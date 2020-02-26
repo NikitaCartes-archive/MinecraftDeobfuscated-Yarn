@@ -4,6 +4,7 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -18,8 +19,13 @@ extends Task<E> {
     }
 
     @Override
+    protected boolean shouldRun(ServerWorld serverWorld, E piglinEntity) {
+        return !((LivingEntity)piglinEntity).getOffHandStack().isEmpty();
+    }
+
+    @Override
     protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-        PiglinBrain.consumeOffHandItem(piglinEntity);
+        PiglinBrain.consumeOffHandItem(piglinEntity, true);
     }
 }
 

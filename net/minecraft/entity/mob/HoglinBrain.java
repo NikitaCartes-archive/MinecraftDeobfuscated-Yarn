@@ -64,12 +64,12 @@ public class HoglinBrain {
 
     private static void addIdleTasks(HoglinEntity hoglin, Brain<HoglinEntity> brain) {
         float f = HoglinBrain.getMovementSpeed(hoglin);
-        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new PacifyTask(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI, 200), new BreedTask(EntityType.HOGLIN), GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI, f * 1.8f, 8, true), new UpdateAttackTargetTask<HoglinEntity>(HoglinBrain::getNearestVisibleTargetablePlayer), new ConditionalTask<MobEntityWithAi>(HoglinEntity::isAdult, GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, f, 8, false)), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), HoglinBrain.makeRandomWalkTask(f)));
+        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new PacifyTask(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS, 200), new BreedTask(EntityType.HOGLIN), GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS, f * 1.8f, 8, true), new UpdateAttackTargetTask<HoglinEntity>(HoglinBrain::getNearestVisibleTargetablePlayer), new ConditionalTask<MobEntityWithAi>(HoglinEntity::isAdult, GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, f, 8, false)), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), HoglinBrain.makeRandomWalkTask(f)));
     }
 
     private static void addFightTasks(HoglinEntity hoglin, Brain<HoglinEntity> brain) {
         float f = HoglinBrain.getMovementSpeed(hoglin);
-        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(new PacifyTask(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI, 200), new BreedTask(EntityType.HOGLIN), new RangedApproachTask(f * 1.8f), new ConditionalTask<MobEntity>(HoglinEntity::isAdult, new MeleeAttackTask(1.5, 40)), new ConditionalTask<MobEntity>(PassiveEntity::isBaby, new MeleeAttackTask(1.5, 15)), new ForgetAttackTargetTask()), MemoryModuleType.ATTACK_TARGET);
+        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(new PacifyTask(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS, 200), new BreedTask(EntityType.HOGLIN), new RangedApproachTask(f * 1.8f), new ConditionalTask<MobEntity>(HoglinEntity::isAdult, new MeleeAttackTask(1.5, 40)), new ConditionalTask<MobEntity>(PassiveEntity::isBaby, new MeleeAttackTask(1.5, 15)), new ForgetAttackTargetTask()), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static void addAvoidTasks(HoglinEntity hoglin, Brain<HoglinEntity> brain) {
@@ -122,14 +122,14 @@ public class HoglinBrain {
     }
 
     private static Optional<? extends LivingEntity> getNearestVisibleTargetablePlayer(HoglinEntity hoglin) {
-        if (HoglinBrain.isPacified(hoglin) || HoglinBrain.hasBreedTarget(hoglin)) {
+        if (HoglinBrain.isNearPlayer(hoglin) || HoglinBrain.hasBreedTarget(hoglin)) {
             return Optional.empty();
         }
         return hoglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER);
     }
 
-    static boolean isWarpedFungiAround(HoglinEntity hoglin, BlockPos pos) {
-        Optional<BlockPos> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI);
+    static boolean isWarpedFungusAround(HoglinEntity hoglin, BlockPos pos) {
+        Optional<BlockPos> optional = hoglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS);
         return optional.isPresent() && optional.get().isWithinDistance(pos, 8.0);
     }
 
@@ -146,7 +146,6 @@ public class HoglinBrain {
         Brain<HoglinEntity> brain = hoglin.getBrain();
         brain.forget(MemoryModuleType.PACIFIED);
         brain.forget(MemoryModuleType.BREED_TARGET);
-        hoglin.playAttackedSound();
         if (hoglin.isBaby()) {
             HoglinBrain.avoidEnemy(hoglin, attacker);
             return;
@@ -213,15 +212,11 @@ public class HoglinBrain {
         return (float)hoglin.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
     }
 
-    protected static boolean isNearPlayer(HoglinEntity hoglin) {
-        return hoglin.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_PLAYERS);
-    }
-
     private static boolean hasBreedTarget(HoglinEntity hoglin) {
         return hoglin.getBrain().hasMemoryModule(MemoryModuleType.BREED_TARGET);
     }
 
-    protected static boolean isPacified(HoglinEntity hoglin) {
+    protected static boolean isNearPlayer(HoglinEntity hoglin) {
         return hoglin.getBrain().hasMemoryModule(MemoryModuleType.PACIFIED);
     }
 

@@ -33,12 +33,12 @@ extends MovingSoundInstance {
     @Override
     public void tick() {
         boolean bl = this.shouldReplace();
-        if (bl && !this.done) {
+        if (bl && !this.isDone()) {
             MinecraftClient.getInstance().getSoundManager().playNextTick(this.getReplacement());
             this.replaced = true;
         }
         if (this.bee.removed || this.replaced) {
-            this.done = true;
+            this.method_24876();
             return;
         }
         this.x = (float)this.bee.getX();

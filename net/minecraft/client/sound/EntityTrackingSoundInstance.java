@@ -32,7 +32,7 @@ extends MovingSoundInstance {
     @Override
     public void tick() {
         if (this.entity.removed) {
-            this.done = true;
+            this.method_24876();
             return;
         }
         this.x = (float)this.entity.getX();

@@ -41,8 +41,8 @@ extends Biome {
         this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.WEEPING_VINES.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(10, 0, 0, 128))));
         DefaultBiomeFeatures.addCrimsonForestVegetation(this);
         DefaultBiomeFeatures.addNetherOres(this);
-        this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIE_PIGMAN, 1, 2, 4));
-        this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.HOGLIN, 5, 3, 4));
+        this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 4));
+        this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.HOGLIN, 10, 3, 4));
         this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.PIGLIN, 5, 3, 4));
     }
 }

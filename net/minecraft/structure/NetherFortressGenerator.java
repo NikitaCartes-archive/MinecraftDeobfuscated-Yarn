@@ -28,11 +28,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
 public class NetherFortressGenerator {
-    private static final class_3404[] field_14494 = new class_3404[]{new class_3404(Bridge.class, 30, 0, true), new class_3404(BridgeCrossing.class, 10, 4), new class_3404(BridgeSmallCrossing.class, 10, 4), new class_3404(BridgeStairs.class, 10, 3), new class_3404(BridgePlatform.class, 5, 2), new class_3404(CorridorExit.class, 5, 1)};
-    private static final class_3404[] field_14493 = new class_3404[]{new class_3404(SmallCorridor.class, 25, 0, true), new class_3404(CorridorCrossing.class, 15, 5), new class_3404(CorridorRightTurn.class, 5, 10), new class_3404(CorridorLeftTurn.class, 5, 10), new class_3404(CorridorStairs.class, 10, 3, true), new class_3404(CorridorBalcony.class, 7, 2), new class_3404(CorridorNetherWartsRoom.class, 5, 2)};
+    private static final PieceData[] field_14494 = new PieceData[]{new PieceData(Bridge.class, 30, 0, true), new PieceData(BridgeCrossing.class, 10, 4), new PieceData(BridgeSmallCrossing.class, 10, 4), new PieceData(BridgeStairs.class, 10, 3), new PieceData(BridgePlatform.class, 5, 2), new PieceData(CorridorExit.class, 5, 1)};
+    private static final PieceData[] field_14493 = new PieceData[]{new PieceData(SmallCorridor.class, 25, 0, true), new PieceData(CorridorCrossing.class, 15, 5), new PieceData(CorridorRightTurn.class, 5, 10), new PieceData(CorridorLeftTurn.class, 5, 10), new PieceData(CorridorStairs.class, 10, 3, true), new PieceData(CorridorBalcony.class, 7, 2), new PieceData(CorridorNetherWartsRoom.class, 5, 2)};
 
-    private static Piece generatePiece(class_3404 arg, List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l) {
-        Class<? extends Piece> class_ = arg.field_14501;
+    private static Piece generatePiece(PieceData pieceData, List<StructurePiece> list, Random random, int i, int j, int k, Direction direction, int l) {
+        Class<? extends Piece> class_ = pieceData.pieceType;
         Piece piece = null;
         if (class_ == Bridge.class) {
             piece = Bridge.method_14798(list, random, i, j, k, direction, l);
@@ -1015,22 +1015,22 @@ public class NetherFortressGenerator {
 
     public static class Start
     extends BridgeCrossing {
-        public class_3404 field_14506;
-        public List<class_3404> bridgePieces;
-        public List<class_3404> corridorPieces;
+        public PieceData field_14506;
+        public List<PieceData> bridgePieces;
+        public List<PieceData> corridorPieces;
         public final List<StructurePiece> field_14505 = Lists.newArrayList();
 
         public Start(Random random, int i, int j) {
             super(random, i, j);
             this.bridgePieces = Lists.newArrayList();
-            for (class_3404 lv : field_14494) {
-                lv.field_14502 = 0;
-                this.bridgePieces.add(lv);
+            for (PieceData pieceData : field_14494) {
+                pieceData.field_14502 = 0;
+                this.bridgePieces.add(pieceData);
             }
             this.corridorPieces = Lists.newArrayList();
-            for (class_3404 lv : field_14493) {
-                lv.field_14502 = 0;
-                this.corridorPieces.add(lv);
+            for (PieceData pieceData : field_14493) {
+                pieceData.field_14502 = 0;
+                this.corridorPieces.add(pieceData);
             }
         }
 
@@ -1053,34 +1053,34 @@ public class NetherFortressGenerator {
         protected void toNbt(CompoundTag tag) {
         }
 
-        private int method_14810(List<class_3404> list) {
+        private int method_14810(List<PieceData> list) {
             boolean bl = false;
             int i = 0;
-            for (class_3404 lv : list) {
-                if (lv.field_14499 > 0 && lv.field_14502 < lv.field_14499) {
+            for (PieceData pieceData : list) {
+                if (pieceData.field_14499 > 0 && pieceData.field_14502 < pieceData.field_14499) {
                     bl = true;
                 }
-                i += lv.field_14503;
+                i += pieceData.field_14503;
             }
             return bl ? i : -1;
         }
 
-        private Piece method_14811(Start start, List<class_3404> list, List<StructurePiece> list2, Random random, int i, int j, int k, Direction direction, int l) {
+        private Piece method_14811(Start start, List<PieceData> list, List<StructurePiece> list2, Random random, int i, int j, int k, Direction direction, int l) {
             int m = this.method_14810(list);
             boolean bl = m > 0 && l <= 30;
             int n = 0;
             block0: while (n < 5 && bl) {
                 ++n;
                 int o = random.nextInt(m);
-                for (class_3404 lv : list) {
-                    if ((o -= lv.field_14503) >= 0) continue;
-                    if (!lv.method_14816(l) || lv == start.field_14506 && !lv.field_14500) continue block0;
-                    Piece piece = NetherFortressGenerator.generatePiece(lv, list2, random, i, j, k, direction, l);
+                for (PieceData pieceData : list) {
+                    if ((o -= pieceData.field_14503) >= 0) continue;
+                    if (!pieceData.method_14816(l) || pieceData == start.field_14506 && !pieceData.field_14500) continue block0;
+                    Piece piece = NetherFortressGenerator.generatePiece(pieceData, list2, random, i, j, k, direction, l);
                     if (piece == null) continue;
-                    ++lv.field_14502;
-                    start.field_14506 = lv;
-                    if (!lv.method_14815()) {
-                        list.remove(lv);
+                    ++pieceData.field_14502;
+                    start.field_14506 = pieceData;
+                    if (!pieceData.method_14815()) {
+                        list.remove(pieceData);
                     }
                     return piece;
                 }
@@ -1093,7 +1093,7 @@ public class NetherFortressGenerator {
             if (Math.abs(i - start.getBoundingBox().minX) > 112 || Math.abs(k - start.getBoundingBox().minZ) > 112) {
                 return BridgeEnd.method_14797(list, random, i, j, k, direction, l);
             }
-            List<class_3404> list2 = start.bridgePieces;
+            List<PieceData> list2 = start.bridgePieces;
             if (bl) {
                 list2 = start.corridorPieces;
             }
@@ -1175,21 +1175,21 @@ public class NetherFortressGenerator {
         }
     }
 
-    static class class_3404 {
-        public final Class<? extends Piece> field_14501;
+    static class PieceData {
+        public final Class<? extends Piece> pieceType;
         public final int field_14503;
         public int field_14502;
         public final int field_14499;
         public final boolean field_14500;
 
-        public class_3404(Class<? extends Piece> class_, int i, int j, boolean bl) {
-            this.field_14501 = class_;
+        public PieceData(Class<? extends Piece> class_, int i, int j, boolean bl) {
+            this.pieceType = class_;
             this.field_14503 = i;
             this.field_14499 = j;
             this.field_14500 = bl;
         }
 
-        public class_3404(Class<? extends Piece> class_, int i, int j) {
+        public PieceData(Class<? extends Piece> class_, int i, int j) {
             this(class_, i, j, false);
         }
 

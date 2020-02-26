@@ -33,7 +33,7 @@ public class AmbientSoundLoops {
         @Override
         public void tick() {
             if (this.player.removed || this.transitionTimer < 0) {
-                this.done = true;
+                this.method_24876();
                 return;
             }
             this.transitionTimer = this.player.isSubmergedInWater() ? ++this.transitionTimer : (this.transitionTimer -= 2);
@@ -60,7 +60,7 @@ public class AmbientSoundLoops {
         @Override
         public void tick() {
             if (this.player.removed || !this.player.isSubmergedInWater()) {
-                this.done = true;
+                this.method_24876();
             }
         }
     }

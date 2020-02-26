@@ -755,7 +755,7 @@ extends AbstractClientPlayerEntity {
                 this.client.openScreen(null);
             }
             if (this.nextNauseaStrength == 0.0f) {
-                this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_PORTAL_TRIGGER, this.random.nextFloat() * 0.4f + 0.8f));
+                this.client.getSoundManager().play(PositionedSoundInstance.method_24877(SoundEvents.BLOCK_PORTAL_TRIGGER, this.random.nextFloat() * 0.4f + 0.8f, 0.25f));
             }
             this.nextNauseaStrength += 0.0125f;
             if (this.nextNauseaStrength >= 1.0f) {

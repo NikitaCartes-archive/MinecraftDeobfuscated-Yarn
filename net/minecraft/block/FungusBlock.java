@@ -18,14 +18,15 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 
-public class FungiBlock
+public class FungusBlock
 extends PlantBlock
 implements Fertilizable {
     protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 9.0, 12.0);
-    private final Supplier<ConfiguredFeature<?, ?>> field_22135;
+    private final Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> field_22135;
 
-    protected FungiBlock(Block.Settings settings, Supplier<ConfiguredFeature<?, ?>> supplier) {
+    protected FungusBlock(Block.Settings settings, Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> supplier) {
         super(settings);
         this.field_22135 = supplier;
     }
@@ -43,7 +44,9 @@ implements Fertilizable {
 
     @Override
     public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-        return true;
+        Block block = ((HugeFungusFeatureConfig)this.field_22135.get().config).field_22435.getBlock();
+        Block block2 = world.getBlockState(pos.down()).getBlock();
+        return block2 == block;
     }
 
     @Override

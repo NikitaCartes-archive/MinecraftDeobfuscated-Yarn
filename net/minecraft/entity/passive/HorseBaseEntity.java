@@ -13,9 +13,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.JumpingMount;
@@ -57,9 +57,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Arm;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -158,11 +162,6 @@ JumpingMount {
 
     public void setInAir(boolean inAir) {
         this.inAir = inAir;
-    }
-
-    @Override
-    public boolean canBeLeashedBy(PlayerEntity player) {
-        return super.canBeLeashedBy(player) && this.getGroup() != EntityGroup.UNDEAD;
     }
 
     @Override
@@ -911,6 +910,28 @@ JumpingMount {
             return null;
         }
         return this.getPassengerList().get(0);
+    }
+
+    @Override
+    public Vec3d method_24829(LivingEntity livingEntity) {
+        Vec3d vec3d = HorseBaseEntity.method_24826(this.getWidth(), livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.RIGHT ? 90.0f : -90.0f));
+        double d = this.getX() + vec3d.x;
+        double e = this.getBoundingBox().y1;
+        double f = this.getZ() + vec3d.z;
+        EntityContext entityContext = EntityContext.of(livingEntity);
+        Box box = livingEntity.method_24833(EntityPose.SWIMMING).offset(d, e, f);
+        BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
+        double g = this.getBoundingBox().y2 + 0.75;
+        do {
+            Box box2;
+            double h = HorseBaseEntity.method_24827(this.world, mutable, entityContext);
+            if ((double)mutable.getY() + h > g) break;
+            if (!Double.isInfinite(h) && h < 1.0 && this.world.getBlockCollisions(livingEntity, box2 = box.offset(d, (double)mutable.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
+                return new Vec3d(d, (double)mutable.getY() + h, f);
+            }
+            mutable.setOffset(Direction.UP);
+        } while ((double)mutable.getY() < g);
+        return new Vec3d(this.getX(), this.getY(), this.getZ());
     }
 
     @Override

@@ -35,6 +35,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.ZombiePigmanEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -64,6 +65,7 @@ extends HostileEntity
 implements CrossbowUser {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> field_22419 = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final UUID BABY_SPEED_BOOST_MODIFIER_ID = UUID.fromString("766bfa64-11f3-11ea-8d71-362b9e155667");
     private static final EntityAttributeModifier BABY_SPEED_BOOST_MODIFIER = new EntityAttributeModifier(BABY_SPEED_BOOST_MODIFIER_ID, "Baby speed boost", (double)0.2f, EntityAttributeModifier.Operation.MULTIPLY_BASE);
@@ -99,6 +101,9 @@ implements CrossbowUser {
         if (this.isBaby()) {
             tag.putBoolean("IsBaby", true);
         }
+        if (this.method_24843()) {
+            tag.putBoolean("IsImmuneToZombification", true);
+        }
         tag.put("Inventory", PiglinEntity.inventoryToTag(this.inventory));
     }
 
@@ -106,6 +111,7 @@ implements CrossbowUser {
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         this.setBaby(tag.getBoolean("IsBaby"));
+        this.method_24847(tag.getBoolean("IsImmuneToZombification"));
         PiglinEntity.inventoryFromTag(this.inventory, tag.getList("Inventory", 10));
     }
 
@@ -131,11 +137,6 @@ implements CrossbowUser {
     protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
         super.dropEquipment(source, lootingMultiplier, allowDrops);
         this.inventory.clearToList().forEach(this::dropStack);
-        ItemStack itemStack = this.getStackInHand(Hand.OFF_HAND);
-        if (!itemStack.isEmpty()) {
-            this.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
-            this.dropStack(itemStack);
-        }
     }
 
     protected ItemStack addItem(ItemStack stack) {
@@ -147,6 +148,7 @@ implements CrossbowUser {
         super.initDataTracker();
         this.dataTracker.startTracking(BABY, false);
         this.dataTracker.startTracking(CHARGING, false);
+        this.dataTracker.startTracking(field_22419, false);
     }
 
     @Override
@@ -176,7 +178,7 @@ implements CrossbowUser {
             this.setBaby(true);
         }
         this.initEquipment(difficulty);
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return entityData;
     }
 
     @Override
@@ -252,8 +254,16 @@ implements CrossbowUser {
         return !this.isBaby();
     }
 
+    private void method_24847(boolean bl) {
+        this.getDataTracker().set(field_22419, bl);
+    }
+
+    private boolean method_24843() {
+        return this.getDataTracker().get(field_22419);
+    }
+
     public boolean canConvert() {
-        return this.world.getDimension().getType() == DimensionType.OVERWORLD;
+        return this.world.getDimension().getType() == DimensionType.OVERWORLD && !this.method_24843();
     }
 
     @Override
@@ -263,10 +273,7 @@ implements CrossbowUser {
         this.world.getProfiler().pop();
         PiglinBrain.tickActivities(this);
         PiglinBrain.playSoundAtChance(this);
-        if (PiglinBrain.hasPlayersNearby(this)) {
-            this.setPersistent();
-        }
-        this.conversionTicks = this.world.dimension.getType() == DimensionType.OVERWORLD ? ++this.conversionTicks : 0;
+        this.conversionTicks = this.canConvert() ? ++this.conversionTicks : 0;
         if (this.conversionTicks > 300) {
             this.playZombifySound();
             this.zombify((ServerWorld)this.world);
@@ -279,7 +286,7 @@ implements CrossbowUser {
     }
 
     private void zombify(ServerWorld world) {
-        ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(world);
+        ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
         zombiePigmanEntity.copyPositionAndRotation(this);
         zombiePigmanEntity.initialize(world, world.getLocalDifficulty(new BlockPos(zombiePigmanEntity)), SpawnType.CONVERSION, null, null);
         zombiePigmanEntity.setBaby(this.isBaby());
@@ -360,18 +367,39 @@ implements CrossbowUser {
         this.shoot(this, target, projectile, multiShotSpray, 1.6f);
     }
 
+    protected void method_24844(ItemStack itemStack) {
+        this.method_24834(EquipmentSlot.MAINHAND, itemStack);
+    }
+
+    protected void method_24845(ItemStack itemStack) {
+        if (itemStack.getItem() == Items.GOLD_INGOT) {
+            this.equipStack(EquipmentSlot.OFFHAND, itemStack);
+        } else {
+            this.method_24834(EquipmentSlot.OFFHAND, itemStack);
+        }
+    }
+
     @Override
     public boolean canGather(ItemStack stack) {
         return PiglinBrain.canGather(this, stack);
     }
 
+    protected boolean method_24846(ItemStack itemStack) {
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+        ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
+        return this.isBetterItemFor(itemStack, itemStack2, equipmentSlot);
+    }
+
     @Override
     protected boolean isBetterItemFor(ItemStack current, ItemStack previous, EquipmentSlot slot) {
-        if (PiglinBrain.isGoldenItem(current.getItem()) && !PiglinBrain.isGoldenItem(previous.getItem())) {
-            return true;
-        }
-        if (!PiglinBrain.isGoldenItem(current.getItem()) && PiglinBrain.isGoldenItem(previous.getItem())) {
+        if (PiglinBrain.isGoldenItem(previous.getItem())) {
             return false;
+        }
+        if (this.isAdult() && previous.getItem() == Items.CROSSBOW) {
+            return false;
+        }
+        if (PiglinBrain.isGoldenItem(current.getItem())) {
+            return true;
         }
         return super.isBetterItemFor(current, previous, slot);
     }
@@ -379,10 +407,6 @@ implements CrossbowUser {
     @Override
     protected void loot(ItemEntity item) {
         PiglinBrain.loot(this, item);
-    }
-
-    protected boolean isOffHandEmpty() {
-        return this.getOffHandStack().isEmpty();
     }
 
     public boolean isRiding() {
@@ -432,10 +456,6 @@ implements CrossbowUser {
         this.playSound(SoundEvents.ENTITY_PIGLIN_CELEBRATE, 1.0f, this.getSoundPitch());
     }
 
-    void playAttackedSound() {
-        this.playRetreatSound();
-    }
-
     void playRetreatSound() {
         this.playSound(SoundEvents.ENTITY_PIGLIN_RETREAT, 1.0f, this.getSoundPitch());
     }
@@ -445,7 +465,7 @@ implements CrossbowUser {
     }
 
     void playZombifySound() {
-        this.playSound(SoundEvents.ENTITY_PIGLIN_CONVERTED_TO_ZOMBIFIED, 1.0f, 1.0f);
+        this.playSound(SoundEvents.ENTITY_PIGLIN_CONVERTED_TO_ZOMBIFIED, 1.0f, this.getSoundPitch());
     }
 
     @Override

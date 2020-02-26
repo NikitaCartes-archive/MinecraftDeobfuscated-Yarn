@@ -116,7 +116,7 @@ implements Projectile {
         float g = -MathHelper.sin(pitch * ((float)Math.PI / 180));
         float h = MathHelper.cos(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
         this.setVelocity(f, g, h, modifierZ, modifierXYZ);
-        this.setVelocity(this.getVelocity().add(user.getVelocity().x, user.onGround ? 0.0 : user.getVelocity().y, user.getVelocity().z));
+        this.setVelocity(this.getVelocity().add(user.getVelocity().x, user.method_24828() ? 0.0 : user.getVelocity().y, user.getVelocity().z));
     }
 
     @Override

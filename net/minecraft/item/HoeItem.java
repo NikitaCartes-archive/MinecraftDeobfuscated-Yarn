@@ -22,6 +22,7 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -35,6 +36,25 @@ extends ToolItem {
     public HoeItem(ToolMaterial material, float attackSpeed, Item.Settings settings) {
         super(material, settings);
         this.attackSpeed = attackSpeed;
+    }
+
+    @Override
+    public float getMiningSpeed(ItemStack stack, BlockState state) {
+        if (state.matches(BlockTags.WART_BLOCKS)) {
+            return 15.0f;
+        }
+        return 1.0f;
+    }
+
+    @Override
+    public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
+        if (!world.isClient) {
+            stack.damage(1, miner, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+        }
+        if (state.matches(BlockTags.WART_BLOCKS)) {
+            return true;
+        }
+        return super.postMine(stack, world, state, pos, miner);
     }
 
     @Override

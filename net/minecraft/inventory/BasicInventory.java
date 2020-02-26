@@ -176,11 +176,15 @@ RecipeInputProvider {
     private void addToExistingSlot(ItemStack stack) {
         for (int i = 0; i < this.size; ++i) {
             ItemStack itemStack = this.getInvStack(i);
-            if (!ItemStack.areItemsEqualIgnoreDamage(itemStack, stack)) continue;
+            if (!this.method_24825(itemStack, stack)) continue;
             this.transfer(stack, itemStack);
             if (!stack.isEmpty()) continue;
             return;
         }
+    }
+
+    private boolean method_24825(ItemStack itemStack, ItemStack itemStack2) {
+        return itemStack.getItem() == itemStack2.getItem() && ItemStack.areTagsEqual(itemStack, itemStack2);
     }
 
     private void transfer(ItemStack source, ItemStack target) {

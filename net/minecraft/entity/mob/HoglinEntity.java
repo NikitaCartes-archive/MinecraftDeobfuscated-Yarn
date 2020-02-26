@@ -34,6 +34,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -53,7 +54,7 @@ implements Monster {
     private static int field_22363 = 0;
     private static int field_22364 = 0;
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super HoglinEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HOGLIN_SPECIFIC_SENSOR);
-    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, MemoryModuleType.AVOID_TARGET, new MemoryModuleType[]{MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI, MemoryModuleType.PACIFIED});
+    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, MemoryModuleType.AVOID_TARGET, new MemoryModuleType[]{MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS, MemoryModuleType.PACIFIED});
 
     public HoglinEntity(EntityType<? extends HoglinEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -134,9 +135,6 @@ implements Monster {
         this.world.getProfiler().pop();
         HoglinBrain.refreshActivities(this);
         HoglinBrain.playSoundAtChance(this);
-        if (HoglinBrain.isNearPlayer(this)) {
-            this.setPersistent();
-        }
     }
 
     @Override
@@ -167,13 +165,22 @@ implements Monster {
 
     @Override
     public float getPathfindingFavor(BlockPos pos, WorldView world) {
-        if (HoglinBrain.isWarpedFungiAround(this, pos)) {
+        if (HoglinBrain.isWarpedFungusAround(this, pos)) {
             return -1.0f;
         }
         if (world.getBlockState(pos.down()).getBlock() == Blocks.CRIMSON_NYLIUM) {
             return 10.0f;
         }
         return 0.0f;
+    }
+
+    @Override
+    public boolean interactMob(PlayerEntity player, Hand hand) {
+        boolean bl = super.interactMob(player, hand);
+        if (bl) {
+            this.setPersistent();
+        }
+        return bl;
     }
 
     @Override
@@ -199,7 +206,7 @@ implements Monster {
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        return stack.getItem() == Items.CRIMSON_FUNGI;
+        return stack.getItem() == Items.CRIMSON_FUNGUS;
     }
 
     public boolean isAdult() {
@@ -209,12 +216,16 @@ implements Monster {
     @Override
     @Nullable
     public PassiveEntity createChild(PassiveEntity mate) {
-        return EntityType.HOGLIN.create(this.world);
+        HoglinEntity hoglinEntity = EntityType.HOGLIN.create(this.world);
+        if (hoglinEntity != null) {
+            hoglinEntity.setPersistent();
+        }
+        return hoglinEntity;
     }
 
     @Override
     public boolean canEat() {
-        return !HoglinBrain.isPacified(this) && super.canEat();
+        return !HoglinBrain.isNearPlayer(this) && super.canEat();
     }
 
     @Override
@@ -261,10 +272,6 @@ implements Monster {
 
     protected void playFightSound() {
         this.playSound(SoundEvents.ENTITY_HOGLIN_ANGRY, 1.0f, this.getSoundPitch());
-    }
-
-    protected void playAttackedSound() {
-        this.playRetreatSound();
     }
 
     protected void playRetreatSound() {

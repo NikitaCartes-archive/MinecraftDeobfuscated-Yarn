@@ -536,7 +536,7 @@ implements ClientPlayPacketListener {
             } else {
                 entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 3, true);
             }
-            entity.onGround = packet.isOnGround();
+            entity.method_24830(packet.isOnGround());
         }
     }
 
@@ -569,7 +569,7 @@ implements ClientPlayPacketListener {
                 float f = (float)(packet.getPitch() * 360) / 256.0f;
                 entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, f, 3, false);
             }
-            entity.onGround = packet.isOnGround();
+            entity.method_24830(packet.isOnGround());
         }
     }
 

@@ -12,14 +12,11 @@ import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractSoundInstance
 implements SoundInstance {
     protected Sound sound;
-    @Nullable
-    private WeightedSoundSet soundSet;
     protected final SoundCategory category;
     protected final Identifier id;
     protected float volume = 1.0f;
@@ -49,9 +46,9 @@ implements SoundInstance {
 
     @Override
     public WeightedSoundSet getSoundSet(SoundManager soundManager) {
-        this.soundSet = soundManager.get(this.id);
-        this.sound = this.soundSet == null ? SoundManager.MISSING_SOUND : this.soundSet.getSound();
-        return this.soundSet;
+        WeightedSoundSet weightedSoundSet = soundManager.get(this.id);
+        this.sound = weightedSoundSet == null ? SoundManager.MISSING_SOUND : weightedSoundSet.getSound();
+        return weightedSoundSet;
     }
 
     @Override

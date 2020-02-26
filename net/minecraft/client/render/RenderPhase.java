@@ -98,7 +98,7 @@ public abstract class RenderPhase {
         RenderSystem.polygonOffset(0.0f, 0.0f);
         RenderSystem.disablePolygonOffset();
     });
-    protected static final Layering field_22241 = new Layering("view_offset_z_layering", () -> {
+    protected static final Layering VIEW_OFFSET_Z_LAYERING = new Layering("view_offset_z_layering", () -> {
         RenderSystem.pushMatrix();
         RenderSystem.scalef(0.99975586f, 0.99975586f, 0.99975586f);
     }, RenderSystem::popMatrix);

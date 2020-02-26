@@ -28,6 +28,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -164,6 +165,12 @@ implements IWorld {
     @Override
     public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
         return this.world.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public float method_24852(Direction direction, boolean bl) {
+        return 1.0f;
     }
 
     @Override

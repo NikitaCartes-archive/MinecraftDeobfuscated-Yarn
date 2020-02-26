@@ -28,16 +28,6 @@ extends BanEntry<GameProfile> {
     }
 
     @Override
-    protected void serialize(JsonObject jsonObject) {
-        if (this.getKey() == null) {
-            return;
-        }
-        jsonObject.addProperty("uuid", ((GameProfile)this.getKey()).getId() == null ? "" : ((GameProfile)this.getKey()).getId().toString());
-        jsonObject.addProperty("name", ((GameProfile)this.getKey()).getName());
-        super.serialize(jsonObject);
-    }
-
-    @Override
     public Text toText() {
         GameProfile gameProfile = (GameProfile)this.getKey();
         return new LiteralText(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));

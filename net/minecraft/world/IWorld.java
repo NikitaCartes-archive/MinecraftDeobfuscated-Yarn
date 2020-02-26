@@ -85,6 +85,10 @@ ModifiableTestableWorld {
 
     public void playLevelEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
 
+    default public int method_24853() {
+        return this.getDimension().isNether() ? 128 : 256;
+    }
+
     default public void playLevelEvent(int eventId, BlockPos blockPos, int data) {
         this.playLevelEvent(null, eventId, blockPos, data);
     }

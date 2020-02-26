@@ -11,6 +11,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -601,6 +603,32 @@ extends Entity {
             passenger.setYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
             passenger.setHeadYaw(passenger.getHeadYaw() + (float)j);
         }
+    }
+
+    @Override
+    public Vec3d method_24829(LivingEntity livingEntity) {
+        double f;
+        double e;
+        Vec3d vec3d = BoatEntity.method_24826(Math.sqrt((double)(this.getWidth() * this.getWidth()) * 2.0), livingEntity.getWidth(), this.yaw);
+        double d = this.getX() + vec3d.x;
+        BlockPos blockPos = new BlockPos(d, e = this.getBoundingBox().y2 + 0.001, f = this.getZ() + vec3d.z);
+        BlockPos blockPos2 = blockPos.down();
+        if (!this.world.isWater(blockPos2)) {
+            Box box3;
+            double h;
+            EntityContext entityContext = EntityContext.of(livingEntity);
+            Box box = livingEntity.method_24833(EntityPose.SWIMMING).offset(d, e, f);
+            double g = BoatEntity.method_24827(this.world, blockPos, entityContext);
+            if (!Double.isInfinite(g) && g < 1.0) {
+                Box box2 = box.offset(d, (double)blockPos.getY() + g, f);
+                if (this.world.getBlockCollisions(livingEntity, box2).allMatch(VoxelShape::isEmpty)) {
+                    return new Vec3d(d, (double)blockPos.getY() + g, f);
+                }
+            } else if (g < 1.0 && !Double.isInfinite(h = BoatEntity.method_24827(this.world, blockPos2, entityContext)) && h <= 0.5 && this.world.getBlockCollisions(livingEntity, box3 = box.offset(d, (double)blockPos2.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
+                return new Vec3d(d, (double)blockPos2.getY() + h, f);
+            }
+        }
+        return new Vec3d(this.getX(), e, this.getZ());
     }
 
     protected void copyEntityData(Entity entity) {

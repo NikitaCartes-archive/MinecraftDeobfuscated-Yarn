@@ -222,8 +222,8 @@ public class Items {
     public static final Item WITHER_ROSE = Items.register(Blocks.WITHER_ROSE, ItemGroup.DECORATIONS);
     public static final Item BROWN_MUSHROOM = Items.register(Blocks.BROWN_MUSHROOM, ItemGroup.DECORATIONS);
     public static final Item RED_MUSHROOM = Items.register(Blocks.RED_MUSHROOM, ItemGroup.DECORATIONS);
-    public static final Item CRIMSON_FUNGI = Items.register(Blocks.CRIMSON_FUNGI, ItemGroup.DECORATIONS);
-    public static final Item WARPED_FUNGI = Items.register(Blocks.WARPED_FUNGI, ItemGroup.DECORATIONS);
+    public static final Item CRIMSON_FUNGUS = Items.register(Blocks.CRIMSON_FUNGUS, ItemGroup.DECORATIONS);
+    public static final Item WARPED_FUNGUS = Items.register(Blocks.WARPED_FUNGUS, ItemGroup.DECORATIONS);
     public static final Item CRIMSON_ROOTS = Items.register(Blocks.CRIMSON_ROOTS, ItemGroup.DECORATIONS);
     public static final Item WARPED_ROOTS = Items.register(Blocks.WARPED_ROOTS, ItemGroup.DECORATIONS);
     public static final Item NETHER_SPROUTS = Items.register(Blocks.NETHER_SPROUTS, ItemGroup.DECORATIONS);
@@ -892,7 +892,7 @@ public class Items {
     public static final Item WOLF_SPAWN_EGG = Items.register("wolf_spawn_egg", (Item)new SpawnEggItem(EntityType.WOLF, 0xD7D3D3, 13545366, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ZOMBIE_SPAWN_EGG = Items.register("zombie_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOMBIE, 44975, 7969893, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ZOMBIE_HORSE_SPAWN_EGG = Items.register("zombie_horse_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOMBIE_HORSE, 3232308, 9945732, new Item.Settings().group(ItemGroup.MISC)));
-    public static final Item ZOMBIE_PIGMAN_SPAWN_EGG = Items.register("zombie_pigman_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOMBIE_PIGMAN, 15373203, 5009705, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item ZOMBIFIED_PIGLIN_SPAWN_EGG = Items.register("zombified_piglin_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOMBIFIED_PIGLIN, 15373203, 5009705, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ZOMBIE_VILLAGER_SPAWN_EGG = Items.register("zombie_villager_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOMBIE_VILLAGER, 5651507, 7969893, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item EXPERIENCE_BOTTLE = Items.register("experience_bottle", (Item)new ExperienceBottleItem(new Item.Settings().group(ItemGroup.MISC).rarity(Rarity.UNCOMMON)));
     public static final Item FIRE_CHARGE = Items.register("fire_charge", (Item)new FireChargeItem(new Item.Settings().group(ItemGroup.MISC)));
@@ -1038,6 +1038,8 @@ public class Items {
     public static final Item NETHERITE_CHESTPLATE = Items.register("netherite_chestplate", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.CHEST, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
     public static final Item NETHERITE_LEGGINGS = Items.register("netherite_leggings", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.LEGS, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
     public static final Item NETHERITE_BOOTS = Items.register("netherite_boots", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.FEET, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
+    public static final Item TARGET = Items.register(Blocks.TARGET, ItemGroup.REDSTONE);
+    public static final Item CRYING_OBSIDIAN = Items.register(Blocks.CRYING_OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

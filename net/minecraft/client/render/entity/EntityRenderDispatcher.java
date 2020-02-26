@@ -110,7 +110,6 @@ import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
 import net.minecraft.client.render.entity.WolfEntityRenderer;
 import net.minecraft.client.render.entity.ZombieEntityRenderer;
 import net.minecraft.client.render.entity.ZombieHorseEntityRenderer;
-import net.minecraft.client.render.entity.ZombiePigmanEntityRenderer;
 import net.minecraft.client.render.entity.ZombieVillagerEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
@@ -228,7 +227,7 @@ public class EntityRenderDispatcher {
         this.register(EntityType.PARROT, new ParrotEntityRenderer(this));
         this.register(EntityType.PHANTOM, new PhantomEntityRenderer(this));
         this.register(EntityType.PIG, new PigEntityRenderer(this));
-        this.register(EntityType.PIGLIN, new PiglinEntityRenderer(this));
+        this.register(EntityType.PIGLIN, new PiglinEntityRenderer(this, false));
         this.register(EntityType.PILLAGER, new PillagerEntityRenderer(this));
         this.register(EntityType.POLAR_BEAR, new PolarBearEntityRenderer(this));
         this.register(EntityType.POTION, new FlyingItemEntityRenderer(this, itemRenderer));
@@ -268,7 +267,7 @@ public class EntityRenderDispatcher {
         this.register(EntityType.WOLF, new WolfEntityRenderer(this));
         this.register(EntityType.ZOMBIE_HORSE, new ZombieHorseEntityRenderer(this));
         this.register(EntityType.ZOMBIE, new ZombieEntityRenderer(this));
-        this.register(EntityType.ZOMBIE_PIGMAN, new ZombiePigmanEntityRenderer(this));
+        this.register(EntityType.ZOMBIFIED_PIGLIN, new PiglinEntityRenderer(this, true));
         this.register(EntityType.ZOMBIE_VILLAGER, new ZombieVillagerEntityRenderer(this, reloadableResourceManager));
     }
 

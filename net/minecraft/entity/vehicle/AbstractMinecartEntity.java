@@ -302,7 +302,7 @@ extends Entity {
                 entity2.pushAwayFrom(this);
             }
         }
-        this.checkWaterState();
+        this.updateWaterState();
     }
 
     protected double getMaxOffRailSpeed() {

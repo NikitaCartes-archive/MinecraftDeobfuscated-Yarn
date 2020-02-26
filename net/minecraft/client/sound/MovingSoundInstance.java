@@ -14,7 +14,7 @@ import net.minecraft.sound.SoundEvent;
 public abstract class MovingSoundInstance
 extends AbstractSoundInstance
 implements TickableSoundInstance {
-    protected boolean done;
+    private boolean done;
 
     protected MovingSoundInstance(SoundEvent sound, SoundCategory soundCategory) {
         super(sound, soundCategory);
@@ -23,6 +23,11 @@ implements TickableSoundInstance {
     @Override
     public boolean isDone() {
         return this.done;
+    }
+
+    protected final void method_24876() {
+        this.done = true;
+        this.repeat = false;
     }
 }
 

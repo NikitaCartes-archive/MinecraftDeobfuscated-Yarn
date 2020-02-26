@@ -37,6 +37,7 @@ import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
 import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
+import net.minecraft.advancement.criterion.TargetHitCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.advancement.criterion.UsedEnderEyeCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
@@ -84,6 +85,7 @@ public class Criterions {
     public static final BlockUsedCriterion SAFELY_HARVEST_HONEY = Criterions.register(new BlockUsedCriterion(new Identifier("safely_harvest_honey")));
     public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = Criterions.register(new SlideDownBlockCriterion());
     public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = Criterions.register(new BeeNestDestroyedCriterion());
+    public static final TargetHitCriterion TARGET_HIT = Criterions.register(new TargetHitCriterion());
 
     private static <T extends Criterion<?>> T register(T object) {
         if (VALUES.containsKey(object.getId())) {

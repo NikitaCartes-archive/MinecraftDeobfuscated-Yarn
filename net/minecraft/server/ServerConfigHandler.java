@@ -11,7 +11,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.yggdrasil.ProfileNotFoundException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -76,8 +75,8 @@ public class ServerConfigHandler {
             if (bannedPlayerList.getFile().exists()) {
                 try {
                     bannedPlayerList.load();
-                } catch (FileNotFoundException fileNotFoundException) {
-                    LOGGER.warn("Could not load existing file {}", (Object)bannedPlayerList.getFile().getName(), (Object)fileNotFoundException);
+                } catch (IOException iOException) {
+                    LOGGER.warn("Could not load existing file {}", (Object)bannedPlayerList.getFile().getName(), (Object)iOException);
                 }
             }
             try {
@@ -129,8 +128,8 @@ public class ServerConfigHandler {
             if (bannedIpList.getFile().exists()) {
                 try {
                     bannedIpList.load();
-                } catch (FileNotFoundException fileNotFoundException) {
-                    LOGGER.warn("Could not load existing file {}", (Object)bannedIpList.getFile().getName(), (Object)fileNotFoundException);
+                } catch (IOException iOException) {
+                    LOGGER.warn("Could not load existing file {}", (Object)bannedIpList.getFile().getName(), (Object)iOException);
                 }
             }
             try {
@@ -161,8 +160,8 @@ public class ServerConfigHandler {
             if (operatorList.getFile().exists()) {
                 try {
                     operatorList.load();
-                } catch (FileNotFoundException fileNotFoundException) {
-                    LOGGER.warn("Could not load existing file {}", (Object)operatorList.getFile().getName(), (Object)fileNotFoundException);
+                } catch (IOException iOException) {
+                    LOGGER.warn("Could not load existing file {}", (Object)operatorList.getFile().getName(), (Object)iOException);
                 }
             }
             try {
@@ -204,8 +203,8 @@ public class ServerConfigHandler {
             if (whitelist.getFile().exists()) {
                 try {
                     whitelist.load();
-                } catch (FileNotFoundException fileNotFoundException) {
-                    LOGGER.warn("Could not load existing file {}", (Object)whitelist.getFile().getName(), (Object)fileNotFoundException);
+                } catch (IOException iOException) {
+                    LOGGER.warn("Could not load existing file {}", (Object)whitelist.getFile().getName(), (Object)iOException);
                 }
             }
             try {

@@ -68,7 +68,7 @@ extends QuadrupedEntityModel<T> {
         this.backRightLeg.yaw = 0.0f;
         this.backLeftLeg.yaw = 0.0f;
         this.field_3594.pitch = 1.5707964f;
-        if (!((Entity)turtleEntity).isTouchingWater() && ((TurtleEntity)turtleEntity).onGround) {
+        if (!((Entity)turtleEntity).isTouchingWater() && ((Entity)turtleEntity).method_24828()) {
             float k = ((TurtleEntity)turtleEntity).isDiggingSand() ? 4.0f : 1.0f;
             float l = ((TurtleEntity)turtleEntity).isDiggingSand() ? 2.0f : 1.0f;
             float m = 5.0f;

@@ -32,8 +32,8 @@ extends Dimension {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Vec3d modifyFogColor(int fogColor, float tickDelta) {
-        return Vec3d.unpackRgb(fogColor);
+    public Vec3d modifyFogColor(Vec3d vec3d, float tickDelta) {
+        return vec3d;
     }
 
     @Override

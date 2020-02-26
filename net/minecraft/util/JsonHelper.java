@@ -17,7 +17,6 @@ import com.google.gson.stream.JsonReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
@@ -316,11 +315,11 @@ public class JsonHelper {
     }
 
     @Nullable
-    public static <T> T deserialize(Gson gson, Reader reader, Type type, boolean lenient) {
+    public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken, boolean lenient) {
         try {
             JsonReader jsonReader = new JsonReader(reader);
             jsonReader.setLenient(lenient);
-            return (T)gson.getAdapter(TypeToken.get(type)).read(jsonReader);
+            return gson.getAdapter(typeToken).read(jsonReader);
         } catch (IOException iOException) {
             throw new JsonParseException(iOException);
         }
@@ -328,8 +327,8 @@ public class JsonHelper {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public static <T> T deserialize(Gson gson, String content, Type type, boolean lenient) {
-        return JsonHelper.deserialize(gson, (Reader)new StringReader(content), type, lenient);
+    public static <T> T deserialize(Gson gson, String content, TypeToken<T> typeToken, boolean lenient) {
+        return JsonHelper.deserialize(gson, (Reader)new StringReader(content), typeToken, lenient);
     }
 
     @Nullable
@@ -338,14 +337,14 @@ public class JsonHelper {
     }
 
     @Nullable
-    public static <T> T deserialize(Gson gson, Reader reader, Type type) {
-        return JsonHelper.deserialize(gson, reader, type, false);
+    public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken) {
+        return JsonHelper.deserialize(gson, reader, typeToken, false);
     }
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public static <T> T deserialize(Gson gson, String content, Type type) {
-        return JsonHelper.deserialize(gson, content, type, false);
+    public static <T> T deserialize(Gson gson, String content, TypeToken<T> typeToken) {
+        return JsonHelper.deserialize(gson, content, typeToken, false);
     }
 
     @Nullable

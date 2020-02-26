@@ -18,7 +18,6 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -26,6 +25,7 @@ import net.minecraft.world.World;
 public class BlockLeakParticle
 extends SpriteBillboardParticle {
     private final Fluid fluid;
+    protected boolean obsidianTear;
 
     private BlockLeakParticle(World world, double x, double y, double z, Fluid fluid) {
         super(world, x, y, z);
@@ -41,7 +41,7 @@ extends SpriteBillboardParticle {
 
     @Override
     public int getColorMultiplier(float tint) {
-        if (this.fluid.isIn(FluidTags.LAVA)) {
+        if (this.obsidianTear) {
             return 240;
         }
         return super.getColorMultiplier(tint);
@@ -79,6 +79,67 @@ extends SpriteBillboardParticle {
     }
 
     protected void updateVelocity() {
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class LandingObsidianTearFactory
+    implements ParticleFactory<DefaultParticleType> {
+        protected final SpriteProvider spriteProvider;
+
+        public LandingObsidianTearFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
+        }
+
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            Landing blockLeakParticle = new Landing(world, d, e, f, Fluids.EMPTY);
+            blockLeakParticle.obsidianTear = true;
+            blockLeakParticle.maxAge = (int)(28.0 / (Math.random() * 0.8 + 0.2));
+            blockLeakParticle.setColor(0.51171875f, 0.03125f, 0.890625f);
+            blockLeakParticle.setSprite(this.spriteProvider);
+            return blockLeakParticle;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class FallingObsidianTearFactory
+    implements ParticleFactory<DefaultParticleType> {
+        protected final SpriteProvider spriteProvider;
+
+        public FallingObsidianTearFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
+        }
+
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            ContinuousFalling blockLeakParticle = new ContinuousFalling(world, d, e, f, Fluids.EMPTY, ParticleTypes.LANDING_OBSIDIAN_TEAR);
+            blockLeakParticle.obsidianTear = true;
+            blockLeakParticle.gravityStrength = 0.01f;
+            blockLeakParticle.setColor(0.51171875f, 0.03125f, 0.890625f);
+            blockLeakParticle.setSprite(this.spriteProvider);
+            return blockLeakParticle;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class DrippingObsidianTearFactory
+    implements ParticleFactory<DefaultParticleType> {
+        protected final SpriteProvider spriteProvider;
+
+        public DrippingObsidianTearFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
+        }
+
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
+            Dripping dripping = new Dripping(world, d, e, f, Fluids.EMPTY, ParticleTypes.FALLING_OBSIDIAN_TEAR);
+            dripping.obsidianTear = true;
+            dripping.gravityStrength *= 0.01f;
+            dripping.maxAge = 100;
+            dripping.setColor(0.51171875f, 0.03125f, 0.890625f);
+            dripping.setSprite(this.spriteProvider);
+            return dripping;
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -251,8 +312,8 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     static class Landing
     extends BlockLeakParticle {
-        private Landing(World world, double d, double e, double f, Fluid fluid) {
-            super(world, d, e, f, fluid);
+        private Landing(World world, double x, double y, double z, Fluid fluid) {
+            super(world, x, y, z, fluid);
             this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
         }
     }
@@ -260,8 +321,8 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     static class Falling
     extends BlockLeakParticle {
-        private Falling(World world, double d, double e, double f, Fluid fluid) {
-            super(world, d, e, f, fluid);
+        private Falling(World world, double x, double y, double z, Fluid fluid) {
+            super(world, x, y, z, fluid);
             this.maxAge = (int)(64.0 / (Math.random() * 0.8 + 0.2));
         }
 
@@ -276,8 +337,8 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     static class FallingHoney
     extends ContinuousFalling {
-        private FallingHoney(World world, double d, double e, double f, Fluid fluid, ParticleEffect particleEffect) {
-            super(world, d, e, f, fluid, particleEffect);
+        private FallingHoney(World world, double x, double y, double z, Fluid fluid, ParticleEffect particleEffect) {
+            super(world, x, y, z, fluid, particleEffect);
         }
 
         @Override

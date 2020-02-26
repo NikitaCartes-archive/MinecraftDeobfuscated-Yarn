@@ -31,7 +31,7 @@ implements Packet<ClientPlayPacketListener> {
         this.z = entity.getZ();
         this.yaw = (byte)(entity.yaw * 256.0f / 360.0f);
         this.pitch = (byte)(entity.pitch * 256.0f / 360.0f);
-        this.onGround = entity.onGround;
+        this.onGround = entity.method_24828();
     }
 
     @Override

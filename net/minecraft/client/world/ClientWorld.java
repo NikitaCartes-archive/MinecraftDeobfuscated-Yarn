@@ -694,6 +694,32 @@ extends World {
     }
 
     @Override
+    public float method_24852(Direction direction, boolean bl) {
+        boolean bl2;
+        boolean bl3 = bl2 = this.dimension.getType() == DimensionType.THE_NETHER;
+        if (!bl) {
+            return bl2 ? 0.9f : 1.0f;
+        }
+        switch (direction) {
+            case DOWN: {
+                return bl2 ? 0.9f : 0.5f;
+            }
+            case UP: {
+                return bl2 ? 0.9f : 1.0f;
+            }
+            case NORTH: 
+            case SOUTH: {
+                return 0.8f;
+            }
+            case WEST: 
+            case EAST: {
+                return 0.6f;
+            }
+        }
+        return 1.0f;
+    }
+
+    @Override
     public int getColor(BlockPos pos, ColorResolver colorResolver) {
         BiomeColorCache biomeColorCache = this.colorCache.get(colorResolver);
         return biomeColorCache.getBiomeColor(pos, () -> this.calculateColor(pos, colorResolver));

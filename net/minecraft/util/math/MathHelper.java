@@ -125,14 +125,14 @@ public class MathHelper {
         return value;
     }
 
-    public static double clampedLerp(double first, double second, double delta) {
+    public static double clampedLerp(double start, double end, double delta) {
         if (delta < 0.0) {
-            return first;
+            return start;
         }
         if (delta > 1.0) {
-            return second;
+            return end;
         }
-        return MathHelper.lerp(delta, first, second);
+        return MathHelper.lerp(delta, start, end);
     }
 
     public static double absMax(double d, double e) {
@@ -364,57 +364,66 @@ public class MathHelper {
         return new UUID(l, m);
     }
 
-    public static UUID randomUUID() {
+    public static UUID randomUuid() {
         return MathHelper.randomUuid(RANDOM);
     }
 
-    public static double minusDiv(double numerator, double delta, double denominator) {
-        return (numerator - delta) / (denominator - delta);
+    /**
+     * Gets the fraction of the way that {@code value} is between {@code start} and {@code end}.
+     * This is the delta value needed to lerp between {@code start} and {@code end} to get {@code value}.
+     * In other words, {@code getLerpProgress(lerp(delta, start, end), start, end) == delta}.
+     * 
+     * @param value The result of the lerp function
+     * @param start The value interpolated from
+     * @param end The value interpolated to
+     */
+    public static double getLerpProgress(double value, double start, double end) {
+        return (value - start) / (end - start);
     }
 
-    public static double atan2(double d, double e) {
-        double g;
+    public static double atan2(double y, double x) {
+        double e;
         boolean bl3;
         boolean bl2;
         boolean bl;
-        double f = e * e + d * d;
-        if (Double.isNaN(f)) {
+        double d = x * x + y * y;
+        if (Double.isNaN(d)) {
             return Double.NaN;
         }
-        boolean bl4 = bl = d < 0.0;
+        boolean bl4 = bl = y < 0.0;
         if (bl) {
-            d = -d;
+            y = -y;
         }
-        boolean bl5 = bl2 = e < 0.0;
+        boolean bl5 = bl2 = x < 0.0;
         if (bl2) {
-            e = -e;
+            x = -x;
         }
-        boolean bl6 = bl3 = d > e;
+        boolean bl6 = bl3 = y > x;
         if (bl3) {
-            g = e;
-            e = d;
-            d = g;
+            e = x;
+            x = y;
+            y = e;
         }
-        g = MathHelper.fastInverseSqrt(f);
-        e *= g;
-        double h = SMALLEST_FRACTION_FREE_DOUBLE + (d *= g);
-        int i = (int)Double.doubleToRawLongBits(h);
-        double j = ARCSINE_TABLE[i];
-        double k = COSINE_TABLE[i];
-        double l = h - SMALLEST_FRACTION_FREE_DOUBLE;
-        double m = d * k - e * l;
-        double n = (6.0 + m * m) * m * 0.16666666666666666;
-        double o = j + n;
+        e = MathHelper.fastInverseSqrt(d);
+        x *= e;
+        double f = SMALLEST_FRACTION_FREE_DOUBLE + (y *= e);
+        int i = (int)Double.doubleToRawLongBits(f);
+        double g = ARCSINE_TABLE[i];
+        double h = COSINE_TABLE[i];
+        double j = f - SMALLEST_FRACTION_FREE_DOUBLE;
+        double k = y * h - x * j;
+        double l = (6.0 + k * k) * k * 0.16666666666666666;
+        double m = g + l;
         if (bl3) {
-            o = 1.5707963267948966 - o;
+            m = 1.5707963267948966 - m;
         }
         if (bl2) {
-            o = Math.PI - o;
+            m = Math.PI - m;
         }
         if (bl) {
-            o = -o;
+            m = -m;
         }
-        return o;
+        return m;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -526,20 +535,45 @@ public class MathHelper {
         return start;
     }
 
-    public static float lerp(float delta, float first, float second) {
-        return first + delta * (second - first);
+    public static float lerp(float delta, float start, float end) {
+        return start + delta * (end - start);
     }
 
-    public static double lerp(double delta, double first, double second) {
-        return first + delta * (second - first);
+    public static double lerp(double delta, double start, double end) {
+        return start + delta * (end - start);
     }
 
-    public static double lerp2(double deltaX, double deltaY, double d, double e, double f, double g) {
-        return MathHelper.lerp(deltaY, MathHelper.lerp(deltaX, d, e), MathHelper.lerp(deltaX, f, g));
+    /**
+     * A two-dimensional lerp between values on the 4 corners of the unit square. Arbitrary values are specified for the corners and the output is interpolated between them.
+     * 
+     * @param deltaX The x-coordinate on the unit square
+     * @param deltaY The y-coordinate on the unit square
+     * @param val00 The output if {@code deltaX} is 0 and {@code deltaY} is 0
+     * @param val10 The output if {@code deltaX} is 1 and {@code deltaY} is 0
+     * @param val01 The output if {@code deltaX} is 0 and {@code deltaY} is 1
+     * @param val11 The output if {@code deltaX} is 1 and {@code deltaY} is 1
+     */
+    public static double lerp2(double deltaX, double deltaY, double val00, double val10, double val01, double val11) {
+        return MathHelper.lerp(deltaY, MathHelper.lerp(deltaX, val00, val10), MathHelper.lerp(deltaX, val01, val11));
     }
 
-    public static double lerp3(double deltaX, double deltaY, double deltaZ, double d, double e, double f, double g, double h, double i, double j, double k) {
-        return MathHelper.lerp(deltaZ, MathHelper.lerp2(deltaX, deltaY, d, e, f, g), MathHelper.lerp2(deltaX, deltaY, h, i, j, k));
+    /**
+     * A three-dimensional lerp between values on the 8 corners of the unit cube. Arbitrary values are specified for the corners and the output is interpolated between them.
+     * 
+     * @param deltaX The x-coordinate on the unit cube
+     * @param deltaY The y-coordinate on the unit cube
+     * @param deltaZ The z-coordinate on the unit cube
+     * @param val000 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
+     * @param val100 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
+     * @param val010 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
+     * @param val110 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
+     * @param val001 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
+     * @param val101 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
+     * @param val011 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
+     * @param val111 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
+     */
+    public static double lerp3(double deltaX, double deltaY, double deltaZ, double val000, double val100, double val010, double val110, double val001, double val101, double val011, double val111) {
+        return MathHelper.lerp(deltaZ, MathHelper.lerp2(deltaX, deltaY, val000, val100, val010, val110), MathHelper.lerp2(deltaX, deltaY, val001, val101, val011, val111));
     }
 
     public static double perlinFade(double d) {
@@ -554,8 +588,8 @@ public class MathHelper {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static float lerpAngleDegrees(float delta, float first, float second) {
-        return first + delta * MathHelper.wrapDegrees(second - first);
+    public static float lerpAngleDegrees(float delta, float start, float end) {
+        return start + delta * MathHelper.wrapDegrees(end - start);
     }
 
     @Deprecated
@@ -571,7 +605,7 @@ public class MathHelper {
 
     @Deprecated
     @Environment(value=EnvType.CLIENT)
-    public static float method_22860(double d) {
+    public static float fwrapDegrees(double d) {
         while (d >= 180.0) {
             d -= 360.0;
         }

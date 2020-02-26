@@ -81,7 +81,7 @@ extends BaseFluid {
                 BlockState blockState = world.getBlockState(blockPos);
                 if (blockState.isAir()) {
                     if (!this.canLightFire(world, blockPos)) continue;
-                    world.setBlockState(blockPos, Blocks.FIRE.getDefaultState());
+                    world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
                     return;
                 }
                 if (!blockState.getMaterial().blocksMovement()) continue;

@@ -502,7 +502,7 @@ implements Monster {
                 return;
             }
             this.state = MoveControl.State.WAIT;
-            if (this.entity.onGround) {
+            if (this.entity.method_24828()) {
                 this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
                 if (this.ticksUntilJump-- <= 0) {
                     this.ticksUntilJump = this.slime.getTicksUntilNextJump();

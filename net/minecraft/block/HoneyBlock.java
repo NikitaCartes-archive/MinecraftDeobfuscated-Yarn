@@ -65,7 +65,7 @@ extends TransparentBlock {
     }
 
     private boolean isSliding(BlockPos pos, Entity entity) {
-        if (entity.onGround) {
+        if (entity.method_24828()) {
             return false;
         }
         if (entity.getY() > (double)pos.getY() + 0.9375 - 1.0E-7) {

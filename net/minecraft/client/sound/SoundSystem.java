@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.options.GameOptions;
@@ -101,7 +102,7 @@ public class SoundSystem {
         }
     }
 
-    private float getSoundVolume(SoundCategory soundCategory) {
+    private float getSoundVolume(@Nullable SoundCategory soundCategory) {
         if (soundCategory == null || soundCategory == SoundCategory.MASTER) {
             return 1.0f;
         }
@@ -207,9 +208,8 @@ public class SoundSystem {
                 continue;
             }
             if (!sourceManager2.isStopped() || (i = this.soundEndTicks.get(soundInstance).intValue()) > this.ticks) continue;
-            int j = soundInstance.getRepeatDelay();
-            if (soundInstance.isRepeatable() && j > 0) {
-                this.startTicks.put(soundInstance, this.ticks + j);
+            if (SoundSystem.isRepeatDelayed(soundInstance)) {
+                this.startTicks.put(soundInstance, this.ticks + soundInstance.getRepeatDelay());
             }
             iterator.remove();
             LOGGER.debug(MARKER, "Removed channel {} because it's not playing anymore", (Object)sourceManager2);
@@ -233,6 +233,18 @@ public class SoundSystem {
             this.play(soundInstance);
             iterator2.remove();
         }
+    }
+
+    private static boolean canRepeatInstantly(SoundInstance soundInstance) {
+        return soundInstance.getRepeatDelay() > 0;
+    }
+
+    private static boolean isRepeatDelayed(SoundInstance soundInstance) {
+        return soundInstance.isRepeatable() && SoundSystem.canRepeatInstantly(soundInstance);
+    }
+
+    private static boolean shouldRepeatInstantly(SoundInstance soundInstance) {
+        return soundInstance.isRepeatable() && !SoundSystem.canRepeatInstantly(soundInstance);
     }
 
     public boolean isPlaying(SoundInstance soundInstance) {
@@ -284,9 +296,15 @@ public class SoundSystem {
             LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", (Object)sound.getIdentifier());
             return;
         }
-        boolean bl2 = soundInstance.isRepeatable() && soundInstance.getRepeatDelay() == 0;
+        boolean bl2 = SoundSystem.shouldRepeatInstantly(soundInstance);
+        boolean bl3 = sound.isStreamed();
         Vec3d vec3d = new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ());
-        Channel.SourceManager sourceManager = this.channel.createSource(sound.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
+        CompletableFuture<Channel.SourceManager> completableFuture = this.channel.createSource(sound.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
+        Channel.SourceManager sourceManager = completableFuture.join();
+        if (sourceManager == null) {
+            LOGGER.warn("Failed to create new sound handle");
+            return;
+        }
         LOGGER.debug(MARKER, "Playing sound {} for event {}", (Object)sound.getIdentifier(), (Object)identifier);
         this.soundEndTicks.put(soundInstance, this.ticks + 20);
         this.sources.put(soundInstance, sourceManager);
@@ -299,17 +317,17 @@ public class SoundSystem {
             } else {
                 source.disableAttenuation();
             }
-            source.setLooping(bl2);
+            source.setLooping(bl2 && !bl3);
             source.setPosition(vec3d);
             source.setRelative(bl);
         });
-        if (!sound.isStreamed()) {
+        if (!bl3) {
             this.soundLoader.loadStatic(sound.getLocation()).thenAccept(staticSound -> sourceManager.run(source -> {
                 source.setBuffer((StaticSound)staticSound);
                 source.play();
             }));
         } else {
-            this.soundLoader.loadStreamed(sound.getLocation()).thenAccept(audioStream -> sourceManager.run(source -> {
+            this.soundLoader.loadStreamed(sound.getLocation(), bl2).thenAccept(audioStream -> sourceManager.run(source -> {
                 source.setStream((AudioStream)audioStream);
                 source.play();
             }));

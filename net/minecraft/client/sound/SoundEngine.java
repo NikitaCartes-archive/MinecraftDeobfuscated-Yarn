@@ -166,6 +166,7 @@ public class SoundEngine {
         @Nullable
         public Source createSource() {
             if (this.sources.size() >= this.maxSourceCount) {
+                LOGGER.warn("Maximum sound pool size {} reached", (Object)this.maxSourceCount);
                 return null;
             }
             Source source = Source.create();

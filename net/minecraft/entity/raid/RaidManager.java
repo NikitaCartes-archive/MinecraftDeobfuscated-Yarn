@@ -90,7 +90,7 @@ extends PersistentState {
             return null;
         }
         BlockPos blockPos = new BlockPos(player);
-        List list = this.world.getPointOfInterestStorage().get(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).collect(Collectors.toList());
+        List list = this.world.getPointOfInterestStorage().getInCircle(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).collect(Collectors.toList());
         int i = 0;
         Vec3d vec3d = Vec3d.ZERO;
         for (PointOfInterest pointOfInterest : list) {

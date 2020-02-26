@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.reflect.TypeToken;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -26,7 +27,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -53,7 +53,7 @@ public class UserCache {
     private final GameProfileRepository profileRepository;
     protected final Gson gson;
     private final File cacheFile;
-    private static final ParameterizedType ENTRY_LIST_TYPE;
+    private static final TypeToken<List<Entry>> ENTRY_LIST_TYPE;
 
     public UserCache(GameProfileRepository profileRepository, File file) {
         this.profileRepository = profileRepository;
@@ -169,7 +169,7 @@ public class UserCache {
             bufferedReader = null;
             try {
                 bufferedReader = Files.newReader(this.cacheFile, StandardCharsets.UTF_8);
-                List list = (List)JsonHelper.deserialize(this.gson, (Reader)bufferedReader, (Type)ENTRY_LIST_TYPE);
+                List<Entry> list = JsonHelper.deserialize(this.gson, (Reader)bufferedReader, ENTRY_LIST_TYPE);
                 this.byName.clear();
                 this.byUuid.clear();
                 this.byAccessTime.clear();
@@ -224,23 +224,7 @@ public class UserCache {
     }
 
     static {
-        ENTRY_LIST_TYPE = new ParameterizedType(){
-
-            @Override
-            public Type[] getActualTypeArguments() {
-                return new Type[]{Entry.class};
-            }
-
-            @Override
-            public Type getRawType() {
-                return List.class;
-            }
-
-            @Override
-            public Type getOwnerType() {
-                return null;
-            }
-        };
+        ENTRY_LIST_TYPE = new TypeToken<List<Entry>>(){};
     }
 
     class Entry {

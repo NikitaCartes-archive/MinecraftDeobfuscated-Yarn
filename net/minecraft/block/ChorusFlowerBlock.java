@@ -13,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -196,8 +197,10 @@ extends Block {
 
     @Override
     public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
-        BlockPos blockPos = hitResult.getBlockPos();
-        world.breakBlock(blockPos, true, entity);
+        if (entity.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES)) {
+            BlockPos blockPos = hitResult.getBlockPos();
+            world.breakBlock(blockPos, true, entity);
+        }
     }
 }
 

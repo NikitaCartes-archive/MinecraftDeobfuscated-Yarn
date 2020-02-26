@@ -469,6 +469,7 @@ public interface DispenserBehavior {
                     for (SheepEntity sheepEntity : list) {
                         if (!sheepEntity.isAlive() || sheepEntity.isSheared() || sheepEntity.isBaby()) continue;
                         sheepEntity.dropItems();
+                        world.playSound(null, blockPos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0f, 1.0f);
                         if (stack.damage(1, world.random, null)) {
                             stack.setCount(0);
                         }

@@ -10,8 +10,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldView;
 
 public class SproutsBlock
@@ -30,6 +32,14 @@ extends Block {
     @Override
     public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
         return true;
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+        if (!state.canPlaceAt(world, pos)) {
+            return Blocks.AIR.getDefaultState();
+        }
+        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
     }
 
     @Override

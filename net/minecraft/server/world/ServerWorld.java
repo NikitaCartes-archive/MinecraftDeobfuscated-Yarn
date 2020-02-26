@@ -108,6 +108,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
@@ -1257,6 +1258,12 @@ extends World {
         if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
             this.updateNeighborsAlways(pos, block);
         }
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public float method_24852(Direction direction, boolean bl) {
+        return 1.0f;
     }
 
     @Override

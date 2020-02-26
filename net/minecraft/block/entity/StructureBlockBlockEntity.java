@@ -368,7 +368,7 @@ extends BlockEntity {
         } catch (InvalidIdentifierException invalidIdentifierException) {
             return false;
         }
-        structure.method_15174(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
+        structure.saveFromWorld(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
         structure.setAuthor(this.author);
         if (bl) {
             try {
@@ -423,7 +423,7 @@ extends BlockEntity {
             this.world.updateListeners(blockPos, blockState, blockState, 3);
         }
         if (!resizeDisabled || bl) {
-            StructurePlacementData structurePlacementData = new StructurePlacementData().setMirrored(this.mirror).setRotation(this.rotation).setIgnoreEntities(this.ignoreEntities).setChunkPosition(null);
+            StructurePlacementData structurePlacementData = new StructurePlacementData().setMirror(this.mirror).setRotation(this.rotation).setIgnoreEntities(this.ignoreEntities).setChunkPosition(null);
             if (this.integrity < 1.0f) {
                 structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0f, 1.0f))).setRandom(StructureBlockBlockEntity.createRandom(this.seed));
             }

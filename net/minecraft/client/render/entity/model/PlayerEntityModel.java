@@ -16,6 +16,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
 
@@ -102,12 +103,20 @@ extends BipedEntityModel<T> {
         this.leftSleeve.copyPositionAndRotation(this.leftArm);
         this.rightSleeve.copyPositionAndRotation(this.rightArm);
         this.jacket.copyPositionAndRotation(this.torso);
-        if (((Entity)livingEntity).isInSneakingPose()) {
-            this.cape.pivotZ = 1.6f;
-            this.cape.pivotY = 1.8f;
+        if (((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.CHEST).isEmpty()) {
+            if (((Entity)livingEntity).isInSneakingPose()) {
+                this.cape.pivotZ = 1.4f;
+                this.cape.pivotY = 1.85f;
+            } else {
+                this.cape.pivotZ = 0.0f;
+                this.cape.pivotY = 0.0f;
+            }
+        } else if (((Entity)livingEntity).isInSneakingPose()) {
+            this.cape.pivotZ = 0.3f;
+            this.cape.pivotY = 0.8f;
         } else {
-            this.cape.pivotZ = 0.0f;
-            this.cape.pivotY = 0.0f;
+            this.cape.pivotZ = -1.1f;
+            this.cape.pivotY = -0.85f;
         }
     }
 

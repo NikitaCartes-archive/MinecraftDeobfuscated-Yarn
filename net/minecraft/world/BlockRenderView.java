@@ -6,6 +6,7 @@ package net.minecraft.world;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -13,6 +14,9 @@ import net.minecraft.world.level.ColorResolver;
 
 public interface BlockRenderView
 extends BlockView {
+    @Environment(value=EnvType.CLIENT)
+    public float method_24852(Direction var1, boolean var2);
+
     public LightingProvider getLightingProvider();
 
     @Environment(value=EnvType.CLIENT)

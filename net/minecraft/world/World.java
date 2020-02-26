@@ -991,10 +991,6 @@ AutoCloseable {
     public void playGlobalEvent(int type, BlockPos pos, int data) {
     }
 
-    public int getEffectiveHeight() {
-        return this.dimension.isNether() ? 128 : 256;
-    }
-
     public CrashReportSection addDetailsToCrashReport(CrashReport report) {
         CrashReportSection crashReportSection = report.addElement("Affected level", 1);
         crashReportSection.add("All players", () -> this.getPlayers().size() + " total; " + this.getPlayers());

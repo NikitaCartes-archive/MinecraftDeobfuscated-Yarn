@@ -24,13 +24,13 @@ public class HoglinSpecificSensor
 extends Sensor<HoglinEntity> {
     @Override
     public Set<MemoryModuleType<?>> getOutputMemoryModules() {
-        return ImmutableSet.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, new MemoryModuleType[0]);
+        return ImmutableSet.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, new MemoryModuleType[0]);
     }
 
     @Override
     protected void sense(ServerWorld serverWorld, HoglinEntity hoglinEntity) {
         Brain<HoglinEntity> brain = hoglinEntity.getBrain();
-        brain.remember(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGI, this.findNearestWarpedFungi(serverWorld, hoglinEntity));
+        brain.remember(MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS, this.findNearestWarpedFungus(serverWorld, hoglinEntity));
         Optional<Object> optional = Optional.empty();
         int i = 0;
         ArrayList<HoglinEntity> list = Lists.newArrayList();
@@ -51,8 +51,8 @@ extends Sensor<HoglinEntity> {
         brain.remember(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, list.size());
     }
 
-    private Optional<BlockPos> findNearestWarpedFungi(ServerWorld world, HoglinEntity hoglin) {
-        return BlockSenses.findBlock(hoglin.getSenseCenterPos(), 8, 4, blockPos -> world.getBlockState((BlockPos)blockPos).getBlock() == Blocks.WARPED_FUNGI);
+    private Optional<BlockPos> findNearestWarpedFungus(ServerWorld world, HoglinEntity hoglin) {
+        return BlockSenses.findBlock(hoglin.getSenseCenterPos(), 8, 4, blockPos -> world.getBlockState((BlockPos)blockPos).getBlock() == Blocks.WARPED_FUNGUS);
     }
 }
 

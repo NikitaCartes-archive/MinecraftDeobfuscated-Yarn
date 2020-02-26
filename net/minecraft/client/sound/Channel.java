@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -14,6 +15,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.SoundEngine;
 import net.minecraft.client.sound.Source;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class Channel {
@@ -26,16 +28,19 @@ public class Channel {
         this.executor = executor;
     }
 
-    public SourceManager createSource(SoundEngine.RunMode mode) {
-        SourceManager sourceManager = new SourceManager();
+    public CompletableFuture<SourceManager> createSource(SoundEngine.RunMode mode) {
+        CompletableFuture<SourceManager> completableFuture = new CompletableFuture<SourceManager>();
         this.executor.execute(() -> {
             Source source = this.soundEngine.createSource(mode);
             if (source != null) {
-                sourceManager.source = source;
+                SourceManager sourceManager = new SourceManager(source);
                 this.sources.add(sourceManager);
+                completableFuture.complete(sourceManager);
+            } else {
+                completableFuture.complete(null);
             }
         });
-        return sourceManager;
+        return completableFuture;
     }
 
     public void execute(Consumer<Stream<Source>> consumer) {
@@ -62,11 +67,16 @@ public class Channel {
 
     @Environment(value=EnvType.CLIENT)
     public class SourceManager {
+        @Nullable
         private Source source;
         private boolean stopped;
 
         public boolean isStopped() {
             return this.stopped;
+        }
+
+        public SourceManager(Source source) {
+            this.source = source;
         }
 
         public void run(Consumer<Source> action) {

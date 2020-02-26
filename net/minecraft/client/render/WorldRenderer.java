@@ -891,7 +891,7 @@ SynchronousResourceReloadListener {
                     TransformingVertexConsumer vertexConsumer = new TransformingVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(u)), matrices.peek());
                     vertexConsumerProvider2 = renderLayer -> {
                         VertexConsumer vertexConsumer2 = immediate.getBuffer(renderLayer);
-                        if (renderLayer.method_23037()) {
+                        if (renderLayer.hasCrumbling()) {
                             return VertexConsumers.dual(vertexConsumer, vertexConsumer2);
                         }
                         return vertexConsumer2;
@@ -1975,7 +1975,7 @@ SynchronousResourceReloadListener {
                 break;
             }
             case 1032: {
-                this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4f + 0.8f));
+                this.client.getSoundManager().play(PositionedSoundInstance.method_24877(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4f + 0.8f, 0.25f));
                 break;
             }
             case 1001: {

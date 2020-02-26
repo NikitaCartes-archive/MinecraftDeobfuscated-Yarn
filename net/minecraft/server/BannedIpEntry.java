@@ -32,14 +32,5 @@ extends BanEntry<String> {
     private static String getIpFromJson(JsonObject json) {
         return json.has("ip") ? json.get("ip").getAsString() : null;
     }
-
-    @Override
-    protected void serialize(JsonObject jsonObject) {
-        if (this.getKey() == null) {
-            return;
-        }
-        jsonObject.addProperty("ip", (String)this.getKey());
-        super.serialize(jsonObject);
-    }
 }
 

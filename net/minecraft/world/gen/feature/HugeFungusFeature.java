@@ -9,7 +9,7 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -17,36 +17,60 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.HugeFungiFeatureConfig;
+import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 import net.minecraft.world.gen.feature.WeepingVinesFeature;
 import org.jetbrains.annotations.Nullable;
 
-public class HugeFungiFeature
-extends Feature<HugeFungiFeatureConfig> {
-    public HugeFungiFeature(Function<Dynamic<?>, ? extends HugeFungiFeatureConfig> function) {
+public class HugeFungusFeature
+extends Feature<HugeFungusFeatureConfig> {
+    public HugeFungusFeature(Function<Dynamic<?>, ? extends HugeFungusFeatureConfig> function) {
         super(function);
     }
 
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, HugeFungiFeatureConfig hugeFungiFeatureConfig) {
-        BlockPos.Mutable mutable = HugeFungiFeature.getStartPos(iWorld, blockPos);
-        if (mutable == null) {
+    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, HugeFungusFeatureConfig hugeFungusFeatureConfig) {
+        Block block = hugeFungusFeatureConfig.field_22435.getBlock();
+        BlockPos blockPos2 = null;
+        if (hugeFungusFeatureConfig.planted) {
+            Block block2 = iWorld.getBlockState(blockPos.down()).getBlock();
+            if (block2 == block) {
+                blockPos2 = blockPos;
+            }
+        } else {
+            blockPos2 = HugeFungusFeature.getStartPos(iWorld, blockPos, block);
+        }
+        if (blockPos2 == null) {
             return false;
         }
         int i = MathHelper.nextInt(random, 4, 13);
         if (random.nextInt(12) == 0) {
             i *= 2;
         }
-        if (mutable.getY() + i + 1 >= 256) {
-            return false;
+        if (!hugeFungusFeatureConfig.planted) {
+            int j = iWorld.method_24853();
+            if (blockPos2.getY() + i + 1 >= j) {
+                return false;
+            }
         }
-        boolean bl = !hugeFungiFeatureConfig.planted && random.nextFloat() < 0.06f;
-        this.generateHat(iWorld, random, hugeFungiFeatureConfig, mutable, i, bl);
-        this.generateStem(iWorld, random, hugeFungiFeatureConfig, mutable, i, bl);
+        boolean bl = !hugeFungusFeatureConfig.planted && random.nextFloat() < 0.06f;
+        iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
+        this.generateHat(iWorld, random, hugeFungusFeatureConfig, blockPos2, i, bl);
+        this.generateStem(iWorld, random, hugeFungusFeatureConfig, blockPos2, i, bl);
         return true;
     }
 
-    private void generateStem(IWorld world, Random random, HugeFungiFeatureConfig config, BlockPos.Mutable pos, int stemHeight, boolean thickStem) {
+    public static boolean method_24866(IWorld iWorld, BlockPos blockPos) {
+        return iWorld.testBlockState(blockPos, blockState -> {
+            Material material = blockState.getMaterial();
+            return material == Material.REPLACEABLE_PLANT;
+        });
+    }
+
+    private static boolean method_24868(IWorld iWorld, BlockPos blockPos) {
+        return iWorld.getBlockState(blockPos).isAir() || !iWorld.getFluidState(blockPos).isEmpty() || HugeFungusFeature.method_24866(iWorld, blockPos);
+    }
+
+    private void generateStem(IWorld world, Random random, HugeFungusFeatureConfig config, BlockPos blockPos, int stemHeight, boolean thickStem) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockState blockState = config.stemState;
         int i = thickStem ? 1 : 0;
@@ -54,9 +78,12 @@ extends Feature<HugeFungiFeatureConfig> {
             for (int k = -i; k <= i; ++k) {
                 boolean bl = thickStem && MathHelper.abs(j) == i && MathHelper.abs(k) == i;
                 for (int l = 0; l < stemHeight; ++l) {
-                    mutable.set(pos).setOffset(j, l, k);
-                    if (world.getBlockState(mutable).isFullOpaque(world, mutable)) continue;
+                    mutable.set(blockPos).setOffset(j, l, k);
+                    if (!HugeFungusFeature.method_24868(world, mutable)) continue;
                     if (config.planted) {
+                        if (!world.getBlockState((BlockPos)mutable.down()).isAir()) {
+                            world.breakBlock(mutable, true);
+                        }
                         world.setBlockState(mutable, blockState, 3);
                         continue;
                     }
@@ -71,7 +98,7 @@ extends Feature<HugeFungiFeatureConfig> {
         }
     }
 
-    private void generateHat(IWorld world, Random random, HugeFungiFeatureConfig config, BlockPos.Mutable pos, int hatHeight, boolean thickStem) {
+    private void generateHat(IWorld world, Random random, HugeFungusFeatureConfig config, BlockPos blockPos, int hatHeight, boolean thickStem) {
         int j;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         boolean bl = config.hatState.getBlock() == Blocks.NETHER_WART_BLOCK;
@@ -92,8 +119,11 @@ extends Feature<HugeFungiFeatureConfig> {
                     boolean bl4 = !bl2 && !bl3 && k != hatHeight;
                     boolean bl5 = bl2 && bl3;
                     boolean bl6 = k < j + 3;
-                    mutable.set(pos).setOffset(m, k, n2);
-                    if (world.getBlockState(mutable).isFullOpaque(world, mutable)) continue;
+                    mutable.set(blockPos).setOffset(m, k, n2);
+                    if (!HugeFungusFeature.method_24868(world, mutable)) continue;
+                    if (config.planted && !world.getBlockState((BlockPos)mutable.down()).isAir()) {
+                        world.breakBlock(mutable, true);
+                    }
                     if (bl6) {
                         if (bl4) continue;
                         this.tryGenerateVines(world, random, mutable, config.hatState, bl);
@@ -113,13 +143,13 @@ extends Feature<HugeFungiFeatureConfig> {
         }
     }
 
-    private void generateHatBlock(IWorld world, Random random, HugeFungiFeatureConfig config, BlockPos.Mutable pos, float decorationChance, float generationChance, float vineChance) {
+    private void generateHatBlock(IWorld world, Random random, HugeFungusFeatureConfig config, BlockPos.Mutable pos, float decorationChance, float generationChance, float vineChance) {
         if (random.nextFloat() < decorationChance) {
             this.setBlockState(world, pos, config.decorationState);
         } else if (random.nextFloat() < generationChance) {
             this.setBlockState(world, pos, config.hatState);
             if (random.nextFloat() < vineChance) {
-                this.generateVines(pos, world, random);
+                HugeFungusFeature.generateVines(pos, world, random);
             }
         }
     }
@@ -130,26 +160,26 @@ extends Feature<HugeFungiFeatureConfig> {
         } else if ((double)random.nextFloat() < 0.15) {
             this.setBlockState(world, pos, state);
             if (bl && random.nextInt(11) == 0) {
-                this.generateVines(pos, world, random);
+                HugeFungusFeature.generateVines(pos, world, random);
             }
         }
     }
 
     @Nullable
-    private static BlockPos.Mutable getStartPos(IWorld world, BlockPos pos) {
+    private static BlockPos.Mutable getStartPos(IWorld world, BlockPos pos, Block block) {
         BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
         for (int i = pos.getY(); i >= 1; --i) {
             mutable.setY(i);
-            Block block = world.getBlockState((BlockPos)mutable.down()).getBlock();
-            if (!block.isIn(BlockTags.NYLIUM)) continue;
+            Block block2 = world.getBlockState((BlockPos)mutable.down()).getBlock();
+            if (block2 != block) continue;
             return mutable;
         }
         return null;
     }
 
-    private void generateVines(BlockPos pos, IWorld world, Random random) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(pos).setOffset(Direction.DOWN);
-        if (!world.isAir(mutable)) {
+    private static void generateVines(BlockPos blockPos, IWorld iWorld, Random random) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
+        if (!iWorld.isAir(mutable)) {
             return;
         }
         int i = MathHelper.nextInt(random, 1, 5);
@@ -158,7 +188,7 @@ extends Feature<HugeFungiFeatureConfig> {
         }
         int j = 23;
         int k = 25;
-        WeepingVinesFeature.generateVines(world, random, mutable, i, 23, 25);
+        WeepingVinesFeature.generateVines(iWorld, random, mutable, i, 23, 25);
     }
 }
 

@@ -12,11 +12,13 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class MusicTracker {
     private final Random random = new Random();
     private final MinecraftClient client;
+    @Nullable
     private SoundInstance current;
     private int timeUntilNextSong = 100;
 

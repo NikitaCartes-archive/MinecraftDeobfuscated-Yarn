@@ -10,11 +10,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
+import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -24,6 +26,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractFireBlock
 extends Block {
@@ -32,6 +35,11 @@ extends Block {
     public AbstractFireBlock(Block.Settings settings, float damage) {
         super(settings);
         this.damage = damage;
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return AbstractFireBlock.getState(ctx.getWorld(), ctx.getBlockPos());
     }
 
     public static BlockState getState(BlockView world, BlockPos pos) {
@@ -125,6 +133,19 @@ extends Block {
             entity.damage(DamageSource.IN_FIRE, this.damage);
         }
         super.onEntityCollision(state, world, pos, entity);
+    }
+
+    @Override
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+        if (oldState.getBlock() == state.getBlock()) {
+            return;
+        }
+        if ((world.dimension.getType() == DimensionType.OVERWORLD || world.dimension.getType() == DimensionType.THE_NETHER) && ((NetherPortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
+            return;
+        }
+        if (!state.canPlaceAt(world, pos)) {
+            world.removeBlock(pos, false);
+        }
     }
 }
 

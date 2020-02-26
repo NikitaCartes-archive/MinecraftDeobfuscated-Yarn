@@ -3,18 +3,13 @@
  */
 package net.minecraft.server;
 
-import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 
-public class ServerConfigEntry<T> {
+public abstract class ServerConfigEntry<T> {
     @Nullable
     private final T object;
 
-    public ServerConfigEntry(T object) {
-        this.object = object;
-    }
-
-    protected ServerConfigEntry(@Nullable T object, JsonObject jsonObject) {
+    public ServerConfigEntry(@Nullable T object) {
         this.object = object;
     }
 
@@ -25,9 +20,6 @@ public class ServerConfigEntry<T> {
 
     boolean isInvalid() {
         return false;
-    }
-
-    protected void serialize(JsonObject jsonObject) {
     }
 }
 

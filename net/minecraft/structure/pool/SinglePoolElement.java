@@ -104,7 +104,7 @@ extends StructurePoolElement {
         StructurePlacementData structurePlacementData = new StructurePlacementData();
         structurePlacementData.setBoundingBox(blockBox);
         structurePlacementData.setRotation(blockRotation);
-        structurePlacementData.method_15131(true);
+        structurePlacementData.setUpdateNeighbors(true);
         structurePlacementData.setIgnoreEntities(false);
         structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
         structurePlacementData.addProcessor(JigsawReplacementStructureProcessor.INSTANCE);

@@ -77,6 +77,7 @@ public class BlockTags {
     public static final Tag<Block> WART_BLOCKS;
     public static final Tag<Block> BEACON_BASE_BLOCKS;
     public static final Tag<Block> WALL_POST_OVERRIDE;
+    public static final Tag<Block> CLIMBABLE;
 
     public static void setContainer(TagContainer<Block> container) {
         BlockTags.container = container;
@@ -156,6 +157,7 @@ public class BlockTags {
         WART_BLOCKS = BlockTags.register("wart_blocks");
         BEACON_BASE_BLOCKS = BlockTags.register("beacon_base_blocks");
         WALL_POST_OVERRIDE = BlockTags.register("wall_post_override");
+        CLIMBABLE = BlockTags.register("climbable");
     }
 
     static class CachingTag

@@ -12,9 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectingBlock;
-import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.TntBlock;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -28,7 +26,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.TheEndDimension;
 
 public class FireBlock
@@ -51,17 +48,12 @@ extends AbstractFireBlock {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
         if (this.canPlaceAt(state, world, pos)) {
-            return (BlockState)this.getStateForPosition(world, pos).with(AGE, state.get(AGE));
+            return this.method_24855(world, pos, state.get(AGE));
         }
         return Blocks.AIR.getDefaultState();
     }
 
-    @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getStateForPosition(ctx.getWorld(), ctx.getBlockPos());
-    }
-
-    public BlockState getStateForPosition(BlockView world, BlockPos pos) {
+    protected BlockState getStateForPosition(BlockView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
         if (this.isFlammable(blockState) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
@@ -147,7 +139,7 @@ extends AbstractFireBlock {
                     }
                     if (q <= 0 || random.nextInt(o) > q || world.isRaining() && this.isRainingAround(world, mutable)) continue;
                     int r = Math.min(15, i + random.nextInt(5) / 4);
-                    world.setBlockState(mutable, (BlockState)this.getStateForPosition(world, mutable).with(AGE, r), 3);
+                    world.setBlockState(mutable, this.method_24855(world, mutable, r), 3);
                 }
             }
         }
@@ -177,7 +169,7 @@ extends AbstractFireBlock {
             BlockState blockState = world.getBlockState(pos);
             if (rand.nextInt(currentAge + 10) < 5 && !world.hasRain(pos)) {
                 int j = Math.min(currentAge + rand.nextInt(5) / 4, 15);
-                world.setBlockState(pos, (BlockState)this.getStateForPosition(world, pos).with(AGE, j), 3);
+                world.setBlockState(pos, this.method_24855(world, pos, j), 3);
             } else {
                 world.removeBlock(pos, false);
             }
@@ -187,6 +179,14 @@ extends AbstractFireBlock {
                 TntBlock.primeTnt(world, pos);
             }
         }
+    }
+
+    private BlockState method_24855(IWorld iWorld, BlockPos blockPos, int i) {
+        BlockState blockState = FireBlock.getState(iWorld, blockPos);
+        if (blockState.getBlock() == Blocks.FIRE) {
+            return (BlockState)blockState.with(AGE, i);
+        }
+        return blockState;
     }
 
     private boolean areBlocksAroundFlammable(BlockView world, BlockPos pos) {
@@ -216,16 +216,7 @@ extends AbstractFireBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-        if (oldState.getBlock() == state.getBlock()) {
-            return;
-        }
-        if ((world.dimension.getType() == DimensionType.OVERWORLD || world.dimension.getType() == DimensionType.THE_NETHER) && ((NetherPortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
-            return;
-        }
-        if (!state.canPlaceAt(world, pos)) {
-            world.removeBlock(pos, false);
-            return;
-        }
+        super.onBlockAdded(state, world, pos, oldState, moved);
         world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + world.random.nextInt(10));
     }
 

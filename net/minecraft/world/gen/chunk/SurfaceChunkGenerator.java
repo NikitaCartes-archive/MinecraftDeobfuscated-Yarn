@@ -246,18 +246,22 @@ extends ChunkGenerator<T> {
                 StructureStart structureStart = chunk2.getStructureStart(string);
                 if (structureStart == null || !structureStart.hasChildren()) continue;
                 for (StructurePiece structurePiece : structureStart.getChildren()) {
-                    if (!structurePiece.method_16654(chunkPos, 12) || !(structurePiece instanceof PoolStructurePiece)) continue;
-                    PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
-                    StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
-                    if (projection == StructurePool.Projection.RIGID) {
-                        objectList.add(poolStructurePiece);
+                    if (!structurePiece.method_16654(chunkPos, 12)) continue;
+                    if (structurePiece instanceof PoolStructurePiece) {
+                        PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
+                        StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
+                        if (projection == StructurePool.Projection.RIGID) {
+                            objectList.add(poolStructurePiece);
+                        }
+                        for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
+                            int o = jigsawJunction.getSourceX();
+                            int p = jigsawJunction.getSourceZ();
+                            if (o <= l - 12 || p <= m - 12 || o >= l + 15 + 12 || p >= m + 15 + 12) continue;
+                            objectList2.add(jigsawJunction);
+                        }
+                        continue;
                     }
-                    for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
-                        int o = jigsawJunction.getSourceX();
-                        int p = jigsawJunction.getSourceZ();
-                        if (o <= l - 12 || p <= m - 12 || o >= l + 15 + 12 || p >= m + 15 + 12) continue;
-                        objectList2.add(jigsawJunction);
-                    }
+                    objectList.add(structurePiece);
                 }
             }
         }
@@ -320,10 +324,10 @@ extends ChunkGenerator<T> {
                                 double ar = MathHelper.clamp(aq / 200.0, -1.0, 1.0);
                                 ar = ar / 2.0 - ar * ar * ar / 24.0;
                                 while (objectListIterator.hasNext()) {
-                                    PoolStructurePiece poolStructurePiece2 = (PoolStructurePiece)objectListIterator.next();
-                                    BlockBox blockBox = poolStructurePiece2.getBoundingBox();
+                                    StructurePiece structurePiece2 = (StructurePiece)objectListIterator.next();
+                                    BlockBox blockBox = structurePiece2.getBoundingBox();
                                     as = Math.max(0, Math.max(blockBox.minX - ah, ah - blockBox.maxX));
-                                    at = y - (blockBox.minY + poolStructurePiece2.getGroundLevelDelta());
+                                    at = y - (blockBox.minY + (structurePiece2 instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece2).getGroundLevelDelta() : 0));
                                     int au = Math.max(0, Math.max(blockBox.minZ - an, an - blockBox.maxZ));
                                     ar += SurfaceChunkGenerator.method_16572(as, at, au) * 0.8;
                                 }

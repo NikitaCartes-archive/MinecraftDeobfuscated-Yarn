@@ -43,6 +43,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -105,9 +106,6 @@ implements DataProvider {
         }
     }
 
-    /*
-     * Opcode count of 13837 triggered aggressive code reduction.  Override with --aggressivesizethreshold.
-     */
     private static void generate(Consumer<RecipeJsonProvider> consumer) {
         RecipesProvider.method_24475(consumer, Blocks.ACACIA_PLANKS, ItemTags.ACACIA_LOGS);
         RecipesProvider.method_24477(consumer, Blocks.BIRCH_PLANKS, ItemTags.BIRCH_LOGS);
@@ -143,6 +141,7 @@ implements DataProvider {
         RecipesProvider.method_24484(consumer, Blocks.ACACIA_SLAB, Blocks.ACACIA_PLANKS);
         RecipesProvider.method_24485(consumer, Blocks.ACACIA_STAIRS, Blocks.ACACIA_PLANKS);
         RecipesProvider.method_24486(consumer, Blocks.ACACIA_TRAPDOOR, Blocks.ACACIA_PLANKS);
+        RecipesProvider.method_24883(consumer, Blocks.ACACIA_SIGN, Blocks.ACACIA_PLANKS);
         RecipesProvider.method_24479(consumer, Blocks.BIRCH_BUTTON, Blocks.BIRCH_PLANKS);
         RecipesProvider.method_24480(consumer, Blocks.BIRCH_DOOR, Blocks.BIRCH_PLANKS);
         RecipesProvider.method_24481(consumer, Blocks.BIRCH_FENCE, Blocks.BIRCH_PLANKS);
@@ -151,6 +150,7 @@ implements DataProvider {
         RecipesProvider.method_24484(consumer, Blocks.BIRCH_SLAB, Blocks.BIRCH_PLANKS);
         RecipesProvider.method_24485(consumer, Blocks.BIRCH_STAIRS, Blocks.BIRCH_PLANKS);
         RecipesProvider.method_24486(consumer, Blocks.BIRCH_TRAPDOOR, Blocks.BIRCH_PLANKS);
+        RecipesProvider.method_24883(consumer, Blocks.BIRCH_SIGN, Blocks.BIRCH_PLANKS);
         RecipesProvider.method_24479(consumer, Blocks.CRIMSON_BUTTON, Blocks.CRIMSON_PLANKS);
         RecipesProvider.method_24480(consumer, Blocks.CRIMSON_DOOR, Blocks.CRIMSON_PLANKS);
         RecipesProvider.method_24481(consumer, Blocks.CRIMSON_FENCE, Blocks.CRIMSON_PLANKS);
@@ -159,6 +159,7 @@ implements DataProvider {
         RecipesProvider.method_24484(consumer, Blocks.CRIMSON_SLAB, Blocks.CRIMSON_PLANKS);
         RecipesProvider.method_24485(consumer, Blocks.CRIMSON_STAIRS, Blocks.CRIMSON_PLANKS);
         RecipesProvider.method_24486(consumer, Blocks.CRIMSON_TRAPDOOR, Blocks.CRIMSON_PLANKS);
+        RecipesProvider.method_24883(consumer, Blocks.CRIMSON_SIGN, Blocks.CRIMSON_PLANKS);
         RecipesProvider.method_24479(consumer, Blocks.DARK_OAK_BUTTON, Blocks.DARK_OAK_PLANKS);
         RecipesProvider.method_24480(consumer, Blocks.DARK_OAK_DOOR, Blocks.DARK_OAK_PLANKS);
         RecipesProvider.method_24481(consumer, Blocks.DARK_OAK_FENCE, Blocks.DARK_OAK_PLANKS);
@@ -167,6 +168,7 @@ implements DataProvider {
         RecipesProvider.method_24484(consumer, Blocks.DARK_OAK_SLAB, Blocks.DARK_OAK_PLANKS);
         RecipesProvider.method_24485(consumer, Blocks.DARK_OAK_STAIRS, Blocks.DARK_OAK_PLANKS);
         RecipesProvider.method_24486(consumer, Blocks.DARK_OAK_TRAPDOOR, Blocks.DARK_OAK_PLANKS);
+        RecipesProvider.method_24883(consumer, Blocks.DARK_OAK_SIGN, Blocks.DARK_OAK_PLANKS);
         RecipesProvider.method_24479(consumer, Blocks.JUNGLE_BUTTON, Blocks.JUNGLE_PLANKS);
         RecipesProvider.method_24480(consumer, Blocks.JUNGLE_DOOR, Blocks.JUNGLE_PLANKS);
         RecipesProvider.method_24481(consumer, Blocks.JUNGLE_FENCE, Blocks.JUNGLE_PLANKS);
@@ -175,6 +177,7 @@ implements DataProvider {
         RecipesProvider.method_24484(consumer, Blocks.JUNGLE_SLAB, Blocks.JUNGLE_PLANKS);
         RecipesProvider.method_24485(consumer, Blocks.JUNGLE_STAIRS, Blocks.JUNGLE_PLANKS);
         RecipesProvider.method_24486(consumer, Blocks.JUNGLE_TRAPDOOR, Blocks.JUNGLE_PLANKS);
+        RecipesProvider.method_24883(consumer, Blocks.JUNGLE_SIGN, Blocks.JUNGLE_PLANKS);
         RecipesProvider.method_24479(consumer, Blocks.OAK_BUTTON, Blocks.OAK_PLANKS);
         RecipesProvider.method_24480(consumer, Blocks.OAK_DOOR, Blocks.OAK_PLANKS);
         RecipesProvider.method_24481(consumer, Blocks.OAK_FENCE, Blocks.OAK_PLANKS);
@@ -183,6 +186,7 @@ implements DataProvider {
         RecipesProvider.method_24484(consumer, Blocks.OAK_SLAB, Blocks.OAK_PLANKS);
         RecipesProvider.method_24485(consumer, Blocks.OAK_STAIRS, Blocks.OAK_PLANKS);
         RecipesProvider.method_24486(consumer, Blocks.OAK_TRAPDOOR, Blocks.OAK_PLANKS);
+        RecipesProvider.method_24883(consumer, Blocks.OAK_SIGN, Blocks.OAK_PLANKS);
         RecipesProvider.method_24479(consumer, Blocks.SPRUCE_BUTTON, Blocks.SPRUCE_PLANKS);
         RecipesProvider.method_24480(consumer, Blocks.SPRUCE_DOOR, Blocks.SPRUCE_PLANKS);
         RecipesProvider.method_24481(consumer, Blocks.SPRUCE_FENCE, Blocks.SPRUCE_PLANKS);
@@ -191,6 +195,7 @@ implements DataProvider {
         RecipesProvider.method_24484(consumer, Blocks.SPRUCE_SLAB, Blocks.SPRUCE_PLANKS);
         RecipesProvider.method_24485(consumer, Blocks.SPRUCE_STAIRS, Blocks.SPRUCE_PLANKS);
         RecipesProvider.method_24486(consumer, Blocks.SPRUCE_TRAPDOOR, Blocks.SPRUCE_PLANKS);
+        RecipesProvider.method_24883(consumer, Blocks.SPRUCE_SIGN, Blocks.SPRUCE_PLANKS);
         RecipesProvider.method_24479(consumer, Blocks.WARPED_BUTTON, Blocks.WARPED_PLANKS);
         RecipesProvider.method_24480(consumer, Blocks.WARPED_DOOR, Blocks.WARPED_PLANKS);
         RecipesProvider.method_24481(consumer, Blocks.WARPED_FENCE, Blocks.WARPED_PLANKS);
@@ -199,6 +204,180 @@ implements DataProvider {
         RecipesProvider.method_24484(consumer, Blocks.WARPED_SLAB, Blocks.WARPED_PLANKS);
         RecipesProvider.method_24485(consumer, Blocks.WARPED_STAIRS, Blocks.WARPED_PLANKS);
         RecipesProvider.method_24486(consumer, Blocks.WARPED_TRAPDOOR, Blocks.WARPED_PLANKS);
+        RecipesProvider.method_24883(consumer, Blocks.WARPED_SIGN, Blocks.WARPED_PLANKS);
+        RecipesProvider.method_24884(consumer, Blocks.BLACK_WOOL, Items.BLACK_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.BLACK_CARPET, Blocks.BLACK_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.BLACK_CARPET, Items.BLACK_DYE);
+        RecipesProvider.method_24887(consumer, Items.BLACK_BED, Blocks.BLACK_WOOL);
+        RecipesProvider.method_24888(consumer, Items.BLACK_BED, Items.BLACK_DYE);
+        RecipesProvider.method_24889(consumer, Items.BLACK_BANNER, Blocks.BLACK_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.BLUE_WOOL, Items.BLUE_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.BLUE_CARPET, Blocks.BLUE_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.BLUE_CARPET, Items.BLUE_DYE);
+        RecipesProvider.method_24887(consumer, Items.BLUE_BED, Blocks.BLUE_WOOL);
+        RecipesProvider.method_24888(consumer, Items.BLUE_BED, Items.BLUE_DYE);
+        RecipesProvider.method_24889(consumer, Items.BLUE_BANNER, Blocks.BLUE_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.BROWN_WOOL, Items.BROWN_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.BROWN_CARPET, Blocks.BROWN_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.BROWN_CARPET, Items.BROWN_DYE);
+        RecipesProvider.method_24887(consumer, Items.BROWN_BED, Blocks.BROWN_WOOL);
+        RecipesProvider.method_24888(consumer, Items.BROWN_BED, Items.BROWN_DYE);
+        RecipesProvider.method_24889(consumer, Items.BROWN_BANNER, Blocks.BROWN_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.CYAN_WOOL, Items.CYAN_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.CYAN_CARPET, Blocks.CYAN_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.CYAN_CARPET, Items.CYAN_DYE);
+        RecipesProvider.method_24887(consumer, Items.CYAN_BED, Blocks.CYAN_WOOL);
+        RecipesProvider.method_24888(consumer, Items.CYAN_BED, Items.CYAN_DYE);
+        RecipesProvider.method_24889(consumer, Items.CYAN_BANNER, Blocks.CYAN_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.GRAY_WOOL, Items.GRAY_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.GRAY_CARPET, Blocks.GRAY_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.GRAY_CARPET, Items.GRAY_DYE);
+        RecipesProvider.method_24887(consumer, Items.GRAY_BED, Blocks.GRAY_WOOL);
+        RecipesProvider.method_24888(consumer, Items.GRAY_BED, Items.GRAY_DYE);
+        RecipesProvider.method_24889(consumer, Items.GRAY_BANNER, Blocks.GRAY_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.GREEN_WOOL, Items.GREEN_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.GREEN_CARPET, Blocks.GREEN_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.GREEN_CARPET, Items.GREEN_DYE);
+        RecipesProvider.method_24887(consumer, Items.GREEN_BED, Blocks.GREEN_WOOL);
+        RecipesProvider.method_24888(consumer, Items.GREEN_BED, Items.GREEN_DYE);
+        RecipesProvider.method_24889(consumer, Items.GREEN_BANNER, Blocks.GREEN_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.LIGHT_BLUE_WOOL, Items.LIGHT_BLUE_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.LIGHT_BLUE_CARPET, Blocks.LIGHT_BLUE_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.LIGHT_BLUE_CARPET, Items.LIGHT_BLUE_DYE);
+        RecipesProvider.method_24887(consumer, Items.LIGHT_BLUE_BED, Blocks.LIGHT_BLUE_WOOL);
+        RecipesProvider.method_24888(consumer, Items.LIGHT_BLUE_BED, Items.LIGHT_BLUE_DYE);
+        RecipesProvider.method_24889(consumer, Items.LIGHT_BLUE_BANNER, Blocks.LIGHT_BLUE_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.LIGHT_GRAY_WOOL, Items.LIGHT_GRAY_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.LIGHT_GRAY_CARPET, Blocks.LIGHT_GRAY_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.LIGHT_GRAY_CARPET, Items.LIGHT_GRAY_DYE);
+        RecipesProvider.method_24887(consumer, Items.LIGHT_GRAY_BED, Blocks.LIGHT_GRAY_WOOL);
+        RecipesProvider.method_24888(consumer, Items.LIGHT_GRAY_BED, Items.LIGHT_GRAY_DYE);
+        RecipesProvider.method_24889(consumer, Items.LIGHT_GRAY_BANNER, Blocks.LIGHT_GRAY_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.LIME_WOOL, Items.LIME_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.LIME_CARPET, Blocks.LIME_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.LIME_CARPET, Items.LIME_DYE);
+        RecipesProvider.method_24887(consumer, Items.LIME_BED, Blocks.LIME_WOOL);
+        RecipesProvider.method_24888(consumer, Items.LIME_BED, Items.LIME_DYE);
+        RecipesProvider.method_24889(consumer, Items.LIME_BANNER, Blocks.LIME_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.MAGENTA_WOOL, Items.MAGENTA_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.MAGENTA_CARPET, Blocks.MAGENTA_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.MAGENTA_CARPET, Items.MAGENTA_DYE);
+        RecipesProvider.method_24887(consumer, Items.MAGENTA_BED, Blocks.MAGENTA_WOOL);
+        RecipesProvider.method_24888(consumer, Items.MAGENTA_BED, Items.MAGENTA_DYE);
+        RecipesProvider.method_24889(consumer, Items.MAGENTA_BANNER, Blocks.MAGENTA_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.ORANGE_WOOL, Items.ORANGE_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.ORANGE_CARPET, Blocks.ORANGE_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.ORANGE_CARPET, Items.ORANGE_DYE);
+        RecipesProvider.method_24887(consumer, Items.ORANGE_BED, Blocks.ORANGE_WOOL);
+        RecipesProvider.method_24888(consumer, Items.ORANGE_BED, Items.ORANGE_DYE);
+        RecipesProvider.method_24889(consumer, Items.ORANGE_BANNER, Blocks.ORANGE_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.PINK_WOOL, Items.PINK_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.PINK_CARPET, Blocks.PINK_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.PINK_CARPET, Items.PINK_DYE);
+        RecipesProvider.method_24887(consumer, Items.PINK_BED, Blocks.PINK_WOOL);
+        RecipesProvider.method_24888(consumer, Items.PINK_BED, Items.PINK_DYE);
+        RecipesProvider.method_24889(consumer, Items.PINK_BANNER, Blocks.PINK_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.PURPLE_WOOL, Items.PURPLE_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.PURPLE_CARPET, Blocks.PURPLE_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.PURPLE_CARPET, Items.PURPLE_DYE);
+        RecipesProvider.method_24887(consumer, Items.PURPLE_BED, Blocks.PURPLE_WOOL);
+        RecipesProvider.method_24888(consumer, Items.PURPLE_BED, Items.PURPLE_DYE);
+        RecipesProvider.method_24889(consumer, Items.PURPLE_BANNER, Blocks.PURPLE_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.RED_WOOL, Items.RED_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.RED_CARPET, Blocks.RED_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.RED_CARPET, Items.RED_DYE);
+        RecipesProvider.method_24887(consumer, Items.RED_BED, Blocks.RED_WOOL);
+        RecipesProvider.method_24888(consumer, Items.RED_BED, Items.RED_DYE);
+        RecipesProvider.method_24889(consumer, Items.RED_BANNER, Blocks.RED_WOOL);
+        RecipesProvider.method_24885(consumer, Blocks.WHITE_CARPET, Blocks.WHITE_WOOL);
+        RecipesProvider.method_24887(consumer, Items.WHITE_BED, Blocks.WHITE_WOOL);
+        RecipesProvider.method_24889(consumer, Items.WHITE_BANNER, Blocks.WHITE_WOOL);
+        RecipesProvider.method_24884(consumer, Blocks.YELLOW_WOOL, Items.YELLOW_DYE);
+        RecipesProvider.method_24885(consumer, Blocks.YELLOW_CARPET, Blocks.YELLOW_WOOL);
+        RecipesProvider.method_24886(consumer, Blocks.YELLOW_CARPET, Items.YELLOW_DYE);
+        RecipesProvider.method_24887(consumer, Items.YELLOW_BED, Blocks.YELLOW_WOOL);
+        RecipesProvider.method_24888(consumer, Items.YELLOW_BED, Items.YELLOW_DYE);
+        RecipesProvider.method_24889(consumer, Items.YELLOW_BANNER, Blocks.YELLOW_WOOL);
+        RecipesProvider.method_24890(consumer, Blocks.BLACK_STAINED_GLASS, Items.BLACK_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.BLACK_STAINED_GLASS_PANE, Blocks.BLACK_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.BLACK_STAINED_GLASS_PANE, Items.BLACK_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.BLUE_STAINED_GLASS, Items.BLUE_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.BLUE_STAINED_GLASS_PANE, Blocks.BLUE_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.BLUE_STAINED_GLASS_PANE, Items.BLUE_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.BROWN_STAINED_GLASS, Items.BROWN_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.BROWN_STAINED_GLASS_PANE, Blocks.BROWN_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.BROWN_STAINED_GLASS_PANE, Items.BROWN_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.CYAN_STAINED_GLASS, Items.CYAN_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.CYAN_STAINED_GLASS_PANE, Blocks.CYAN_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.CYAN_STAINED_GLASS_PANE, Items.CYAN_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.GRAY_STAINED_GLASS, Items.GRAY_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.GRAY_STAINED_GLASS_PANE, Blocks.GRAY_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.GRAY_STAINED_GLASS_PANE, Items.GRAY_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.GREEN_STAINED_GLASS, Items.GREEN_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.GREEN_STAINED_GLASS_PANE, Blocks.GREEN_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.GREEN_STAINED_GLASS_PANE, Items.GREEN_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.LIGHT_BLUE_STAINED_GLASS, Items.LIGHT_BLUE_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Blocks.LIGHT_BLUE_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, Items.LIGHT_BLUE_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.LIGHT_GRAY_STAINED_GLASS, Items.LIGHT_GRAY_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Blocks.LIGHT_GRAY_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, Items.LIGHT_GRAY_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.LIME_STAINED_GLASS, Items.LIME_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.LIME_STAINED_GLASS_PANE, Blocks.LIME_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.LIME_STAINED_GLASS_PANE, Items.LIME_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.MAGENTA_STAINED_GLASS, Items.MAGENTA_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.MAGENTA_STAINED_GLASS_PANE, Blocks.MAGENTA_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.MAGENTA_STAINED_GLASS_PANE, Items.MAGENTA_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.ORANGE_STAINED_GLASS, Items.ORANGE_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.ORANGE_STAINED_GLASS_PANE, Blocks.ORANGE_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.ORANGE_STAINED_GLASS_PANE, Items.ORANGE_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.PINK_STAINED_GLASS, Items.PINK_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.PINK_STAINED_GLASS_PANE, Blocks.PINK_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.PINK_STAINED_GLASS_PANE, Items.PINK_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.PURPLE_STAINED_GLASS, Items.PURPLE_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.PURPLE_STAINED_GLASS_PANE, Blocks.PURPLE_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.PURPLE_STAINED_GLASS_PANE, Items.PURPLE_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.RED_STAINED_GLASS, Items.RED_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.RED_STAINED_GLASS_PANE, Blocks.RED_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.RED_STAINED_GLASS_PANE, Items.RED_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.WHITE_STAINED_GLASS, Items.WHITE_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.WHITE_STAINED_GLASS_PANE, Blocks.WHITE_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.WHITE_STAINED_GLASS_PANE, Items.WHITE_DYE);
+        RecipesProvider.method_24890(consumer, Blocks.YELLOW_STAINED_GLASS, Items.YELLOW_DYE);
+        RecipesProvider.method_24891(consumer, Blocks.YELLOW_STAINED_GLASS_PANE, Blocks.YELLOW_STAINED_GLASS);
+        RecipesProvider.method_24892(consumer, Blocks.YELLOW_STAINED_GLASS_PANE, Items.YELLOW_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.BLACK_TERRACOTTA, Items.BLACK_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.BLUE_TERRACOTTA, Items.BLUE_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.BROWN_TERRACOTTA, Items.BROWN_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.CYAN_TERRACOTTA, Items.CYAN_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.GRAY_TERRACOTTA, Items.GRAY_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.GREEN_TERRACOTTA, Items.GREEN_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.LIGHT_BLUE_TERRACOTTA, Items.LIGHT_BLUE_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.LIGHT_GRAY_TERRACOTTA, Items.LIGHT_GRAY_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.LIME_TERRACOTTA, Items.LIME_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.MAGENTA_TERRACOTTA, Items.MAGENTA_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.ORANGE_TERRACOTTA, Items.ORANGE_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.PINK_TERRACOTTA, Items.PINK_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.PURPLE_TERRACOTTA, Items.PURPLE_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.RED_TERRACOTTA, Items.RED_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.WHITE_TERRACOTTA, Items.WHITE_DYE);
+        RecipesProvider.method_24893(consumer, Blocks.YELLOW_TERRACOTTA, Items.YELLOW_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.BLACK_CONCRETE_POWDER, Items.BLACK_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.BLUE_CONCRETE_POWDER, Items.BLUE_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.BROWN_CONCRETE_POWDER, Items.BROWN_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.CYAN_CONCRETE_POWDER, Items.CYAN_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.GRAY_CONCRETE_POWDER, Items.GRAY_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.GREEN_CONCRETE_POWDER, Items.GREEN_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.LIGHT_BLUE_CONCRETE_POWDER, Items.LIGHT_BLUE_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.LIGHT_GRAY_CONCRETE_POWDER, Items.LIGHT_GRAY_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.LIME_CONCRETE_POWDER, Items.LIME_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.MAGENTA_CONCRETE_POWDER, Items.MAGENTA_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.ORANGE_CONCRETE_POWDER, Items.ORANGE_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.PINK_CONCRETE_POWDER, Items.PINK_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.PURPLE_CONCRETE_POWDER, Items.PURPLE_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.RED_CONCRETE_POWDER, Items.RED_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.WHITE_CONCRETE_POWDER, Items.WHITE_DYE);
+        RecipesProvider.method_24894(consumer, Blocks.YELLOW_CONCRETE_POWDER, Items.YELLOW_DYE);
         ShapedRecipeJsonFactory.create(Blocks.ACTIVATOR_RAIL, 6).input(Character.valueOf('#'), Blocks.REDSTONE_TORCH).input(Character.valueOf('S'), Items.STICK).input(Character.valueOf('X'), Items.IRON_INGOT).pattern("XSX").pattern("X#X").pattern("XSX").criterion("has_rail", RecipesProvider.conditionsFromItem(Blocks.RAIL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Blocks.ANDESITE, 2).input(Blocks.DIORITE).input(Blocks.COBBLESTONE).criterion("has_stone", RecipesProvider.conditionsFromItem(Blocks.DIORITE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.ANVIL).input(Character.valueOf('I'), Blocks.IRON_BLOCK).input(Character.valueOf('i'), Items.IRON_INGOT).pattern("III").pattern(" i ").pattern("iii").criterion("has_iron_block", RecipesProvider.conditionsFromItem(Blocks.IRON_BLOCK)).offerTo(consumer);
@@ -208,34 +387,12 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.BEACON).input(Character.valueOf('S'), Items.NETHER_STAR).input(Character.valueOf('G'), Blocks.GLASS).input(Character.valueOf('O'), Blocks.OBSIDIAN).pattern("GGG").pattern("GSG").pattern("OOO").criterion("has_nether_star", RecipesProvider.conditionsFromItem(Items.NETHER_STAR)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.BEEHIVE).input(Character.valueOf('P'), ItemTags.PLANKS).input(Character.valueOf('H'), Items.HONEYCOMB).pattern("PPP").pattern("HHH").pattern("PPP").criterion("has_honeycomb", RecipesProvider.conditionsFromItem(Items.HONEYCOMB)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BEETROOT_SOUP).input(Items.BOWL).input(Items.BEETROOT, 6).criterion("has_beetroot", RecipesProvider.conditionsFromItem(Items.BEETROOT)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.BLACK_BANNER).input(Character.valueOf('#'), Blocks.BLACK_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_black_wool", RecipesProvider.conditionsFromItem(Blocks.BLACK_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.BLACK_BED).input(Character.valueOf('#'), Blocks.BLACK_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_black_wool", RecipesProvider.conditionsFromItem(Blocks.BLACK_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.BLACK_BED).input(Items.WHITE_BED).input(Items.BLACK_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "black_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.BLACK_CARPET, 3).input(Character.valueOf('#'), Blocks.BLACK_WOOL).pattern("##").group("carpet").criterion("has_black_wool", RecipesProvider.conditionsFromItem(Blocks.BLACK_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BLACK_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.BLACK_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_black_dye", RecipesProvider.conditionsFromItem(Items.BLACK_DYE)).offerTo(consumer, "black_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.BLACK_CONCRETE_POWDER, 8).input(Items.BLACK_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BLACK_DYE).input(Items.INK_SAC).group("black_dye").criterion("has_ink_sac", RecipesProvider.conditionsFromItem(Items.INK_SAC)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BLACK_DYE).input(Blocks.WITHER_ROSE).group("black_dye").criterion("has_black_flower", RecipesProvider.conditionsFromItem(Blocks.WITHER_ROSE)).offerTo(consumer, "black_dye_from_wither_rose");
-        ShapedRecipeJsonFactory.create(Blocks.BLACK_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.BLACK_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BLACK_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.BLACK_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BLACK_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.BLACK_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_black_dye", RecipesProvider.conditionsFromItem(Items.BLACK_DYE)).offerTo(consumer, "black_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.BLACK_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.BLACK_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.BLACK_WOOL).input(Items.BLACK_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BLAZE_POWDER, 2).input(Items.BLAZE_ROD).criterion("has_blaze_rod", RecipesProvider.conditionsFromItem(Items.BLAZE_ROD)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.BLUE_BANNER).input(Character.valueOf('#'), Blocks.BLUE_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_blue_wool", RecipesProvider.conditionsFromItem(Blocks.BLUE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.BLUE_BED).input(Character.valueOf('#'), Blocks.BLUE_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_blue_wool", RecipesProvider.conditionsFromItem(Blocks.BLUE_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.BLUE_BED).input(Items.WHITE_BED).input(Items.BLUE_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "blue_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.BLUE_CARPET, 3).input(Character.valueOf('#'), Blocks.BLUE_WOOL).pattern("##").group("carpet").criterion("has_blue_wool", RecipesProvider.conditionsFromItem(Blocks.BLUE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BLUE_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.BLUE_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).offerTo(consumer, "blue_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.BLUE_CONCRETE_POWDER, 8).input(Items.BLUE_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BLUE_DYE).input(Items.LAPIS_LAZULI).group("blue_dye").criterion("has_lapis_lazuli", RecipesProvider.conditionsFromItem(Items.LAPIS_LAZULI)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BLUE_DYE).input(Blocks.CORNFLOWER).group("blue_dye").criterion("has_blue_flower", RecipesProvider.conditionsFromItem(Blocks.CORNFLOWER)).offerTo(consumer, "blue_dye_from_cornflower");
         ShapedRecipeJsonFactory.create(Blocks.BLUE_ICE).input(Character.valueOf('#'), Blocks.PACKED_ICE).pattern("###").pattern("###").pattern("###").criterion("has_packed_ice", RecipesProvider.conditionsFromItem(Blocks.PACKED_ICE)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BLUE_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.BLUE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BLUE_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.BLUE_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BLUE_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.BLUE_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).offerTo(consumer, "blue_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.BLUE_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.BLUE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.BLUE_WOOL).input(Items.BLUE_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.BONE_BLOCK).input(Character.valueOf('X'), Items.BONE_MEAL).pattern("XXX").pattern("XXX").pattern("XXX").criterion("has_bonemeal", RecipesProvider.conditionsFromItem(Items.BONE_MEAL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BONE_MEAL, 3).input(Items.BONE).group("bonemeal").criterion("has_bone", RecipesProvider.conditionsFromItem(Items.BONE)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BONE_MEAL, 9).input(Blocks.BONE_BLOCK).group("bonemeal").criterion("has_bone_block", RecipesProvider.conditionsFromItem(Blocks.BONE_BLOCK)).offerTo(consumer, "bone_meal_from_bone_block");
@@ -248,18 +405,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.BRICKS).input(Character.valueOf('#'), Items.BRICK).pattern("##").pattern("##").criterion("has_brick", RecipesProvider.conditionsFromItem(Items.BRICK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.BRICK_SLAB, 6).input(Character.valueOf('#'), Blocks.BRICKS).pattern("###").criterion("has_brick_block", RecipesProvider.conditionsFromItem(Blocks.BRICKS)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.BRICK_STAIRS, 4).input(Character.valueOf('#'), Blocks.BRICKS).pattern("#  ").pattern("## ").pattern("###").criterion("has_brick_block", RecipesProvider.conditionsFromItem(Blocks.BRICKS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.BROWN_BANNER).input(Character.valueOf('#'), Blocks.BROWN_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_brown_wool", RecipesProvider.conditionsFromItem(Blocks.BROWN_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.BROWN_BED).input(Character.valueOf('#'), Blocks.BROWN_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_brown_wool", RecipesProvider.conditionsFromItem(Blocks.BROWN_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.BROWN_BED).input(Items.WHITE_BED).input(Items.BROWN_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "brown_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.BROWN_CARPET, 3).input(Character.valueOf('#'), Blocks.BROWN_WOOL).pattern("##").group("carpet").criterion("has_brown_wool", RecipesProvider.conditionsFromItem(Blocks.BROWN_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BROWN_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.BROWN_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_brown_dye", RecipesProvider.conditionsFromItem(Items.BROWN_DYE)).offerTo(consumer, "brown_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.BROWN_CONCRETE_POWDER, 8).input(Items.BROWN_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.BROWN_DYE).input(Items.COCOA_BEANS).group("brown_dye").criterion("has_cocoa_beans", RecipesProvider.conditionsFromItem(Items.COCOA_BEANS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BROWN_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.BROWN_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BROWN_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.BROWN_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.BROWN_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.BROWN_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_brown_dye", RecipesProvider.conditionsFromItem(Items.BROWN_DYE)).offerTo(consumer, "brown_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.BROWN_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.BROWN_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.BROWN_WOOL).input(Items.BROWN_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.BUCKET).input(Character.valueOf('#'), Items.IRON_INGOT).pattern("# #").pattern(" # ").criterion("has_iron_ingot", RecipesProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CAKE).input(Character.valueOf('A'), Items.MILK_BUCKET).input(Character.valueOf('B'), Items.SUGAR).input(Character.valueOf('C'), Items.WHEAT).input(Character.valueOf('E'), Items.EGG).pattern("AAA").pattern("BEB").pattern("CCC").criterion("has_egg", RecipesProvider.conditionsFromItem(Items.EGG)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CAMPFIRE).input(Character.valueOf('L'), ItemTags.LOGS).input(Character.valueOf('S'), Items.STICK).input(Character.valueOf('C'), ItemTags.COALS).pattern(" S ").pattern("SCS").pattern("LLL").criterion("has_stick", RecipesProvider.conditionsFromItem(Items.STICK)).criterion("has_coal", RecipesProvider.conditionsFromTag(ItemTags.COALS)).offerTo(consumer);
@@ -285,18 +431,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.LOOM).input(Character.valueOf('#'), ItemTags.PLANKS).input(Character.valueOf('@'), Items.STRING).pattern("@@").pattern("##").criterion("has_string", RecipesProvider.conditionsFromItem(Items.STRING)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CHISELED_RED_SANDSTONE).input(Character.valueOf('#'), Blocks.RED_SANDSTONE_SLAB).pattern("#").pattern("#").criterion("has_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.RED_SANDSTONE)).criterion("has_chiseled_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CHISELED_RED_SANDSTONE)).criterion("has_cut_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CUT_RED_SANDSTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CHISELED_SANDSTONE).input(Character.valueOf('#'), Blocks.SANDSTONE_SLAB).pattern("#").pattern("#").criterion("has_stone_slab", RecipesProvider.conditionsFromItem(Blocks.SANDSTONE_SLAB)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.CYAN_BANNER).input(Character.valueOf('#'), Blocks.CYAN_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_cyan_wool", RecipesProvider.conditionsFromItem(Blocks.CYAN_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.CYAN_BED).input(Character.valueOf('#'), Blocks.CYAN_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_cyan_wool", RecipesProvider.conditionsFromItem(Blocks.CYAN_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.CYAN_BED).input(Items.WHITE_BED).input(Items.CYAN_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "cyan_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.CYAN_CARPET, 3).input(Character.valueOf('#'), Blocks.CYAN_WOOL).pattern("##").group("carpet").criterion("has_cyan_wool", RecipesProvider.conditionsFromItem(Blocks.CYAN_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.CYAN_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.CYAN_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_cyan_dye", RecipesProvider.conditionsFromItem(Items.CYAN_DYE)).offerTo(consumer, "cyan_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.CYAN_CONCRETE_POWDER, 8).input(Items.CYAN_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.CYAN_DYE, 2).input(Items.BLUE_DYE).input(Items.GREEN_DYE).criterion("has_green_dye", RecipesProvider.conditionsFromItem(Items.GREEN_DYE)).criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.CYAN_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.CYAN_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.CYAN_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.CYAN_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.CYAN_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.CYAN_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_cyan_dye", RecipesProvider.conditionsFromItem(Items.CYAN_DYE)).offerTo(consumer, "cyan_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.CYAN_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.CYAN_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.CYAN_WOOL).input(Items.CYAN_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.DARK_PRISMARINE).input(Character.valueOf('S'), Items.PRISMARINE_SHARD).input(Character.valueOf('I'), Items.BLACK_DYE).pattern("SSS").pattern("SIS").pattern("SSS").criterion("has_prismarine_shard", RecipesProvider.conditionsFromItem(Items.PRISMARINE_SHARD)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.PRISMARINE_STAIRS, 4).input(Character.valueOf('#'), Blocks.PRISMARINE).pattern("#  ").pattern("## ").pattern("###").criterion("has_prismarine", RecipesProvider.conditionsFromItem(Blocks.PRISMARINE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.PRISMARINE_BRICK_STAIRS, 4).input(Character.valueOf('#'), Blocks.PRISMARINE_BRICKS).pattern("#  ").pattern("## ").pattern("###").criterion("has_prismarine_bricks", RecipesProvider.conditionsFromItem(Blocks.PRISMARINE_BRICKS)).offerTo(consumer);
@@ -352,29 +487,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Items.GOLD_INGOT).input(Character.valueOf('#'), Items.GOLD_NUGGET).pattern("###").pattern("###").pattern("###").group("gold_ingot").criterion("has_gold_nugget", RecipesProvider.conditionsFromItem(Items.GOLD_NUGGET)).offerTo(consumer, "gold_ingot_from_nuggets");
         ShapelessRecipeJsonFactory.create(Items.GOLD_NUGGET, 9).input(Items.GOLD_INGOT).criterion("has_gold_ingot", RecipesProvider.conditionsFromItem(Items.GOLD_INGOT)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Blocks.GRANITE).input(Blocks.DIORITE).input(Items.QUARTZ).criterion("has_quartz", RecipesProvider.conditionsFromItem(Items.QUARTZ)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.GRAY_BANNER).input(Character.valueOf('#'), Blocks.GRAY_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_gray_wool", RecipesProvider.conditionsFromItem(Blocks.GRAY_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.GRAY_BED).input(Character.valueOf('#'), Blocks.GRAY_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_gray_wool", RecipesProvider.conditionsFromItem(Blocks.GRAY_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.GRAY_BED).input(Items.WHITE_BED).input(Items.GRAY_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "gray_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.GRAY_CARPET, 3).input(Character.valueOf('#'), Blocks.GRAY_WOOL).pattern("##").group("carpet").criterion("has_gray_wool", RecipesProvider.conditionsFromItem(Blocks.GRAY_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.GRAY_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.GRAY_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_gray_dye", RecipesProvider.conditionsFromItem(Items.GRAY_DYE)).offerTo(consumer, "gray_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.GRAY_CONCRETE_POWDER, 8).input(Items.GRAY_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.GRAY_DYE, 2).input(Items.BLACK_DYE).input(Items.WHITE_DYE).criterion("has_white_dye", RecipesProvider.conditionsFromItem(Items.WHITE_DYE)).criterion("has_black_dye", RecipesProvider.conditionsFromItem(Items.BLACK_DYE)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.GRAY_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.GRAY_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.GRAY_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.GRAY_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.GRAY_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.GRAY_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_gray_dye", RecipesProvider.conditionsFromItem(Items.GRAY_DYE)).offerTo(consumer, "gray_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.GRAY_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.GRAY_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.GRAY_WOOL).input(Items.GRAY_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.GREEN_BANNER).input(Character.valueOf('#'), Blocks.GREEN_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_green_wool", RecipesProvider.conditionsFromItem(Blocks.GREEN_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.GREEN_BED).input(Character.valueOf('#'), Blocks.GREEN_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_green_wool", RecipesProvider.conditionsFromItem(Blocks.GREEN_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.GREEN_BED).input(Items.WHITE_BED).input(Items.GREEN_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "green_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.GREEN_CARPET, 3).input(Character.valueOf('#'), Blocks.GREEN_WOOL).pattern("##").group("carpet").criterion("has_green_wool", RecipesProvider.conditionsFromItem(Blocks.GREEN_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.GREEN_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.GREEN_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_green_dye", RecipesProvider.conditionsFromItem(Items.GREEN_DYE)).offerTo(consumer, "green_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.GREEN_CONCRETE_POWDER, 8).input(Items.GREEN_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.GREEN_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.GREEN_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.GREEN_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.GREEN_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.GREEN_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.GREEN_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_green_dye", RecipesProvider.conditionsFromItem(Items.GREEN_DYE)).offerTo(consumer, "green_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.GREEN_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.GREEN_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.GREEN_WOOL).input(Items.GREEN_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.HAY_BLOCK).input(Character.valueOf('#'), Items.WHEAT).pattern("###").pattern("###").pattern("###").criterion("has_wheat", RecipesProvider.conditionsFromItem(Items.WHEAT)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE).input(Character.valueOf('#'), Items.IRON_INGOT).pattern("##").criterion("has_iron_ingot", RecipesProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.HONEY_BOTTLE, 4).input(Items.HONEY_BLOCK).input(Items.GLASS_BOTTLE, 4).criterion("has_honey_block", RecipesProvider.conditionsFromItem(Blocks.HONEY_BLOCK)).offerTo(consumer);
@@ -412,65 +525,21 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Items.LEATHER_HORSE_ARMOR).input(Character.valueOf('X'), Items.LEATHER).pattern("X X").pattern("XXX").pattern("X X").criterion("has_leather", RecipesProvider.conditionsFromItem(Items.LEATHER)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.LECTERN).input(Character.valueOf('S'), ItemTags.WOODEN_SLABS).input(Character.valueOf('B'), Blocks.BOOKSHELF).pattern("SSS").pattern(" B ").pattern(" S ").criterion("has_book", RecipesProvider.conditionsFromItem(Items.BOOK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.LEVER).input(Character.valueOf('#'), Blocks.COBBLESTONE).input(Character.valueOf('X'), Items.STICK).pattern("X").pattern("#").criterion("has_cobblestone", RecipesProvider.conditionsFromItem(Blocks.COBBLESTONE)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.LIGHT_BLUE_BANNER).input(Character.valueOf('#'), Blocks.LIGHT_BLUE_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_light_blue_wool", RecipesProvider.conditionsFromItem(Blocks.LIGHT_BLUE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.LIGHT_BLUE_BED).input(Character.valueOf('#'), Blocks.LIGHT_BLUE_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_light_blue_wool", RecipesProvider.conditionsFromItem(Blocks.LIGHT_BLUE_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.LIGHT_BLUE_BED).input(Items.WHITE_BED).input(Items.LIGHT_BLUE_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "light_blue_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_BLUE_CARPET, 3).input(Character.valueOf('#'), Blocks.LIGHT_BLUE_WOOL).pattern("##").group("carpet").criterion("has_light_blue_wool", RecipesProvider.conditionsFromItem(Blocks.LIGHT_BLUE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_BLUE_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.LIGHT_BLUE_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_light_blue_dye", RecipesProvider.conditionsFromItem(Items.LIGHT_BLUE_DYE)).offerTo(consumer, "light_blue_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.LIGHT_BLUE_CONCRETE_POWDER, 8).input(Items.LIGHT_BLUE_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.LIGHT_BLUE_DYE).input(Blocks.BLUE_ORCHID).group("light_blue_dye").criterion("has_red_flower", RecipesProvider.conditionsFromItem(Blocks.BLUE_ORCHID)).offerTo(consumer, "light_blue_dye_from_blue_orchid");
         ShapelessRecipeJsonFactory.create(Items.LIGHT_BLUE_DYE, 2).input(Items.BLUE_DYE).input(Items.WHITE_DYE).group("light_blue_dye").criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).criterion("has_white_dye", RecipesProvider.conditionsFromItem(Items.WHITE_DYE)).offerTo(consumer, "light_blue_dye_from_blue_white_dye");
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_BLUE_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.LIGHT_BLUE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.LIGHT_BLUE_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_BLUE_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.LIGHT_BLUE_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_light_blue_dye", RecipesProvider.conditionsFromItem(Items.LIGHT_BLUE_DYE)).offerTo(consumer, "light_blue_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_BLUE_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.LIGHT_BLUE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.LIGHT_BLUE_WOOL).input(Items.LIGHT_BLUE_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.LIGHT_GRAY_BANNER).input(Character.valueOf('#'), Blocks.LIGHT_GRAY_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_light_gray_wool", RecipesProvider.conditionsFromItem(Blocks.LIGHT_GRAY_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.LIGHT_GRAY_BED).input(Character.valueOf('#'), Blocks.LIGHT_GRAY_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_light_gray_wool", RecipesProvider.conditionsFromItem(Blocks.LIGHT_GRAY_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_BED).input(Items.WHITE_BED).input(Items.LIGHT_GRAY_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "light_gray_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_GRAY_CARPET, 3).input(Character.valueOf('#'), Blocks.LIGHT_GRAY_WOOL).pattern("##").group("carpet").criterion("has_light_gray_wool", RecipesProvider.conditionsFromItem(Blocks.LIGHT_GRAY_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_GRAY_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.LIGHT_GRAY_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_light_gray_dye", RecipesProvider.conditionsFromItem(Items.LIGHT_GRAY_DYE)).offerTo(consumer, "light_gray_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.LIGHT_GRAY_CONCRETE_POWDER, 8).input(Items.LIGHT_GRAY_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE).input(Blocks.AZURE_BLUET).group("light_gray_dye").criterion("has_red_flower", RecipesProvider.conditionsFromItem(Blocks.AZURE_BLUET)).offerTo(consumer, "light_gray_dye_from_azure_bluet");
         ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE, 2).input(Items.GRAY_DYE).input(Items.WHITE_DYE).group("light_gray_dye").criterion("has_gray_dye", RecipesProvider.conditionsFromItem(Items.GRAY_DYE)).criterion("has_white_dye", RecipesProvider.conditionsFromItem(Items.WHITE_DYE)).offerTo(consumer, "light_gray_dye_from_gray_white_dye");
         ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE, 3).input(Items.BLACK_DYE).input(Items.WHITE_DYE, 2).group("light_gray_dye").criterion("has_white_dye", RecipesProvider.conditionsFromItem(Items.WHITE_DYE)).criterion("has_black_dye", RecipesProvider.conditionsFromItem(Items.BLACK_DYE)).offerTo(consumer, "light_gray_dye_from_black_white_dye");
         ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE).input(Blocks.OXEYE_DAISY).group("light_gray_dye").criterion("has_red_flower", RecipesProvider.conditionsFromItem(Blocks.OXEYE_DAISY)).offerTo(consumer, "light_gray_dye_from_oxeye_daisy");
         ShapelessRecipeJsonFactory.create(Items.LIGHT_GRAY_DYE).input(Blocks.WHITE_TULIP).group("light_gray_dye").criterion("has_red_flower", RecipesProvider.conditionsFromItem(Blocks.WHITE_TULIP)).offerTo(consumer, "light_gray_dye_from_white_tulip");
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_GRAY_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.LIGHT_GRAY_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.LIGHT_GRAY_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_GRAY_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.LIGHT_GRAY_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_light_gray_dye", RecipesProvider.conditionsFromItem(Items.LIGHT_GRAY_DYE)).offerTo(consumer, "light_gray_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.LIGHT_GRAY_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.LIGHT_GRAY_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.LIGHT_GRAY_WOOL).input(Items.LIGHT_GRAY_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE).input(Character.valueOf('#'), Items.GOLD_INGOT).pattern("##").criterion("has_gold_ingot", RecipesProvider.conditionsFromItem(Items.GOLD_INGOT)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.LIME_BANNER).input(Character.valueOf('#'), Blocks.LIME_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_lime_wool", RecipesProvider.conditionsFromItem(Blocks.LIME_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.LIME_BED).input(Character.valueOf('#'), Blocks.LIME_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_lime_wool", RecipesProvider.conditionsFromItem(Blocks.LIME_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.LIME_BED).input(Items.WHITE_BED).input(Items.LIME_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "lime_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.LIME_CARPET, 3).input(Character.valueOf('#'), Blocks.LIME_WOOL).pattern("##").group("carpet").criterion("has_lime_wool", RecipesProvider.conditionsFromItem(Blocks.LIME_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIME_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.LIME_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_lime_dye", RecipesProvider.conditionsFromItem(Items.LIME_DYE)).offerTo(consumer, "lime_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.LIME_CONCRETE_POWDER, 8).input(Items.LIME_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.LIME_DYE, 2).input(Items.GREEN_DYE).input(Items.WHITE_DYE).criterion("has_green_dye", RecipesProvider.conditionsFromItem(Items.GREEN_DYE)).criterion("has_white_dye", RecipesProvider.conditionsFromItem(Items.WHITE_DYE)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIME_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.LIME_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIME_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.LIME_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.LIME_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.LIME_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_lime_dye", RecipesProvider.conditionsFromItem(Items.LIME_DYE)).offerTo(consumer, "lime_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.LIME_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.LIME_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.LIME_WOOL).input(Items.LIME_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.JACK_O_LANTERN).input(Character.valueOf('A'), Blocks.CARVED_PUMPKIN).input(Character.valueOf('B'), Blocks.TORCH).pattern("A").pattern("B").criterion("has_carved_pumpkin", RecipesProvider.conditionsFromItem(Blocks.CARVED_PUMPKIN)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.MAGENTA_BANNER).input(Character.valueOf('#'), Blocks.MAGENTA_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_magenta_wool", RecipesProvider.conditionsFromItem(Blocks.MAGENTA_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.MAGENTA_BED).input(Character.valueOf('#'), Blocks.MAGENTA_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_magenta_wool", RecipesProvider.conditionsFromItem(Blocks.MAGENTA_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.MAGENTA_BED).input(Items.WHITE_BED).input(Items.MAGENTA_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "magenta_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.MAGENTA_CARPET, 3).input(Character.valueOf('#'), Blocks.MAGENTA_WOOL).pattern("##").group("carpet").criterion("has_magenta_wool", RecipesProvider.conditionsFromItem(Blocks.MAGENTA_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.MAGENTA_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.MAGENTA_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_magenta_dye", RecipesProvider.conditionsFromItem(Items.MAGENTA_DYE)).offerTo(consumer, "magenta_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.MAGENTA_CONCRETE_POWDER, 8).input(Items.MAGENTA_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE).input(Blocks.ALLIUM).group("magenta_dye").criterion("has_red_flower", RecipesProvider.conditionsFromItem(Blocks.ALLIUM)).offerTo(consumer, "magenta_dye_from_allium");
         ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 4).input(Items.BLUE_DYE).input(Items.RED_DYE, 2).input(Items.WHITE_DYE).group("magenta_dye").criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).criterion("has_rose_red", RecipesProvider.conditionsFromItem(Items.RED_DYE)).criterion("has_white_dye", RecipesProvider.conditionsFromItem(Items.WHITE_DYE)).offerTo(consumer, "magenta_dye_from_blue_red_white_dye");
         ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 3).input(Items.BLUE_DYE).input(Items.RED_DYE).input(Items.PINK_DYE).group("magenta_dye").criterion("has_pink_dye", RecipesProvider.conditionsFromItem(Items.PINK_DYE)).criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).criterion("has_red_dye", RecipesProvider.conditionsFromItem(Items.RED_DYE)).offerTo(consumer, "magenta_dye_from_blue_red_pink");
         ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 2).input(Blocks.LILAC).group("magenta_dye").criterion("has_double_plant", RecipesProvider.conditionsFromItem(Blocks.LILAC)).offerTo(consumer, "magenta_dye_from_lilac");
         ShapelessRecipeJsonFactory.create(Items.MAGENTA_DYE, 2).input(Items.PURPLE_DYE).input(Items.PINK_DYE).group("magenta_dye").criterion("has_pink_dye", RecipesProvider.conditionsFromItem(Items.PINK_DYE)).criterion("has_purple_dye", RecipesProvider.conditionsFromItem(Items.PURPLE_DYE)).offerTo(consumer, "magenta_dye_from_purple_and_pink");
-        ShapedRecipeJsonFactory.create(Blocks.MAGENTA_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.MAGENTA_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.MAGENTA_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.MAGENTA_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.MAGENTA_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.MAGENTA_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_magenta_dye", RecipesProvider.conditionsFromItem(Items.MAGENTA_DYE)).offerTo(consumer, "magenta_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.MAGENTA_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.MAGENTA_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.MAGENTA_WOOL).input(Items.MAGENTA_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.MAGMA_BLOCK).input(Character.valueOf('#'), Items.MAGMA_CREAM).pattern("##").pattern("##").criterion("has_magma_cream", RecipesProvider.conditionsFromItem(Items.MAGMA_CREAM)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.MAGMA_CREAM).input(Items.BLAZE_POWDER).input(Items.SLIME_BALL).criterion("has_blaze_powder", RecipesProvider.conditionsFromItem(Items.BLAZE_POWDER)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.MAP).input(Character.valueOf('#'), Items.PAPER).input(Character.valueOf('X'), Items.COMPASS).pattern("###").pattern("#X#").pattern("###").criterion("has_compass", RecipesProvider.conditionsFromItem(Items.COMPASS)).offerTo(consumer);
@@ -497,37 +566,15 @@ implements DataProvider {
         ShapelessRecipeJsonFactory.create(Items.NETHERITE_BOOTS).input(Items.NETHERITE_INGOT).input(Items.DIAMOND_BOOTS).criterion("has_netherite_ingot", RecipesProvider.conditionsFromItem(Items.NETHERITE_INGOT)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.NOTE_BLOCK).input(Character.valueOf('#'), ItemTags.PLANKS).input(Character.valueOf('X'), Items.REDSTONE).pattern("###").pattern("#X#").pattern("###").criterion("has_redstone", RecipesProvider.conditionsFromItem(Items.REDSTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.OBSERVER).input(Character.valueOf('Q'), Items.QUARTZ).input(Character.valueOf('R'), Items.REDSTONE).input(Character.valueOf('#'), Blocks.COBBLESTONE).pattern("###").pattern("RRQ").pattern("###").criterion("has_quartz", RecipesProvider.conditionsFromItem(Items.QUARTZ)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.ORANGE_BANNER).input(Character.valueOf('#'), Blocks.ORANGE_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_orange_wool", RecipesProvider.conditionsFromItem(Blocks.ORANGE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.ORANGE_BED).input(Character.valueOf('#'), Blocks.ORANGE_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_orange_wool", RecipesProvider.conditionsFromItem(Blocks.ORANGE_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.ORANGE_BED).input(Items.WHITE_BED).input(Items.ORANGE_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "orange_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.ORANGE_CARPET, 3).input(Character.valueOf('#'), Blocks.ORANGE_WOOL).pattern("##").group("carpet").criterion("has_orange_wool", RecipesProvider.conditionsFromItem(Blocks.ORANGE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.ORANGE_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.ORANGE_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_oramge_dye", RecipesProvider.conditionsFromItem(Items.ORANGE_DYE)).offerTo(consumer, "orange_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.ORANGE_CONCRETE_POWDER, 8).input(Items.ORANGE_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.ORANGE_DYE).input(Blocks.ORANGE_TULIP).group("orange_dye").criterion("has_red_flower", RecipesProvider.conditionsFromItem(Blocks.ORANGE_TULIP)).offerTo(consumer, "orange_dye_from_orange_tulip");
         ShapelessRecipeJsonFactory.create(Items.ORANGE_DYE, 2).input(Items.RED_DYE).input(Items.YELLOW_DYE).group("orange_dye").criterion("has_red_dye", RecipesProvider.conditionsFromItem(Items.RED_DYE)).criterion("has_yellow_dye", RecipesProvider.conditionsFromItem(Items.YELLOW_DYE)).offerTo(consumer, "orange_dye_from_red_yellow");
-        ShapedRecipeJsonFactory.create(Blocks.ORANGE_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.ORANGE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.ORANGE_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.ORANGE_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.ORANGE_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.ORANGE_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_orange_dye", RecipesProvider.conditionsFromItem(Items.ORANGE_DYE)).offerTo(consumer, "orange_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.ORANGE_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.ORANGE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.ORANGE_WOOL).input(Items.ORANGE_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.PAINTING).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Ingredient.fromTag(ItemTags.WOOL)).pattern("###").pattern("#X#").pattern("###").criterion("has_wool", RecipesProvider.conditionsFromTag(ItemTags.WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.PAPER, 3).input(Character.valueOf('#'), Blocks.SUGAR_CANE).pattern("###").criterion("has_reeds", RecipesProvider.conditionsFromItem(Blocks.SUGAR_CANE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.QUARTZ_PILLAR, 2).input(Character.valueOf('#'), Blocks.QUARTZ_BLOCK).pattern("#").pattern("#").criterion("has_chiseled_quartz_block", RecipesProvider.conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK)).criterion("has_quartz_block", RecipesProvider.conditionsFromItem(Blocks.QUARTZ_BLOCK)).criterion("has_quartz_pillar", RecipesProvider.conditionsFromItem(Blocks.QUARTZ_PILLAR)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Blocks.PACKED_ICE).input(Blocks.ICE, 9).criterion("has_ice", RecipesProvider.conditionsFromItem(Blocks.ICE)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.PINK_BANNER).input(Character.valueOf('#'), Blocks.PINK_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_pink_wool", RecipesProvider.conditionsFromItem(Blocks.PINK_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.PINK_BED).input(Character.valueOf('#'), Blocks.PINK_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_pink_wool", RecipesProvider.conditionsFromItem(Blocks.PINK_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.PINK_BED).input(Items.WHITE_BED).input(Items.PINK_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "pink_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.PINK_CARPET, 3).input(Character.valueOf('#'), Blocks.PINK_WOOL).pattern("##").group("carpet").criterion("has_pink_wool", RecipesProvider.conditionsFromItem(Blocks.PINK_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.PINK_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.PINK_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_pink_dye", RecipesProvider.conditionsFromItem(Items.PINK_DYE)).offerTo(consumer, "pink_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.PINK_CONCRETE_POWDER, 8).input(Items.PINK_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.PINK_DYE, 2).input(Blocks.PEONY).group("pink_dye").criterion("has_double_plant", RecipesProvider.conditionsFromItem(Blocks.PEONY)).offerTo(consumer, "pink_dye_from_peony");
         ShapelessRecipeJsonFactory.create(Items.PINK_DYE).input(Blocks.PINK_TULIP).group("pink_dye").criterion("has_red_flower", RecipesProvider.conditionsFromItem(Blocks.PINK_TULIP)).offerTo(consumer, "pink_dye_from_pink_tulip");
         ShapelessRecipeJsonFactory.create(Items.PINK_DYE, 2).input(Items.RED_DYE).input(Items.WHITE_DYE).group("pink_dye").criterion("has_white_dye", RecipesProvider.conditionsFromItem(Items.WHITE_DYE)).criterion("has_red_dye", RecipesProvider.conditionsFromItem(Items.RED_DYE)).offerTo(consumer, "pink_dye_from_red_white_dye");
-        ShapedRecipeJsonFactory.create(Blocks.PINK_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.PINK_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.PINK_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.PINK_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.PINK_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.PINK_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_pink_dye", RecipesProvider.conditionsFromItem(Items.PINK_DYE)).offerTo(consumer, "pink_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.PINK_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.PINK_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.PINK_WOOL).input(Items.PINK_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.PISTON).input(Character.valueOf('R'), Items.REDSTONE).input(Character.valueOf('#'), Blocks.COBBLESTONE).input(Character.valueOf('T'), ItemTags.PLANKS).input(Character.valueOf('X'), Items.IRON_INGOT).pattern("TTT").pattern("#X#").pattern("#R#").criterion("has_redstone", RecipesProvider.conditionsFromItem(Items.REDSTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.POLISHED_GRANITE, 4).input(Character.valueOf('S'), Blocks.GRANITE).pattern("SS").pattern("SS").criterion("has_stone", RecipesProvider.conditionsFromItem(Blocks.GRANITE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.POLISHED_DIORITE, 4).input(Character.valueOf('S'), Blocks.DIORITE).pattern("SS").pattern("SS").criterion("has_stone", RecipesProvider.conditionsFromItem(Blocks.DIORITE)).offerTo(consumer);
@@ -539,19 +586,8 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.DARK_PRISMARINE_SLAB, 6).input(Character.valueOf('#'), Blocks.DARK_PRISMARINE).pattern("###").criterion("has_dark_prismarine", RecipesProvider.conditionsFromItem(Blocks.DARK_PRISMARINE)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.PUMPKIN_PIE).input(Blocks.PUMPKIN).input(Items.SUGAR).input(Items.EGG).criterion("has_carved_pumpkin", RecipesProvider.conditionsFromItem(Blocks.CARVED_PUMPKIN)).criterion("has_pumpkin", RecipesProvider.conditionsFromItem(Blocks.PUMPKIN)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.PUMPKIN_SEEDS, 4).input(Blocks.PUMPKIN).criterion("has_pumpkin", RecipesProvider.conditionsFromItem(Blocks.PUMPKIN)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.PURPLE_BANNER).input(Character.valueOf('#'), Blocks.PURPLE_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_purple_wool", RecipesProvider.conditionsFromItem(Blocks.PURPLE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.PURPLE_BED).input(Character.valueOf('#'), Blocks.PURPLE_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_purple_wool", RecipesProvider.conditionsFromItem(Blocks.PURPLE_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.PURPLE_BED).input(Items.WHITE_BED).input(Items.PURPLE_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "purple_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.PURPLE_CARPET, 3).input(Character.valueOf('#'), Blocks.PURPLE_WOOL).pattern("##").group("carpet").criterion("has_purple_wool", RecipesProvider.conditionsFromItem(Blocks.PURPLE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.PURPLE_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.PURPLE_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_purple_dye", RecipesProvider.conditionsFromItem(Items.PURPLE_DYE)).offerTo(consumer, "purple_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.PURPLE_CONCRETE_POWDER, 8).input(Items.PURPLE_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.PURPLE_DYE, 2).input(Items.BLUE_DYE).input(Items.RED_DYE).criterion("has_blue_dye", RecipesProvider.conditionsFromItem(Items.BLUE_DYE)).criterion("has_red_dye", RecipesProvider.conditionsFromItem(Items.RED_DYE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.SHULKER_BOX).input(Character.valueOf('#'), Blocks.CHEST).input(Character.valueOf('-'), Items.SHULKER_SHELL).pattern("-").pattern("#").pattern("-").criterion("has_shulker_shell", RecipesProvider.conditionsFromItem(Items.SHULKER_SHELL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.PURPLE_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.PURPLE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.PURPLE_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.PURPLE_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.PURPLE_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.PURPLE_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_purple_dye", RecipesProvider.conditionsFromItem(Items.PURPLE_DYE)).offerTo(consumer, "purple_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.PURPLE_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.PURPLE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.PURPLE_WOOL).input(Items.PURPLE_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.PURPUR_BLOCK, 4).input(Character.valueOf('F'), Items.POPPED_CHORUS_FRUIT).pattern("FF").pattern("FF").criterion("has_chorus_fruit_popped", RecipesProvider.conditionsFromItem(Items.POPPED_CHORUS_FRUIT)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.PURPUR_PILLAR).input(Character.valueOf('#'), Blocks.PURPUR_SLAB).pattern("#").pattern("#").criterion("has_purpur_block", RecipesProvider.conditionsFromItem(Blocks.PURPUR_BLOCK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.PURPUR_SLAB, 6).input(Character.valueOf('#'), Ingredient.ofItems(Blocks.PURPUR_BLOCK, Blocks.PURPUR_PILLAR)).pattern("###").criterion("has_purpur_block", RecipesProvider.conditionsFromItem(Blocks.PURPUR_BLOCK)).offerTo(consumer);
@@ -566,12 +602,6 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.REDSTONE_BLOCK).input(Character.valueOf('#'), Items.REDSTONE).pattern("###").pattern("###").pattern("###").criterion("has_redstone", RecipesProvider.conditionsFromItem(Items.REDSTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.REDSTONE_LAMP).input(Character.valueOf('R'), Items.REDSTONE).input(Character.valueOf('G'), Blocks.GLOWSTONE).pattern(" R ").pattern("RGR").pattern(" R ").criterion("has_glowstone", RecipesProvider.conditionsFromItem(Blocks.GLOWSTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.REDSTONE_TORCH).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Items.REDSTONE).pattern("X").pattern("#").criterion("has_redstone", RecipesProvider.conditionsFromItem(Items.REDSTONE)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.RED_BANNER).input(Character.valueOf('#'), Blocks.RED_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_red_wool", RecipesProvider.conditionsFromItem(Blocks.RED_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.RED_BED).input(Character.valueOf('#'), Blocks.RED_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_red_wool", RecipesProvider.conditionsFromItem(Blocks.RED_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.RED_BED).input(Items.WHITE_BED).input(Items.RED_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "red_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.RED_CARPET, 3).input(Character.valueOf('#'), Blocks.RED_WOOL).pattern("##").group("carpet").criterion("has_red_wool", RecipesProvider.conditionsFromItem(Blocks.RED_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.RED_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.RED_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_red_dye", RecipesProvider.conditionsFromItem(Items.RED_DYE)).offerTo(consumer, "red_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.RED_CONCRETE_POWDER, 8).input(Items.RED_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.RED_DYE).input(Items.BEETROOT).group("red_dye").criterion("has_beetroot", RecipesProvider.conditionsFromItem(Items.BEETROOT)).offerTo(consumer, "red_dye_from_beetroot");
         ShapelessRecipeJsonFactory.create(Items.RED_DYE).input(Blocks.POPPY).group("red_dye").criterion("has_red_flower", RecipesProvider.conditionsFromItem(Blocks.POPPY)).offerTo(consumer, "red_dye_from_poppy");
         ShapelessRecipeJsonFactory.create(Items.RED_DYE, 2).input(Blocks.ROSE_BUSH).group("red_dye").criterion("has_double_plant", RecipesProvider.conditionsFromItem(Blocks.ROSE_BUSH)).offerTo(consumer, "red_dye_from_rose_bush");
@@ -581,11 +611,6 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.RED_SANDSTONE_SLAB, 6).input(Character.valueOf('#'), Ingredient.ofItems(Blocks.RED_SANDSTONE, Blocks.CHISELED_RED_SANDSTONE)).pattern("###").criterion("has_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.RED_SANDSTONE)).criterion("has_chiseled_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CHISELED_RED_SANDSTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CUT_RED_SANDSTONE_SLAB, 6).input(Character.valueOf('#'), Blocks.CUT_RED_SANDSTONE).pattern("###").criterion("has_cut_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CUT_RED_SANDSTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.RED_SANDSTONE_STAIRS, 4).input(Character.valueOf('#'), Ingredient.ofItems(Blocks.RED_SANDSTONE, Blocks.CHISELED_RED_SANDSTONE, Blocks.CUT_RED_SANDSTONE)).pattern("#  ").pattern("## ").pattern("###").criterion("has_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.RED_SANDSTONE)).criterion("has_chiseled_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CHISELED_RED_SANDSTONE)).criterion("has_cut_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CUT_RED_SANDSTONE)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.RED_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.RED_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.RED_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.RED_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.RED_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.RED_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_red_dye", RecipesProvider.conditionsFromItem(Items.RED_DYE)).offerTo(consumer, "red_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.RED_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.RED_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.RED_WOOL).input(Items.RED_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.REPEATER).input(Character.valueOf('#'), Blocks.REDSTONE_TORCH).input(Character.valueOf('X'), Items.REDSTONE).input(Character.valueOf('I'), Blocks.STONE).pattern("#X#").pattern("III").criterion("has_redstone_torch", RecipesProvider.conditionsFromItem(Blocks.REDSTONE_TORCH)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.SANDSTONE).input(Character.valueOf('#'), Blocks.SAND).pattern("##").pattern("##").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.SANDSTONE_SLAB, 6).input(Character.valueOf('#'), Ingredient.ofItems(Blocks.SANDSTONE, Blocks.CHISELED_SANDSTONE)).pattern("###").criterion("has_sandstone", RecipesProvider.conditionsFromItem(Blocks.SANDSTONE)).criterion("has_chiseled_sandstone", RecipesProvider.conditionsFromItem(Blocks.CHISELED_SANDSTONE)).offerTo(consumer);
@@ -594,12 +619,6 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.SEA_LANTERN).input(Character.valueOf('S'), Items.PRISMARINE_SHARD).input(Character.valueOf('C'), Items.PRISMARINE_CRYSTALS).pattern("SCS").pattern("CCC").pattern("SCS").criterion("has_prismarine_crystals", RecipesProvider.conditionsFromItem(Items.PRISMARINE_CRYSTALS)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.SHEARS).input(Character.valueOf('#'), Items.IRON_INGOT).pattern(" #").pattern("# ").criterion("has_iron_ingot", RecipesProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.SHIELD).input(Character.valueOf('W'), ItemTags.PLANKS).input(Character.valueOf('o'), Items.IRON_INGOT).pattern("WoW").pattern("WWW").pattern(" W ").criterion("has_iron_ingot", RecipesProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.OAK_SIGN, 3).input(Character.valueOf('#'), Items.OAK_PLANKS).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_oak_planks", RecipesProvider.conditionsFromItem(Items.OAK_PLANKS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.SPRUCE_SIGN, 3).input(Character.valueOf('#'), Items.SPRUCE_PLANKS).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_spruce_planks", RecipesProvider.conditionsFromItem(Items.SPRUCE_PLANKS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.BIRCH_SIGN, 3).input(Character.valueOf('#'), Items.BIRCH_PLANKS).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_birch_planks", RecipesProvider.conditionsFromItem(Items.BIRCH_PLANKS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.ACACIA_SIGN, 3).input(Character.valueOf('#'), Items.ACACIA_PLANKS).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_acacia_planks", RecipesProvider.conditionsFromItem(Items.ACACIA_PLANKS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.JUNGLE_SIGN, 3).input(Character.valueOf('#'), Items.JUNGLE_PLANKS).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_jungle_planks", RecipesProvider.conditionsFromItem(Items.JUNGLE_PLANKS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.DARK_OAK_SIGN, 3).input(Character.valueOf('#'), Items.DARK_OAK_PLANKS).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_dark_oak_planks", RecipesProvider.conditionsFromItem(Items.DARK_OAK_PLANKS)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.SLIME_BLOCK).input(Character.valueOf('#'), Items.SLIME_BALL).pattern("###").pattern("###").pattern("###").criterion("has_slime_ball", RecipesProvider.conditionsFromItem(Items.SLIME_BALL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.SLIME_BALL, 9).input(Blocks.SLIME_BLOCK).criterion("has_slime", RecipesProvider.conditionsFromItem(Blocks.SLIME_BLOCK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CUT_RED_SANDSTONE, 4).input(Character.valueOf('#'), Blocks.RED_SANDSTONE).pattern("##").pattern("##").criterion("has_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.RED_SANDSTONE)).offerTo(consumer);
@@ -627,6 +646,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.WHITE_WOOL).input(Character.valueOf('#'), Items.STRING).pattern("##").pattern("##").criterion("has_string", RecipesProvider.conditionsFromItem(Items.STRING)).offerTo(consumer, "white_wool_from_string");
         ShapelessRecipeJsonFactory.create(Items.SUGAR).input(Blocks.SUGAR_CANE).group("sugar").criterion("has_reeds", RecipesProvider.conditionsFromItem(Blocks.SUGAR_CANE)).offerTo(consumer, "sugar_from_sugar_cane");
         ShapelessRecipeJsonFactory.create(Items.SUGAR, 3).input(Items.HONEY_BOTTLE).group("sugar").criterion("has_honey_bottle", RecipesProvider.conditionsFromItem(Items.HONEY_BOTTLE)).offerTo(consumer, "sugar_from_honey_bottle");
+        ShapedRecipeJsonFactory.create(Blocks.TARGET).input(Character.valueOf('H'), Items.HAY_BLOCK).input(Character.valueOf('R'), Items.REDSTONE).pattern(" R ").pattern("RHR").pattern(" R ").criterion("has_redstone", RecipesProvider.conditionsFromItem(Items.REDSTONE)).criterion("has_hay_block", RecipesProvider.conditionsFromItem(Blocks.HAY_BLOCK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.TNT).input(Character.valueOf('#'), Ingredient.ofItems(Blocks.SAND, Blocks.RED_SAND)).input(Character.valueOf('X'), Items.GUNPOWDER).pattern("X#X").pattern("#X#").pattern("X#X").criterion("has_gunpowder", RecipesProvider.conditionsFromItem(Items.GUNPOWDER)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.TNT_MINECART).input(Character.valueOf('A'), Blocks.TNT).input(Character.valueOf('B'), Items.MINECART).pattern("A").pattern("B").criterion("has_minecart", RecipesProvider.conditionsFromItem(Items.MINECART)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.TORCH, 4).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Ingredient.ofItems(Items.COAL, Items.CHARCOAL)).pattern("X").pattern("#").criterion("has_stone_pickaxe", RecipesProvider.conditionsFromItem(Items.STONE_PICKAXE)).offerTo(consumer);
@@ -637,35 +657,16 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.TRIPWIRE_HOOK, 2).input(Character.valueOf('#'), ItemTags.PLANKS).input(Character.valueOf('S'), Items.STICK).input(Character.valueOf('I'), Items.IRON_INGOT).pattern("I").pattern("S").pattern("#").criterion("has_string", RecipesProvider.conditionsFromItem(Items.STRING)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.TURTLE_HELMET).input(Character.valueOf('X'), Items.SCUTE).pattern("XXX").pattern("X X").criterion("has_scute", RecipesProvider.conditionsFromItem(Items.SCUTE)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.WHEAT, 9).input(Blocks.HAY_BLOCK).criterion("has_hay_block", RecipesProvider.conditionsFromItem(Blocks.HAY_BLOCK)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.WHITE_BANNER).input(Character.valueOf('#'), Blocks.WHITE_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.WHITE_BED).input(Character.valueOf('#'), Blocks.WHITE_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.WHITE_CARPET, 3).input(Character.valueOf('#'), Blocks.WHITE_WOOL).pattern("##").group("carpet").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.WHITE_CONCRETE_POWDER, 8).input(Items.WHITE_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.WHITE_DYE).input(Items.BONE_MEAL).group("white_dye").criterion("has_bone_meal", RecipesProvider.conditionsFromItem(Items.BONE_MEAL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.WHITE_DYE).input(Blocks.LILY_OF_THE_VALLEY).group("white_dye").criterion("has_white_flower", RecipesProvider.conditionsFromItem(Blocks.LILY_OF_THE_VALLEY)).offerTo(consumer, "white_dye_from_lily_of_the_valley");
-        ShapedRecipeJsonFactory.create(Blocks.WHITE_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.WHITE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.WHITE_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.WHITE_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.WHITE_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.WHITE_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_white_dye", RecipesProvider.conditionsFromItem(Items.WHITE_DYE)).offerTo(consumer, "white_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.WHITE_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.WHITE_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.WOODEN_AXE).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("XX").pattern("X#").pattern(" #").criterion("has_stick", RecipesProvider.conditionsFromItem(Items.STICK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.WOODEN_HOE).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("XX").pattern(" #").pattern(" #").criterion("has_stick", RecipesProvider.conditionsFromItem(Items.STICK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.WOODEN_PICKAXE).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("XXX").pattern(" # ").pattern(" # ").criterion("has_stick", RecipesProvider.conditionsFromItem(Items.STICK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.WOODEN_SHOVEL).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("X").pattern("#").pattern("#").criterion("has_stick", RecipesProvider.conditionsFromItem(Items.STICK)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.WOODEN_SWORD).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("X").pattern("X").pattern("#").criterion("has_stick", RecipesProvider.conditionsFromItem(Items.STICK)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.WRITABLE_BOOK).input(Items.BOOK).input(Items.INK_SAC).input(Items.FEATHER).criterion("has_book", RecipesProvider.conditionsFromItem(Items.BOOK)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.YELLOW_BANNER).input(Character.valueOf('#'), Blocks.YELLOW_WOOL).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_yellow_wool", RecipesProvider.conditionsFromItem(Blocks.YELLOW_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Items.YELLOW_BED).input(Character.valueOf('#'), Blocks.YELLOW_WOOL).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_yellow_wool", RecipesProvider.conditionsFromItem(Blocks.YELLOW_WOOL)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Items.YELLOW_BED).input(Items.WHITE_BED).input(Items.YELLOW_DYE).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, "yellow_bed_from_white_bed");
-        ShapedRecipeJsonFactory.create(Blocks.YELLOW_CARPET, 3).input(Character.valueOf('#'), Blocks.YELLOW_WOOL).pattern("##").group("carpet").criterion("has_yellow_wool", RecipesProvider.conditionsFromItem(Blocks.YELLOW_WOOL)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.YELLOW_CARPET, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), Items.YELLOW_DYE).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_yellow_dye", RecipesProvider.conditionsFromItem(Items.YELLOW_DYE)).offerTo(consumer, "yellow_carpet_from_white_carpet");
-        ShapelessRecipeJsonFactory.create(Blocks.YELLOW_CONCRETE_POWDER, 8).input(Items.YELLOW_DYE).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.YELLOW_DYE).input(Blocks.DANDELION).group("yellow_dye").criterion("has_yellow_flower", RecipesProvider.conditionsFromItem(Blocks.DANDELION)).offerTo(consumer, "yellow_dye_from_dandelion");
         ShapelessRecipeJsonFactory.create(Items.YELLOW_DYE, 2).input(Blocks.SUNFLOWER).group("yellow_dye").criterion("has_double_plant", RecipesProvider.conditionsFromItem(Blocks.SUNFLOWER)).offerTo(consumer, "yellow_dye_from_sunflower");
-        ShapedRecipeJsonFactory.create(Blocks.YELLOW_STAINED_GLASS, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), Items.YELLOW_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.YELLOW_STAINED_GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.YELLOW_STAINED_GLASS).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.YELLOW_STAINED_GLASS_PANE, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), Items.YELLOW_DYE).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_yellow_dye", RecipesProvider.conditionsFromItem(Items.YELLOW_DYE)).offerTo(consumer, "yellow_stained_glass_pane_from_glass_pane");
-        ShapedRecipeJsonFactory.create(Blocks.YELLOW_TERRACOTTA, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), Items.YELLOW_DYE).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
-        ShapelessRecipeJsonFactory.create(Blocks.YELLOW_WOOL).input(Items.YELLOW_DYE).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.DRIED_KELP, 9).input(Blocks.DRIED_KELP_BLOCK).criterion("has_dried_kelp_block", RecipesProvider.conditionsFromItem(Blocks.DRIED_KELP_BLOCK)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Blocks.DRIED_KELP_BLOCK).input(Items.DRIED_KELP, 9).criterion("has_dried_kelp", RecipesProvider.conditionsFromItem(Items.DRIED_KELP)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CONDUIT).input(Character.valueOf('#'), Items.NAUTILUS_SHELL).input(Character.valueOf('X'), Items.HEART_OF_THE_SEA).pattern("###").pattern("#X#").pattern("###").criterion("has_nautilus_core", RecipesProvider.conditionsFromItem(Items.HEART_OF_THE_SEA)).criterion("has_nautilus_shell", RecipesProvider.conditionsFromItem(Items.NAUTILUS_SHELL)).offerTo(consumer);
@@ -943,6 +944,63 @@ implements DataProvider {
 
     private static void method_24486(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
         ShapedRecipeJsonFactory.create(itemConvertible, 2).input(Character.valueOf('#'), itemConvertible2).pattern("###").pattern("###").group("wooden_trapdoor").criterion("has_planks", RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
+    }
+
+    private static void method_24883(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        String string = Registry.ITEM.getId(itemConvertible2.asItem()).getPath();
+        ShapedRecipeJsonFactory.create(itemConvertible, 3).input(Character.valueOf('#'), itemConvertible2).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_" + string, RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
+    }
+
+    private static void method_24884(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        ShapelessRecipeJsonFactory.create(itemConvertible).input(itemConvertible2).input(Blocks.WHITE_WOOL).group("wool").criterion("has_white_wool", RecipesProvider.conditionsFromItem(Blocks.WHITE_WOOL)).offerTo(consumer);
+    }
+
+    private static void method_24885(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        String string = Registry.ITEM.getId(itemConvertible2.asItem()).getPath();
+        ShapedRecipeJsonFactory.create(itemConvertible, 3).input(Character.valueOf('#'), itemConvertible2).pattern("##").group("carpet").criterion("has_" + string, RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
+    }
+
+    private static void method_24886(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        String string = Registry.ITEM.getId(itemConvertible.asItem()).getPath();
+        String string2 = Registry.ITEM.getId(itemConvertible2.asItem()).getPath();
+        ShapedRecipeJsonFactory.create(itemConvertible, 8).input(Character.valueOf('#'), Blocks.WHITE_CARPET).input(Character.valueOf('$'), itemConvertible2).pattern("###").pattern("#$#").pattern("###").group("carpet").criterion("has_white_carpet", RecipesProvider.conditionsFromItem(Blocks.WHITE_CARPET)).criterion("has_" + string2, RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer, string + "_from_white_carpet");
+    }
+
+    private static void method_24887(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        String string = Registry.ITEM.getId(itemConvertible2.asItem()).getPath();
+        ShapedRecipeJsonFactory.create(itemConvertible).input(Character.valueOf('#'), itemConvertible2).input(Character.valueOf('X'), ItemTags.PLANKS).pattern("###").pattern("XXX").group("bed").criterion("has_" + string, RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
+    }
+
+    private static void method_24888(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        String string = Registry.ITEM.getId(itemConvertible.asItem()).getPath();
+        ShapelessRecipeJsonFactory.create(itemConvertible).input(Items.WHITE_BED).input(itemConvertible2).group("dyed_bed").criterion("has_bed", RecipesProvider.conditionsFromItem(Items.WHITE_BED)).offerTo(consumer, string + "_from_white_bed");
+    }
+
+    private static void method_24889(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        String string = Registry.ITEM.getId(itemConvertible2.asItem()).getPath();
+        ShapedRecipeJsonFactory.create(itemConvertible).input(Character.valueOf('#'), itemConvertible2).input(Character.valueOf('|'), Items.STICK).pattern("###").pattern("###").pattern(" | ").group("banner").criterion("has_" + string, RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
+    }
+
+    private static void method_24890(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        ShapedRecipeJsonFactory.create(itemConvertible, 8).input(Character.valueOf('#'), Blocks.GLASS).input(Character.valueOf('X'), itemConvertible2).pattern("###").pattern("#X#").pattern("###").group("stained_glass").criterion("has_glass", RecipesProvider.conditionsFromItem(Blocks.GLASS)).offerTo(consumer);
+    }
+
+    private static void method_24891(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        ShapedRecipeJsonFactory.create(itemConvertible, 16).input(Character.valueOf('#'), itemConvertible2).pattern("###").pattern("###").group("stained_glass_pane").criterion("has_glass", RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
+    }
+
+    private static void method_24892(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        String string = Registry.ITEM.getId(itemConvertible.asItem()).getPath();
+        String string2 = Registry.ITEM.getId(itemConvertible2.asItem()).getPath();
+        ShapedRecipeJsonFactory.create(itemConvertible, 8).input(Character.valueOf('#'), Blocks.GLASS_PANE).input(Character.valueOf('$'), itemConvertible2).pattern("###").pattern("#$#").pattern("###").group("stained_glass_pane").criterion("has_glass_pane", RecipesProvider.conditionsFromItem(Blocks.GLASS_PANE)).criterion("has_" + string2, RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer, string + "_from_glass_pane");
+    }
+
+    private static void method_24893(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        ShapedRecipeJsonFactory.create(itemConvertible, 8).input(Character.valueOf('#'), Blocks.TERRACOTTA).input(Character.valueOf('X'), itemConvertible2).pattern("###").pattern("#X#").pattern("###").group("stained_terracotta").criterion("has_terracotta", RecipesProvider.conditionsFromItem(Blocks.TERRACOTTA)).offerTo(consumer);
+    }
+
+    private static void method_24894(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+        ShapelessRecipeJsonFactory.create(itemConvertible, 8).input(itemConvertible2).input(Blocks.SAND, 4).input(Blocks.GRAVEL, 4).group("concrete_powder").criterion("has_sand", RecipesProvider.conditionsFromItem(Blocks.SAND)).criterion("has_gravel", RecipesProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(consumer);
     }
 
     private static void generateCookingRecipes(Consumer<RecipeJsonProvider> consumer, String string, CookingRecipeSerializer<?> cookingRecipeSerializer, int i) {

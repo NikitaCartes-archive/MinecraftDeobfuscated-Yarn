@@ -61,35 +61,35 @@ public class Structure {
         return this.author;
     }
 
-    public void method_15174(World world, BlockPos blockPos, BlockPos blockPos2, boolean bl, @Nullable Block block) {
-        if (blockPos2.getX() < 1 || blockPos2.getY() < 1 || blockPos2.getZ() < 1) {
+    public void saveFromWorld(World world, BlockPos start, BlockPos size, boolean includeEntities, @Nullable Block ignoredBlock) {
+        if (size.getX() < 1 || size.getY() < 1 || size.getZ() < 1) {
             return;
         }
-        BlockPos blockPos3 = blockPos.add(blockPos2).add(-1, -1, -1);
+        BlockPos blockPos = start.add(size).add(-1, -1, -1);
         ArrayList<StructureBlockInfo> list = Lists.newArrayList();
         ArrayList<StructureBlockInfo> list2 = Lists.newArrayList();
         ArrayList<StructureBlockInfo> list3 = Lists.newArrayList();
-        BlockPos blockPos4 = new BlockPos(Math.min(blockPos.getX(), blockPos3.getX()), Math.min(blockPos.getY(), blockPos3.getY()), Math.min(blockPos.getZ(), blockPos3.getZ()));
-        BlockPos blockPos5 = new BlockPos(Math.max(blockPos.getX(), blockPos3.getX()), Math.max(blockPos.getY(), blockPos3.getY()), Math.max(blockPos.getZ(), blockPos3.getZ()));
-        this.size = blockPos2;
-        for (BlockPos blockPos6 : BlockPos.iterate(blockPos4, blockPos5)) {
-            BlockPos blockPos7 = blockPos6.subtract(blockPos4);
-            BlockState blockState = world.getBlockState(blockPos6);
-            if (block != null && block == blockState.getBlock()) continue;
-            BlockEntity blockEntity = world.getBlockEntity(blockPos6);
+        BlockPos blockPos2 = new BlockPos(Math.min(start.getX(), blockPos.getX()), Math.min(start.getY(), blockPos.getY()), Math.min(start.getZ(), blockPos.getZ()));
+        BlockPos blockPos3 = new BlockPos(Math.max(start.getX(), blockPos.getX()), Math.max(start.getY(), blockPos.getY()), Math.max(start.getZ(), blockPos.getZ()));
+        this.size = size;
+        for (BlockPos blockPos4 : BlockPos.iterate(blockPos2, blockPos3)) {
+            BlockPos blockPos5 = blockPos4.subtract(blockPos2);
+            BlockState blockState = world.getBlockState(blockPos4);
+            if (ignoredBlock != null && ignoredBlock == blockState.getBlock()) continue;
+            BlockEntity blockEntity = world.getBlockEntity(blockPos4);
             if (blockEntity != null) {
                 CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
                 compoundTag.remove("x");
                 compoundTag.remove("y");
                 compoundTag.remove("z");
-                list2.add(new StructureBlockInfo(blockPos7, blockState, compoundTag));
+                list2.add(new StructureBlockInfo(blockPos5, blockState, compoundTag));
                 continue;
             }
-            if (blockState.isFullOpaque(world, blockPos6) || blockState.isFullCube(world, blockPos6)) {
-                list.add(new StructureBlockInfo(blockPos7, blockState, null));
+            if (blockState.isFullOpaque(world, blockPos4) || blockState.isFullCube(world, blockPos4)) {
+                list.add(new StructureBlockInfo(blockPos5, blockState, null));
                 continue;
             }
-            list3.add(new StructureBlockInfo(blockPos7, blockState, null));
+            list3.add(new StructureBlockInfo(blockPos5, blockState, null));
         }
         ArrayList<StructureBlockInfo> list4 = Lists.newArrayList();
         list4.addAll(list);
@@ -97,22 +97,22 @@ public class Structure {
         list4.addAll(list3);
         this.blocks.clear();
         this.blocks.add(list4);
-        if (bl) {
-            this.method_15164(world, blockPos4, blockPos5.add(1, 1, 1));
+        if (includeEntities) {
+            this.addEntitiesFromWorld(world, blockPos2, blockPos3.add(1, 1, 1));
         } else {
             this.entities.clear();
         }
     }
 
-    private void method_15164(World world, BlockPos blockPos, BlockPos blockPos2) {
-        List<Entity> list = world.getEntities(Entity.class, new Box(blockPos, blockPos2), entity -> !(entity instanceof PlayerEntity));
+    private void addEntitiesFromWorld(World world, BlockPos firstCorner, BlockPos secondCorner) {
+        List<Entity> list = world.getEntities(Entity.class, new Box(firstCorner, secondCorner), entity -> !(entity instanceof PlayerEntity));
         this.entities.clear();
         for (Entity entity2 : list) {
-            Vec3d vec3d = new Vec3d(entity2.getX() - (double)blockPos.getX(), entity2.getY() - (double)blockPos.getY(), entity2.getZ() - (double)blockPos.getZ());
+            Vec3d vec3d = new Vec3d(entity2.getX() - (double)firstCorner.getX(), entity2.getY() - (double)firstCorner.getY(), entity2.getZ() - (double)firstCorner.getZ());
             CompoundTag compoundTag = new CompoundTag();
             entity2.saveToTag(compoundTag);
-            BlockPos blockPos3 = entity2 instanceof PaintingEntity ? ((PaintingEntity)entity2).getDecorationBlockPos().subtract(blockPos) : new BlockPos(vec3d);
-            this.entities.add(new StructureEntityInfo(vec3d, blockPos3, compoundTag));
+            BlockPos blockPos = entity2 instanceof PaintingEntity ? ((PaintingEntity)entity2).getDecorationBlockPos().subtract(firstCorner) : new BlockPos(vec3d);
+            this.entities.add(new StructureEntityInfo(vec3d, blockPos, compoundTag));
         }
     }
 
@@ -122,8 +122,8 @@ public class Structure {
 
     public List<StructureBlockInfo> method_15165(BlockPos blockPos, StructurePlacementData structurePlacementData, Block block, boolean bl) {
         ArrayList<StructureBlockInfo> list = Lists.newArrayList();
-        BlockBox blockBox = structurePlacementData.method_15124();
-        for (StructureBlockInfo structureBlockInfo : structurePlacementData.method_15121(this.blocks, blockPos)) {
+        BlockBox blockBox = structurePlacementData.getBoundingBox();
+        for (StructureBlockInfo structureBlockInfo : structurePlacementData.getRandomBlockInfos(this.blocks, blockPos)) {
             BlockState blockState;
             BlockPos blockPos2;
             BlockPos blockPos3 = blockPos2 = bl ? Structure.method_15171(structurePlacementData, structureBlockInfo.pos).add(blockPos) : structureBlockInfo.pos;
@@ -144,7 +144,7 @@ public class Structure {
     }
 
     public void place(IWorld iWorld, BlockPos blockPos, StructurePlacementData structurePlacementData) {
-        structurePlacementData.method_15132();
+        structurePlacementData.calculateBoundingBox();
         this.method_15178(iWorld, blockPos, structurePlacementData);
     }
 
@@ -156,11 +156,11 @@ public class Structure {
         if (this.blocks.isEmpty()) {
             return false;
         }
-        List<StructureBlockInfo> list = structurePlacementData.method_15121(this.blocks, blockPos);
+        List<StructureBlockInfo> list = structurePlacementData.getRandomBlockInfos(this.blocks, blockPos);
         if (list.isEmpty() && (structurePlacementData.shouldIgnoreEntities() || this.entities.isEmpty()) || this.size.getX() < 1 || this.size.getY() < 1 || this.size.getZ() < 1) {
             return false;
         }
-        BlockBox blockBox = structurePlacementData.method_15124();
+        BlockBox blockBox = structurePlacementData.getBoundingBox();
         ArrayList<BlockPos> list2 = Lists.newArrayListWithCapacity(structurePlacementData.shouldPlaceFluids() ? list.size() : 0);
         ArrayList<Pair<BlockPos, CompoundTag>> list3 = Lists.newArrayListWithCapacity(list.size());
         int j = Integer.MAX_VALUE;
@@ -227,7 +227,7 @@ public class Structure {
             }
         }
         if (j <= m) {
-            if (!structurePlacementData.method_16444()) {
+            if (!structurePlacementData.shouldUpdateNeighbors()) {
                 BitSetVoxelSet voxelSet = new BitSetVoxelSet(m - j + 1, n - k + 1, o - l + 1);
                 int n2 = j;
                 int r = k;
@@ -241,7 +241,7 @@ public class Structure {
             for (Pair pair : list3) {
                 BlockEntity blockEntity;
                 BlockPos blockPos4 = (BlockPos)pair.getFirst();
-                if (!structurePlacementData.method_16444()) {
+                if (!structurePlacementData.shouldUpdateNeighbors()) {
                     BlockState blockState2;
                     BlockState blockState3 = iWorld.getBlockState(blockPos4);
                     if (blockState3 != (blockState2 = Block.getRenderingState(blockState3, iWorld, blockPos4))) {
@@ -483,11 +483,11 @@ public class Structure {
             tag.put("palette", new ListTag());
         } else {
             ListTag listTag2;
-            ArrayList<class_3500> list = Lists.newArrayList();
-            class_3500 lv = new class_3500();
-            list.add(lv);
+            ArrayList<Palette> list = Lists.newArrayList();
+            Palette palette = new Palette();
+            list.add(palette);
             for (int i = 1; i < this.blocks.size(); ++i) {
-                list.add(new class_3500());
+                list.add(new Palette());
             }
             ListTag listTag = new ListTag();
             List<StructureBlockInfo> list2 = this.blocks.get(0);
@@ -495,29 +495,29 @@ public class Structure {
                 StructureBlockInfo structureBlockInfo = list2.get(j);
                 CompoundTag compoundTag = new CompoundTag();
                 compoundTag.put("pos", this.createIntListTag(structureBlockInfo.pos.getX(), structureBlockInfo.pos.getY(), structureBlockInfo.pos.getZ()));
-                int k = lv.method_15187(structureBlockInfo.state);
+                int k = palette.getId(structureBlockInfo.state);
                 compoundTag.putInt("state", k);
                 if (structureBlockInfo.tag != null) {
                     compoundTag.put("nbt", structureBlockInfo.tag);
                 }
                 listTag.add(compoundTag);
                 for (int l = 1; l < this.blocks.size(); ++l) {
-                    class_3500 lv2 = (class_3500)list.get(l);
-                    lv2.method_15186(this.blocks.get((int)l).get((int)j).state, k);
+                    Palette palette2 = (Palette)list.get(l);
+                    palette2.set(this.blocks.get((int)l).get((int)j).state, k);
                 }
             }
             tag.put("blocks", listTag);
             if (list.size() == 1) {
                 listTag2 = new ListTag();
-                for (BlockState blockState : lv) {
+                for (BlockState blockState : palette) {
                     listTag2.add(NbtHelper.fromBlockState(blockState));
                 }
                 tag.put("palette", listTag2);
             } else {
                 listTag2 = new ListTag();
-                for (class_3500 lv3 : list) {
+                for (Palette palette3 : list) {
                     ListTag listTag3 = new ListTag();
-                    for (BlockState blockState2 : lv3) {
+                    for (BlockState blockState2 : palette3) {
                         listTag3.add(NbtHelper.fromBlockState(blockState2));
                     }
                     listTag2.add(listTag3);
@@ -572,16 +572,16 @@ public class Structure {
 
     private void method_15177(ListTag listTag, ListTag listTag2) {
         int i;
-        class_3500 lv = new class_3500();
+        Palette palette = new Palette();
         ArrayList<StructureBlockInfo> list = Lists.newArrayList();
         for (i = 0; i < listTag.size(); ++i) {
-            lv.method_15186(NbtHelper.toBlockState(listTag.getCompound(i)), i);
+            palette.set(NbtHelper.toBlockState(listTag.getCompound(i)), i);
         }
         for (i = 0; i < listTag2.size(); ++i) {
             CompoundTag compoundTag = listTag2.getCompound(i);
             ListTag listTag3 = compoundTag.getList("pos", 3);
             BlockPos blockPos = new BlockPos(listTag3.getInt(0), listTag3.getInt(1), listTag3.getInt(2));
-            BlockState blockState = lv.method_15185(compoundTag.getInt("state"));
+            BlockState blockState = palette.getState(compoundTag.getInt("state"));
             CompoundTag compoundTag2 = compoundTag.contains("nbt") ? compoundTag.getCompound("nbt") : null;
             list.add(new StructureBlockInfo(blockPos, blockState, compoundTag2));
         }
@@ -633,37 +633,37 @@ public class Structure {
         }
     }
 
-    static class class_3500
+    static class Palette
     implements Iterable<BlockState> {
-        public static final BlockState field_15590 = Blocks.AIR.getDefaultState();
-        private final IdList<BlockState> field_15591 = new IdList(16);
-        private int field_15592;
+        public static final BlockState AIR = Blocks.AIR.getDefaultState();
+        private final IdList<BlockState> ids = new IdList(16);
+        private int currentIndex;
 
-        private class_3500() {
+        private Palette() {
         }
 
-        public int method_15187(BlockState blockState) {
-            int i = this.field_15591.getId(blockState);
+        public int getId(BlockState state) {
+            int i = this.ids.getId(state);
             if (i == -1) {
-                i = this.field_15592++;
-                this.field_15591.set(blockState, i);
+                i = this.currentIndex++;
+                this.ids.set(state, i);
             }
             return i;
         }
 
         @Nullable
-        public BlockState method_15185(int i) {
-            BlockState blockState = this.field_15591.get(i);
-            return blockState == null ? field_15590 : blockState;
+        public BlockState getState(int id) {
+            BlockState blockState = this.ids.get(id);
+            return blockState == null ? AIR : blockState;
         }
 
         @Override
         public Iterator<BlockState> iterator() {
-            return this.field_15591.iterator();
+            return this.ids.iterator();
         }
 
-        public void method_15186(BlockState blockState, int i) {
-            this.field_15591.set(blockState, i);
+        public void set(BlockState state, int id) {
+            this.ids.set(state, id);
         }
     }
 }
