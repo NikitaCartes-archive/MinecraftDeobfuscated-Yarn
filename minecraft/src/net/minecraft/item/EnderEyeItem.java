@@ -40,7 +40,7 @@ public class EnderEyeItem extends Item {
 			BlockState blockState2 = blockState.with(EndPortalFrameBlock.EYE, Boolean.valueOf(true));
 			Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
 			world.setBlockState(blockPos, blockState2, 2);
-			world.updateHorizontalAdjacent(blockPos, Blocks.END_PORTAL_FRAME);
+			world.updateComparators(blockPos, Blocks.END_PORTAL_FRAME);
 			context.getStack().decrement(1);
 			world.playLevelEvent(1503, blockPos, 0);
 			BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
@@ -69,7 +69,7 @@ public class EnderEyeItem extends Item {
 		} else {
 			user.setCurrentHand(hand);
 			if (world instanceof ServerWorld) {
-				BlockPos blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(user), 100, false);
+				BlockPos blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", user.getSenseCenterPos(), 100, false);
 				if (blockPos != null) {
 					EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
 					enderEyeEntity.setItem(itemStack);
@@ -82,7 +82,7 @@ public class EnderEyeItem extends Item {
 					world.playSound(
 						null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 					);
-					world.playLevelEvent(null, 1003, new BlockPos(user), 0);
+					world.playLevelEvent(null, 1003, user.getSenseCenterPos(), 0);
 					if (!user.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import net.minecraft.data.client.BlockStateDefinitionProvider;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
@@ -57,6 +58,10 @@ public class Main {
 		DataGenerator dataGenerator = new DataGenerator(output, inputs);
 		if (includeClient || includeServer) {
 			dataGenerator.install(new SnbtProvider(dataGenerator).addWriter(new StructureValidatorProvider()));
+		}
+
+		if (includeClient) {
+			dataGenerator.install(new BlockStateDefinitionProvider(dataGenerator));
 		}
 
 		if (includeServer) {

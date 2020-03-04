@@ -139,7 +139,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				}
 			} else {
 				Potion potion = null;
-				if (this.random.nextFloat() < 0.15F && this.isInFluid(FluidTags.WATER) && !this.hasStatusEffect(StatusEffects.WATER_BREATHING)) {
+				if (this.random.nextFloat() < 0.15F && this.isSubmergedIn(FluidTags.WATER) && !this.hasStatusEffect(StatusEffects.WATER_BREATHING)) {
 					potion = Potions.WATER_BREATHING;
 				} else if (this.random.nextFloat() < 0.15F
 					&& (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isFire())
@@ -242,7 +242,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			}
 
 			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this);
-			thrownPotionEntity.setItemStack(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+			thrownPotionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
 			thrownPotionEntity.pitch -= -20.0F;
 			thrownPotionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
 			this.world

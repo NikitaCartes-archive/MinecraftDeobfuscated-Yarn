@@ -44,7 +44,7 @@ public class StructureProcessorRule {
 		return this.tag;
 	}
 
-	public <T> Dynamic<T> method_16764(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> toDynamic(DynamicOps<T> dynamicOps) {
 		T object = dynamicOps.createMap(
 			ImmutableMap.of(
 				dynamicOps.createString("input_predicate"),
@@ -62,7 +62,7 @@ public class StructureProcessorRule {
 			);
 	}
 
-	public static <T> StructureProcessorRule method_16765(Dynamic<T> dynamic) {
+	public static <T> StructureProcessorRule fromDynamic(Dynamic<T> dynamic) {
 		Dynamic<T> dynamic2 = dynamic.get("input_predicate").orElseEmptyMap();
 		Dynamic<T> dynamic3 = dynamic.get("location_predicate").orElseEmptyMap();
 		RuleTest ruleTest = DynamicDeserializer.deserialize(dynamic2, Registry.RULE_TEST, "predicate_type", AlwaysTrueRuleTest.INSTANCE);

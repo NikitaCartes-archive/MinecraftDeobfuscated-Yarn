@@ -1,27 +1,23 @@
 package net.minecraft.item;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class HoeItem extends ToolItem {
-	private final float attackSpeed;
+public class HoeItem extends MiningToolItem {
+	private static final Set<Block> EFFECTIVE_BLOCKS = ImmutableSet.of(Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK, Blocks.HAY_BLOCK);
 	protected static final Map<Block, BlockState> TILLED_BLOCKS = Maps.<Block, BlockState>newHashMap(
 		ImmutableMap.of(
 			Blocks.GRASS_BLOCK,
@@ -35,23 +31,8 @@ public class HoeItem extends ToolItem {
 		)
 	);
 
-	public HoeItem(ToolMaterial material, float attackSpeed, Item.Settings settings) {
-		super(material, settings);
-		this.attackSpeed = attackSpeed;
-	}
-
-	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
-		return state.matches(BlockTags.WART_BLOCKS) ? 15.0F : 1.0F;
-	}
-
-	@Override
-	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-		if (!world.isClient) {
-			stack.damage(1, miner, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
-		}
-
-		return state.matches(BlockTags.WART_BLOCKS) ? true : super.postMine(stack, world, state, pos, miner);
+	protected HoeItem(ToolMaterial material, int attackDamage, float attackSpeed, Item.Settings settings) {
+		super((float)attackDamage, attackSpeed, material, EFFECTIVE_BLOCKS, settings);
 	}
 
 	@Override
@@ -75,28 +56,5 @@ public class HoeItem extends ToolItem {
 		}
 
 		return ActionResult.PASS;
-	}
-
-	@Override
-	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
-		return true;
-	}
-
-	@Override
-	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
-		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
-		if (slot == EquipmentSlot.MAINHAND) {
-			multimap.put(
-				EntityAttributes.ATTACK_DAMAGE.getId(),
-				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Weapon modifier", 0.0, EntityAttributeModifier.Operation.ADDITION)
-			);
-			multimap.put(
-				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Weapon modifier", (double)this.attackSpeed, EntityAttributeModifier.Operation.ADDITION)
-			);
-		}
-
-		return multimap;
 	}
 }

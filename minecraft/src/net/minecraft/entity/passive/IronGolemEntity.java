@@ -284,7 +284,7 @@ public class IronGolemEntity extends GolemEntity {
 
 	@Override
 	public boolean canSpawn(WorldView world) {
-		BlockPos blockPos = new BlockPos(this);
+		BlockPos blockPos = this.getSenseCenterPos();
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = world.getBlockState(blockPos2);
 		if (!blockState.hasSolidTopSurface(world, blockPos2, this)) {

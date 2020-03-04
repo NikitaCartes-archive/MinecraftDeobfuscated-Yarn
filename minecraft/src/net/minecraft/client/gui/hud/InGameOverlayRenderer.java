@@ -37,7 +37,7 @@ public class InGameOverlayRenderer {
 		}
 
 		if (!minecraftClient.player.isSpectator()) {
-			if (minecraftClient.player.isInFluid(FluidTags.WATER)) {
+			if (minecraftClient.player.isSubmergedIn(FluidTags.WATER)) {
 				renderUnderwaterOverlay(minecraftClient, matrixStack);
 			}
 

@@ -106,7 +106,7 @@ public class LightningEntity extends Entity {
 
 	private void spawnFire(int spreadAttempts) {
 		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
-			BlockPos blockPos = new BlockPos(this);
+			BlockPos blockPos = this.getSenseCenterPos();
 			BlockState blockState = AbstractFireBlock.getState(this.world, blockPos);
 			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
 				this.world.setBlockState(blockPos, blockState);

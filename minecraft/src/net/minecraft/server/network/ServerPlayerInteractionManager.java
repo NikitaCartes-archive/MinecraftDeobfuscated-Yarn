@@ -7,13 +7,13 @@ import net.minecraft.block.CommandBlock;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -49,7 +49,7 @@ public class ServerPlayerInteractionManager {
 		gameMode.setAbilitites(this.player.abilities);
 		this.player.sendAbilitiesUpdate();
 		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, this.player));
-		this.world.updatePlayersSleeping();
+		this.world.updateSleepingPlayers();
 	}
 
 	public GameMode getGameMode() {
@@ -126,12 +126,7 @@ public class ServerPlayerInteractionManager {
 				}
 
 				if (this.isCreative()) {
-					if (!this.world.extinguishFire(null, pos, direction)) {
-						this.finishMining(pos, action, "creative destroy");
-					} else {
-						this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, true, "fire put out"));
-					}
-
+					this.finishMining(pos, action, "creative destroy");
 					return;
 				}
 
@@ -140,7 +135,6 @@ public class ServerPlayerInteractionManager {
 					return;
 				}
 
-				this.world.extinguishFire(null, pos, direction);
 				this.startMiningTime = this.tickCounter;
 				float h = 1.0F;
 				BlockState blockState = this.world.getBlockState(pos);
@@ -284,7 +278,7 @@ public class ServerPlayerInteractionManager {
 				}
 
 				if (!player.isUsingItem()) {
-					((ServerPlayerEntity)player).openContainer(player.playerContainer);
+					((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
 				}
 
 				return typedActionResult.getResult();
@@ -296,9 +290,9 @@ public class ServerPlayerInteractionManager {
 		BlockPos blockPos = hitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (this.gameMode == GameMode.SPECTATOR) {
-			NameableContainerFactory nameableContainerFactory = blockState.createContainerFactory(world, blockPos);
-			if (nameableContainerFactory != null) {
-				player.openContainer(nameableContainerFactory);
+			NameableScreenHandlerFactory nameableScreenHandlerFactory = blockState.createContainerFactory(world, blockPos);
+			if (nameableScreenHandlerFactory != null) {
+				player.openHandledScreen(nameableScreenHandlerFactory);
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.PASS;

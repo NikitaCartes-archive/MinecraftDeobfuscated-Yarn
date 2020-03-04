@@ -8,9 +8,9 @@ public class RandomBooleanFeatureConfig implements FeatureConfig {
 	public final ConfiguredFeature<?, ?> featureTrue;
 	public final ConfiguredFeature<?, ?> featureFalse;
 
-	public RandomBooleanFeatureConfig(ConfiguredFeature<?, ?> configuredFeature, ConfiguredFeature<?, ?> configuredFeature2) {
-		this.featureTrue = configuredFeature;
-		this.featureFalse = configuredFeature2;
+	public RandomBooleanFeatureConfig(ConfiguredFeature<?, ?> featureTrue, ConfiguredFeature<?, ?> featureFalse) {
+		this.featureTrue = featureTrue;
+		this.featureFalse = featureFalse;
 	}
 
 	@Override

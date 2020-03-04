@@ -69,7 +69,7 @@ public class WanderingTraderManager {
 		} else if (this.random.nextInt(10) != 0) {
 			return false;
 		} else {
-			BlockPos blockPos = playerEntity.getBlockPos();
+			BlockPos blockPos = playerEntity.getSenseCenterPos();
 			int i = 48;
 			PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getPosition(
@@ -101,7 +101,7 @@ public class WanderingTraderManager {
 	}
 
 	private void method_18016(WanderingTraderEntity wanderingTraderEntity, int i) {
-		BlockPos blockPos = this.method_18017(new BlockPos(wanderingTraderEntity), i);
+		BlockPos blockPos = this.method_18017(wanderingTraderEntity.getSenseCenterPos(), i);
 		if (blockPos != null) {
 			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(this.world, null, null, null, blockPos, SpawnType.EVENT, false, false);
 			if (traderLlamaEntity != null) {

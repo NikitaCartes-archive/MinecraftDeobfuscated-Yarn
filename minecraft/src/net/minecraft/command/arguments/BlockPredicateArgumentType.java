@@ -98,8 +98,8 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 			this.nbt = nbt;
 		}
 
-		public boolean test(CachedBlockPosition pos) {
-			BlockState blockState = pos.getBlockState();
+		public boolean test(CachedBlockPosition cachedBlockPosition) {
+			BlockState blockState = cachedBlockPosition.getBlockState();
 			if (blockState.getBlock() != this.state.getBlock()) {
 				return false;
 			} else {
@@ -112,7 +112,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 				if (this.nbt == null) {
 					return true;
 				} else {
-					BlockEntity blockEntity = pos.getBlockEntity();
+					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
 					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
 				}
 			}

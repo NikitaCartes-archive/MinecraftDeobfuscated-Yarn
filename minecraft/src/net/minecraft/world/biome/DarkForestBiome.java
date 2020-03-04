@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
@@ -26,7 +27,7 @@ public final class DarkForestBiome extends Biome {
 				.scale(0.2F)
 				.temperature(0.7F)
 				.downfall(0.8F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(SoundEvents.AMBIENT_CAVE).build())
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.WOODLAND_MANSION.configure(FeatureConfig.DEFAULT));

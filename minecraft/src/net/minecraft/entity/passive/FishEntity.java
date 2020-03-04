@@ -38,8 +38,8 @@ import net.minecraft.world.World;
 public abstract class FishEntity extends WaterCreatureEntity {
 	private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(FishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-	public FishEntity(EntityType<? extends FishEntity> type, World world) {
-		super(type, world);
+	public FishEntity(EntityType<? extends FishEntity> entityType, World world) {
+		super(entityType, world);
 		this.moveControl = new FishEntity.FishMoveControl(this);
 	}
 
@@ -194,7 +194,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 		@Override
 		public void tick() {
-			if (this.fish.isInFluid(FluidTags.WATER)) {
+			if (this.fish.isSubmergedIn(FluidTags.WATER)) {
 				this.fish.setVelocity(this.fish.getVelocity().add(0.0, 0.005, 0.0));
 			}
 

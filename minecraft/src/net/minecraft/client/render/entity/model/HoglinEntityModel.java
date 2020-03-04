@@ -81,18 +81,9 @@ public class HoglinEntityModel extends AnimalModel<HoglinEntity> {
 		this.rightEar.roll = (float) (-Math.PI * 2.0 / 9.0) - g * MathHelper.sin(f);
 		this.leftEar.roll = (float) (Math.PI * 2.0 / 9.0) + g * MathHelper.sin(f);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
-		int k = hoglinEntity.getMovementCooldownTicks();
-		if (k > 0) {
-			int l = 10 - k;
-			float m = MathHelper.method_24504((float)l, 10.0F);
-			float n = (-m + 1.0F) / 2.0F;
-			float o = -1.2217305F * n;
-			this.head.pitch = 0.87266463F + o;
-		} else {
-			this.head.pitch = 0.87266463F;
-		}
-
-		float p = 1.2F;
+		float k = 1.0F - (float)MathHelper.abs(10 - 2 * hoglinEntity.getMovementCooldownTicks()) / 10.0F;
+		this.head.pitch = MathHelper.lerp(k, 0.87266463F, (float) (-Math.PI / 9));
+		float l = 1.2F;
 		this.field_22231.pitch = MathHelper.cos(f) * 1.2F * g;
 		this.field_22232.pitch = MathHelper.cos(f + (float) Math.PI) * 1.2F * g;
 		this.field_22233.pitch = this.field_22232.pitch;

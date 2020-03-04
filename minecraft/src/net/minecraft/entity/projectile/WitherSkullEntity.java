@@ -55,37 +55,43 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
+	protected void onEntityHit(EntityHitResult entityHitResult) {
+		super.onEntityHit(entityHitResult);
+		if (!this.world.isClient) {
+			Entity entity = entityHitResult.getEntity();
+			Entity entity2 = this.getOwner();
+			if (entity2 instanceof LivingEntity) {
+				LivingEntity livingEntity = (LivingEntity)entity2;
+				if (entity.damage(DamageSource.mob(livingEntity), 8.0F)) {
+					if (entity.isAlive()) {
+						this.dealDamage(livingEntity, entity);
+					} else {
+						livingEntity.heal(5.0F);
+					}
+				}
+			} else {
+				entity.damage(DamageSource.MAGIC, 5.0F);
+			}
+
+			if (entity instanceof LivingEntity) {
+				int i = 0;
+				if (this.world.getDifficulty() == Difficulty.NORMAL) {
+					i = 10;
+				} else if (this.world.getDifficulty() == Difficulty.HARD) {
+					i = 40;
+				}
+
+				if (i > 0) {
+					((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1));
+				}
+			}
+		}
+	}
+
+	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
-				Entity entity = ((EntityHitResult)hitResult).getEntity();
-				if (this.owner != null) {
-					if (entity.damage(DamageSource.mob(this.owner), 8.0F)) {
-						if (entity.isAlive()) {
-							this.dealDamage(this.owner, entity);
-						} else {
-							this.owner.heal(5.0F);
-						}
-					}
-				} else {
-					entity.damage(DamageSource.MAGIC, 5.0F);
-				}
-
-				if (entity instanceof LivingEntity) {
-					int i = 0;
-					if (this.world.getDifficulty() == Difficulty.NORMAL) {
-						i = 10;
-					} else if (this.world.getDifficulty() == Difficulty.HARD) {
-						i = 40;
-					}
-
-					if (i > 0) {
-						((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1));
-					}
-				}
-			}
-
 			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)
 				? Explosion.DestructionType.DESTROY
 				: Explosion.DestructionType.NONE;

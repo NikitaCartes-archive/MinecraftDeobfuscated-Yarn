@@ -36,7 +36,7 @@ public class PortalForcer {
 		Vec3d vec3d = entity.getLastNetherPortalDirectionVector();
 		Direction direction = entity.getLastNetherPortalDirection();
 		BlockPattern.TeleportTarget teleportTarget = this.getPortal(
-			new BlockPos(entity), entity.getVelocity(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity
+			entity.getSenseCenterPos(), entity.getVelocity(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity
 		);
 		if (teleportTarget == null) {
 			return false;

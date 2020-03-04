@@ -1,12 +1,16 @@
 package com.mojang.realmsclient.gui.screens;
 
+import com.google.common.collect.Sets;
 import com.mojang.realmsclient.exception.RealmsDefaultUncaughtExceptionHandler;
 import com.mojang.realmsclient.gui.LongRunningTask;
-import com.mojang.realmsclient.gui.RealmsConstants;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.realms.Realms;
-import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsScreen;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,10 +18,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final int BUTTON_CANCEL_ID = 666;
-	private final int BUTTON_BACK_ID = 667;
-	private final RealmsScreen lastScreen;
-	private final LongRunningTask taskThread;
+	private final Screen lastScreen;
 	private volatile String title = "";
 	private volatile boolean error;
 	private volatile String errorMessage;
@@ -48,15 +49,11 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 		"▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _"
 	};
 
-	public RealmsLongRunningMcoTaskScreen(RealmsScreen lastScreen, LongRunningTask task) {
-		this.lastScreen = lastScreen;
+	public RealmsLongRunningMcoTaskScreen(Screen screen, LongRunningTask task) {
+		this.lastScreen = screen;
 		this.task = task;
 		task.setScreen(this);
-		this.taskThread = task;
-	}
-
-	public void start() {
-		Thread thread = new Thread(this.taskThread, "Realms-long-running-task");
+		Thread thread = new Thread(task, "Realms-long-running-task");
 		thread.setUncaughtExceptionHandler(new RealmsDefaultUncaughtExceptionHandler(LOGGER));
 		thread.start();
 	}
@@ -70,58 +67,56 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int eventKey, int scancode, int mods) {
-		if (eventKey == 256) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == 256) {
 			this.cancelOrBackButtonClicked();
 			return true;
 		} else {
-			return super.keyPressed(eventKey, scancode, mods);
+			return super.keyPressed(keyCode, scanCode, modifiers);
 		}
 	}
 
 	@Override
 	public void init() {
 		this.task.init();
-		this.buttonsAdd(new RealmsButton(666, this.width() / 2 - 106, RealmsConstants.row(12), 212, 20, getLocalizedString("gui.cancel")) {
-			@Override
-			public void onPress() {
-				RealmsLongRunningMcoTaskScreen.this.cancelOrBackButtonClicked();
-			}
-		});
+		this.addButton(new ButtonWidget(this.width / 2 - 106, row(12), 212, 20, I18n.translate("gui.cancel"), buttonWidget -> this.cancelOrBackButtonClicked()));
 	}
 
 	private void cancelOrBackButtonClicked() {
 		this.aborted = true;
 		this.task.abortTask();
-		Realms.setScreen(this.lastScreen);
+		this.client.openScreen(this.lastScreen);
 	}
 
 	@Override
-	public void render(int xm, int ym, float a) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.drawCenteredString(this.title, this.width() / 2, RealmsConstants.row(3), 16777215);
+		this.drawCenteredString(this.textRenderer, this.title, this.width / 2, row(3), 16777215);
 		if (!this.error) {
-			this.drawCenteredString(symbols[this.animTicks % symbols.length], this.width() / 2, RealmsConstants.row(8), 8421504);
+			this.drawCenteredString(this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, row(8), 8421504);
 		}
 
 		if (this.error) {
-			this.drawCenteredString(this.errorMessage, this.width() / 2, RealmsConstants.row(8), 16711680);
+			this.drawCenteredString(this.textRenderer, this.errorMessage, this.width / 2, row(8), 16711680);
 		}
 
-		super.render(xm, ym, a);
+		super.render(mouseX, mouseY, delta);
 	}
 
 	public void method_21290(String string) {
 		this.error = true;
 		this.errorMessage = string;
 		Realms.narrateNow(string);
-		this.buttonsClear();
-		this.buttonsAdd(new RealmsButton(667, this.width() / 2 - 106, this.height() / 4 + 120 + 12, getLocalizedString("gui.back")) {
-			@Override
-			public void onPress() {
-				RealmsLongRunningMcoTaskScreen.this.cancelOrBackButtonClicked();
-			}
-		});
+		this.method_25166();
+		this.addButton(
+			new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.back"), buttonWidget -> this.cancelOrBackButtonClicked())
+		);
+	}
+
+	public void method_25166() {
+		Set<Element> set = Sets.<Element>newHashSet(this.buttons);
+		this.children.removeIf(set::contains);
+		this.buttons.clear();
 	}
 
 	public void setTitle(String title) {

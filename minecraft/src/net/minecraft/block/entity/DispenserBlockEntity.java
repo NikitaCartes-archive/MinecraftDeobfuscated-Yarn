@@ -1,12 +1,12 @@
 package net.minecraft.block.entity;
 
 import java.util.Random;
-import net.minecraft.container.Container;
-import net.minecraft.container.Generic3x3Container;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.Generic3x3ContainerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
@@ -88,7 +88,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return new Generic3x3Container(i, playerInventory, this);
+	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
+		return new Generic3x3ContainerScreenHandler(i, playerInventory, this);
 	}
 }

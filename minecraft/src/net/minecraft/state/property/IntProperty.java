@@ -32,11 +32,11 @@ public class IntProperty extends AbstractProperty<Integer> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o instanceof IntProperty && super.equals(o)) {
-			IntProperty intProperty = (IntProperty)o;
+		} else if (object instanceof IntProperty && super.equals(object)) {
+			IntProperty intProperty = (IntProperty)object;
 			return this.values.equals(intProperty.values);
 		} else {
 			return false;

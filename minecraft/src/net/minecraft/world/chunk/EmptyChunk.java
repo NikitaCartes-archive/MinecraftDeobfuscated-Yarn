@@ -35,7 +35,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+	public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
 		return null;
 	}
 

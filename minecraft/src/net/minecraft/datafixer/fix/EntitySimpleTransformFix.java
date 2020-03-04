@@ -7,8 +7,8 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.util.Pair;
 
 public abstract class EntitySimpleTransformFix extends EntityTransformFix {
-	public EntitySimpleTransformFix(String name, Schema oldSchema, boolean bl) {
-		super(name, oldSchema, bl);
+	public EntitySimpleTransformFix(String string, Schema schema, boolean bl) {
+		super(string, schema, bl);
 	}
 
 	@Override

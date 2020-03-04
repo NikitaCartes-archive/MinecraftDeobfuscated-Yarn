@@ -59,8 +59,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		}
 	};
 
-	protected AbstractSkeletonEntity(EntityType<? extends AbstractSkeletonEntity> type, World world) {
-		super(type, world);
+	protected AbstractSkeletonEntity(EntityType<? extends AbstractSkeletonEntity> entityType, World world) {
+		super(entityType, world);
 		this.updateAttackType();
 	}
 
@@ -189,8 +189,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.world.spawnEntity(projectileEntity);
 	}
 
-	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
-		return ProjectileUtil.createArrowProjectile(this, arrow, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
+		return ProjectileUtil.createArrowProjectile(this, arrow, damageModifier);
 	}
 
 	@Override

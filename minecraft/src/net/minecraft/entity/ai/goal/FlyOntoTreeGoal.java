@@ -33,7 +33,7 @@ public class FlyOntoTreeGoal extends WanderAroundFarGoal {
 
 	@Nullable
 	private Vec3d getTreeTarget() {
-		BlockPos blockPos = new BlockPos(this.mob);
+		BlockPos blockPos = this.mob.getSenseCenterPos();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
@@ -46,10 +46,10 @@ public class FlyOntoTreeGoal extends WanderAroundFarGoal {
 			MathHelper.floor(this.mob.getZ() + 3.0)
 		)) {
 			if (!blockPos.equals(blockPos2)) {
-				Block block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock();
+				Block block = this.mob.world.getBlockState(mutable2.move(blockPos2, Direction.DOWN)).getBlock();
 				boolean bl = block instanceof LeavesBlock || block.isIn(BlockTags.LOGS);
-				if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) {
-					return new Vec3d(blockPos2);
+				if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.move(blockPos2, Direction.UP))) {
+					return Vec3d.method_24955(blockPos2);
 				}
 			}
 		}

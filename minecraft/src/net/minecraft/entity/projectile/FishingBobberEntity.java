@@ -144,7 +144,7 @@ public class FishingBobberEntity extends Entity {
 			}
 
 			float f = 0.0F;
-			BlockPos blockPos = new BlockPos(this);
+			BlockPos blockPos = this.getSenseCenterPos();
 			FluidState fluidState = this.world.getFluidState(blockPos);
 			if (fluidState.matches(FluidTags.WATER)) {
 				f = fluidState.getHeight(this.world, blockPos);
@@ -381,7 +381,7 @@ public class FishingBobberEntity extends Entity {
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.hookCountdown > 0) {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-					.put(LootContextParameters.POSITION, new BlockPos(this))
+					.put(LootContextParameters.POSITION, this.getSenseCenterPos())
 					.put(LootContextParameters.TOOL, usedItem)
 					.setRandom(this.random)
 					.setLuck((float)this.luckOfTheSeaLevel + this.owner.getLuck());

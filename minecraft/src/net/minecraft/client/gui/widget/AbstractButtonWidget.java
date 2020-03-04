@@ -22,24 +22,18 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public abstract class AbstractButtonWidget extends DrawableHelper implements Drawable, Element {
 	public static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
-	private static final int NARRATE_DELAY_MOUSE = 750;
-	private static final int NARRATE_DELAY_FOCUS = 200;
 	protected int width;
 	protected int height;
 	public int x;
 	public int y;
 	private String message;
 	private boolean wasHovered;
-	protected boolean isHovered;
+	protected boolean hovered;
 	public boolean active = true;
 	public boolean visible = true;
 	protected float alpha = 1.0F;
 	protected long nextNarration = Long.MAX_VALUE;
 	private boolean focused;
-
-	public AbstractButtonWidget(int x, int y, String text) {
-		this(x, y, 200, 20, text);
-	}
 
 	public AbstractButtonWidget(int x, int y, int width, int height, String message) {
 		this.x = x;
@@ -47,6 +41,10 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		this.width = width;
 		this.height = height;
 		this.message = message;
+	}
+
+	public int getHeight() {
+		return this.height;
 	}
 
 	protected int getYImage(boolean isHovered) {
@@ -63,7 +61,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		if (this.visible) {
-			this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			if (this.wasHovered != this.isHovered()) {
 				if (this.isHovered()) {
 					if (this.focused) {
@@ -157,8 +155,8 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		}
 	}
 
-	protected boolean isValidClickButton(int i) {
-		return i == 0;
+	protected boolean isValidClickButton(int button) {
+		return button == 0;
 	}
 
 	@Override
@@ -181,11 +179,11 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	public boolean isHovered() {
-		return this.isHovered || this.focused;
+		return this.hovered || this.focused;
 	}
 
 	@Override
-	public boolean changeFocus(boolean bl) {
+	public boolean changeFocus(boolean lookForwards) {
 		if (this.active && this.visible) {
 			this.focused = !this.focused;
 			this.onFocusedChanged(this.focused);
@@ -235,8 +233,8 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		this.message = value;
 	}
 
-	public void queueNarration(int i) {
-		this.nextNarration = Util.getMeasuringTimeMs() + (long)i;
+	public void queueNarration(int delay) {
+		this.nextNarration = Util.getMeasuringTimeMs() + (long)delay;
 	}
 
 	public String getMessage() {

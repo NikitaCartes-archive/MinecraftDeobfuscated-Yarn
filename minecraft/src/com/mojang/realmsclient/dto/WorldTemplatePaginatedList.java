@@ -24,15 +24,11 @@ public class WorldTemplatePaginatedList extends ValueObject {
 	public WorldTemplatePaginatedList() {
 	}
 
-	public WorldTemplatePaginatedList(int i) {
+	public WorldTemplatePaginatedList(int size) {
 		this.templates = Collections.emptyList();
 		this.page = 0;
-		this.size = i;
+		this.size = size;
 		this.total = -1;
-	}
-
-	public boolean isLastPage() {
-		return this.page * this.size >= this.total && this.page > 0 && this.total > 0 && this.size > 0;
 	}
 
 	public static WorldTemplatePaginatedList parse(String json) {

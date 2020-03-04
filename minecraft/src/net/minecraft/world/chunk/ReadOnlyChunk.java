@@ -54,7 +54,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+	public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
 		return null;
 	}
 
@@ -188,7 +188,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void method_22405(BiomeArray biomeArray) {
+	public void setBiomes(BiomeArray biomeArray) {
 	}
 
 	@Override

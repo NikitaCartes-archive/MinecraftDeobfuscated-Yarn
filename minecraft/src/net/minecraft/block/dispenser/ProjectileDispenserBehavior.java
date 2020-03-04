@@ -1,7 +1,6 @@
 package net.minecraft.block.dispenser;
 
 import net.minecraft.block.DispenserBlock;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPointer;
@@ -19,7 +18,7 @@ public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior 
 		projectile.setVelocity(
 			(double)direction.getOffsetX(), (double)((float)direction.getOffsetY() + 0.1F), (double)direction.getOffsetZ(), this.getForce(), this.getVariation()
 		);
-		world.spawnEntity((Entity)projectile);
+		world.spawnEntity(projectile);
 		stack.decrement(1);
 		return stack;
 	}

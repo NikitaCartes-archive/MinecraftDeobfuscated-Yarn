@@ -63,17 +63,17 @@ public abstract class StructurePoolElement {
 		}
 	}
 
-	protected abstract <T> Dynamic<T> method_16625(DynamicOps<T> dynamicOps);
+	protected abstract <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps);
 
-	public <T> Dynamic<T> method_16755(DynamicOps<T> dynamicOps) {
-		T object = this.method_16625(dynamicOps).getValue();
+	public <T> Dynamic<T> toDynamic(DynamicOps<T> dynamicOps) {
+		T object = this.rawToDynamic(dynamicOps).getValue();
 		T object2 = dynamicOps.mergeInto(
 			object, dynamicOps.createString("element_type"), dynamicOps.createString(Registry.STRUCTURE_POOL_ELEMENT.getId(this.getType()).toString())
 		);
 		return new Dynamic<>(dynamicOps, dynamicOps.mergeInto(object2, dynamicOps.createString("projection"), dynamicOps.createString(this.projection.getId())));
 	}
 
-	public int method_19308() {
+	public int getGroundLevelDelta() {
 		return 1;
 	}
 }

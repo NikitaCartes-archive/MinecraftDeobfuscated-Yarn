@@ -42,7 +42,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.minecraft.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.enableRepeatEvents(true);
 		this.addButton(
 			new ButtonWidget(
 				(this.width - 200) / 2,
@@ -70,10 +70,10 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.children.add(this.biomeSelectionList);
 		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.parent.generatorOptionsTag = this.getGeneratorTag();
-			this.minecraft.openScreen(this.parent);
+			this.client.openScreen(this.parent);
 		}));
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent))
 		);
 		this.initListSelectLogic();
 		this.refreshConfirmButton();
@@ -140,9 +140,9 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderDirtBackground(0);
 		this.biomeSelectionList.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
-		this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
-		this.drawCenteredString(this.font, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 16777215);
+		this.drawCenteredString(this.textRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
+		this.drawCenteredString(this.textRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
 		super.render(mouseX, mouseY, delta);
 	}
 
@@ -150,7 +150,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	class BuffetBiomesListWidget extends AlwaysSelectedEntryListWidget<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
 		private BuffetBiomesListWidget() {
 			super(
-				CustomizeBuffetLevelScreen.this.minecraft,
+				CustomizeBuffetLevelScreen.this.client,
 				CustomizeBuffetLevelScreen.this.width,
 				CustomizeBuffetLevelScreen.this.height,
 				80,
@@ -177,8 +177,8 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		}
 
 		@Override
-		protected void moveSelection(int i) {
-			super.moveSelection(i);
+		protected void moveSelection(int amount) {
+			super.moveSelection(amount);
 			CustomizeBuffetLevelScreen.this.refreshConfirmButton();
 		}
 
@@ -191,8 +191,10 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			}
 
 			@Override
-			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				BuffetBiomesListWidget.this.drawString(CustomizeBuffetLevelScreen.this.font, Registry.BIOME.get(this.biome).getName().getString(), k + 5, j + 2, 16777215);
+			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+				BuffetBiomesListWidget.this.drawString(
+					CustomizeBuffetLevelScreen.this.textRenderer, Registry.BIOME.get(this.biome).getName().getString(), x + 5, y + 2, 16777215
+				);
 			}
 
 			@Override

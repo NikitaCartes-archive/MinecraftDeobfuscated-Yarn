@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -212,10 +212,10 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
-		if (entity.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES)) {
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
+		if (projectile.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES)) {
 			BlockPos blockPos = hitResult.getBlockPos();
-			world.breakBlock(blockPos, true, entity);
+			world.breakBlock(blockPos, true, projectile);
 		}
 	}
 }

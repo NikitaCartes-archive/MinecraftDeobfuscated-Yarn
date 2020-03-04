@@ -19,24 +19,24 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 		this.chance = chance;
 	}
 
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> serialize(DynamicOps<T> dynamic) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			dynamic,
+			dynamic.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("name"),
-					dynamicOps.createString(Registry.FEATURE.getId(this.feature.feature).toString()),
-					dynamicOps.createString("config"),
-					this.feature.config.serialize(dynamicOps).getValue(),
-					dynamicOps.createString("chance"),
-					dynamicOps.createFloat(this.chance)
+					dynamic.createString("name"),
+					dynamic.createString(Registry.FEATURE.getId(this.feature.feature).toString()),
+					dynamic.createString("config"),
+					this.feature.config.serialize(dynamic).getValue(),
+					dynamic.createString("chance"),
+					dynamic.createFloat(this.chance)
 				)
 			)
 		);
 	}
 
-	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
-		return this.feature.generate(world, chunkGenerator, random, blockPos);
+	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos pos) {
+		return this.feature.generate(world, chunkGenerator, random, pos);
 	}
 
 	public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {

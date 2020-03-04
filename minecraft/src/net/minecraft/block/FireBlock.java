@@ -5,6 +5,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
+import net.minecraft.entity.EntityContext;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -13,6 +15,8 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
@@ -52,6 +56,37 @@ public class FireBlock extends AbstractFireBlock {
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
 		return this.canPlaceAt(state, world, pos) ? this.method_24855(world, pos, state.get(AGE)) : Blocks.AIR.getDefaultState();
+	}
+
+	@Override
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+		VoxelShape voxelShape = VoxelShapes.empty();
+		if (state.get(UP)) {
+			voxelShape = field_22497;
+		}
+
+		if (state.get(WEST)) {
+			voxelShape = VoxelShapes.union(voxelShape, field_22499);
+		}
+
+		if (state.get(EAST)) {
+			voxelShape = VoxelShapes.union(voxelShape, field_22500);
+		}
+
+		if (state.get(NORTH)) {
+			voxelShape = VoxelShapes.union(voxelShape, field_22501);
+		}
+
+		if (state.get(SOUTH)) {
+			voxelShape = VoxelShapes.union(voxelShape, field_22502);
+		}
+
+		return voxelShape == VoxelShapes.empty() ? field_22498 : voxelShape;
+	}
+
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return this.getStateForPosition(ctx.getWorld(), ctx.getBlockPos());
 	}
 
 	protected BlockState getStateForPosition(BlockView world, BlockPos pos) {
@@ -139,7 +174,7 @@ public class FireBlock extends AbstractFireBlock {
 									o += (n - 1) * 100;
 								}
 
-								mutable.set(pos).setOffset(l, n, m);
+								mutable.setOffset(pos, l, n, m);
 								int p = this.getBurnChance(world, mutable);
 								if (p > 0) {
 									int q = (p + 40 + world.getDifficulty().getId() * 7) / (i + 30);
@@ -346,6 +381,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.VINE, 15, 100);
 		fireBlock.registerFlammableBlock(Blocks.COAL_BLOCK, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.HAY_BLOCK, 60, 20);
+		fireBlock.registerFlammableBlock(Blocks.TARGET, 15, 20);
 		fireBlock.registerFlammableBlock(Blocks.WHITE_CARPET, 60, 20);
 		fireBlock.registerFlammableBlock(Blocks.ORANGE_CARPET, 60, 20);
 		fireBlock.registerFlammableBlock(Blocks.MAGENTA_CARPET, 60, 20);

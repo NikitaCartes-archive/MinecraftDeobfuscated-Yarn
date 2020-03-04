@@ -30,11 +30,11 @@ public class BooleanProperty extends AbstractProperty<Boolean> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o instanceof BooleanProperty && super.equals(o)) {
-			BooleanProperty booleanProperty = (BooleanProperty)o;
+		} else if (object instanceof BooleanProperty && super.equals(object)) {
+			BooleanProperty booleanProperty = (BooleanProperty)object;
 			return this.values.equals(booleanProperty.values);
 		} else {
 			return false;

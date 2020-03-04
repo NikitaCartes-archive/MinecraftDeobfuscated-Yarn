@@ -55,7 +55,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
+				this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(this.parent)
 			)
 		);
 	}
@@ -63,7 +63,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		super.render(mouseX, mouseY, delta);
 	}
 

@@ -17,8 +17,8 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerHeadFeatureRenderer extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-	public ShulkerHeadFeatureRenderer(FeatureRendererContext<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> context) {
-		super(context);
+	public ShulkerHeadFeatureRenderer(FeatureRendererContext<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

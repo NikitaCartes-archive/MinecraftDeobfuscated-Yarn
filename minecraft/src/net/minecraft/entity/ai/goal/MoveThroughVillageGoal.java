@@ -47,7 +47,7 @@ public class MoveThroughVillageGoal extends Goal {
 			return false;
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.mob.world;
-			BlockPos blockPos = new BlockPos(this.mob);
+			BlockPos blockPos = this.mob.getSenseCenterPos();
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
@@ -80,7 +80,7 @@ public class MoveThroughVillageGoal extends Goal {
 						this.targetPath = mobNavigation.findPathTo(this.target, 0);
 						mobNavigation.setCanPathThroughDoors(bl);
 						if (this.targetPath == null) {
-							Vec3d vec3d2 = TargetFinder.findTargetTowards(this.mob, 10, 7, new Vec3d(this.target));
+							Vec3d vec3d2 = TargetFinder.findTargetTowards(this.mob, 10, 7, Vec3d.method_24955(this.target));
 							if (vec3d2 == null) {
 								return false;
 							}

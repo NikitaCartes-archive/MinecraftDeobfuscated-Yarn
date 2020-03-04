@@ -5,7 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -37,11 +37,11 @@ public class EndCrystalItem extends Item {
 					return ActionResult.FAIL;
 				} else {
 					if (!world.isClient) {
-						EnderCrystalEntity enderCrystalEntity = new EnderCrystalEntity(world, d + 0.5, e, f + 0.5);
-						enderCrystalEntity.setShowBottom(false);
-						world.spawnEntity(enderCrystalEntity);
+						EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, d + 0.5, e, f + 0.5);
+						endCrystalEntity.setShowBottom(false);
+						world.spawnEntity(endCrystalEntity);
 						if (world.dimension instanceof TheEndDimension) {
-							EnderDragonFight enderDragonFight = ((TheEndDimension)world.dimension).method_12513();
+							EnderDragonFight enderDragonFight = ((TheEndDimension)world.dimension).getEnderDragonFight();
 							enderDragonFight.respawnDragon();
 						}
 					}

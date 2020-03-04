@@ -133,8 +133,9 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.BIRCH_LOGS).add(Blocks.BIRCH_LOG, Blocks.BIRCH_WOOD, Blocks.STRIPPED_BIRCH_LOG, Blocks.STRIPPED_BIRCH_WOOD);
 		this.getOrCreateTagBuilder(BlockTags.JUNGLE_LOGS).add(Blocks.JUNGLE_LOG, Blocks.JUNGLE_WOOD, Blocks.STRIPPED_JUNGLE_LOG, Blocks.STRIPPED_JUNGLE_WOOD);
 		this.getOrCreateTagBuilder(BlockTags.SPRUCE_LOGS).add(Blocks.SPRUCE_LOG, Blocks.SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_WOOD);
-		this.getOrCreateTagBuilder(BlockTags.CRIMSON_STEMS).add(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM);
-		this.getOrCreateTagBuilder(BlockTags.WARPED_STEMS).add(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM);
+		this.getOrCreateTagBuilder(BlockTags.CRIMSON_STEMS)
+			.add(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM, Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE);
+		this.getOrCreateTagBuilder(BlockTags.WARPED_STEMS).add(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM, Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE);
 		this.getOrCreateTagBuilder(BlockTags.LOGS)
 			.add(BlockTags.DARK_OAK_LOGS)
 			.add(BlockTags.OAK_LOGS)
@@ -396,15 +397,8 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.TRAPDOORS).add(BlockTags.WOODEN_TRAPDOORS).add(Blocks.IRON_TRAPDOOR);
 		this.getOrCreateTagBuilder(BlockTags.UNDERWATER_BONEMEALS).add(Blocks.SEAGRASS).add(BlockTags.CORALS).add(BlockTags.WALL_CORALS);
 		this.getOrCreateTagBuilder(BlockTags.BAMBOO_PLANTABLE_ON)
-			.add(Blocks.BAMBOO)
-			.add(Blocks.BAMBOO_SAPLING)
-			.add(Blocks.GRAVEL)
 			.add(BlockTags.SAND)
-			.add(Blocks.DIRT)
-			.add(Blocks.GRASS_BLOCK)
-			.add(Blocks.PODZOL)
-			.add(Blocks.COARSE_DIRT)
-			.add(Blocks.MYCELIUM);
+			.add(Blocks.BAMBOO, Blocks.BAMBOO_SAPLING, Blocks.GRAVEL, Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.MYCELIUM);
 		this.getOrCreateTagBuilder(BlockTags.STANDING_SIGNS)
 			.add(
 				Blocks.OAK_SIGN,
@@ -479,7 +473,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.JIGSAW,
 				Blocks.MOVING_PISTON
 			);
-		this.getOrCreateTagBuilder(BlockTags.WITHER_SUMMON_BASE_BLOCKS).add(Blocks.SOUL_SAND).add(Blocks.SOUL_SOIL);
+		this.getOrCreateTagBuilder(BlockTags.WITHER_SUMMON_BASE_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.TALL_FLOWERS).add(Blocks.SUNFLOWER, Blocks.LILAC, Blocks.PEONY, Blocks.ROSE_BUSH);
 		this.getOrCreateTagBuilder(BlockTags.FLOWERS).add(BlockTags.SMALL_FLOWERS).add(BlockTags.TALL_FLOWERS);
 		this.getOrCreateTagBuilder(BlockTags.BEEHIVES).add(Blocks.BEE_NEST, Blocks.BEEHIVE);
@@ -512,18 +506,14 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.BEACON_BASE_BLOCKS)
 			.add(Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK, Blocks.DIAMOND_BLOCK, Blocks.GOLD_BLOCK, Blocks.IRON_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.WALL_POST_OVERRIDE)
-			.add(Blocks.LANTERN)
-			.add(Blocks.SOUL_FIRE_LANTERN)
-			.add(Blocks.TORCH)
+			.add(Blocks.LANTERN, Blocks.SOUL_FIRE_LANTERN, Blocks.TORCH, Blocks.SOUL_FIRE_TORCH, Blocks.REDSTONE_TORCH, Blocks.TRIPWIRE);
+		this.getOrCreateTagBuilder(BlockTags.CLIMBABLE).add(Blocks.LADDER, Blocks.VINE, Blocks.SCAFFOLDING, Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT);
+		this.getOrCreateTagBuilder(BlockTags.PIGLIN_REPELLENTS)
+			.add(Blocks.SOUL_FIRE)
 			.add(Blocks.SOUL_FIRE_TORCH)
-			.add(Blocks.REDSTONE_TORCH)
-			.add(Blocks.TRIPWIRE);
-		this.getOrCreateTagBuilder(BlockTags.CLIMBABLE)
-			.add(Blocks.LADDER)
-			.add(Blocks.VINE)
-			.add(Blocks.SCAFFOLDING)
-			.add(Blocks.WEEPING_VINES)
-			.add(Blocks.WEEPING_VINES_PLANT);
+			.add(Blocks.SOUL_FIRE_LANTERN)
+			.add(Blocks.SOUL_FIRE_WALL_TORCH);
+		this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS);
 	}
 
 	@Override

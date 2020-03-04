@@ -66,7 +66,7 @@ public class Framebuffer {
 		}
 
 		if (this.colorAttachment > -1) {
-			TextureUtil.releaseTextureId(this.colorAttachment);
+			TextureUtil.method_24957(this.colorAttachment);
 			this.colorAttachment = -1;
 		}
 
@@ -84,7 +84,7 @@ public class Framebuffer {
 		this.textureWidth = width;
 		this.textureHeight = height;
 		this.fbo = GlStateManager.genFramebuffers();
-		this.colorAttachment = TextureUtil.generateTextureId();
+		this.colorAttachment = TextureUtil.method_24956();
 		if (this.useDepthAttachment) {
 			this.depthAttachment = GlStateManager.genRenderbuffers();
 		}

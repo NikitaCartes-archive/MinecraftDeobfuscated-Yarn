@@ -20,8 +20,8 @@ import net.minecraft.world.World;
 public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	private static final TrackedData<Boolean> CHEST = DataTracker.registerData(AbstractDonkeyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-	protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> type, World world) {
-		super(type, world);
+	protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> entityType, World world) {
+		super(entityType, world);
 		this.field_6964 = false;
 	}
 

@@ -45,7 +45,7 @@ public class GravityStructureProcessor extends StructureProcessor {
 	}
 
 	@Override
-	protected <T> Dynamic<T> method_16666(DynamicOps<T> dynamicOps) {
+	protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
 			dynamicOps,
 			dynamicOps.createMap(

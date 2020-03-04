@@ -36,7 +36,7 @@ public class MinecartCommandBlockScreen extends AbstractCommandBlockScreen {
 	protected void syncSettingsToServer(CommandBlockExecutor commandExecutor) {
 		if (commandExecutor instanceof CommandBlockMinecartEntity.CommandExecutor) {
 			CommandBlockMinecartEntity.CommandExecutor commandExecutor2 = (CommandBlockMinecartEntity.CommandExecutor)commandExecutor;
-			this.minecraft
+			this.client
 				.getNetworkHandler()
 				.sendPacket(
 					new UpdateCommandBlockMinecartC2SPacket(

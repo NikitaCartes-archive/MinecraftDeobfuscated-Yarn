@@ -15,8 +15,8 @@ import net.minecraft.entity.LivingEntity;
 public class SlimeOverlayFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, SlimeEntityModel<T>> {
 	private final EntityModel<T> model = new SlimeEntityModel<>(0);
 
-	public SlimeOverlayFeatureRenderer(FeatureRendererContext<T, SlimeEntityModel<T>> context) {
-		super(context);
+	public SlimeOverlayFeatureRenderer(FeatureRendererContext<T, SlimeEntityModel<T>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

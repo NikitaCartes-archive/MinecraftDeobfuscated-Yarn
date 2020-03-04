@@ -5,7 +5,7 @@ import net.minecraft.recipe.Ingredient;
 public interface ToolMaterial {
 	int getDurability();
 
-	float getMiningSpeed();
+	float getMiningSpeedMultiplier();
 
 	float getAttackDamage();
 

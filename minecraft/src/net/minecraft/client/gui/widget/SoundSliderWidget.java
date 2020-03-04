@@ -7,7 +7,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.sound.SoundCategory;
 
 @Environment(EnvType.CLIENT)
-public class SoundSliderWidget extends SliderWidget {
+public class SoundSliderWidget extends OptionSliderWidget {
 	private final SoundCategory category;
 
 	public SoundSliderWidget(MinecraftClient client, int x, int y, SoundCategory category, int width) {

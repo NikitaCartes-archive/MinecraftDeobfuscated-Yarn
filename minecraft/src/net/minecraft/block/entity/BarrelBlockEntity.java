@@ -3,13 +3,13 @@ package net.minecraft.block.entity;
 import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.container.Container;
-import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -71,8 +71,8 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return GenericContainer.createGeneric9x3(i, playerInventory, this);
+	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
+		return GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, this);
 	}
 
 	@Override

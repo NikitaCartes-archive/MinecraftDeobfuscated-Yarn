@@ -26,7 +26,7 @@ public class RingBellTask extends Task<LivingEntity> {
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
 		BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.MEETING_POINT).get()).getPos();
-		if (blockPos.isWithinDistance(new BlockPos(entity), 3.0)) {
+		if (blockPos.isWithinDistance(entity.getSenseCenterPos(), 3.0)) {
 			BlockState blockState = world.getBlockState(blockPos);
 			if (blockState.getBlock() == Blocks.BELL) {
 				BellBlock bellBlock = (BellBlock)blockState.getBlock();

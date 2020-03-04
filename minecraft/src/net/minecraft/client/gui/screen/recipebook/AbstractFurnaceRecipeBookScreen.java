@@ -10,11 +10,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.container.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.DefaultedList;
 
 @Environment(EnvType.CLIENT)
@@ -70,7 +70,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	@Override
 	public void slotClicked(@Nullable Slot slot) {
 		super.slotClicked(slot);
-		if (slot != null && slot.id < this.craftingContainer.getCraftingSlotCount()) {
+		if (slot != null && slot.id < this.craftingScreenHandler.getCraftingSlotCount()) {
 			this.outputSlot = null;
 		}
 	}

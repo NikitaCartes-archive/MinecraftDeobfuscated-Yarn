@@ -22,8 +22,8 @@ import net.minecraft.text.LiteralText;
 public class TestFunctionArgumentType implements ArgumentType<TestFunction> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("techtests.piston", "techtests");
 
-	public TestFunction parse(StringReader reader) throws CommandSyntaxException {
-		String string = reader.readUnquotedString();
+	public TestFunction parse(StringReader stringReader) throws CommandSyntaxException {
+		String string = stringReader.readUnquotedString();
 		Optional<TestFunction> optional = TestFunctions.getTestFunction(string);
 		if (optional.isPresent()) {
 			return (TestFunction)optional.get();

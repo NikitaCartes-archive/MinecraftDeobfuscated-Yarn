@@ -15,8 +15,8 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
-	public VillageFeature(Function<Dynamic<?>, ? extends VillageFeatureConfig> configFactory) {
-		super(configFactory);
+	public VillageFeature(Function<Dynamic<?>, ? extends VillageFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 		int r = p < 0 ? p - m + 1 : p;
 		int s = q / m;
 		int t = r / m;
-		((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), s, t, 10387312);
+		((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), s, t, 10387312);
 		s *= m;
 		t *= m;
 		s += random.nextInt(m - n);
@@ -38,9 +38,9 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
-		return chunkZ == chunkPos.x && i == chunkPos.z ? chunkGenerator.hasStructure(biome, this) : false;
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
+		return chunkX == chunkPos.x && chunkZ == chunkPos.z ? chunkGenerator.hasStructure(biome, this) : false;
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
 	}
 
 	public static class Start extends VillageStructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override

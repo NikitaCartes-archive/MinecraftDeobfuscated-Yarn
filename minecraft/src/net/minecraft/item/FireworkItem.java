@@ -37,6 +37,7 @@ public class FireworkItem extends Item {
 			Direction direction = context.getSide();
 			FireworkEntity fireworkEntity = new FireworkEntity(
 				world,
+				context.getPlayer(),
 				vec3d.x + (double)direction.getOffsetX() * 0.15,
 				vec3d.y + (double)direction.getOffsetY() * 0.15,
 				vec3d.z + (double)direction.getOffsetZ() * 0.15,

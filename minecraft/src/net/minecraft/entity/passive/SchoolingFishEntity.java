@@ -16,8 +16,8 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	private SchoolingFishEntity leader;
 	private int groupSize = 1;
 
-	public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> type, World world) {
-		super(type, world);
+	public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

@@ -34,11 +34,10 @@ public interface CrossbowUser extends RangedAttackMob {
 	}
 
 	default void shoot(LivingEntity entity, LivingEntity target, Projectile projectile, float multishotSpray, float speed) {
-		Entity entity2 = (Entity)projectile;
 		double d = target.getX() - entity.getX();
 		double e = target.getZ() - entity.getZ();
 		double f = (double)MathHelper.sqrt(d * d + e * e);
-		double g = target.getBodyY(0.3333333333333333) - entity2.getY() + f * 0.2F;
+		double g = target.getBodyY(0.3333333333333333) - projectile.getY() + f * 0.2F;
 		Vector3f vector3f = this.getProjectileLaunchVelocity(entity, new Vec3d(d, g, e), multishotSpray);
 		projectile.setVelocity(
 			(double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), speed, (float)(14 - entity.world.getDifficulty().getId() * 4)

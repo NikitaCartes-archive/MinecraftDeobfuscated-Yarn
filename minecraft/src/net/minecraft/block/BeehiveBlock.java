@@ -74,7 +74,7 @@ public class BeehiveBlock extends BlockWithEntity {
 			BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
 			if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
 				beehiveBlockEntity.angerBees(player, state, BeehiveBlockEntity.BeeState.EMERGENCY);
-				world.updateHorizontalAdjacent(pos, this);
+				world.updateComparators(pos, this);
 				this.angerNearbyBees(world, pos);
 			}
 

@@ -55,7 +55,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 					}
 
 					ConfiguredFeature<?, ?> configuredFeature = ((DecoratedFeatureConfig)((ConfiguredFeature)list.get(0)).config).feature;
-					blockState3 = ((FlowerFeature)configuredFeature.feature).getFlowerToPlace(random, blockPos2, configuredFeature.config);
+					blockState3 = ((FlowerFeature)configuredFeature.feature).getFlowerState(random, blockPos2, configuredFeature.config);
 				} else {
 					blockState3 = blockState;
 				}

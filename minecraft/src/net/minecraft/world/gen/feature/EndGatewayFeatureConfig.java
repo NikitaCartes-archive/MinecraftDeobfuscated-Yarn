@@ -37,14 +37,14 @@ public class EndGatewayFeatureConfig implements FeatureConfig {
 			ops,
 			(T)this.exitPos
 				.map(
-					blockPos -> ops.createMap(
+					pos -> ops.createMap(
 							ImmutableMap.of(
 								ops.createString("exit_x"),
-								ops.createInt(blockPos.getX()),
+								ops.createInt(pos.getX()),
 								ops.createString("exit_y"),
-								ops.createInt(blockPos.getY()),
+								ops.createInt(pos.getY()),
 								ops.createString("exit_z"),
-								ops.createInt(blockPos.getZ()),
+								ops.createInt(pos.getZ()),
 								ops.createString("exact"),
 								ops.createBoolean(this.exact)
 							)

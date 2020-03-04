@@ -57,7 +57,7 @@ public class SnowmanEntityModel<T extends Entity> extends CompositeEntityModel<T
 		return ImmutableList.<ModelPart>of(this.middleSnowball, this.bottomSnowball, this.topSnowball, this.leftArm, this.rightArm);
 	}
 
-	public ModelPart method_2834() {
+	public ModelPart getTopSnowball() {
 		return this.topSnowball;
 	}
 }

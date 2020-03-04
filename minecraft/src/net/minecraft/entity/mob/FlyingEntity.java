@@ -9,8 +9,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class FlyingEntity extends MobEntity {
-	protected FlyingEntity(EntityType<? extends FlyingEntity> type, World world) {
-		super(type, world);
+	protected FlyingEntity(EntityType<? extends FlyingEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

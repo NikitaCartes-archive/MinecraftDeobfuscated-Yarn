@@ -10,8 +10,8 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class AbstractTempleFeature<C extends FeatureConfig> extends StructureFeature<C> {
-	public AbstractTempleFeature(Function<Dynamic<?>, ? extends C> configFactory) {
-		super(configFactory);
+	public AbstractTempleFeature(Function<Dynamic<?>, ? extends C> function) {
+		super(function);
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 		int r = p < 0 ? p - m + 1 : p;
 		int s = q / m;
 		int t = r / m;
-		((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), s, t, this.getSeedModifier());
+		((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), s, t, this.getSeedModifier());
 		s *= m;
 		t *= m;
 		s += random.nextInt(m - n);
@@ -33,9 +33,9 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
-		return chunkZ == chunkPos.x && i == chunkPos.z && chunkGenerator.hasStructure(biome, this);
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
+		return chunkX == chunkPos.x && chunkZ == chunkPos.z && chunkGenerator.hasStructure(biome, this);
 	}
 
 	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {

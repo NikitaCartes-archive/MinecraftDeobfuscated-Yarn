@@ -26,11 +26,11 @@ public class SlimeBlock extends TransparentBlock {
 		if (entity.bypassesLandingEffects()) {
 			super.onEntityLand(world, entity);
 		} else {
-			this.method_21847(entity);
+			this.bounce(entity);
 		}
 	}
 
-	private void method_21847(Entity entity) {
+	private void bounce(Entity entity) {
 		Vec3d vec3d = entity.getVelocity();
 		if (vec3d.y < 0.0) {
 			double d = entity instanceof LivingEntity ? 1.0 : 0.8;

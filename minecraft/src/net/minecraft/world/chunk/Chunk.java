@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 
 public interface Chunk extends BlockView, StructureHolder {
 	@Nullable
-	BlockState setBlockState(BlockPos pos, BlockState state, boolean bl);
+	BlockState setBlockState(BlockPos pos, BlockState state, boolean moved);
 
 	void setBlockEntity(BlockPos pos, BlockEntity blockEntity);
 

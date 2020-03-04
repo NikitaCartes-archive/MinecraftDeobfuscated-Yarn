@@ -102,18 +102,18 @@ public class AdvancementWidget extends DrawableHelper {
 			int m = y + this.yPos + 13;
 			int n = firstPass ? -16777216 : -1;
 			if (firstPass) {
-				this.hLine(j, i, k - 1, n);
-				this.hLine(j + 1, i, k, n);
-				this.hLine(j, i, k + 1, n);
-				this.hLine(l, j - 1, m - 1, n);
-				this.hLine(l, j - 1, m, n);
-				this.hLine(l, j - 1, m + 1, n);
-				this.vLine(j - 1, m, k, n);
-				this.vLine(j + 1, m, k, n);
+				this.drawHorizontalLine(j, i, k - 1, n);
+				this.drawHorizontalLine(j + 1, i, k, n);
+				this.drawHorizontalLine(j, i, k + 1, n);
+				this.drawHorizontalLine(l, j - 1, m - 1, n);
+				this.drawHorizontalLine(l, j - 1, m, n);
+				this.drawHorizontalLine(l, j - 1, m + 1, n);
+				this.drawVerticalLine(j - 1, m, k, n);
+				this.drawVerticalLine(j + 1, m, k, n);
 			} else {
-				this.hLine(j, i, k, n);
-				this.hLine(l, j, m, n);
-				this.vLine(j, m, k, n);
+				this.drawHorizontalLine(j, i, k, n);
+				this.drawHorizontalLine(l, j, m, n);
+				this.drawVerticalLine(j, m, k, n);
 			}
 		}
 

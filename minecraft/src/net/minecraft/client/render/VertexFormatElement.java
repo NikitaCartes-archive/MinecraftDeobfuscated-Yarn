@@ -42,10 +42,6 @@ public class VertexFormatElement {
 		return this.type;
 	}
 
-	public final int getCount() {
-		return this.count;
-	}
-
 	public final int getIndex() {
 		return this.index;
 	}
@@ -56,10 +52,6 @@ public class VertexFormatElement {
 
 	public final int getSize() {
 		return this.size;
-	}
-
-	public final boolean isPosition() {
-		return this.type == VertexFormatElement.Type.POSITION;
 	}
 
 	public boolean equals(Object o) {

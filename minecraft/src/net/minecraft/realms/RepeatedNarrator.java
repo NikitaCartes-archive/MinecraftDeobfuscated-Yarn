@@ -11,37 +11,32 @@ import net.minecraft.text.LiteralText;
 
 @Environment(EnvType.CLIENT)
 public class RepeatedNarrator {
-	final Duration repeatDelay;
 	private final float permitsPerSecond;
-	final AtomicReference<RepeatedNarrator.Parameters> params;
+	private final AtomicReference<RepeatedNarrator.Parameters> params = new AtomicReference();
 
 	public RepeatedNarrator(Duration duration) {
-		this.repeatDelay = duration;
-		this.params = new AtomicReference();
-		float f = (float)duration.toMillis() / 1000.0F;
-		this.permitsPerSecond = 1.0F / f;
+		this.permitsPerSecond = 1000.0F / (float)duration.toMillis();
 	}
 
-	public void narrate(String string) {
+	public void narrate(String message) {
 		RepeatedNarrator.Parameters parameters = (RepeatedNarrator.Parameters)this.params
 			.updateAndGet(
-				parametersx -> parametersx != null && string.equals(parametersx.message)
+				parametersx -> parametersx != null && message.equals(parametersx.message)
 						? parametersx
-						: new RepeatedNarrator.Parameters(string, RateLimiter.create((double)this.permitsPerSecond))
+						: new RepeatedNarrator.Parameters(message, RateLimiter.create((double)this.permitsPerSecond))
 			);
 		if (parameters.rateLimiter.tryAcquire(1)) {
-			NarratorManager narratorManager = NarratorManager.INSTANCE;
-			narratorManager.onChatMessage(MessageType.SYSTEM, new LiteralText(string));
+			NarratorManager.INSTANCE.onChatMessage(MessageType.SYSTEM, new LiteralText(message));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class Parameters {
-		String message;
-		RateLimiter rateLimiter;
+		private final String message;
+		private final RateLimiter rateLimiter;
 
-		Parameters(String string, RateLimiter rateLimiter) {
-			this.message = string;
+		Parameters(String message, RateLimiter rateLimiter) {
+			this.message = message;
 			this.rateLimiter = rateLimiter;
 		}
 	}

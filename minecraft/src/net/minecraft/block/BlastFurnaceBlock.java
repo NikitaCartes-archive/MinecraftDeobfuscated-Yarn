@@ -5,9 +5,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -27,10 +27,10 @@ public class BlastFurnaceBlock extends AbstractFurnaceBlock {
 	}
 
 	@Override
-	protected void openContainer(World world, BlockPos pos, PlayerEntity player) {
+	protected void openScreen(World world, BlockPos pos, PlayerEntity player) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof BlastFurnaceBlockEntity) {
-			player.openContainer((NameableContainerFactory)blockEntity);
+			player.openHandledScreen((NameableScreenHandlerFactory)blockEntity);
 			player.incrementStat(Stats.INTERACT_WITH_BLAST_FURNACE);
 		}
 	}

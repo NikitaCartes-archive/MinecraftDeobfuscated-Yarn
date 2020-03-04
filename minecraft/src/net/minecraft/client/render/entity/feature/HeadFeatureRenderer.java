@@ -27,8 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithHead> extends FeatureRenderer<T, M> {
-	public HeadFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

@@ -154,6 +154,20 @@ public abstract class RenderLayer extends RenderPhase {
 		return TRANSLUCENT_NO_CRUMBLING;
 	}
 
+	public static RenderLayer getArmorCutoutNoCull(Identifier texture) {
+		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+			.texture(new RenderPhase.Texture(texture, false, false))
+			.transparency(NO_TRANSPARENCY)
+			.diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
+			.alpha(ONE_TENTH_ALPHA)
+			.cull(DISABLE_CULLING)
+			.lightmap(ENABLE_LIGHTMAP)
+			.overlay(ENABLE_OVERLAY_COLOR)
+			.layering(VIEW_OFFSET_Z_LAYERING)
+			.build(true);
+		return of("armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, false, multiPhaseParameters);
+	}
+
 	public static RenderLayer getEntitySolid(Identifier texture) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
 			.texture(new RenderPhase.Texture(texture, false, false))
@@ -272,9 +286,9 @@ public abstract class RenderLayer extends RenderPhase {
 		return of("entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, false, true, multiPhaseParameters);
 	}
 
-	public static RenderLayer method_24469(Identifier identifier) {
+	public static RenderLayer getEntityShadow(Identifier texture) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-			.texture(new RenderPhase.Texture(identifier, false, false))
+			.texture(new RenderPhase.Texture(texture, false, false))
 			.transparency(TRANSLUCENT_TRANSPARENCY)
 			.diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
 			.alpha(ONE_TENTH_ALPHA)
@@ -341,17 +355,17 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static RenderLayer getOutline(Identifier texture) {
-		return method_24468(texture, DISABLE_CULLING);
+		return getOutline(texture, DISABLE_CULLING);
 	}
 
-	public static RenderLayer method_24468(Identifier identifier, RenderPhase.Cull cull) {
+	public static RenderLayer getOutline(Identifier texture, RenderPhase.Cull cull) {
 		return of(
 			"outline",
 			VertexFormats.POSITION_COLOR_TEXTURE,
 			7,
 			256,
 			RenderLayer.MultiPhaseParameters.builder()
-				.texture(new RenderPhase.Texture(identifier, false, false))
+				.texture(new RenderPhase.Texture(texture, false, false))
 				.cull(cull)
 				.depthTest(ALWAYS_DEPTH_TEST)
 				.alpha(ONE_TENTH_ALPHA)
@@ -576,7 +590,7 @@ public abstract class RenderLayer extends RenderPhase {
 			);
 			this.phases = phases;
 			this.affectedOutline = phases.outlineMode == RenderLayer.OutlineMode.AFFECTS_OUTLINE
-				? phases.texture.getId().map(identifier -> method_24468(identifier, phases.cull))
+				? phases.texture.getId().map(identifier -> getOutline(identifier, phases.cull))
 				: Optional.empty();
 			this.outline = phases.outlineMode == RenderLayer.OutlineMode.IS_OUTLINE;
 			this.hash = Objects.hash(new Object[]{super.hashCode(), phases});

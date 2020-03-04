@@ -28,7 +28,7 @@ public class GuardianAttackSoundInstance extends MovingSoundInstance {
 			this.volume = 0.0F + 1.0F * f * f;
 			this.pitch = 0.7F + 0.5F * f;
 		} else {
-			this.method_24876();
+			this.setDone();
 		}
 	}
 }

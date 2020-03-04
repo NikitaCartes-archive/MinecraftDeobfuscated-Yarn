@@ -11,8 +11,8 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 
 public class DarkOakTreeFeature extends AbstractTreeFeature<MegaTreeFeatureConfig> {
-	public DarkOakTreeFeature(Function<Dynamic<?>, ? extends MegaTreeFeatureConfig> configFactory) {
-		super(configFactory);
+	public DarkOakTreeFeature(Function<Dynamic<?>, ? extends MegaTreeFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(

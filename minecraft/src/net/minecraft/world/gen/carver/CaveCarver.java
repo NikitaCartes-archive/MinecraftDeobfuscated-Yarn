@@ -11,8 +11,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
 public class CaveCarver extends Carver<ProbabilityConfig> {
-	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer, int heightLimit) {
-		super(configDeserializer, heightLimit);
+	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function, int i) {
+		super(function, i);
 	}
 
 	public boolean shouldCarve(Random random, int i, int j, ProbabilityConfig probabilityConfig) {

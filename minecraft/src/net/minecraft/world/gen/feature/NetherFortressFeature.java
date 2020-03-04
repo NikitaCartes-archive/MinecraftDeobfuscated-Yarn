@@ -24,22 +24,22 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
 	);
 
-	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+		int i = chunkX >> 4;
 		int j = chunkZ >> 4;
-		int k = i >> 4;
-		random.setSeed((long)(j ^ k << 4) ^ chunkGenerator.getSeed());
+		random.setSeed((long)(i ^ j << 4) ^ chunkGenerator.getSeed());
 		random.nextInt();
 		if (random.nextInt(3) != 0) {
 			return false;
-		} else if (chunkZ != (j << 4) + 4 + random.nextInt(8)) {
+		} else if (chunkX != (i << 4) + 4 + random.nextInt(8)) {
 			return false;
 		} else {
-			return i != (k << 4) + 4 + random.nextInt(8) ? false : chunkGenerator.hasStructure(biome, this);
+			return chunkZ != (j << 4) + 4 + random.nextInt(8) ? false : chunkGenerator.hasStructure(biome, this);
 		}
 	}
 
@@ -64,8 +64,8 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override

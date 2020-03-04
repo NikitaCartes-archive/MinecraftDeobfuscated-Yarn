@@ -49,7 +49,7 @@ public class EmptyPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public <T> Dynamic<T> method_16625(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(dynamicOps, dynamicOps.emptyMap());
 	}
 

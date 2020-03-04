@@ -107,7 +107,7 @@ public abstract class EntityNavigation {
 
 	@Nullable
 	public Path findPathTo(Entity entity, int distance) {
-		return this.findPathToAny(ImmutableSet.of(new BlockPos(entity)), 16, true, distance);
+		return this.findPathToAny(ImmutableSet.of(entity.getSenseCenterPos()), 16, true, distance);
 	}
 
 	@Nullable
@@ -123,7 +123,7 @@ public abstract class EntityNavigation {
 		} else {
 			this.world.getProfiler().push("pathfind");
 			float f = (float)this.followRange.getValue();
-			BlockPos blockPos = bl ? new BlockPos(this.entity).up() : new BlockPos(this.entity);
+			BlockPos blockPos = bl ? this.entity.getSenseCenterPos().up() : this.entity.getSenseCenterPos();
 			int i = (int)(f + (float)range);
 			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));
 			Path path = this.pathNodeNavigator.findPathToAny(chunkCache, this.entity, positions, f, distance, this.rangeMultiplier);

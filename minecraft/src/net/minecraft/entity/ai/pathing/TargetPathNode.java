@@ -14,8 +14,8 @@ public class TargetPathNode extends PathNode {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TargetPathNode(int x, int y, int z) {
-		super(x, y, z);
+	public TargetPathNode(int i, int j, int k) {
+		super(i, j, k);
 	}
 
 	public void updateNearestNode(float distance, PathNode node) {

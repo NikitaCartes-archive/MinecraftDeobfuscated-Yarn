@@ -75,11 +75,11 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 	}
 
 	@Override
-	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
 		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		ModelPart modelPart = this.getArm(arm);
 		modelPart.pivotX += f;
-		modelPart.rotate(matrixStack);
+		modelPart.rotate(matrices);
 		modelPart.pivotX -= f;
 	}
 }

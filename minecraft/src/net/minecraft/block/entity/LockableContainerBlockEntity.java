@@ -1,20 +1,20 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
-import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 
-public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NameableContainerFactory, Nameable {
+public abstract class LockableContainerBlockEntity extends BlockEntity implements Inventory, NameableScreenHandlerFactory, Nameable {
 	private ContainerLock lock = ContainerLock.EMPTY;
 	private Text customName;
 
@@ -80,9 +80,9 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 
 	@Nullable
 	@Override
-	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return this.checkUnlocked(playerEntity) ? this.createContainer(syncId, playerInventory) : null;
+	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+		return this.checkUnlocked(playerEntity) ? this.createContainer(i, playerInventory) : null;
 	}
 
-	protected abstract Container createContainer(int i, PlayerInventory playerInventory);
+	protected abstract ScreenHandler createContainer(int i, PlayerInventory playerInventory);
 }

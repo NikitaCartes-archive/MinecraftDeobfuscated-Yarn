@@ -167,7 +167,19 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
+	/**
+	 * Returns if this entity is shaking, as if a zombie villager, zombie,
+	 * husk, or piglin undergoing conversion.
+	 */
+	protected boolean isShaking(T entity) {
+		return false;
+	}
+
 	protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
+		if (this.isShaking(entity)) {
+			bodyYaw += (float)(Math.cos((double)entity.age * 3.25) * Math.PI * 0.4F);
+		}
+
 		EntityPose entityPose = entity.getPose();
 		if (entityPose != EntityPose.SLEEPING) {
 			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
@@ -220,7 +232,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 0.0F;
 	}
 
-	protected void scale(T entity, MatrixStack matrices, float tickDelta) {
+	protected void scale(T entity, MatrixStack matrices, float amount) {
 	}
 
 	protected boolean hasLabel(T livingEntity) {

@@ -25,7 +25,7 @@ public class PacifyTask extends Task<LivingEntity> {
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		entity.getBrain().remember(MemoryModuleType.PACIFIED, true, time, (long)this.duration);
+		entity.getBrain().remember(MemoryModuleType.PACIFIED, true, (long)this.duration);
 		entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
 	}
 }

@@ -92,7 +92,7 @@ public class CommandBlock extends BlockWithEntity {
 				}
 			}
 
-			world.updateHorizontalAdjacent(pos, this);
+			world.updateComparators(pos, this);
 		}
 	}
 
@@ -183,7 +183,7 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	private static void executeCommandChain(World world, BlockPos pos, Direction facing) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+		BlockPos.Mutable mutable = pos.mutableCopy();
 		GameRules gameRules = world.getGameRules();
 
 		int i;
@@ -213,7 +213,7 @@ public class CommandBlock extends BlockWithEntity {
 						break;
 					}
 
-					world.updateHorizontalAdjacent(mutable, block);
+					world.updateComparators(mutable, block);
 				} else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
 					commandBlockExecutor.setSuccessCount(0);
 				}

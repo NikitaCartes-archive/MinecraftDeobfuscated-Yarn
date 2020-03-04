@@ -5,12 +5,12 @@ import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.RailShape;
-import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -105,7 +105,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 			world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
 		}
 
-		world.updateHorizontalAdjacent(pos, this);
+		world.updateComparators(pos, this);
 	}
 
 	protected void updateNearbyRails(World world, BlockPos pos, BlockState state, boolean unpowering) {
@@ -144,7 +144,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 			List<AbstractMinecartEntity> list2 = this.getCarts(world, pos, AbstractMinecartEntity.class, EntityPredicates.VALID_INVENTORIES);
 			if (!list2.isEmpty()) {
-				return Container.calculateComparatorOutput((Inventory)list2.get(0));
+				return ScreenHandler.calculateComparatorOutput((Inventory)list2.get(0));
 			}
 		}
 

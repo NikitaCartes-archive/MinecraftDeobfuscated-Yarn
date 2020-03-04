@@ -108,7 +108,7 @@ public class ExecuteCommand {
 					List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 		
 					for(Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-						list.add(commandContext.getSource().withWorld((ServerWorld)entity.world).withPosition(entity.getPosVector()).withRotation(entity.getRotationClient()));
+						list.add(commandContext.getSource().withWorld((ServerWorld)entity.world).withPosition(entity.getPos()).withRotation(entity.getRotationClient()));
 					}
 		
 					return list;
@@ -133,7 +133,7 @@ public class ExecuteCommand {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 				
 							for(Entity entity : EntityArgumentType.getOptionalEntities(commandContext, "targets")) {
-								list.add(commandContext.getSource().withPosition(entity.getPosVector()));
+								list.add(commandContext.getSource().withPosition(entity.getPos()));
 							}
 				
 							return list;

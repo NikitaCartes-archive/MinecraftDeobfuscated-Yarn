@@ -12,11 +12,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ElderGuardianEntity extends GuardianEntity {
-	public static final float field_17492 = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
+	public static final float SCALE = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
 
 	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
 		super(entityType, world);
@@ -82,7 +81,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 		}
 
 		if (!this.hasPositionTarget()) {
-			this.setPositionTarget(new BlockPos(this), 16);
+			this.setPositionTarget(this.getSenseCenterPos(), 16);
 		}
 	}
 }

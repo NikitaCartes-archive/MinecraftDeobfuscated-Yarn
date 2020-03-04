@@ -40,12 +40,12 @@ public class ShearsItem extends Item {
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
+	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		Block block = state.getBlock();
 		if (block == Blocks.COBWEB || state.matches(BlockTags.LEAVES)) {
 			return 15.0F;
 		} else {
-			return block.isIn(BlockTags.WOOL) ? 5.0F : super.getMiningSpeed(stack, state);
+			return block.isIn(BlockTags.WOOL) ? 5.0F : super.getMiningSpeedMultiplier(stack, state);
 		}
 	}
 }

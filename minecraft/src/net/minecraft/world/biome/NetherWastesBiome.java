@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.Carver;
@@ -28,7 +29,16 @@ public final class NetherWastesBiome extends Biome {
 				.scale(0.2F)
 				.temperature(2.0F)
 				.downfall(0.0F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(3344392).build())
+				.effects(
+					new BiomeEffects.Builder()
+						.waterColor(4159204)
+						.waterFogColor(329011)
+						.fogColor(3344392)
+						.loopSound(SoundEvents.AMBIENT_NETHER_WASTES_LOOP)
+						.moodSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD)
+						.additionsSound(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS)
+						.build()
+				)
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, -0.5F, 1.0F)))
 		);

@@ -16,7 +16,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 	public final BlockStateProvider leavesProvider;
 	public final List<TreeDecorator> decorators;
 	public final int baseHeight;
-	public transient boolean field_21593;
+	public transient boolean skipFluidCheck;
 
 	protected TreeFeatureConfig(BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, List<TreeDecorator> decorators, int baseHeight) {
 		this.trunkProvider = trunkProvider;
@@ -25,8 +25,8 @@ public class TreeFeatureConfig implements FeatureConfig {
 		this.baseHeight = baseHeight;
 	}
 
-	public void method_23916() {
-		this.field_21593 = true;
+	public void ignoreFluidCheck() {
+		this.skipFluidCheck = true;
 	}
 
 	@Override

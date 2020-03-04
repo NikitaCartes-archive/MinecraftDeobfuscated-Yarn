@@ -58,6 +58,7 @@ public class AxeItem extends MiningToolItem {
 		Blocks.ACACIA_PRESSURE_PLATE,
 		Blocks.CRIMSON_PLANKS,
 		Blocks.CRIMSON_STEM,
+		Blocks.CRIMSON_HYPHAE,
 		Blocks.CRIMSON_BUTTON,
 		Blocks.CRIMSON_PRESSURE_PLATE,
 		Blocks.CRIMSON_FENCE,
@@ -69,6 +70,7 @@ public class AxeItem extends MiningToolItem {
 		Blocks.CRIMSON_SLAB,
 		Blocks.WARPED_PLANKS,
 		Blocks.WARPED_STEM,
+		Blocks.WARPED_HYPHAE,
 		Blocks.WARPED_BUTTON,
 		Blocks.WARPED_PRESSURE_PLATE,
 		Blocks.WARPED_FENCE,
@@ -93,7 +95,9 @@ public class AxeItem extends MiningToolItem {
 		.put(Blocks.SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_WOOD)
 		.put(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG)
 		.put(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM)
+		.put(Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE)
 		.put(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM)
+		.put(Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE)
 		.build();
 
 	protected AxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {
@@ -101,10 +105,10 @@ public class AxeItem extends MiningToolItem {
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
+	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		Material material = state.getMaterial();
 		return material != Material.WOOD && material != Material.PLANT && material != Material.REPLACEABLE_PLANT && material != Material.BAMBOO
-			? super.getMiningSpeed(stack, state)
+			? super.getMiningSpeedMultiplier(stack, state)
 			: this.miningSpeed;
 	}
 

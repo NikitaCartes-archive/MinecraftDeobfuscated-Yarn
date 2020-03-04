@@ -2,9 +2,10 @@ package com.mojang.realmsclient.dto;
 
 import com.google.gson.JsonObject;
 import com.mojang.realmsclient.util.JsonUtils;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.realms.RealmsScreen;
+import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
 public class RealmsWorldOptions extends ValueObject {
@@ -22,19 +23,7 @@ public class RealmsWorldOptions extends ValueObject {
 	public String templateImage;
 	public boolean adventureMap;
 	public boolean empty;
-	private static final boolean forceGameModeDefault = false;
-	private static final boolean pvpDefault = true;
-	private static final boolean spawnAnimalsDefault = true;
-	private static final boolean spawnMonstersDefault = true;
-	private static final boolean spawnNPCsDefault = true;
-	private static final int spawnProtectionDefault = 0;
-	private static final boolean commandBlocksDefault = false;
-	private static final int difficultyDefault = 2;
-	private static final int gameModeDefault = 0;
-	private static final String slotNameDefault = "";
-	private static final long templateIdDefault = -1L;
 	private static final String templateImageDefault = null;
-	private static final boolean adventureMapDefault = false;
 
 	public RealmsWorldOptions(
 		Boolean pvp,
@@ -65,7 +54,7 @@ public class RealmsWorldOptions extends ValueObject {
 	}
 
 	public static RealmsWorldOptions getEmptyDefaults() {
-		RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(true, true, true, true, 0, false, 2, 0, false, "");
+		RealmsWorldOptions realmsWorldOptions = getDefaults();
 		realmsWorldOptions.setEmpty(true);
 		return realmsWorldOptions;
 	}
@@ -97,12 +86,12 @@ public class RealmsWorldOptions extends ValueObject {
 		if (this.slotName != null && !this.slotName.isEmpty()) {
 			return this.slotName;
 		} else {
-			return this.empty ? RealmsScreen.getLocalizedString("mco.configure.world.slot.empty") : this.getDefaultSlotName(i);
+			return this.empty ? I18n.translate("mco.configure.world.slot.empty") : this.getDefaultSlotName(i);
 		}
 	}
 
 	public String getDefaultSlotName(int i) {
-		return RealmsScreen.getLocalizedString("mco.configure.world.slot", i);
+		return I18n.translate("mco.configure.world.slot", i);
 	}
 
 	public String toJson() {
@@ -143,7 +132,7 @@ public class RealmsWorldOptions extends ValueObject {
 			jsonObject.addProperty("forceGameMode", this.forceGameMode);
 		}
 
-		if (this.slotName != null && !this.slotName.equals("")) {
+		if (!Objects.equals(this.slotName, "")) {
 			jsonObject.addProperty("slotName", this.slotName);
 		}
 

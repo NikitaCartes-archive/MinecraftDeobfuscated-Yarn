@@ -10,7 +10,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public abstract class TrackTargetGoal extends Goal {
@@ -96,7 +95,7 @@ public abstract class TrackTargetGoal extends Goal {
 			return false;
 		} else if (!targetPredicate.test(this.mob, target)) {
 			return false;
-		} else if (!this.mob.isInWalkTargetRange(new BlockPos(target))) {
+		} else if (!this.mob.isInWalkTargetRange(target.getSenseCenterPos())) {
 			return false;
 		} else {
 			if (this.checkCanNavigate) {

@@ -9,8 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.container.Container;
-import net.minecraft.container.ShulkerBoxContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,6 +17,8 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -293,8 +293,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return new ShulkerBoxContainer(i, playerInventory, this);
+	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
+		return new ShulkerBoxScreenHandler(i, playerInventory, this);
 	}
 
 	public static enum AnimationStage {

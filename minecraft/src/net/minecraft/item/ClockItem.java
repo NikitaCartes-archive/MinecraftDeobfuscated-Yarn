@@ -22,9 +22,9 @@ public class ClockItem extends Item {
 
 			@Environment(EnvType.CLIENT)
 			@Override
-			public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity user) {
-				boolean bl = user != null;
-				Entity entity = (Entity)(bl ? user : stack.getFrame());
+			public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+				boolean bl = livingEntity != null;
+				Entity entity = (Entity)(bl ? livingEntity : itemStack.getFrame());
 				if (world == null && entity != null) {
 					world = entity.world;
 				}

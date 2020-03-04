@@ -20,13 +20,13 @@ public class MiningToolItem extends ToolItem {
 	protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, Set<Block> effectiveBlocks, Item.Settings settings) {
 		super(material, settings);
 		this.effectiveBlocks = effectiveBlocks;
-		this.miningSpeed = material.getMiningSpeed();
+		this.miningSpeed = material.getMiningSpeedMultiplier();
 		this.attackDamage = attackDamage + material.getAttackDamage();
 		this.attackSpeed = attackSpeed;
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
+	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		return this.effectiveBlocks.contains(state.getBlock()) ? this.miningSpeed : 1.0F;
 	}
 

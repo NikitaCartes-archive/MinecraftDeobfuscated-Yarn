@@ -60,12 +60,13 @@ public class HoglinEntity extends AnimalEntity implements Monster {
 		MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
 		MemoryModuleType.PATH,
 		MemoryModuleType.ATTACK_TARGET,
+		MemoryModuleType.ATTACK_COOLING_DOWN,
 		MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN,
 		MemoryModuleType.AVOID_TARGET,
 		MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT,
 		MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT,
 		MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS,
-		MemoryModuleType.NEAREST_VISIBLE_WARPED_FUNGUS,
+		MemoryModuleType.NEAREST_REPELLENT,
 		MemoryModuleType.PACIFIED
 	);
 
@@ -244,6 +245,10 @@ public class HoglinEntity extends AnimalEntity implements Monster {
 		}
 
 		return hoglinEntity;
+	}
+
+	protected float method_24915() {
+		return (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
 	}
 
 	@Override

@@ -42,8 +42,8 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		SPINE_1_COAL, SPINE_2_COAL, SPINE_3_COAL, SPINE_4_COAL, SKULL_1_COAL, SKULL_2_COAL, SKULL_3_COAL, SKULL_4_COAL
 	};
 
-	public FossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public FossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(
@@ -63,7 +63,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 			.setBoundingBox(blockBox)
 			.setRandom(random2)
 			.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-		BlockPos blockPos2 = structure.method_15166(blockRotation);
+		BlockPos blockPos2 = structure.getRotatedSize(blockRotation);
 		int j = random2.nextInt(16 - blockPos2.getX());
 		int k = random2.nextInt(16 - blockPos2.getZ());
 		int l = 256;
@@ -75,14 +75,14 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		}
 
 		int m = Math.max(l - 15 - random2.nextInt(10), 10);
-		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
+		BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
-		structure.method_15172(iWorld, blockPos3, structurePlacementData, 4);
+		structure.place(iWorld, blockPos3, structurePlacementData, 4);
 		structurePlacementData.removeProcessor(blockRotStructureProcessor);
 		BlockRotStructureProcessor blockRotStructureProcessor2 = new BlockRotStructureProcessor(0.1F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor2);
-		structure2.method_15172(iWorld, blockPos3, structurePlacementData, 4);
+		structure2.place(iWorld, blockPos3, structurePlacementData, 4);
 		return true;
 	}
 }

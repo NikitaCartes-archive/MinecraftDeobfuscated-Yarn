@@ -49,14 +49,14 @@ public class SelectorText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (!(o instanceof SelectorText)) {
+		} else if (!(object instanceof SelectorText)) {
 			return false;
 		} else {
-			SelectorText selectorText = (SelectorText)o;
-			return this.pattern.equals(selectorText.pattern) && super.equals(o);
+			SelectorText selectorText = (SelectorText)object;
+			return this.pattern.equals(selectorText.pattern) && super.equals(object);
 		}
 	}
 

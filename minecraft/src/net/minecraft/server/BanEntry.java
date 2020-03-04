@@ -64,4 +64,12 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	boolean isInvalid() {
 		return this.expiryDate == null ? false : this.expiryDate.before(new Date());
 	}
+
+	@Override
+	protected void method_24896(JsonObject jsonObject) {
+		jsonObject.addProperty("created", DATE_FORMAT.format(this.creationDate));
+		jsonObject.addProperty("source", this.source);
+		jsonObject.addProperty("expires", this.expiryDate == null ? "forever" : DATE_FORMAT.format(this.expiryDate));
+		jsonObject.addProperty("reason", this.reason);
+	}
 }

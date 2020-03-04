@@ -14,14 +14,14 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatureConfig> {
-	public BuriedTreasureFeature(Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig> configFactory) {
-		super(configFactory);
+	public BuriedTreasureFeature(Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
 		if (chunkGenerator.hasStructure(biome, this)) {
-			((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), chunkZ, i, 10387320);
+			((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), chunkX, chunkZ, 10387320);
 			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
 			return random.nextFloat() < buriedTreasureFeatureConfig.probability;
 		} else {
@@ -45,8 +45,8 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override

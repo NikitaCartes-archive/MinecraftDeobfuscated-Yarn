@@ -8,8 +8,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 
 public abstract class GolemEntity extends MobEntityWithAi {
-	protected GolemEntity(EntityType<? extends GolemEntity> type, World world) {
-		super(type, world);
+	protected GolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

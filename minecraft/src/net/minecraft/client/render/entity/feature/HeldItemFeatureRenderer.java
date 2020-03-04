@@ -15,8 +15,8 @@ import net.minecraft.util.Arm;
 
 @Environment(EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithArms> extends FeatureRenderer<T, M> {
-	public HeldItemFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public HeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(
@@ -40,23 +40,23 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 	}
 
 	private void renderItem(
-		LivingEntity livingEntity,
-		ItemStack itemStack,
-		ModelTransformation.Mode mode,
+		LivingEntity entity,
+		ItemStack stack,
+		ModelTransformation.Mode transformationMode,
 		Arm arm,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light
 	) {
-		if (!itemStack.isEmpty()) {
-			matrixStack.push();
-			this.getContextModel().setArmAngle(arm, matrixStack);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		if (!stack.isEmpty()) {
+			matrices.push();
+			this.getContextModel().setArmAngle(arm, matrices);
+			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			boolean bl = arm == Arm.LEFT;
-			matrixStack.translate((double)((float)(bl ? -1 : 1) / 16.0F), 0.125, -0.625);
-			MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, itemStack, mode, bl, matrixStack, vertexConsumerProvider, i);
-			matrixStack.pop();
+			matrices.translate((double)((float)(bl ? -1 : 1) / 16.0F), 0.125, -0.625);
+			MinecraftClient.getInstance().getHeldItemRenderer().renderItem(entity, stack, transformationMode, bl, matrices, vertexConsumers, light);
+			matrices.pop();
 		}
 	}
 }

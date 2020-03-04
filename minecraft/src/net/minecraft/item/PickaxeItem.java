@@ -121,8 +121,10 @@ public class PickaxeItem extends MiningToolItem {
 	}
 
 	@Override
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
+	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		Material material = state.getMaterial();
-		return material != Material.METAL && material != Material.ANVIL && material != Material.STONE ? super.getMiningSpeed(stack, state) : this.miningSpeed;
+		return material != Material.METAL && material != Material.ANVIL && material != Material.STONE
+			? super.getMiningSpeedMultiplier(stack, state)
+			: this.miningSpeed;
 	}
 }

@@ -19,8 +19,8 @@ import net.minecraft.world.LightType;
 
 @Environment(EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>> extends LivingEntityRenderer<T, M> {
-	public MobEntityRenderer(EntityRenderDispatcher renderManager, M model, float f) {
-		super(renderManager, model, f);
+	public MobEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
+		super(entityRenderDispatcher, entityModel, f);
 	}
 
 	protected boolean hasLabel(T mobEntity) {

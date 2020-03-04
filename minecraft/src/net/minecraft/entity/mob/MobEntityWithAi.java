@@ -12,8 +12,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public abstract class MobEntityWithAi extends MobEntity {
-	protected MobEntityWithAi(EntityType<? extends MobEntityWithAi> type, World world) {
-		super(type, world);
+	protected MobEntityWithAi(EntityType<? extends MobEntityWithAi> entityType, World world) {
+		super(entityType, world);
 	}
 
 	public float getPathfindingFavor(BlockPos pos) {
@@ -26,7 +26,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 
 	@Override
 	public boolean canSpawn(IWorld world, SpawnType spawnType) {
-		return this.getPathfindingFavor(new BlockPos(this), world) >= 0.0F;
+		return this.getPathfindingFavor(this.getSenseCenterPos(), world) >= 0.0F;
 	}
 
 	public boolean isNavigating() {
@@ -38,7 +38,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 		super.updateLeash();
 		Entity entity = this.getHoldingEntity();
 		if (entity != null && entity.world == this.world) {
-			this.setPositionTarget(new BlockPos(entity), 5);
+			this.setPositionTarget(entity.getSenseCenterPos(), 5);
 			float f = this.distanceTo(entity);
 			if (this instanceof TameableEntity && ((TameableEntity)this).isSitting()) {
 				if (f > 10.0F) {

@@ -55,7 +55,7 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		boolean bl2 = pandaEntity.isSneezing();
 		int k = pandaEntity.getSneezeProgress();
 		boolean bl3 = pandaEntity.isEating();
-		boolean bl4 = pandaEntity.method_6524();
+		boolean bl4 = pandaEntity.isScaredByThunderstorm();
 		if (bl) {
 			this.head.yaw = 0.35F * MathHelper.sin(0.6F * h);
 			this.head.roll = 0.35F * MathHelper.sin(0.6F * h);

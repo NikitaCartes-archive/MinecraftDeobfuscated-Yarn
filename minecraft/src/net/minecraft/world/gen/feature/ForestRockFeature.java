@@ -10,8 +10,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
-	public ForestRockFeature(Function<Dynamic<?>, ? extends BoulderFeatureConfig> configFactory) {
-		super(configFactory);
+	public ForestRockFeature(Function<Dynamic<?>, ? extends BoulderFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(

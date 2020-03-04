@@ -96,11 +96,11 @@ public class WorldChunk implements Chunk {
 		ChunkPos chunkPos,
 		BiomeArray biomeArray,
 		UpgradeData upgradeData,
-		TickScheduler<Block> tickScheduler,
-		TickScheduler<Fluid> tickScheduler2,
-		long l,
+		TickScheduler<Block> blockTickScheduler,
+		TickScheduler<Fluid> fluidTickScheduler,
+		long inhabitedTime,
 		@Nullable ChunkSection[] chunkSections,
-		@Nullable Consumer<WorldChunk> consumer
+		@Nullable Consumer<WorldChunk> loadToWorldConsumer
 	) {
 		this.entitySections = new TypeFilterableList[16];
 		this.world = world;
@@ -118,10 +118,10 @@ public class WorldChunk implements Chunk {
 		}
 
 		this.biomeArray = biomeArray;
-		this.blockTickScheduler = tickScheduler;
-		this.fluidTickScheduler = tickScheduler2;
-		this.inhabitedTime = l;
-		this.loadToWorldConsumer = consumer;
+		this.blockTickScheduler = blockTickScheduler;
+		this.fluidTickScheduler = fluidTickScheduler;
+		this.inhabitedTime = inhabitedTime;
+		this.loadToWorldConsumer = loadToWorldConsumer;
 		if (chunkSections != null) {
 			if (this.sections.length == chunkSections.length) {
 				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -231,12 +231,12 @@ public class WorldChunk implements Chunk {
 		return this.getFluidState(pos.getX(), pos.getY(), pos.getZ());
 	}
 
-	public FluidState getFluidState(int x, int y, int i) {
+	public FluidState getFluidState(int x, int y, int z) {
 		try {
 			if (y >= 0 && y >> 4 < this.sections.length) {
 				ChunkSection chunkSection = this.sections[y >> 4];
 				if (!ChunkSection.isEmpty(chunkSection)) {
-					return chunkSection.getFluidState(x & 15, y & 15, i & 15);
+					return chunkSection.getFluidState(x & 15, y & 15, z & 15);
 				}
 			}
 
@@ -244,14 +244,14 @@ public class WorldChunk implements Chunk {
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Getting fluid state");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being got");
-			crashReportSection.add("Location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(x, y, i)));
+			crashReportSection.add("Location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(x, y, z)));
 			throw new CrashException(crashReport);
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+	public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
 		int i = pos.getX() & 15;
 		int j = pos.getY();
 		int k = pos.getZ() & 15;
@@ -265,7 +265,7 @@ public class WorldChunk implements Chunk {
 			this.sections[j >> 4] = chunkSection;
 		}
 
-		boolean bl2 = chunkSection.isEmpty();
+		boolean bl = chunkSection.isEmpty();
 		BlockState blockState = chunkSection.setBlockState(i, j & 15, k, state);
 		if (blockState == state) {
 			return null;
@@ -276,13 +276,13 @@ public class WorldChunk implements Chunk {
 			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(i, j, k, state);
 			((Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(i, j, k, state);
 			((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(i, j, k, state);
-			boolean bl3 = chunkSection.isEmpty();
-			if (bl2 != bl3) {
-				this.world.getChunkManager().getLightingProvider().updateSectionStatus(pos, bl3);
+			boolean bl2 = chunkSection.isEmpty();
+			if (bl != bl2) {
+				this.world.getChunkManager().getLightingProvider().updateSectionStatus(pos, bl2);
 			}
 
 			if (!this.world.isClient) {
-				blockState.onBlockRemoved(this.world, pos, state, bl);
+				blockState.onBlockRemoved(this.world, pos, state, moved);
 			} else if (block2 != block && block2 instanceof BlockEntityProvider) {
 				this.world.removeBlockEntity(pos);
 			}
@@ -298,7 +298,7 @@ public class WorldChunk implements Chunk {
 				}
 
 				if (!this.world.isClient) {
-					state.onBlockAdded(this.world, pos, blockState, bl);
+					state.onBlockAdded(this.world, pos, blockState, moved);
 				}
 
 				if (block instanceof BlockEntityProvider) {
@@ -586,8 +586,8 @@ public class WorldChunk implements Chunk {
 		return this.biomeArray;
 	}
 
-	public void setLoadedToWorld(boolean bl) {
-		this.loadedToWorld = bl;
+	public void setLoadedToWorld(boolean loaded) {
+		this.loadedToWorld = loaded;
 	}
 
 	public World getWorld() {

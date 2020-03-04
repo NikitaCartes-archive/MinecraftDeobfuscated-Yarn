@@ -2,6 +2,7 @@ package net.minecraft.world.biome;
 
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -20,7 +21,7 @@ public final class SavannaBiome extends Biome {
 				.scale(0.05F)
 				.temperature(1.2F)
 				.downfall(0.0F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build())
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(SoundEvents.AMBIENT_CAVE).build())
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.VILLAGE.configure(new VillageFeatureConfig("village/savanna/town_centers", 6)));

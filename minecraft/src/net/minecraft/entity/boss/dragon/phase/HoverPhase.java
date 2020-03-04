@@ -7,8 +7,8 @@ import net.minecraft.util.math.Vec3d;
 public class HoverPhase extends AbstractPhase {
 	private Vec3d field_7042;
 
-	public HoverPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public HoverPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class HoverPhase extends AbstractPhase {
 	}
 
 	@Override
-	public boolean method_6848() {
+	public boolean isSittingOrHovering() {
 		return true;
 	}
 
@@ -29,7 +29,7 @@ public class HoverPhase extends AbstractPhase {
 	}
 
 	@Override
-	public float method_6846() {
+	public float getMaxYAcceleration() {
 		return 1.0F;
 	}
 

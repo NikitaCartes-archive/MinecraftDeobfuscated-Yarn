@@ -12,20 +12,20 @@ import net.minecraft.util.math.Vec3d;
 public class EntityDamageSource extends DamageSource {
 	@Nullable
 	protected final Entity source;
-	private boolean field_5880;
+	private boolean thorns;
 
 	public EntityDamageSource(String name, @Nullable Entity entity) {
 		super(name);
 		this.source = entity;
 	}
 
-	public EntityDamageSource method_5550() {
-		this.field_5880 = true;
+	public EntityDamageSource setThorns() {
+		this.thorns = true;
 		return this;
 	}
 
-	public boolean method_5549() {
-		return this.field_5880;
+	public boolean isThorns() {
+		return this.thorns;
 	}
 
 	@Nullable

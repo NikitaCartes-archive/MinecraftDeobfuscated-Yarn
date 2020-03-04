@@ -22,13 +22,14 @@ import com.mojang.realmsclient.dto.WorldTemplatePaginatedList;
 import com.mojang.realmsclient.exception.RealmsHttpException;
 import com.mojang.realmsclient.exception.RealmsServiceException;
 import com.mojang.realmsclient.exception.RetryCallException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
-import net.minecraft.realms.Realms;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.realms.CheckedGson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,32 +40,29 @@ public class RealmsClient {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final String sessionId;
 	private final String username;
-	private static final Gson gson = new Gson();
+	private static final CheckedGson field_22568 = new CheckedGson();
 
 	public static RealmsClient createRealmsClient() {
-		String string = Realms.userName();
-		String string2 = Realms.sessionId();
-		if (string != null && string2 != null) {
-			if (!initialized) {
-				initialized = true;
-				String string3 = System.getenv("realms.environment");
-				if (string3 == null) {
-					string3 = System.getProperty("realms.environment");
-				}
-
-				if (string3 != null) {
-					if ("LOCAL".equals(string3)) {
-						switchToLocal();
-					} else if ("STAGE".equals(string3)) {
-						switchToStage();
-					}
-				}
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		String string = minecraftClient.getSession().getUsername();
+		String string2 = minecraftClient.getSession().getSessionId();
+		if (!initialized) {
+			initialized = true;
+			String string3 = System.getenv("realms.environment");
+			if (string3 == null) {
+				string3 = System.getProperty("realms.environment");
 			}
 
-			return new RealmsClient(string2, string, Realms.getProxy());
-		} else {
-			return null;
+			if (string3 != null) {
+				if ("LOCAL".equals(string3)) {
+					switchToLocal();
+				} else if ("STAGE".equals(string3)) {
+					switchToStage();
+				}
+			}
 		}
+
+		return new RealmsClient(string2, string, minecraftClient.getNetworkProxy());
 	}
 
 	public static void switchToStage() {
@@ -85,13 +83,13 @@ public class RealmsClient {
 		RealmsClientConfig.setProxy(proxy);
 	}
 
-	public RealmsServerList listWorlds() throws RealmsServiceException, IOException {
+	public RealmsServerList listWorlds() throws RealmsServiceException {
 		String string = this.url("worlds");
 		String string2 = this.execute(Request.get(string));
 		return RealmsServerList.parse(string2);
 	}
 
-	public RealmsServer getOwnWorld(long worldId) throws RealmsServiceException, IOException {
+	public RealmsServer getOwnWorld(long worldId) throws RealmsServiceException {
 		String string = this.url("worlds" + "/$ID".replace("$ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.get(string));
 		return RealmsServer.parse(string2);
@@ -103,32 +101,32 @@ public class RealmsClient {
 		return RealmsServerPlayerLists.parse(string2);
 	}
 
-	public RealmsServerAddress join(long worldId) throws RealmsServiceException, IOException {
+	public RealmsServerAddress join(long worldId) throws RealmsServiceException {
 		String string = this.url("worlds" + "/v1/$ID/join/pc".replace("$ID", "" + worldId));
 		String string2 = this.execute(Request.get(string, 5000, 30000));
 		return RealmsServerAddress.parse(string2);
 	}
 
-	public void initializeWorld(long worldId, String name, String motd) throws RealmsServiceException, IOException {
+	public void initializeWorld(long worldId, String name, String motd) throws RealmsServiceException {
 		RealmsDescriptionDto realmsDescriptionDto = new RealmsDescriptionDto(name, motd);
 		String string = this.url("worlds" + "/$WORLD_ID/initialize".replace("$WORLD_ID", String.valueOf(worldId)));
-		String string2 = gson.toJson(realmsDescriptionDto);
+		String string2 = field_22568.toJson(realmsDescriptionDto);
 		this.execute(Request.post(string, string2, 5000, 10000));
 	}
 
-	public Boolean mcoEnabled() throws RealmsServiceException, IOException {
+	public Boolean mcoEnabled() throws RealmsServiceException {
 		String string = this.url("mco/available");
 		String string2 = this.execute(Request.get(string));
 		return Boolean.valueOf(string2);
 	}
 
-	public Boolean stageAvailable() throws RealmsServiceException, IOException {
+	public Boolean stageAvailable() throws RealmsServiceException {
 		String string = this.url("mco/stageAvailable");
 		String string2 = this.execute(Request.get(string));
 		return Boolean.valueOf(string2);
 	}
 
-	public RealmsClient.CompatibleVersionResponse clientCompatible() throws RealmsServiceException, IOException {
+	public RealmsClient.CompatibleVersionResponse clientCompatible() throws RealmsServiceException {
 		String string = this.url("mco/client/compatible");
 		String string2 = this.execute(Request.get(string));
 
@@ -149,11 +147,11 @@ public class RealmsClient {
 		this.execute(Request.delete(string));
 	}
 
-	public RealmsServer invite(long worldId, String profileName) throws RealmsServiceException, IOException {
+	public RealmsServer invite(long worldId, String profileName) throws RealmsServiceException {
 		PlayerInfo playerInfo = new PlayerInfo();
 		playerInfo.setName(profileName);
 		String string = this.url("invites" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(worldId)));
-		String string2 = this.execute(Request.post(string, gson.toJson(playerInfo)));
+		String string2 = this.execute(Request.post(string, field_22568.toJson(playerInfo)));
 		return RealmsServer.parse(string2);
 	}
 
@@ -163,13 +161,13 @@ public class RealmsClient {
 		return BackupList.parse(string2);
 	}
 
-	public void update(long worldId, String name, String motd) throws RealmsServiceException, UnsupportedEncodingException {
+	public void update(long worldId, String name, String motd) throws RealmsServiceException {
 		RealmsDescriptionDto realmsDescriptionDto = new RealmsDescriptionDto(name, motd);
 		String string = this.url("worlds" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(worldId)));
-		this.execute(Request.post(string, gson.toJson(realmsDescriptionDto)));
+		this.execute(Request.post(string, field_22568.toJson(realmsDescriptionDto)));
 	}
 
-	public void updateSlot(long worldId, int slot, RealmsWorldOptions options) throws RealmsServiceException, UnsupportedEncodingException {
+	public void updateSlot(long worldId, int slot, RealmsWorldOptions options) throws RealmsServiceException {
 		String string = this.url("worlds" + "/$WORLD_ID/slot/$SLOT_ID".replace("$WORLD_ID", String.valueOf(worldId)).replace("$SLOT_ID", String.valueOf(slot)));
 		String string2 = options.toJson();
 		this.execute(Request.post(string, string2));
@@ -210,33 +208,33 @@ public class RealmsClient {
 		return Ops.parse(this.execute(Request.delete(string2)));
 	}
 
-	public Boolean open(long worldId) throws RealmsServiceException, IOException {
+	public Boolean open(long worldId) throws RealmsServiceException {
 		String string = this.url("worlds" + "/$WORLD_ID/open".replace("$WORLD_ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.put(string, ""));
 		return Boolean.valueOf(string2);
 	}
 
-	public Boolean close(long worldId) throws RealmsServiceException, IOException {
+	public Boolean close(long worldId) throws RealmsServiceException {
 		String string = this.url("worlds" + "/$WORLD_ID/close".replace("$WORLD_ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.put(string, ""));
 		return Boolean.valueOf(string2);
 	}
 
-	public Boolean resetWorldWithSeed(long worldId, String seed, Integer levelType, boolean generateStructures) throws RealmsServiceException, IOException {
+	public Boolean resetWorldWithSeed(long worldId, String seed, Integer levelType, boolean generateStructures) throws RealmsServiceException {
 		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(seed, -1L, levelType, generateStructures);
 		String string = this.url("worlds" + "/$WORLD_ID/reset".replace("$WORLD_ID", String.valueOf(worldId)));
-		String string2 = this.execute(Request.post(string, gson.toJson(realmsWorldResetDto), 30000, 80000));
+		String string2 = this.execute(Request.post(string, field_22568.toJson(realmsWorldResetDto), 30000, 80000));
 		return Boolean.valueOf(string2);
 	}
 
-	public Boolean resetWorldWithTemplate(long worldId, String worldTemplateId) throws RealmsServiceException, IOException {
+	public Boolean resetWorldWithTemplate(long worldId, String worldTemplateId) throws RealmsServiceException {
 		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(null, Long.valueOf(worldTemplateId), -1, false);
 		String string = this.url("worlds" + "/$WORLD_ID/reset".replace("$WORLD_ID", String.valueOf(worldId)));
-		String string2 = this.execute(Request.post(string, gson.toJson(realmsWorldResetDto), 30000, 80000));
+		String string2 = this.execute(Request.post(string, field_22568.toJson(realmsWorldResetDto), 30000, 80000));
 		return Boolean.valueOf(string2);
 	}
 
-	public Subscription subscriptionFor(long worldId) throws RealmsServiceException, IOException {
+	public Subscription subscriptionFor(long worldId) throws RealmsServiceException {
 		String string = this.url("subscriptions" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.get(string));
 		return Subscription.parse(string2);
@@ -291,7 +289,7 @@ public class RealmsClient {
 		this.execute(Request.post(string, ""));
 	}
 
-	public RealmsNews getNews() throws RealmsServiceException, IOException {
+	public RealmsNews getNews() throws RealmsServiceException {
 		String string = this.url("mco/v1/news");
 		String string2 = this.execute(Request.get(string, 5000, 10000));
 		return RealmsNews.parse(string2);
@@ -299,28 +297,29 @@ public class RealmsClient {
 
 	public void sendPingResults(PingResult pingResult) throws RealmsServiceException {
 		String string = this.url("regions/ping/stat");
-		this.execute(Request.post(string, gson.toJson(pingResult)));
+		this.execute(Request.post(string, field_22568.toJson(pingResult)));
 	}
 
-	public Boolean trialAvailable() throws RealmsServiceException, IOException {
+	public Boolean trialAvailable() throws RealmsServiceException {
 		String string = this.url("trial");
 		String string2 = this.execute(Request.get(string));
 		return Boolean.valueOf(string2);
 	}
 
-	public void deleteWorld(long worldId) throws RealmsServiceException, IOException {
+	public void deleteWorld(long worldId) throws RealmsServiceException {
 		String string = this.url("worlds" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(worldId)));
 		this.execute(Request.delete(string));
 	}
 
+	@Nullable
 	private String url(String path) {
 		return this.url(path, null);
 	}
 
-	private String url(String path, String queryString) {
+	@Nullable
+	private String url(String path, @Nullable String queryString) {
 		try {
-			URI uRI = new URI(currentEnvironment.protocol, currentEnvironment.baseUrl, "/" + path, queryString, null);
-			return uRI.toASCIIString();
+			return new URI(currentEnvironment.protocol, currentEnvironment.baseUrl, "/" + path, queryString, null).toASCIIString();
 		} catch (URISyntaxException var4) {
 			var4.printStackTrace();
 			return null;
@@ -330,7 +329,7 @@ public class RealmsClient {
 	private String execute(Request<?> r) throws RealmsServiceException {
 		r.cookie("sid", this.sessionId);
 		r.cookie("user", this.username);
-		r.cookie("version", Realms.getMinecraftVersionString());
+		r.cookie("version", SharedConstants.getGameVersion().getName());
 
 		try {
 			int i = r.responseCode();

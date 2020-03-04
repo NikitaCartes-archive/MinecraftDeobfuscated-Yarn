@@ -97,8 +97,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	protected boolean field_6964 = true;
 	protected int soundTicks;
 
-	protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> type, World world) {
-		super(type, world);
+	protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> entityType, World world) {
+		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.method_6721();
 	}
@@ -523,7 +523,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.world.getBlockState(new BlockPos(this).down()).getBlock() == Blocks.GRASS_BLOCK) {
+					&& this.world.getBlockState(this.getSenseCenterPos().down()).getBlock() == Blocks.GRASS_BLOCK) {
 					this.setEatingGrass(true);
 				}
 

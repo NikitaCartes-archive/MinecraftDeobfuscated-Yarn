@@ -29,7 +29,7 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-		BlockPos blockPos = new BlockPos(mobEntityWithAi);
+		BlockPos blockPos = mobEntityWithAi.getSenseCenterPos();
 		if (serverWorld.isNearOccupiedPointOfInterest(blockPos)) {
 			this.updateWalkTarget(mobEntityWithAi);
 		} else {
@@ -45,7 +45,7 @@ public class FindWalkTargetTask extends Task<MobEntityWithAi> {
 
 	private void updateWalkTarget(MobEntityWithAi entity, ChunkSectionPos pos) {
 		Optional<Vec3d> optional = Optional.ofNullable(
-			TargetFinder.findTargetTowards(entity, this.maxHorizontalDistance, this.maxVerticalDistance, new Vec3d(pos.getCenterPos()))
+			TargetFinder.findTargetTowards(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.method_24955(pos.getCenterPos()))
 		);
 		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
 	}

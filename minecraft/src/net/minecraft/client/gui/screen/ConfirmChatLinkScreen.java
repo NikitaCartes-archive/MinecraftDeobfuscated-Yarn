@@ -39,14 +39,14 @@ public class ConfirmChatLinkScreen extends ConfirmScreen {
 	}
 
 	public void copyToClipboard() {
-		this.minecraft.keyboard.setClipboard(this.link);
+		this.client.keyboard.setClipboard(this.link);
 	}
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		super.render(mouseX, mouseY, delta);
 		if (this.drawWarning) {
-			this.drawCenteredString(this.font, this.warning, this.width / 2, 110, 16764108);
+			this.drawCenteredString(this.textRenderer, this.warning, this.width / 2, 110, 16764108);
 		}
 	}
 }

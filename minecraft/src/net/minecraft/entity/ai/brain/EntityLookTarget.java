@@ -16,7 +16,7 @@ public class EntityLookTarget implements LookTarget {
 
 	@Override
 	public BlockPos getBlockPos() {
-		return new BlockPos(this.entity);
+		return this.entity.getSenseCenterPos();
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class ResourceTexture extends AbstractTexture {
 	}
 
 	private void method_22810(NativeImage nativeImage, boolean bl, boolean bl2) {
-		TextureUtil.prepareImage(this.getGlId(), 0, nativeImage.getWidth(), nativeImage.getHeight());
+		TextureUtil.method_24959(this.getGlId(), 0, nativeImage.getWidth(), nativeImage.getHeight());
 		nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), bl, bl2, false, true);
 	}
 

@@ -24,18 +24,18 @@ public class ClientResourcePackProfile extends ResourcePackProfile {
 	private Identifier iconId;
 
 	public ClientResourcePackProfile(
-		String name,
-		boolean notSorting,
-		Supplier<ResourcePack> packCreator,
-		ResourcePack pack,
-		PackResourceMetadata metadata,
-		ResourcePackProfile.InsertionPosition direction
+		String string,
+		boolean bl,
+		Supplier<ResourcePack> supplier,
+		ResourcePack resourcePack,
+		PackResourceMetadata packResourceMetadata,
+		ResourcePackProfile.InsertionPosition insertionPosition
 	) {
-		super(name, notSorting, packCreator, pack, metadata, direction);
+		super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition);
 		NativeImage nativeImage = null;
 
 		try {
-			InputStream inputStream = pack.openRoot("pack.png");
+			InputStream inputStream = resourcePack.openRoot("pack.png");
 			Throwable var9 = null;
 
 			try {

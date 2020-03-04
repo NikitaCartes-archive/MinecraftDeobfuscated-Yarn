@@ -56,7 +56,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 	}
 
 	private void uploadTexture(NativeImage image) {
-		TextureUtil.prepareImage(this.getGlId(), image.getWidth(), image.getHeight());
+		TextureUtil.method_24958(this.getGlId(), image.getWidth(), image.getHeight());
 		image.upload(0, 0, 0, true);
 	}
 

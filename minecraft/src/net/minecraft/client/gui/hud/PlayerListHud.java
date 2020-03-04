@@ -211,9 +211,9 @@ public class PlayerListHud extends DrawableHelper {
 			l = 4;
 		}
 
-		this.setBlitOffset(this.getBlitOffset() + 100);
+		this.setZOffset(this.getZOffset() + 100);
 		this.blit(j + i - 11, y, 0, 176 + l * 8, 10, 8);
-		this.setBlitOffset(this.getBlitOffset() - 100);
+		this.setZOffset(this.getZOffset() - 100);
 	}
 
 	private void renderScoreboardObjective(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry) {

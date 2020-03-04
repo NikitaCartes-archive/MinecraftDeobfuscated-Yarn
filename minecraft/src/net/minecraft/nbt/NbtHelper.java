@@ -158,14 +158,56 @@ public final class NbtHelper {
 		}
 	}
 
-	public static CompoundTag fromUuid(UUID uuid) {
+	/**
+	 * Serializes a {@link UUID} into its equivalent NBT representation.
+	 * 
+	 * @since 20w10a
+	 */
+	public static IntArrayTag fromUuidNew(UUID uuid) {
+		long l = uuid.getMostSignificantBits();
+		long m = uuid.getLeastSignificantBits();
+		return new IntArrayTag(new int[]{(int)(l >> 32), (int)l, (int)(m >> 32), (int)m});
+	}
+
+	/**
+	 * Deserializes a tag into a {@link UUID}.
+	 * The tag's data must have the same structure as the output of {@link #fromUuid}.
+	 * 
+	 * @throws IllegalArgumentException if {@code tag} is not a valid representation of a UUID
+	 * @since 20w10a
+	 */
+	public static UUID toUuidNew(Tag tag) {
+		if (tag.getReader() != IntArrayTag.READER) {
+			throw new IllegalArgumentException(
+				"Expected UUID-Tag to be of type " + IntArrayTag.READER.getCrashReportName() + ", but found " + tag.getReader().getCrashReportName() + "."
+			);
+		} else {
+			int[] is = ((IntArrayTag)tag).getIntArray();
+			if (is.length != 4) {
+				throw new IllegalArgumentException("Expected UUID-Array to be of length 4, but found " + is.length + ".");
+			} else {
+				return new UUID((long)is[0] << 32 | (long)is[1] & 4294967295L, (long)is[2] << 32 | (long)is[3] & 4294967295L);
+			}
+		}
+	}
+
+	/**
+	 * @deprecated use {@link #fromUuidNew}.
+	 */
+	@Deprecated
+	public static CompoundTag fromUuidOld(UUID uuid) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putLong("M", uuid.getMostSignificantBits());
 		compoundTag.putLong("L", uuid.getLeastSignificantBits());
 		return compoundTag;
 	}
 
-	public static UUID toUuid(CompoundTag tag) {
+	/**
+	 * @deprecated use {@link #toUuidNew} for newly added deserialization methods.
+	 * Other places may keep calling this besides {@link #toUuidNew} to ensure a smooth transition for old worlds.
+	 */
+	@Deprecated
+	public static UUID toUuidOld(CompoundTag tag) {
 		return new UUID(tag.getLong("M"), tag.getLong("L"));
 	}
 

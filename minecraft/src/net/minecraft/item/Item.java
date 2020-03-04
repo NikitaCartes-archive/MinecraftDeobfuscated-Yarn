@@ -137,7 +137,7 @@ public class Item implements ItemConvertible {
 		return ActionResult.PASS;
 	}
 
-	public float getMiningSpeed(ItemStack stack, BlockState state) {
+	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		return 1.0F;
 	}
 

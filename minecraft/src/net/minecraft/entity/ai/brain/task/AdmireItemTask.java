@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.DynamicSerializableBoolean;
 
 public class AdmireItemTask<E extends PiglinEntity> extends Task<E> {
 	private final int duration;
@@ -18,7 +19,7 @@ public class AdmireItemTask<E extends PiglinEntity> extends Task<E> {
 				MemoryModuleState.VALUE_PRESENT,
 				MemoryModuleType.ADMIRING_ITEM,
 				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.WAS_HIT_BY_PLAYER,
+				MemoryModuleType.ADMIRING_DISABLED,
 				MemoryModuleState.VALUE_ABSENT
 			)
 		);
@@ -31,6 +32,6 @@ public class AdmireItemTask<E extends PiglinEntity> extends Task<E> {
 	}
 
 	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-		piglinEntity.getBrain().remember(MemoryModuleType.ADMIRING_ITEM, true, l, (long)this.duration);
+		piglinEntity.getBrain().remember(MemoryModuleType.ADMIRING_ITEM, DynamicSerializableBoolean.of(true), (long)this.duration);
 	}
 }

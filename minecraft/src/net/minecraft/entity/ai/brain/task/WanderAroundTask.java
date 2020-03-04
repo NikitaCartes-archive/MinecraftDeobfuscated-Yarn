@@ -113,7 +113,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 				return true;
 			}
 
-			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
+			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)mobEntity, 10, 7, Vec3d.method_24955(blockPos));
 			if (vec3d != null) {
 				this.path = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
 				return this.path != null;
@@ -124,6 +124,6 @@ public class WanderAroundTask extends Task<MobEntity> {
 	}
 
 	private boolean hasReached(MobEntity entity, WalkTarget walkTarget) {
-		return walkTarget.getLookTarget().getBlockPos().getManhattanDistance(new BlockPos(entity)) <= walkTarget.getCompletionRange();
+		return walkTarget.getLookTarget().getBlockPos().getManhattanDistance(entity.getSenseCenterPos()) <= walkTarget.getCompletionRange();
 	}
 }

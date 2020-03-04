@@ -13,6 +13,14 @@ public class WhitelistEntry extends ServerConfigEntry<GameProfile> {
 		super(deserializeProfile(jsonObject));
 	}
 
+	@Override
+	protected void method_24896(JsonObject jsonObject) {
+		if (this.getKey() != null) {
+			jsonObject.addProperty("uuid", this.getKey().getId() == null ? "" : this.getKey().getId().toString());
+			jsonObject.addProperty("name", this.getKey().getName());
+		}
+	}
+
 	private static GameProfile deserializeProfile(JsonObject json) {
 		if (json.has("uuid") && json.has("name")) {
 			String string = json.get("uuid").getAsString();

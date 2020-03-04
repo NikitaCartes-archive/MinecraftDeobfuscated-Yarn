@@ -29,7 +29,7 @@ public class StopFollowingCustomerGoal extends Goal {
 			} else if (this.trader.squaredDistanceTo(playerEntity) > 16.0) {
 				return false;
 			} else {
-				return playerEntity.container != null;
+				return playerEntity.currentScreenHandler != null;
 			}
 		}
 	}

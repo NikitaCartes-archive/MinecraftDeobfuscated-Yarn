@@ -351,7 +351,7 @@ public class AreaEffectCloudEntity extends Entity {
 		this.radiusOnUse = tag.getFloat("RadiusOnUse");
 		this.radiusGrowth = tag.getFloat("RadiusPerTick");
 		this.setRadius(tag.getFloat("Radius"));
-		this.ownerUuid = tag.getUuid("OwnerUUID");
+		this.ownerUuid = tag.getUuidOld("OwnerUUID");
 		if (tag.contains("Particle", 8)) {
 			try {
 				this.setParticleType(ParticleArgumentType.readParameters(new StringReader(tag.getString("Particle"))));
@@ -393,7 +393,7 @@ public class AreaEffectCloudEntity extends Entity {
 		tag.putFloat("Radius", this.getRadius());
 		tag.putString("Particle", this.getParticleType().asString());
 		if (this.ownerUuid != null) {
-			tag.putUuid("OwnerUUID", this.ownerUuid);
+			tag.putUuidOld("OwnerUUID", this.ownerUuid);
 		}
 
 		if (this.customColor) {

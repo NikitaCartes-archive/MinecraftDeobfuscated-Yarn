@@ -68,8 +68,8 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.minecraft.keyboard.enableRepeatEvents(true);
-		this.levelNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterName")) {
+		this.client.keyboard.enableRepeatEvents(true);
+		this.levelNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterName")) {
 			@Override
 			protected String getNarrationMessage() {
 				return super.getNarrationMessage() + ". " + I18n.translate("selectWorld.resultFolder") + " " + CreateWorldScreen.this.saveDirectoryName;
@@ -112,7 +112,7 @@ public class CreateWorldScreen extends Screen {
 				}
 			}
 		);
-		this.seedField = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterSeed"));
+		this.seedField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterSeed"));
 		this.seedField.setText(this.seed);
 		this.seedField.setChangedListener(string -> this.seed = this.seedField.getText());
 		this.children.add(this.seedField);
@@ -168,11 +168,11 @@ public class CreateWorldScreen extends Screen {
 		this.mapTypeSwitchButton.visible = false;
 		this.customizeTypeButton = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType"), buttonWidget -> {
 			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.FLAT) {
-				this.minecraft.openScreen(new CustomizeFlatLevelScreen(this, this.generatorOptionsTag));
+				this.client.openScreen(new CustomizeFlatLevelScreen(this, this.generatorOptionsTag));
 			}
 
 			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.BUFFET) {
-				this.minecraft.openScreen(new CustomizeBuffetLevelScreen(this, this.generatorOptionsTag));
+				this.client.openScreen(new CustomizeBuffetLevelScreen(this, this.generatorOptionsTag));
 			}
 		}));
 		this.customizeTypeButton.visible = false;
@@ -218,7 +218,7 @@ public class CreateWorldScreen extends Screen {
 		);
 		this.createLevelButton.active = !this.levelName.isEmpty();
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent))
 		);
 		this.setMoreOptionsOpen(this.moreOptionsOpen);
 		this.setInitialFocus(this.levelNameField);
@@ -238,12 +238,12 @@ public class CreateWorldScreen extends Screen {
 		}
 
 		try {
-			this.saveDirectoryName = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
+			this.saveDirectoryName = FileNameUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
 		} catch (Exception var4) {
 			this.saveDirectoryName = "World";
 
 			try {
-				this.saveDirectoryName = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
+				this.saveDirectoryName = FileNameUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
 			} catch (Exception var3) {
 				throw new RuntimeException("Could not create save folder", var3);
 			}
@@ -252,11 +252,11 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.minecraft.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.enableRepeatEvents(false);
 	}
 
 	private void createLevel() {
-		this.minecraft.openScreen(null);
+		this.client.openScreen(null);
 		if (!this.creatingLevel) {
 			this.creatingLevel = true;
 			long l = new Random().nextLong();
@@ -282,7 +282,7 @@ public class CreateWorldScreen extends Screen {
 				levelInfo.enableCommands();
 			}
 
-			this.minecraft.startIntegratedServer(this.saveDirectoryName, this.levelNameField.getText().trim(), levelInfo);
+			this.client.startIntegratedServer(this.saveDirectoryName, this.levelNameField.getText().trim(), levelInfo);
 		}
 	}
 
@@ -371,28 +371,28 @@ public class CreateWorldScreen extends Screen {
 		if (this.moreOptionsOpen) {
 			this.setMoreOptionsOpen(false);
 		} else {
-			this.minecraft.openScreen(this.parent);
+			this.client.openScreen(this.parent);
 		}
 	}
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, -1);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, -1);
 		if (this.moreOptionsOpen) {
-			this.drawString(this.font, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
-			this.drawString(this.font, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
+			this.drawString(this.textRenderer, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
+			this.drawString(this.textRenderer, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
 			if (this.generateStructuresButton.visible) {
-				this.drawString(this.font, I18n.translate("selectWorld.mapFeatures.info"), this.width / 2 - 150, 122, -6250336);
+				this.drawString(this.textRenderer, I18n.translate("selectWorld.mapFeatures.info"), this.width / 2 - 150, 122, -6250336);
 			}
 
 			if (this.enableCheatsButton.visible) {
-				this.drawString(this.font, I18n.translate("selectWorld.allowCommands.info"), this.width / 2 - 150, 172, -6250336);
+				this.drawString(this.textRenderer, I18n.translate("selectWorld.allowCommands.info"), this.width / 2 - 150, 172, -6250336);
 			}
 
 			this.seedField.render(mouseX, mouseY, delta);
 			if (LevelGeneratorType.TYPES[this.generatorType].hasInfo()) {
-				this.font
+				this.textRenderer
 					.drawTrimmed(
 						I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getInfoTranslationKey()),
 						this.mapTypeSwitchButton.x + 2,
@@ -402,11 +402,11 @@ public class CreateWorldScreen extends Screen {
 					);
 			}
 		} else {
-			this.drawString(this.font, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
-			this.drawString(this.font, I18n.translate("selectWorld.resultFolder") + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
+			this.drawString(this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
+			this.drawString(this.textRenderer, I18n.translate("selectWorld.resultFolder") + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
 			this.levelNameField.render(mouseX, mouseY, delta);
-			this.drawCenteredString(this.font, this.firstGameModeDescriptionLine, this.width / 2, 137, -6250336);
-			this.drawCenteredString(this.font, this.secondGameModeDescriptionLine, this.width / 2, 149, -6250336);
+			this.drawCenteredString(this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2, 137, -6250336);
+			this.drawCenteredString(this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2, 149, -6250336);
 		}
 
 		super.render(mouseX, mouseY, delta);

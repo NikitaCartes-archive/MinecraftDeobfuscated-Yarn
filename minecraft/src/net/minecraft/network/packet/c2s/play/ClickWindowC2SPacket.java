@@ -3,10 +3,10 @@ package net.minecraft.network.packet.c2s.play;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.container.SlotActionType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.PacketByteBuf;
 
 public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {

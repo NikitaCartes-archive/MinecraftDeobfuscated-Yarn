@@ -103,7 +103,7 @@ public class StructurePoolBasedGenerator {
 				structureManager,
 				structurePoolElement,
 				blockPos,
-				structurePoolElement.method_19308(),
+				structurePoolElement.getGroundLevelDelta(),
 				blockRotation,
 				structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation)
 			);
@@ -200,7 +200,7 @@ public class StructurePoolBasedGenerator {
 										Identifier identifier = new Identifier(structureBlockInfox.tag.getString("target_pool"));
 										StructurePool structurePoolxx = StructurePoolBasedGenerator.REGISTRY.get(identifier);
 										StructurePool structurePool2xx = StructurePoolBasedGenerator.REGISTRY.get(structurePoolxx.getTerminatorsId());
-										return Math.max(structurePoolxx.method_19309(this.structureManager), structurePool2xx.method_19309(this.structureManager));
+										return Math.max(structurePoolxx.getHighestY(this.structureManager), structurePool2xx.getHighestY(this.structureManager));
 									}
 								}).max().orElse(0);
 							}
@@ -243,7 +243,7 @@ public class StructurePoolBasedGenerator {
 										if (bl3) {
 											t = s - p;
 										} else {
-											t = structurePoolElement2.method_19308();
+											t = structurePoolElement2.getGroundLevelDelta();
 										}
 
 										PoolStructurePiece poolStructurePiece = this.pieceFactory

@@ -544,7 +544,7 @@ public class WoodlandMansionGenerator {
 				}
 			}
 
-			BlockPos blockPos2 = Structure.method_15162(new BlockPos(1, 0, 0), BlockMirror.NONE, blockRotation2, 7, 7);
+			BlockPos blockPos2 = Structure.applyTransformedOffset(new BlockPos(1, 0, 0), BlockMirror.NONE, blockRotation2, 7, 7);
 			blockRotation2 = blockRotation2.rotate(blockRotation);
 			blockPos2 = blockPos2.rotate(blockRotation);
 			BlockPos blockPos3 = blockPos.add(blockPos2.getX(), 0, blockPos2.getZ());
@@ -1082,7 +1082,7 @@ public class WoodlandMansionGenerator {
 
 				illagerEntity.setPersistent();
 				illagerEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-				illagerEntity.initialize(world, world.getLocalDifficulty(new BlockPos(illagerEntity)), SpawnType.STRUCTURE, null, null);
+				illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getSenseCenterPos()), SpawnType.STRUCTURE, null, null);
 				world.spawnEntity(illagerEntity);
 				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
 			}

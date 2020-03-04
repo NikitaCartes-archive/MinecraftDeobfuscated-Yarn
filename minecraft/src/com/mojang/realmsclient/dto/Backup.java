@@ -56,7 +56,7 @@ public class Backup extends ValueObject {
 					stringBuilder.append(string).append(" ");
 				} else {
 					char c = Character.toUpperCase(string.charAt(0));
-					stringBuilder.append(c).append(string.substring(1, string.length())).append(" ");
+					stringBuilder.append(c).append(string.substring(1)).append(" ");
 				}
 			}
 		}

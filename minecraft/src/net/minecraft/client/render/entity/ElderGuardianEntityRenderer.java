@@ -16,7 +16,7 @@ public class ElderGuardianEntityRenderer extends GuardianEntityRenderer {
 	}
 
 	protected void scale(GuardianEntity guardianEntity, MatrixStack matrixStack, float f) {
-		matrixStack.scale(ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492, ElderGuardianEntity.field_17492);
+		matrixStack.scale(ElderGuardianEntity.SCALE, ElderGuardianEntity.SCALE, ElderGuardianEntity.SCALE);
 	}
 
 	@Override

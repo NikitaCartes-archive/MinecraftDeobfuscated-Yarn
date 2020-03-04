@@ -26,8 +26,8 @@ public abstract class PatrolEntity extends HostileEntity {
 	private boolean patrolLeader;
 	private boolean patrolling;
 
-	protected PatrolEntity(EntityType<? extends PatrolEntity> type, World world) {
-		super(type, world);
+	protected PatrolEntity(EntityType<? extends PatrolEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	public void setRandomPatrolTarget() {
-		this.patrolTarget = new BlockPos(this).add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
+		this.patrolTarget = this.getSenseCenterPos().add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
 		this.patrolling = true;
 	}
 
@@ -173,7 +173,7 @@ public abstract class PatrolEntity extends HostileEntity {
 				} else if (bl && this.actor.getPatrolTarget().isWithinDistance(this.actor.getPos(), 10.0)) {
 					this.actor.setRandomPatrolTarget();
 				} else {
-					Vec3d vec3d = new Vec3d(this.actor.getPatrolTarget());
+					Vec3d vec3d = Vec3d.method_24955(this.actor.getPatrolTarget());
 					Vec3d vec3d2 = this.actor.getPos();
 					Vec3d vec3d3 = vec3d2.subtract(vec3d);
 					vec3d = vec3d3.rotateY(90.0F).multiply(0.4).add(vec3d);
@@ -202,7 +202,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			Random random = this.actor.getRandom();
 			BlockPos blockPos = this.actor
 				.world
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.actor.getSenseCenterPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 			return this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
 		}
 	}

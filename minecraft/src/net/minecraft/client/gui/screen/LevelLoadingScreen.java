@@ -62,7 +62,7 @@ public class LevelLoadingScreen extends Screen {
 		int j = this.height / 2;
 		int k = 30;
 		drawChunkMap(this.progressProvider, i, j + 30, 2, 0);
-		this.drawCenteredString(this.font, string, i, j - 9 / 2 - 30, 16777215);
+		this.drawCenteredString(this.textRenderer, string, i, j - 9 / 2 - 30, 16777215);
 	}
 
 	public static void drawChunkMap(WorldGenerationProgressTracker progressProvider, int centerX, int centerY, int chunkSize, int i) {

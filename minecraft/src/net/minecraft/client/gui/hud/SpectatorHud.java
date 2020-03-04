@@ -46,12 +46,12 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 				this.spectatorMenu.close();
 			} else {
 				int i = this.client.getWindow().getScaledWidth() / 2;
-				int j = this.getBlitOffset();
-				this.setBlitOffset(-90);
+				int j = this.getZOffset();
+				this.setZOffset(-90);
 				int k = MathHelper.floor((float)this.client.getWindow().getScaledHeight() - 22.0F * f);
 				SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
 				this.renderSpectatorMenu(f, i, k, spectatorMenuState);
-				this.setBlitOffset(j);
+				this.setZOffset(j);
 			}
 		}
 	}

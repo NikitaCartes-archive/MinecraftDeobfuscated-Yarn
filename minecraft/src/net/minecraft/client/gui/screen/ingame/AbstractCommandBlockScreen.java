@@ -36,7 +36,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.minecraft.keyboard.enableRepeatEvents(true);
+		this.client.keyboard.enableRepeatEvents(true);
 		this.doneButton = this.addButton(
 			new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.commitAndClose())
 		);
@@ -50,7 +50,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				this.updateTrackedOutput();
 			})
 		);
-		this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command")) {
+		this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command")) {
 			@Override
 			protected String getNarrationMessage() {
 				return super.getNarrationMessage() + AbstractCommandBlockScreen.this.commandSuggestor.method_23958();
@@ -60,7 +60,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
 		this.children.add(this.consoleCommandTextField);
 		this.previousOutputTextField = new TextFieldWidget(
-			this.font, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, I18n.translate("advMode.previousOutput")
+			this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, I18n.translate("advMode.previousOutput")
 		);
 		this.previousOutputTextField.setMaxLength(32500);
 		this.previousOutputTextField.setEditable(false);
@@ -68,7 +68,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.children.add(this.previousOutputTextField);
 		this.setInitialFocus(this.consoleCommandTextField);
 		this.consoleCommandTextField.setSelected(true);
-		this.commandSuggestor = new CommandSuggestor(this.minecraft, this, this.consoleCommandTextField, this.font, true, true, 0, 7, false, Integer.MIN_VALUE);
+		this.commandSuggestor = new CommandSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
 		this.commandSuggestor.setWindowActive(true);
 		this.commandSuggestor.refresh();
 	}
@@ -98,12 +98,12 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			commandBlockExecutor.setLastOutput(null);
 		}
 
-		this.minecraft.openScreen(null);
+		this.client.openScreen(null);
 	}
 
 	@Override
 	public void removed() {
-		this.minecraft.keyboard.enableRepeatEvents(false);
+		this.client.keyboard.enableRepeatEvents(false);
 	}
 
 	protected abstract void syncSettingsToServer(CommandBlockExecutor commandExecutor);
@@ -111,7 +111,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	public void onClose() {
 		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
-		this.minecraft.openScreen(null);
+		this.client.openScreen(null);
 	}
 
 	private void onCommandChanged(String text) {
@@ -133,8 +133,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
-		return this.commandSuggestor.mouseScrolled(amount) ? true : super.mouseScrolled(d, e, amount);
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return this.commandSuggestor.mouseScrolled(amount) ? true : super.mouseScrolled(mouseX, mouseY, amount);
 	}
 
 	@Override
@@ -145,13 +145,13 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, I18n.translate("advMode.setCommand"), this.width / 2, 20, 16777215);
-		this.drawString(this.font, I18n.translate("advMode.command"), this.width / 2 - 150, 40, 10526880);
+		this.drawCenteredString(this.textRenderer, I18n.translate("advMode.setCommand"), this.width / 2, 20, 16777215);
+		this.drawString(this.textRenderer, I18n.translate("advMode.command"), this.width / 2 - 150, 40, 10526880);
 		this.consoleCommandTextField.render(mouseX, mouseY, delta);
 		int i = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
 			i += 5 * 9 + 1 + this.getTrackOutputButtonHeight() - 135;
-			this.drawString(this.font, I18n.translate("advMode.previousOutput"), this.width / 2 - 150, i + 4, 10526880);
+			this.drawString(this.textRenderer, I18n.translate("advMode.previousOutput"), this.width / 2 - 150, i + 4, 10526880);
 			this.previousOutputTextField.render(mouseX, mouseY, delta);
 		}
 

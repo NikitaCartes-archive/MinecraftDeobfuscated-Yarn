@@ -29,6 +29,6 @@ public class MemoryTransferTask<E extends MobEntity, T> extends Task<E> {
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
 		Brain<?> brain = mobEntity.getBrain();
-		brain.remember(this.targetType, (T)brain.getOptionalMemory(this.sourceType).get(), l, (long)this.duration.choose(serverWorld.random));
+		brain.remember(this.targetType, (T)brain.getOptionalMemory(this.sourceType).get(), (long)this.duration.choose(serverWorld.random));
 	}
 }

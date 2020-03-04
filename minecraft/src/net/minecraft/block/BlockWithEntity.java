@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.NameableContainerFactory;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -25,8 +25,8 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 
 	@Nullable
 	@Override
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		return blockEntity instanceof NameableContainerFactory ? (NameableContainerFactory)blockEntity : null;
+		return blockEntity instanceof NameableScreenHandlerFactory ? (NameableScreenHandlerFactory)blockEntity : null;
 	}
 }
