@@ -7,16 +7,16 @@ import com.mojang.realmsclient.RealmsMainScreen;
 import com.mojang.realmsclient.client.RealmsClient;
 import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.exception.RealmsServiceException;
-import com.mojang.realmsclient.gui.RealmsConstants;
 import com.mojang.realmsclient.gui.screens.RealmsLongRunningMcoTaskScreen;
-import com.mojang.realmsclient.util.RealmsTasks;
-import com.mojang.realmsclient.util.RealmsUtil;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.realms.Realms;
-import net.minecraft.realms.RealmsButton;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.realms.RealmsGetServerDetailsTask;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,96 +24,78 @@ import org.apache.logging.log4j.Logger;
 public class RealmsTermsScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final RealmsScreen lastScreen;
+    private final Screen field_22727;
     private final RealmsMainScreen mainScreen;
     private final RealmsServer realmsServer;
-    private RealmsButton agreeButton;
     private boolean onLink;
     private final String realmsToSUrl = "https://minecraft.net/realms/terms";
 
-    public RealmsTermsScreen(RealmsScreen lastScreen, RealmsMainScreen mainScreen, RealmsServer realmsServer) {
-        this.lastScreen = lastScreen;
+    public RealmsTermsScreen(Screen screen, RealmsMainScreen mainScreen, RealmsServer realmsServer) {
+        this.field_22727 = screen;
         this.mainScreen = mainScreen;
         this.realmsServer = realmsServer;
     }
 
     @Override
     public void init() {
-        this.setKeyboardHandlerSendRepeatsToGui(true);
-        int i = this.width() / 4;
-        int j = this.width() / 4 - 2;
-        int k = this.width() / 2 + 4;
-        this.agreeButton = new RealmsButton(1, i, RealmsConstants.row(12), j, 20, RealmsTermsScreen.getLocalizedString("mco.terms.buttons.agree")){
-
-            @Override
-            public void onPress() {
-                RealmsTermsScreen.this.agreedToTos();
-            }
-        };
-        this.buttonsAdd(this.agreeButton);
-        this.buttonsAdd(new RealmsButton(2, k, RealmsConstants.row(12), j, 20, RealmsTermsScreen.getLocalizedString("mco.terms.buttons.disagree")){
-
-            @Override
-            public void onPress() {
-                Realms.setScreen(RealmsTermsScreen.this.lastScreen);
-            }
-        });
+        this.client.keyboard.enableRepeatEvents(true);
+        int i = this.width / 4 - 2;
+        this.addButton(new ButtonWidget(this.width / 4, RealmsTermsScreen.row(12), i, 20, I18n.translate("mco.terms.buttons.agree", new Object[0]), buttonWidget -> this.agreedToTos()));
+        this.addButton(new ButtonWidget(this.width / 2 + 4, RealmsTermsScreen.row(12), i, 20, I18n.translate("mco.terms.buttons.disagree", new Object[0]), buttonWidget -> this.client.openScreen(this.field_22727)));
     }
 
     @Override
     public void removed() {
-        this.setKeyboardHandlerSendRepeatsToGui(false);
+        this.client.keyboard.enableRepeatEvents(false);
     }
 
     @Override
-    public boolean keyPressed(int eventKey, int scancode, int mods) {
-        if (eventKey == 256) {
-            Realms.setScreen(this.lastScreen);
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == 256) {
+            this.client.openScreen(this.field_22727);
             return true;
         }
-        return super.keyPressed(eventKey, scancode, mods);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void agreedToTos() {
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         try {
             realmsClient.agreeToTos();
-            RealmsLongRunningMcoTaskScreen realmsLongRunningMcoTaskScreen = new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsTasks.RealmsGetServerDetailsTask(this.mainScreen, this.lastScreen, this.realmsServer, new ReentrantLock()));
-            realmsLongRunningMcoTaskScreen.start();
-            Realms.setScreen(realmsLongRunningMcoTaskScreen);
+            this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.field_22727, new RealmsGetServerDetailsTask(this.mainScreen, this.field_22727, this.realmsServer, new ReentrantLock())));
         } catch (RealmsServiceException realmsServiceException) {
             LOGGER.error("Couldn't agree to TOS");
         }
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int buttonNum) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.onLink) {
-            Realms.setClipboard("https://minecraft.net/realms/terms");
-            RealmsUtil.browseTo("https://minecraft.net/realms/terms");
+            this.client.keyboard.setClipboard("https://minecraft.net/realms/terms");
+            Util.getOperatingSystem().open("https://minecraft.net/realms/terms");
             return true;
         }
-        return super.mouseClicked(x, y, buttonNum);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public void render(int xm, int ym, float a) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawCenteredString(RealmsTermsScreen.getLocalizedString("mco.terms.title"), this.width() / 2, 17, 0xFFFFFF);
-        this.drawString(RealmsTermsScreen.getLocalizedString("mco.terms.sentence.1"), this.width() / 2 - 120, RealmsConstants.row(5), 0xFFFFFF);
-        int i = this.fontWidth(RealmsTermsScreen.getLocalizedString("mco.terms.sentence.1"));
-        int j = this.width() / 2 - 121 + i;
-        int k = RealmsConstants.row(5);
-        int l = j + this.fontWidth("mco.terms.sentence.2") + 1;
-        int m = k + 1 + this.fontLineHeight();
-        if (j <= xm && xm <= l && k <= ym && ym <= m) {
+        this.drawCenteredString(this.textRenderer, I18n.translate("mco.terms.title", new Object[0]), this.width / 2, 17, 0xFFFFFF);
+        this.textRenderer.draw(I18n.translate("mco.terms.sentence.1", new Object[0]), this.width / 2 - 120, RealmsTermsScreen.row(5), 0xFFFFFF);
+        int i = this.textRenderer.getStringWidth(I18n.translate("mco.terms.sentence.1", new Object[0]));
+        int j = this.width / 2 - 121 + i;
+        int k = RealmsTermsScreen.row(5);
+        int l = j + this.textRenderer.getStringWidth("mco.terms.sentence.2") + 1;
+        int m = k + 1 + this.textRenderer.fontHeight;
+        if (j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m) {
             this.onLink = true;
-            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + i, RealmsConstants.row(5), 7107012);
+            this.textRenderer.draw(" " + I18n.translate("mco.terms.sentence.2", new Object[0]), this.width / 2 - 120 + i, RealmsTermsScreen.row(5), 7107012);
         } else {
             this.onLink = false;
-            this.drawString(" " + RealmsTermsScreen.getLocalizedString("mco.terms.sentence.2"), this.width() / 2 - 120 + i, RealmsConstants.row(5), 0x3366BB);
+            this.textRenderer.draw(" " + I18n.translate("mco.terms.sentence.2", new Object[0]), this.width / 2 - 120 + i, RealmsTermsScreen.row(5), 0x3366BB);
         }
-        super.render(xm, ym, a);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

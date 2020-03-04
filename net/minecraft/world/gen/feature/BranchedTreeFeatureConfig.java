@@ -27,10 +27,10 @@ extends TreeFeatureConfig {
     public final int trunkTopOffsetRandom;
     public final int foliageHeight;
     public final int foliageHeightRandom;
-    public final int maxWaterDepth;
+    public final int maxFluidDepth;
     public final boolean noVines;
 
-    protected BranchedTreeFeatureConfig(BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, FoliagePlacer foliagePlacer, List<TreeDecorator> treeDecorators, int baseHeight, int heightRandA, int heightRandB, int trunkHeight, int trunkHeightRandom, int trunkTopOffset, int trunkTopOffsetRandom, int foliageHeight, int foliageHeightRandom, int maxWaterDepth, boolean noVines) {
+    protected BranchedTreeFeatureConfig(BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, FoliagePlacer foliagePlacer, List<TreeDecorator> treeDecorators, int baseHeight, int heightRandA, int heightRandB, int trunkHeight, int trunkHeightRandom, int trunkTopOffset, int trunkTopOffsetRandom, int foliageHeight, int foliageHeightRandom, int maxFluidDepth, boolean noVines) {
         super(trunkProvider, leavesProvider, treeDecorators, baseHeight);
         this.foliagePlacer = foliagePlacer;
         this.heightRandA = heightRandA;
@@ -41,14 +41,14 @@ extends TreeFeatureConfig {
         this.trunkTopOffsetRandom = trunkTopOffsetRandom;
         this.foliageHeight = foliageHeight;
         this.foliageHeightRandom = foliageHeightRandom;
-        this.maxWaterDepth = maxWaterDepth;
+        this.maxFluidDepth = maxFluidDepth;
         this.noVines = noVines;
     }
 
     @Override
     public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("foliage_placer"), this.foliagePlacer.serialize(ops)).put(ops.createString("height_rand_a"), ops.createInt(this.heightRandA)).put(ops.createString("height_rand_b"), ops.createInt(this.heightRandB)).put(ops.createString("trunk_height"), ops.createInt(this.trunkHeight)).put(ops.createString("trunk_height_random"), ops.createInt(this.trunkHeightRandom)).put(ops.createString("trunk_top_offset"), ops.createInt(this.trunkTopOffset)).put(ops.createString("trunk_top_offset_random"), ops.createInt(this.trunkTopOffsetRandom)).put(ops.createString("foliage_height"), ops.createInt(this.foliageHeight)).put(ops.createString("foliage_height_random"), ops.createInt(this.foliageHeightRandom)).put(ops.createString("max_water_depth"), ops.createInt(this.maxWaterDepth)).put(ops.createString("ignore_vines"), ops.createBoolean(this.noVines));
+        builder.put(ops.createString("foliage_placer"), this.foliagePlacer.serialize(ops)).put(ops.createString("height_rand_a"), ops.createInt(this.heightRandA)).put(ops.createString("height_rand_b"), ops.createInt(this.heightRandB)).put(ops.createString("trunk_height"), ops.createInt(this.trunkHeight)).put(ops.createString("trunk_height_random"), ops.createInt(this.trunkHeightRandom)).put(ops.createString("trunk_top_offset"), ops.createInt(this.trunkTopOffset)).put(ops.createString("trunk_top_offset_random"), ops.createInt(this.trunkTopOffsetRandom)).put(ops.createString("foliage_height"), ops.createInt(this.foliageHeight)).put(ops.createString("foliage_height_random"), ops.createInt(this.foliageHeightRandom)).put(ops.createString("max_water_depth"), ops.createInt(this.maxFluidDepth)).put(ops.createString("ignore_vines"), ops.createBoolean(this.noVines));
         Dynamic<T> dynamic = new Dynamic<T>(ops, ops.createMap(builder.build()));
         return dynamic.merge(super.serialize(ops));
     }
@@ -63,7 +63,7 @@ extends TreeFeatureConfig {
     extends TreeFeatureConfig.Builder {
         private final FoliagePlacer foliagePlacer;
         private List<TreeDecorator> treeDecorators = ImmutableList.of();
-        private int field_21272;
+        private int height;
         private int heightRandA;
         private int heightRandB;
         private int trunkHeight = -1;
@@ -87,7 +87,7 @@ extends TreeFeatureConfig {
 
         @Override
         public Builder baseHeight(int i) {
-            this.field_21272 = i;
+            this.height = i;
             return this;
         }
 
@@ -131,8 +131,8 @@ extends TreeFeatureConfig {
             return this;
         }
 
-        public Builder maxWaterDepth(int maxWaterDepth) {
-            this.maxWaterDepth = maxWaterDepth;
+        public Builder maxFluidDepth(int maxFluidDepth) {
+            this.maxWaterDepth = maxFluidDepth;
             return this;
         }
 
@@ -143,7 +143,7 @@ extends TreeFeatureConfig {
 
         @Override
         public BranchedTreeFeatureConfig build() {
-            return new BranchedTreeFeatureConfig(this.trunkProvider, this.leavesProvider, this.foliagePlacer, this.treeDecorators, this.field_21272, this.heightRandA, this.heightRandB, this.trunkHeight, this.trunkHeightRandom, this.trunkTopOffset, this.trunkTopOffsetRandom, this.foliageHeight, this.foliageHeightRandom, this.maxWaterDepth, this.noVines);
+            return new BranchedTreeFeatureConfig(this.trunkProvider, this.leavesProvider, this.foliagePlacer, this.treeDecorators, this.height, this.heightRandA, this.heightRandB, this.trunkHeight, this.trunkHeightRandom, this.trunkTopOffset, this.trunkTopOffsetRandom, this.foliageHeight, this.foliageHeightRandom, this.maxWaterDepth, this.noVines);
         }
 
         @Override

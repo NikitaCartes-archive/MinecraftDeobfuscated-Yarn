@@ -35,7 +35,6 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -53,8 +52,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ProjectileEntity
-extends Entity
-implements Projectile {
+extends Projectile {
     private static final TrackedData<Byte> PROJECTILE_FLAGS = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<Optional<UUID>> OPTIONAL_UUID = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private static final TrackedData<Byte> PIERCE_LEVEL = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -64,7 +62,6 @@ implements Projectile {
     protected int inGroundTime;
     public PickupPermission pickupType = PickupPermission.DISALLOWED;
     public int shake;
-    public UUID ownerUuid;
     private int life;
     private int flyingTick;
     private double damage = 2.0;
@@ -73,8 +70,8 @@ implements Projectile {
     private IntOpenHashSet piercedEntities;
     private List<Entity> piercingKilledEntities;
 
-    protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, World world) {
-        super(type, world);
+    protected ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
+        super((EntityType<? extends Projectile>)entityType, world);
     }
 
     protected ProjectileEntity(EntityType<? extends ProjectileEntity> type, double x, double y, double z, World world) {
@@ -111,23 +108,9 @@ implements Projectile {
         this.dataTracker.startTracking(PIERCE_LEVEL, (byte)0);
     }
 
-    public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
-        float f = -MathHelper.sin(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
-        float g = -MathHelper.sin(pitch * ((float)Math.PI / 180));
-        float h = MathHelper.cos(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
-        this.setVelocity(f, g, h, modifierZ, modifierXYZ);
-        this.setVelocity(this.getVelocity().add(user.getVelocity().x, user.method_24828() ? 0.0 : user.getVelocity().y, user.getVelocity().z));
-    }
-
     @Override
     public void setVelocity(double x, double y, double z, float speed, float divergence) {
-        Vec3d vec3d = new Vec3d(x, y, z).normalize().add(this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence, this.random.nextGaussian() * (double)0.0075f * (double)divergence).multiply(speed);
-        this.setVelocity(vec3d);
-        float f = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
-        this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
-        this.prevYaw = this.yaw;
-        this.prevPitch = this.pitch;
+        super.setVelocity(x, y, z, speed, divergence);
         this.life = 0;
     }
 
@@ -141,16 +124,8 @@ implements Projectile {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void setVelocityClient(double x, double y, double z) {
-        this.setVelocity(x, y, z);
-        if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            float f = MathHelper.sqrt(x * x + z * z);
-            this.pitch = (float)(MathHelper.atan2(y, f) * 57.2957763671875);
-            this.yaw = (float)(MathHelper.atan2(x, z) * 57.2957763671875);
-            this.prevPitch = this.pitch;
-            this.prevYaw = this.yaw;
-            this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-            this.life = 0;
-        }
+        super.setVelocityClient(x, y, z);
+        this.life = 0;
     }
 
     @Override
@@ -169,7 +144,7 @@ implements Projectile {
             this.prevYaw = this.yaw;
             this.prevPitch = this.pitch;
         }
-        if (!((blockState = this.world.getBlockState(blockPos = new BlockPos(this))).isAir() || bl || (voxelShape = blockState.getCollisionShape(this.world, blockPos)).isEmpty())) {
+        if (!((blockState = this.world.getBlockState(blockPos = this.getSenseCenterPos())).isAir() || bl || (voxelShape = blockState.getCollisionShape(this.world, blockPos)).isEmpty())) {
             vec3d2 = this.getPos();
             for (Box box : voxelShape.getBoundingBoxes()) {
                 if (!box.offset(blockPos).contains(vec3d2)) continue;
@@ -216,7 +191,7 @@ implements Projectile {
                 }
             }
             if (hitResult != null && !bl) {
-                this.onHit(hitResult);
+                this.onCollision(hitResult);
                 this.velocityDirty = true;
             }
             if (entityHitResult == null || this.getPierceLevel() <= 0) break;
@@ -276,30 +251,6 @@ implements Projectile {
         }
     }
 
-    protected void onHit(HitResult hitResult) {
-        HitResult.Type type = hitResult.getType();
-        if (type == HitResult.Type.ENTITY) {
-            this.onEntityHit((EntityHitResult)hitResult);
-        } else if (type == HitResult.Type.BLOCK) {
-            BlockState blockState;
-            BlockHitResult blockHitResult = (BlockHitResult)hitResult;
-            this.inBlockState = blockState = this.world.getBlockState(blockHitResult.getBlockPos());
-            Vec3d vec3d = blockHitResult.getPos().subtract(this.getX(), this.getY(), this.getZ());
-            this.setVelocity(vec3d);
-            Vec3d vec3d2 = vec3d.normalize().multiply(0.05f);
-            this.setPos(this.getX() - vec3d2.x, this.getY() - vec3d2.y, this.getZ() - vec3d2.z);
-            this.playSound(this.getSound(), 1.0f, 1.2f / (this.random.nextFloat() * 0.2f + 0.9f));
-            this.inGround = true;
-            this.shake = 7;
-            this.setCritical(false);
-            this.setPierceLevel((byte)0);
-            this.setSound(SoundEvents.ENTITY_ARROW_HIT);
-            this.setShotFromCrossbow(false);
-            this.clearPiercingStatus();
-            blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
-        }
-    }
-
     private void clearPiercingStatus() {
         if (this.piercingKilledEntities != null) {
             this.piercingKilledEntities.clear();
@@ -309,9 +260,11 @@ implements Projectile {
         }
     }
 
+    @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         DamageSource damageSource;
         Entity entity2;
+        super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
         float f = (float)this.getVelocity().length();
         int i = MathHelper.ceil(Math.max((double)f * this.damage, 0.0));
@@ -397,6 +350,24 @@ implements Projectile {
         }
     }
 
+    @Override
+    protected void method_24920(BlockHitResult blockHitResult) {
+        super.method_24920(blockHitResult);
+        this.inBlockState = this.world.getBlockState(blockHitResult.getBlockPos());
+        Vec3d vec3d = blockHitResult.getPos().subtract(this.getX(), this.getY(), this.getZ());
+        this.setVelocity(vec3d);
+        Vec3d vec3d2 = vec3d.normalize().multiply(0.05f);
+        this.setPos(this.getX() - vec3d2.x, this.getY() - vec3d2.y, this.getZ() - vec3d2.z);
+        this.playSound(this.getSound(), 1.0f, 1.2f / (this.random.nextFloat() * 0.2f + 0.9f));
+        this.inGround = true;
+        this.shake = 7;
+        this.setCritical(false);
+        this.setPierceLevel((byte)0);
+        this.setSound(SoundEvents.ENTITY_ARROW_HIT);
+        this.setShotFromCrossbow(false);
+        this.clearPiercingStatus();
+    }
+
     protected SoundEvent getHitSound() {
         return SoundEvents.ENTITY_ARROW_HIT;
     }
@@ -415,6 +386,7 @@ implements Projectile {
 
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         tag.putShort("life", (short)this.life);
         if (this.inBlockState != null) {
             tag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
@@ -425,15 +397,13 @@ implements Projectile {
         tag.putDouble("damage", this.damage);
         tag.putBoolean("crit", this.isCritical());
         tag.putByte("PierceLevel", this.getPierceLevel());
-        if (this.ownerUuid != null) {
-            tag.putUuid("OwnerUUID", this.ownerUuid);
-        }
         tag.putString("SoundEvent", Registry.SOUND_EVENT.getId(this.sound).toString());
         tag.putBoolean("ShotFromCrossbow", this.isShotFromCrossbow());
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
         this.life = tag.getShort("life");
         if (tag.contains("inBlockState", 10)) {
             this.inBlockState = NbtHelper.toBlockState(tag.getCompound("inBlockState"));
@@ -450,28 +420,18 @@ implements Projectile {
         }
         this.setCritical(tag.getBoolean("crit"));
         this.setPierceLevel(tag.getByte("PierceLevel"));
-        if (tag.containsUuid("OwnerUUID")) {
-            this.ownerUuid = tag.getUuid("OwnerUUID");
-        }
         if (tag.contains("SoundEvent", 8)) {
             this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(tag.getString("SoundEvent"))).orElse(this.getHitSound());
         }
         this.setShotFromCrossbow(tag.getBoolean("ShotFromCrossbow"));
     }
 
+    @Override
     public void setOwner(@Nullable Entity entity) {
-        UUID uUID = this.ownerUuid = entity == null ? null : entity.getUuid();
+        super.setOwner(entity);
         if (entity instanceof PlayerEntity) {
             this.pickupType = ((PlayerEntity)entity).abilities.creativeMode ? PickupPermission.CREATIVE_ONLY : PickupPermission.ALLOWED;
         }
-    }
-
-    @Nullable
-    public Entity getOwner() {
-        if (this.ownerUuid != null && this.world instanceof ServerWorld) {
-            return ((ServerWorld)this.world).getEntity(this.ownerUuid);
-        }
-        return null;
     }
 
     @Override
@@ -550,9 +510,9 @@ implements Projectile {
         return this.dataTracker.get(PIERCE_LEVEL);
     }
 
-    public void applyEnchantmentEffects(LivingEntity livingEntity, float damageModifier) {
-        int i = EnchantmentHelper.getEquipmentLevel(Enchantments.POWER, livingEntity);
-        int j = EnchantmentHelper.getEquipmentLevel(Enchantments.PUNCH, livingEntity);
+    public void applyEnchantmentEffects(LivingEntity entity, float damageModifier) {
+        int i = EnchantmentHelper.getEquipmentLevel(Enchantments.POWER, entity);
+        int j = EnchantmentHelper.getEquipmentLevel(Enchantments.PUNCH, entity);
         this.setDamage((double)(damageModifier * 2.0f) + (this.random.nextGaussian() * 0.25 + (double)((float)this.world.getDifficulty().getId() * 0.11f)));
         if (i > 0) {
             this.setDamage(this.getDamage() + (double)i * 0.5 + 0.5);
@@ -560,7 +520,7 @@ implements Projectile {
         if (j > 0) {
             this.setPunch(j);
         }
-        if (EnchantmentHelper.getEquipmentLevel(Enchantments.FLAME, livingEntity) > 0) {
+        if (EnchantmentHelper.getEquipmentLevel(Enchantments.FLAME, entity) > 0) {
             this.setOnFireFor(100);
         }
     }

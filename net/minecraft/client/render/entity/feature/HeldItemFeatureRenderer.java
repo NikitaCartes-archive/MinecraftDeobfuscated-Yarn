@@ -21,8 +21,8 @@ import net.minecraft.util.Arm;
 @Environment(value=EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M> {
-    public HeldItemFeatureRenderer(FeatureRendererContext<T, M> context) {
-        super(context);
+    public HeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override
@@ -45,18 +45,18 @@ extends FeatureRenderer<T, M> {
         matrixStack.pop();
     }
 
-    private void renderItem(LivingEntity livingEntity, ItemStack itemStack, ModelTransformation.Mode mode, Arm arm, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-        if (itemStack.isEmpty()) {
+    private void renderItem(LivingEntity entity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        if (stack.isEmpty()) {
             return;
         }
-        matrixStack.push();
-        ((ModelWithArms)this.getContextModel()).setArmAngle(arm, matrixStack);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrices.push();
+        ((ModelWithArms)this.getContextModel()).setArmAngle(arm, matrices);
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         boolean bl = arm == Arm.LEFT;
-        matrixStack.translate((float)(bl ? -1 : 1) / 16.0f, 0.125, -0.625);
-        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(livingEntity, itemStack, mode, bl, matrixStack, vertexConsumerProvider, i);
-        matrixStack.pop();
+        matrices.translate((float)(bl ? -1 : 1) / 16.0f, 0.125, -0.625);
+        MinecraftClient.getInstance().getHeldItemRenderer().renderItem(entity, stack, transformationMode, bl, matrices, vertexConsumers, light);
+        matrices.pop();
     }
 }
 

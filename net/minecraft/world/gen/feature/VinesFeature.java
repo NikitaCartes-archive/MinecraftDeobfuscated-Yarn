@@ -21,13 +21,13 @@ public class VinesFeature
 extends Feature<DefaultFeatureConfig> {
     private static final Direction[] DIRECTIONS = Direction.values();
 
-    public VinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public VinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override
     public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
+        BlockPos.Mutable mutable = blockPos.mutableCopy();
         block0: for (int i = blockPos.getY(); i < 256; ++i) {
             mutable.set(blockPos);
             mutable.setOffset(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));

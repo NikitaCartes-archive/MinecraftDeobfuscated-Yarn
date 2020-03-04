@@ -19,8 +19,8 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
 public class CoralClawFeature
 extends CoralFeature {
-    public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override
@@ -37,7 +37,7 @@ extends CoralFeature {
             int l;
             int k;
             Direction direction3;
-            BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+            BlockPos.Mutable mutable = pos.mutableCopy();
             int j = random.nextInt(2) + 1;
             mutable.setOffset(direction2);
             if (direction2 == direction) {

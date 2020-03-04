@@ -36,7 +36,7 @@ extends BlockItem {
         if (blockState.getBlock() == block) {
             Direction direction = context.shouldCancelInteraction() ? (context.hitsInsideBlock() ? context.getSide().getOpposite() : context.getSide()) : (context.getSide() == Direction.UP ? context.getPlayerFacing() : Direction.UP);
             int i = 0;
-            BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(direction);
+            BlockPos.Mutable mutable = blockPos.mutableCopy().setOffset(direction);
             while (i < 7) {
                 if (!world.isClient && !World.method_24794(mutable)) {
                     PlayerEntity playerEntity = context.getPlayer();

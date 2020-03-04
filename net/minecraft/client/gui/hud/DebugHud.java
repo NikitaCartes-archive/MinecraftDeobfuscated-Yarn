@@ -151,7 +151,7 @@ extends DrawableHelper {
         float f = clientConnection.getAveragePacketsSent();
         float g = clientConnection.getAveragePacketsReceived();
         String string = integratedServer != null ? String.format("Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", Float.valueOf(integratedServer.getTickTime()), Float.valueOf(f), Float.valueOf(g)) : String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), Float.valueOf(f), Float.valueOf(g));
-        BlockPos blockPos = new BlockPos(this.client.getCameraEntity());
+        BlockPos blockPos = this.client.getCameraEntity().getSenseCenterPos();
         if (this.client.hasReducedDebugInfo()) {
             return Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getDebugString(), "", String.format("Chunk-relative: %d %d %d", blockPos.getX() & 0xF, blockPos.getY() & 0xF, blockPos.getZ() & 0xF));
         }
@@ -407,20 +407,20 @@ extends DrawableHelper {
         if (bl) {
             DebugHud.fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
             this.fontRenderer.draw("60 FPS", i + 2, t - 30 + 2, 0xE0E0E0);
-            this.hLine(i, i + p - 1, t - 30, -1);
+            this.drawHorizontalLine(i, i + p - 1, t - 30, -1);
             DebugHud.fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
             this.fontRenderer.draw("30 FPS", i + 2, t - 60 + 2, 0xE0E0E0);
-            this.hLine(i, i + p - 1, t - 60, -1);
+            this.drawHorizontalLine(i, i + p - 1, t - 60, -1);
         } else {
             DebugHud.fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
             this.fontRenderer.draw("20 TPS", i + 2, t - 60 + 2, 0xE0E0E0);
-            this.hLine(i, i + p - 1, t - 60, -1);
+            this.drawHorizontalLine(i, i + p - 1, t - 60, -1);
         }
-        this.hLine(i, i + p - 1, t - 1, -1);
-        this.vLine(i, t - 60, t, -1);
-        this.vLine(i + p - 1, t - 60, t, -1);
+        this.drawHorizontalLine(i, i + p - 1, t - 1, -1);
+        this.drawVerticalLine(i, t - 60, t, -1);
+        this.drawVerticalLine(i + p - 1, t - 60, t, -1);
         if (bl && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
-            this.hLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
+            this.drawHorizontalLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
         }
         String string = r + " ms min";
         String string2 = q / (long)p + " ms avg";

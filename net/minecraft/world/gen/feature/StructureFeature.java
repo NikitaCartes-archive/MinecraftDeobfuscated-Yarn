@@ -35,8 +35,8 @@ public abstract class StructureFeature<C extends FeatureConfig>
 extends Feature<C> {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public StructureFeature(Function<Dynamic<?>, ? extends C> configFactory) {
-        super(configFactory);
+    public StructureFeature(Function<Dynamic<?>, ? extends C> function) {
+        super(function);
     }
 
     @Override
@@ -79,12 +79,12 @@ extends Feature<C> {
         return StructureStart.DEFAULT;
     }
 
-    public boolean isApproximatelyInsideStructure(IWorld iWorld, BlockPos blockPos) {
-        return this.isInsideStructure(iWorld, blockPos, false).hasChildren();
+    public boolean isApproximatelyInsideStructure(IWorld world, BlockPos pos) {
+        return this.isInsideStructure(world, pos, false).hasChildren();
     }
 
-    public boolean isInsideStructure(IWorld iWorld, BlockPos blockPos) {
-        return this.isInsideStructure(iWorld, blockPos, true).hasChildren();
+    public boolean isInsideStructure(IWorld world, BlockPos pos) {
+        return this.isInsideStructure(world, pos, true).hasChildren();
     }
 
     @Nullable

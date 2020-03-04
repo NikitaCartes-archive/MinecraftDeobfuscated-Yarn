@@ -8,8 +8,8 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.thrown.ThrownEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
@@ -35,18 +35,13 @@ extends Block {
     }
 
     @Override
-    public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
-        int i = TargetBlock.trigger(world, state, hitResult, entity);
-        Entity entity2 = null;
-        if (entity instanceof ProjectileEntity) {
-            entity2 = ((ProjectileEntity)entity).getOwner();
-        } else if (entity instanceof ThrownEntity) {
-            entity2 = ((ThrownEntity)entity).getOwner();
-        }
-        if (entity2 instanceof ServerPlayerEntity) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity2;
+    public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
+        int i = TargetBlock.trigger(world, state, hitResult, projectile);
+        Entity entity = projectile.getOwner();
+        if (entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
             serverPlayerEntity.incrementStat(Stats.TARGET_HIT);
-            Criterions.TARGET_HIT.trigger(serverPlayerEntity, i);
+            Criterions.TARGET_HIT.trigger(serverPlayerEntity, projectile, hitResult.getPos(), i);
         }
     }
 
@@ -95,6 +90,16 @@ extends Block {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(POWER);
+    }
+
+    @Override
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+        if (world.isClient() || state.getBlock() == oldState.getBlock()) {
+            return;
+        }
+        if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {
+            world.setBlockState(pos, (BlockState)state.with(POWER, 0), 18);
+        }
     }
 }
 

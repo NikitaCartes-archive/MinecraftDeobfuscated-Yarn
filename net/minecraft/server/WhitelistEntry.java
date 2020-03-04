@@ -18,6 +18,15 @@ extends ServerConfigEntry<GameProfile> {
         super(WhitelistEntry.deserializeProfile(jsonObject));
     }
 
+    @Override
+    protected void method_24896(JsonObject jsonObject) {
+        if (this.getKey() == null) {
+            return;
+        }
+        jsonObject.addProperty("uuid", ((GameProfile)this.getKey()).getId() == null ? "" : ((GameProfile)this.getKey()).getId().toString());
+        jsonObject.addProperty("name", ((GameProfile)this.getKey()).getName());
+    }
+
     private static GameProfile deserializeProfile(JsonObject json) {
         UUID uUID;
         if (!json.has("uuid") || !json.has("name")) {

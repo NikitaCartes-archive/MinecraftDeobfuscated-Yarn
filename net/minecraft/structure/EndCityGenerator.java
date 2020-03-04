@@ -161,7 +161,7 @@ public class EndCityGenerator {
 
     private static Piece createPiece(StructureManager structureManager, Piece lastPiece, BlockPos relativePosition, String template, BlockRotation rotation, boolean ignoreAir) {
         Piece piece = new Piece(structureManager, template, lastPiece.pos, rotation, ignoreAir);
-        BlockPos blockPos = lastPiece.structure.method_15180(lastPiece.placementData, relativePosition, piece.placementData, BlockPos.ORIGIN);
+        BlockPos blockPos = lastPiece.structure.transformBox(lastPiece.placementData, relativePosition, piece.placementData, BlockPos.ORIGIN);
         piece.translate(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         return piece;
     }

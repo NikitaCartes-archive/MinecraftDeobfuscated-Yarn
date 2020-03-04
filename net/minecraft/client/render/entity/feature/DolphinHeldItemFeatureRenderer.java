@@ -20,8 +20,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class DolphinHeldItemFeatureRenderer
 extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
-    public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> context) {
-        super(context);
+    public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override

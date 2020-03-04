@@ -19,8 +19,8 @@ extends FeatureRenderer<T, DrownedEntityModel<T>> {
     private static final Identifier SKIN = new Identifier("textures/entity/zombie/drowned_outer_layer.png");
     private final DrownedEntityModel<T> model = new DrownedEntityModel(0.25f, 0.0f, 64, 64);
 
-    public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> context) {
-        super(context);
+    public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override

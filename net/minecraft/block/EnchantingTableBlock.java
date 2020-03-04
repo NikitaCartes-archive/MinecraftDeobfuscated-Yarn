@@ -14,15 +14,15 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.EnchantingTableContainer;
-import net.minecraft.container.NameableContainerFactory;
-import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.EnchantingTableScreenHandler;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -87,17 +87,17 @@ extends BlockWithEntity {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        player.openContainer(state.createContainerFactory(world, pos));
+        player.openHandledScreen(state.createContainerFactory(world, pos));
         return ActionResult.SUCCESS;
     }
 
     @Override
     @Nullable
-    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof EnchantingTableBlockEntity) {
             Text text = ((Nameable)((Object)blockEntity)).getDisplayName();
-            return new SimpleNamedContainerFactory((i, playerInventory, playerEntity) -> new EnchantingTableContainer(i, playerInventory, BlockContext.create(world, pos)), text);
+            return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new EnchantingTableScreenHandler(i, playerInventory, BlockContext.create(world, pos)), text);
         }
         return null;
     }

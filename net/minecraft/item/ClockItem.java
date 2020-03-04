@@ -29,10 +29,10 @@ extends Item {
 
             @Override
             @Environment(value=EnvType.CLIENT)
-            public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity user) {
+            public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
                 Entity entity;
-                boolean bl = user != null;
-                Entity entity2 = entity = bl ? user : stack.getFrame();
+                boolean bl = livingEntity != null;
+                Entity entity2 = entity = bl ? livingEntity : itemStack.getFrame();
                 if (world == null && entity != null) {
                     world = entity.world;
                 }

@@ -60,7 +60,7 @@ public class EntityAttributes {
         compoundTag.putString("Name", modifier.getName());
         compoundTag.putDouble("Amount", modifier.getAmount());
         compoundTag.putInt("Operation", modifier.getOperation().getId());
-        compoundTag.putUuid("UUID", modifier.getId());
+        compoundTag.putUuidOld("UUID", modifier.getId());
         return compoundTag;
     }
 
@@ -94,7 +94,7 @@ public class EntityAttributes {
 
     @Nullable
     public static EntityAttributeModifier createFromTag(CompoundTag tag) {
-        UUID uUID = tag.getUuid("UUID");
+        UUID uUID = tag.getUuidOld("UUID");
         try {
             EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(tag.getInt("Operation"));
             return new EntityAttributeModifier(uUID, tag.getString("Name"), tag.getDouble("Amount"), operation);

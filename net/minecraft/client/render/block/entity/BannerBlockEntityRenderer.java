@@ -34,8 +34,8 @@ extends BlockEntityRenderer<BannerBlockEntity> {
     private final ModelPart verticalBar = new ModelPart(64, 64, 44, 0);
     private final ModelPart topBar;
 
-    public BannerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
-        super(dispatcher);
+    public BannerBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+        super(blockEntityRenderDispatcher);
         this.verticalBar.addCuboid(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f, 0.0f);
         this.topBar = new ModelPart(64, 64, 0, 42);
         this.topBar.addCuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f, 0.0f);

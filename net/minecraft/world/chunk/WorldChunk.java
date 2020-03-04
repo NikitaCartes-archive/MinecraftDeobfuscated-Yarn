@@ -100,7 +100,7 @@ implements Chunk {
         this(world, chunkPos, biomeArray, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
     }
 
-    public WorldChunk(World world, ChunkPos chunkPos, BiomeArray biomeArray, UpgradeData upgradeData, TickScheduler<Block> tickScheduler, TickScheduler<Fluid> tickScheduler2, long l, @Nullable ChunkSection[] chunkSections, @Nullable Consumer<WorldChunk> consumer) {
+    public WorldChunk(World world, ChunkPos chunkPos, BiomeArray biomeArray, UpgradeData upgradeData, TickScheduler<Block> blockTickScheduler, TickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] chunkSections, @Nullable Consumer<WorldChunk> loadToWorldConsumer) {
         this.entitySections = new TypeFilterableList[16];
         this.world = world;
         this.pos = chunkPos;
@@ -113,10 +113,10 @@ implements Chunk {
             this.entitySections[i] = new TypeFilterableList<Entity>(Entity.class);
         }
         this.biomeArray = biomeArray;
-        this.blockTickScheduler = tickScheduler;
-        this.fluidTickScheduler = tickScheduler2;
-        this.inhabitedTime = l;
-        this.loadToWorldConsumer = consumer;
+        this.blockTickScheduler = blockTickScheduler;
+        this.fluidTickScheduler = fluidTickScheduler;
+        this.inhabitedTime = inhabitedTime;
+        this.loadToWorldConsumer = loadToWorldConsumer;
         if (chunkSections != null) {
             if (this.sections.length == chunkSections.length) {
                 System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -202,24 +202,24 @@ implements Chunk {
         return this.getFluidState(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public FluidState getFluidState(int x, int y, int i) {
+    public FluidState getFluidState(int x, int y, int z) {
         try {
             ChunkSection chunkSection;
             if (y >= 0 && y >> 4 < this.sections.length && !ChunkSection.isEmpty(chunkSection = this.sections[y >> 4])) {
-                return chunkSection.getFluidState(x & 0xF, y & 0xF, i & 0xF);
+                return chunkSection.getFluidState(x & 0xF, y & 0xF, z & 0xF);
             }
             return Fluids.EMPTY.getDefaultState();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Getting fluid state");
             CrashReportSection crashReportSection = crashReport.addElement("Block being got");
-            crashReportSection.add("Location", () -> CrashReportSection.createPositionString(x, y, i));
+            crashReportSection.add("Location", () -> CrashReportSection.createPositionString(x, y, z));
             throw new CrashException(crashReport);
         }
     }
 
     @Override
     @Nullable
-    public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+    public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
         BlockEntity blockEntity;
         int i = pos.getX() & 0xF;
         int j = pos.getY();
@@ -231,7 +231,7 @@ implements Chunk {
             }
             this.sections[j >> 4] = chunkSection = new ChunkSection(j >> 4 << 4);
         }
-        boolean bl2 = chunkSection.isEmpty();
+        boolean bl = chunkSection.isEmpty();
         BlockState blockState = chunkSection.setBlockState(i, j & 0xF, k, state);
         if (blockState == state) {
             return null;
@@ -242,12 +242,12 @@ implements Chunk {
         this.heightmaps.get((Object)Heightmap.Type.MOTION_BLOCKING_NO_LEAVES).trackUpdate(i, j, k, state);
         this.heightmaps.get((Object)Heightmap.Type.OCEAN_FLOOR).trackUpdate(i, j, k, state);
         this.heightmaps.get((Object)Heightmap.Type.WORLD_SURFACE).trackUpdate(i, j, k, state);
-        boolean bl3 = chunkSection.isEmpty();
-        if (bl2 != bl3) {
-            this.world.getChunkManager().getLightingProvider().updateSectionStatus(pos, bl3);
+        boolean bl2 = chunkSection.isEmpty();
+        if (bl != bl2) {
+            this.world.getChunkManager().getLightingProvider().updateSectionStatus(pos, bl2);
         }
         if (!this.world.isClient) {
-            blockState.onBlockRemoved(this.world, pos, state, bl);
+            blockState.onBlockRemoved(this.world, pos, state, moved);
         } else if (block2 != block && block2 instanceof BlockEntityProvider) {
             this.world.removeBlockEntity(pos);
         }
@@ -258,7 +258,7 @@ implements Chunk {
             blockEntity.resetBlock();
         }
         if (!this.world.isClient) {
-            state.onBlockAdded(this.world, pos, blockState, bl);
+            state.onBlockAdded(this.world, pos, blockState, moved);
         }
         if (block instanceof BlockEntityProvider) {
             blockEntity = this.getBlockEntity(pos, CreationType.CHECK);
@@ -515,8 +515,8 @@ implements Chunk {
         return this.biomeArray;
     }
 
-    public void setLoadedToWorld(boolean bl) {
-        this.loadedToWorld = bl;
+    public void setLoadedToWorld(boolean loaded) {
+        this.loadedToWorld = loaded;
     }
 
     public World getWorld() {

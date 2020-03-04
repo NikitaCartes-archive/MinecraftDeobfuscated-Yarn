@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -28,6 +29,8 @@ import net.minecraft.client.resource.ResourceIndex;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.resource.DefaultResourcePack;
+import net.minecraft.resource.DirectoryResourcePack;
+import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
@@ -66,8 +69,6 @@ implements ResourcePackProvider {
 
     @Override
     public <T extends ResourcePackProfile> void register(Map<String, T> registry, ResourcePackProfile.Factory<T> factory) {
-        T resourcePackProfile2;
-        File file;
         T resourcePackProfile = ResourcePackProfile.of("vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM);
         if (resourcePackProfile != null) {
             registry.put("vanilla", resourcePackProfile);
@@ -75,15 +76,7 @@ implements ResourcePackProvider {
         if (this.serverContainer != null) {
             registry.put("server", this.serverContainer);
         }
-        if ((file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"))) != null && file.isFile() && (resourcePackProfile2 = ResourcePackProfile.of("programer_art", false, () -> new ZipResourcePack(file){
-
-            @Override
-            public String getName() {
-                return "Programmer Art";
-            }
-        }, factory, ResourcePackProfile.InsertionPosition.TOP)) != null) {
-            registry.put("programer_art", resourcePackProfile2);
-        }
+        this.method_25454(registry, factory);
     }
 
     public DefaultResourcePack getPack() {
@@ -219,6 +212,46 @@ implements ResourcePackProvider {
         LOGGER.info("Applying server pack {}", (Object)packZip);
         this.serverContainer = new ClientResourcePackProfile("server", true, () -> new ZipResourcePack(packZip), new TranslatableText("resourcePack.server.name", new Object[0]), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), ResourcePackProfile.InsertionPosition.TOP, true, nativeImage);
         return MinecraftClient.getInstance().reloadResourcesConcurrently();
+    }
+
+    private <T extends ResourcePackProfile> void method_25454(Map<String, T> map, ResourcePackProfile.Factory<T> factory) {
+        File file2;
+        File file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"));
+        if (file != null && file.isFile() && ClientBuiltinResourcePackProvider.method_25453(map, factory, () -> ClientBuiltinResourcePackProvider.method_16048(file))) {
+            return;
+        }
+        if (SharedConstants.isDevelopment && (file2 = this.index.findFile("../resourcepacks/programmer_art")) != null && file2.isDirectory()) {
+            ClientBuiltinResourcePackProvider.method_25453(map, factory, () -> ClientBuiltinResourcePackProvider.method_25455(file2));
+        }
+    }
+
+    private static <T extends ResourcePackProfile> boolean method_25453(Map<String, T> map, ResourcePackProfile.Factory<T> factory, Supplier<ResourcePack> supplier) {
+        T resourcePackProfile = ResourcePackProfile.of("programer_art", false, supplier, factory, ResourcePackProfile.InsertionPosition.TOP);
+        if (resourcePackProfile != null) {
+            map.put("programer_art", resourcePackProfile);
+            return true;
+        }
+        return false;
+    }
+
+    private static DirectoryResourcePack method_25455(File file) {
+        return new DirectoryResourcePack(file){
+
+            @Override
+            public String getName() {
+                return "Programmer Art";
+            }
+        };
+    }
+
+    private static ResourcePack method_16048(File file) {
+        return new ZipResourcePack(file){
+
+            @Override
+            public String getName() {
+                return "Programmer Art";
+            }
+        };
     }
 }
 

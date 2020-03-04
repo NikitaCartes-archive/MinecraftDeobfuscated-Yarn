@@ -30,6 +30,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -39,9 +40,8 @@ import net.minecraft.world.World;
 
 @EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
 public class FireworkEntity
-extends Entity
-implements FlyingItemEntity,
-Projectile {
+extends Projectile
+implements FlyingItemEntity {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<OptionalInt> SHOOTER_ENTITY_ID = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.field_17910);
     private static final TrackedData<Boolean> SHOT_AT_ANGLE = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -50,7 +50,41 @@ Projectile {
     private LivingEntity shooter;
 
     public FireworkEntity(EntityType<? extends FireworkEntity> entityType, World world) {
-        super(entityType, world);
+        super((EntityType<? extends Projectile>)entityType, world);
+    }
+
+    public FireworkEntity(World world, double x, double y, double z, ItemStack item) {
+        super((EntityType<? extends Projectile>)EntityType.FIREWORK_ROCKET, world);
+        this.life = 0;
+        this.updatePosition(x, y, z);
+        int i = 1;
+        if (!item.isEmpty() && item.hasTag()) {
+            this.dataTracker.set(ITEM, item.copy());
+            i += item.getOrCreateSubTag("Fireworks").getByte("Flight");
+        }
+        this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
+        this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
+    }
+
+    public FireworkEntity(World world, Entity entity, double d, double e, double f, ItemStack itemStack) {
+        this(world, d, e, f, itemStack);
+        this.setOwner(entity);
+    }
+
+    public FireworkEntity(World world, ItemStack item, LivingEntity shooter) {
+        this(world, shooter, shooter.getX(), shooter.getY(), shooter.getZ(), item);
+        this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getEntityId()));
+        this.shooter = shooter;
+    }
+
+    public FireworkEntity(World world, ItemStack item, double x, double y, double z, boolean shotAtAngle) {
+        this(world, x, y, z, item);
+        this.dataTracker.set(SHOT_AT_ANGLE, shotAtAngle);
+    }
+
+    public FireworkEntity(World world, ItemStack itemStack, Entity entity, double d, double e, double f, boolean bl) {
+        this(world, itemStack, d, e, f, bl);
+        this.setOwner(entity);
     }
 
     @Override
@@ -70,43 +104,6 @@ Projectile {
     @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
         return super.shouldRender(cameraX, cameraY, cameraZ) && !this.wasShotByEntity();
-    }
-
-    public FireworkEntity(World world, double x, double y, double z, ItemStack item) {
-        super(EntityType.FIREWORK_ROCKET, world);
-        this.life = 0;
-        this.updatePosition(x, y, z);
-        int i = 1;
-        if (!item.isEmpty() && item.hasTag()) {
-            this.dataTracker.set(ITEM, item.copy());
-            i += item.getOrCreateSubTag("Fireworks").getByte("Flight");
-        }
-        this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
-        this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
-    }
-
-    public FireworkEntity(World world, ItemStack item, LivingEntity shooter) {
-        this(world, shooter.getX(), shooter.getY(), shooter.getZ(), item);
-        this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getEntityId()));
-        this.shooter = shooter;
-    }
-
-    public FireworkEntity(World world, ItemStack item, double x, double y, double z, boolean shotAtAngle) {
-        this(world, x, y, z, item);
-        this.dataTracker.set(SHOT_AT_ANGLE, shotAtAngle);
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public void setVelocityClient(double x, double y, double z) {
-        this.setVelocity(x, y, z);
-        if (this.prevPitch == 0.0f && this.prevYaw == 0.0f) {
-            float f = MathHelper.sqrt(x * x + z * z);
-            this.yaw = (float)(MathHelper.atan2(x, z) * 57.2957763671875);
-            this.pitch = (float)(MathHelper.atan2(y, f) * 57.2957763671875);
-            this.prevYaw = this.yaw;
-            this.prevPitch = this.pitch;
-        }
     }
 
     @Override
@@ -142,7 +139,7 @@ Projectile {
         vec3d = this.getVelocity();
         HitResult hitResult = ProjectileUtil.getCollision((Entity)this, this.getBoundingBox().stretch(vec3d).expand(1.0), entity -> !entity.isSpectator() && entity.isAlive() && entity.collides(), RayTraceContext.ShapeType.COLLIDER, true);
         if (!this.noClip) {
-            this.handleCollision(hitResult);
+            this.onCollision(hitResult);
             this.velocityDirty = true;
         }
         float f = MathHelper.sqrt(FireworkEntity.squaredHorizontalLength(vec3d));
@@ -180,11 +177,20 @@ Projectile {
         this.remove();
     }
 
-    protected void handleCollision(HitResult hitResult) {
-        if (hitResult.getType() == HitResult.Type.ENTITY && !this.world.isClient) {
-            this.explodeAndRemove();
-        } else if (this.collided) {
-            BlockPos blockPos = hitResult.getType() == HitResult.Type.BLOCK ? new BlockPos(((BlockHitResult)hitResult).getBlockPos()) : new BlockPos(this);
+    @Override
+    protected void onEntityHit(EntityHitResult entityHitResult) {
+        super.onEntityHit(entityHitResult);
+        if (this.world.isClient) {
+            return;
+        }
+        this.explodeAndRemove();
+    }
+
+    @Override
+    protected void method_24920(BlockHitResult blockHitResult) {
+        super.method_24920(blockHitResult);
+        if (this.collided) {
+            BlockPos blockPos = new BlockPos(blockHitResult.getBlockPos());
             this.world.getBlockState(blockPos).onEntityCollision(this.world, blockPos, this);
             if (this.hasExplosionEffects()) {
                 this.explodeAndRemove();
@@ -210,7 +216,7 @@ Projectile {
         }
         if (f > 0.0f) {
             if (this.shooter != null) {
-                this.shooter.damage(DamageSource.FIREWORKS, 5.0f + (float)(listTag.size() * 2));
+                this.shooter.damage(DamageSource.method_24907(this, this.getOwner()), 5.0f + (float)(listTag.size() * 2));
             }
             double d = 5.0;
             Vec3d vec3d = this.getPos();
@@ -227,7 +233,7 @@ Projectile {
                 }
                 if (!bl) continue;
                 float g = f * (float)Math.sqrt((5.0 - (double)this.distanceTo(livingEntity)) / 5.0);
-                livingEntity.damage(DamageSource.FIREWORKS, g);
+                livingEntity.damage(DamageSource.method_24907(this, this.getOwner()), g);
             }
         }
     }
@@ -260,6 +266,7 @@ Projectile {
 
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
         tag.putInt("Life", this.life);
         tag.putInt("LifeTime", this.lifeTime);
         ItemStack itemStack = this.dataTracker.get(ITEM);
@@ -271,6 +278,7 @@ Projectile {
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
         this.life = tag.getInt("Life");
         this.lifeTime = tag.getInt("LifeTime");
         ItemStack itemStack = ItemStack.fromTag(tag.getCompound("FireworksItem"));
@@ -297,18 +305,6 @@ Projectile {
     @Override
     public Packet<?> createSpawnPacket() {
         return new EntitySpawnS2CPacket(this);
-    }
-
-    @Override
-    public void setVelocity(double x, double y, double z, float speed, float divergence) {
-        float f = MathHelper.sqrt(x * x + y * y + z * z);
-        x /= (double)f;
-        y /= (double)f;
-        z /= (double)f;
-        x += this.random.nextGaussian() * (double)0.0075f * (double)divergence;
-        y += this.random.nextGaussian() * (double)0.0075f * (double)divergence;
-        z += this.random.nextGaussian() * (double)0.0075f * (double)divergence;
-        this.setVelocity(x *= (double)speed, y *= (double)speed, z *= (double)speed);
     }
 }
 

@@ -13,7 +13,7 @@ public class BlockSenses {
             return Optional.of(center);
         }
         int i = Math.max(horizontalRadius, verticalRadius);
-        BlockPos.Mutable mutable = new BlockPos.Mutable(center);
+        BlockPos.Mutable mutable = center.mutableCopy();
         for (int j = 1; j <= i; ++j) {
             for (int k = -j; k <= j; ++k) {
                 if (k > horizontalRadius || k < -horizontalRadius) continue;
@@ -25,7 +25,7 @@ public class BlockSenses {
                         boolean bl3;
                         if (m > horizontalRadius || m < -horizontalRadius) continue;
                         boolean bl4 = bl3 = m == -j || m == j;
-                        if (!bl && !bl2 && !bl3 || !predicate.test(mutable.set(center).setOffset(k, l, m))) continue;
+                        if (!bl && !bl2 && !bl3 || !predicate.test(mutable.setOffset(center, k, l, m))) continue;
                         return Optional.of(center.add(k, l, m));
                     }
                 }

@@ -34,7 +34,7 @@ extends DiveJumpingGoal {
         Direction direction = this.dolphin.getMovementDirection();
         int i = direction.getOffsetX();
         int j = direction.getOffsetZ();
-        BlockPos blockPos = new BlockPos(this.dolphin);
+        BlockPos blockPos = this.dolphin.getSenseCenterPos();
         for (int k : OFFSET_MULTIPLIERS) {
             if (this.isWater(blockPos, i, j, k) && this.isAirAbove(blockPos, i, j, k)) continue;
             return false;
@@ -78,7 +78,7 @@ extends DiveJumpingGoal {
     public void tick() {
         boolean bl = this.inWater;
         if (!bl) {
-            FluidState fluidState = this.dolphin.world.getFluidState(new BlockPos(this.dolphin));
+            FluidState fluidState = this.dolphin.world.getFluidState(this.dolphin.getSenseCenterPos());
             this.inWater = fluidState.matches(FluidTags.WATER);
         }
         if (this.inWater && !bl) {

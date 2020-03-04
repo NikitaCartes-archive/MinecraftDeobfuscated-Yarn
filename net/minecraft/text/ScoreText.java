@@ -110,13 +110,13 @@ implements ParsableText {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o instanceof ScoreText) {
-            ScoreText scoreText = (ScoreText)o;
-            return this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(o);
+        if (object instanceof ScoreText) {
+            ScoreText scoreText = (ScoreText)object;
+            return this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(object);
         }
         return false;
     }

@@ -25,8 +25,8 @@ implements ArgumentType<BlockStateArgument> {
     }
 
     @Override
-    public BlockStateArgument parse(StringReader reader) throws CommandSyntaxException {
-        BlockArgumentParser blockArgumentParser = new BlockArgumentParser(reader, false).parse(true);
+    public BlockStateArgument parse(StringReader stringReader) throws CommandSyntaxException {
+        BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, false).parse(true);
         return new BlockStateArgument(blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData());
     }
 

@@ -15,9 +15,9 @@ implements FeatureConfig {
     public final List<ConfiguredFeature<?, ?>> features;
     public final int count;
 
-    public RandomRandomFeatureConfig(List<ConfiguredFeature<?, ?>> list, int i) {
-        this.features = list;
-        this.count = i;
+    public RandomRandomFeatureConfig(List<ConfiguredFeature<?, ?>> features, int count) {
+        this.features = features;
+        this.count = count;
     }
 
     @Override

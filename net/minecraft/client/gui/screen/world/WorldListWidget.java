@@ -29,7 +29,6 @@ import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
@@ -74,13 +73,13 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
     public void filter(Supplier<String> filter, boolean load) {
         this.clearEntries();
-        LevelStorage levelStorage = this.minecraft.getLevelStorage();
+        LevelStorage levelStorage = this.client.getLevelStorage();
         if (this.levels == null || load) {
             try {
                 this.levels = levelStorage.getLevelList();
             } catch (LevelStorageException levelStorageException) {
                 LOGGER.error("Couldn't load level list", (Throwable)levelStorageException);
-                this.minecraft.openScreen(new FatalErrorScreen(new TranslatableText("selectWorld.unable_to_load", new Object[0]), levelStorageException.getMessage()));
+                this.client.openScreen(new FatalErrorScreen(new TranslatableText("selectWorld.unable_to_load", new Object[0]), levelStorageException.getMessage()));
                 return;
             }
             Collections.sort(this.levels);
@@ -88,13 +87,13 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         String string = filter.get().toLowerCase(Locale.ROOT);
         for (LevelSummary levelSummary : this.levels) {
             if (!levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) && !levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) continue;
-            this.addEntry(new Entry(this, levelSummary, this.minecraft.getLevelStorage()));
+            this.addEntry(new Entry(this, levelSummary, this.client.getLevelStorage()));
         }
     }
 
     @Override
-    protected int getScrollbarPosition() {
-        return super.getScrollbarPosition() + 20;
+    protected int getScrollbarPositionX() {
+        return super.getScrollbarPositionX() + 20;
     }
 
     @Override
@@ -117,8 +116,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Override
-    protected void moveSelection(int i) {
-        super.moveSelection(i);
+    protected void moveSelection(int amount) {
+        super.moveSelection(amount);
         this.parent.worldSelected(true);
     }
 
@@ -128,11 +127,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
     public SelectWorldScreen getParent() {
         return this.parent;
-    }
-
-    @Override
-    public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-        this.setSelected((Entry)entry);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -161,11 +155,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         }
 
         @Override
-        public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
+        public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
             String string = this.level.getDisplayName();
             String string2 = this.level.getName() + " (" + DATE_FORMAT.format(new Date(this.level.getLastPlayed())) + ")";
             if (StringUtils.isEmpty(string)) {
-                string = I18n.translate("selectWorld.world", new Object[0]) + " " + (i + 1);
+                string = I18n.translate("selectWorld.world", new Object[0]) + " " + (index + 1);
             }
             String string3 = "";
             if (this.level.requiresConversion()) {
@@ -181,42 +175,42 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 String string4 = this.level.getVersion().asFormattedString();
                 string3 = this.level.isDifferentVersion() ? (this.level.isFutureLevel() ? string3 + ", " + I18n.translate("selectWorld.version", new Object[0]) + " " + (Object)((Object)Formatting.RED) + string4 + (Object)((Object)Formatting.RESET) : string3 + ", " + I18n.translate("selectWorld.version", new Object[0]) + " " + (Object)((Object)Formatting.ITALIC) + string4 + (Object)((Object)Formatting.RESET)) : string3 + ", " + I18n.translate("selectWorld.version", new Object[0]) + " " + string4;
             }
-            this.client.textRenderer.draw(string, k + 32 + 3, j + 1, 0xFFFFFF);
-            this.client.textRenderer.draw(string2, k + 32 + 3, j + this.client.textRenderer.fontHeight + 3, 0x808080);
-            this.client.textRenderer.draw(string3, k + 32 + 3, j + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3, 0x808080);
+            this.client.textRenderer.draw(string, x + 32 + 3, y + 1, 0xFFFFFF);
+            this.client.textRenderer.draw(string2, x + 32 + 3, y + this.client.textRenderer.fontHeight + 3, 0x808080);
+            this.client.textRenderer.draw(string3, x + 32 + 3, y + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3, 0x808080);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : UNKNOWN_SERVER_LOCATION);
             RenderSystem.enableBlend();
-            DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 32, 32);
+            DrawableHelper.blit(x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             RenderSystem.disableBlend();
-            if (this.client.options.touchscreen || bl) {
-                int q;
+            if (this.client.options.touchscreen || hovering) {
+                int j;
                 this.client.getTextureManager().bindTexture(WORLD_SELECTION_LOCATION);
-                DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
+                DrawableHelper.fill(x, y, x + 32, y + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                int p = n - k;
-                int n2 = q = p < 32 ? 32 : 0;
+                int i = mouseX - x;
+                int n = j = i < 32 ? 32 : 0;
                 if (this.level.isDifferentVersion()) {
-                    DrawableHelper.blit(k, j, 32.0f, q, 32, 32, 256, 256);
+                    DrawableHelper.blit(x, y, 32.0f, j, 32, 32, 256, 256);
                     if (this.level.isLegacyCustomizedWorld()) {
-                        DrawableHelper.blit(k, j, 96.0f, q, 32, 32, 256, 256);
-                        if (p < 32) {
+                        DrawableHelper.blit(x, y, 96.0f, j, 32, 32, 256, 256);
+                        if (i < 32) {
                             Text text = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
                             this.screen.setTooltip(this.client.textRenderer.wrapStringToWidth(text.asFormattedString(), 175));
                         }
                     } else if (this.level.isFutureLevel()) {
-                        DrawableHelper.blit(k, j, 96.0f, q, 32, 32, 256, 256);
-                        if (p < 32) {
+                        DrawableHelper.blit(x, y, 96.0f, j, 32, 32, 256, 256);
+                        if (i < 32) {
                             this.screen.setTooltip((Object)((Object)Formatting.RED) + I18n.translate("selectWorld.tooltip.fromNewerVersion1", new Object[0]) + "\n" + (Object)((Object)Formatting.RED) + I18n.translate("selectWorld.tooltip.fromNewerVersion2", new Object[0]));
                         }
                     } else if (!SharedConstants.getGameVersion().isStable()) {
-                        DrawableHelper.blit(k, j, 64.0f, q, 32, 32, 256, 256);
-                        if (p < 32) {
+                        DrawableHelper.blit(x, y, 64.0f, j, 32, 32, 256, 256);
+                        if (i < 32) {
                             this.screen.setTooltip((Object)((Object)Formatting.GOLD) + I18n.translate("selectWorld.tooltip.snapshot1", new Object[0]) + "\n" + (Object)((Object)Formatting.GOLD) + I18n.translate("selectWorld.tooltip.snapshot2", new Object[0]));
                         }
                     }
                 } else {
-                    DrawableHelper.blit(k, j, 0.0f, q, 32, 32, 256, 256);
+                    DrawableHelper.blit(x, y, 0.0f, j, 32, 32, 256, 256);
                 }
             }
         }

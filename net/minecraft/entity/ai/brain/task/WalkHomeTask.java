@@ -41,8 +41,8 @@ extends Task<LivingEntity> {
         }
         MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)entity;
         PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
-        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(PointOfInterestType.HOME.getCompletionCondition(), new BlockPos(entity), 48, PointOfInterestStorage.OccupationStatus.ANY);
-        return optional.isPresent() && !(optional.get().getSquaredDistance(new BlockPos(mobEntityWithAi)) <= 4.0);
+        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(PointOfInterestType.HOME.getCompletionCondition(), entity.getSenseCenterPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
+        return optional.isPresent() && !(optional.get().getSquaredDistance(mobEntityWithAi.getSenseCenterPos()) <= 4.0);
     }
 
     @Override
@@ -62,7 +62,7 @@ extends Task<LivingEntity> {
             this.positionToExpiry.put(l, this.expiryTimeLimit + 40L);
             return true;
         };
-        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(PointOfInterestType.HOME.getCompletionCondition(), predicate, new BlockPos(entity), 48, PointOfInterestStorage.OccupationStatus.ANY);
+        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(PointOfInterestType.HOME.getCompletionCondition(), predicate, entity.getSenseCenterPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
         Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
         if (path != null && path.reachesTarget()) {
             BlockPos blockPos2 = path.getTarget();

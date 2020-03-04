@@ -16,7 +16,6 @@ import net.minecraft.client.render.entity.model.ArmorStandArmorEntityModel;
 import net.minecraft.client.render.entity.model.ArmorStandEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -43,7 +42,7 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
     @Override
     protected void setupTransforms(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - g));
-        float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
+        float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.lastHitTime) + h;
         if (i < 5.0f) {
             matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.sin(i / 1.5f * (float)Math.PI) * 3.0f));
         }
@@ -74,11 +73,6 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
             return RenderLayer.getCutoutNoCull(identifier, false);
         }
         return null;
-    }
-
-    @Override
-    protected /* synthetic */ boolean hasLabel(LivingEntity livingEntity) {
-        return this.hasLabel((ArmorStandEntity)livingEntity);
     }
 }
 

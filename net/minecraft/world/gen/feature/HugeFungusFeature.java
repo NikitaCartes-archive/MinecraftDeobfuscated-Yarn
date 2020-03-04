@@ -29,7 +29,7 @@ extends Feature<HugeFungusFeatureConfig> {
 
     @Override
     public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, HugeFungusFeatureConfig hugeFungusFeatureConfig) {
-        Block block = hugeFungusFeatureConfig.field_22435.getBlock();
+        Block block = hugeFungusFeatureConfig.validBaseBlock.getBlock();
         BlockPos blockPos2 = null;
         if (hugeFungusFeatureConfig.planted) {
             Block block2 = iWorld.getBlockState(blockPos.down()).getBlock();
@@ -78,7 +78,7 @@ extends Feature<HugeFungusFeatureConfig> {
             for (int k = -i; k <= i; ++k) {
                 boolean bl = thickStem && MathHelper.abs(j) == i && MathHelper.abs(k) == i;
                 for (int l = 0; l < stemHeight; ++l) {
-                    mutable.set(blockPos).setOffset(j, l, k);
+                    mutable.setOffset(blockPos, j, l, k);
                     if (!HugeFungusFeature.method_24868(world, mutable)) continue;
                     if (config.planted) {
                         if (!world.getBlockState((BlockPos)mutable.down()).isAir()) {
@@ -119,7 +119,7 @@ extends Feature<HugeFungusFeatureConfig> {
                     boolean bl4 = !bl2 && !bl3 && k != hatHeight;
                     boolean bl5 = bl2 && bl3;
                     boolean bl6 = k < j + 3;
-                    mutable.set(blockPos).setOffset(m, k, n2);
+                    mutable.setOffset(blockPos, m, k, n2);
                     if (!HugeFungusFeature.method_24868(world, mutable)) continue;
                     if (config.planted && !world.getBlockState((BlockPos)mutable.down()).isAir()) {
                         world.breakBlock(mutable, true);
@@ -167,7 +167,7 @@ extends Feature<HugeFungusFeatureConfig> {
 
     @Nullable
     private static BlockPos.Mutable getStartPos(IWorld world, BlockPos pos, Block block) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+        BlockPos.Mutable mutable = pos.mutableCopy();
         for (int i = pos.getY(); i >= 1; --i) {
             mutable.setY(i);
             Block block2 = world.getBlockState((BlockPos)mutable.down()).getBlock();
@@ -178,7 +178,7 @@ extends Feature<HugeFungusFeatureConfig> {
     }
 
     private static void generateVines(BlockPos blockPos, IWorld iWorld, Random random) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
+        BlockPos.Mutable mutable = blockPos.mutableCopy().setOffset(Direction.DOWN);
         if (!iWorld.isAir(mutable)) {
             return;
         }

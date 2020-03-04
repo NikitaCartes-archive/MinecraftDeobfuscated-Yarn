@@ -24,8 +24,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class EndCityFeature
 extends StructureFeature<DefaultFeatureConfig> {
-    public EndCityFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public EndCityFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override
@@ -38,21 +38,21 @@ extends StructureFeature<DefaultFeatureConfig> {
         int r = p < 0 ? p - m + 1 : p;
         int s = q / m;
         int t = r / m;
-        ((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), s, t, 10387313);
+        ((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), s, t, 10387313);
         s *= m;
         t *= m;
         return new ChunkPos(s += (random.nextInt(m - n) + random.nextInt(m - n)) / 2, t += (random.nextInt(m - n) + random.nextInt(m - n)) / 2);
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
-        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
-        if (chunkZ == chunkPos.x && i == chunkPos.z) {
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
+        if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
             if (!chunkGenerator.hasStructure(biome, this)) {
                 return false;
             }
-            int j = EndCityFeature.getGenerationHeight(chunkZ, i, chunkGenerator);
-            return j >= 60;
+            int i = EndCityFeature.getGenerationHeight(chunkX, chunkZ, chunkGenerator);
+            return i >= 60;
         }
         return false;
     }
@@ -96,8 +96,8 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override

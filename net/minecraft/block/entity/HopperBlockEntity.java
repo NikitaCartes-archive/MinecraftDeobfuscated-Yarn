@@ -17,8 +17,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.container.Container;
-import net.minecraft.container.HopperContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -28,6 +26,8 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.screen.HopperScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
@@ -383,8 +383,8 @@ Tickable {
     }
 
     @Override
-    protected Container createContainer(int i, PlayerInventory playerInventory) {
-        return new HopperContainer(i, playerInventory, this);
+    protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
+        return new HopperScreenHandler(i, playerInventory, this);
     }
 }
 

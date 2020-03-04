@@ -176,7 +176,7 @@ public abstract class PlayerManager {
             }
             return entity;
         })) != null) {
-            UUID uUID = compoundTag2.getUuid("Attach");
+            UUID uUID = compoundTag2.getUuidOld("Attach");
             if (entity2.getUuid().equals(uUID)) {
                 player.startRiding(entity2, true);
             } else {
@@ -560,7 +560,7 @@ public abstract class PlayerManager {
     }
 
     public void method_14594(ServerPlayerEntity player) {
-        player.openContainer(player.playerContainer);
+        player.openHandledScreen(player.playerScreenHandler);
         player.markHealthDirty();
         player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(player.inventory.selectedSlot));
     }

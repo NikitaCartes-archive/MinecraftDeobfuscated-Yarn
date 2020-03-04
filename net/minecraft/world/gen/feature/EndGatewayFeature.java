@@ -18,8 +18,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class EndGatewayFeature
 extends Feature<EndGatewayFeatureConfig> {
-    public EndGatewayFeature(Function<Dynamic<?>, ? extends EndGatewayFeatureConfig> configFactory) {
-        super(configFactory);
+    public EndGatewayFeature(Function<Dynamic<?>, ? extends EndGatewayFeatureConfig> function) {
+        super(function);
     }
 
     @Override

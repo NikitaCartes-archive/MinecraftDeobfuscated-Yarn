@@ -28,29 +28,46 @@ implements DynamicSerializable {
         this.type = type;
     }
 
+    /**
+     * This is the main method used to generate foliage.
+     * 
+     * @param baseHeight the height of the full tree
+     * @param trunkHeight the height of just the trunk, or the part of the tree without leaves
+     * @param radius the radius of the foliage
+     */
     public abstract void generate(ModifiableTestableWorld var1, Random var2, BranchedTreeFeatureConfig var3, int var4, int var5, int var6, BlockPos var7, Set<BlockPos> var8);
 
     public abstract int getRadius(Random var1, int var2, int var3, BranchedTreeFeatureConfig var4);
 
-    protected abstract boolean method_23451(Random var1, int var2, int var3, int var4, int var5, int var6);
+    protected abstract boolean isInvalidForLeaves(Random var1, int var2, int var3, int var4, int var5, int var6);
 
-    public abstract int method_23447(int var1, int var2, int var3, int var4);
+    /**
+     * This method is used to ensure that a tree can place foliage when it generates.
+     * 
+     * <p>It runs for every y-level of the tree being generated.
+     * 
+     * @param trunkHeight the height of the trunk
+     * @param baseHeight the height of the full tree
+     * @param radius the radius of the foliage
+     * @param currentTreeHeight the current y-level of the tree being tested.
+     */
+    public abstract int getRadiusForPlacement(int var1, int var2, int var3, int var4);
 
-    protected void generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BranchedTreeFeatureConfig branchedTreeFeatureConfig, int i, BlockPos blockPos, int j, int k, Set<BlockPos> set) {
+    protected void generate(ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, int baseHeight, BlockPos pos, int y, int radius, Set<BlockPos> leaves) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int l = -k; l <= k; ++l) {
-            for (int m = -k; m <= k; ++m) {
-                if (this.method_23451(random, i, l, j, m, k)) continue;
-                mutable.set(l + blockPos.getX(), j + blockPos.getY(), m + blockPos.getZ());
-                this.method_23450(modifiableTestableWorld, random, mutable, branchedTreeFeatureConfig, set);
+        for (int i = -radius; i <= radius; ++i) {
+            for (int j = -radius; j <= radius; ++j) {
+                if (this.isInvalidForLeaves(random, baseHeight, i, y, j, radius)) continue;
+                mutable.set(i + pos.getX(), y + pos.getY(), j + pos.getZ());
+                this.placeLeaves(world, random, mutable, config, leaves);
             }
         }
     }
 
-    protected void method_23450(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, BranchedTreeFeatureConfig branchedTreeFeatureConfig, Set<BlockPos> set) {
-        if (AbstractTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos)) {
-            modifiableTestableWorld.setBlockState(blockPos, branchedTreeFeatureConfig.leavesProvider.getBlockState(random, blockPos), 19);
-            set.add(blockPos.toImmutable());
+    protected void placeLeaves(ModifiableTestableWorld world, Random random, BlockPos pos, BranchedTreeFeatureConfig config, Set<BlockPos> leaves) {
+        if (AbstractTreeFeature.isAirOrLeaves(world, pos) || AbstractTreeFeature.isReplaceablePlant(world, pos) || AbstractTreeFeature.isWater(world, pos)) {
+            world.setBlockState(pos, config.leavesProvider.getBlockState(random, pos), 19);
+            leaves.add(pos.toImmutable());
         }
     }
 

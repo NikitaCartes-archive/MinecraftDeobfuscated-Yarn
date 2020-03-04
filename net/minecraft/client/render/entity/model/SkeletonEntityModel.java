@@ -81,11 +81,11 @@ extends BipedEntityModel<T> {
     }
 
     @Override
-    public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+    public void setArmAngle(Arm arm, MatrixStack matrices) {
         float f = arm == Arm.RIGHT ? 1.0f : -1.0f;
         ModelPart modelPart = this.getArm(arm);
         modelPart.pivotX += f;
-        modelPart.rotate(matrixStack);
+        modelPart.rotate(matrices);
         modelPart.pivotX -= f;
     }
 }

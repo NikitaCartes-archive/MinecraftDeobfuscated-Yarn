@@ -37,13 +37,13 @@ public abstract class StructureStart {
     private int references;
     protected final ChunkRandom random;
 
-    public StructureStart(StructureFeature<?> feature, int chunkX, int chunkZ, BlockBox box, int references, long l) {
+    public StructureStart(StructureFeature<?> feature, int chunkX, int chunkZ, BlockBox box, int references, long seed) {
         this.feature = feature;
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.references = references;
         this.random = new ChunkRandom();
-        this.random.setStructureSeed(l, chunkX, chunkZ);
+        this.random.setCarverSeed(seed, chunkX, chunkZ);
         this.boundingBox = box;
     }
 
@@ -60,13 +60,13 @@ public abstract class StructureStart {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+    public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
         List<StructurePiece> list = this.children;
         synchronized (list) {
             Iterator<StructurePiece> iterator = this.children.iterator();
             while (iterator.hasNext()) {
                 StructurePiece structurePiece = iterator.next();
-                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(world, chunkGenerator, random, blockBox, chunkPos)) continue;
+                if (!structurePiece.getBoundingBox().intersects(box) || structurePiece.generate(world, chunkGenerator, random, box, pos)) continue;
                 iterator.remove();
             }
             this.setBoundingBoxFromChildren();

@@ -3,6 +3,7 @@
  */
 package com.mojang.realmsclient.dto;
 
+import com.google.gson.annotations.SerializedName;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import net.fabricmc.api.EnvType;
@@ -13,9 +14,9 @@ public abstract class ValueObject {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("{");
         for (Field field : this.getClass().getFields()) {
-            if (ValueObject.isStatic(field)) continue;
+            if (ValueObject.method_25094(field)) continue;
             try {
-                stringBuilder.append(field.getName()).append("=").append(field.get(this)).append(" ");
+                stringBuilder.append(ValueObject.method_25093(field)).append("=").append(field.get(this)).append(" ");
             } catch (IllegalAccessException illegalAccessException) {
                 // empty catch block
             }
@@ -25,7 +26,12 @@ public abstract class ValueObject {
         return stringBuilder.toString();
     }
 
-    private static boolean isStatic(Field f) {
+    private static String method_25093(Field field) {
+        SerializedName serializedName = field.getAnnotation(SerializedName.class);
+        return serializedName != null ? serializedName.value() : field.getName();
+    }
+
+    private static boolean method_25094(Field f) {
         return Modifier.isStatic(f.getModifiers());
     }
 }

@@ -27,10 +27,10 @@ extends ResourcePackProfile {
     @Nullable
     private Identifier iconId;
 
-    public ClientResourcePackProfile(String name, boolean notSorting, Supplier<ResourcePack> packCreator, ResourcePack pack, PackResourceMetadata metadata, ResourcePackProfile.InsertionPosition direction) {
-        super(name, notSorting, packCreator, pack, metadata, direction);
+    public ClientResourcePackProfile(String string, boolean bl, Supplier<ResourcePack> supplier, ResourcePack resourcePack, PackResourceMetadata packResourceMetadata, ResourcePackProfile.InsertionPosition insertionPosition) {
+        super(string, bl, supplier, resourcePack, packResourceMetadata, insertionPosition);
         NativeImage nativeImage = null;
-        try (InputStream inputStream = pack.openRoot("pack.png");){
+        try (InputStream inputStream = resourcePack.openRoot("pack.png");){
             nativeImage = NativeImage.read(inputStream);
         } catch (IOException | IllegalArgumentException exception) {
             // empty catch block

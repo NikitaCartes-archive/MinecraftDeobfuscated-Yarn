@@ -29,8 +29,8 @@ public class OceanMonumentFeature
 extends StructureFeature<DefaultFeatureConfig> {
     private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
-    public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override
@@ -43,22 +43,22 @@ extends StructureFeature<DefaultFeatureConfig> {
         int r = p < 0 ? p - m + 1 : p;
         int s = q / m;
         int t = r / m;
-        ((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), s, t, 10387313);
+        ((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), s, t, 10387313);
         s *= m;
         t *= m;
         return new ChunkPos(s += (random.nextInt(m - n) + random.nextInt(m - n)) / 2, t += (random.nextInt(m - n) + random.nextInt(m - n)) / 2);
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
-        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
-        if (chunkZ == chunkPos.x && i == chunkPos.z) {
-            Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(chunkZ * 16 + 9, chunkGenerator.getSeaLevel(), i * 16 + 9, 16);
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
+        if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
+            Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 16);
             for (Biome biome2 : set) {
                 if (chunkGenerator.hasStructure(biome2, this)) continue;
                 return false;
             }
-            Set<Biome> set2 = chunkGenerator.getBiomeSource().getBiomesInArea(chunkZ * 16 + 9, chunkGenerator.getSeaLevel(), i * 16 + 9, 29);
+            Set<Biome> set2 = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 29);
             for (Biome biome3 : set2) {
                 if (biome3.getCategory() == Biome.Category.OCEAN || biome3.getCategory() == Biome.Category.RIVER) continue;
                 return false;
@@ -92,8 +92,8 @@ extends StructureFeature<DefaultFeatureConfig> {
     extends StructureStart {
         private boolean field_13717;
 
-        public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override
@@ -111,12 +111,12 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+        public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
             if (!this.field_13717) {
                 this.children.clear();
                 this.method_16588(this.getChunkX(), this.getChunkZ());
             }
-            super.generateStructure(world, chunkGenerator, random, blockBox, chunkPos);
+            super.generateStructure(world, chunkGenerator, random, box, pos);
         }
     }
 }

@@ -23,8 +23,8 @@ public class MobNavigation
 extends EntityNavigation {
     private boolean avoidSunlight;
 
-    public MobNavigation(MobEntity entity, World world) {
-        super(entity, world);
+    public MobNavigation(MobEntity mobEntity, World world) {
+        super(mobEntity, world);
     }
 
     @Override
@@ -72,7 +72,7 @@ extends EntityNavigation {
 
     @Override
     public Path findPathTo(Entity entity, int distance) {
-        return this.findPathTo(new BlockPos(entity), distance);
+        return this.findPathTo(entity.getSenseCenterPos(), distance);
     }
 
     private int method_6362() {

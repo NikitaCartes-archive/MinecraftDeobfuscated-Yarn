@@ -17,29 +17,29 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class VoidStartPlatformFeature
 extends Feature<DefaultFeatureConfig> {
-    private static final BlockPos field_19241 = new BlockPos(8, 3, 8);
-    private static final ChunkPos field_19242 = new ChunkPos(field_19241);
+    private static final BlockPos START_BLOCK = new BlockPos(8, 3, 8);
+    private static final ChunkPos START_CHUNK = new ChunkPos(START_BLOCK);
 
-    public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
-    private static int method_20403(int i, int j, int k, int l) {
-        return Math.max(Math.abs(i - k), Math.abs(j - l));
+    private static int getDistance(int x1, int z1, int x2, int z2) {
+        return Math.max(Math.abs(x1 - x2), Math.abs(z1 - z2));
     }
 
     @Override
     public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
         ChunkPos chunkPos = new ChunkPos(blockPos);
-        if (VoidStartPlatformFeature.method_20403(chunkPos.x, chunkPos.z, VoidStartPlatformFeature.field_19242.x, VoidStartPlatformFeature.field_19242.z) > 1) {
+        if (VoidStartPlatformFeature.getDistance(chunkPos.x, chunkPos.z, VoidStartPlatformFeature.START_CHUNK.x, VoidStartPlatformFeature.START_CHUNK.z) > 1) {
             return true;
         }
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = chunkPos.getStartZ(); i <= chunkPos.getEndZ(); ++i) {
             for (int j = chunkPos.getStartX(); j <= chunkPos.getEndX(); ++j) {
-                if (VoidStartPlatformFeature.method_20403(field_19241.getX(), field_19241.getZ(), j, i) > 16) continue;
-                mutable.set(j, field_19241.getY(), i);
-                if (mutable.equals(field_19241)) {
+                if (VoidStartPlatformFeature.getDistance(START_BLOCK.getX(), START_BLOCK.getZ(), j, i) > 16) continue;
+                mutable.set(j, START_BLOCK.getY(), i);
+                if (mutable.equals(START_BLOCK)) {
                     iWorld.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), 2);
                     continue;
                 }

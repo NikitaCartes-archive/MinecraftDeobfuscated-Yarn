@@ -17,8 +17,8 @@ extends TreeFeatureConfig {
     public final int heightInterval;
     public final int crownHeight;
 
-    protected MegaTreeFeatureConfig(BlockStateProvider blockStateProvider, BlockStateProvider blockStateProvider2, List<TreeDecorator> list, int i, int heightInterval, int crownHeight) {
-        super(blockStateProvider, blockStateProvider2, list, i);
+    protected MegaTreeFeatureConfig(BlockStateProvider trunkProvider, BlockStateProvider leavesProvider, List<TreeDecorator> decorators, int baseHeight, int heightInterval, int crownHeight) {
+        super(trunkProvider, leavesProvider, decorators, baseHeight);
         this.heightInterval = heightInterval;
         this.crownHeight = crownHeight;
     }
@@ -36,8 +36,8 @@ extends TreeFeatureConfig {
 
     public static class Builder
     extends TreeFeatureConfig.Builder {
-        private List<TreeDecorator> field_21234 = ImmutableList.of();
-        private int field_21235;
+        private List<TreeDecorator> treeDecorators = ImmutableList.of();
+        private int height;
         private int heightInterval;
         private int crownHeight;
 
@@ -45,14 +45,14 @@ extends TreeFeatureConfig {
             super(blockStateProvider, blockStateProvider2);
         }
 
-        public Builder treeDecorators(List<TreeDecorator> list) {
-            this.field_21234 = list;
+        public Builder treeDecorators(List<TreeDecorator> decorators) {
+            this.treeDecorators = decorators;
             return this;
         }
 
         @Override
         public Builder baseHeight(int i) {
-            this.field_21235 = i;
+            this.height = i;
             return this;
         }
 
@@ -68,7 +68,7 @@ extends TreeFeatureConfig {
 
         @Override
         public MegaTreeFeatureConfig build() {
-            return new MegaTreeFeatureConfig(this.trunkProvider, this.leavesProvider, this.field_21234, this.field_21235, this.heightInterval, this.crownHeight);
+            return new MegaTreeFeatureConfig(this.trunkProvider, this.leavesProvider, this.treeDecorators, this.height, this.heightInterval, this.crownHeight);
         }
 
         @Override

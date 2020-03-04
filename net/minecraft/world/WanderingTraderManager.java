@@ -81,7 +81,7 @@ public class WanderingTraderManager {
         if (this.random.nextInt(10) != 0) {
             return false;
         }
-        BlockPos blockPos2 = playerEntity.getBlockPos();
+        BlockPos blockPos2 = playerEntity.getSenseCenterPos();
         int i = 48;
         PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
         Optional<BlockPos> optional = pointOfInterestStorage.getPosition(PointOfInterestType.MEETING.getCompletionCondition(), blockPos -> true, blockPos2, 48, PointOfInterestStorage.OccupationStatus.ANY);
@@ -107,7 +107,7 @@ public class WanderingTraderManager {
     }
 
     private void method_18016(WanderingTraderEntity wanderingTraderEntity, int i) {
-        BlockPos blockPos = this.method_18017(new BlockPos(wanderingTraderEntity), i);
+        BlockPos blockPos = this.method_18017(wanderingTraderEntity.getSenseCenterPos(), i);
         if (blockPos == null) {
             return;
         }

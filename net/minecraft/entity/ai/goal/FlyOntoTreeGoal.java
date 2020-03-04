@@ -36,15 +36,15 @@ extends WanderAroundFarGoal {
 
     @Nullable
     private Vec3d getTreeTarget() {
-        BlockPos blockPos = new BlockPos(this.mob);
+        BlockPos blockPos = this.mob.getSenseCenterPos();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         Iterable<BlockPos> iterable = BlockPos.iterate(MathHelper.floor(this.mob.getX() - 3.0), MathHelper.floor(this.mob.getY() - 6.0), MathHelper.floor(this.mob.getZ() - 3.0), MathHelper.floor(this.mob.getX() + 3.0), MathHelper.floor(this.mob.getY() + 6.0), MathHelper.floor(this.mob.getZ() + 3.0));
         for (BlockPos blockPos2 : iterable) {
             Block block;
             boolean bl;
-            if (blockPos.equals(blockPos2) || !(bl = (block = this.mob.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock()) instanceof LeavesBlock || block.isIn(BlockTags.LOGS)) || !this.mob.world.isAir(blockPos2) || !this.mob.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) continue;
-            return new Vec3d(blockPos2);
+            if (blockPos.equals(blockPos2) || !(bl = (block = this.mob.world.getBlockState(mutable2.move(blockPos2, Direction.DOWN)).getBlock()) instanceof LeavesBlock || block.isIn(BlockTags.LOGS)) || !this.mob.world.isAir(blockPos2) || !this.mob.world.isAir(mutable.move(blockPos2, Direction.UP))) continue;
+            return Vec3d.method_24955(blockPos2);
         }
         return null;
     }

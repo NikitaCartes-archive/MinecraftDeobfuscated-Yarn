@@ -21,36 +21,36 @@ extends AbstractTreeFeature<T> {
         super(function);
     }
 
-    protected void generate(ModifiableTestableWorld world, Random random, int height, BlockPos pos, int trunkTopOffset, Set<BlockPos> logPositions, BlockBox blockBox, BranchedTreeFeatureConfig config) {
+    protected void generate(ModifiableTestableWorld world, Random random, int height, BlockPos pos, int trunkTopOffset, Set<BlockPos> logPositions, BlockBox box, BranchedTreeFeatureConfig config) {
         for (int i = 0; i < height - trunkTopOffset; ++i) {
-            this.setLogBlockState(world, random, pos.up(i), logPositions, blockBox, config);
+            this.setLogBlockState(world, random, pos.up(i), logPositions, box, config);
         }
     }
 
-    public Optional<BlockPos> findPositionToGenerate(ModifiableTestableWorld world, int height, int i, int j, BlockPos pos, BranchedTreeFeatureConfig config) {
+    public Optional<BlockPos> findPositionToGenerate(ModifiableTestableWorld world, int baseHeight, int trunkHeight, int foliageRadius, BlockPos pos, BranchedTreeFeatureConfig config) {
         BlockPos blockPos;
-        int l;
-        int k;
-        if (!config.field_21593) {
-            k = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
-            l = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
-            blockPos = new BlockPos(pos.getX(), k, pos.getZ());
-            if (l - k > config.maxWaterDepth) {
+        int j;
+        int i;
+        if (!config.skipFluidCheck) {
+            i = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
+            j = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
+            blockPos = new BlockPos(pos.getX(), i, pos.getZ());
+            if (j - i > config.maxFluidDepth) {
                 return Optional.empty();
             }
         } else {
             blockPos = pos;
         }
-        if (blockPos.getY() < 1 || blockPos.getY() + height + 1 > 256) {
+        if (blockPos.getY() < 1 || blockPos.getY() + baseHeight + 1 > 256) {
             return Optional.empty();
         }
-        for (k = 0; k <= height + 1; ++k) {
-            l = config.foliagePlacer.method_23447(i, height, j, k);
+        for (i = 0; i <= baseHeight + 1; ++i) {
+            j = config.foliagePlacer.getRadiusForPlacement(trunkHeight, baseHeight, foliageRadius, i);
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            for (int m = -l; m <= l; ++m) {
-                for (int n = -l; n <= l; ++n) {
-                    if (k + blockPos.getY() >= 0 && k + blockPos.getY() < 256) {
-                        mutable.set(m + blockPos.getX(), k + blockPos.getY(), n + blockPos.getZ());
+            for (int k = -j; k <= j; ++k) {
+                for (int l = -j; l <= j; ++l) {
+                    if (i + blockPos.getY() >= 0 && i + blockPos.getY() < 256) {
+                        mutable.set(k + blockPos.getX(), i + blockPos.getY(), l + blockPos.getZ());
                         if (BranchedTreeFeature.canTreeReplace(world, mutable) && (config.noVines || !BranchedTreeFeature.isVine(world, mutable))) continue;
                         return Optional.empty();
                     }
@@ -58,7 +58,7 @@ extends AbstractTreeFeature<T> {
                 }
             }
         }
-        if (!BranchedTreeFeature.isDirtOrGrass(world, blockPos.down()) || blockPos.getY() >= 256 - height - 1) {
+        if (!BranchedTreeFeature.isDirtOrGrass(world, blockPos.down()) || blockPos.getY() >= 256 - baseHeight - 1) {
             return Optional.empty();
         }
         return Optional.of(blockPos);

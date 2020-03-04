@@ -24,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
 extends StuckObjectsFeatureRenderer<T, M> {
-    private static final Identifier field_20529 = new Identifier("textures/entity/bee/bee_stinger.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/bee/bee_stinger.png");
 
     public StuckStingersFeatureRenderer(LivingEntityRenderer<T, M> livingEntityRenderer) {
         super(livingEntityRenderer);
@@ -36,36 +36,36 @@ extends StuckObjectsFeatureRenderer<T, M> {
     }
 
     @Override
-    protected void renderObject(MatrixStack matrix, VertexConsumerProvider vertexConsumers, int i, Entity entity, float tickDelta, float f, float g, float h) {
-        float j = MathHelper.sqrt(tickDelta * tickDelta + g * g);
-        float k = (float)(Math.atan2(tickDelta, g) * 57.2957763671875);
-        float l = (float)(Math.atan2(f, j) * 57.2957763671875);
+    protected void renderObject(MatrixStack matrix, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta) {
+        float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
+        float g = (float)(Math.atan2(directionX, directionZ) * 57.2957763671875);
+        float h = (float)(Math.atan2(directionY, f) * 57.2957763671875);
         matrix.translate(0.0, 0.0, 0.0);
-        matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k - 90.0f));
-        matrix.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(l));
-        float m = 0.0f;
-        float n = 0.125f;
-        float o = 0.0f;
-        float p = 0.0625f;
-        float q = 0.03125f;
+        matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g - 90.0f));
+        matrix.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(h));
+        float i = 0.0f;
+        float j = 0.125f;
+        float k = 0.0f;
+        float l = 0.0625f;
+        float m = 0.03125f;
         matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0f));
         matrix.scale(0.03125f, 0.03125f, 0.03125f);
         matrix.translate(2.5, 0.0, 0.0);
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(field_20529));
-        for (int r = 0; r < 4; ++r) {
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
+        for (int n = 0; n < 4; ++n) {
             matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             MatrixStack.Entry entry = matrix.peek();
             Matrix4f matrix4f = entry.getModel();
             Matrix3f matrix3f = entry.getNormal();
-            StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, i);
-            StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, -1, 0.125f, 0.0f, i);
-            StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, 4.5f, 1, 0.125f, 0.0625f, i);
-            StuckStingersFeatureRenderer.method_23295(vertexConsumer, matrix4f, matrix3f, -4.5f, 1, 0.0f, 0.0625f, i);
+            StuckStingersFeatureRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, light);
+            StuckStingersFeatureRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, 4.5f, -1, 0.125f, 0.0f, light);
+            StuckStingersFeatureRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, 4.5f, 1, 0.125f, 0.0625f, light);
+            StuckStingersFeatureRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, -4.5f, 1, 0.0f, 0.0625f, light);
         }
     }
 
-    private static void method_23295(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, float f, int i, float g, float h, int j) {
-        vertexConsumer.vertex(matrix4f, f, i, 0.0f).color(255, 255, 255, 255).texture(g, h).overlay(OverlayTexture.DEFAULT_UV).light(j).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
+    private static void produceVertex(VertexConsumer vertexConsumer, Matrix4f vertexTransform, Matrix3f normalTransform, float x, int y, float u, float v, int light) {
+        vertexConsumer.vertex(vertexTransform, x, y, 0.0f).color(255, 255, 255, 255).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normalTransform, 0.0f, 1.0f, 0.0f).next();
     }
 }
 

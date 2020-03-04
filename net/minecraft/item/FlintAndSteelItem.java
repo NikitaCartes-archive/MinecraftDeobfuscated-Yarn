@@ -65,7 +65,7 @@ extends Item {
         BlockState blockState = AbstractFireBlock.getState(world, pos);
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            if (world.getBlockState(pos.offset(direction)).getBlock() != Blocks.OBSIDIAN || ((NetherPortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(world, pos) == null) continue;
+            if (world.getBlockState(pos.offset(direction)).getBlock() != Blocks.OBSIDIAN || NetherPortalBlock.createAreaHelper(world, pos) == null) continue;
             bl = true;
         }
         return block.isAir() && (blockState.canPlaceAt(world, pos) || bl);

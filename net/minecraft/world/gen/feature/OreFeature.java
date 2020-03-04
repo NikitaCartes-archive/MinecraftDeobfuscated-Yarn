@@ -18,8 +18,8 @@ import net.minecraft.world.gen.feature.OreFeatureConfig;
 
 public class OreFeature
 extends Feature<OreFeatureConfig> {
-    public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> configFactory) {
-        super(configFactory);
+    public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> function) {
+        super(function);
     }
 
     @Override

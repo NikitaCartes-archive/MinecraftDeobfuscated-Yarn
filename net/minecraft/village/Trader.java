@@ -6,10 +6,10 @@ package net.minecraft.village;
 import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.container.MerchantContainer;
-import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.village.TradeOffer;
@@ -48,7 +48,7 @@ public interface Trader {
 
     default public void sendOffers(PlayerEntity playerEntity2, Text text, int i2) {
         TraderOfferList traderOfferList;
-        OptionalInt optionalInt = playerEntity2.openContainer(new SimpleNamedContainerFactory((i, playerInventory, playerEntity) -> new MerchantContainer(i, playerInventory, this), text));
+        OptionalInt optionalInt = playerEntity2.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new MerchantScreenHandler(i, playerInventory, this), text));
         if (optionalInt.isPresent() && !(traderOfferList = this.getOffers()).isEmpty()) {
             playerEntity2.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i2, this.getExperience(), this.isLevelledTrader(), this.canRefreshTrades());
         }

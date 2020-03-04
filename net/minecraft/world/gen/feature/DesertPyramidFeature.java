@@ -17,8 +17,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class DesertPyramidFeature
 extends AbstractTempleFeature<DefaultFeatureConfig> {
-    public DesertPyramidFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public DesertPyramidFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override
@@ -43,8 +43,8 @@ extends AbstractTempleFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override

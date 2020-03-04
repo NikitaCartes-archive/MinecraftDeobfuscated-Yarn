@@ -30,13 +30,13 @@ implements MultipartModelSelector {
     }
 
     @Override
-    public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateFactory) {
+    public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
         Predicate<BlockState> predicate;
         List<String> list;
         boolean bl;
-        Property<?> property = stateFactory.getProperty(this.key);
+        Property<?> property = stateManager.getProperty(this.key);
         if (property == null) {
-            throw new RuntimeException(String.format("Unknown property '%s' on '%s'", this.key, stateFactory.getOwner().toString()));
+            throw new RuntimeException(String.format("Unknown property '%s' on '%s'", this.key, stateManager.getOwner().toString()));
         }
         String string2 = this.valueString;
         boolean bl2 = bl = !string2.isEmpty() && string2.charAt(0) == '!';
@@ -44,12 +44,12 @@ implements MultipartModelSelector {
             string2 = string2.substring(1);
         }
         if ((list = VALUE_SPLITTER.splitToList(string2)).isEmpty()) {
-            throw new RuntimeException(String.format("Empty value '%s' for property '%s' on '%s'", this.valueString, this.key, stateFactory.getOwner().toString()));
+            throw new RuntimeException(String.format("Empty value '%s' for property '%s' on '%s'", this.valueString, this.key, stateManager.getOwner().toString()));
         }
         if (list.size() == 1) {
-            predicate = this.createPredicate(stateFactory, property, string2);
+            predicate = this.createPredicate(stateManager, property, string2);
         } else {
-            List list2 = list.stream().map(string -> this.createPredicate(stateFactory, property, (String)string)).collect(Collectors.toList());
+            List list2 = list.stream().map(string -> this.createPredicate(stateManager, property, (String)string)).collect(Collectors.toList());
             predicate = blockState -> list2.stream().anyMatch(predicate -> predicate.test(blockState));
         }
         return bl ? predicate.negate() : predicate;

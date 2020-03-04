@@ -43,7 +43,7 @@ extends StructureProcessor {
     }
 
     @Override
-    protected <T> Dynamic<T> method_16666(DynamicOps<T> dynamicOps) {
+    protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("heightmap"), dynamicOps.createString(this.heightmap.getName()), dynamicOps.createString("offset"), dynamicOps.createInt(this.offset))));
     }
 }

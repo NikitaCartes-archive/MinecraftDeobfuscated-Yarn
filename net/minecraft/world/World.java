@@ -197,7 +197,7 @@ AutoCloseable {
                 if ((flags & 1) != 0) {
                     this.updateNeighbors(pos, blockState.getBlock());
                     if (!this.isClient && state.hasComparatorOutput()) {
-                        this.updateHorizontalAdjacent(pos, block);
+                        this.updateComparators(pos, block);
                     }
                 }
                 if ((flags & 0x10) == 0) {
@@ -468,15 +468,13 @@ AutoCloseable {
         int l = MathHelper.ceil(box.y2);
         int m = MathHelper.floor(box.z1);
         int n = MathHelper.ceil(box.z2);
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (int o = i; o < j; ++o) {
-                for (int p = k; p < l; ++p) {
-                    for (int q = m; q < n; ++q) {
-                        BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-                        if (blockState.isAir()) continue;
-                        boolean bl = true;
-                        return bl;
-                    }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int o = i; o < j; ++o) {
+            for (int p = k; p < l; ++p) {
+                for (int q = m; q < n; ++q) {
+                    BlockState blockState = this.getBlockState(mutable.set(o, p, q));
+                    if (blockState.isAir()) continue;
+                    return true;
                 }
             }
         }
@@ -491,15 +489,13 @@ AutoCloseable {
         int l = MathHelper.ceil(box.y2);
         int m = MathHelper.floor(box.z1);
         if (this.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.z2))) {
-            try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-                for (int o = i; o < j; ++o) {
-                    for (int p = k; p < l; ++p) {
-                        for (int q = m; q < n; ++q) {
-                            BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-                            if (!blockState.matches(BlockTags.FIRE) && blockState.getBlock() != Blocks.LAVA) continue;
-                            boolean bl = true;
-                            return bl;
-                        }
+            BlockPos.Mutable mutable = new BlockPos.Mutable();
+            for (int o = i; o < j; ++o) {
+                for (int p = k; p < l; ++p) {
+                    for (int q = m; q < n; ++q) {
+                        BlockState blockState = this.getBlockState(mutable.set(o, p, q));
+                        if (!blockState.matches(BlockTags.FIRE) && blockState.getBlock() != Blocks.LAVA) continue;
+                        return true;
                     }
                 }
             }
@@ -517,15 +513,13 @@ AutoCloseable {
         int l = MathHelper.ceil(area.y2);
         int m = MathHelper.floor(area.z1);
         if (this.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(area.z2))) {
-            try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-                for (int o = i; o < j; ++o) {
-                    for (int p = k; p < l; ++p) {
-                        for (int q = m; q < n; ++q) {
-                            BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-                            if (blockState.getBlock() != block) continue;
-                            BlockState blockState2 = blockState;
-                            return blockState2;
-                        }
+            BlockPos.Mutable mutable = new BlockPos.Mutable();
+            for (int o = i; o < j; ++o) {
+                for (int p = k; p < l; ++p) {
+                    for (int q = m; q < n; ++q) {
+                        BlockState blockState = this.getBlockState(mutable.set(o, p, q));
+                        if (blockState.getBlock() != block) continue;
+                        return blockState;
                     }
                 }
             }
@@ -560,15 +554,6 @@ AutoCloseable {
         explosion.collectBlocksAndDamageEntities();
         explosion.affectWorld(true);
         return explosion;
-    }
-
-    public boolean extinguishFire(@Nullable PlayerEntity playerEntity, BlockPos blockPos, Direction direction) {
-        if (this.getBlockState(blockPos = blockPos.offset(direction)).matches(BlockTags.FIRE)) {
-            this.playLevelEvent(playerEntity, 1009, blockPos, 0);
-            this.removeBlock(blockPos, false);
-            return true;
-        }
-        return false;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -660,7 +645,7 @@ AutoCloseable {
         if (chunk == null) {
             return false;
         }
-        return chunk.getBlockState(blockPos).hasSolidSurface(this, blockPos, entity, direction);
+        return chunk.getBlockState(blockPos).isSideOpaque(this, blockPos, entity, direction);
     }
 
     public boolean isTopSolid(BlockPos pos, Entity entity) {
@@ -1012,7 +997,7 @@ AutoCloseable {
 
     public abstract Scoreboard getScoreboard();
 
-    public void updateHorizontalAdjacent(BlockPos pos, Block block) {
+    public void updateComparators(BlockPos pos, Block block) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos = pos.offset(direction);
             if (!this.isChunkLoaded(blockPos)) continue;

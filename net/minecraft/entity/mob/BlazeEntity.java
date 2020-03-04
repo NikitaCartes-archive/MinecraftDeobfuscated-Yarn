@@ -27,7 +27,6 @@ import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -213,7 +212,7 @@ extends HostileEntity {
                     }
                     if (this.field_7218 > 1) {
                         float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5f;
-                        this.blaze.world.playLevelEvent(null, 1018, new BlockPos(this.blaze), 0);
+                        this.blaze.world.playLevelEvent(null, 1018, this.blaze.getSenseCenterPos(), 0);
                         for (int i = 0; i < 1; ++i) {
                             SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h);
                             smallFireballEntity.updatePosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());

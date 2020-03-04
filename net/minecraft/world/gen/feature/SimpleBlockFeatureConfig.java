@@ -33,9 +33,9 @@ implements FeatureConfig {
     @Override
     public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
         T object = BlockState.serialize(ops, this.toPlace).getValue();
-        Object object2 = ops.createList(this.placeOn.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
-        Object object3 = ops.createList(this.placeIn.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
-        Object object4 = ops.createList(this.placeUnder.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
+        Object object2 = ops.createList(this.placeOn.stream().map(state -> BlockState.serialize(ops, state).getValue()));
+        Object object3 = ops.createList(this.placeIn.stream().map(state -> BlockState.serialize(ops, state).getValue()));
+        Object object4 = ops.createList(this.placeUnder.stream().map(state -> BlockState.serialize(ops, state).getValue()));
         return new Dynamic<Object>(ops, ops.createMap(ImmutableMap.of(ops.createString("to_place"), object, ops.createString("place_on"), object2, ops.createString("place_in"), object3, ops.createString("place_under"), object4)));
     }
 

@@ -8,8 +8,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
-import net.minecraft.container.Container;
-import net.minecraft.container.HopperContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -19,6 +17,8 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.screen.HopperScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -99,7 +99,7 @@ implements Hopper {
     public void tick() {
         super.tick();
         if (!this.world.isClient && this.isAlive() && this.isEnabled()) {
-            BlockPos blockPos = new BlockPos(this);
+            BlockPos blockPos = this.getSenseCenterPos();
             if (blockPos.equals(this.currentBlockPos)) {
                 --this.transferCooldown;
             } else {
@@ -157,8 +157,8 @@ implements Hopper {
     }
 
     @Override
-    public Container getContainer(int syncId, PlayerInventory playerInventory) {
-        return new HopperContainer(syncId, playerInventory, this);
+    public ScreenHandler getScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new HopperScreenHandler(syncId, playerInventory, this);
     }
 }
 

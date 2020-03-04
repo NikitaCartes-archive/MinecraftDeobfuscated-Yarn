@@ -25,7 +25,7 @@ extends Sensor<VillagerEntity> {
     @Override
     protected void sense(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         DimensionType dimensionType = serverWorld.getDimension().getType();
-        BlockPos blockPos = new BlockPos(villagerEntity);
+        BlockPos blockPos = villagerEntity.getSenseCenterPos();
         ArrayList<GlobalPos> list = Lists.newArrayList();
         int i = 4;
         for (int j = -4; j <= 4; ++j) {

@@ -12,8 +12,8 @@ import net.minecraft.datafixer.fix.EntityTransformFix;
 
 public abstract class EntitySimpleTransformFix
 extends EntityTransformFix {
-    public EntitySimpleTransformFix(String name, Schema oldSchema, boolean bl) {
-        super(name, oldSchema, bl);
+    public EntitySimpleTransformFix(String string, Schema schema, boolean bl) {
+        super(string, schema, bl);
     }
 
     @Override

@@ -85,7 +85,7 @@ implements AutoCloseable {
     public static NativeImage read(@Nullable Format format, InputStream inputStream) throws IOException {
         ByteBuffer byteBuffer = null;
         try {
-            byteBuffer = TextureUtil.readResource(inputStream);
+            byteBuffer = TextureUtil.method_24962(inputStream);
             byteBuffer.rewind();
             NativeImage nativeImage = NativeImage.read(format, byteBuffer);
             return nativeImage;

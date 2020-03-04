@@ -81,26 +81,26 @@ public abstract class EntityRenderer<T extends Entity> {
         return this.renderManager.getTextRenderer();
     }
 
-    protected void renderLabelIfPresent(T entity, String string, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i) {
+    protected void renderLabelIfPresent(T entity, String label, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         double d = this.renderManager.getSquaredDistanceToCamera((Entity)entity);
         if (d > 4096.0) {
             return;
         }
         boolean bl = !((Entity)entity).isSneaky();
         float f = ((Entity)entity).getHeight() + 0.5f;
-        int j = "deadmau5".equals(string) ? -10 : 0;
+        int i = "deadmau5".equals(label) ? -10 : 0;
         matrices.push();
         matrices.translate(0.0, f, 0.0);
         matrices.multiply(this.renderManager.getRotation());
         matrices.scale(-0.025f, -0.025f, 0.025f);
         Matrix4f matrix4f = matrices.peek().getModel();
         float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
-        int k = (int)(g * 255.0f) << 24;
+        int j = (int)(g * 255.0f) << 24;
         TextRenderer textRenderer = this.getFontRenderer();
-        float h = -textRenderer.getStringWidth(string) / 2;
-        textRenderer.draw(string, h, j, 0x20FFFFFF, false, matrix4f, vertexConsumerProvider, bl, k, i);
+        float h = -textRenderer.getStringWidth(label) / 2;
+        textRenderer.draw(label, h, i, 0x20FFFFFF, false, matrix4f, vertexConsumers, bl, j, light);
         if (bl) {
-            textRenderer.draw(string, h, j, -1, false, matrix4f, vertexConsumerProvider, false, 0, i);
+            textRenderer.draw(label, h, i, -1, false, matrix4f, vertexConsumers, false, 0, light);
         }
         matrices.pop();
     }

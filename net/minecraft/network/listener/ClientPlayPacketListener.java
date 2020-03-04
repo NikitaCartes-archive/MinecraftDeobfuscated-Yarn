@@ -14,13 +14,11 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
-import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
-import net.minecraft.network.packet.s2c.play.ContainerPropertyUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -56,8 +54,8 @@ import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenContainerS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenHorseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
@@ -77,6 +75,8 @@ import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
@@ -135,15 +135,15 @@ extends PacketListener {
 
     public void onGuiActionConfirm(ConfirmGuiActionS2CPacket var1);
 
-    public void onCloseContainer(CloseContainerS2CPacket var1);
+    public void onCloseScreen(CloseScreenS2CPacket var1);
 
     public void onInventory(InventoryS2CPacket var1);
 
-    public void onOpenHorseContainer(OpenHorseContainerS2CPacket var1);
+    public void onOpenHorseScreen(OpenHorseScreenS2CPacket var1);
 
-    public void onContainerPropertyUpdate(ContainerPropertyUpdateS2CPacket var1);
+    public void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket var1);
 
-    public void onContainerSlotUpdate(ContainerSlotUpdateS2CPacket var1);
+    public void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket var1);
 
     public void onCustomPayload(CustomPayloadS2CPacket var1);
 
@@ -267,7 +267,7 @@ extends PacketListener {
 
     public void onOpenWrittenBook(OpenWrittenBookS2CPacket var1);
 
-    public void onOpenContainer(OpenContainerS2CPacket var1);
+    public void onOpenScreen(OpenScreenS2CPacket var1);
 
     public void onSetTradeOffers(SetTradeOffersS2CPacket var1);
 

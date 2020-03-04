@@ -122,6 +122,7 @@ extends ProjectileEntity {
     protected void onEntityHit(EntityHitResult entityHitResult) {
         BlockPos blockPos;
         Entity entity2;
+        super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
         float f = 8.0f;
         if (entity instanceof LivingEntity) {
@@ -146,7 +147,7 @@ extends ProjectileEntity {
         }
         this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
         float g = 1.0f;
-        if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack) && this.world.isSkyVisible(blockPos = entity.getBlockPos())) {
+        if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack) && this.world.isSkyVisible(blockPos = entity.getSenseCenterPos())) {
             LightningEntity lightningEntity = new LightningEntity(this.world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, false);
             lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
             ((ServerWorld)this.world).addLightning(lightningEntity);

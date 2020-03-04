@@ -13,7 +13,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,7 +97,7 @@ extends Goal {
         if (!targetPredicate.test(this.mob, target)) {
             return false;
         }
-        if (!this.mob.isInWalkTargetRange(new BlockPos(target))) {
+        if (!this.mob.isInWalkTargetRange(target.getSenseCenterPos())) {
             return false;
         }
         if (this.checkCanNavigate) {

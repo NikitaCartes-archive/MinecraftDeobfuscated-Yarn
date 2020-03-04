@@ -25,10 +25,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class BannerItem
 extends WallStandingBlockItem {
-    public BannerItem(Block standingBlock, Block wallBlock, Item.Settings settings) {
-        super(standingBlock, wallBlock, settings);
-        Validate.isInstanceOf(AbstractBannerBlock.class, standingBlock);
-        Validate.isInstanceOf(AbstractBannerBlock.class, wallBlock);
+    public BannerItem(Block block, Block block2, Item.Settings settings) {
+        super(block, block2, settings);
+        Validate.isInstanceOf(AbstractBannerBlock.class, block);
+        Validate.isInstanceOf(AbstractBannerBlock.class, block2);
     }
 
     @Environment(value=EnvType.CLIENT)

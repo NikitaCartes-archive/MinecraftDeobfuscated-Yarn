@@ -292,7 +292,7 @@ implements Monster {
                 return SlimeEntity.canMobSpawn(type, world, spawnType, pos, random);
             }
             ChunkPos chunkPos = new ChunkPos(pos);
-            boolean bl2 = bl = ChunkRandom.create(chunkPos.x, chunkPos.z, world.getSeed(), 987234911L).nextInt(10) == 0;
+            boolean bl2 = bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, world.getSeed(), 987234911L).nextInt(10) == 0;
             if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
                 return SlimeEntity.canMobSpawn(type, world, spawnType, pos, random);
             }

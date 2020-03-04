@@ -44,7 +44,7 @@ extends Item {
             ItemStack itemStack = context.getStack();
             Vec3d vec3d = context.getHitPos();
             Direction direction = context.getSide();
-            FireworkEntity fireworkEntity = new FireworkEntity(world, vec3d.x + (double)direction.getOffsetX() * 0.15, vec3d.y + (double)direction.getOffsetY() * 0.15, vec3d.z + (double)direction.getOffsetZ() * 0.15, itemStack);
+            FireworkEntity fireworkEntity = new FireworkEntity(world, context.getPlayer(), vec3d.x + (double)direction.getOffsetX() * 0.15, vec3d.y + (double)direction.getOffsetY() * 0.15, vec3d.z + (double)direction.getOffsetZ() * 0.15, itemStack);
             world.spawnEntity(fireworkEntity);
             itemStack.decrement(1);
         }

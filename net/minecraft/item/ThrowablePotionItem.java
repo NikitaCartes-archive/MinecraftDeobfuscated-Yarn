@@ -24,7 +24,7 @@ extends PotionItem {
         ItemStack itemStack = user.getStackInHand(hand);
         if (!world.isClient) {
             ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, user);
-            thrownPotionEntity.setItemStack(itemStack);
+            thrownPotionEntity.setItem(itemStack);
             thrownPotionEntity.setProperties(user, user.pitch, user.yaw, -20.0f, 0.5f, 1.0f);
             world.spawnEntity(thrownPotionEntity);
         }

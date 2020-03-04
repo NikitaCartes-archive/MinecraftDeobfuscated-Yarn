@@ -10,7 +10,7 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieVillagerEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.Identifier;
@@ -32,11 +32,13 @@ extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<Zomb
     }
 
     @Override
-    protected void setupTransforms(ZombieVillagerEntity zombieVillagerEntity, MatrixStack matrixStack, float f, float g, float h) {
-        if (zombieVillagerEntity.isConverting()) {
-            g += (float)(Math.cos((double)zombieVillagerEntity.age * 3.25) * Math.PI * 0.25);
-        }
-        super.setupTransforms(zombieVillagerEntity, matrixStack, f, g, h);
+    protected boolean isShaking(ZombieVillagerEntity zombieVillagerEntity) {
+        return zombieVillagerEntity.isConverting();
+    }
+
+    @Override
+    protected /* synthetic */ boolean isShaking(LivingEntity entity) {
+        return this.isShaking((ZombieVillagerEntity)entity);
     }
 }
 

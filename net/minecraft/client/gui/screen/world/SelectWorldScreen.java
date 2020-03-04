@@ -33,8 +33,8 @@ extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double amount) {
-        return super.mouseScrolled(d, e, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
@@ -44,18 +44,18 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.minecraft.keyboard.enableRepeatEvents(true);
-        this.searchBox = new TextFieldWidget(this.font, this.width / 2 - 100, 22, 200, 20, this.searchBox, I18n.translate("selectWorld.search", new Object[0]));
+        this.client.keyboard.enableRepeatEvents(true);
+        this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, I18n.translate("selectWorld.search", new Object[0]));
         this.searchBox.setChangedListener(string -> this.levelList.filter(() -> string, false));
-        this.levelList = new WorldListWidget(this, this.minecraft, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
+        this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
         this.children.add(this.searchBox);
         this.children.add(this.levelList);
         this.selectButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, I18n.translate("selectWorld.select", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::play)));
-        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, I18n.translate("selectWorld.create", new Object[0]), buttonWidget -> this.minecraft.openScreen(new CreateWorldScreen(this))));
+        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, I18n.translate("selectWorld.create", new Object[0]), buttonWidget -> this.client.openScreen(new CreateWorldScreen(this))));
         this.editButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, I18n.translate("selectWorld.edit", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit)));
         this.deleteButton = this.addButton(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, I18n.translate("selectWorld.delete", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::delete)));
         this.recreateButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, I18n.translate("selectWorld.recreate", new Object[0]), buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::recreate)));
-        this.addButton(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.client.openScreen(this.parent)));
         this.worldSelected(false);
         this.setInitialFocus(this.searchBox);
     }
@@ -70,7 +70,7 @@ extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.openScreen(this.parent);
+        this.client.openScreen(this.parent);
     }
 
     @Override
@@ -83,7 +83,7 @@ extends Screen {
         this.tooltipText = null;
         this.levelList.render(mouseX, mouseY, delta);
         this.searchBox.render(mouseX, mouseY, delta);
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
         super.render(mouseX, mouseY, delta);
         if (this.tooltipText != null) {
             this.renderTooltip(Lists.newArrayList(Splitter.on("\n").split(this.tooltipText)), mouseX, mouseY);

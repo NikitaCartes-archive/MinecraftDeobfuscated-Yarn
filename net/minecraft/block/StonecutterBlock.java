@@ -8,13 +8,13 @@ import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.NameableContainerFactory;
-import net.minecraft.container.SimpleNamedContainerFactory;
-import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -52,15 +52,15 @@ extends Block {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        player.openContainer(state.createContainerFactory(world, pos));
+        player.openHandledScreen(state.createContainerFactory(world, pos));
         player.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
         return ActionResult.SUCCESS;
     }
 
     @Override
     @Nullable
-    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedContainerFactory((i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME);
+    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+        return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new StonecutterScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME);
     }
 
     @Override

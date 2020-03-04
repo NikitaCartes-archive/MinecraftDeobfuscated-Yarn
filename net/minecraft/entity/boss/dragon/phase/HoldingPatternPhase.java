@@ -9,7 +9,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -25,8 +25,8 @@ extends AbstractPhase {
     private Vec3d field_7045;
     private boolean field_7044;
 
-    public HoldingPatternPhase(EnderDragonEntity dragon) {
-        super(dragon);
+    public HoldingPatternPhase(EnderDragonEntity enderDragonEntity) {
+        super(enderDragonEntity);
     }
 
     public PhaseType<HoldingPatternPhase> getType() {
@@ -75,7 +75,7 @@ extends AbstractPhase {
         }
         if (this.field_7043 == null || this.field_7043.isFinished()) {
             int j;
-            i = j = this.dragon.method_6818();
+            i = j = this.dragon.getNearestPathNodeIndex();
             if (this.dragon.getRandom().nextInt(8) == 0) {
                 this.field_7044 = !this.field_7044;
                 i += 6;
@@ -88,7 +88,7 @@ extends AbstractPhase {
             } else if ((i %= 12) < 0) {
                 i += 12;
             }
-            this.field_7043 = this.dragon.method_6833(j, i, null);
+            this.field_7043 = this.dragon.findPath(j, i, null);
             if (this.field_7043 != null) {
                 this.field_7043.next();
             }
@@ -115,7 +115,7 @@ extends AbstractPhase {
     }
 
     @Override
-    public void crystalDestroyed(EnderCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
+    public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
         if (player != null && !player.abilities.invulnerable) {
             this.method_6843(player);
         }

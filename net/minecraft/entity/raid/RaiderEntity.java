@@ -60,8 +60,8 @@ extends PatrolEntity {
     private boolean ableToJoinRaid;
     private int outOfRaidCounter;
 
-    protected RaiderEntity(EntityType<? extends RaiderEntity> type, World world) {
-        super((EntityType<? extends PatrolEntity>)type, world);
+    protected RaiderEntity(EntityType<? extends RaiderEntity> entityType, World world) {
+        super((EntityType<? extends PatrolEntity>)entityType, world);
     }
 
     @Override
@@ -96,7 +96,7 @@ extends PatrolEntity {
             if (this.canJoinRaid()) {
                 if (raid == null) {
                     Raid raid2;
-                    if (this.world.getTime() % 20L == 0L && (raid2 = ((ServerWorld)this.world).getRaidAt(new BlockPos(this))) != null && RaidManager.isValidRaiderFor(this, raid2)) {
+                    if (this.world.getTime() % 20L == 0L && (raid2 = ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos())) != null && RaidManager.isValidRaiderFor(this, raid2)) {
                         raid2.addRaider(raid2.getGroupsSpawned(), this, null, true);
                     }
                 } else {
@@ -129,7 +129,7 @@ extends PatrolEntity {
                 }
                 raid.removeFromWave(this, false);
             }
-            if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
+            if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos()) == null) {
                 ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
                 PlayerEntity playerEntity = null;
                 Entity entity2 = entity;
@@ -313,7 +313,7 @@ extends PatrolEntity {
 
         private boolean tryFindHome() {
             ServerWorld serverWorld = (ServerWorld)this.raider.world;
-            BlockPos blockPos = new BlockPos(this.raider);
+            BlockPos blockPos = this.raider.getSenseCenterPos();
             Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, this::canLootHome, PointOfInterestStorage.OccupationStatus.ANY, blockPos, 48, this.raider.random);
             if (!optional.isPresent()) {
                 return false;
@@ -348,7 +348,7 @@ extends PatrolEntity {
         @Override
         public void tick() {
             if (this.raider.getNavigation().isIdle()) {
-                Vec3d vec3d = new Vec3d(this.home);
+                Vec3d vec3d = Vec3d.method_24955(this.home);
                 Vec3d vec3d2 = TargetFinder.findTargetTowards(this.raider, 16, 7, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
                     vec3d2 = TargetFinder.findTargetTowards(this.raider, 8, 7, vec3d);

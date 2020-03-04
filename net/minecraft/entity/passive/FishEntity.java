@@ -42,8 +42,8 @@ public abstract class FishEntity
 extends WaterCreatureEntity {
     private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(FishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    public FishEntity(EntityType<? extends FishEntity> type, World world) {
-        super((EntityType<? extends WaterCreatureEntity>)type, world);
+    public FishEntity(EntityType<? extends FishEntity> entityType, World world) {
+        super((EntityType<? extends WaterCreatureEntity>)entityType, world);
         this.moveControl = new FishMoveControl(this);
     }
 
@@ -193,7 +193,7 @@ extends WaterCreatureEntity {
 
         @Override
         public void tick() {
-            if (this.fish.isInFluid(FluidTags.WATER)) {
+            if (this.fish.isSubmergedIn(FluidTags.WATER)) {
                 this.fish.setVelocity(this.fish.getVelocity().add(0.0, 0.005, 0.0));
             }
             if (this.state != MoveControl.State.MOVE_TO || this.fish.getNavigation().isIdle()) {

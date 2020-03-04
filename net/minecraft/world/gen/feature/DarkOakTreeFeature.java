@@ -17,8 +17,8 @@ import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 
 public class DarkOakTreeFeature
 extends AbstractTreeFeature<MegaTreeFeatureConfig> {
-    public DarkOakTreeFeature(Function<Dynamic<?>, ? extends MegaTreeFeatureConfig> configFactory) {
-        super(configFactory);
+    public DarkOakTreeFeature(Function<Dynamic<?>, ? extends MegaTreeFeatureConfig> function) {
+        super(function);
     }
 
     @Override

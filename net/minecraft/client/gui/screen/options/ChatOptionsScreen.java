@@ -31,20 +31,20 @@ extends GameOptionsScreen {
         for (Option option : OPTIONS) {
             int j = this.width / 2 - 155 + i % 2 * 160;
             int k = this.height / 6 + 24 * (i >> 1);
-            AbstractButtonWidget abstractButtonWidget = this.addButton(option.createButton(this.minecraft.options, j, k, 150));
+            AbstractButtonWidget abstractButtonWidget = this.addButton(option.createButton(this.client.options, j, k, 150));
             if (option == Option.NARRATOR) {
                 this.narratorOptionButton = abstractButtonWidget;
                 abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
             }
             ++i;
         }
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.client.openScreen(this.parent)));
     }
 
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
         super.render(mouseX, mouseY, delta);
     }
 

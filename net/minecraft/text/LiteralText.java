@@ -29,13 +29,13 @@ extends BaseText {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o instanceof LiteralText) {
-            LiteralText literalText = (LiteralText)o;
-            return this.string.equals(literalText.getRawString()) && super.equals(o);
+        if (object instanceof LiteralText) {
+            LiteralText literalText = (LiteralText)object;
+            return this.string.equals(literalText.getRawString()) && super.equals(object);
         }
         return false;
     }

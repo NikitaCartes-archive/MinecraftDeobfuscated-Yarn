@@ -24,23 +24,23 @@ public class NetherFortressFeature
 extends StructureFeature<DefaultFeatureConfig> {
     private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.newArrayList(new Biome.SpawnEntry(EntityType.BLAZE, 10, 2, 3), new Biome.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 5, 4, 4), new Biome.SpawnEntry(EntityType.WITHER_SKELETON, 8, 5, 5), new Biome.SpawnEntry(EntityType.SKELETON, 2, 5, 5), new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4));
 
-    public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+        int i = chunkX >> 4;
         int j = chunkZ >> 4;
-        int k = i >> 4;
-        random.setSeed((long)(j ^ k << 4) ^ chunkGenerator.getSeed());
+        random.setSeed((long)(i ^ j << 4) ^ chunkGenerator.getSeed());
         random.nextInt();
         if (random.nextInt(3) != 0) {
             return false;
         }
-        if (chunkZ != (j << 4) + 4 + random.nextInt(8)) {
+        if (chunkX != (i << 4) + 4 + random.nextInt(8)) {
             return false;
         }
-        if (i != (k << 4) + 4 + random.nextInt(8)) {
+        if (chunkZ != (j << 4) + 4 + random.nextInt(8)) {
             return false;
         }
         return chunkGenerator.hasStructure(biome, this);
@@ -68,8 +68,8 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override

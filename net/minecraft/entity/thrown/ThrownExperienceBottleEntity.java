@@ -12,7 +12,6 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ThrownExperienceBottleEntity
@@ -41,9 +40,10 @@ extends ThrownItemEntity {
 
     @Override
     protected void onCollision(HitResult hitResult) {
+        super.onCollision(hitResult);
         if (!this.world.isClient) {
             int j;
-            this.world.playLevelEvent(2002, new BlockPos(this), PotionUtil.getColor(Potions.WATER));
+            this.world.playLevelEvent(2002, this.getSenseCenterPos(), PotionUtil.getColor(Potions.WATER));
             for (int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5); i > 0; i -= j) {
                 j = ExperienceOrbEntity.roundToOrbSize(i);
                 this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));

@@ -39,7 +39,7 @@ extends Item {
     }
 
     @Override
-    public float getMiningSpeed(ItemStack stack, BlockState state) {
+    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         Block block = state.getBlock();
         if (block == Blocks.COBWEB || state.matches(BlockTags.LEAVES)) {
             return 15.0f;
@@ -47,7 +47,7 @@ extends Item {
         if (block.isIn(BlockTags.WOOL)) {
             return 5.0f;
         }
-        return super.getMiningSpeed(stack, state);
+        return super.getMiningSpeedMultiplier(stack, state);
     }
 }
 

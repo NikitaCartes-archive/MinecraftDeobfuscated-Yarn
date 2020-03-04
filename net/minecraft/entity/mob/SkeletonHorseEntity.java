@@ -47,7 +47,7 @@ extends HorseBaseEntity {
     @Override
     protected SoundEvent getAmbientSound() {
         super.getAmbientSound();
-        if (this.isInFluid(FluidTags.WATER)) {
+        if (this.isSubmergedIn(FluidTags.WATER)) {
             return SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT_WATER;
         }
         return SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT;

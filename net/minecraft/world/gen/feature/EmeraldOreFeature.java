@@ -15,8 +15,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class EmeraldOreFeature
 extends Feature<EmeraldOreFeatureConfig> {
-    public EmeraldOreFeature(Function<Dynamic<?>, ? extends EmeraldOreFeatureConfig> configFactory) {
-        super(configFactory);
+    public EmeraldOreFeature(Function<Dynamic<?>, ? extends EmeraldOreFeatureConfig> function) {
+        super(function);
     }
 
     @Override

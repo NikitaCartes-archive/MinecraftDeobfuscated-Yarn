@@ -54,7 +54,7 @@ implements Fertilizable {
                 List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getFlowerFeatures();
                 if (list.isEmpty()) continue;
                 ConfiguredFeature<?, ?> configuredFeature = ((DecoratedFeatureConfig)list.get((int)0).config).feature;
-                blockState3 = ((FlowerFeature)configuredFeature.feature).getFlowerToPlace(random, blockPos2, configuredFeature.config);
+                blockState3 = ((FlowerFeature)configuredFeature.feature).getFlowerState(random, blockPos2, configuredFeature.config);
             } else {
                 blockState3 = blockState;
             }

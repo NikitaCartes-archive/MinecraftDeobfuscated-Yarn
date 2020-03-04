@@ -16,14 +16,14 @@ implements FeatureConfig {
     public final List<RandomFeatureEntry<?>> features;
     public final ConfiguredFeature<?, ?> defaultFeature;
 
-    public RandomFeatureConfig(List<RandomFeatureEntry<?>> list, ConfiguredFeature<?, ?> configuredFeature) {
-        this.features = list;
-        this.defaultFeature = configuredFeature;
+    public RandomFeatureConfig(List<RandomFeatureEntry<?>> features, ConfiguredFeature<?, ?> defaultFeature) {
+        this.features = features;
+        this.defaultFeature = defaultFeature;
     }
 
     @Override
     public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        Object object = ops.createList(this.features.stream().map(randomFeatureEntry -> randomFeatureEntry.serialize(ops).getValue()));
+        Object object = ops.createList(this.features.stream().map(feature -> feature.serialize(ops).getValue()));
         T object2 = this.defaultFeature.serialize(ops).getValue();
         return new Dynamic<Object>(ops, ops.createMap(ImmutableMap.of(ops.createString("features"), object, ops.createString("default"), object2)));
     }

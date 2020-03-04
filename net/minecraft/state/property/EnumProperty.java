@@ -49,12 +49,12 @@ extends AbstractProperty<T> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o instanceof EnumProperty && super.equals(o)) {
-            EnumProperty enumProperty = (EnumProperty)o;
+        if (object instanceof EnumProperty && super.equals(object)) {
+            EnumProperty enumProperty = (EnumProperty)object;
             return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
         }
         return false;

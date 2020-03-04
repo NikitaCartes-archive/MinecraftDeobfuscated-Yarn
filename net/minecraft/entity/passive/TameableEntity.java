@@ -33,8 +33,8 @@ extends AnimalEntity {
     protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private boolean sitting;
 
-    protected TameableEntity(EntityType<? extends TameableEntity> type, World world) {
-        super((EntityType<? extends AnimalEntity>)type, world);
+    protected TameableEntity(EntityType<? extends TameableEntity> entityType, World world) {
+        super((EntityType<? extends AnimalEntity>)entityType, world);
         this.onTamedChanged();
     }
 

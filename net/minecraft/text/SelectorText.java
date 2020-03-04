@@ -60,13 +60,13 @@ implements ParsableText {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o instanceof SelectorText) {
-            SelectorText selectorText = (SelectorText)o;
-            return this.pattern.equals(selectorText.pattern) && super.equals(o);
+        if (object instanceof SelectorText) {
+            SelectorText selectorText = (SelectorText)object;
+            return this.pattern.equals(selectorText.pattern) && super.equals(object);
         }
         return false;
     }

@@ -24,8 +24,8 @@ public class LakeFeature
 extends Feature<SingleStateFeatureConfig> {
     private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-    public LakeFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> configFactory) {
-        super(configFactory);
+    public LakeFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
+        super(function);
     }
 
     @Override

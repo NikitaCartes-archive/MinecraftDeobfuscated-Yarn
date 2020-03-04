@@ -23,9 +23,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
-import net.minecraft.container.Container;
-import net.minecraft.container.GenericContainer;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
@@ -38,6 +35,9 @@ import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -96,20 +96,20 @@ implements Waterloggable {
             return this.getFallback();
         }
     };
-    private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerFactory>>(){
+    private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableScreenHandlerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableScreenHandlerFactory>>(){
 
         @Override
-        public Optional<NameableContainerFactory> getFromBoth(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
+        public Optional<NameableScreenHandlerFactory> getFromBoth(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
             final DoubleInventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
-            return Optional.of(new NameableContainerFactory(){
+            return Optional.of(new NameableScreenHandlerFactory(){
 
                 @Override
                 @Nullable
-                public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+                public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
                     if (chestBlockEntity.checkUnlocked(playerEntity) && chestBlockEntity2.checkUnlocked(playerEntity)) {
                         chestBlockEntity.checkLootInteraction(playerInventory.player);
                         chestBlockEntity2.checkLootInteraction(playerInventory.player);
-                        return GenericContainer.createGeneric9x6(syncId, playerInventory, inventory);
+                        return GenericContainerScreenHandler.createGeneric9x6(i, playerInventory, inventory);
                     }
                     return null;
                 }
@@ -128,12 +128,12 @@ implements Waterloggable {
         }
 
         @Override
-        public Optional<NameableContainerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
+        public Optional<NameableScreenHandlerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
             return Optional.of(chestBlockEntity);
         }
 
         @Override
-        public Optional<NameableContainerFactory> getFallback() {
+        public Optional<NameableScreenHandlerFactory> getFallback() {
             return Optional.empty();
         }
 
@@ -257,7 +257,7 @@ implements Waterloggable {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof Inventory) {
             ItemScatterer.spawn(world, pos, (Inventory)((Object)blockEntity));
-            world.updateHorizontalAdjacent(pos, this);
+            world.updateComparators(pos, this);
         }
         super.onBlockRemoved(state, world, pos, newState, moved);
     }
@@ -267,9 +267,9 @@ implements Waterloggable {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        NameableContainerFactory nameableContainerFactory = this.createContainerFactory(state, world, pos);
-        if (nameableContainerFactory != null) {
-            player.openContainer(nameableContainerFactory);
+        NameableScreenHandlerFactory nameableScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
+        if (nameableScreenHandlerFactory != null) {
+            player.openHandledScreen(nameableScreenHandlerFactory);
             player.incrementStat(this.getOpenStat());
             PiglinBrain.onGoldBlockBroken(player);
         }
@@ -293,7 +293,7 @@ implements Waterloggable {
 
     @Override
     @Nullable
-    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         return this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
     }
 
@@ -355,7 +355,7 @@ implements Waterloggable {
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return Container.calculateComparatorOutput(ChestBlock.getInventory(this, state, world, pos, false));
+        return ScreenHandler.calculateComparatorOutput(ChestBlock.getInventory(this, state, world, pos, false));
     }
 
     @Override

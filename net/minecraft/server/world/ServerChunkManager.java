@@ -287,7 +287,7 @@ extends ChunkManager {
 
     public boolean method_20727(Entity entity) {
         long l = ChunkPos.toLong(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
-        return this.method_20585(l, ChunkHolder::method_20725);
+        return this.method_20585(l, ChunkHolder::getBorderFuture);
     }
 
     private boolean method_20585(long pos, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> function) {
@@ -334,7 +334,6 @@ extends ChunkManager {
         if (!bl) {
             this.world.getProfiler().push("pollingChunks");
             int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
-            BlockPos blockPos = this.world.getSpawnPos();
             boolean bl3 = levelProperties.getTime() % 400L == 0L;
             this.world.getProfiler().push("naturalSpawnCount");
             int j = this.ticketManager.getLevelCount();
@@ -361,7 +360,7 @@ extends ChunkManager {
                         if (entityCategory == EntityCategory.MISC || entityCategory.isPeaceful() && !this.spawnAnimals || !entityCategory.isPeaceful() && !this.spawnMonsters || entityCategory.isAnimal() && !bl3) continue;
                         int k = entityCategory.getSpawnCap() * j / CHUNKS_ELIGIBLE_FOR_SPAWNING;
                         if (object2IntMap.getInt((Object)entityCategory) > k) continue;
-                        SpawnHelper.spawnEntitiesInChunk(entityCategory, this.world, worldChunk, blockPos);
+                        SpawnHelper.spawnEntitiesInChunk(entityCategory, this.world, worldChunk);
                     }
                     this.world.getProfiler().pop();
                 }

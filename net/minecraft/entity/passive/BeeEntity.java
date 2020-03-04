@@ -108,8 +108,8 @@ implements Flutterer {
     private MoveToFlowerGoal moveToFlowerGoal;
     private int ticksInsideWater;
 
-    public BeeEntity(EntityType<? extends BeeEntity> type, World world) {
-        super((EntityType<? extends AnimalEntity>)type, world);
+    public BeeEntity(EntityType<? extends BeeEntity> entityType, World world) {
+        super((EntityType<? extends AnimalEntity>)entityType, world);
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.lookControl = new BeeLookControl(this);
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
@@ -245,9 +245,9 @@ implements Flutterer {
 
     private void startMovingTo(BlockPos pos) {
         Vec3d vec3d2;
-        Vec3d vec3d = new Vec3d(pos);
+        Vec3d vec3d = Vec3d.method_24955(pos);
         int i = 0;
-        BlockPos blockPos = new BlockPos(this);
+        BlockPos blockPos = this.getSenseCenterPos();
         int j = (int)vec3d.y - blockPos.getY();
         if (j > 2) {
             i = 4;
@@ -603,7 +603,7 @@ implements Flutterer {
     }
 
     private boolean isWithinDistance(BlockPos pos, int distance) {
-        return pos.isWithinDistance(new BlockPos(this), (double)distance);
+        return pos.isWithinDistance(this.getSenseCenterPos(), (double)distance);
     }
 
     @Override
@@ -690,7 +690,7 @@ implements Flutterer {
             }
             for (int i = 1; i <= 2; ++i) {
                 int j;
-                BlockPos blockPos = new BlockPos(BeeEntity.this).down(i);
+                BlockPos blockPos = BeeEntity.this.getSenseCenterPos().down(i);
                 BlockState blockState = BeeEntity.this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
                 boolean bl = false;
@@ -752,7 +752,7 @@ implements Flutterer {
         }
 
         private List<BlockPos> getNearbyFreeHives() {
-            BlockPos blockPos3 = new BlockPos(BeeEntity.this);
+            BlockPos blockPos3 = BeeEntity.this.getSenseCenterPos();
             PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage();
             Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(pointOfInterestType -> pointOfInterestType == PointOfInterestType.BEEHIVE || pointOfInterestType == PointOfInterestType.BEE_NEST, blockPos3, 20, PointOfInterestStorage.OccupationStatus.ANY);
             return stream.map(PointOfInterest::getPos).filter(blockPos -> BeeEntity.this.doesHiveHaveSpace(blockPos)).sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos3))).collect(Collectors.toList());
@@ -866,7 +866,7 @@ implements Flutterer {
                 BeeEntity.this.flowerPos = null;
                 return;
             }
-            Vec3d vec3d = new Vec3d(BeeEntity.this.flowerPos).add(0.5, 0.6f, 0.5);
+            Vec3d vec3d = Vec3d.method_24955(BeeEntity.this.flowerPos).add(0.0, 0.6f, 0.0);
             if (vec3d.distanceTo(BeeEntity.this.getPos()) > 1.0) {
                 this.nextTarget = vec3d;
                 this.moveToNextTarget();
@@ -915,7 +915,7 @@ implements Flutterer {
         }
 
         private Optional<BlockPos> findFlower(Predicate<BlockState> predicate, double searchDistance) {
-            BlockPos blockPos = new BlockPos(BeeEntity.this);
+            BlockPos blockPos = BeeEntity.this.getSenseCenterPos();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             int i = 0;
             while ((double)i <= searchDistance) {
@@ -926,7 +926,7 @@ implements Flutterer {
                         int l;
                         int n = l = k < j && k > -j ? j : 0;
                         while (l <= j) {
-                            mutable.set(blockPos).setOffset(k, i - 1, l);
+                            mutable.setOffset(blockPos, k, i - 1, l);
                             if (blockPos.isWithinDistance(mutable, searchDistance) && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
                                 return Optional.of(mutable);
                             }
@@ -1157,7 +1157,7 @@ implements Flutterer {
         private Vec3d getRandomLocation() {
             Vec3d vec3d2;
             if (BeeEntity.this.isHiveValid() && !BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 40)) {
-                Vec3d vec3d = new Vec3d(BeeEntity.this.hivePos);
+                Vec3d vec3d = Vec3d.method_24953(BeeEntity.this.hivePos);
                 vec3d2 = vec3d.subtract(BeeEntity.this.getPos()).normalize();
             } else {
                 vec3d2 = BeeEntity.this.getRotationVec(0.0f);

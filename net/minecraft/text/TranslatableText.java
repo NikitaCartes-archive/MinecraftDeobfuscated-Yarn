@@ -183,13 +183,13 @@ implements ParsableText {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o instanceof TranslatableText) {
-            TranslatableText translatableText = (TranslatableText)o;
-            return Arrays.equals(this.args, translatableText.args) && this.key.equals(translatableText.key) && super.equals(o);
+        if (object instanceof TranslatableText) {
+            TranslatableText translatableText = (TranslatableText)object;
+            return Arrays.equals(this.args, translatableText.args) && this.key.equals(translatableText.key) && super.equals(object);
         }
         return false;
     }

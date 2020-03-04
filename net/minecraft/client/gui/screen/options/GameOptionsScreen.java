@@ -23,12 +23,12 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.minecraft.options.write();
+        this.client.options.write();
     }
 
     @Override
     public void onClose() {
-        this.minecraft.openScreen(this.parent);
+        this.client.openScreen(this.parent);
     }
 }
 

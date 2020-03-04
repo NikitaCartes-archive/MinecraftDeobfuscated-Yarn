@@ -22,8 +22,8 @@ extends AbstractPhase {
     private Path field_7047;
     private Vec3d field_7048;
 
-    public LandingApproachPhase(EnderDragonEntity dragon) {
-        super(dragon);
+    public LandingApproachPhase(EnderDragonEntity enderDragonEntity) {
+        super(enderDragonEntity);
     }
 
     public PhaseType<LandingApproachPhase> getType() {
@@ -54,17 +54,17 @@ extends AbstractPhase {
     private void method_6844() {
         if (this.field_7047 == null || this.field_7047.isFinished()) {
             int j;
-            int i = this.dragon.method_6818();
+            int i = this.dragon.getNearestPathNodeIndex();
             BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
             PlayerEntity playerEntity = this.dragon.world.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, blockPos.getX(), blockPos.getY(), blockPos.getZ());
             if (playerEntity != null) {
                 Vec3d vec3d = new Vec3d(playerEntity.getX(), 0.0, playerEntity.getZ()).normalize();
-                j = this.dragon.method_6822(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
+                j = this.dragon.getNearestPathNodeIndex(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
             } else {
-                j = this.dragon.method_6822(40.0, blockPos.getY(), 0.0);
+                j = this.dragon.getNearestPathNodeIndex(40.0, blockPos.getY(), 0.0);
             }
             PathNode pathNode = new PathNode(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-            this.field_7047 = this.dragon.method_6833(i, j, pathNode);
+            this.field_7047 = this.dragon.findPath(i, j, pathNode);
             if (this.field_7047 != null) {
                 this.field_7047.next();
             }

@@ -22,8 +22,8 @@ extends FeatureRenderer<PigEntity, PigEntityModel<PigEntity>> {
     private static final Identifier SKIN = new Identifier("textures/entity/pig/pig_saddle.png");
     private final PigEntityModel<PigEntity> model = new PigEntityModel(0.5f);
 
-    public PigSaddleFeatureRenderer(FeatureRendererContext<PigEntity, PigEntityModel<PigEntity>> context) {
-        super(context);
+    public PigSaddleFeatureRenderer(FeatureRendererContext<PigEntity, PigEntityModel<PigEntity>> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override

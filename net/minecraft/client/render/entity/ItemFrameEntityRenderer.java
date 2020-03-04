@@ -44,6 +44,7 @@ extends EntityRenderer<ItemFrameEntity> {
 
     @Override
     public void render(ItemFrameEntity itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        ItemStack itemStack;
         super.render(itemFrameEntity, f, g, matrixStack, vertexConsumerProvider, i);
         matrixStack.push();
         Direction direction = itemFrameEntity.getHorizontalFacing();
@@ -53,20 +54,27 @@ extends EntityRenderer<ItemFrameEntity> {
         matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.pitch));
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - itemFrameEntity.yaw));
-        BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
-        BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
-        ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
-        matrixStack.push();
-        matrixStack.translate(-0.5, -0.5, -0.5);
-        blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntitySolid()), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, i, OverlayTexture.DEFAULT_UV);
-        matrixStack.pop();
-        ItemStack itemStack = itemFrameEntity.getHeldItemStack();
-        if (!itemStack.isEmpty()) {
-            boolean bl = itemStack.getItem() == Items.FILLED_MAP;
-            matrixStack.translate(0.0, 0.0, 0.4375);
-            int j = bl ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0f / 8.0f));
+        boolean bl = itemFrameEntity.isInvisible();
+        if (!bl) {
+            BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
+            BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
+            ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.FILLED_MAP ? MAP_FRAME : NORMAL_FRAME;
+            matrixStack.push();
+            matrixStack.translate(-0.5, -0.5, -0.5);
+            blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntitySolid()), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, i, OverlayTexture.DEFAULT_UV);
+            matrixStack.pop();
+        }
+        if (!(itemStack = itemFrameEntity.getHeldItemStack()).isEmpty()) {
+            boolean bl2;
+            boolean bl3 = bl2 = itemStack.getItem() == Items.FILLED_MAP;
             if (bl) {
+                matrixStack.translate(0.0, 0.0, 0.5);
+            } else {
+                matrixStack.translate(0.0, 0.0, 0.4375);
+            }
+            int j = bl2 ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
+            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0f / 8.0f));
+            if (bl2) {
                 matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
                 float h = 0.0078125f;
                 matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);

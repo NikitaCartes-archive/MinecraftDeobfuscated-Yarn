@@ -203,7 +203,7 @@ VillagerDataContainer {
             this.world.sendEntityStatus(this, (byte)14);
             this.lastCustomer = null;
         }
-        if (!this.isAiDisabled() && this.random.nextInt(100) == 0 && (raid = ((ServerWorld)this.world).getRaidAt(new BlockPos(this))) != null && raid.isActive() && !raid.isFinished()) {
+        if (!this.isAiDisabled() && this.random.nextInt(100) == 0 && (raid = ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos())) != null && raid.isActive() && !raid.isFinished()) {
             this.world.sendEntityStatus(this, (byte)42);
         }
         if (this.getVillagerData().getProfession() == VillagerProfession.NONE && this.hasCustomer()) {
@@ -611,7 +611,7 @@ VillagerDataContainer {
             this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
         }
         if (spawnType == SpawnType.COMMAND || spawnType == SpawnType.SPAWN_EGG || spawnType == SpawnType.SPAWNER || spawnType == SpawnType.DISPENSER) {
-            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(new BlockPos(this)))));
+            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getSenseCenterPos()))));
         }
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
@@ -619,9 +619,9 @@ VillagerDataContainer {
     @Override
     public VillagerEntity createChild(PassiveEntity passiveEntity) {
         double d = this.random.nextDouble();
-        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(this.world.getBiome(new BlockPos(this))) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
+        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(this.world.getBiome(this.getSenseCenterPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
         VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
-        villagerEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.BREEDING, null, null);
+        villagerEntity.initialize(this.world, this.world.getLocalDifficulty(villagerEntity.getSenseCenterPos()), SpawnType.BREEDING, null, null);
         return villagerEntity;
     }
 
@@ -629,7 +629,7 @@ VillagerDataContainer {
     public void onStruckByLightning(LightningEntity lightning) {
         WitchEntity witchEntity = EntityType.WITCH.create(this.world);
         witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-        witchEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.CONVERSION, null, null);
+        witchEntity.initialize(this.world, this.world.getLocalDifficulty(witchEntity.getSenseCenterPos()), SpawnType.CONVERSION, null, null);
         witchEntity.setAiDisabled(this.isAiDisabled());
         if (this.hasCustomName()) {
             witchEntity.setCustomName(this.getCustomName());
@@ -794,7 +794,7 @@ VillagerDataContainer {
 
     @Nullable
     private IronGolemEntity spawnIronGolem() {
-        BlockPos blockPos = new BlockPos(this);
+        BlockPos blockPos = this.getSenseCenterPos();
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos3;
             IronGolemEntity ironGolemEntity;

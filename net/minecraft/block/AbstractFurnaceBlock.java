@@ -8,18 +8,18 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.block.RedstoneTorchBlock;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -33,7 +33,7 @@ import net.minecraft.world.World;
 public abstract class AbstractFurnaceBlock
 extends BlockWithEntity {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-    public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
+    public static final BooleanProperty LIT = Properties.LIT;
 
     protected AbstractFurnaceBlock(Block.Settings settings) {
         super(settings);
@@ -50,11 +50,11 @@ extends BlockWithEntity {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        this.openContainer(world, pos, player);
+        this.openScreen(world, pos, player);
         return ActionResult.SUCCESS;
     }
 
-    protected abstract void openContainer(World var1, BlockPos var2, PlayerEntity var3);
+    protected abstract void openScreen(World var1, BlockPos var2, PlayerEntity var3);
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
@@ -77,7 +77,7 @@ extends BlockWithEntity {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof AbstractFurnaceBlockEntity) {
             ItemScatterer.spawn(world, pos, (Inventory)((AbstractFurnaceBlockEntity)blockEntity));
-            world.updateHorizontalAdjacent(pos, this);
+            world.updateComparators(pos, this);
         }
         super.onBlockRemoved(state, world, pos, newState, moved);
     }
@@ -89,7 +89,7 @@ extends BlockWithEntity {
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return Container.calculateComparatorOutput(world.getBlockEntity(pos));
+        return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 
     @Override

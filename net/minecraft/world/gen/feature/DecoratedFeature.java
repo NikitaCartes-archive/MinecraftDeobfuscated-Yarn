@@ -16,8 +16,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class DecoratedFeature
 extends Feature<DecoratedFeatureConfig> {
-    public DecoratedFeature(Function<Dynamic<?>, ? extends DecoratedFeatureConfig> configFactory) {
-        super(configFactory);
+    public DecoratedFeature(Function<Dynamic<?>, ? extends DecoratedFeatureConfig> function) {
+        super(function);
     }
 
     @Override

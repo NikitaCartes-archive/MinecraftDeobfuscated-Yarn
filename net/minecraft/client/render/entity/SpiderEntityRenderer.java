@@ -9,6 +9,7 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.SpiderEyesFeatureRenderer;
 import net.minecraft.client.render.entity.model.SpiderEntityModel;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.util.Identifier;
 
@@ -30,6 +31,11 @@ extends MobEntityRenderer<T, SpiderEntityModel<T>> {
     @Override
     public Identifier getTexture(T spiderEntity) {
         return SKIN;
+    }
+
+    @Override
+    protected /* synthetic */ float getLyingAngle(LivingEntity entity) {
+        return this.getLyingAngle((T)((SpiderEntity)entity));
     }
 }
 

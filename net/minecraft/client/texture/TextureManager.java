@@ -143,7 +143,7 @@ ResourceReloadListener {
     public void destroyTexture(Identifier id) {
         AbstractTexture abstractTexture = this.getTexture(id);
         if (abstractTexture != null) {
-            TextureUtil.releaseTextureId(abstractTexture.getGlId());
+            TextureUtil.method_24957(abstractTexture.getGlId());
         }
     }
 

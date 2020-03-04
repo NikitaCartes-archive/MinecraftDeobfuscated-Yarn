@@ -66,7 +66,7 @@ extends AbstractClientPlayerEntity {
             this.headYaw = (float)((double)this.headYaw + MathHelper.wrapDegrees(this.serverHeadYaw - (double)this.headYaw) / (double)this.headTrackingIncrements);
             --this.headTrackingIncrements;
         }
-        this.field_7505 = this.field_7483;
+        this.prevStrideDistance = this.strideDistance;
         this.tickHandSwing();
         float g = !this.onGround || this.getHealth() <= 0.0f ? 0.0f : Math.min(0.1f, MathHelper.sqrt(OtherClientPlayerEntity.squaredHorizontalLength(this.getVelocity())));
         if (this.onGround || this.getHealth() <= 0.0f) {
@@ -74,7 +74,7 @@ extends AbstractClientPlayerEntity {
         } else {
             float h = (float)Math.atan(-this.getVelocity().y * (double)0.2f) * 15.0f;
         }
-        this.field_7483 += (g - this.field_7483) * 0.4f;
+        this.strideDistance += (g - this.strideDistance) * 0.4f;
         this.world.getProfiler().push("push");
         this.tickCramming();
         this.world.getProfiler().pop();

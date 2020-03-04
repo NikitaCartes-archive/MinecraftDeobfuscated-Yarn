@@ -56,12 +56,12 @@ public class ReplaceItemCommand {
         ArrayList<Entity> list = Lists.newArrayListWithCapacity(targets.size());
         for (Entity entity : targets) {
             if (entity instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
+                ((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
             }
             if (!entity.equip(slot, item.copy())) continue;
             list.add(entity);
             if (!(entity instanceof ServerPlayerEntity)) continue;
-            ((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
+            ((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
         }
         if (list.isEmpty()) {
             throw ENTITY_FAILED_EXCEPTION.create(item.toHoverableText(), slot);

@@ -38,7 +38,7 @@ extends MovingSoundInstance {
     @Override
     public void tick() {
         if (this.minecart.removed || !this.player.hasVehicle() || this.player.getVehicle() != this.minecart) {
-            this.method_24876();
+            this.setDone();
             return;
         }
         float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.minecart.getVelocity()));

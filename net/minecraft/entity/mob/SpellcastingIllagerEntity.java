@@ -26,8 +26,8 @@ extends IllagerEntity {
     protected int spellTicks;
     private Spell spell = Spell.NONE;
 
-    protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> type, World world) {
-        super((EntityType<? extends IllagerEntity>)type, world);
+    protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
+        super((EntityType<? extends IllagerEntity>)entityType, world);
     }
 
     @Override

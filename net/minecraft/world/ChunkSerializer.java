@@ -116,7 +116,7 @@ public class ChunkSerializer {
             chunk = new WorldChunk(serverWorld.getWorld(), chunkPos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, worldChunk -> ChunkSerializer.writeEntities(compoundTag2, worldChunk));
         } else {
             ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
-            protoChunk.method_22405(biomeArray);
+            protoChunk.setBiomes(biomeArray);
             chunk = protoChunk;
             chunk.setInhabitedTime(l);
             protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));

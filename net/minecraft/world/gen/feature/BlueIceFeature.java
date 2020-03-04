@@ -20,8 +20,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class BlueIceFeature
 extends Feature<DefaultFeatureConfig> {
-    public BlueIceFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public BlueIceFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override

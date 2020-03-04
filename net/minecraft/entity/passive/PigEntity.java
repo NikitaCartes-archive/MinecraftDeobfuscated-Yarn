@@ -22,7 +22,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.entity.mob.ZombiePigmanEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -181,16 +181,16 @@ extends AnimalEntity {
 
     @Override
     public void onStruckByLightning(LightningEntity lightning) {
-        ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world);
-        zombiePigmanEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-        zombiePigmanEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-        zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
-        zombiePigmanEntity.setBaby(this.isBaby());
+        ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world);
+        zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+        zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+        zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
+        zombifiedPiglinEntity.setBaby(this.isBaby());
         if (this.hasCustomName()) {
-            zombiePigmanEntity.setCustomName(this.getCustomName());
-            zombiePigmanEntity.setCustomNameVisible(this.isCustomNameVisible());
+            zombifiedPiglinEntity.setCustomName(this.getCustomName());
+            zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
         }
-        this.world.spawnEntity(zombiePigmanEntity);
+        this.world.spawnEntity(zombifiedPiglinEntity);
         this.remove();
     }
 

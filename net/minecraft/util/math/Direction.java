@@ -375,8 +375,8 @@ public enum Direction implements StringIdentifiable
             }
 
             @Override
-            public /* synthetic */ boolean test(@Nullable Object context) {
-                return super.test((Direction)context);
+            public /* synthetic */ boolean test(@Nullable Object object) {
+                return super.test((Direction)object);
             }
         }
         ,
@@ -393,8 +393,8 @@ public enum Direction implements StringIdentifiable
             }
 
             @Override
-            public /* synthetic */ boolean test(@Nullable Object context) {
-                return super.test((Direction)context);
+            public /* synthetic */ boolean test(@Nullable Object object) {
+                return super.test((Direction)object);
             }
         }
         ,
@@ -411,8 +411,8 @@ public enum Direction implements StringIdentifiable
             }
 
             @Override
-            public /* synthetic */ boolean test(@Nullable Object context) {
-                return super.test((Direction)context);
+            public /* synthetic */ boolean test(@Nullable Object object) {
+                return super.test((Direction)object);
             }
         };
 

@@ -27,8 +27,8 @@ public class PillagerOutpostFeature
 extends AbstractTempleFeature<DefaultFeatureConfig> {
     private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.newArrayList(new Biome.SpawnEntry(EntityType.PILLAGER, 1, 1, 1));
 
-    public PillagerOutpostFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public PillagerOutpostFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override
@@ -47,20 +47,20 @@ extends AbstractTempleFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
-        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkZ, i, 0, 0);
-        if (chunkZ == chunkPos.x && i == chunkPos.z) {
+    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
+        if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
+            int i = chunkX >> 4;
             int j = chunkZ >> 4;
-            int k = i >> 4;
-            random.setSeed((long)(j ^ k << 4) ^ chunkGenerator.getSeed());
+            random.setSeed((long)(i ^ j << 4) ^ chunkGenerator.getSeed());
             random.nextInt();
             if (random.nextInt(5) != 0) {
                 return false;
             }
             if (chunkGenerator.hasStructure(biome, this)) {
-                for (int l = chunkZ - 10; l <= chunkZ + 10; ++l) {
-                    for (int m = i - 10; m <= i + 10; ++m) {
-                        if (!Feature.VILLAGE.shouldStartAt(biomeAccess, chunkGenerator, random, l, m, biomeAccess.getBiome(new BlockPos((l << 4) + 9, 0, (m << 4) + 9)))) continue;
+                for (int k = chunkX - 10; k <= chunkX + 10; ++k) {
+                    for (int l = chunkZ - 10; l <= chunkZ + 10; ++l) {
+                        if (!Feature.VILLAGE.shouldStartAt(biomeAccess, chunkGenerator, random, k, l, biomeAccess.getBiome(new BlockPos((k << 4) + 9, 0, (l << 4) + 9)))) continue;
                         return false;
                     }
                 }
@@ -82,8 +82,8 @@ extends AbstractTempleFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends VillageStructureStart {
-        public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override

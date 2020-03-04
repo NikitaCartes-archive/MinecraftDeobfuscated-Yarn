@@ -103,7 +103,7 @@ extends BlockWithEntity {
                     commandBlockExecutor.setSuccessCount(0);
                 }
             }
-            world.updateHorizontalAdjacent(pos, this);
+            world.updateComparators(pos, this);
         }
     }
 
@@ -194,7 +194,7 @@ extends BlockWithEntity {
     }
 
     private static void executeCommandChain(World world, BlockPos pos, Direction facing) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+        BlockPos.Mutable mutable = pos.mutableCopy();
         GameRules gameRules = world.getGameRules();
         int i = gameRules.getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH);
         while (i-- > 0) {
@@ -208,7 +208,7 @@ extends BlockWithEntity {
                 CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
                 if (commandBlockBlockEntity.updateConditionMet()) {
                     if (!commandBlockExecutor.execute(world)) break;
-                    world.updateHorizontalAdjacent(mutable, block);
+                    world.updateComparators(mutable, block);
                 } else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
                     commandBlockExecutor.setSuccessCount(0);
                 }

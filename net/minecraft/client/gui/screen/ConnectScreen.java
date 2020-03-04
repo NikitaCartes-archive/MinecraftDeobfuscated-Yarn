@@ -41,7 +41,7 @@ extends Screen {
 
     public ConnectScreen(Screen parent, MinecraftClient client, ServerInfo entry) {
         super(NarratorManager.EMPTY);
-        this.minecraft = client;
+        this.client = client;
         this.parent = parent;
         ServerAddress serverAddress = ServerAddress.parse(entry.address);
         client.disconnect();
@@ -51,7 +51,7 @@ extends Screen {
 
     public ConnectScreen(Screen parent, MinecraftClient client, String address, int port) {
         super(NarratorManager.EMPTY);
-        this.minecraft = client;
+        this.client = client;
         this.parent = parent;
         client.disconnect();
         this.connect(address, port);
@@ -69,23 +69,23 @@ extends Screen {
                         return;
                     }
                     inetAddress = InetAddress.getByName(address);
-                    ConnectScreen.this.connection = ClientConnection.connect(inetAddress, port, ConnectScreen.this.minecraft.options.shouldUseNativeTransport());
-                    ConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, ConnectScreen.this.minecraft, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)));
+                    ConnectScreen.this.connection = ClientConnection.connect(inetAddress, port, ConnectScreen.this.client.options.shouldUseNativeTransport());
+                    ConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, ConnectScreen.this.client, ConnectScreen.this.parent, text -> ConnectScreen.this.setStatus(text)));
                     ConnectScreen.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
-                    ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.minecraft.getSession().getProfile()));
+                    ConnectScreen.this.connection.send(new LoginHelloC2SPacket(ConnectScreen.this.client.getSession().getProfile()));
                 } catch (UnknownHostException unknownHostException) {
                     if (ConnectScreen.this.connectingCancelled) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)unknownHostException);
-                    ConnectScreen.this.minecraft.execute(() -> ConnectScreen.this.minecraft.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host"))));
+                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host"))));
                 } catch (Exception exception) {
                     if (ConnectScreen.this.connectingCancelled) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to server", (Throwable)exception);
                     String string = inetAddress == null ? exception.toString() : exception.toString().replaceAll(inetAddress + ":" + port, "");
-                    ConnectScreen.this.minecraft.execute(() -> ConnectScreen.this.minecraft.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", string))));
+                    ConnectScreen.this.client.execute(() -> ConnectScreen.this.client.openScreen(new DisconnectedScreen(ConnectScreen.this.parent, "connect.failed", new TranslatableText("disconnect.genericReason", string))));
                 }
             }
         };
@@ -120,7 +120,7 @@ extends Screen {
             if (this.connection != null) {
                 this.connection.disconnect(new TranslatableText("connect.aborted", new Object[0]));
             }
-            this.minecraft.openScreen(this.parent);
+            this.client.openScreen(this.parent);
         }));
     }
 
@@ -132,7 +132,7 @@ extends Screen {
             this.narratorTimer = l;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining", new Object[0]).getString());
         }
-        this.drawCenteredString(this.font, this.status.asFormattedString(), this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.status.asFormattedString(), this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(mouseX, mouseY, delta);
     }
 }

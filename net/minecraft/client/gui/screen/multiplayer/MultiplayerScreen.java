@@ -50,12 +50,12 @@ extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.minecraft.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.enableRepeatEvents(true);
         if (this.initialized) {
             this.serverListWidget.updateSize(this.width, this.height, 32, this.height - 64);
         } else {
             this.initialized = true;
-            this.serverList = new ServerList(this.minecraft);
+            this.serverList = new ServerList(this.client);
             this.serverList.loadFile();
             this.lanServers = new LanServerQueryManager.LanServerEntryList();
             try {
@@ -64,18 +64,18 @@ extends Screen {
             } catch (Exception exception) {
                 LOGGER.warn("Unable to start LAN server detection: {}", (Object)exception.getMessage());
             }
-            this.serverListWidget = new MultiplayerServerListWidget(this, this.minecraft, this.width, this.height, 32, this.height - 64, 36);
+            this.serverListWidget = new MultiplayerServerListWidget(this, this.client, this.width, this.height, 32, this.height - 64, 36);
             this.serverListWidget.setServers(this.serverList);
         }
         this.children.add(this.serverListWidget);
         this.buttonJoin = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, I18n.translate("selectServer.select", new Object[0]), buttonWidget -> this.connect()));
         this.addButton(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("selectServer.direct", new Object[0]), buttonWidget -> {
             this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), "", false);
-            this.minecraft.openScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
+            this.client.openScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.translate("selectServer.add", new Object[0]), buttonWidget -> {
             this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), "", false);
-            this.minecraft.openScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
+            this.client.openScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
         }));
         this.buttonEdit = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, I18n.translate("selectServer.edit", new Object[0]), buttonWidget -> {
             MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.serverListWidget.getSelected();
@@ -83,7 +83,7 @@ extends Screen {
                 ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
                 this.selectedEntry = new ServerInfo(serverInfo.name, serverInfo.address, false);
                 this.selectedEntry.copyFrom(serverInfo);
-                this.minecraft.openScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
+                this.client.openScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
             }
         }));
         this.buttonDelete = this.addButton(new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, I18n.translate("selectServer.delete", new Object[0]), buttonWidget -> {
@@ -94,11 +94,11 @@ extends Screen {
                 TranslatableText text2 = new TranslatableText("selectServer.deleteWarning", string);
                 String string2 = I18n.translate("selectServer.deleteButton", new Object[0]);
                 String string3 = I18n.translate("gui.cancel", new Object[0]);
-                this.minecraft.openScreen(new ConfirmScreen(this::removeEntry, text, text2, string2, string3));
+                this.client.openScreen(new ConfirmScreen(this::removeEntry, text, text2, string2, string3));
             }
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, I18n.translate("selectServer.refresh", new Object[0]), buttonWidget -> this.refresh()));
-        this.addButton(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.client.openScreen(this.parent)));
         this.updateButtonActivationStates();
     }
 
@@ -115,7 +115,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.minecraft.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.enableRepeatEvents(false);
         if (this.lanServerDetector != null) {
             this.lanServerDetector.interrupt();
             this.lanServerDetector = null;
@@ -124,7 +124,7 @@ extends Screen {
     }
 
     private void refresh() {
-        this.minecraft.openScreen(new MultiplayerScreen(this.parent));
+        this.client.openScreen(new MultiplayerScreen(this.parent));
     }
 
     private void removeEntry(boolean confirmedAction) {
@@ -135,7 +135,7 @@ extends Screen {
             this.serverListWidget.setSelected((MultiplayerServerListWidget.Entry)null);
             this.serverListWidget.setServers(this.serverList);
         }
-        this.minecraft.openScreen(this);
+        this.client.openScreen(this);
     }
 
     private void editEntry(boolean confirmedAction) {
@@ -148,7 +148,7 @@ extends Screen {
             this.serverList.saveFile();
             this.serverListWidget.setServers(this.serverList);
         }
-        this.minecraft.openScreen(this);
+        this.client.openScreen(this);
     }
 
     private void addEntry(boolean confirmedAction) {
@@ -158,14 +158,14 @@ extends Screen {
             this.serverListWidget.setSelected((MultiplayerServerListWidget.Entry)null);
             this.serverListWidget.setServers(this.serverList);
         }
-        this.minecraft.openScreen(this);
+        this.client.openScreen(this);
     }
 
     private void directConnect(boolean confirmedAction) {
         if (confirmedAction) {
             this.connect(this.selectedEntry);
         } else {
-            this.minecraft.openScreen(this);
+            this.client.openScreen(this);
         }
     }
 
@@ -193,7 +193,7 @@ extends Screen {
         this.tooltipText = null;
         this.renderBackground();
         this.serverListWidget.render(mouseX, mouseY, delta);
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
         super.render(mouseX, mouseY, delta);
         if (this.tooltipText != null) {
             this.renderTooltip(Lists.newArrayList(Splitter.on("\n").split(this.tooltipText)), mouseX, mouseY);
@@ -211,7 +211,7 @@ extends Screen {
     }
 
     private void connect(ServerInfo entry) {
-        this.minecraft.openScreen(new ConnectScreen(this, this.minecraft, entry));
+        this.client.openScreen(new ConnectScreen(this, this.client, entry));
     }
 
     public void select(MultiplayerServerListWidget.Entry entry) {

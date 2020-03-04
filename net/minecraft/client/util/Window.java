@@ -175,7 +175,7 @@ implements AutoCloseable {
         RenderSystem.assertThread(RenderSystem::isInInitPhase);
         ByteBuffer byteBuffer = null;
         try {
-            byteBuffer = TextureUtil.readResource(in);
+            byteBuffer = TextureUtil.method_24962(in);
             byteBuffer.rewind();
             ByteBuffer byteBuffer2 = STBImage.stbi_load_from_memory(byteBuffer, x, y, channels, 0);
             return byteBuffer2;

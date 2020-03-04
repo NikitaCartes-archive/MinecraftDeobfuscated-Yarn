@@ -48,7 +48,7 @@ extends Item {
         BlockState blockState2 = (BlockState)blockState.with(EndPortalFrameBlock.EYE, true);
         Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
         world.setBlockState(blockPos, blockState2, 2);
-        world.updateHorizontalAdjacent(blockPos, Blocks.END_PORTAL_FRAME);
+        world.updateComparators(blockPos, Blocks.END_PORTAL_FRAME);
         context.getStack().decrement(1);
         world.playLevelEvent(1503, blockPos, 0);
         BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
@@ -73,7 +73,7 @@ extends Item {
             return TypedActionResult.pass(itemStack);
         }
         user.setCurrentHand(hand);
-        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", new BlockPos(user), 100, false)) != null) {
+        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", user.getSenseCenterPos(), 100, false)) != null) {
             EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
             enderEyeEntity.setItem(itemStack);
             enderEyeEntity.moveTowards(blockPos);
@@ -82,7 +82,7 @@ extends Item {
                 Criterions.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);
             }
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
-            world.playLevelEvent(null, 1003, new BlockPos(user), 0);
+            world.playLevelEvent(null, 1003, user.getSenseCenterPos(), 0);
             if (!user.abilities.creativeMode) {
                 itemStack.decrement(1);
             }

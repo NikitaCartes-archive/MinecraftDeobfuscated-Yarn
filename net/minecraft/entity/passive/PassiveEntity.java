@@ -24,8 +24,8 @@ extends MobEntityWithAi {
     protected int forcedAge;
     protected int happyTicksRemaining;
 
-    protected PassiveEntity(EntityType<? extends PassiveEntity> type, World world) {
-        super((EntityType<? extends MobEntityWithAi>)type, world);
+    protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
+        super((EntityType<? extends MobEntityWithAi>)entityType, world);
     }
 
     @Override

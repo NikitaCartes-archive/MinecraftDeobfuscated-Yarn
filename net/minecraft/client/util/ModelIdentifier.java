@@ -49,12 +49,12 @@ extends Identifier {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o instanceof ModelIdentifier && super.equals(o)) {
-            ModelIdentifier modelIdentifier = (ModelIdentifier)o;
+        if (object instanceof ModelIdentifier && super.equals(object)) {
+            ModelIdentifier modelIdentifier = (ModelIdentifier)object;
             return this.variant.equals(modelIdentifier.variant);
         }
         return false;

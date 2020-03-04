@@ -136,12 +136,12 @@ public interface DispenserBehavior {
         DispenserBlock.registerBehavior(Items.SPLASH_POTION, new DispenserBehavior(){
 
             @Override
-            public ItemStack dispense(BlockPointer location, ItemStack stack) {
+            public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
                 return new ProjectileDispenserBehavior(){
 
                     @Override
                     protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-                        return Util.make(new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
+                        return Util.make(new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItem(itemStack));
                     }
 
                     @Override
@@ -153,18 +153,18 @@ public interface DispenserBehavior {
                     protected float getForce() {
                         return super.getForce() * 1.25f;
                     }
-                }.dispense(location, stack);
+                }.dispense(blockPointer, itemStack);
             }
         });
         DispenserBlock.registerBehavior(Items.LINGERING_POTION, new DispenserBehavior(){
 
             @Override
-            public ItemStack dispense(BlockPointer location, ItemStack stack) {
+            public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
                 return new ProjectileDispenserBehavior(){
 
                     @Override
                     protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-                        return Util.make(new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack));
+                        return Util.make(new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItem(itemStack));
                     }
 
                     @Override
@@ -176,7 +176,7 @@ public interface DispenserBehavior {
                     protected float getForce() {
                         return super.getForce() * 1.25f;
                     }
-                }.dispense(location, stack);
+                }.dispense(blockPointer, itemStack);
             }
         });
         ItemDispenserBehavior itemDispenserBehavior = new ItemDispenserBehavior(){

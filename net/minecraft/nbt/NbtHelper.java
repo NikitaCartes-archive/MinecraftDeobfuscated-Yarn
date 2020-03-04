@@ -18,6 +18,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.state.State;
@@ -145,14 +146,52 @@ public final class NbtHelper {
         return standard.equals(subject);
     }
 
-    public static CompoundTag fromUuid(UUID uuid) {
+    /**
+     * Serializes a {@link UUID} into its equivalent NBT representation.
+     * 
+     * @since 20w10a
+     */
+    public static IntArrayTag fromUuidNew(UUID uuid) {
+        long l = uuid.getMostSignificantBits();
+        long m = uuid.getLeastSignificantBits();
+        return new IntArrayTag(new int[]{(int)(l >> 32), (int)l, (int)(m >> 32), (int)m});
+    }
+
+    /**
+     * Deserializes a tag into a {@link UUID}.
+     * The tag's data must have the same structure as the output of {@link #fromUuid}.
+     * 
+     * @throws IllegalArgumentException if {@code tag} is not a valid representation of a UUID
+     * @since 20w10a
+     */
+    public static UUID toUuidNew(Tag tag) {
+        if (tag.getReader() != IntArrayTag.READER) {
+            throw new IllegalArgumentException("Expected UUID-Tag to be of type " + IntArrayTag.READER.getCrashReportName() + ", but found " + tag.getReader().getCrashReportName() + ".");
+        }
+        int[] is = ((IntArrayTag)tag).getIntArray();
+        if (is.length != 4) {
+            throw new IllegalArgumentException("Expected UUID-Array to be of length 4, but found " + is.length + ".");
+        }
+        return new UUID((long)is[0] << 32 | (long)is[1] & 0xFFFFFFFFL, (long)is[2] << 32 | (long)is[3] & 0xFFFFFFFFL);
+    }
+
+    /**
+     * @deprecated use {@link #fromUuidNew}.
+     */
+    @Deprecated
+    public static CompoundTag fromUuidOld(UUID uuid) {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putLong("M", uuid.getMostSignificantBits());
         compoundTag.putLong("L", uuid.getLeastSignificantBits());
         return compoundTag;
     }
 
-    public static UUID toUuid(CompoundTag tag) {
+    /**
+     * @deprecated use {@link #toUuidNew} for newly added deserialization methods.
+     * Other places may keep calling this besides {@link #toUuidNew} to ensure a smooth transition for old worlds.
+     */
+    @Deprecated
+    public static UUID toUuidOld(CompoundTag tag) {
         return new UUID(tag.getLong("M"), tag.getLong("L"));
     }
 

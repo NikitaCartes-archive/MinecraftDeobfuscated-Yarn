@@ -13,10 +13,10 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -24,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
 public class AnimatedResultButton
 extends AbstractButtonWidget {
     private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
-    private CraftingContainer<?> craftingContainer;
+    private CraftingScreenHandler<?> craftingScreenHandler;
     private RecipeBook recipeBook;
     private RecipeResultCollection results;
     private float time;
@@ -37,9 +37,9 @@ extends AbstractButtonWidget {
 
     public void showResultCollection(RecipeResultCollection recipeResultCollection, RecipeBookResults recipeBookResults) {
         this.results = recipeResultCollection;
-        this.craftingContainer = (CraftingContainer)recipeBookResults.getMinecraftClient().player.container;
+        this.craftingScreenHandler = (CraftingScreenHandler)recipeBookResults.getMinecraftClient().player.currentScreenHandler;
         this.recipeBook = recipeBookResults.getRecipeBook();
-        List<Recipe<?>> list = recipeResultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer));
+        List<Recipe<?>> list = recipeResultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
         for (Recipe<?> recipe : list) {
             if (!this.recipeBook.shouldDisplay(recipe)) continue;
             recipeBookResults.onRecipesDisplayed(list);
@@ -70,7 +70,7 @@ extends AbstractButtonWidget {
             i += 25;
         }
         int j = 206;
-        if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
+        if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
             j += 25;
         }
         boolean bl2 = bl = this.bounce > 0.0f;
@@ -99,7 +99,7 @@ extends AbstractButtonWidget {
 
     private List<Recipe<?>> getResults() {
         List<Recipe<?>> list = this.results.getRecipes(true);
-        if (!this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
+        if (!this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {
             list.addAll(this.results.getRecipes(false));
         }
         return list;
@@ -117,7 +117,7 @@ extends AbstractButtonWidget {
     public List<String> getTooltip(Screen screen) {
         ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput();
         List<String> list = screen.getTooltipFromItem(itemStack);
-        if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
+        if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
             list.add(I18n.translate("gui.recipebook.moreRecipes", new Object[0]));
         }
         return list;
@@ -129,8 +129,8 @@ extends AbstractButtonWidget {
     }
 
     @Override
-    protected boolean isValidClickButton(int i) {
-        return i == 0 || i == 1;
+    protected boolean isValidClickButton(int button) {
+        return button == 0 || button == 1;
     }
 }
 

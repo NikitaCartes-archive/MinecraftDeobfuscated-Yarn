@@ -104,24 +104,21 @@ public abstract class Request<T extends Request<T>> {
     private void dispose() {
         byte[] bs = new byte[1024];
         try {
-            int i = 0;
             InputStream inputStream = this.connection.getInputStream();
-            while ((i = inputStream.read(bs)) > 0) {
+            while (inputStream.read(bs) > 0) {
             }
             inputStream.close();
         } catch (Exception exception) {
-            int j;
-            InputStream inputStream;
+            InputStream inputStream2;
             block13: {
-                inputStream = this.connection.getErrorStream();
-                j = 0;
-                if (inputStream != null) break block13;
+                inputStream2 = this.connection.getErrorStream();
+                if (inputStream2 != null) break block13;
                 return;
             }
             try {
-                while ((j = inputStream.read(bs)) > 0) {
+                while (inputStream2.read(bs) > 0) {
                 }
-                inputStream.close();
+                inputStream2.close();
             } catch (IOException iOException) {
                 // empty catch block
             }
@@ -259,8 +256,8 @@ public abstract class Request<T extends Request<T>> {
     @Environment(value=EnvType.CLIENT)
     public static class Get
     extends Request<Get> {
-        public Get(String uri, int connectTimeout, int readTimeout) {
-            super(uri, connectTimeout, readTimeout);
+        public Get(String string, int i, int j) {
+            super(string, i, j);
         }
 
         @Override
@@ -285,8 +282,8 @@ public abstract class Request<T extends Request<T>> {
     @Environment(value=EnvType.CLIENT)
     public static class Delete
     extends Request<Delete> {
-        public Delete(String uri, int connectTimeout, int readTimeout) {
-            super(uri, connectTimeout, readTimeout);
+        public Delete(String string, int i, int j) {
+            super(string, i, j);
         }
 
         @Override

@@ -19,8 +19,8 @@ extends AbstractPhase {
     private Path field_7054;
     private Vec3d field_7055;
 
-    public TakeoffPhase(EnderDragonEntity dragon) {
-        super(dragon);
+    public TakeoffPhase(EnderDragonEntity enderDragonEntity) {
+        super(enderDragonEntity);
     }
 
     @Override
@@ -44,9 +44,9 @@ extends AbstractPhase {
     }
 
     private void method_6858() {
-        int i = this.dragon.method_6818();
+        int i = this.dragon.getNearestPathNodeIndex();
         Vec3d vec3d = this.dragon.method_6834(1.0f);
-        int j = this.dragon.method_6822(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
+        int j = this.dragon.getNearestPathNodeIndex(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
         if (this.dragon.getFight() == null || this.dragon.getFight().getAliveEndCrystals() <= 0) {
             j -= 12;
             j &= 7;
@@ -54,7 +54,7 @@ extends AbstractPhase {
         } else if ((j %= 12) < 0) {
             j += 12;
         }
-        this.field_7054 = this.dragon.method_6833(i, j, null);
+        this.field_7054 = this.dragon.findPath(i, j, null);
         this.method_6859();
     }
 

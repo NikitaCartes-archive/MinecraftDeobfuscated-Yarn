@@ -40,7 +40,7 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.minecraft.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.enableRepeatEvents(true);
         this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.commitAndClose()));
         this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.onClose()));
         this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, "O", buttonWidget -> {
@@ -48,7 +48,7 @@ extends Screen {
             commandBlockExecutor.shouldTrackOutput(!(commandBlockExecutor = this.getCommandExecutor()).isTrackingOutput());
             this.updateTrackedOutput();
         }));
-        this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command", new Object[0])){
+        this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command", new Object[0])){
 
             @Override
             protected String getNarrationMessage() {
@@ -58,14 +58,14 @@ extends Screen {
         this.consoleCommandTextField.setMaxLength(32500);
         this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
         this.children.add(this.consoleCommandTextField);
-        this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, I18n.translate("advMode.previousOutput", new Object[0]));
+        this.previousOutputTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, I18n.translate("advMode.previousOutput", new Object[0]));
         this.previousOutputTextField.setMaxLength(32500);
         this.previousOutputTextField.setEditable(false);
         this.previousOutputTextField.setText("-");
         this.children.add(this.previousOutputTextField);
         this.setInitialFocus(this.consoleCommandTextField);
         this.consoleCommandTextField.setSelected(true);
-        this.commandSuggestor = new CommandSuggestor(this.minecraft, this, this.consoleCommandTextField, this.font, true, true, 0, 7, false, Integer.MIN_VALUE);
+        this.commandSuggestor = new CommandSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
         this.commandSuggestor.setWindowActive(true);
         this.commandSuggestor.refresh();
     }
@@ -94,12 +94,12 @@ extends Screen {
         if (!commandBlockExecutor.isTrackingOutput()) {
             commandBlockExecutor.setLastOutput(null);
         }
-        this.minecraft.openScreen(null);
+        this.client.openScreen(null);
     }
 
     @Override
     public void removed() {
-        this.minecraft.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.enableRepeatEvents(false);
     }
 
     protected abstract void syncSettingsToServer(CommandBlockExecutor var1);
@@ -107,7 +107,7 @@ extends Screen {
     @Override
     public void onClose() {
         this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
-        this.minecraft.openScreen(null);
+        this.client.openScreen(null);
     }
 
     private void onCommandChanged(String text) {
@@ -130,11 +130,11 @@ extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (this.commandSuggestor.mouseScrolled(amount)) {
             return true;
         }
-        return super.mouseScrolled(d, e, amount);
+        return super.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
@@ -148,12 +148,12 @@ extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawCenteredString(this.font, I18n.translate("advMode.setCommand", new Object[0]), this.width / 2, 20, 0xFFFFFF);
-        this.drawString(this.font, I18n.translate("advMode.command", new Object[0]), this.width / 2 - 150, 40, 0xA0A0A0);
+        this.drawCenteredString(this.textRenderer, I18n.translate("advMode.setCommand", new Object[0]), this.width / 2, 20, 0xFFFFFF);
+        this.drawString(this.textRenderer, I18n.translate("advMode.command", new Object[0]), this.width / 2 - 150, 40, 0xA0A0A0);
         this.consoleCommandTextField.render(mouseX, mouseY, delta);
         int i = 75;
         if (!this.previousOutputTextField.getText().isEmpty()) {
-            this.drawString(this.font, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (i += 5 * this.font.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
+            this.drawString(this.textRenderer, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (i += 5 * this.textRenderer.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
             this.previousOutputTextField.render(mouseX, mouseY, delta);
         }
         super.render(mouseX, mouseY, delta);

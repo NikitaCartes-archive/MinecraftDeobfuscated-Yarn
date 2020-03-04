@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.util.math.MathHelper;
@@ -38,7 +39,6 @@ extends BipedEntityModel<T> {
         this.head.addChild(this.leftEar);
         this.leftEar.setTextureOffset(57, 22).addCuboid(-1.0f, 0.0f, -2.0f, 1.0f, 5.0f, 4.0f, scale);
         this.helmet = new ModelPart(this);
-        this.helmet.setPivot(0.0f, 0.0f, 0.0f);
         this.rightArm = new ModelPart(this);
         this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
         this.rightArm.setTextureOffset(40, 16).addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
@@ -65,18 +65,9 @@ extends BipedEntityModel<T> {
             PiglinEntity piglinEntity = (PiglinEntity)mobEntity;
             PiglinEntity.Activity activity = piglinEntity.getActivity();
             if (activity == PiglinEntity.Activity.CROSSBOW_HOLD) {
-                this.rightArm.yaw = -0.3f + this.head.yaw;
-                this.leftArm.yaw = 0.6f + this.head.yaw;
-                this.rightArm.pitch = -1.5707964f + this.head.pitch + 0.1f;
-                this.leftArm.pitch = -1.5f + this.head.pitch;
+                CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
             } else if (activity == PiglinEntity.Activity.CROSSBOW_CHARGE) {
-                this.rightArm.yaw = -0.8f;
-                this.rightArm.pitch = -0.97079635f;
-                this.leftArm.pitch = -0.97079635f;
-                float n = MathHelper.clamp(piglinEntity.getItemUseTime(), 0, 25);
-                float o = n / 25.0f;
-                this.leftArm.yaw = MathHelper.lerp(o, 0.4f, 0.85f);
-                this.leftArm.pitch = MathHelper.lerp(o, this.leftArm.pitch, -1.5707964f);
+                CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, true);
             } else if (activity == PiglinEntity.Activity.ADMIRING_ITEM) {
                 this.leftArm.yaw = 0.5f;
                 this.leftArm.pitch = -0.9f;

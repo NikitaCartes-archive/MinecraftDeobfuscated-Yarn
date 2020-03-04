@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 
 public abstract class FlyingEntity
 extends MobEntity {
-    protected FlyingEntity(EntityType<? extends FlyingEntity> type, World world) {
-        super((EntityType<? extends MobEntity>)type, world);
+    protected FlyingEntity(EntityType<? extends FlyingEntity> entityType, World world) {
+        super((EntityType<? extends MobEntity>)entityType, world);
     }
 
     @Override

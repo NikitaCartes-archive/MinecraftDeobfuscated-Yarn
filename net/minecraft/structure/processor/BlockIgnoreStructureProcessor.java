@@ -49,7 +49,7 @@ extends StructureProcessor {
     }
 
     @Override
-    protected <T> Dynamic<T> method_16666(DynamicOps<T> dynamicOps) {
+    protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
         return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("blocks"), dynamicOps.createList(this.blocks.stream().map(block -> BlockState.serialize(dynamicOps, block.getDefaultState()).getValue())))));
     }
 }

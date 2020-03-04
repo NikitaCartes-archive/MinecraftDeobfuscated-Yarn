@@ -16,7 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.mob.ZombiePigmanEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -60,7 +60,7 @@ extends Block {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
-            ZombiePigmanEntity entity;
+            ZombifiedPiglinEntity entity;
             while (world.getBlockState(pos).getBlock() == this) {
                 pos = pos.down();
             }
@@ -70,8 +70,8 @@ extends Block {
         }
     }
 
-    public boolean createPortalAt(IWorld world, BlockPos pos) {
-        AreaHelper areaHelper = this.createAreaHelper(world, pos);
+    public static boolean createPortalAt(IWorld iWorld, BlockPos blockPos) {
+        AreaHelper areaHelper = NetherPortalBlock.createAreaHelper(iWorld, blockPos);
         if (areaHelper != null) {
             areaHelper.createPortal();
             return true;
@@ -80,12 +80,12 @@ extends Block {
     }
 
     @Nullable
-    public AreaHelper createAreaHelper(IWorld world, BlockPos pos) {
-        AreaHelper areaHelper = new AreaHelper(world, pos, Direction.Axis.X);
+    public static AreaHelper createAreaHelper(IWorld iWorld, BlockPos blockPos) {
+        AreaHelper areaHelper = new AreaHelper(iWorld, blockPos, Direction.Axis.X);
         if (areaHelper.isValid() && areaHelper.foundPortalBlocks == 0) {
             return areaHelper;
         }
-        AreaHelper areaHelper2 = new AreaHelper(world, pos, Direction.Axis.Z);
+        AreaHelper areaHelper2 = new AreaHelper(iWorld, blockPos, Direction.Axis.Z);
         if (areaHelper2.isValid() && areaHelper2.foundPortalBlocks == 0) {
             return areaHelper2;
         }

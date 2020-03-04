@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 import net.minecraft.server.ServerConfigEntry;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -111,9 +112,10 @@ public abstract class ServerConfigList<K, V extends ServerConfigEntry<K>> {
     }
 
     public void save() throws IOException {
-        Collection<V> collection = this.map.values();
+        JsonArray jsonArray = new JsonArray();
+        this.map.values().stream().map(serverConfigEntry -> Util.make(new JsonObject(), serverConfigEntry::method_24896)).forEach(jsonArray::add);
         try (BufferedWriter bufferedWriter = Files.newWriter(this.file, StandardCharsets.UTF_8);){
-            GSON.toJson(collection, (Appendable)bufferedWriter);
+            GSON.toJson((JsonElement)jsonArray, (Appendable)bufferedWriter);
         }
     }
 

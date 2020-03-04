@@ -66,12 +66,12 @@ extends Entity {
         this.prevX = this.getX();
         this.prevY = this.getY();
         this.prevZ = this.getZ();
-        if (this.isInFluid(FluidTags.WATER)) {
+        if (this.isSubmergedIn(FluidTags.WATER)) {
             this.applyWaterMovement();
         } else if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
         }
-        if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
+        if (this.world.getFluidState(this.getSenseCenterPos()).matches(FluidTags.LAVA)) {
             this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2f, 0.2f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
             this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
         }
@@ -153,7 +153,7 @@ extends Entity {
             ItemStack itemStack;
             player.experiencePickUpDelay = 2;
             player.sendPickup(this, 1);
-            Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.method_24365(Enchantments.MENDING, player, ItemStack::isDamaged);
+            Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getMatchingEnchantedEquipment(Enchantments.MENDING, player, ItemStack::isDamaged);
             if (entry != null && !(itemStack = entry.getValue()).isEmpty() && itemStack.isDamaged()) {
                 int i = Math.min(this.getMendingRepairAmount(this.amount), itemStack.getDamage());
                 this.amount -= this.getMendingRepairCost(i);

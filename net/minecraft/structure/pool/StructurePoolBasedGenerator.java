@@ -72,7 +72,7 @@ public class StructurePoolBasedGenerator {
             BlockRotation blockRotation = BlockRotation.random(random);
             StructurePool structurePool = REGISTRY.get(startingPool);
             StructurePoolElement structurePoolElement = structurePool.getRandomElement(random);
-            PoolStructurePiece poolStructurePiece = pieceFactory.create(structureManager, structurePoolElement, blockPos, structurePoolElement.method_19308(), blockRotation, structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation));
+            PoolStructurePiece poolStructurePiece = pieceFactory.create(structureManager, structurePoolElement, blockPos, structurePoolElement.getGroundLevelDelta(), blockRotation, structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation));
             BlockBox blockBox = poolStructurePiece.getBoundingBox();
             int i = (blockBox.maxX + blockBox.minX) / 2;
             int j = (blockBox.maxZ + blockBox.minZ) / 2;
@@ -143,7 +143,7 @@ public class StructurePoolBasedGenerator {
                             Identifier identifier = new Identifier(structureBlockInfo.tag.getString("target_pool"));
                             StructurePool structurePool = REGISTRY.get(identifier);
                             StructurePool structurePool2 = REGISTRY.get(structurePool.getTerminatorsId());
-                            return Math.max(structurePool.method_19309(this.structureManager), structurePool2.method_19309(this.structureManager));
+                            return Math.max(structurePool.getHighestY(this.structureManager), structurePool2.getHighestY(this.structureManager));
                         }).max().orElse(0);
                         for (Structure.StructureBlockInfo structureBlockInfo22 : list2) {
                             int u;
@@ -176,7 +176,7 @@ public class StructurePoolBasedGenerator {
                             if (VoxelShapes.matchesAnywhere((VoxelShape)atomicReference2.get(), VoxelShapes.cuboid(Box.from(blockBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND)) continue;
                             atomicReference2.set(VoxelShapes.combine((VoxelShape)atomicReference2.get(), VoxelShapes.cuboid(Box.from(blockBox4)), BooleanBiFunction.ONLY_FIRST));
                             s = piece.getGroundLevelDelta();
-                            int t = bl3 ? s - p : structurePoolElement2.method_19308();
+                            int t = bl3 ? s - p : structurePoolElement2.getGroundLevelDelta();
                             PoolStructurePiece poolStructurePiece = this.pieceFactory.create(this.structureManager, structurePoolElement2, blockPos6, t, blockRotation2, blockBox4);
                             if (bl) {
                                 u = i + j;

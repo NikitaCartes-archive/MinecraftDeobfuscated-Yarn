@@ -136,8 +136,8 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldRenderer
-implements AutoCloseable,
-SynchronousResourceReloadListener {
+implements SynchronousResourceReloadListener,
+AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Identifier MOON_PHASES = new Identifier("textures/environment/moon_phases.png");
     private static final Identifier SUN = new Identifier("textures/environment/sun.png");
@@ -1975,7 +1975,7 @@ SynchronousResourceReloadListener {
                 break;
             }
             case 1032: {
-                this.client.getSoundManager().play(PositionedSoundInstance.method_24877(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4f + 0.8f, 0.25f));
+                this.client.getSoundManager().play(PositionedSoundInstance.ambient(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4f + 0.8f, 0.25f));
                 break;
             }
             case 1001: {
@@ -2189,6 +2189,10 @@ SynchronousResourceReloadListener {
             }
             case 1030: {
                 this.world.playSound(pos, SoundEvents.BLOCK_ANVIL_USE, SoundCategory.BLOCKS, 1.0f, this.world.random.nextFloat() * 0.1f + 0.9f, false);
+                break;
+            }
+            case 1044: {
+                this.world.playSound(pos, SoundEvents.BLOCK_SMITHING_TABLE_USE, SoundCategory.BLOCKS, 1.0f, this.world.random.nextFloat() * 0.1f + 0.9f, false);
                 break;
             }
             case 1031: {

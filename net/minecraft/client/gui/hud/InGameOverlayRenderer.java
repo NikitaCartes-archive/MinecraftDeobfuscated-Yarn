@@ -38,7 +38,7 @@ public class InGameOverlayRenderer {
             InGameOverlayRenderer.renderInWallOverlay(minecraftClient, minecraftClient.getBlockRenderManager().getModels().getSprite(blockState), matrixStack);
         }
         if (!minecraftClient.player.isSpectator()) {
-            if (minecraftClient.player.isInFluid(FluidTags.WATER)) {
+            if (minecraftClient.player.isSubmergedIn(FluidTags.WATER)) {
                 InGameOverlayRenderer.renderUnderwaterOverlay(minecraftClient, matrixStack);
             }
             if (minecraftClient.player.isOnFire()) {

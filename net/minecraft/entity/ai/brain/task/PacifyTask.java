@@ -21,7 +21,7 @@ extends Task<LivingEntity> {
 
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
-        entity.getBrain().remember(MemoryModuleType.PACIFIED, true, time, this.duration);
+        entity.getBrain().remember(MemoryModuleType.PACIFIED, true, this.duration);
         entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
     }
 }

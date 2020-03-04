@@ -89,7 +89,7 @@ implements AutoCloseable {
         }
         float f = clientWorld.method_23783(1.0f);
         float g = clientWorld.getLightningTicksLeft() > 0 ? 1.0f : f * 0.95f + 0.05f;
-        float h = this.client.player.method_3140();
+        float h = this.client.player.getUnderwaterVisibility();
         float i = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, delta) : (h > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? h : 0.0f);
         Vector3f vector3f = new Vector3f(f, f, 1.0f);
         vector3f.lerp(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f);

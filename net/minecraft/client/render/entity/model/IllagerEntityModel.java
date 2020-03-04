@@ -8,10 +8,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.CompositeEntityModel;
+import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.Arm;
@@ -30,7 +30,6 @@ ModelWithHead {
     private final ModelPart leftLeg;
     private final ModelPart rightAttackingArm;
     private final ModelPart leftAttackingArm;
-    private float field_3424;
 
     public IllagerEntityModel(float f, float g, int i, int j) {
         this.head = new ModelPart(this).setTextureSize(i, j);
@@ -80,7 +79,6 @@ ModelWithHead {
     @Override
     public void setAngles(T illagerEntity, float f, float g, float h, float i, float j) {
         boolean bl;
-        float k;
         this.head.yaw = i * ((float)Math.PI / 180);
         this.head.pitch = j * ((float)Math.PI / 180);
         this.arms.pivotY = 3.0f;
@@ -115,7 +113,7 @@ ModelWithHead {
         }
         IllagerEntity.State state = ((IllagerEntity)illagerEntity).getState();
         if (state == IllagerEntity.State.ATTACKING) {
-            k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
+            float k = MathHelper.sin(this.handSwingProgress * (float)Math.PI);
             float l = MathHelper.sin((1.0f - (1.0f - this.handSwingProgress) * (1.0f - this.handSwingProgress)) * (float)Math.PI);
             this.rightAttackingArm.roll = 0.0f;
             this.leftAttackingArm.roll = 0.0f;
@@ -154,17 +152,9 @@ ModelWithHead {
             this.leftAttackingArm.yaw = this.head.yaw - 0.4f;
             this.leftAttackingArm.roll = 1.5707964f;
         } else if (state == IllagerEntity.State.CROSSBOW_HOLD) {
-            this.rightAttackingArm.yaw = -0.3f + this.head.yaw;
-            this.leftAttackingArm.yaw = 0.6f + this.head.yaw;
-            this.rightAttackingArm.pitch = -1.5707964f + this.head.pitch + 0.1f;
-            this.leftAttackingArm.pitch = -1.5f + this.head.pitch;
+            CrossbowPosing.hold(this.rightAttackingArm, this.leftAttackingArm, this.head, true);
         } else if (state == IllagerEntity.State.CROSSBOW_CHARGE) {
-            this.rightAttackingArm.yaw = -0.8f;
-            this.rightAttackingArm.pitch = -0.97079635f;
-            this.leftAttackingArm.pitch = -0.97079635f;
-            k = MathHelper.clamp(this.field_3424, 0.0f, 25.0f);
-            this.leftAttackingArm.yaw = MathHelper.lerp(k / 25.0f, 0.4f, 0.85f);
-            this.leftAttackingArm.pitch = MathHelper.lerp(k / 25.0f, this.leftAttackingArm.pitch, -1.5707964f);
+            CrossbowPosing.charge(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, true);
         } else if (state == IllagerEntity.State.CELEBRATING) {
             this.rightAttackingArm.pivotZ = 0.0f;
             this.rightAttackingArm.pivotX = -5.0f;
@@ -180,12 +170,6 @@ ModelWithHead {
         this.arms.visible = bl = state == IllagerEntity.State.CROSSED;
         this.leftAttackingArm.visible = !bl;
         this.rightAttackingArm.visible = !bl;
-    }
-
-    @Override
-    public void animateModel(T illagerEntity, float f, float g, float h) {
-        this.field_3424 = ((LivingEntity)illagerEntity).getItemUseTime();
-        super.animateModel(illagerEntity, f, g, h);
     }
 
     private ModelPart method_2813(Arm arm) {
@@ -205,8 +189,8 @@ ModelWithHead {
     }
 
     @Override
-    public void setArmAngle(Arm arm, MatrixStack matrixStack) {
-        this.method_2813(arm).rotate(matrixStack);
+    public void setArmAngle(Arm arm, MatrixStack matrices) {
+        this.method_2813(arm).rotate(matrices);
     }
 }
 

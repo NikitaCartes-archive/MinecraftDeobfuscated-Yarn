@@ -69,7 +69,7 @@ extends Entity {
         this.prevX = x;
         this.prevY = y;
         this.prevZ = z;
-        this.setFallingBlockPos(new BlockPos(this));
+        this.setFallingBlockPos(this.getSenseCenterPos());
     }
 
     @Override
@@ -110,7 +110,7 @@ extends Entity {
         }
         Block block = this.block.getBlock();
         if (this.timeFalling++ == 0) {
-            blockPos = new BlockPos(this);
+            blockPos = this.getSenseCenterPos();
             if (this.world.getBlockState(blockPos).getBlock() == block) {
                 this.world.removeBlock(blockPos, false);
             } else if (!this.world.isClient) {
@@ -124,7 +124,7 @@ extends Entity {
         this.move(MovementType.SELF, this.getVelocity());
         if (!this.world.isClient) {
             BlockHitResult blockHitResult;
-            blockPos = new BlockPos(this);
+            blockPos = this.getSenseCenterPos();
             boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
             boolean bl2 = bl && this.world.getFluidState(blockPos).matches(FluidTags.WATER);
             double d = this.getVelocity().lengthSquared();

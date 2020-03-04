@@ -40,7 +40,7 @@ extends Goal {
         if (!this.mob.isOnFire()) {
             return false;
         }
-        if (!this.world.isSkyVisible(new BlockPos(this.mob))) {
+        if (!this.world.isSkyVisible(this.mob.getSenseCenterPos())) {
             return false;
         }
         if (!this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
@@ -73,11 +73,11 @@ extends Goal {
     @Nullable
     protected Vec3d locateShadedPos() {
         Random random = this.mob.getRandom();
-        BlockPos blockPos = new BlockPos(this.mob);
+        BlockPos blockPos = this.mob.getSenseCenterPos();
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
             if (this.world.isSkyVisible(blockPos2) || !(this.mob.getPathfindingFavor(blockPos2) < 0.0f)) continue;
-            return new Vec3d(blockPos2);
+            return Vec3d.method_24955(blockPos2);
         }
         return null;
     }

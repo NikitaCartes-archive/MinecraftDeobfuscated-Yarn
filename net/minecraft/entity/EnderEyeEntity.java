@@ -168,7 +168,7 @@ implements FlyingItemEntity {
                 if (this.dropsItem) {
                     this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
                 } else {
-                    this.world.playLevelEvent(2003, new BlockPos(this), 0);
+                    this.world.playLevelEvent(2003, this.getSenseCenterPos(), 0);
                 }
             }
         } else {

@@ -60,15 +60,15 @@ implements ProgressListener {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         if (this.done) {
-            if (!this.minecraft.isConnectedToRealms()) {
-                this.minecraft.openScreen(null);
+            if (!this.client.isConnectedToRealms()) {
+                this.client.openScreen(null);
             }
             return;
         }
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title, this.width / 2, 70, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         if (!Objects.equals(this.task, "") && this.progress != 0) {
-            this.drawCenteredString(this.font, this.task + " " + this.progress + "%", this.width / 2, 90, 0xFFFFFF);
+            this.drawCenteredString(this.textRenderer, this.task + " " + this.progress + "%", this.width / 2, 90, 0xFFFFFF);
         }
         super.render(mouseX, mouseY, delta);
     }

@@ -46,7 +46,7 @@ implements Stainable {
         }
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BeaconBlockEntity) {
-            player.openContainer((BeaconBlockEntity)blockEntity);
+            player.openHandledScreen((BeaconBlockEntity)blockEntity);
             player.incrementStat(Stats.INTERACT_WITH_BEACON);
         }
         return ActionResult.SUCCESS;

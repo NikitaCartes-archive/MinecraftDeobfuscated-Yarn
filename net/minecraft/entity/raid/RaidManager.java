@@ -89,7 +89,7 @@ extends PersistentState {
         if (dimensionType == DimensionType.THE_NETHER) {
             return null;
         }
-        BlockPos blockPos = new BlockPos(player);
+        BlockPos blockPos = player.getSenseCenterPos();
         List list = this.world.getPointOfInterestStorage().getInCircle(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).collect(Collectors.toList());
         int i = 0;
         Vec3d vec3d = Vec3d.ZERO;

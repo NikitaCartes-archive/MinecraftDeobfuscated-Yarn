@@ -21,8 +21,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public abstract class CoralFeature
 extends Feature<DefaultFeatureConfig> {
-    public CoralFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public CoralFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override

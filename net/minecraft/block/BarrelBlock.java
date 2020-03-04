@@ -10,13 +10,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -52,7 +52,7 @@ extends BlockWithEntity {
         }
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BarrelBlockEntity) {
-            player.openContainer((BarrelBlockEntity)blockEntity);
+            player.openHandledScreen((BarrelBlockEntity)blockEntity);
             player.incrementStat(Stats.OPEN_BARREL);
             PiglinBrain.onGoldBlockBroken(player);
         }
@@ -67,7 +67,7 @@ extends BlockWithEntity {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof Inventory) {
             ItemScatterer.spawn(world, pos, (Inventory)((Object)blockEntity));
-            world.updateHorizontalAdjacent(pos, this);
+            world.updateComparators(pos, this);
         }
         super.onBlockRemoved(state, world, pos, newState, moved);
     }
@@ -106,7 +106,7 @@ extends BlockWithEntity {
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return Container.calculateComparatorOutput(world.getBlockEntity(pos));
+        return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 
     @Override

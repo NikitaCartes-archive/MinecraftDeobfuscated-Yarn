@@ -23,7 +23,7 @@ extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderDirtBackground(0);
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 70, 0xFFFFFF);
         super.render(mouseX, mouseY, delta);
     }
 }

@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity.vehicle;
 
-import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -19,12 +17,13 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -33,15 +32,15 @@ import org.jetbrains.annotations.Nullable;
 public abstract class StorageMinecartEntity
 extends AbstractMinecartEntity
 implements Inventory,
-NameableContainerFactory {
+NameableScreenHandlerFactory {
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
     private boolean field_7733 = true;
     @Nullable
     private Identifier lootTableId;
     private long lootSeed;
 
-    protected StorageMinecartEntity(EntityType<?> type, World world) {
-        super(type, world);
+    protected StorageMinecartEntity(EntityType<?> entityType, World world) {
+        super(entityType, world);
     }
 
     protected StorageMinecartEntity(EntityType<?> type, double x, double y, double z, World world) {
@@ -160,7 +159,7 @@ NameableContainerFactory {
 
     @Override
     public boolean interact(PlayerEntity player, Hand hand) {
-        player.openContainer(this);
+        player.openHandledScreen(this);
         return true;
     }
 
@@ -168,7 +167,7 @@ NameableContainerFactory {
     protected void applySlowdown() {
         float f = 0.98f;
         if (this.lootTableId == null) {
-            int i = 15 - Container.calculateComparatorOutput(this);
+            int i = 15 - ScreenHandler.calculateComparatorOutput(this);
             f += (float)i * 0.001f;
         }
         this.setVelocity(this.getVelocity().multiply(f, 0.0, f));
@@ -178,7 +177,7 @@ NameableContainerFactory {
         if (this.lootTableId != null && this.world.getServer() != null) {
             LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
             this.lootTableId = null;
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this)).setRandom(this.lootSeed);
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, this.getSenseCenterPos()).setRandom(this.lootSeed);
             if (playerEntity != null) {
                 builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
             }
@@ -199,14 +198,14 @@ NameableContainerFactory {
 
     @Override
     @Nullable
-    public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (this.lootTableId == null || !playerEntity.isSpectator()) {
             this.method_7563(playerInventory.player);
-            return this.getContainer(syncId, playerInventory);
+            return this.getScreenHandler(i, playerInventory);
         }
         return null;
     }
 
-    protected abstract Container getContainer(int var1, PlayerInventory var2);
+    protected abstract ScreenHandler getScreenHandler(int var1, PlayerInventory var2);
 }
 

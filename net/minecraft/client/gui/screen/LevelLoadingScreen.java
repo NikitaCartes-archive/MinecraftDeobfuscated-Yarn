@@ -66,7 +66,7 @@ extends Screen {
         int j = this.height / 2;
         int k = 30;
         LevelLoadingScreen.drawChunkMap(this.progressProvider, i, j + 30, 2, 0);
-        this.drawCenteredString(this.font, string, i, j - this.font.fontHeight / 2 - 30, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, string, i, j - this.textRenderer.fontHeight / 2 - 30, 0xFFFFFF);
     }
 
     public static void drawChunkMap(WorldGenerationProgressTracker progressProvider, int centerX, int centerY, int chunkSize, int i) {

@@ -29,13 +29,13 @@ extends Screen {
     @Override
     protected void init() {
         this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("lanServer.start", new Object[0]), buttonWidget -> {
-            this.minecraft.openScreen(null);
+            this.client.openScreen(null);
             int i = NetworkUtils.findLocalPort();
-            TranslatableText text = this.minecraft.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i) ? new TranslatableText("commands.publish.started", i) : new TranslatableText("commands.publish.failed", new Object[0]);
-            this.minecraft.inGameHud.getChatHud().addMessage(text);
-            this.minecraft.updateWindowTitle();
+            TranslatableText text = this.client.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i) ? new TranslatableText("commands.publish.started", i) : new TranslatableText("commands.publish.failed", new Object[0]);
+            this.client.inGameHud.getChatHud().addMessage(text);
+            this.client.updateWindowTitle();
         }));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.client.openScreen(this.parent)));
         this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode", new Object[0]), buttonWidget -> {
             this.gameMode = "spectator".equals(this.gameMode) ? "creative" : ("creative".equals(this.gameMode) ? "adventure" : ("adventure".equals(this.gameMode) ? "survival" : "spectator"));
             this.updateButtonText();
@@ -55,8 +55,8 @@ extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 50, 0xFFFFFF);
-        this.drawCenteredString(this.font, I18n.translate("lanServer.otherPlayers", new Object[0]), this.width / 2, 82, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 50, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, I18n.translate("lanServer.otherPlayers", new Object[0]), this.width / 2, 82, 0xFFFFFF);
         super.render(mouseX, mouseY, delta);
     }
 }

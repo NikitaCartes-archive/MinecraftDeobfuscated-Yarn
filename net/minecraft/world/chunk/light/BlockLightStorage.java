@@ -30,8 +30,8 @@ extends LightStorage<Data> {
 
     public static final class Data
     extends ChunkToNibbleArrayMap<Data> {
-        public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> map) {
-            super(map);
+        public Data(Long2ObjectOpenHashMap<ChunkNibbleArray> long2ObjectOpenHashMap) {
+            super(long2ObjectOpenHashMap);
         }
 
         @Override

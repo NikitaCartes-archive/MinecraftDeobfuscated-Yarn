@@ -9,7 +9,7 @@ import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.Identifier;
 
@@ -29,11 +29,13 @@ extends BipedEntityRenderer<T, M> {
     }
 
     @Override
-    protected void setupTransforms(T zombieEntity, MatrixStack matrixStack, float f, float g, float h) {
-        if (((ZombieEntity)zombieEntity).isConvertingInWater()) {
-            g += (float)(Math.cos((double)((ZombieEntity)zombieEntity).age * 3.25) * Math.PI * 0.25);
-        }
-        super.setupTransforms(zombieEntity, matrixStack, f, g, h);
+    protected boolean isShaking(T zombieEntity) {
+        return ((ZombieEntity)zombieEntity).isConvertingInWater();
+    }
+
+    @Override
+    protected /* synthetic */ boolean isShaking(LivingEntity entity) {
+        return this.isShaking((T)((ZombieEntity)entity));
     }
 }
 

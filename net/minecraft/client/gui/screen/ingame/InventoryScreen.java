@@ -16,21 +16,21 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.container.CraftingContainer;
-import net.minecraft.container.PlayerContainer;
-import net.minecraft.container.Slot;
-import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(value=EnvType.CLIENT)
 public class InventoryScreen
-extends AbstractInventoryScreen<PlayerContainer>
+extends AbstractInventoryScreen<PlayerScreenHandler>
 implements RecipeBookProvider {
-    private static final Identifier RECIPE_BUTTON_TEX = new Identifier("textures/gui/recipe_button.png");
+    private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
     private float mouseX;
     private float mouseY;
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
@@ -39,14 +39,14 @@ implements RecipeBookProvider {
     private boolean isMouseDown;
 
     public InventoryScreen(PlayerEntity player) {
-        super(player.playerContainer, player.inventory, new TranslatableText("container.crafting", new Object[0]));
+        super(player.playerScreenHandler, player.inventory, new TranslatableText("container.crafting", new Object[0]));
         this.passEvents = true;
     }
 
     @Override
     public void tick() {
-        if (this.minecraft.interactionManager.hasCreativeInventory()) {
-            this.minecraft.openScreen(new CreativeInventoryScreen(this.minecraft.player));
+        if (this.client.interactionManager.hasCreativeInventory()) {
+            this.client.openScreen(new CreativeInventoryScreen(this.client.player));
             return;
         }
         this.recipeBook.update();
@@ -54,21 +54,21 @@ implements RecipeBookProvider {
 
     @Override
     protected void init() {
-        if (this.minecraft.interactionManager.hasCreativeInventory()) {
-            this.minecraft.openScreen(new CreativeInventoryScreen(this.minecraft.player));
+        if (this.client.interactionManager.hasCreativeInventory()) {
+            this.client.openScreen(new CreativeInventoryScreen(this.client.player));
             return;
         }
         super.init();
         this.isNarrow = this.width < 379;
-        this.recipeBook.initialize(this.width, this.height, this.minecraft, this.isNarrow, (CraftingContainer)this.container);
+        this.recipeBook.initialize(this.width, this.height, this.client, this.isNarrow, (CraftingScreenHandler)this.handler);
         this.isOpen = true;
-        this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+        this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.backgroundWidth);
         this.children.add(this.recipeBook);
         this.setInitialFocus(this.recipeBook);
-        this.addButton(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+        this.addButton(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
             this.recipeBook.reset(this.isNarrow);
             this.recipeBook.toggleOpen();
-            this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+            this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.backgroundWidth);
             ((TexturedButtonWidget)buttonWidget).setPos(this.x + 104, this.height / 2 - 22);
             this.isMouseDown = true;
         }));
@@ -76,7 +76,7 @@ implements RecipeBookProvider {
 
     @Override
     protected void drawForeground(int mouseX, int mouseY) {
-        this.font.draw(this.title.asFormattedString(), 97.0f, 8.0f, 0x404040);
+        this.textRenderer.draw(this.title.asFormattedString(), 97.0f, 8.0f, 0x404040);
     }
 
     @Override
@@ -101,11 +101,11 @@ implements RecipeBookProvider {
     @Override
     protected void drawBackground(float delta, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
         int i = this.x;
         int j = this.y;
-        this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
-        InventoryScreen.drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.minecraft.player);
+        this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        InventoryScreen.drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.client.player);
     }
 
     public static void drawEntity(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity) {
@@ -174,8 +174,8 @@ implements RecipeBookProvider {
 
     @Override
     protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
-        boolean bl = mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.containerWidth) || mouseY >= (double)(top + this.containerHeight);
-        return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.containerWidth, this.containerHeight, button) && bl;
+        boolean bl = mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.backgroundWidth) || mouseY >= (double)(top + this.backgroundHeight);
+        return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.backgroundWidth, this.backgroundHeight, button) && bl;
     }
 
     @Override

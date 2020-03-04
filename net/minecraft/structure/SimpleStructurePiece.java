@@ -61,14 +61,14 @@ extends StructurePiece {
     public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
         this.placementData.setBoundingBox(box);
         this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-        if (this.structure.method_15172(world, this.pos, this.placementData, 2)) {
-            List<Structure.StructureBlockInfo> list = this.structure.method_16445(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
+        if (this.structure.place(world, this.pos, this.placementData, 2)) {
+            List<Structure.StructureBlockInfo> list = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 StructureBlockMode structureBlockMode;
                 if (structureBlockInfo.tag == null || (structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"))) != StructureBlockMode.DATA) continue;
                 this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, world, random, box);
             }
-            List<Structure.StructureBlockInfo> list2 = this.structure.method_16445(this.pos, this.placementData, Blocks.JIGSAW);
+            List<Structure.StructureBlockInfo> list2 = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW);
             for (Structure.StructureBlockInfo structureBlockInfo2 : list2) {
                 if (structureBlockInfo2.tag == null) continue;
                 String string = structureBlockInfo2.tag.getString("final_state");

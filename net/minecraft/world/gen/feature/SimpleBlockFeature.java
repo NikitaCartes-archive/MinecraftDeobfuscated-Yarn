@@ -15,8 +15,8 @@ import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 
 public class SimpleBlockFeature
 extends Feature<SimpleBlockFeatureConfig> {
-    public SimpleBlockFeature(Function<Dynamic<?>, ? extends SimpleBlockFeatureConfig> configFactory) {
-        super(configFactory);
+    public SimpleBlockFeature(Function<Dynamic<?>, ? extends SimpleBlockFeatureConfig> function) {
+        super(function);
     }
 
     @Override

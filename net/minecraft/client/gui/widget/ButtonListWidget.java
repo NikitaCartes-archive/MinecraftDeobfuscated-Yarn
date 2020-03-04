@@ -18,17 +18,17 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ButtonListWidget
 extends ElementListWidget<ButtonEntry> {
-    public ButtonListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
-        super(client, width, height, top, bottom, itemHeight);
+    public ButtonListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
+        super(minecraftClient, i, j, k, l, m);
         this.centerListVertically = false;
     }
 
     public int addSingleOptionEntry(Option option) {
-        return this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, option));
+        return this.addEntry(ButtonEntry.create(this.client.options, this.width, option));
     }
 
     public void addOptionEntry(Option firstOption, @Nullable Option secondOption) {
-        this.addEntry(ButtonEntry.create(this.minecraft.options, this.width, firstOption, secondOption));
+        this.addEntry(ButtonEntry.create(this.client.options, this.width, firstOption, secondOption));
     }
 
     public void addAll(Option[] options) {
@@ -43,8 +43,8 @@ extends ElementListWidget<ButtonEntry> {
     }
 
     @Override
-    protected int getScrollbarPosition() {
-        return super.getScrollbarPosition() + 32;
+    protected int getScrollbarPositionX() {
+        return super.getScrollbarPositionX() + 32;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -69,10 +69,10 @@ extends ElementListWidget<ButtonEntry> {
         }
 
         @Override
-        public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
+        public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
             this.buttons.forEach(button -> {
-                button.y = j;
-                button.render(n, o, f);
+                button.y = y;
+                button.render(mouseX, mouseY, delta);
             });
         }
 

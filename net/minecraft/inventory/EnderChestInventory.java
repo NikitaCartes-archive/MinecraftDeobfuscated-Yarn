@@ -22,6 +22,7 @@ extends BasicInventory {
         this.currentBlockEntity = enderChestBlockEntity;
     }
 
+    @Override
     public void readTags(ListTag listTag) {
         int i;
         for (i = 0; i < this.getInvSize(); ++i) {
@@ -35,6 +36,7 @@ extends BasicInventory {
         }
     }
 
+    @Override
     public ListTag getTags() {
         ListTag listTag = new ListTag();
         for (int i = 0; i < this.getInvSize(); ++i) {

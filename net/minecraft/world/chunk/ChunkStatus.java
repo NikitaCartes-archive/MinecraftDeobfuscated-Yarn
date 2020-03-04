@@ -206,11 +206,11 @@ public class ChunkStatus {
     static interface SimpleTask
     extends Task {
         @Override
-        default public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(ChunkStatus targetStatus, ServerWorld serverWorld, ChunkGenerator<?> generator, StructureManager structureManager, ServerLightingProvider serverLightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> list, Chunk chunk) {
-            if (!chunk.getStatus().isAtLeast(targetStatus)) {
-                this.doWork(serverWorld, generator, list, chunk);
+        default public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(ChunkStatus chunkStatus, ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, StructureManager structureManager, ServerLightingProvider serverLightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function, List<Chunk> list, Chunk chunk) {
+            if (!chunk.getStatus().isAtLeast(chunkStatus)) {
+                this.doWork(serverWorld, chunkGenerator, list, chunk);
                 if (chunk instanceof ProtoChunk) {
-                    ((ProtoChunk)chunk).setStatus(targetStatus);
+                    ((ProtoChunk)chunk).setStatus(chunkStatus);
                 }
             }
             return CompletableFuture.completedFuture(Either.left(chunk));

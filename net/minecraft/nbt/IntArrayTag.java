@@ -210,13 +210,13 @@ extends AbstractListTag<IntTag> {
     }
 
     @Override
-    public /* synthetic */ void add(int value, Object object) {
-        this.method_10531(value, (IntTag)object);
+    public /* synthetic */ void add(int i, Object object) {
+        this.method_10531(i, (IntTag)object);
     }
 
     @Override
-    public /* synthetic */ Object set(int index, Object object) {
-        return this.set(index, (IntTag)object);
+    public /* synthetic */ Object set(int i, Object object) {
+        return this.set(i, (IntTag)object);
     }
 
     @Override

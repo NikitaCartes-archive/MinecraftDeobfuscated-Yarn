@@ -32,13 +32,13 @@ extends BaseText {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o instanceof KeybindText) {
-            KeybindText keybindText = (KeybindText)o;
-            return this.key.equals(keybindText.key) && super.equals(o);
+        if (object instanceof KeybindText) {
+            KeybindText keybindText = (KeybindText)object;
+            return this.key.equals(keybindText.key) && super.equals(object);
         }
         return false;
     }

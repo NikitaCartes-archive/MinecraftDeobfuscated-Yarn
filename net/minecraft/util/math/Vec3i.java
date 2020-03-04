@@ -15,12 +15,9 @@ import org.jetbrains.annotations.Unmodifiable;
 public class Vec3i
 implements Comparable<Vec3i> {
     public static final Vec3i ZERO = new Vec3i(0, 0, 0);
-    @Deprecated
-    private final int x;
-    @Deprecated
-    private final int y;
-    @Deprecated
-    private final int z;
+    private int x;
+    private int y;
+    private int z;
 
     public Vec3i(int x, int y, int z) {
         this.x = x;
@@ -76,6 +73,18 @@ implements Comparable<Vec3i> {
         return this.z;
     }
 
+    protected void setX(int x) {
+        this.x = x;
+    }
+
+    protected void setY(int y) {
+        this.y = y;
+    }
+
+    protected void setZ(int z) {
+        this.z = z;
+    }
+
     public Vec3i down() {
         return this.down(1);
     }
@@ -84,11 +93,11 @@ implements Comparable<Vec3i> {
         return this.offset(Direction.DOWN, i);
     }
 
-    public Vec3i offset(Direction direction, int i) {
-        if (i == 0) {
+    public Vec3i offset(Direction direction, int distance) {
+        if (distance == 0) {
             return this;
         }
-        return new Vec3i(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
+        return new Vec3i(this.getX() + direction.getOffsetX() * distance, this.getY() + direction.getOffsetY() * distance, this.getZ() + direction.getOffsetZ() * distance);
     }
 
     public Vec3i crossProduct(Vec3i vec) {

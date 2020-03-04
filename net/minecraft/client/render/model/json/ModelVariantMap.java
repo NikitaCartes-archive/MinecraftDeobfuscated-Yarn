@@ -90,10 +90,10 @@ public class ModelVariantMap {
     public static class Deserializer
     implements JsonDeserializer<ModelVariantMap> {
         @Override
-        public ModelVariantMap deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-            JsonObject jsonObject = element.getAsJsonObject();
-            Map<String, WeightedUnbakedModel> map = this.deserializeVariants(context, jsonObject);
-            MultipartUnbakedModel multipartUnbakedModel = this.deserializeMultipart(context, jsonObject);
+        public ModelVariantMap deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            Map<String, WeightedUnbakedModel> map = this.deserializeVariants(jsonDeserializationContext, jsonObject);
+            MultipartUnbakedModel multipartUnbakedModel = this.deserializeMultipart(jsonDeserializationContext, jsonObject);
             if (map.isEmpty() && (multipartUnbakedModel == null || multipartUnbakedModel.getModels().isEmpty())) {
                 throw new JsonParseException("Neither 'variants' nor 'multipart' found");
             }

@@ -198,7 +198,7 @@ extends HostileEntity {
         if (this.isWet()) {
             this.damage(DamageSource.DROWN, 1.0f);
         }
-        if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
+        if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(this.getSenseCenterPos()) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
             this.setTarget(null);
             this.teleportRandomly();
         }
@@ -282,7 +282,7 @@ extends HostileEntity {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (source instanceof ProjectileDamageSource || source == DamageSource.FIREWORKS) {
+        if (source instanceof ProjectileDamageSource) {
             for (int i = 0; i < 64; ++i) {
                 if (!this.teleportRandomly()) continue;
                 return true;

@@ -5,7 +5,6 @@ package net.minecraft.entity.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -15,7 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
@@ -46,15 +44,14 @@ extends ThrownItemEntity {
     }
 
     @Override
+    protected void onEntityHit(EntityHitResult entityHitResult) {
+        super.onEntityHit(entityHitResult);
+        entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0f);
+    }
+
+    @Override
     protected void onCollision(HitResult hitResult) {
-        HitResult.Type type = hitResult.getType();
-        if (type == HitResult.Type.ENTITY) {
-            ((EntityHitResult)hitResult).getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0f);
-        } else if (type == HitResult.Type.BLOCK) {
-            BlockHitResult blockHitResult = (BlockHitResult)hitResult;
-            BlockState blockState = this.world.getBlockState(blockHitResult.getBlockPos());
-            blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
-        }
+        super.onCollision(hitResult);
         if (!this.world.isClient) {
             if (this.random.nextInt(8) == 0) {
                 int i = 1;

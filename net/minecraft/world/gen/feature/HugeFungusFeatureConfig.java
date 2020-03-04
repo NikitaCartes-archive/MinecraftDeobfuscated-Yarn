@@ -12,27 +12,27 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class HugeFungusFeatureConfig
 implements FeatureConfig {
-    public static final HugeFungusFeatureConfig field_22431 = new HugeFungusFeatureConfig(Blocks.CRIMSON_NYLIUM.getDefaultState(), Blocks.CRIMSON_STEM.getDefaultState(), Blocks.NETHER_WART_BLOCK.getDefaultState(), Blocks.SHROOMLIGHT.getDefaultState(), true);
-    public static final HugeFungusFeatureConfig field_22432 = new HugeFungusFeatureConfig(HugeFungusFeatureConfig.field_22431.field_22435, HugeFungusFeatureConfig.field_22431.stemState, HugeFungusFeatureConfig.field_22431.hatState, HugeFungusFeatureConfig.field_22431.decorationState, false);
-    public static final HugeFungusFeatureConfig field_22433 = new HugeFungusFeatureConfig(Blocks.WARPED_NYLIUM.getDefaultState(), Blocks.WARPED_STEM.getDefaultState(), Blocks.WARPED_WART_BLOCK.getDefaultState(), Blocks.SHROOMLIGHT.getDefaultState(), true);
-    public static final HugeFungusFeatureConfig field_22434 = new HugeFungusFeatureConfig(HugeFungusFeatureConfig.field_22433.field_22435, HugeFungusFeatureConfig.field_22433.stemState, HugeFungusFeatureConfig.field_22433.hatState, HugeFungusFeatureConfig.field_22433.decorationState, false);
-    public final BlockState field_22435;
+    public static final HugeFungusFeatureConfig CRIMSON_FUNGUS_CONFIG = new HugeFungusFeatureConfig(Blocks.CRIMSON_NYLIUM.getDefaultState(), Blocks.CRIMSON_STEM.getDefaultState(), Blocks.NETHER_WART_BLOCK.getDefaultState(), Blocks.SHROOMLIGHT.getDefaultState(), true);
+    public static final HugeFungusFeatureConfig CRIMSON_FUNGUS_NOT_PLANTED_CONFIG = new HugeFungusFeatureConfig(HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG.validBaseBlock, HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG.stemState, HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG.hatState, HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG.decorationState, false);
+    public static final HugeFungusFeatureConfig WARPED_FUNGUS_CONFIG = new HugeFungusFeatureConfig(Blocks.WARPED_NYLIUM.getDefaultState(), Blocks.WARPED_STEM.getDefaultState(), Blocks.WARPED_WART_BLOCK.getDefaultState(), Blocks.SHROOMLIGHT.getDefaultState(), true);
+    public static final HugeFungusFeatureConfig WARPED_FUNGUS_NOT_PLANTED_CONFIG = new HugeFungusFeatureConfig(HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG.validBaseBlock, HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG.stemState, HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG.hatState, HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG.decorationState, false);
+    public final BlockState validBaseBlock;
     public final BlockState stemState;
     public final BlockState hatState;
     public final BlockState decorationState;
     public final boolean planted;
 
-    public HugeFungusFeatureConfig(BlockState stemState, BlockState blockState, BlockState blockState2, BlockState blockState3, boolean bl) {
-        this.field_22435 = stemState;
-        this.stemState = blockState;
-        this.hatState = blockState2;
-        this.decorationState = blockState3;
-        this.planted = bl;
+    public HugeFungusFeatureConfig(BlockState validBaseBlock, BlockState stemState, BlockState hatState, BlockState decorationState, boolean planted) {
+        this.validBaseBlock = validBaseBlock;
+        this.stemState = stemState;
+        this.hatState = hatState;
+        this.decorationState = decorationState;
+        this.planted = planted;
     }
 
     @Override
     public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("valid_base_block"), BlockState.serialize(ops, this.field_22435).getValue(), ops.createString("stem_state"), BlockState.serialize(ops, this.stemState).getValue(), ops.createString("hat_state"), BlockState.serialize(ops, this.hatState).getValue(), ops.createString("decor_state"), BlockState.serialize(ops, this.decorationState).getValue(), ops.createString("planted"), ops.createBoolean(this.planted))));
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("valid_base_block"), BlockState.serialize(ops, this.validBaseBlock).getValue(), ops.createString("stem_state"), BlockState.serialize(ops, this.stemState).getValue(), ops.createString("hat_state"), BlockState.serialize(ops, this.hatState).getValue(), ops.createString("decor_state"), BlockState.serialize(ops, this.decorationState).getValue(), ops.createString("planted"), ops.createBoolean(this.planted))));
     }
 
     public static <T> HugeFungusFeatureConfig deserialize(Dynamic<T> dynamic) {

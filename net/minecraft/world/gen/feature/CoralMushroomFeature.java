@@ -15,8 +15,8 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 
 public class CoralMushroomFeature
 extends CoralFeature {
-    public CoralMushroomFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public CoralMushroomFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override
@@ -25,7 +25,7 @@ extends CoralFeature {
         int j = random.nextInt(3) + 3;
         int k = random.nextInt(3) + 3;
         int l = random.nextInt(3) + 1;
-        BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+        BlockPos.Mutable mutable = pos.mutableCopy();
         for (int m = 0; m <= j; ++m) {
             for (int n = 0; n <= i; ++n) {
                 for (int o = 0; o <= k; ++o) {

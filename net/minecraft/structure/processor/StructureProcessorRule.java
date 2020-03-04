@@ -47,7 +47,7 @@ public class StructureProcessorRule {
         return this.tag;
     }
 
-    public <T> Dynamic<T> method_16764(DynamicOps<T> dynamicOps) {
+    public <T> Dynamic<T> toDynamic(DynamicOps<T> dynamicOps) {
         T object = dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("input_predicate"), this.inputPredicate.serializeWithId(dynamicOps).getValue(), dynamicOps.createString("location_predicate"), this.locationPredicate.serializeWithId(dynamicOps).getValue(), dynamicOps.createString("output_state"), BlockState.serialize(dynamicOps, this.outputState).getValue()));
         if (this.tag == null) {
             return new Dynamic<T>(dynamicOps, object);
@@ -55,7 +55,7 @@ public class StructureProcessorRule {
         return new Dynamic<T>(dynamicOps, dynamicOps.mergeInto(object, dynamicOps.createString("output_nbt"), new Dynamic<CompoundTag>(NbtOps.INSTANCE, this.tag).convert(dynamicOps).getValue()));
     }
 
-    public static <T> StructureProcessorRule method_16765(Dynamic<T> dynamic2) {
+    public static <T> StructureProcessorRule fromDynamic(Dynamic<T> dynamic2) {
         Dynamic<T> dynamic22 = dynamic2.get("input_predicate").orElseEmptyMap();
         Dynamic<T> dynamic3 = dynamic2.get("location_predicate").orElseEmptyMap();
         RuleTest ruleTest = DynamicDeserializer.deserialize(dynamic22, Registry.RULE_TEST, "predicate_type", AlwaysTrueRuleTest.INSTANCE);

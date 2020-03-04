@@ -28,8 +28,8 @@ import net.minecraft.world.WorldView;
 public abstract class HostileEntity
 extends MobEntityWithAi
 implements Monster {
-    protected HostileEntity(EntityType<? extends HostileEntity> type, World world) {
-        super((EntityType<? extends MobEntityWithAi>)type, world);
+    protected HostileEntity(EntityType<? extends HostileEntity> entityType, World world) {
+        super((EntityType<? extends MobEntityWithAi>)entityType, world);
         this.experiencePoints = 5;
     }
 
@@ -130,11 +130,11 @@ implements Monster {
     }
 
     @Override
-    public ItemStack getArrowType(ItemStack itemStack) {
-        if (itemStack.getItem() instanceof RangedWeaponItem) {
-            Predicate<ItemStack> predicate = ((RangedWeaponItem)itemStack.getItem()).getHeldProjectiles();
-            ItemStack itemStack2 = RangedWeaponItem.getHeldProjectile(this, predicate);
-            return itemStack2.isEmpty() ? new ItemStack(Items.ARROW) : itemStack2;
+    public ItemStack getArrowType(ItemStack stack) {
+        if (stack.getItem() instanceof RangedWeaponItem) {
+            Predicate<ItemStack> predicate = ((RangedWeaponItem)stack.getItem()).getHeldProjectiles();
+            ItemStack itemStack = RangedWeaponItem.getHeldProjectile(this, predicate);
+            return itemStack.isEmpty() ? new ItemStack(Items.ARROW) : itemStack;
         }
         return ItemStack.EMPTY;
     }

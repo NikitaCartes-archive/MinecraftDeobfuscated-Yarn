@@ -18,57 +18,25 @@ public class MeleeAttackTask
 extends Task<MobEntity> {
     private final double range;
     private final int interval;
-    private int cooldown = 0;
 
     public MeleeAttackTask(double range, int interval) {
-        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT));
+        super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT));
         this.range = range;
         this.interval = interval;
     }
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-        if (this.cooldown > 0) {
-            --this.cooldown;
-            return false;
-        }
-        return !this.isHoldingRangedWeapon(mobEntity) && LookTargetUtil.isAttackTargetClose(mobEntity, this.range);
-    }
-
-    private boolean isHoldingRangedWeapon(MobEntity entity) {
-        return entity.isHolding(item -> item instanceof RangedWeaponItem);
-    }
-
-    @Override
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-        return LookTargetUtil.isAttackTargetClose(mobEntity, this.range);
+        return !mobEntity.isHolding(item -> item instanceof RangedWeaponItem) && LookTargetUtil.isAttackTargetClose(mobEntity, this.range);
     }
 
     @Override
     protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-        LivingEntity livingEntity = MeleeAttackTask.getAttackTarget(mobEntity);
+        LivingEntity livingEntity = mobEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
         LookTargetUtil.lookAt(mobEntity, livingEntity);
-        this.attack(mobEntity, livingEntity);
-        this.cooldown = this.interval;
-    }
-
-    private void attack(MobEntity entity, LivingEntity target) {
-        entity.swingHand(Hand.MAIN_HAND);
-        entity.tryAttack(target);
-    }
-
-    private static LivingEntity getAttackTarget(LivingEntity entity) {
-        return entity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
-    }
-
-    @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (MobEntity)entity, time);
-    }
-
-    @Override
-    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
-        this.run(world, (MobEntity)entity, time);
+        mobEntity.swingHand(Hand.MAIN_HAND);
+        mobEntity.tryAttack(livingEntity);
+        mobEntity.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, this.interval);
     }
 }
 

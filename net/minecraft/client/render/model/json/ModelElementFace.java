@@ -37,12 +37,12 @@ public class ModelElementFace {
         }
 
         @Override
-        public ModelElementFace deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-            JsonObject jsonObject = element.getAsJsonObject();
+        public ModelElementFace deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
             Direction direction = this.deserializeCullFace(jsonObject);
             int i = this.deserializeTintIndex(jsonObject);
             String string = this.deserializeTexture(jsonObject);
-            ModelElementTexture modelElementTexture = (ModelElementTexture)context.deserialize(jsonObject, (Type)((Object)ModelElementTexture.class));
+            ModelElementTexture modelElementTexture = (ModelElementTexture)jsonDeserializationContext.deserialize(jsonObject, (Type)((Object)ModelElementTexture.class));
             return new ModelElementFace(direction, i, string, modelElementTexture);
         }
 

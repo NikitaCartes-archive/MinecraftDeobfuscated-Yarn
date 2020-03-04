@@ -38,8 +38,8 @@ extends Screen {
     protected void init() {
         this.ticksSinceDeath = 0;
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, this.isHardcore ? I18n.translate("deathScreen.spectate", new Object[0]) : I18n.translate("deathScreen.respawn", new Object[0]), buttonWidget -> {
-            this.minecraft.player.requestRespawn();
-            this.minecraft.openScreen(null);
+            this.client.player.requestRespawn();
+            this.client.openScreen(null);
         }));
         ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, I18n.translate("deathScreen.titleScreen", new Object[0]), buttonWidget -> {
             if (this.isHardcore) {
@@ -47,10 +47,10 @@ extends Screen {
                 return;
             }
             ConfirmScreen confirmScreen = new ConfirmScreen(this::onConfirmQuit, new TranslatableText("deathScreen.quit.confirm", new Object[0]), new LiteralText(""), I18n.translate("deathScreen.titleScreen", new Object[0]), I18n.translate("deathScreen.respawn", new Object[0]));
-            this.minecraft.openScreen(confirmScreen);
+            this.client.openScreen(confirmScreen);
             confirmScreen.disableButtons(20);
         }));
-        if (!this.isHardcore && this.minecraft.getSession() == null) {
+        if (!this.isHardcore && this.client.getSession() == null) {
             buttonWidget2.active = false;
         }
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
@@ -67,17 +67,17 @@ extends Screen {
         if (quit) {
             this.quitLevel();
         } else {
-            this.minecraft.player.requestRespawn();
-            this.minecraft.openScreen(null);
+            this.client.player.requestRespawn();
+            this.client.openScreen(null);
         }
     }
 
     private void quitLevel() {
-        if (this.minecraft.world != null) {
-            this.minecraft.world.disconnect();
+        if (this.client.world != null) {
+            this.client.world.disconnect();
         }
-        this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel", new Object[0])));
-        this.minecraft.openScreen(new TitleScreen());
+        this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel", new Object[0])));
+        this.client.openScreen(new TitleScreen());
     }
 
     @Override
@@ -86,14 +86,14 @@ extends Screen {
         this.fillGradient(0, 0, this.width, this.height, 0x60500000, -1602211792);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(2.0f, 2.0f, 2.0f);
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2 / 2, 30, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2 / 2, 30, 0xFFFFFF);
         RenderSystem.popMatrix();
         if (this.message != null) {
-            this.drawCenteredString(this.font, this.message.asFormattedString(), this.width / 2, 85, 0xFFFFFF);
+            this.drawCenteredString(this.textRenderer, this.message.asFormattedString(), this.width / 2, 85, 0xFFFFFF);
         }
-        this.drawCenteredString(this.font, I18n.translate("deathScreen.score", new Object[0]) + ": " + (Object)((Object)Formatting.YELLOW) + this.minecraft.player.getScore(), this.width / 2, 100, 0xFFFFFF);
-        if (this.message != null && mouseY > 85 && mouseY < 85 + this.font.fontHeight && (text = this.getTextComponentUnderMouse(mouseX)) != null && text.getStyle().getHoverEvent() != null) {
-            this.renderComponentHoverEffect(text, mouseX, mouseY);
+        this.drawCenteredString(this.textRenderer, I18n.translate("deathScreen.score", new Object[0]) + ": " + (Object)((Object)Formatting.YELLOW) + this.client.player.getScore(), this.width / 2, 100, 0xFFFFFF);
+        if (this.message != null && mouseY > 85 && mouseY < 85 + this.textRenderer.fontHeight && (text = this.getTextComponentUnderMouse(mouseX)) != null && text.getStyle().getHoverEvent() != null) {
+            this.renderTextHoverEffect(text, mouseX, mouseY);
         }
         super.render(mouseX, mouseY, delta);
     }
@@ -103,7 +103,7 @@ extends Screen {
         if (this.message == null) {
             return null;
         }
-        int i = this.minecraft.textRenderer.getStringWidth(this.message.asFormattedString());
+        int i = this.client.textRenderer.getStringWidth(this.message.asFormattedString());
         int j = this.width / 2 - i / 2;
         int k = this.width / 2 + i / 2;
         int l = j;
@@ -111,7 +111,7 @@ extends Screen {
             return null;
         }
         for (Text text : this.message) {
-            if ((l += this.minecraft.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false))) <= mouseX) continue;
+            if ((l += this.client.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false))) <= mouseX) continue;
             return text;
         }
         return null;
@@ -120,8 +120,8 @@ extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Text text;
-        if (this.message != null && mouseY > 85.0 && mouseY < (double)(85 + this.font.fontHeight) && (text = this.getTextComponentUnderMouse((int)mouseX)) != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
-            this.handleComponentClicked(text);
+        if (this.message != null && mouseY > 85.0 && mouseY < (double)(85 + this.textRenderer.fontHeight) && (text = this.getTextComponentUnderMouse((int)mouseX)) != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
+            this.handleTextClick(text);
             return false;
         }
         return super.mouseClicked(mouseX, mouseY, button);

@@ -65,7 +65,7 @@ extends Goal {
             if (!this.doorValid) continue;
             return true;
         }
-        this.doorPos = new BlockPos(this.mob).up();
+        this.doorPos = this.mob.getSenseCenterPos().up();
         this.doorValid = DoorBlock.method_24795(this.mob.world, this.doorPos);
         return this.doorValid;
     }

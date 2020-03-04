@@ -14,8 +14,8 @@ import net.minecraft.world.WorldView;
 
 public abstract class WaterCreatureEntity
 extends MobEntityWithAi {
-    protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> type, World world) {
-        super((EntityType<? extends MobEntityWithAi>)type, world);
+    protected WaterCreatureEntity(EntityType<? extends WaterCreatureEntity> entityType, World world) {
+        super((EntityType<? extends MobEntityWithAi>)entityType, world);
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
     }
 

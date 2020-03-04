@@ -86,7 +86,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
             matrixStack.translate(0.0, 0.8f * q, 0.0);
             matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0f)));
             matrixStack.translate(0.0, -1.0f * q, 0.0);
-            if (pandaEntity.method_6524()) {
+            if (pandaEntity.isScaredByThunderstorm()) {
                 float r2 = (float)(Math.cos((double)pandaEntity.age * 1.25) * Math.PI * (double)0.05f);
                 matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(r2));
                 if (pandaEntity.isBaby()) {

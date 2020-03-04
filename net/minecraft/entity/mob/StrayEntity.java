@@ -50,8 +50,8 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
-        ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, f);
+    protected ProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
+        ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, damageModifier);
         if (projectileEntity instanceof ArrowEntity) {
             ((ArrowEntity)projectileEntity).addEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 600));
         }

@@ -192,7 +192,7 @@ implements Monster {
         super.tick();
         BlockPos blockPos = this.dataTracker.get(ATTACHED_BLOCK).orElse(null);
         if (blockPos == null && !this.world.isClient) {
-            blockPos = new BlockPos(this);
+            blockPos = this.getSenseCenterPos();
             this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
         }
         if (this.hasVehicle()) {
@@ -306,7 +306,7 @@ implements Monster {
         if (this.isAiDisabled() || !this.isAlive()) {
             return true;
         }
-        BlockPos blockPos = new BlockPos(this);
+        BlockPos blockPos = this.getSenseCenterPos();
         for (int i = 0; i < 5; ++i) {
             Direction direction;
             BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));

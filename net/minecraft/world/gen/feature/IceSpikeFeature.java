@@ -19,8 +19,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class IceSpikeFeature
 extends Feature<DefaultFeatureConfig> {
-    public IceSpikeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public IceSpikeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override

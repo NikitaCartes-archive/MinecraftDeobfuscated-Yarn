@@ -32,9 +32,9 @@ extends GameOptionsScreen {
 
     @Override
     protected void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings", new Object[0]), buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this, this.gameOptions))));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings", new Object[0]), buttonWidget -> this.client.openScreen(new MouseOptionsScreen(this, this.gameOptions))));
         this.addButton(Option.AUTO_JUMP.createButton(this.gameOptions, this.width / 2 - 155 + 160, 18, 150));
-        this.keyBindingListWidget = new ControlsListWidget(this, this.minecraft);
+        this.keyBindingListWidget = new ControlsListWidget(this, this.client);
         this.children.add(this.keyBindingListWidget);
         this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll", new Object[0]), buttonWidget -> {
             for (KeyBinding keyBinding : this.gameOptions.keysAll) {
@@ -42,7 +42,7 @@ extends GameOptionsScreen {
             }
             KeyBinding.updateKeysByCode();
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.client.openScreen(this.parent)));
     }
 
     @Override
@@ -76,7 +76,7 @@ extends GameOptionsScreen {
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.keyBindingListWidget.render(mouseX, mouseY, delta);
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
         boolean bl = false;
         for (KeyBinding keyBinding : this.gameOptions.keysAll) {
             if (keyBinding.isDefault()) continue;

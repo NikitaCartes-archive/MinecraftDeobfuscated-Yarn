@@ -16,7 +16,6 @@ import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity>
@@ -30,12 +29,12 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return ((MobEntity)this.actor).getTarget() == null && !((Entity)this.actor).hasPassengers() && ((RaiderEntity)this.actor).hasActiveRaid() && !((RaiderEntity)this.actor).getRaid().isFinished() && !((ServerWorld)((RaiderEntity)this.actor).world).isNearOccupiedPointOfInterest(new BlockPos((Entity)this.actor));
+        return ((MobEntity)this.actor).getTarget() == null && !((Entity)this.actor).hasPassengers() && ((RaiderEntity)this.actor).hasActiveRaid() && !((RaiderEntity)this.actor).getRaid().isFinished() && !((ServerWorld)((RaiderEntity)this.actor).world).isNearOccupiedPointOfInterest(((Entity)this.actor).getSenseCenterPos());
     }
 
     @Override
     public boolean shouldContinue() {
-        return ((RaiderEntity)this.actor).hasActiveRaid() && !((RaiderEntity)this.actor).getRaid().isFinished() && ((RaiderEntity)this.actor).world instanceof ServerWorld && !((ServerWorld)((RaiderEntity)this.actor).world).isNearOccupiedPointOfInterest(new BlockPos((Entity)this.actor));
+        return ((RaiderEntity)this.actor).hasActiveRaid() && !((RaiderEntity)this.actor).getRaid().isFinished() && ((RaiderEntity)this.actor).world instanceof ServerWorld && !((ServerWorld)((RaiderEntity)this.actor).world).isNearOccupiedPointOfInterest(((Entity)this.actor).getSenseCenterPos());
     }
 
     @Override
@@ -46,7 +45,7 @@ extends Goal {
             if (((RaiderEntity)this.actor).age % 20 == 0) {
                 this.includeFreeRaiders(raid);
             }
-            if (!((MobEntityWithAi)this.actor).isNavigating() && (vec3d = TargetFinder.findTargetTowards(this.actor, 15, 4, new Vec3d(raid.getCenter()))) != null) {
+            if (!((MobEntityWithAi)this.actor).isNavigating() && (vec3d = TargetFinder.findTargetTowards(this.actor, 15, 4, Vec3d.method_24955(raid.getCenter()))) != null) {
                 ((MobEntity)this.actor).getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
             }
         }

@@ -98,7 +98,7 @@ public class UpgradeData {
             BlockState blockState;
             BlockState blockState2 = blockState = world.getBlockState(blockPos);
             for (Direction direction : directions) {
-                mutable.set(blockPos).setOffset(direction);
+                mutable.move(blockPos, direction);
                 blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, world, blockPos, mutable);
             }
             Block.replaceBlock(blockState, blockState2, world, blockPos, 18);
@@ -110,39 +110,38 @@ public class UpgradeData {
     }
 
     private void upgradeCenter(WorldChunk chunk) {
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();
-             BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get();){
-            int i;
-            ChunkPos chunkPos = chunk.getPos();
-            World iWorld = chunk.getWorld();
-            for (i = 0; i < 16; ++i) {
-                ChunkSection chunkSection = chunk.getSectionArray()[i];
-                int[] is = this.centerIndicesToUpgrade[i];
-                this.centerIndicesToUpgrade[i] = null;
-                if (chunkSection == null || is == null || is.length <= 0) continue;
-                Direction[] directions = Direction.values();
-                PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
-                for (int j : is) {
-                    BlockState blockState;
-                    int k = j & 0xF;
-                    int l = j >> 8 & 0xF;
-                    int m = j >> 4 & 0xF;
-                    pooledMutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
-                    BlockState blockState2 = blockState = palettedContainer.get(j);
-                    for (Direction direction : directions) {
-                        pooledMutable2.set(pooledMutable).setOffset(direction);
-                        if (pooledMutable.getX() >> 4 != chunkPos.x || pooledMutable.getZ() >> 4 != chunkPos.z) continue;
-                        blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, iWorld, pooledMutable, pooledMutable2);
-                    }
-                    Block.replaceBlock(blockState, blockState2, iWorld, pooledMutable, 18);
+        int i;
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        BlockPos.Mutable mutable2 = new BlockPos.Mutable();
+        ChunkPos chunkPos = chunk.getPos();
+        World iWorld = chunk.getWorld();
+        for (i = 0; i < 16; ++i) {
+            ChunkSection chunkSection = chunk.getSectionArray()[i];
+            int[] is = this.centerIndicesToUpgrade[i];
+            this.centerIndicesToUpgrade[i] = null;
+            if (chunkSection == null || is == null || is.length <= 0) continue;
+            Direction[] directions = Direction.values();
+            PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
+            for (int j : is) {
+                BlockState blockState;
+                int k = j & 0xF;
+                int l = j >> 8 & 0xF;
+                int m = j >> 4 & 0xF;
+                mutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
+                BlockState blockState2 = blockState = palettedContainer.get(j);
+                for (Direction direction : directions) {
+                    mutable2.move(mutable, direction);
+                    if (mutable.getX() >> 4 != chunkPos.x || mutable.getZ() >> 4 != chunkPos.z) continue;
+                    blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, iWorld, mutable, mutable2);
                 }
+                Block.replaceBlock(blockState, blockState2, iWorld, mutable, 18);
             }
-            for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
-                if (this.centerIndicesToUpgrade[i] != null) {
-                    LOGGER.warn("Discarding update data for section {} for chunk ({} {})", (Object)i, (Object)chunkPos.x, (Object)chunkPos.z);
-                }
-                this.centerIndicesToUpgrade[i] = null;
+        }
+        for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
+            if (this.centerIndicesToUpgrade[i] != null) {
+                LOGGER.warn("Discarding update data for section {} for chunk ({} {})", (Object)i, (Object)chunkPos.x, (Object)chunkPos.z);
             }
+            this.centerIndicesToUpgrade[i] = null;
         }
     }
 
@@ -248,7 +247,7 @@ public class UpgradeData {
                         world.setBlockState(blockPos, (BlockState)blockState.with(Properties.DISTANCE_1_7, j), 18);
                         if (i == 7) continue;
                         for (Direction direction : DIRECTIONS) {
-                            mutable.set(blockPos).setOffset(direction);
+                            mutable.move(blockPos, direction);
                             BlockState blockState2 = world.getBlockState(mutable);
                             if (!blockState2.contains(Properties.DISTANCE_1_7) || blockState.get(Properties.DISTANCE_1_7) <= i) continue;
                             objectSet2.add(mutable.toImmutable());

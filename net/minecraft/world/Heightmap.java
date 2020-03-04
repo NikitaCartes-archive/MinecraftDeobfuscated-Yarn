@@ -36,25 +36,24 @@ public class Heightmap {
         ObjectArrayList objectList = new ObjectArrayList(i);
         Iterator objectListIterator = objectList.iterator();
         int j = chunk.getHighestNonEmptySectionYOffset() + 16;
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (int k = 0; k < 16; ++k) {
-                block10: for (int l = 0; l < 16; ++l) {
-                    for (Type type : types) {
-                        objectList.add(chunk.getHeightmap(type));
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int k = 0; k < 16; ++k) {
+            block1: for (int l = 0; l < 16; ++l) {
+                for (Type type : types) {
+                    objectList.add(chunk.getHeightmap(type));
+                }
+                for (int m = j - 1; m >= 0; --m) {
+                    mutable.set(k, m, l);
+                    BlockState blockState = chunk.getBlockState(mutable);
+                    if (blockState.getBlock() == Blocks.AIR) continue;
+                    while (objectListIterator.hasNext()) {
+                        Heightmap heightmap = (Heightmap)objectListIterator.next();
+                        if (!heightmap.blockPredicate.test(blockState)) continue;
+                        heightmap.set(k, l, m + 1);
+                        objectListIterator.remove();
                     }
-                    for (int m = j - 1; m >= 0; --m) {
-                        pooledMutable.set(k, m, l);
-                        BlockState blockState = chunk.getBlockState(pooledMutable);
-                        if (blockState.getBlock() == Blocks.AIR) continue;
-                        while (objectListIterator.hasNext()) {
-                            Heightmap heightmap = (Heightmap)objectListIterator.next();
-                            if (!heightmap.blockPredicate.test(blockState)) continue;
-                            heightmap.set(k, l, m + 1);
-                            objectListIterator.remove();
-                        }
-                        if (objectList.isEmpty()) continue block10;
-                        objectListIterator.back(i);
-                    }
+                    if (objectList.isEmpty()) continue block1;
+                    objectListIterator.back(i);
                 }
             }
         }

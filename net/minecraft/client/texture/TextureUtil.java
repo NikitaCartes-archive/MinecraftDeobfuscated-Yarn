@@ -23,33 +23,33 @@ import org.lwjgl.system.MemoryUtil;
 
 @Environment(value=EnvType.CLIENT)
 public class TextureUtil {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger field_22547 = LogManager.getLogger();
 
-    public static int generateTextureId() {
+    public static int method_24956() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         return GlStateManager.getTexLevelParameter();
     }
 
-    public static void releaseTextureId(int i) {
+    public static void method_24957(int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         GlStateManager.deleteTexture(i);
     }
 
-    public static void prepareImage(int i, int j, int k) {
-        TextureUtil.prepareImage(NativeImage.GLFormat.RGBA, i, 0, j, k);
+    public static void method_24958(int i, int j, int k) {
+        TextureUtil.method_24961(NativeImage.GLFormat.RGBA, i, 0, j, k);
     }
 
-    public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k) {
-        TextureUtil.prepareImage(gLFormat, i, 0, j, k);
+    public static void method_24960(NativeImage.GLFormat gLFormat, int i, int j, int k) {
+        TextureUtil.method_24961(gLFormat, i, 0, j, k);
     }
 
-    public static void prepareImage(int i, int j, int k, int l) {
-        TextureUtil.prepareImage(NativeImage.GLFormat.RGBA, i, j, k, l);
+    public static void method_24959(int i, int j, int k, int l) {
+        TextureUtil.method_24961(NativeImage.GLFormat.RGBA, i, j, k, l);
     }
 
-    public static void prepareImage(NativeImage.GLFormat gLFormat, int i, int j, int k, int l) {
+    public static void method_24961(NativeImage.GLFormat gLFormat, int i, int j, int k, int l) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        TextureUtil.bind(i);
+        TextureUtil.method_24964(i);
         if (j >= 0) {
             GlStateManager.texParameter(3553, 33085, j);
             GlStateManager.texParameter(3553, 33082, 0);
@@ -61,12 +61,12 @@ public class TextureUtil {
         }
     }
 
-    private static void bind(int i) {
+    private static void method_24964(int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         GlStateManager.bindTexture(i);
     }
 
-    public static ByteBuffer readResource(InputStream inputStream) throws IOException {
+    public static ByteBuffer method_24962(InputStream inputStream) throws IOException {
         ByteBuffer byteBuffer;
         if (inputStream instanceof FileInputStream) {
             FileInputStream fileInputStream = (FileInputStream)inputStream;
@@ -88,11 +88,11 @@ public class TextureUtil {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public static String readResourceAsString(InputStream inputStream) {
+    public static String method_24965(InputStream inputStream) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         ByteBuffer byteBuffer = null;
         try {
-            byteBuffer = TextureUtil.readResource(inputStream);
+            byteBuffer = TextureUtil.method_24962(inputStream);
             int i = byteBuffer.position();
             byteBuffer.rewind();
             String string = MemoryUtil.memASCII(byteBuffer, i);
@@ -106,7 +106,7 @@ public class TextureUtil {
         return null;
     }
 
-    public static void initTexture(IntBuffer intBuffer, int i, int j) {
+    public static void method_24963(IntBuffer intBuffer, int i, int j) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         GL11.glPixelStorei(3312, 0);
         GL11.glPixelStorei(3313, 0);

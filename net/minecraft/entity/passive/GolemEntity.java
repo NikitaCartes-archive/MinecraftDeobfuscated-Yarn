@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class GolemEntity
 extends MobEntityWithAi {
-    protected GolemEntity(EntityType<? extends GolemEntity> type, World world) {
-        super((EntityType<? extends MobEntityWithAi>)type, world);
+    protected GolemEntity(EntityType<? extends GolemEntity> entityType, World world) {
+        super((EntityType<? extends MobEntityWithAi>)entityType, world);
     }
 
     @Override

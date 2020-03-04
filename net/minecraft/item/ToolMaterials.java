@@ -42,7 +42,7 @@ public enum ToolMaterials implements ToolMaterial
     }
 
     @Override
-    public float getMiningSpeed() {
+    public float getMiningSpeedMultiplier() {
         return this.miningSpeed;
     }
 

@@ -79,7 +79,7 @@ public class TargetFinder {
         boolean bl = mob.hasPositionTarget() ? mob.getPositionTarget().isWithinDistance(mob.getPos(), (double)(mob.getPositionTargetRange() + (float)maxHorizontalDistance) + 1.0) : false;
         boolean bl2 = false;
         double d = Double.NEGATIVE_INFINITY;
-        BlockPos blockPos2 = new BlockPos(mob);
+        BlockPos blockPos2 = mob.getSenseCenterPos();
         for (int i = 0; i < 10; ++i) {
             double e;
             PathNodeType pathNodeType;
@@ -104,7 +104,7 @@ public class TargetFinder {
             bl2 = true;
         }
         if (bl2) {
-            return new Vec3d(blockPos2);
+            return Vec3d.method_24955(blockPos2);
         }
         return null;
     }

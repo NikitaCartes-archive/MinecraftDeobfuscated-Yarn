@@ -50,16 +50,16 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.minecraft.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.enableRepeatEvents(true);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.finishEditing()));
         this.sign.setEditable(false);
-        this.selectionManager = new SelectionManager(this.minecraft, () -> this.sign.getTextOnRow(this.currentRow).getString(), string -> this.sign.setTextOnRow(this.currentRow, new LiteralText((String)string)), 90);
+        this.selectionManager = new SelectionManager(this.client, () -> this.sign.getTextOnRow(this.currentRow).getString(), string -> this.sign.setTextOnRow(this.currentRow, new LiteralText((String)string)), 90);
     }
 
     @Override
     public void removed() {
-        this.minecraft.keyboard.enableRepeatEvents(false);
-        ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
+        this.client.keyboard.enableRepeatEvents(false);
+        ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
         if (clientPlayNetworkHandler != null) {
             clientPlayNetworkHandler.sendPacket(new UpdateSignC2SPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3)));
         }
@@ -76,7 +76,7 @@ extends Screen {
 
     private void finishEditing() {
         this.sign.markDirty();
-        this.minecraft.openScreen(null);
+        this.client.openScreen(null);
     }
 
     @Override
@@ -116,7 +116,7 @@ extends Screen {
         int o;
         DiffuseLighting.disableGuiDepthLighting();
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 40, 0xFFFFFF);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.push();
         matrixStack.translate(this.width / 2, 0.0, 50.0);
@@ -132,7 +132,7 @@ extends Screen {
         float g = 0.6666667f;
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-        VertexConsumerProvider.Immediate immediate = this.minecraft.getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
         SpriteIdentifier spriteIdentifier = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.field_21525::getLayer);
         this.field_21525.field.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
@@ -147,40 +147,40 @@ extends Screen {
         String[] strings = new String[4];
         for (int j = 0; j < strings.length; ++j) {
             strings[j] = this.sign.getTextBeingEditedOnRow(j, text -> {
-                List<Text> list = Texts.wrapLines(text, 90, this.minecraft.textRenderer, false, true);
+                List<Text> list = Texts.wrapLines(text, 90, this.client.textRenderer, false, true);
                 return list.isEmpty() ? "" : list.get(0).asFormattedString();
             });
         }
         Matrix4f matrix4f = matrixStack.peek().getModel();
         int k = this.selectionManager.getSelectionStart();
         int l = this.selectionManager.getSelectionEnd();
-        int m = this.minecraft.textRenderer.isRightToLeft() ? -1 : 1;
+        int m = this.client.textRenderer.isRightToLeft() ? -1 : 1;
         int n = this.currentRow * 10 - this.sign.text.length * 5;
         for (o = 0; o < strings.length; ++o) {
             string = strings[o];
             if (string == null) continue;
-            float p = -this.minecraft.textRenderer.getStringWidth(string) / 2;
-            this.minecraft.textRenderer.draw(string, p, o * 10 - this.sign.text.length * 5, i, false, matrix4f, immediate, false, 0, 0xF000F0);
+            float p = -this.client.textRenderer.getStringWidth(string) / 2;
+            this.client.textRenderer.draw(string, p, o * 10 - this.sign.text.length * 5, i, false, matrix4f, immediate, false, 0, 0xF000F0);
             if (o != this.currentRow || k < 0 || !bl2) continue;
-            q = this.minecraft.textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(k, string.length()), 0)));
-            r = (q - this.minecraft.textRenderer.getStringWidth(string) / 2) * m;
+            q = this.client.textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(k, string.length()), 0)));
+            r = (q - this.client.textRenderer.getStringWidth(string) / 2) * m;
             if (k < string.length()) continue;
-            this.minecraft.textRenderer.draw("_", r, n, i, false, matrix4f, immediate, false, 0, 0xF000F0);
+            this.client.textRenderer.draw("_", r, n, i, false, matrix4f, immediate, false, 0, 0xF000F0);
         }
         immediate.draw();
         for (o = 0; o < strings.length; ++o) {
             string = strings[o];
             if (string == null || o != this.currentRow || k < 0) continue;
-            int s = this.minecraft.textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(k, string.length()), 0)));
-            q = (s - this.minecraft.textRenderer.getStringWidth(string) / 2) * m;
+            int s = this.client.textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(k, string.length()), 0)));
+            q = (s - this.client.textRenderer.getStringWidth(string) / 2) * m;
             if (bl2 && k < string.length()) {
-                SignEditScreen.fill(matrix4f, q, n - 1, q + 1, n + this.minecraft.textRenderer.fontHeight, 0xFF000000 | i);
+                SignEditScreen.fill(matrix4f, q, n - 1, q + 1, n + this.client.textRenderer.fontHeight, 0xFF000000 | i);
             }
             if (l == k) continue;
             r = Math.min(k, l);
             int t = Math.max(k, l);
-            int u = (this.minecraft.textRenderer.getStringWidth(string.substring(0, r)) - this.minecraft.textRenderer.getStringWidth(string) / 2) * m;
-            int v = (this.minecraft.textRenderer.getStringWidth(string.substring(0, t)) - this.minecraft.textRenderer.getStringWidth(string) / 2) * m;
+            int u = (this.client.textRenderer.getStringWidth(string.substring(0, r)) - this.client.textRenderer.getStringWidth(string) / 2) * m;
+            int v = (this.client.textRenderer.getStringWidth(string.substring(0, t)) - this.client.textRenderer.getStringWidth(string) / 2) * m;
             int w = Math.min(u, v);
             int x = Math.max(u, v);
             Tessellator tessellator = Tessellator.getInstance();
@@ -189,8 +189,8 @@ extends Screen {
             RenderSystem.enableColorLogicOp();
             RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
             bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-            bufferBuilder.vertex(matrix4f, w, n + this.minecraft.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
-            bufferBuilder.vertex(matrix4f, x, n + this.minecraft.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
+            bufferBuilder.vertex(matrix4f, w, n + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
+            bufferBuilder.vertex(matrix4f, x, n + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, x, n, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, w, n, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.end();

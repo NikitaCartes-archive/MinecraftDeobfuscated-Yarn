@@ -4,16 +4,21 @@
 package com.mojang.realmsclient.dto;
 
 import com.google.common.collect.Lists;
+import com.google.gson.annotations.SerializedName;
 import com.mojang.realmsclient.dto.RegionPingResult;
 import com.mojang.realmsclient.dto.ValueObject;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.realms.RealmsSerializable;
 
 @Environment(value=EnvType.CLIENT)
 public class PingResult
-extends ValueObject {
+extends ValueObject
+implements RealmsSerializable {
+    @SerializedName(value="pingResults")
     public List<RegionPingResult> pingResults = Lists.newArrayList();
+    @SerializedName(value="worldIds")
     public List<Long> worldIds = Lists.newArrayList();
 }
 

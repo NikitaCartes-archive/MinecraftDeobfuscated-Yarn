@@ -104,24 +104,23 @@ extends Block {
 
     @Override
     public void method_9517(BlockState state, IWorld world, BlockPos pos, int flags) {
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (Direction direction : Direction.Type.HORIZONTAL) {
-                WireConnection wireConnection = (WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
-                if (wireConnection == WireConnection.NONE || world.getBlockState(pooledMutable.set(pos).setOffset(direction)).getBlock() == this) continue;
-                pooledMutable.setOffset(Direction.DOWN);
-                BlockState blockState = world.getBlockState(pooledMutable);
-                if (blockState.getBlock() != Blocks.OBSERVER) {
-                    BlockPos blockPos = pooledMutable.offset(direction.getOpposite());
-                    BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos), world, pooledMutable, blockPos);
-                    RedstoneWireBlock.replaceBlock(blockState, blockState2, world, pooledMutable, flags);
-                }
-                pooledMutable.set(pos).setOffset(direction).setOffset(Direction.UP);
-                BlockState blockState3 = world.getBlockState(pooledMutable);
-                if (blockState3.getBlock() == Blocks.OBSERVER) continue;
-                BlockPos blockPos2 = pooledMutable.offset(direction.getOpposite());
-                BlockState blockState4 = blockState3.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos2), world, pooledMutable, blockPos2);
-                RedstoneWireBlock.replaceBlock(blockState3, blockState4, world, pooledMutable, flags);
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Direction direction : Direction.Type.HORIZONTAL) {
+            WireConnection wireConnection = (WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
+            if (wireConnection == WireConnection.NONE || world.getBlockState(mutable.move(pos, direction)).getBlock() == this) continue;
+            mutable.setOffset(Direction.DOWN);
+            BlockState blockState = world.getBlockState(mutable);
+            if (blockState.getBlock() != Blocks.OBSERVER) {
+                BlockPos blockPos = mutable.offset(direction.getOpposite());
+                BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos), world, mutable, blockPos);
+                RedstoneWireBlock.replaceBlock(blockState, blockState2, world, mutable, flags);
             }
+            mutable.move(pos, direction).setOffset(Direction.UP);
+            BlockState blockState3 = world.getBlockState(mutable);
+            if (blockState3.getBlock() == Blocks.OBSERVER) continue;
+            BlockPos blockPos2 = mutable.offset(direction.getOpposite());
+            BlockState blockState4 = blockState3.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos2), world, mutable, blockPos2);
+            RedstoneWireBlock.replaceBlock(blockState3, blockState4, world, mutable, flags);
         }
     }
 

@@ -67,13 +67,11 @@ extends Block {
 
     private static BlockState updateDistanceFromLogs(BlockState state, IWorld world, BlockPos pos) {
         int i = 7;
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (Direction direction : Direction.values()) {
-                pooledMutable.set(pos).setOffset(direction);
-                i = Math.min(i, LeavesBlock.getDistanceFromLog(world.getBlockState(pooledMutable)) + 1);
-                if (i != 1) continue;
-                break;
-            }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Direction direction : Direction.values()) {
+            mutable.move(pos, direction);
+            i = Math.min(i, LeavesBlock.getDistanceFromLog(world.getBlockState(mutable)) + 1);
+            if (i == 1) break;
         }
         return (BlockState)state.with(DISTANCE, i);
     }

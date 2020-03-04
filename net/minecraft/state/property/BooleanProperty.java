@@ -39,12 +39,12 @@ extends AbstractProperty<Boolean> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object object) {
+        if (this == object) {
             return true;
         }
-        if (o instanceof BooleanProperty && super.equals(o)) {
-            BooleanProperty booleanProperty = (BooleanProperty)o;
+        if (object instanceof BooleanProperty && super.equals(object)) {
+            BooleanProperty booleanProperty = (BooleanProperty)object;
             return this.values.equals(booleanProperty.values);
         }
         return false;

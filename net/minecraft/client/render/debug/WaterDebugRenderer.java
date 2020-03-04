@@ -28,7 +28,7 @@ implements DebugRenderer.Renderer {
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         FluidState fluidState;
-        BlockPos blockPos = this.client.player.getBlockPos();
+        BlockPos blockPos = this.client.player.getSenseCenterPos();
         World worldView = this.client.player.world;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

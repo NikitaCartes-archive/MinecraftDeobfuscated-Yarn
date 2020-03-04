@@ -4,7 +4,6 @@
 package net.minecraft.entity;
 
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.ai.RangedAttackMob;
@@ -40,7 +39,7 @@ extends RangedAttackMob {
     }
 
     default public void shoot(LivingEntity entity, LivingEntity target, Projectile projectile, float multishotSpray, float speed) {
-        Entity entity2 = (Entity)((Object)projectile);
+        Projectile entity2 = projectile;
         double d = target.getX() - entity.getX();
         double e = target.getZ() - entity.getZ();
         double f = MathHelper.sqrt(d * d + e * e);

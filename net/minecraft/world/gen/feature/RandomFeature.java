@@ -16,8 +16,8 @@ import net.minecraft.world.gen.feature.RandomFeatureEntry;
 
 public class RandomFeature
 extends Feature<RandomFeatureConfig> {
-    public RandomFeature(Function<Dynamic<?>, ? extends RandomFeatureConfig> configFactory) {
-        super(configFactory);
+    public RandomFeature(Function<Dynamic<?>, ? extends RandomFeatureConfig> function) {
+        super(function);
     }
 
     @Override

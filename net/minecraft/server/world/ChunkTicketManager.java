@@ -120,13 +120,13 @@ public abstract class ChunkTicketManager {
         return bl;
     }
 
-    private void addTicket(long position, ChunkTicket<?> chunkTicket) {
+    private void addTicket(long position, ChunkTicket<?> ticket) {
         SortedArraySet<ChunkTicket<?>> sortedArraySet = this.getTicketSet(position);
         int i = ChunkTicketManager.getLevel(sortedArraySet);
-        ChunkTicket<?> chunkTicket2 = sortedArraySet.addAndGet(chunkTicket);
-        chunkTicket2.setTickCreated(this.age);
-        if (chunkTicket.getLevel() < i) {
-            this.distanceFromTicketTracker.updateLevel(position, chunkTicket.getLevel(), true);
+        ChunkTicket<?> chunkTicket = sortedArraySet.addAndGet(ticket);
+        chunkTicket.setTickCreated(this.age);
+        if (ticket.getLevel() < i) {
+            this.distanceFromTicketTracker.updateLevel(position, ticket.getLevel(), true);
         }
     }
 
@@ -190,8 +190,8 @@ public abstract class ChunkTicketManager {
         }
     }
 
-    protected String method_21623(long l) {
-        SortedArraySet<ChunkTicket<?>> sortedArraySet = this.ticketsByPosition.get(l);
+    protected String getTicket(long pos) {
+        SortedArraySet<ChunkTicket<?>> sortedArraySet = this.ticketsByPosition.get(pos);
         String string = sortedArraySet == null || sortedArraySet.isEmpty() ? "no_ticket" : sortedArraySet.first().toString();
         return string;
     }

@@ -45,7 +45,7 @@ extends MobEntityRenderer<CatEntity, CatEntityModel<CatEntity>> {
         if (i > 0.0f) {
             matrixStack.translate(0.4f * i, 0.15f * i, 0.1f * i);
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerpAngleDegrees(i, 0.0f, 90.0f)));
-            BlockPos blockPos = new BlockPos(catEntity);
+            BlockPos blockPos = catEntity.getSenseCenterPos();
             List<PlayerEntity> list = catEntity.world.getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0));
             for (PlayerEntity playerEntity : list) {
                 if (!playerEntity.isSleeping()) continue;

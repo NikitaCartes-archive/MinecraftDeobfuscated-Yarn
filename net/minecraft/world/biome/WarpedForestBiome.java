@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.BiomeParticleConfig;
@@ -27,7 +28,7 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 public class WarpedForestBiome
 extends Biome {
     protected WarpedForestBiome() {
-        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.NETHER_FOREST, SurfaceBuilder.WARPED_NYLIUM_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.NETHER).depth(0.1f).scale(0.2f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(1705242).particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428f, random -> 0.0, random -> (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1, random -> 0.0)).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0f, 0.5f, 0.0f, 0.0f, 1.0f))));
+        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.NETHER_FOREST, SurfaceBuilder.WARPED_NYLIUM_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.NETHER).depth(0.1f).scale(0.2f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(1705242).particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428f, random -> 0.0, random -> (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1, random -> 0.0)).loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP).moodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD).additionsSound(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0f, 0.5f, 0.0f, 0.0f, 1.0f))));
         this.addCarver(GenerationStep.Carver.AIR, WarpedForestBiome.configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2f)));
         this.addFeature(GenerationStep.Feature.VEGETAL_DECORATION, Feature.SPRING_FEATURE.configure(DefaultBiomeFeatures.LAVA_SPRING_CONFIG).createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(20, 8, 16, 256))));
         DefaultBiomeFeatures.addDefaultMushrooms(this);

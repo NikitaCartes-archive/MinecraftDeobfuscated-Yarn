@@ -32,26 +32,43 @@ extends AbstractFireballEntity {
     }
 
     @Override
+    protected void onEntityHit(EntityHitResult entityHitResult) {
+        super.onEntityHit(entityHitResult);
+        if (this.world.isClient) {
+            return;
+        }
+        Entity entity = entityHitResult.getEntity();
+        if (!entity.isFireImmune()) {
+            Entity entity2 = this.getOwner();
+            int i = entity.getFireTicks();
+            entity.setOnFireFor(5);
+            boolean bl = entity.damage(DamageSource.explosiveProjectile(this, entity2), 5.0f);
+            if (!bl) {
+                entity.setFireTicks(i);
+            } else if (entity2 instanceof LivingEntity) {
+                this.dealDamage((LivingEntity)entity2, entity);
+            }
+        }
+    }
+
+    @Override
+    protected void method_24920(BlockHitResult blockHitResult) {
+        BlockHitResult blockHitResult2;
+        BlockPos blockPos;
+        super.method_24920(blockHitResult);
+        if (this.world.isClient) {
+            return;
+        }
+        Entity entity = this.getOwner();
+        if ((entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && this.world.isAir(blockPos = (blockHitResult2 = blockHitResult).getBlockPos().offset(blockHitResult2.getSide()))) {
+            this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
+        }
+    }
+
+    @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
         if (!this.world.isClient) {
-            BlockHitResult blockHitResult;
-            BlockPos blockPos;
-            if (hitResult.getType() == HitResult.Type.ENTITY) {
-                Entity entity = ((EntityHitResult)hitResult).getEntity();
-                if (!entity.isFireImmune()) {
-                    int i = entity.getFireTicks();
-                    entity.setOnFireFor(5);
-                    boolean bl = entity.damage(DamageSource.explosiveProjectile(this, this.owner), 5.0f);
-                    if (bl) {
-                        this.dealDamage(this.owner, entity);
-                    } else {
-                        entity.setFireTicks(i);
-                    }
-                }
-            } else if ((this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) && this.world.isAir(blockPos = (blockHitResult = (BlockHitResult)hitResult).getBlockPos().offset(blockHitResult.getSide()))) {
-                this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
-            }
             this.remove();
         }
     }

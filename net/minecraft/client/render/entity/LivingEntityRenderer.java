@@ -174,10 +174,21 @@ implements FeatureRendererContext<T, M> {
         return 0.0f;
     }
 
+    /**
+     * Returns if this entity is shaking, as if a zombie villager, zombie,
+     * husk, or piglin undergoing conversion.
+     */
+    protected boolean isShaking(T entity) {
+        return false;
+    }
+
     protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
         String string;
-        EntityPose entityPose = ((Entity)entity).getPose();
-        if (entityPose != EntityPose.SLEEPING) {
+        EntityPose entityPose;
+        if (this.isShaking(entity)) {
+            bodyYaw += (float)(Math.cos((double)((LivingEntity)entity).age * 3.25) * Math.PI * (double)0.4f);
+        }
+        if ((entityPose = ((Entity)entity).getPose()) != EntityPose.SLEEPING) {
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - bodyYaw));
         }
         if (((LivingEntity)entity).deathTime > 0) {
@@ -221,7 +232,7 @@ implements FeatureRendererContext<T, M> {
         return 0.0f;
     }
 
-    protected void scale(T entity, MatrixStack matrices, float tickDelta) {
+    protected void scale(T entity, MatrixStack matrices, float amount) {
     }
 
     @Override
@@ -259,11 +270,6 @@ implements FeatureRendererContext<T, M> {
             }
         }
         return MinecraftClient.isHudEnabled() && livingEntity != minecraftClient.getCameraEntity() && bl && !((Entity)livingEntity).hasPassengers();
-    }
-
-    @Override
-    protected /* synthetic */ boolean hasLabel(Entity entity) {
-        return this.hasLabel((T)((LivingEntity)entity));
     }
 }
 

@@ -18,8 +18,8 @@ implements Predicate<BlockState> {
         }
 
         @Override
-        public /* synthetic */ boolean test(@Nullable Object context) {
-            return this.test((BlockState)context);
+        public /* synthetic */ boolean test(@Nullable Object object) {
+            return this.test((BlockState)object);
         }
     };
     private final Material material;

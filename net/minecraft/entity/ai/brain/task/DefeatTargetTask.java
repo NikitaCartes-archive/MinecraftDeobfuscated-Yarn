@@ -30,7 +30,7 @@ extends Task<LivingEntity> {
         BlockPos blockPos = this.getAttackTarget(entity).getSenseCenterPos();
         entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
         entity.getBrain().forget(MemoryModuleType.ANGRY_AT);
-        entity.getBrain().remember(MemoryModuleType.CELEBRATE_LOCATION, blockPos, time, this.duration);
+        entity.getBrain().remember(MemoryModuleType.CELEBRATE_LOCATION, blockPos, this.duration);
     }
 
     private LivingEntity getAttackTarget(LivingEntity entity) {

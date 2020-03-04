@@ -41,9 +41,9 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     }
 
     @Override
-    protected void renderHeader(int i, int j, Tessellator tessellator) {
+    protected void renderHeader(int x, int y, Tessellator tessellator) {
         Text text = new LiteralText("").append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
-        this.client.textRenderer.draw(text.asFormattedString(), i + this.width / 2 - this.client.textRenderer.getStringWidth(text.asFormattedString()) / 2, Math.min(this.top + 3, j), 0xFFFFFF);
+        this.client.textRenderer.draw(text.asFormattedString(), x + this.width / 2 - this.client.textRenderer.getStringWidth(text.asFormattedString()) / 2, Math.min(this.top + 3, y), 0xFFFFFF);
     }
 
     @Override
@@ -52,7 +52,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     }
 
     @Override
-    protected int getScrollbarPosition() {
+    protected int getScrollbarPositionX() {
         return this.right - 6;
     }
 
@@ -106,65 +106,65 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         @Override
-        public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-            int p;
+        public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+            int i;
             ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
             if (!resourcePackCompatibility.isCompatible()) {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                DrawableHelper.fill(k - 1, j - 1, k + l - 9, j + m + 1, -8978432);
+                DrawableHelper.fill(x - 1, y - 1, x + width - 9, y + height + 1, -8978432);
             }
             this.drawIcon();
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 32, 32);
+            DrawableHelper.blit(x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             String string = this.getDisplayName();
             String string2 = this.getDescription();
-            if (this.isMoveable() && (this.client.options.touchscreen || bl)) {
+            if (this.isMoveable() && (this.client.options.touchscreen || hovering)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_LOCATION);
-                DrawableHelper.fill(k, j, k + 32, j + 32, -1601138544);
+                DrawableHelper.fill(x, y, x + 32, y + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                p = n - k;
-                int q = o - j;
+                i = mouseX - x;
+                int j = mouseY - y;
                 if (!resourcePackCompatibility.isCompatible()) {
                     string = INCOMPATIBLE.asFormattedString();
                     string2 = resourcePackCompatibility.getNotification().asFormattedString();
                 }
                 if (this.isSelectable()) {
-                    if (p < 32) {
-                        DrawableHelper.blit(k, j, 0.0f, 32.0f, 32, 32, 256, 256);
+                    if (i < 32) {
+                        DrawableHelper.blit(x, y, 0.0f, 32.0f, 32, 32, 256, 256);
                     } else {
-                        DrawableHelper.blit(k, j, 0.0f, 0.0f, 32, 32, 256, 256);
+                        DrawableHelper.blit(x, y, 0.0f, 0.0f, 32, 32, 256, 256);
                     }
                 } else {
                     if (this.isRemovable()) {
-                        if (p < 16) {
-                            DrawableHelper.blit(k, j, 32.0f, 32.0f, 32, 32, 256, 256);
+                        if (i < 16) {
+                            DrawableHelper.blit(x, y, 32.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.blit(k, j, 32.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.blit(x, y, 32.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                     if (this.canMoveUp()) {
-                        if (p < 32 && p > 16 && q < 16) {
-                            DrawableHelper.blit(k, j, 96.0f, 32.0f, 32, 32, 256, 256);
+                        if (i < 32 && i > 16 && j < 16) {
+                            DrawableHelper.blit(x, y, 96.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.blit(k, j, 96.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.blit(x, y, 96.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                     if (this.canMoveDown()) {
-                        if (p < 32 && p > 16 && q > 16) {
-                            DrawableHelper.blit(k, j, 64.0f, 32.0f, 32, 32, 256, 256);
+                        if (i < 32 && i > 16 && j > 16) {
+                            DrawableHelper.blit(x, y, 64.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.blit(k, j, 64.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.blit(x, y, 64.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                 }
             }
-            if ((p = this.client.textRenderer.getStringWidth(string)) > 157) {
+            if ((i = this.client.textRenderer.getStringWidth(string)) > 157) {
                 string = this.client.textRenderer.trimToWidth(string, 157 - this.client.textRenderer.getStringWidth("...")) + "...";
             }
-            this.client.textRenderer.drawWithShadow(string, k + 32 + 2, j + 1, 0xFFFFFF);
+            this.client.textRenderer.drawWithShadow(string, x + 32 + 2, y + 1, 0xFFFFFF);
             List<String> list = this.client.textRenderer.wrapStringToWidthAsList(string2, 157);
-            for (int r = 0; r < 2 && r < list.size(); ++r) {
-                this.client.textRenderer.drawWithShadow(list.get(r), k + 32 + 2, j + 12 + 10 * r, 0x808080);
+            for (int k = 0; k < 2 && k < list.size(); ++k) {
+                this.client.textRenderer.drawWithShadow(list.get(k), x + 32 + 2, y + 12 + 10 * k, 0x808080);
             }
         }
 

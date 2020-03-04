@@ -21,8 +21,8 @@ import net.minecraft.item.ItemStack;
 @Environment(value=EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer
 extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
-    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> context) {
-        super(context);
+    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override
@@ -31,7 +31,7 @@ extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
             return;
         }
         matrixStack.push();
-        ((SnowmanEntityModel)this.getContextModel()).method_2834().rotate(matrixStack);
+        ((SnowmanEntityModel)this.getContextModel()).getTopSnowball().rotate(matrixStack);
         float m = 0.625f;
         matrixStack.translate(0.0, -0.34375, 0.0);
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));

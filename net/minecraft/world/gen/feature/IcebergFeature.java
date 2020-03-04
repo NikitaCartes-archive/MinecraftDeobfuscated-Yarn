@@ -21,8 +21,8 @@ import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 
 public class IcebergFeature
 extends Feature<SingleStateFeatureConfig> {
-    public IcebergFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> configFactory) {
-        super(configFactory);
+    public IcebergFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
+        super(function);
     }
 
     @Override

@@ -22,7 +22,7 @@ extends Sensor<LivingEntity> {
     @Override
     protected void sense(ServerWorld world, LivingEntity entity) {
         DimensionType dimensionType = world.getDimension().getType();
-        BlockPos blockPos = new BlockPos(entity);
+        BlockPos blockPos = entity.getSenseCenterPos();
         ArrayList<GlobalPos> list = Lists.newArrayList();
         for (int i = -1; i <= 1; ++i) {
             for (int j = -1; j <= 1; ++j) {

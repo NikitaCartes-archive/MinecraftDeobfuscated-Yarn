@@ -17,8 +17,6 @@ import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
-import net.minecraft.container.Container;
-import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.DoubleInventory;
@@ -26,6 +24,8 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -128,7 +128,7 @@ Tickable {
         List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, new Box((float)ticksOpen - 5.0f, (float)x - 5.0f, (float)y - 5.0f, (float)(ticksOpen + 1) + 5.0f, (float)(x + 1) + 5.0f, (float)(y + 1) + 5.0f));
         for (PlayerEntity playerEntity : list) {
             Inventory inventory;
-            if (!(playerEntity.container instanceof GenericContainer) || (inventory = ((GenericContainer)playerEntity.container).getInventory()) != container && (!(inventory instanceof DoubleInventory) || !((DoubleInventory)inventory).isPart(container))) continue;
+            if (!(playerEntity.currentScreenHandler instanceof GenericContainerScreenHandler) || (inventory = ((GenericContainerScreenHandler)playerEntity.currentScreenHandler).getInventory()) != container && (!(inventory instanceof DoubleInventory) || !((DoubleInventory)inventory).isPart(container))) continue;
             ++i;
         }
         return i;
@@ -218,8 +218,8 @@ Tickable {
     }
 
     @Override
-    protected Container createContainer(int i, PlayerInventory playerInventory) {
-        return GenericContainer.createGeneric9x3(i, playerInventory, this);
+    protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
+        return GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, this);
     }
 }
 

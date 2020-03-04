@@ -11,12 +11,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RailPlacementHelper;
 import net.minecraft.block.enums.RailShape;
-import net.minecraft.container.Container;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -112,7 +112,7 @@ extends AbstractRailBlock {
         if (bl2) {
             world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
         }
-        world.updateHorizontalAdjacent(pos, this);
+        world.updateComparators(pos, this);
     }
 
     protected void updateNearbyRails(World world, BlockPos pos, BlockState state, boolean unpowering) {
@@ -151,7 +151,7 @@ extends AbstractRailBlock {
             }
             List<AbstractMinecartEntity> list2 = this.getCarts(world, pos, AbstractMinecartEntity.class, EntityPredicates.VALID_INVENTORIES);
             if (!list2.isEmpty()) {
-                return Container.calculateComparatorOutput((Inventory)((Object)list2.get(0)));
+                return ScreenHandler.calculateComparatorOutput((Inventory)((Object)list2.get(0)));
             }
         }
         return 0;

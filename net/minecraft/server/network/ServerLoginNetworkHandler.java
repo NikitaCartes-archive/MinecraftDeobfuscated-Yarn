@@ -47,9 +47,9 @@ implements ServerLoginPacketListener {
     private State state = State.HELLO;
     private int loginTicks;
     private GameProfile profile;
-    private final String field_14165 = "";
+    private final String serverId = "";
     private SecretKey secretKey;
-    private ServerPlayerEntity clientEntity;
+    private ServerPlayerEntity player;
 
     public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
         this.server = server;
@@ -63,8 +63,8 @@ implements ServerLoginPacketListener {
             this.acceptPlayer();
         } else if (this.state == State.DELAY_ACCEPT && (serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId())) == null) {
             this.state = State.READY_TO_ACCEPT;
-            this.server.getPlayerManager().onPlayerConnect(this.connection, this.clientEntity);
-            this.clientEntity = null;
+            this.server.getPlayerManager().onPlayerConnect(this.connection, this.player);
+            this.player = null;
         }
         if (this.loginTicks++ == 600) {
             this.disconnect(new TranslatableText("multiplayer.disconnect.slow_login", new Object[0]));
@@ -102,7 +102,7 @@ implements ServerLoginPacketListener {
             ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
             if (serverPlayerEntity != null) {
                 this.state = State.DELAY_ACCEPT;
-                this.clientEntity = this.server.getPlayerManager().createPlayer(this.profile);
+                this.player = this.server.getPlayerManager().createPlayer(this.profile);
             } else {
                 this.server.getPlayerManager().onPlayerConnect(this.connection, this.server.getPlayerManager().createPlayer(this.profile));
             }

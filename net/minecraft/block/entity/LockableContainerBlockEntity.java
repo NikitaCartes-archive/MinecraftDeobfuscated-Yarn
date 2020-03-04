@@ -5,13 +5,13 @@ package net.minecraft.block.entity;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class LockableContainerBlockEntity
 extends BlockEntity
 implements Inventory,
-NameableContainerFactory,
+NameableScreenHandlerFactory,
 Nameable {
     private ContainerLock lock = ContainerLock.EMPTY;
     private Text customName;
@@ -90,13 +90,13 @@ Nameable {
 
     @Override
     @Nullable
-    public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+    public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (this.checkUnlocked(playerEntity)) {
-            return this.createContainer(syncId, playerInventory);
+            return this.createContainer(i, playerInventory);
         }
         return null;
     }
 
-    protected abstract Container createContainer(int var1, PlayerInventory var2);
+    protected abstract ScreenHandler createContainer(int var1, PlayerInventory var2);
 }
 

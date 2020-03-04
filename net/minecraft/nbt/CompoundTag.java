@@ -30,6 +30,7 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
@@ -141,20 +142,67 @@ implements Tag {
         this.tags.put(key, LongTag.of(value));
     }
 
-    public void putUuid(String key, UUID uuid) {
+    /**
+     * Reads a {@link UUID} from its NBT representation in this {@code CompoundTag}.
+     * 
+     * @since 20w10a
+     */
+    public void putUuidNew(String key, UUID value) {
+        this.tags.put(key, NbtHelper.fromUuidNew(value));
+    }
+
+    /**
+     * Reads a {@link UUID} from its NBT representation in this {@code CompoundTag}.
+     * 
+     * @since 20w10a
+     */
+    public UUID getUuidNew(String key) {
+        return NbtHelper.toUuidNew(this.get(key));
+    }
+
+    /**
+     * Returns {@code true} if this {@code CompoundTag} contains a valid UUID representation associated with the given key.
+     * A valid UUID is represented by an int array of length 4.
+     * 
+     * @since 20w10a
+     */
+    public boolean containsUuidNew(String key) {
+        Tag tag = this.get(key);
+        return tag != null && tag.getReader() == IntArrayTag.READER && ((IntArrayTag)tag).getIntArray().length == 4;
+    }
+
+    /**
+     * @deprecated use {@link #putUuid}.
+     */
+    @Deprecated
+    public void putUuidOld(String key, UUID uuid) {
         this.putLong(key + "Most", uuid.getMostSignificantBits());
         this.putLong(key + "Least", uuid.getLeastSignificantBits());
     }
 
-    public UUID getUuid(String key) {
+    /**
+     * @deprecated use {@link #getUuidNew} for newly added deserialization methods.
+     * Other places may keep calling this as well as {@link #getUuidNew} to ensure a smooth transition for old worlds.
+     */
+    @Deprecated
+    public UUID getUuidOld(String key) {
         return new UUID(this.getLong(key + "Most"), this.getLong(key + "Least"));
     }
 
-    public boolean containsUuid(String key) {
+    /**
+     * @deprecated use {@link #containsUuidNew} for newly added deserialization methods.
+     * Other places may keep calling this as well as {@link #containsUuidNew} to ensure a smooth transition for old worlds.
+     */
+    @Deprecated
+    public boolean containsUuidOld(String key) {
         return this.contains(key + "Most", 99) && this.contains(key + "Least", 99);
     }
 
-    public void removeUuid(String key) {
+    /**
+     * @deprecated use {@link #remove} to remove a UUID serialized using the new {@link #putUuid} method.
+     */
+    @Deprecated
+    public void removeUuidOld(String key) {
         this.remove(key + "Most");
         this.remove(key + "Least");
     }

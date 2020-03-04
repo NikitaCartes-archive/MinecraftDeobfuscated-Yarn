@@ -10,7 +10,6 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.projectile.DragonFireballEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.LogManager;
@@ -26,8 +25,8 @@ extends AbstractPhase {
     private LivingEntity field_7062;
     private boolean field_7058;
 
-    public StrafePlayerPhase(EnderDragonEntity dragon) {
-        super(dragon);
+    public StrafePlayerPhase(EnderDragonEntity enderDragonEntity) {
+        super(enderDragonEntity);
     }
 
     @Override
@@ -71,7 +70,7 @@ extends AbstractPhase {
                     double o = this.field_7062.getX() - l;
                     double p = this.field_7062.getBodyY(0.5) - m;
                     double q = this.field_7062.getZ() - n;
-                    this.dragon.world.playLevelEvent(null, 1017, new BlockPos(this.dragon), 0);
+                    this.dragon.world.playLevelEvent(null, 1017, this.dragon.getSenseCenterPos(), 0);
                     DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.world, this.dragon, o, p, q);
                     dragonFireballEntity.refreshPositionAndAngles(l, m, n, 0.0f, 0.0f);
                     this.dragon.world.spawnEntity(dragonFireballEntity);
@@ -94,7 +93,7 @@ extends AbstractPhase {
     private void method_6860() {
         if (this.field_7059 == null || this.field_7059.isFinished()) {
             int i;
-            int j = i = this.dragon.method_6818();
+            int j = i = this.dragon.getNearestPathNodeIndex();
             if (this.dragon.getRandom().nextInt(8) == 0) {
                 this.field_7058 = !this.field_7058;
                 j += 6;
@@ -107,7 +106,7 @@ extends AbstractPhase {
             } else if ((j %= 12) < 0) {
                 j += 12;
             }
-            this.field_7059 = this.dragon.method_6833(i, j, null);
+            this.field_7059 = this.dragon.findPath(i, j, null);
             if (this.field_7059 != null) {
                 this.field_7059.next();
             }
@@ -138,8 +137,8 @@ extends AbstractPhase {
 
     public void method_6862(LivingEntity livingEntity) {
         this.field_7062 = livingEntity;
-        int i = this.dragon.method_6818();
-        int j = this.dragon.method_6822(this.field_7062.getX(), this.field_7062.getY(), this.field_7062.getZ());
+        int i = this.dragon.getNearestPathNodeIndex();
+        int j = this.dragon.getNearestPathNodeIndex(this.field_7062.getX(), this.field_7062.getY(), this.field_7062.getZ());
         int k = MathHelper.floor(this.field_7062.getX());
         int l = MathHelper.floor(this.field_7062.getZ());
         double d = (double)k - this.dragon.getX();
@@ -148,7 +147,7 @@ extends AbstractPhase {
         double g = Math.min((double)0.4f + f / 80.0 - 1.0, 10.0);
         int m = MathHelper.floor(this.field_7062.getY() + g);
         PathNode pathNode = new PathNode(k, m, l);
-        this.field_7059 = this.dragon.method_6833(i, j, pathNode);
+        this.field_7059 = this.dragon.findPath(i, j, pathNode);
         if (this.field_7059 != null) {
             this.field_7059.next();
             this.method_6861();

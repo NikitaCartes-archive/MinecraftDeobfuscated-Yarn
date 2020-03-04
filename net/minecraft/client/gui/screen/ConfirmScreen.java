@@ -47,17 +47,17 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
         this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
         this.messageSplit.clear();
-        this.messageSplit.addAll(this.font.wrapStringToWidthAsList(this.message.asFormattedString(), this.width - 50));
+        this.messageSplit.addAll(this.textRenderer.wrapStringToWidthAsList(this.message.asFormattedString(), this.width - 50));
     }
 
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 70, 0xFFFFFF);
         int i = 90;
         for (String string : this.messageSplit) {
-            this.drawCenteredString(this.font, string, this.width / 2, i, 0xFFFFFF);
-            i += this.font.fontHeight;
+            this.drawCenteredString(this.textRenderer, string, this.width / 2, i, 0xFFFFFF);
+            i += this.textRenderer.fontHeight;
         }
         super.render(mouseX, mouseY, delta);
     }

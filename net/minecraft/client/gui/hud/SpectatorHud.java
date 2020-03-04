@@ -54,12 +54,12 @@ implements SpectatorMenuCloseCallback {
             return;
         }
         int i = this.client.getWindow().getScaledWidth() / 2;
-        int j = this.getBlitOffset();
-        this.setBlitOffset(-90);
+        int j = this.getZOffset();
+        this.setZOffset(-90);
         int k = MathHelper.floor((float)this.client.getWindow().getScaledHeight() - 22.0f * f);
         SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
         this.renderSpectatorMenu(f, i, k, spectatorMenuState);
-        this.setBlitOffset(j);
+        this.setZOffset(j);
     }
 
     protected void renderSpectatorMenu(float height, int x, int i, SpectatorMenuState state) {

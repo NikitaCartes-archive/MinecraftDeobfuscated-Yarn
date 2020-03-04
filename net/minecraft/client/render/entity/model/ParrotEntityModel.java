@@ -77,21 +77,21 @@ extends CompositeEntityModel<ParrotEntity> {
 
     @Override
     public void setAngles(ParrotEntity parrotEntity, float f, float g, float h, float i, float j) {
-        this.method_17111(ParrotEntityModel.getPose(parrotEntity), parrotEntity.age, f, g, h, i, j);
+        this.setAngles(ParrotEntityModel.getPose(parrotEntity), parrotEntity.age, f, g, h, i, j);
     }
 
     @Override
     public void animateModel(ParrotEntity parrotEntity, float f, float g, float h) {
-        this.method_17110(ParrotEntityModel.getPose(parrotEntity));
+        this.animateModel(ParrotEntityModel.getPose(parrotEntity));
     }
 
-    public void method_17106(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k, int l) {
-        this.method_17110(Pose.ON_SHOULDER);
-        this.method_17111(Pose.ON_SHOULDER, l, f, g, 0.0f, h, k);
-        this.getParts().forEach(modelPart -> modelPart.render(matrixStack, vertexConsumer, i, j));
+    public void poseOnShoulder(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float limbAngle, float limbDistance, float headYaw, float headPitch, int danceAngle) {
+        this.animateModel(Pose.ON_SHOULDER);
+        this.setAngles(Pose.ON_SHOULDER, danceAngle, limbAngle, limbDistance, 0.0f, headYaw, headPitch);
+        this.getParts().forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay));
     }
 
-    private void method_17111(Pose pose, int age, float limbAngle, float limbDistance, float age2, float headYaw, float headPitch) {
+    private void setAngles(Pose pose, int danceAngle, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
         this.head.pitch = headPitch * ((float)Math.PI / 180);
         this.head.yaw = headYaw * ((float)Math.PI / 180);
         this.head.roll = 0.0f;
@@ -105,19 +105,19 @@ extends CompositeEntityModel<ParrotEntity> {
                 break;
             }
             case PARTY: {
-                float f = MathHelper.cos(age);
-                float g = MathHelper.sin(age);
+                float f = MathHelper.cos(danceAngle);
+                float g = MathHelper.sin(danceAngle);
                 this.head.pivotX = f;
                 this.head.pivotY = 15.69f + g;
                 this.head.pitch = 0.0f;
                 this.head.yaw = 0.0f;
-                this.head.roll = MathHelper.sin(age) * 0.4f;
+                this.head.roll = MathHelper.sin(danceAngle) * 0.4f;
                 this.torso.pivotX = f;
                 this.torso.pivotY = 16.5f + g;
-                this.leftWing.roll = -0.0873f - age2;
+                this.leftWing.roll = -0.0873f - age;
                 this.leftWing.pivotX = 1.5f + f;
                 this.leftWing.pivotY = 16.94f + g;
-                this.rightWing.roll = 0.0873f + age2;
+                this.rightWing.roll = 0.0873f + age;
                 this.rightWing.pivotX = -1.5f + f;
                 this.rightWing.pivotY = 16.94f + g;
                 this.tail.pivotX = f;
@@ -129,14 +129,14 @@ extends CompositeEntityModel<ParrotEntity> {
                 this.rightLeg.pitch += MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
             }
             default: {
-                float h = age2 * 0.3f;
+                float h = age * 0.3f;
                 this.head.pivotY = 15.69f + h;
                 this.tail.pitch = 1.015f + MathHelper.cos(limbAngle * 0.6662f) * 0.3f * limbDistance;
                 this.tail.pivotY = 21.07f + h;
                 this.torso.pivotY = 16.5f + h;
-                this.leftWing.roll = -0.0873f - age2;
+                this.leftWing.roll = -0.0873f - age;
                 this.leftWing.pivotY = 16.94f + h;
-                this.rightWing.roll = 0.0873f + age2;
+                this.rightWing.roll = 0.0873f + age;
                 this.rightWing.pivotY = 16.94f + h;
                 this.leftLeg.pivotY = 22.0f + h;
                 this.rightLeg.pivotY = 22.0f + h;
@@ -144,7 +144,7 @@ extends CompositeEntityModel<ParrotEntity> {
         }
     }
 
-    private void method_17110(Pose pose) {
+    private void animateModel(Pose pose) {
         this.headFeathers.pitch = -0.2214f;
         this.torso.pitch = 0.4937f;
         this.leftWing.pitch = -0.6981f;
@@ -187,14 +187,14 @@ extends CompositeEntityModel<ParrotEntity> {
         }
     }
 
-    private static Pose getPose(ParrotEntity parrotEntity) {
-        if (parrotEntity.getSongPlaying()) {
+    private static Pose getPose(ParrotEntity parrot) {
+        if (parrot.getSongPlaying()) {
             return Pose.PARTY;
         }
-        if (parrotEntity.isSitting()) {
+        if (parrot.isSitting()) {
             return Pose.SITTING;
         }
-        if (parrotEntity.isInAir()) {
+        if (parrot.isInAir()) {
             return Pose.FLYING;
         }
         return Pose.STANDING;

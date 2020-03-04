@@ -12,12 +12,12 @@ import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -232,7 +232,7 @@ extends BlockWithEntity {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (state.get(HAS_BOOK).booleanValue()) {
             if (!world.isClient) {
-                this.openContainer(world, pos, player);
+                this.openScreen(world, pos, player);
             }
             return ActionResult.SUCCESS;
         }
@@ -245,17 +245,17 @@ extends BlockWithEntity {
 
     @Override
     @Nullable
-    public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         if (!state.get(HAS_BOOK).booleanValue()) {
             return null;
         }
-        return super.createContainerFactory(state, world, pos);
+        return super.createScreenHandlerFactory(state, world, pos);
     }
 
-    private void openContainer(World world, BlockPos pos, PlayerEntity player) {
+    private void openScreen(World world, BlockPos pos, PlayerEntity player) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LecternBlockEntity) {
-            player.openContainer((LecternBlockEntity)blockEntity);
+            player.openHandledScreen((LecternBlockEntity)blockEntity);
             player.incrementStat(Stats.INTERACT_WITH_LECTERN);
         }
     }

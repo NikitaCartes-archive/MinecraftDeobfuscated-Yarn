@@ -10,8 +10,8 @@ import net.minecraft.world.World;
 
 public abstract class AmbientEntity
 extends MobEntity {
-    protected AmbientEntity(EntityType<? extends AmbientEntity> type, World world) {
-        super((EntityType<? extends MobEntity>)type, world);
+    protected AmbientEntity(EntityType<? extends AmbientEntity> entityType, World world) {
+        super((EntityType<? extends MobEntity>)entityType, world);
     }
 
     @Override

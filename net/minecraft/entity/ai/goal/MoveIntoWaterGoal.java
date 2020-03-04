@@ -20,7 +20,7 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return this.mob.method_24828() && !this.mob.world.getFluidState(new BlockPos(this.mob)).matches(FluidTags.WATER);
+        return this.mob.method_24828() && !this.mob.world.getFluidState(this.mob.getSenseCenterPos()).matches(FluidTags.WATER);
     }
 
     @Override

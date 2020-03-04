@@ -95,7 +95,7 @@ extends AbstractCommandBlockScreen {
 
     @Override
     protected void syncSettingsToServer(CommandBlockExecutor commandExecutor) {
-        this.minecraft.getNetworkHandler().sendPacket(new UpdateCommandBlockC2SPacket(new BlockPos(commandExecutor.getPos()), this.consoleCommandTextField.getText(), this.mode, commandExecutor.isTrackingOutput(), this.conditional, this.autoActivate));
+        this.client.getNetworkHandler().sendPacket(new UpdateCommandBlockC2SPacket(new BlockPos(commandExecutor.getPos()), this.consoleCommandTextField.getText(), this.mode, commandExecutor.isTrackingOutput(), this.conditional, this.autoActivate));
     }
 
     private void updateMode() {

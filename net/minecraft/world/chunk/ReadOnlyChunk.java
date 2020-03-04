@@ -64,7 +64,7 @@ extends ProtoChunk {
 
     @Override
     @Nullable
-    public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+    public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
         return null;
     }
 
@@ -200,7 +200,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public void method_22405(BiomeArray biomeArray) {
+    public void setBiomes(BiomeArray biomeArray) {
     }
 
     @Override

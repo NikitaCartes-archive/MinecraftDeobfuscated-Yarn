@@ -3,9 +3,9 @@
  */
 package net.minecraft.client.gui.widget;
 
-import com.google.common.base.Predicates;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -47,7 +47,7 @@ Element {
     private int uneditableColor = 0x707070;
     private String suggestion;
     private Consumer<String> changedListener;
-    private Predicate<String> textPredicate = Predicates.alwaysTrue();
+    private Predicate<String> textPredicate = Objects::nonNull;
     private BiFunction<String, Integer, String> renderTextProvider = (string, integer) -> string;
 
     public TextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, String message) {
@@ -484,11 +484,11 @@ Element {
     }
 
     @Override
-    public boolean changeFocus(boolean bl) {
+    public boolean changeFocus(boolean lookForwards) {
         if (!this.visible || !this.editable) {
             return false;
         }
-        return super.changeFocus(bl);
+        return super.changeFocus(lookForwards);
     }
 
     @Override

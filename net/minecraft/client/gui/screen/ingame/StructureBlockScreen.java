@@ -80,7 +80,7 @@ extends Screen {
 
     private void done() {
         if (this.method_2516(StructureBlockBlockEntity.Action.UPDATE_DATA)) {
-            this.minecraft.openScreen(null);
+            this.client.openScreen(null);
         }
     }
 
@@ -91,24 +91,24 @@ extends Screen {
         this.structureBlock.setIgnoreEntities(this.ignoreEntities);
         this.structureBlock.setShowAir(this.showAir);
         this.structureBlock.setShowBoundingBox(this.showBoundingBox);
-        this.minecraft.openScreen(null);
+        this.client.openScreen(null);
     }
 
     @Override
     protected void init() {
-        this.minecraft.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.enableRepeatEvents(true);
         this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.done()));
         this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.cancel()));
         this.buttonSave = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.save", new Object[0]), buttonWidget -> {
             if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
                 this.method_2516(StructureBlockBlockEntity.Action.SAVE_AREA);
-                this.minecraft.openScreen(null);
+                this.client.openScreen(null);
             }
         }));
         this.buttonLoad = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.load", new Object[0]), buttonWidget -> {
             if (this.structureBlock.getMode() == StructureBlockMode.LOAD) {
                 this.method_2516(StructureBlockBlockEntity.Action.LOAD_AREA);
-                this.minecraft.openScreen(null);
+                this.client.openScreen(null);
             }
         }));
         this.buttonMode = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 185, 50, 20, "MODE", buttonWidget -> {
@@ -118,7 +118,7 @@ extends Screen {
         this.buttonDetect = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, I18n.translate("structure_block.button.detect_size", new Object[0]), buttonWidget -> {
             if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
                 this.method_2516(StructureBlockBlockEntity.Action.SCAN_AREA);
-                this.minecraft.openScreen(null);
+                this.client.openScreen(null);
             }
         }));
         this.buttonEntities = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 160, 50, 20, "ENTITIES", buttonWidget -> {
@@ -165,7 +165,7 @@ extends Screen {
             this.structureBlock.setRotation(BlockRotation.COUNTERCLOCKWISE_90);
             this.updateRotationButton();
         }));
-        this.inputName = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.translate("structure_block.structure_name", new Object[0])){
+        this.inputName = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 40, 300, 20, I18n.translate("structure_block.structure_name", new Object[0])){
 
             @Override
             public boolean charTyped(char chr, int keyCode) {
@@ -179,40 +179,40 @@ extends Screen {
         this.inputName.setText(this.structureBlock.getStructureName());
         this.children.add(this.inputName);
         BlockPos blockPos = this.structureBlock.getOffset();
-        this.inputPosX = new TextFieldWidget(this.font, this.width / 2 - 152, 80, 80, 20, I18n.translate("structure_block.position.x", new Object[0]));
+        this.inputPosX = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 80, 80, 20, I18n.translate("structure_block.position.x", new Object[0]));
         this.inputPosX.setMaxLength(15);
         this.inputPosX.setText(Integer.toString(blockPos.getX()));
         this.children.add(this.inputPosX);
-        this.inputPosY = new TextFieldWidget(this.font, this.width / 2 - 72, 80, 80, 20, I18n.translate("structure_block.position.y", new Object[0]));
+        this.inputPosY = new TextFieldWidget(this.textRenderer, this.width / 2 - 72, 80, 80, 20, I18n.translate("structure_block.position.y", new Object[0]));
         this.inputPosY.setMaxLength(15);
         this.inputPosY.setText(Integer.toString(blockPos.getY()));
         this.children.add(this.inputPosY);
-        this.inputPosZ = new TextFieldWidget(this.font, this.width / 2 + 8, 80, 80, 20, I18n.translate("structure_block.position.z", new Object[0]));
+        this.inputPosZ = new TextFieldWidget(this.textRenderer, this.width / 2 + 8, 80, 80, 20, I18n.translate("structure_block.position.z", new Object[0]));
         this.inputPosZ.setMaxLength(15);
         this.inputPosZ.setText(Integer.toString(blockPos.getZ()));
         this.children.add(this.inputPosZ);
         BlockPos blockPos2 = this.structureBlock.getSize();
-        this.inputSizeX = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 80, 20, I18n.translate("structure_block.size.x", new Object[0]));
+        this.inputSizeX = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 80, 20, I18n.translate("structure_block.size.x", new Object[0]));
         this.inputSizeX.setMaxLength(15);
         this.inputSizeX.setText(Integer.toString(blockPos2.getX()));
         this.children.add(this.inputSizeX);
-        this.inputSizeY = new TextFieldWidget(this.font, this.width / 2 - 72, 120, 80, 20, I18n.translate("structure_block.size.y", new Object[0]));
+        this.inputSizeY = new TextFieldWidget(this.textRenderer, this.width / 2 - 72, 120, 80, 20, I18n.translate("structure_block.size.y", new Object[0]));
         this.inputSizeY.setMaxLength(15);
         this.inputSizeY.setText(Integer.toString(blockPos2.getY()));
         this.children.add(this.inputSizeY);
-        this.inputSizeZ = new TextFieldWidget(this.font, this.width / 2 + 8, 120, 80, 20, I18n.translate("structure_block.size.z", new Object[0]));
+        this.inputSizeZ = new TextFieldWidget(this.textRenderer, this.width / 2 + 8, 120, 80, 20, I18n.translate("structure_block.size.z", new Object[0]));
         this.inputSizeZ.setMaxLength(15);
         this.inputSizeZ.setText(Integer.toString(blockPos2.getZ()));
         this.children.add(this.inputSizeZ);
-        this.inputIntegrity = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 80, 20, I18n.translate("structure_block.integrity.integrity", new Object[0]));
+        this.inputIntegrity = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 80, 20, I18n.translate("structure_block.integrity.integrity", new Object[0]));
         this.inputIntegrity.setMaxLength(15);
         this.inputIntegrity.setText(this.decimalFormat.format(this.structureBlock.getIntegrity()));
         this.children.add(this.inputIntegrity);
-        this.inputSeed = new TextFieldWidget(this.font, this.width / 2 - 72, 120, 80, 20, I18n.translate("structure_block.integrity.seed", new Object[0]));
+        this.inputSeed = new TextFieldWidget(this.textRenderer, this.width / 2 - 72, 120, 80, 20, I18n.translate("structure_block.integrity.seed", new Object[0]));
         this.inputSeed.setMaxLength(31);
         this.inputSeed.setText(Long.toString(this.structureBlock.getSeed()));
         this.children.add(this.inputSeed);
-        this.inputMetadata = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 240, 20, I18n.translate("structure_block.custom_data", new Object[0]));
+        this.inputMetadata = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 240, 20, I18n.translate("structure_block.custom_data", new Object[0]));
         this.inputMetadata.setMaxLength(128);
         this.inputMetadata.setText(this.structureBlock.getMetadata());
         this.children.add(this.inputMetadata);
@@ -258,7 +258,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.minecraft.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.enableRepeatEvents(false);
     }
 
     private void updateIgnoreEntitiesButton() {
@@ -401,7 +401,7 @@ extends Screen {
         BlockPos blockPos2 = new BlockPos(this.parseInt(this.inputSizeX.getText()), this.parseInt(this.inputSizeY.getText()), this.parseInt(this.inputSizeZ.getText()));
         float f = this.parseFloat(this.inputIntegrity.getText());
         long l = this.parseLong(this.inputSeed.getText());
-        this.minecraft.getNetworkHandler().sendPacket(new UpdateStructureBlockC2SPacket(this.structureBlock.getPos(), action, this.structureBlock.getMode(), this.inputName.getText(), blockPos, blockPos2, this.structureBlock.getMirror(), this.structureBlock.getRotation(), this.inputMetadata.getText(), this.structureBlock.shouldIgnoreEntities(), this.structureBlock.shouldShowAir(), this.structureBlock.shouldShowBoundingBox(), f, l));
+        this.client.getNetworkHandler().sendPacket(new UpdateStructureBlockC2SPacket(this.structureBlock.getPos(), action, this.structureBlock.getMode(), this.inputName.getText(), blockPos, blockPos2, this.structureBlock.getMirror(), this.structureBlock.getRotation(), this.inputMetadata.getText(), this.structureBlock.shouldIgnoreEntities(), this.structureBlock.shouldShowAir(), this.structureBlock.shouldShowBoundingBox(), f, l));
         return true;
     }
 
@@ -452,46 +452,46 @@ extends Screen {
         String string;
         this.renderBackground();
         StructureBlockMode structureBlockMode = this.structureBlock.getMode();
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 10, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 10, 0xFFFFFF);
         if (structureBlockMode != StructureBlockMode.DATA) {
-            this.drawString(this.font, I18n.translate("structure_block.structure_name", new Object[0]), this.width / 2 - 153, 30, 0xA0A0A0);
+            this.drawString(this.textRenderer, I18n.translate("structure_block.structure_name", new Object[0]), this.width / 2 - 153, 30, 0xA0A0A0);
             this.inputName.render(mouseX, mouseY, delta);
         }
         if (structureBlockMode == StructureBlockMode.LOAD || structureBlockMode == StructureBlockMode.SAVE) {
-            this.drawString(this.font, I18n.translate("structure_block.position", new Object[0]), this.width / 2 - 153, 70, 0xA0A0A0);
+            this.drawString(this.textRenderer, I18n.translate("structure_block.position", new Object[0]), this.width / 2 - 153, 70, 0xA0A0A0);
             this.inputPosX.render(mouseX, mouseY, delta);
             this.inputPosY.render(mouseX, mouseY, delta);
             this.inputPosZ.render(mouseX, mouseY, delta);
             string = I18n.translate("structure_block.include_entities", new Object[0]);
-            i = this.font.getStringWidth(string);
-            this.drawString(this.font, string, this.width / 2 + 154 - i, 150, 0xA0A0A0);
+            i = this.textRenderer.getStringWidth(string);
+            this.drawString(this.textRenderer, string, this.width / 2 + 154 - i, 150, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.SAVE) {
-            this.drawString(this.font, I18n.translate("structure_block.size", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
+            this.drawString(this.textRenderer, I18n.translate("structure_block.size", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputSizeX.render(mouseX, mouseY, delta);
             this.inputSizeY.render(mouseX, mouseY, delta);
             this.inputSizeZ.render(mouseX, mouseY, delta);
             string = I18n.translate("structure_block.detect_size", new Object[0]);
-            i = this.font.getStringWidth(string);
-            this.drawString(this.font, string, this.width / 2 + 154 - i, 110, 0xA0A0A0);
+            i = this.textRenderer.getStringWidth(string);
+            this.drawString(this.textRenderer, string, this.width / 2 + 154 - i, 110, 0xA0A0A0);
             String string2 = I18n.translate("structure_block.show_air", new Object[0]);
-            int j = this.font.getStringWidth(string2);
-            this.drawString(this.font, string2, this.width / 2 + 154 - j, 70, 0xA0A0A0);
+            int j = this.textRenderer.getStringWidth(string2);
+            this.drawString(this.textRenderer, string2, this.width / 2 + 154 - j, 70, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.LOAD) {
-            this.drawString(this.font, I18n.translate("structure_block.integrity", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
+            this.drawString(this.textRenderer, I18n.translate("structure_block.integrity", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputIntegrity.render(mouseX, mouseY, delta);
             this.inputSeed.render(mouseX, mouseY, delta);
             string = I18n.translate("structure_block.show_boundingbox", new Object[0]);
-            i = this.font.getStringWidth(string);
-            this.drawString(this.font, string, this.width / 2 + 154 - i, 70, 0xA0A0A0);
+            i = this.textRenderer.getStringWidth(string);
+            this.drawString(this.textRenderer, string, this.width / 2 + 154 - i, 70, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.DATA) {
-            this.drawString(this.font, I18n.translate("structure_block.custom_data", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
+            this.drawString(this.textRenderer, I18n.translate("structure_block.custom_data", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputMetadata.render(mouseX, mouseY, delta);
         }
         string = "structure_block.mode_info." + structureBlockMode.asString();
-        this.drawString(this.font, I18n.translate(string, new Object[0]), this.width / 2 - 153, 174, 0xA0A0A0);
+        this.drawString(this.textRenderer, I18n.translate(string, new Object[0]), this.width / 2 - 153, 174, 0xA0A0A0);
         super.render(mouseX, mouseY, delta);
     }
 

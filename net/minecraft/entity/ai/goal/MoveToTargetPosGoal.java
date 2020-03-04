@@ -94,7 +94,7 @@ extends Goal {
     protected boolean findTargetPos() {
         int i = this.range;
         int j = this.maxYDifference;
-        BlockPos blockPos = new BlockPos(this.mob);
+        BlockPos blockPos = this.mob.getSenseCenterPos();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         int k = this.lowestY;
         while (k <= j) {
@@ -104,7 +104,7 @@ extends Goal {
                     int n;
                     int n2 = n = m < l && m > -l ? l : 0;
                     while (n <= l) {
-                        mutable.set(blockPos).setOffset(m, k - 1, n);
+                        mutable.setOffset(blockPos, m, k - 1, n);
                         if (this.mob.isInWalkTargetRange(mutable) && this.isTargetPos(this.mob.world, mutable)) {
                             this.targetPos = mutable;
                             return true;

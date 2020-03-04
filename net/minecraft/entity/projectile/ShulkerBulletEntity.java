@@ -69,7 +69,7 @@ extends Entity {
     public ShulkerBulletEntity(World world, LivingEntity owner, Entity target, Direction.Axis axis) {
         this((EntityType<? extends ShulkerBulletEntity>)EntityType.SHULKER_BULLET, world);
         this.owner = owner;
-        BlockPos blockPos = new BlockPos(owner);
+        BlockPos blockPos = owner.getSenseCenterPos();
         double d = (double)blockPos.getX() + 0.5;
         double e = (double)blockPos.getY() + 0.5;
         double f = (double)blockPos.getZ() + 0.5;
@@ -89,16 +89,16 @@ extends Entity {
         CompoundTag compoundTag;
         BlockPos blockPos;
         if (this.owner != null) {
-            blockPos = new BlockPos(this.owner);
-            compoundTag = NbtHelper.fromUuid(this.owner.getUuid());
+            blockPos = this.owner.getSenseCenterPos();
+            compoundTag = NbtHelper.fromUuidOld(this.owner.getUuid());
             compoundTag.putInt("X", blockPos.getX());
             compoundTag.putInt("Y", blockPos.getY());
             compoundTag.putInt("Z", blockPos.getZ());
             tag.put("Owner", compoundTag);
         }
         if (this.target != null) {
-            blockPos = new BlockPos(this.target);
-            compoundTag = NbtHelper.fromUuid(this.target.getUuid());
+            blockPos = this.target.getSenseCenterPos();
+            compoundTag = NbtHelper.fromUuidOld(this.target.getUuid());
             compoundTag.putInt("X", blockPos.getX());
             compoundTag.putInt("Y", blockPos.getY());
             compoundTag.putInt("Z", blockPos.getZ());
@@ -125,12 +125,12 @@ extends Entity {
         }
         if (tag.contains("Owner", 10)) {
             compoundTag = tag.getCompound("Owner");
-            this.ownerUuid = NbtHelper.toUuid(compoundTag);
+            this.ownerUuid = NbtHelper.toUuidOld(compoundTag);
             this.ownerPos = new BlockPos(compoundTag.getInt("X"), compoundTag.getInt("Y"), compoundTag.getInt("Z"));
         }
         if (tag.contains("Target", 10)) {
             compoundTag = tag.getCompound("Target");
-            this.targetUuid = NbtHelper.toUuid(compoundTag);
+            this.targetUuid = NbtHelper.toUuidOld(compoundTag);
             this.targetPos = new BlockPos(compoundTag.getInt("X"), compoundTag.getInt("Y"), compoundTag.getInt("Z"));
         }
     }
@@ -147,7 +147,7 @@ extends Entity {
         BlockPos blockPos;
         double d = 0.5;
         if (this.target == null) {
-            blockPos = new BlockPos(this).down();
+            blockPos = this.getSenseCenterPos().down();
         } else {
             d = (double)this.target.getHeight() * 0.5;
             blockPos = new BlockPos(this.target.getX(), this.target.getY() + d, this.target.getZ());
@@ -157,7 +157,7 @@ extends Entity {
         double g = (double)blockPos.getZ() + 0.5;
         Direction direction = null;
         if (!blockPos.isWithinDistance(this.getPos(), 2.0)) {
-            BlockPos blockPos2 = new BlockPos(this);
+            BlockPos blockPos2 = this.getSenseCenterPos();
             ArrayList<Direction> list = Lists.newArrayList();
             if (axis != Direction.Axis.X) {
                 if (blockPos2.getX() < blockPos.getX() && this.world.isAir(blockPos2.east())) {
@@ -268,12 +268,12 @@ extends Entity {
                 }
             }
             if (this.direction != null) {
-                BlockPos blockPos = new BlockPos(this);
+                BlockPos blockPos = this.getSenseCenterPos();
                 Direction.Axis axis = this.direction.getAxis();
                 if (this.world.isTopSolid(blockPos.offset(this.direction), this)) {
                     this.method_7486(axis);
                 } else {
-                    BlockPos blockPos2 = new BlockPos(this.target);
+                    BlockPos blockPos2 = this.target.getSenseCenterPos();
                     if (axis == Direction.Axis.X && blockPos.getX() == blockPos2.getX() || axis == Direction.Axis.Z && blockPos.getZ() == blockPos2.getZ() || axis == Direction.Axis.Y && blockPos.getY() == blockPos2.getY()) {
                         this.method_7486(axis);
                     }

@@ -26,8 +26,8 @@ import net.minecraft.world.LightType;
 @Environment(value=EnvType.CLIENT)
 public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityModel<T>>
 extends LivingEntityRenderer<T, M> {
-    public MobEntityRenderer(EntityRenderDispatcher renderManager, M model, float f) {
-        super(renderManager, model, f);
+    public MobEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M entityModel, float f) {
+        super(entityRenderDispatcher, entityModel, f);
     }
 
     @Override
@@ -130,11 +130,6 @@ extends LivingEntityRenderer<T, M> {
         if (bl) {
             vertexConsumer.vertex(matrix4f, t + n, u + j - k, v - o).color(p, q, r, 1.0f).light(i).next();
         }
-    }
-
-    @Override
-    protected /* synthetic */ boolean hasLabel(LivingEntity livingEntity) {
-        return this.hasLabel((T)((MobEntity)livingEntity));
     }
 }
 

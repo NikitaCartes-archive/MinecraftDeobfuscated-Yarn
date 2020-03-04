@@ -24,8 +24,8 @@ extends FeatureRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
     private static final Identifier TRADER_LLAMA_DECOR = new Identifier("textures/entity/llama/decor/trader_llama.png");
     private final LlamaEntityModel<LlamaEntity> model = new LlamaEntityModel(0.5f);
 
-    public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> context) {
-        super(context);
+    public LlamaDecorFeatureRenderer(FeatureRendererContext<LlamaEntity, LlamaEntityModel<LlamaEntity>> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override

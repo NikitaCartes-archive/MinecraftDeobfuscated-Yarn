@@ -24,20 +24,20 @@ import net.minecraft.client.gui.screen.recipebook.RecipeGroupButtonWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
-import net.minecraft.client.recipe.book.ClientRecipeBook;
-import net.minecraft.client.recipe.book.RecipeBookGroup;
+import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.SearchManager;
-import net.minecraft.container.CraftingContainer;
-import net.minecraft.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +56,7 @@ RecipeGridAligner<Ingredient> {
     private final List<RecipeGroupButtonWidget> tabButtons = Lists.newArrayList();
     private RecipeGroupButtonWidget currentTab;
     protected ToggleButtonWidget toggleCraftableButton;
-    protected CraftingContainer<?> craftingContainer;
+    protected CraftingScreenHandler<?> craftingScreenHandler;
     protected MinecraftClient client;
     private TextFieldWidget searchField;
     private String searchText = "";
@@ -66,12 +66,12 @@ RecipeGridAligner<Ingredient> {
     private int cachedInvChangeCount;
     private boolean searching;
 
-    public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean isNarrow, CraftingContainer<?> craftingContainer) {
+    public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean isNarrow, CraftingScreenHandler<?> craftingScreenHandler) {
         this.client = client;
         this.parentWidth = parentWidth;
         this.parentHeight = parentHeight;
-        this.craftingContainer = craftingContainer;
-        client.player.container = craftingContainer;
+        this.craftingScreenHandler = craftingScreenHandler;
+        client.player.currentScreenHandler = craftingScreenHandler;
         this.recipeBook = client.player.getRecipeBook();
         this.cachedInvChangeCount = client.player.inventory.getChangeCount();
         if (this.isOpen()) {
@@ -86,7 +86,7 @@ RecipeGridAligner<Ingredient> {
         int j = (this.parentHeight - 166) / 2;
         this.recipeFinder.clear();
         this.client.player.inventory.populateRecipeFinder(this.recipeFinder);
-        this.craftingContainer.populateRecipeFinder(this.recipeFinder);
+        this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
         String string = this.searchField != null ? this.searchField.getText() : "";
         this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, this.client.textRenderer.fontHeight + 5, I18n.translate("itemGroup.search", new Object[0]));
         this.searchField.setMaxLength(50);
@@ -96,10 +96,10 @@ RecipeGridAligner<Ingredient> {
         this.searchField.setText(string);
         this.recipesArea.initialize(this.client, i, j);
         this.recipesArea.setGui(this);
-        this.toggleCraftableButton = new ToggleButtonWidget(i + 110, j + 12, 26, 16, this.recipeBook.isFilteringCraftable(this.craftingContainer));
+        this.toggleCraftableButton = new ToggleButtonWidget(i + 110, j + 12, 26, 16, this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
         this.setBookButtonTexture();
         this.tabButtons.clear();
-        for (RecipeBookGroup recipeBookGroup : ClientRecipeBook.getGroupsForContainer(this.craftingContainer)) {
+        for (RecipeBookGroup recipeBookGroup : ClientRecipeBook.getGroups(this.craftingScreenHandler)) {
             this.tabButtons.add(new RecipeGroupButtonWidget(recipeBookGroup));
         }
         if (this.currentTab != null) {
@@ -114,7 +114,7 @@ RecipeGridAligner<Ingredient> {
     }
 
     @Override
-    public boolean changeFocus(boolean bl) {
+    public boolean changeFocus(boolean lookForwards) {
         return false;
     }
 
@@ -128,8 +128,8 @@ RecipeGridAligner<Ingredient> {
         this.client.keyboard.enableRepeatEvents(false);
     }
 
-    public int findLeftEdge(boolean narrow, int width, int containerWidth) {
-        int i = this.isOpen() && !narrow ? 177 + (width - containerWidth - 200) / 2 : (width - containerWidth) / 2;
+    public int findLeftEdge(boolean narrow, int width, int parentWidth) {
+        int i = this.isOpen() && !narrow ? 177 + (width - parentWidth - 200) / 2 : (width - parentWidth) / 2;
         return i;
     }
 
@@ -150,7 +150,7 @@ RecipeGridAligner<Ingredient> {
     }
 
     public void slotClicked(@Nullable Slot slot) {
-        if (slot != null && slot.id < this.craftingContainer.getCraftingSlotCount()) {
+        if (slot != null && slot.id < this.craftingScreenHandler.getCraftingSlotCount()) {
             this.ghostSlots.reset();
             if (this.isOpen()) {
                 this.refreshInputs();
@@ -160,7 +160,7 @@ RecipeGridAligner<Ingredient> {
 
     private void refreshResults(boolean resetCurrentPage) {
         List<RecipeResultCollection> list = this.recipeBook.getResultsForGroup(this.currentTab.getCategory());
-        list.forEach(recipeResultCollection -> recipeResultCollection.computeCraftables(this.recipeFinder, this.craftingContainer.getCraftingWidth(), this.craftingContainer.getCraftingHeight(), this.recipeBook));
+        list.forEach(recipeResultCollection -> recipeResultCollection.computeCraftables(this.recipeFinder, this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.recipeBook));
         ArrayList<RecipeResultCollection> list2 = Lists.newArrayList(list);
         list2.removeIf(recipeResultCollection -> !recipeResultCollection.isInitialized());
         list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasFittingRecipes());
@@ -169,7 +169,7 @@ RecipeGridAligner<Ingredient> {
             ObjectLinkedOpenHashSet objectSet = new ObjectLinkedOpenHashSet(this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT)));
             list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
         }
-        if (this.recipeBook.isFilteringCraftable(this.craftingContainer)) {
+        if (this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {
             list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableRecipes());
         }
         this.recipesArea.setResults(list2, resetCurrentPage);
@@ -206,7 +206,7 @@ RecipeGridAligner<Ingredient> {
     private void refreshInputs() {
         this.recipeFinder.clear();
         this.client.player.inventory.populateRecipeFinder(this.recipeFinder);
-        this.craftingContainer.populateRecipeFinder(this.recipeFinder);
+        this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
         this.refreshResults(false);
     }
 
@@ -280,7 +280,7 @@ RecipeGridAligner<Ingredient> {
                     return false;
                 }
                 this.ghostSlots.reset();
-                this.client.interactionManager.clickRecipe(this.client.player.container.syncId, recipe, Screen.hasShiftDown());
+                this.client.interactionManager.clickRecipe(this.client.player.currentScreenHandler.syncId, recipe, Screen.hasShiftDown());
                 if (!this.isWide()) {
                     this.setOpen(false);
                 }
@@ -422,14 +422,14 @@ RecipeGridAligner<Ingredient> {
         ItemStack itemStack = recipe.getOutput();
         this.ghostSlots.setRecipe(recipe);
         this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)0).xPosition, slots.get((int)0).yPosition);
-        this.alignRecipeToGrid(this.craftingContainer.getCraftingWidth(), this.craftingContainer.getCraftingHeight(), this.craftingContainer.getCraftingResultSlotIndex(), recipe, recipe.getPreviewInputs().iterator(), 0);
+        this.alignRecipeToGrid(this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.craftingScreenHandler.getCraftingResultSlotIndex(), recipe, recipe.getPreviewInputs().iterator(), 0);
     }
 
     @Override
     public void acceptAlignedInput(Iterator<Ingredient> inputs, int slot, int amount, int gridX, int gridY) {
         Ingredient ingredient = inputs.next();
         if (!ingredient.isEmpty()) {
-            Slot slot2 = (Slot)this.craftingContainer.slots.get(slot);
+            Slot slot2 = (Slot)this.craftingScreenHandler.slots.get(slot);
             this.ghostSlots.addSlot(ingredient, slot2.xPosition, slot2.yPosition);
         }
     }

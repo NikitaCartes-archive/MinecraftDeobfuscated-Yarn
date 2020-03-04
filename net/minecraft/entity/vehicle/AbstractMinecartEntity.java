@@ -92,8 +92,8 @@ extends Entity {
     @Environment(value=EnvType.CLIENT)
     private double clientZVelocity;
 
-    protected AbstractMinecartEntity(EntityType<?> type, World world) {
-        super(type, world);
+    protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
+        super(entityType, world);
         this.inanimate = true;
     }
 

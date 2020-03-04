@@ -11,13 +11,14 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.DynamicSerializableBoolean;
 
 public class AdmireItemTask<E extends PiglinEntity>
 extends Task<E> {
     private final int duration;
 
     public AdmireItemTask(int duration) {
-        super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ADMIRING_ITEM, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WAS_HIT_BY_PLAYER, MemoryModuleState.VALUE_ABSENT));
+        super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ADMIRING_ITEM, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleState.VALUE_ABSENT));
         this.duration = duration;
     }
 
@@ -29,7 +30,7 @@ extends Task<E> {
 
     @Override
     protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-        ((PiglinEntity)piglinEntity).getBrain().remember(MemoryModuleType.ADMIRING_ITEM, true, l, this.duration);
+        ((PiglinEntity)piglinEntity).getBrain().remember(MemoryModuleType.ADMIRING_ITEM, DynamicSerializableBoolean.of(true), this.duration);
     }
 }
 

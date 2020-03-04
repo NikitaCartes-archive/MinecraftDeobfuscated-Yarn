@@ -26,6 +26,7 @@ import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.IdList;
@@ -257,10 +258,10 @@ public abstract class Biome {
         return this.features.get((Object)feature);
     }
 
-    public void generateFeatureStep(GenerationStep.Feature step, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, IWorld world, long seed, ChunkRandom random, BlockPos pos) {
+    public void generateFeatureStep(GenerationStep.Feature step, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, IWorld world, long populationSeed, ChunkRandom random, BlockPos pos) {
         int i = 0;
         for (ConfiguredFeature<?, ?> configuredFeature : this.features.get((Object)step)) {
-            random.setFeatureSeed(seed, i, step.ordinal());
+            random.setDecoratorSeed(populationSeed, i, step.ordinal());
             try {
                 configuredFeature.generate(world, chunkGenerator, random, pos);
             } catch (Exception exception) {
@@ -307,6 +308,21 @@ public abstract class Biome {
             return TemperatureGroup.MEDIUM;
         }
         return TemperatureGroup.WARM;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<SoundEvent> getLoopSound() {
+        return this.effects.getLoopSound();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<SoundEvent> getMoodSound() {
+        return this.effects.getMoodSound();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<SoundEvent> getAdditionsSound() {
+        return this.effects.getAdditionsSound();
     }
 
     public final float getDepth() {

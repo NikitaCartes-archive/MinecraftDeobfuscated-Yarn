@@ -17,7 +17,7 @@ extends ItemPlacementContext {
     private final Direction facing;
 
     public AutomaticItemPlacementContext(World world, BlockPos pos, Direction facing, ItemStack stack, Direction side) {
-        super(world, null, Hand.MAIN_HAND, stack, new BlockHitResult(new Vec3d((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5), side, pos, false));
+        super(world, null, Hand.MAIN_HAND, stack, new BlockHitResult(Vec3d.method_24955(pos), side, pos, false));
         this.facing = facing;
     }
 

@@ -27,18 +27,18 @@ extends MegaTreeFeature<MegaTreeFeatureConfig> {
             return false;
         }
         this.makeTopLeaves(modifiableTestableWorld, random, blockPos.getX(), blockPos.getZ(), blockPos.getY() + i, 0, set2, blockBox, megaTreeFeatureConfig);
-        this.method_23400(modifiableTestableWorld, random, blockPos, i, set, blockBox, megaTreeFeatureConfig);
+        this.generateTrunk(modifiableTestableWorld, random, blockPos, i, set, blockBox, megaTreeFeatureConfig);
         return true;
     }
 
-    private void makeTopLeaves(ModifiableTestableWorld modifiableTestableWorld, Random random, int i, int j, int k, int l, Set<BlockPos> set, BlockBox blockBox, MegaTreeFeatureConfig megaTreeFeatureConfig) {
-        int m = random.nextInt(5) + megaTreeFeatureConfig.crownHeight;
-        int n = 0;
-        for (int o = k - m; o <= k; ++o) {
-            int p = k - o;
-            int q = l + MathHelper.floor((float)p / (float)m * 3.5f);
-            this.makeSquaredLeafLayer(modifiableTestableWorld, random, new BlockPos(i, o, j), q + (p > 0 && q == n && (o & 1) == 0 ? 1 : 0), set, blockBox, megaTreeFeatureConfig);
-            n = q;
+    private void makeTopLeaves(ModifiableTestableWorld world, Random random, int x, int z, int height, int radius, Set<BlockPos> leaves, BlockBox box, MegaTreeFeatureConfig config) {
+        int i = random.nextInt(5) + config.crownHeight;
+        int j = 0;
+        for (int k = height - i; k <= height; ++k) {
+            int l = height - k;
+            int m = radius + MathHelper.floor((float)l / (float)i * 3.5f);
+            this.makeSquaredLeafLayer(world, random, new BlockPos(x, k, z), m + (l > 0 && m == j && (k & 1) == 0 ? 1 : 0), leaves, box, config);
+            j = m;
         }
     }
 }

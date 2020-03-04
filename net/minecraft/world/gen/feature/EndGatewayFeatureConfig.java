@@ -38,7 +38,7 @@ implements FeatureConfig {
 
     @Override
     public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<Object>(ops, this.exitPos.map(blockPos -> ops.createMap(ImmutableMap.of(ops.createString("exit_x"), ops.createInt(blockPos.getX()), ops.createString("exit_y"), ops.createInt(blockPos.getY()), ops.createString("exit_z"), ops.createInt(blockPos.getZ()), ops.createString("exact"), ops.createBoolean(this.exact)))).orElse(ops.emptyMap()));
+        return new Dynamic<Object>(ops, this.exitPos.map(pos -> ops.createMap(ImmutableMap.of(ops.createString("exit_x"), ops.createInt(pos.getX()), ops.createString("exit_y"), ops.createInt(pos.getY()), ops.createString("exit_z"), ops.createInt(pos.getZ()), ops.createString("exact"), ops.createBoolean(this.exact)))).orElse(ops.emptyMap()));
     }
 
     public static <T> EndGatewayFeatureConfig deserialize(Dynamic<T> dynamic) {

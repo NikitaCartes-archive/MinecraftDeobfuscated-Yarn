@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class RainSplashParticle
 extends SpriteBillboardParticle {
-    protected RainSplashParticle(World world, double x, double d, double e) {
-        super(world, x, d, e, 0.0, 0.0, 0.0);
+    protected RainSplashParticle(World world, double d, double e, double f) {
+        super(world, d, e, f, 0.0, 0.0, 0.0);
         this.velocityX *= (double)0.3f;
         this.velocityY = Math.random() * (double)0.2f + (double)0.1f;
         this.velocityZ *= (double)0.3f;

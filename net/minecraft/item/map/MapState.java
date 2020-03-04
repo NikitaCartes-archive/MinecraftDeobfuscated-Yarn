@@ -44,8 +44,8 @@ extends PersistentState {
     public final Map<String, MapIcon> icons = Maps.newLinkedHashMap();
     private final Map<String, MapFrameMarker> frames = Maps.newHashMap();
 
-    public MapState(String key) {
-        super(key);
+    public MapState(String string) {
+        super(string);
     }
 
     public void init(int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, DimensionType dimension) {

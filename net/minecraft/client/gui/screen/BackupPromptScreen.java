@@ -43,11 +43,11 @@ extends Screen {
     protected void init() {
         super.init();
         this.wrappedText.clear();
-        this.wrappedText.addAll(this.font.wrapStringToWidthAsList(this.subtitle.asFormattedString(), this.width - 50));
-        int i = (this.wrappedText.size() + 1) * this.font.fontHeight;
+        this.wrappedText.addAll(this.textRenderer.wrapStringToWidthAsList(this.subtitle.asFormattedString(), this.width - 50));
+        int i = (this.wrappedText.size() + 1) * this.textRenderer.fontHeight;
         this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, this.confirmText, buttonWidget -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked())));
         this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, 100 + i, 150, 20, this.skipText, buttonWidget -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked())));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, this.cancelText, buttonWidget -> this.minecraft.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, this.cancelText, buttonWidget -> this.client.openScreen(this.parent)));
         this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, this.eraseCacheText, false);
         if (this.showEraseCacheCheckbox) {
             this.addButton(this.eraseCacheCheckbox);
@@ -57,11 +57,11 @@ extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 50, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 50, 0xFFFFFF);
         int i = 70;
         for (String string : this.wrappedText) {
-            this.drawCenteredString(this.font, string, this.width / 2, i, 0xFFFFFF);
-            i += this.font.fontHeight;
+            this.drawCenteredString(this.textRenderer, string, this.width / 2, i, 0xFFFFFF);
+            i += this.textRenderer.fontHeight;
         }
         super.render(mouseX, mouseY, delta);
     }
@@ -74,7 +74,7 @@ extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 256) {
-            this.minecraft.openScreen(this.parent);
+            this.client.openScreen(this.parent);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

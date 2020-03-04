@@ -29,23 +29,23 @@ extends GameOptionsScreen {
     @Override
     protected void init() {
         this.mipmapLevels = this.gameOptions.mipmapLevels;
-        this.list = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
-        this.list.addSingleOptionEntry(new FullScreenOption(this.minecraft.getWindow()));
+        this.list = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+        this.list.addSingleOptionEntry(new FullScreenOption(this.client.getWindow()));
         this.list.addSingleOptionEntry(Option.BIOME_BLEND_RADIUS);
         this.list.addAll(OPTIONS);
         this.children.add(this.list);
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done", new Object[0]), button -> {
-            this.minecraft.options.write();
-            this.minecraft.getWindow().applyVideoMode();
-            this.minecraft.openScreen(this.parent);
+            this.client.options.write();
+            this.client.getWindow().applyVideoMode();
+            this.client.openScreen(this.parent);
         }));
     }
 
     @Override
     public void removed() {
         if (this.gameOptions.mipmapLevels != this.mipmapLevels) {
-            this.minecraft.resetMipmapLevels(this.gameOptions.mipmapLevels);
-            this.minecraft.reloadResourcesConcurrently();
+            this.client.resetMipmapLevels(this.gameOptions.mipmapLevels);
+            this.client.reloadResourcesConcurrently();
         }
         super.removed();
     }
@@ -55,7 +55,7 @@ extends GameOptionsScreen {
         int i = this.gameOptions.guiScale;
         if (super.mouseClicked(mouseX, mouseY, button)) {
             if (this.gameOptions.guiScale != i) {
-                this.minecraft.onResolutionChanged();
+                this.client.onResolutionChanged();
             }
             return true;
         }
@@ -70,7 +70,7 @@ extends GameOptionsScreen {
         }
         if (this.list.mouseReleased(mouseX, mouseY, button)) {
             if (this.gameOptions.guiScale != i) {
-                this.minecraft.onResolutionChanged();
+                this.client.onResolutionChanged();
             }
             return true;
         }
@@ -81,7 +81,7 @@ extends GameOptionsScreen {
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
         this.list.render(mouseX, mouseY, delta);
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 5, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 5, 0xFFFFFF);
         super.render(mouseX, mouseY, delta);
     }
 }

@@ -17,8 +17,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class ChorusPlantFeature
 extends Feature<DefaultFeatureConfig> {
-    public ChorusPlantFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public ChorusPlantFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override

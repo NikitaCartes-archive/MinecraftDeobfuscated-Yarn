@@ -195,7 +195,7 @@ public class StructureTestUtil {
     private static boolean isInStructureBounds(BlockPos structureBlockPos, BlockPos pos, ServerWorld world) {
         StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(structureBlockPos);
         Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
-        return box.contains(new Vec3d(pos));
+        return box.contains(Vec3d.method_24954(pos));
     }
 }
 

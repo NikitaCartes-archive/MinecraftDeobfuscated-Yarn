@@ -205,7 +205,7 @@ implements BlockEntityProvider {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
-        Direction direction = BedBlock.method_24163(state).getOpposite();
+        Direction direction = BedBlock.getOppositePartDirection(state).getOpposite();
         switch (direction) {
             case NORTH: {
                 return NORTH_SHAPE;
@@ -220,7 +220,7 @@ implements BlockEntityProvider {
         return EAST_SHAPE;
     }
 
-    public static Direction method_24163(BlockState blockState) {
+    public static Direction getOppositePartDirection(BlockState blockState) {
         Direction direction = blockState.get(FACING);
         return blockState.get(PART) == BedPart.HEAD ? direction.getOpposite() : direction;
     }
@@ -265,7 +265,7 @@ implements BlockEntityProvider {
         if (voxelShape.getMaximum(Direction.Axis.Y) > 0.4375) {
             return Optional.empty();
         }
-        BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+        BlockPos.Mutable mutable = pos.mutableCopy();
         while (mutable.getY() >= 0 && pos.getY() - mutable.getY() <= 2 && worldView.getBlockState(mutable).getCollisionShape(worldView, mutable).isEmpty()) {
             mutable.setOffset(Direction.DOWN);
         }

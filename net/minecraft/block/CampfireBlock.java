@@ -23,6 +23,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractFireballEntity;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -185,26 +186,15 @@ implements Waterloggable {
         return false;
     }
 
-    @Nullable
-    private Entity method_23756(Entity entity) {
-        if (entity instanceof AbstractFireballEntity) {
-            return ((AbstractFireballEntity)entity).owner;
-        }
-        if (entity instanceof ProjectileEntity) {
-            return ((ProjectileEntity)entity).getOwner();
-        }
-        return null;
-    }
-
     @Override
-    public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
+    public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
         if (!world.isClient) {
             boolean bl;
-            boolean bl2 = bl = entity instanceof AbstractFireballEntity || entity instanceof ProjectileEntity && entity.isOnFire();
+            boolean bl2 = bl = projectile instanceof AbstractFireballEntity || projectile instanceof ProjectileEntity && projectile.isOnFire();
             if (bl) {
                 boolean bl22;
-                Entity entity2 = this.method_23756(entity);
-                boolean bl3 = bl22 = entity2 == null || entity2 instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+                Entity entity = projectile.getOwner();
+                boolean bl3 = bl22 = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
                 if (bl22 && !state.get(LIT).booleanValue() && !state.get(WATERLOGGED).booleanValue()) {
                     BlockPos blockPos = hitResult.getBlockPos();
                     world.setBlockState(blockPos, (BlockState)state.with(Properties.LIT, true), 11);

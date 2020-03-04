@@ -29,7 +29,7 @@ extends StructureProcessor {
     }
 
     public RuleStructureProcessor(Dynamic<?> dynamic) {
-        this(dynamic.get("rules").asList(StructureProcessorRule::method_16765));
+        this(dynamic.get("rules").asList(StructureProcessorRule::fromDynamic));
     }
 
     @Override
@@ -50,8 +50,8 @@ extends StructureProcessor {
     }
 
     @Override
-    protected <T> Dynamic<T> method_16666(DynamicOps<T> dynamicOps) {
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("rules"), dynamicOps.createList(this.rules.stream().map(structureProcessorRule -> structureProcessorRule.method_16764(dynamicOps).getValue())))));
+    protected <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
+        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("rules"), dynamicOps.createList(this.rules.stream().map(structureProcessorRule -> structureProcessorRule.toDynamic(dynamicOps).getValue())))));
     }
 }
 

@@ -8,14 +8,15 @@ import java.net.UnknownHostException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.realms.DisconnectedRealmsScreen;
 import net.minecraft.realms.Realms;
-import net.minecraft.realms.RealmsScreen;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,59 +24,62 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class RealmsConnect {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final RealmsScreen onlineScreen;
+    private final Screen onlineScreen;
     private volatile boolean aborted;
     private ClientConnection connection;
 
-    public RealmsConnect(RealmsScreen realmsScreen) {
-        this.onlineScreen = realmsScreen;
+    public RealmsConnect(Screen onlineScreen) {
+        this.onlineScreen = onlineScreen;
     }
 
-    public void connect(final String string, final int i) {
-        Realms.setConnectedToRealms(true);
-        Realms.narrateNow(Realms.getLocalizedString("mco.connect.success", new Object[0]));
+    public void connect(final String address, final int port) {
+        final MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        minecraftClient.setConnectedToRealms(true);
+        Realms.narrateNow(I18n.translate("mco.connect.success", new Object[0]));
         new Thread("Realms-connect-task"){
 
             @Override
             public void run() {
                 InetAddress inetAddress = null;
                 try {
-                    inetAddress = InetAddress.getByName(string);
+                    inetAddress = InetAddress.getByName(address);
                     if (RealmsConnect.this.aborted) {
                         return;
                     }
-                    RealmsConnect.this.connection = ClientConnection.connect(inetAddress, i, MinecraftClient.getInstance().options.shouldUseNativeTransport());
+                    RealmsConnect.this.connection = ClientConnection.connect(inetAddress, port, minecraftClient.options.shouldUseNativeTransport());
                     if (RealmsConnect.this.aborted) {
                         return;
                     }
-                    RealmsConnect.this.connection.setPacketListener(new ClientLoginNetworkHandler(RealmsConnect.this.connection, MinecraftClient.getInstance(), RealmsConnect.this.onlineScreen.getProxy(), text -> {}));
+                    RealmsConnect.this.connection.setPacketListener(new ClientLoginNetworkHandler(RealmsConnect.this.connection, minecraftClient, RealmsConnect.this.onlineScreen, text -> {}));
                     if (RealmsConnect.this.aborted) {
                         return;
                     }
-                    RealmsConnect.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
+                    RealmsConnect.this.connection.send(new HandshakeC2SPacket(address, port, NetworkState.LOGIN));
                     if (RealmsConnect.this.aborted) {
                         return;
                     }
-                    RealmsConnect.this.connection.send(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getProfile()));
+                    RealmsConnect.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getProfile()));
                 } catch (UnknownHostException unknownHostException) {
-                    Realms.clearResourcePack();
+                    minecraftClient.getResourcePackDownloader().clear();
                     if (RealmsConnect.this.aborted) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to world", (Throwable)unknownHostException);
-                    Realms.setScreen(new DisconnectedRealmsScreen(RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host '" + string + "'")));
+                    DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableText("disconnect.genericReason", "Unknown host '" + address + "'"));
+                    minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
                 } catch (Exception exception) {
-                    Realms.clearResourcePack();
+                    minecraftClient.getResourcePackDownloader().clear();
                     if (RealmsConnect.this.aborted) {
                         return;
                     }
                     LOGGER.error("Couldn't connect to world", (Throwable)exception);
-                    String string3 = exception.toString();
+                    String string = exception.toString();
                     if (inetAddress != null) {
-                        String string2 = inetAddress + ":" + i;
-                        string3 = string3.replaceAll(string2, "");
+                        String string2 = inetAddress + ":" + port;
+                        string = string.replaceAll(string2, "");
                     }
-                    Realms.setScreen(new DisconnectedRealmsScreen(RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableText("disconnect.genericReason", string3)));
+                    DisconnectedRealmsScreen disconnectedRealmsScreen2 = new DisconnectedRealmsScreen(RealmsConnect.this.onlineScreen, "connect.failed", new TranslatableText("disconnect.genericReason", string));
+                    minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen2));
                 }
             }
         }.start();

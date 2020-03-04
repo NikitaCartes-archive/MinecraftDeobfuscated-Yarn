@@ -58,13 +58,13 @@ implements Drawable {
     protected final Text title;
     protected final List<Element> children = Lists.newArrayList();
     @Nullable
-    protected MinecraftClient minecraft;
+    protected MinecraftClient client;
     protected ItemRenderer itemRenderer;
     public int width;
     public int height;
     protected final List<AbstractButtonWidget> buttons = Lists.newArrayList();
     public boolean passEvents;
-    protected TextRenderer font;
+    protected TextRenderer textRenderer;
     private URI clickedLink;
 
     protected Screen(Text title) {
@@ -108,13 +108,17 @@ implements Drawable {
     }
 
     public void onClose() {
-        this.minecraft.openScreen(null);
+        this.client.openScreen(null);
     }
 
     protected <T extends AbstractButtonWidget> T addButton(T button) {
         this.buttons.add(button);
-        this.children.add(button);
-        return button;
+        return this.addChild(button);
+    }
+
+    protected <T extends Element> T addChild(T element) {
+        this.children.add(element);
+        return element;
     }
 
     protected void renderTooltip(ItemStack stack, int x, int y) {
@@ -122,7 +126,7 @@ implements Drawable {
     }
 
     public List<String> getTooltipFromItem(ItemStack stack) {
-        List<Text> list = stack.getTooltip(this.minecraft.player, this.minecraft.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
+        List<Text> list = stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
         ArrayList<String> list2 = Lists.newArrayList();
         for (Text text : list) {
             list2.add(text.asFormattedString());
@@ -143,7 +147,7 @@ implements Drawable {
         RenderSystem.disableDepthTest();
         int i = 0;
         for (String string : text) {
-            j = this.font.getStringWidth(string);
+            j = this.textRenderer.getStringWidth(string);
             if (j <= i) continue;
             i = j;
         }
@@ -160,7 +164,7 @@ implements Drawable {
         if (l + m + 6 > this.height) {
             l = this.height - m - 6;
         }
-        this.setBlitOffset(300);
+        this.setZOffset(300);
         this.itemRenderer.zOffset = 300.0f;
         int n = -267386864;
         this.fillGradient(k - 3, l - 4, k + j + 3, l - 3, -267386864, -267386864);
@@ -181,7 +185,7 @@ implements Drawable {
         for (int q = 0; q < text.size(); ++q) {
             String string2 = text.get(q);
             if (string2 != null) {
-                this.font.draw(string2, k, l, -1, true, matrix4f, immediate, false, 0, 0xF000F0);
+                this.textRenderer.draw(string2, k, l, -1, true, matrix4f, immediate, false, 0, 0xF000F0);
             }
             if (q == 0) {
                 l += 2;
@@ -189,17 +193,17 @@ implements Drawable {
             l += 10;
         }
         immediate.draw();
-        this.setBlitOffset(0);
+        this.setZOffset(0);
         this.itemRenderer.zOffset = 0.0f;
         RenderSystem.enableDepthTest();
         RenderSystem.enableRescaleNormal();
     }
 
-    protected void renderComponentHoverEffect(Text component, int x, int y) {
-        if (component == null || component.getStyle().getHoverEvent() == null) {
+    protected void renderTextHoverEffect(Text text, int x, int y) {
+        if (text == null || text.getStyle().getHoverEvent() == null) {
             return;
         }
-        HoverEvent hoverEvent = component.getStyle().getHoverEvent();
+        HoverEvent hoverEvent = text.getStyle().getHoverEvent();
         if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ITEM) {
             ItemStack itemStack = ItemStack.EMPTY;
             try {
@@ -216,13 +220,13 @@ implements Drawable {
                 this.renderTooltip(itemStack, x, y);
             }
         } else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ENTITY) {
-            if (this.minecraft.options.advancedItemTooltips) {
+            if (this.client.options.advancedItemTooltips) {
                 try {
                     CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
                     ArrayList<String> list = Lists.newArrayList();
-                    Text text = Text.Serializer.fromJson(compoundTag.getString("name"));
-                    if (text != null) {
-                        list.add(text.asFormattedString());
+                    Text text2 = Text.Serializer.fromJson(compoundTag.getString("name"));
+                    if (text2 != null) {
+                        list.add(text2.asFormattedString());
                     }
                     if (compoundTag.contains("type", 8)) {
                         String string = compoundTag.getString("type");
@@ -235,14 +239,14 @@ implements Drawable {
                 }
             }
         } else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
-            this.renderTooltip(this.minecraft.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), x, y);
+            this.renderTooltip(this.client.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), x, y);
         }
     }
 
     protected void insertText(String text, boolean override) {
     }
 
-    public boolean handleComponentClicked(Text text) {
+    public boolean handleTextClick(Text text) {
         if (text == null) {
             return false;
         }
@@ -254,7 +258,7 @@ implements Drawable {
         } else if (clickEvent != null) {
             block21: {
                 if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
-                    if (!this.minecraft.options.chatLinks) {
+                    if (!this.client.options.chatLinks) {
                         return false;
                     }
                     try {
@@ -266,9 +270,9 @@ implements Drawable {
                         if (!ALLOWED_PROTOCOLS.contains(string.toLowerCase(Locale.ROOT))) {
                             throw new URISyntaxException(clickEvent.getValue(), "Unsupported protocol: " + string.toLowerCase(Locale.ROOT));
                         }
-                        if (this.minecraft.options.chatLinksPrompt) {
+                        if (this.client.options.chatLinksPrompt) {
                             this.clickedLink = uRI;
-                            this.minecraft.openScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
+                            this.client.openScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
                             break block21;
                         }
                         this.openLink(uRI);
@@ -283,7 +287,7 @@ implements Drawable {
                 } else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
                     this.sendMessage(clickEvent.getValue(), false);
                 } else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
-                    this.minecraft.keyboard.setClipboard(clickEvent.getValue());
+                    this.client.keyboard.setClipboard(clickEvent.getValue());
                 } else {
                     LOGGER.error("Don't know how to handle {}", (Object)clickEvent);
                 }
@@ -299,26 +303,21 @@ implements Drawable {
 
     public void sendMessage(String message, boolean toHud) {
         if (toHud) {
-            this.minecraft.inGameHud.getChatHud().addToMessageHistory(message);
+            this.client.inGameHud.getChatHud().addToMessageHistory(message);
         }
-        this.minecraft.player.sendChatMessage(message);
+        this.client.player.sendChatMessage(message);
     }
 
     public void init(MinecraftClient client, int width, int height) {
-        this.minecraft = client;
+        this.client = client;
         this.itemRenderer = client.getItemRenderer();
-        this.font = client.textRenderer;
+        this.textRenderer = client.textRenderer;
         this.width = width;
         this.height = height;
         this.buttons.clear();
         this.children.clear();
         this.setFocused(null);
         this.init();
-    }
-
-    public void setSize(int width, int height) {
-        this.width = width;
-        this.height = height;
     }
 
     @Override
@@ -340,7 +339,7 @@ implements Drawable {
     }
 
     public void renderBackground(int alpha) {
-        if (this.minecraft.world != null) {
+        if (this.client.world != null) {
             this.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
         } else {
             this.renderDirtBackground(alpha);
@@ -350,7 +349,7 @@ implements Drawable {
     public void renderDirtBackground(int alpha) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.minecraft.getTextureManager().bindTexture(BACKGROUND_LOCATION);
+        this.client.getTextureManager().bindTexture(BACKGROUND_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -370,7 +369,7 @@ implements Drawable {
             this.openLink(this.clickedLink);
         }
         this.clickedLink = null;
-        this.minecraft.openScreen(this);
+        this.client.openScreen(this);
     }
 
     private void openLink(URI link) {

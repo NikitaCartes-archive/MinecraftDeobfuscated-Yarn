@@ -33,10 +33,10 @@ extends AbstractBannerBlock {
     private static final Map<DyeColor, Block> COLORED_BANNERS = Maps.newHashMap();
     private static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
-    public BannerBlock(DyeColor color, Block.Settings settings) {
-        super(color, settings);
+    public BannerBlock(DyeColor dyeColor, Block.Settings settings) {
+        super(dyeColor, settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0));
-        COLORED_BANNERS.put(color, this);
+        COLORED_BANNERS.put(dyeColor, this);
     }
 
     @Override

@@ -47,7 +47,7 @@ public class PhantomSpawner {
             BlockPos blockPos2;
             LocalDifficulty localDifficulty;
             if (playerEntity.isSpectator()) continue;
-            BlockPos blockPos = new BlockPos(playerEntity);
+            BlockPos blockPos = playerEntity.getSenseCenterPos();
             if (serverWorld.dimension.hasSkyLight() && (blockPos.getY() < serverWorld.getSeaLevel() || !serverWorld.isSkyVisible(blockPos)) || !(localDifficulty = serverWorld.getLocalDifficulty(blockPos)).isHarderThan(random.nextFloat() * 3.0f)) continue;
             ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).getStatHandler();
             int j = MathHelper.clamp(serverStatHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);

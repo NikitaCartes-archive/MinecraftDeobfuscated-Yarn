@@ -86,18 +86,18 @@ implements UnbakedModel {
     public static class Deserializer
     implements JsonDeserializer<WeightedUnbakedModel> {
         @Override
-        public WeightedUnbakedModel deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
+        public WeightedUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             ArrayList<ModelVariant> list = Lists.newArrayList();
-            if (element.isJsonArray()) {
-                JsonArray jsonArray = element.getAsJsonArray();
+            if (jsonElement.isJsonArray()) {
+                JsonArray jsonArray = jsonElement.getAsJsonArray();
                 if (jsonArray.size() == 0) {
                     throw new JsonParseException("Empty variant array");
                 }
-                for (JsonElement jsonElement : jsonArray) {
-                    list.add((ModelVariant)context.deserialize(jsonElement, (Type)((Object)ModelVariant.class)));
+                for (JsonElement jsonElement2 : jsonArray) {
+                    list.add((ModelVariant)jsonDeserializationContext.deserialize(jsonElement2, (Type)((Object)ModelVariant.class)));
                 }
             } else {
-                list.add((ModelVariant)context.deserialize(element, (Type)((Object)ModelVariant.class)));
+                list.add((ModelVariant)jsonDeserializationContext.deserialize(jsonElement, (Type)((Object)ModelVariant.class)));
             }
             return new WeightedUnbakedModel(list);
         }

@@ -58,13 +58,13 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.minecraft.keyboard.enableRepeatEvents(true);
-        this.serverNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 66, 200, 20, I18n.translate("addServer.enterName", new Object[0]));
+        this.client.keyboard.enableRepeatEvents(true);
+        this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, I18n.translate("addServer.enterName", new Object[0]));
         this.serverNameField.setSelected(true);
         this.serverNameField.setText(this.server.name);
         this.serverNameField.setChangedListener(this::onClose);
         this.children.add(this.serverNameField);
-        this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp", new Object[0]));
+        this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp", new Object[0]));
         this.addressField.setMaxLength(128);
         this.addressField.setText(this.server.address);
         this.addressField.setTextPredicate(this.addressTextFilter);
@@ -94,7 +94,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.minecraft.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.enableRepeatEvents(false);
     }
 
     private void addAndClose() {
@@ -106,7 +106,7 @@ extends Screen {
     @Override
     public void onClose() {
         this.updateButtonActiveState();
-        this.minecraft.openScreen(this.parent);
+        this.client.openScreen(this.parent);
     }
 
     private void updateButtonActiveState() {
@@ -118,9 +118,9 @@ extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 17, 0xFFFFFF);
-        this.drawString(this.font, I18n.translate("addServer.enterName", new Object[0]), this.width / 2 - 100, 53, 0xA0A0A0);
-        this.drawString(this.font, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 94, 0xA0A0A0);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 17, 0xFFFFFF);
+        this.drawString(this.textRenderer, I18n.translate("addServer.enterName", new Object[0]), this.width / 2 - 100, 53, 0xA0A0A0);
+        this.drawString(this.textRenderer, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 94, 0xA0A0A0);
         this.serverNameField.render(mouseX, mouseY, delta);
         this.addressField.render(mouseX, mouseY, delta);
         super.render(mouseX, mouseY, delta);

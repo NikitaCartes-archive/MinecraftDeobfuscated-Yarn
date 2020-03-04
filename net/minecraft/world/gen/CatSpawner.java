@@ -24,7 +24,6 @@ public class CatSpawner {
     private int ticksUntilNextSpawn;
 
     public int spawn(ServerWorld serverWorld, boolean spawnMonsters, boolean spawnAnimals) {
-        int j;
         if (!spawnAnimals || !serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
             return 0;
         }
@@ -39,7 +38,8 @@ public class CatSpawner {
         }
         Random random = serverWorld.random;
         int i = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-        BlockPos blockPos = new BlockPos(playerEntity).add(i, 0, j = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1));
+        int j = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
+        BlockPos blockPos = playerEntity.getSenseCenterPos().add(i, 0, j);
         if (!serverWorld.isRegionLoaded(blockPos.getX() - 10, blockPos.getY() - 10, blockPos.getZ() - 10, blockPos.getX() + 10, blockPos.getY() + 10, blockPos.getZ() + 10)) {
             return 0;
         }

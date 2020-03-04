@@ -49,11 +49,11 @@ implements SynchronousResourceReloadListener {
     private final ReloadableResourceManager resourceManager;
     private final String entityType;
 
-    public VillagerClothingFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, ReloadableResourceManager reloadableResourceManager, String string) {
-        super(featureRendererContext);
-        this.resourceManager = reloadableResourceManager;
-        this.entityType = string;
-        reloadableResourceManager.registerListener(this);
+    public VillagerClothingFeatureRenderer(FeatureRendererContext<T, M> context, ReloadableResourceManager resourceManager, String entityType) {
+        super(context);
+        this.resourceManager = resourceManager;
+        this.entityType = entityType;
+        resourceManager.registerListener(this);
     }
 
     @Override

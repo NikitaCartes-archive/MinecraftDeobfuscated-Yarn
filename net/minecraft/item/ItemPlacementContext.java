@@ -23,8 +23,8 @@ extends ItemUsageContext {
         this(context.getWorld(), context.getPlayer(), context.getHand(), context.getStack(), context.hit);
     }
 
-    protected ItemPlacementContext(World world, @Nullable PlayerEntity player, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
-        super(world, player, hand, itemStack, blockHitResult);
+    protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
+        super(world, playerEntity, hand, itemStack, blockHitResult);
         this.placementPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
         this.canReplaceExisting = world.getBlockState(blockHitResult.getBlockPos()).canReplace(this);
     }

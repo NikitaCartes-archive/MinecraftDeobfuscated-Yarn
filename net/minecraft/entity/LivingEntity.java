@@ -201,8 +201,8 @@ extends Entity {
     private float lastLeaningPitch;
     protected Brain<?> brain;
 
-    protected LivingEntity(EntityType<? extends LivingEntity> type, World world) {
-        super(type, world);
+    protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
+        super(entityType, world);
         this.initAttributes();
         this.setHealth(this.getMaximumHealth());
         this.inanimate = true;
@@ -300,7 +300,7 @@ extends Entity {
         boolean bl3 = bl2 = bl && ((PlayerEntity)this).abilities.invulnerable;
         if (this.isAlive()) {
             BlockPos blockPos;
-            if (this.isInFluid(FluidTags.WATER) && this.world.getBlockState(new BlockPos(this.getX(), this.getEyeY(), this.getZ())).getBlock() != Blocks.BUBBLE_COLUMN) {
+            if (this.isSubmergedIn(FluidTags.WATER) && this.world.getBlockState(new BlockPos(this.getX(), this.getEyeY(), this.getZ())).getBlock() != Blocks.BUBBLE_COLUMN) {
                 if (!(this.canBreatheInWater() || StatusEffectUtil.hasWaterBreathing(this) || bl2)) {
                     this.setAir(this.getNextAirUnderwater(this.getAir()));
                     if (this.getAir() == -20) {
@@ -321,7 +321,7 @@ extends Entity {
             } else if (this.getAir() < this.getMaxAir()) {
                 this.setAir(this.getNextAirOnLand(this.getAir()));
             }
-            if (!this.world.isClient && !Objects.equal(this.lastBlockPos, blockPos = new BlockPos(this))) {
+            if (!this.world.isClient && !Objects.equal(this.lastBlockPos, blockPos = this.getSenseCenterPos())) {
                 this.lastBlockPos = blockPos;
                 this.applyFrostWalker(blockPos);
             }
@@ -832,7 +832,7 @@ extends Entity {
         if (bl2) {
             if (bl) {
                 this.world.sendEntityStatus(this, (byte)29);
-            } else if (source instanceof EntityDamageSource && ((EntityDamageSource)source).method_5549()) {
+            } else if (source instanceof EntityDamageSource && ((EntityDamageSource)source).isThorns()) {
                 this.world.sendEntityStatus(this, (byte)33);
             } else {
                 int b = source == DamageSource.DROWN ? 36 : (source.isFire() ? 37 : (source == DamageSource.SWEET_BERRY_BUSH ? 44 : 2));
@@ -1000,7 +1000,7 @@ extends Entity {
         boolean bl = false;
         if (adversary instanceof WitherEntity) {
             if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-                BlockPos blockPos = new BlockPos(this);
+                BlockPos blockPos = this.getSenseCenterPos();
                 BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
                 if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
                     this.world.setBlockState(blockPos, blockState, 3);
@@ -1055,7 +1055,7 @@ extends Entity {
     }
 
     protected LootContext.Builder getLootContextBuilder(boolean causedByPlayer, DamageSource source) {
-        LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).setRandom(this.random).put(LootContextParameters.THIS_ENTITY, this).put(LootContextParameters.POSITION, new BlockPos(this)).put(LootContextParameters.DAMAGE_SOURCE, source).putNullable(LootContextParameters.KILLER_ENTITY, source.getAttacker()).putNullable(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
+        LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).setRandom(this.random).put(LootContextParameters.THIS_ENTITY, this).put(LootContextParameters.POSITION, this.getSenseCenterPos()).put(LootContextParameters.DAMAGE_SOURCE, source).putNullable(LootContextParameters.KILLER_ENTITY, source.getAttacker()).putNullable(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
         if (causedByPlayer && this.attackingPlayer != null) {
             builder = builder.put(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).setLuck(this.attackingPlayer.getLuck());
         }
@@ -1128,7 +1128,7 @@ extends Entity {
     }
 
     public BlockState getBlockState() {
-        return this.world.getBlockState(new BlockPos(this));
+        return this.world.getBlockState(this.getSenseCenterPos());
     }
 
     private boolean canEnterTrapdoor(BlockPos pos, BlockState state) {
@@ -1186,7 +1186,7 @@ extends Entity {
         return MathHelper.floor(entityAttributeInstance.getValue());
     }
 
-    protected void damageArmor(DamageSource damageSource, float f) {
+    protected void damageArmor(DamageSource source, float amount) {
     }
 
     protected void damageShield(float amount) {
@@ -1540,7 +1540,7 @@ extends Entity {
     }
 
     private void onDismounted(Entity vehicle) {
-        Vec3d vec3d = this.world.getBlockState(new BlockPos(vehicle)).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.method_24829(this);
+        Vec3d vec3d = this.world.getBlockState(vehicle.getSenseCenterPos()).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.method_24829(this);
         this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
     }
 
@@ -2420,7 +2420,7 @@ extends Entity {
         return true;
     }
 
-    public boolean method_6102() {
+    public boolean isMobOrPlayer() {
         return true;
     }
 
@@ -2442,7 +2442,7 @@ extends Entity {
         return pose == EntityPose.SLEEPING ? SLEEPING_DIMENSIONS : super.getDimensions(pose).scaled(this.getScaleFactor());
     }
 
-    public ImmutableList<EntityPose> method_24831() {
+    public ImmutableList<EntityPose> getPoses() {
         return ImmutableList.of(EntityPose.STANDING);
     }
 
@@ -2527,7 +2527,7 @@ extends Entity {
         return super.getEyeHeight(pose, dimensions);
     }
 
-    public ItemStack getArrowType(ItemStack itemStack) {
+    public ItemStack getArrowType(ItemStack stack) {
         return ItemStack.EMPTY;
     }
 

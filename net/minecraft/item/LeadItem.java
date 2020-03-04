@@ -5,7 +5,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import net.minecraft.block.Block;
-import net.minecraft.entity.decoration.LeadKnotEntity;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -38,7 +38,7 @@ extends Item {
     }
 
     public static ActionResult attachHeldMobsToBlock(PlayerEntity playerEntity, World world, BlockPos blockPos) {
-        LeadKnotEntity leadKnotEntity = null;
+        LeashKnotEntity leashKnotEntity = null;
         boolean bl = false;
         double d = 7.0;
         int i = blockPos.getX();
@@ -47,10 +47,10 @@ extends Item {
         List<MobEntity> list = world.getNonSpectatingEntities(MobEntity.class, new Box((double)i - 7.0, (double)j - 7.0, (double)k - 7.0, (double)i + 7.0, (double)j + 7.0, (double)k + 7.0));
         for (MobEntity mobEntity : list) {
             if (mobEntity.getHoldingEntity() != playerEntity) continue;
-            if (leadKnotEntity == null) {
-                leadKnotEntity = LeadKnotEntity.getOrCreate(world, blockPos);
+            if (leashKnotEntity == null) {
+                leashKnotEntity = LeashKnotEntity.getOrCreate(world, blockPos);
             }
-            mobEntity.attachLeash(leadKnotEntity, true);
+            mobEntity.attachLeash(leashKnotEntity, true);
             bl = true;
         }
         return bl ? ActionResult.SUCCESS : ActionResult.PASS;

@@ -19,7 +19,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
@@ -312,7 +312,7 @@ Nameable {
             }
             int j = stack.getMaxCount() - this.getInvStack(i).getCount();
             if (!this.insertStack(i, stack.split(j))) continue;
-            ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
+            ((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
         }
     }
 
@@ -376,7 +376,7 @@ Nameable {
     }
 
     public float getBlockBreakingSpeed(BlockState block) {
-        return this.main.get(this.selectedSlot).getMiningSpeed(block);
+        return this.main.get(this.selectedSlot).getMiningSpeedMultiplier(block);
     }
 
     public ListTag serialize(ListTag tag) {

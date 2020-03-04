@@ -66,8 +66,8 @@ implements ArgumentType<Integer> {
     }
 
     @Override
-    public Integer parse(StringReader reader) throws CommandSyntaxException {
-        String string = reader.readUnquotedString();
+    public Integer parse(StringReader stringReader) throws CommandSyntaxException {
+        String string = stringReader.readUnquotedString();
         if (!slotNamesToSlotCommandId.containsKey(string)) {
             throw UNKNOWN_SLOT_EXCEPTION.create(string);
         }

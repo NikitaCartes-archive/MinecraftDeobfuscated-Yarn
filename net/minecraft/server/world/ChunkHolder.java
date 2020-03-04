@@ -61,7 +61,7 @@ public class ChunkHolder {
     private final LightingProvider lightingProvider;
     private final LevelUpdateListener levelUpdateListener;
     private final PlayersWatchingChunkProvider playersWatchingChunkProvider;
-    private boolean field_19238;
+    private boolean ticking;
 
     public ChunkHolder(ChunkPos pos, int level, LightingProvider lightingProvider, LevelUpdateListener levelUpdateListener, PlayersWatchingChunkProvider playersWatchingChunkProvider) {
         this.pos = pos;
@@ -93,7 +93,7 @@ public class ChunkHolder {
         return this.entityTickingFuture;
     }
 
-    public CompletableFuture<Either<WorldChunk, Unloaded>> method_20725() {
+    public CompletableFuture<Either<WorldChunk, Unloaded>> getBorderFuture() {
         return this.borderFuture;
     }
 
@@ -244,7 +244,7 @@ public class ChunkHolder {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public LevelType method_23271() {
+    public LevelType getLevelType() {
         return ChunkHolder.getLevelType(this.level);
     }
 
@@ -297,7 +297,7 @@ public class ChunkHolder {
         }
         boolean bl3 = levelType.isAfter(LevelType.BORDER);
         boolean bl4 = levelType2.isAfter(LevelType.BORDER);
-        this.field_19238 |= bl4;
+        this.ticking |= bl4;
         if (!bl3 && bl4) {
             this.borderFuture = chunkStorage.createBorderFuture(this);
             this.updateFuture(this.borderFuture);
@@ -345,12 +345,12 @@ public class ChunkHolder {
         return LEVEL_TYPES[MathHelper.clamp(33 - distance + 1, 0, LEVEL_TYPES.length - 1)];
     }
 
-    public boolean method_20384() {
-        return this.field_19238;
+    public boolean isTicking() {
+        return this.ticking;
     }
 
-    public void method_20385() {
-        this.field_19238 = ChunkHolder.getLevelType(this.level).isAfter(LevelType.BORDER);
+    public void updateTickingStatus() {
+        this.ticking = ChunkHolder.getLevelType(this.level).isAfter(LevelType.BORDER);
     }
 
     public void method_20456(ReadOnlyChunk readOnlyChunk) {

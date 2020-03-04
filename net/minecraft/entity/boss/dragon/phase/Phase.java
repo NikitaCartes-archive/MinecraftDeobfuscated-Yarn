@@ -5,26 +5,26 @@ package net.minecraft.entity.boss.dragon.phase;
 
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public interface Phase {
-    public boolean method_6848();
+    public boolean isSittingOrHovering();
 
     public void clientTick();
 
     public void serverTick();
 
-    public void crystalDestroyed(EnderCrystalEntity var1, BlockPos var2, DamageSource var3, @Nullable PlayerEntity var4);
+    public void crystalDestroyed(EndCrystalEntity var1, BlockPos var2, DamageSource var3, @Nullable PlayerEntity var4);
 
     public void beginPhase();
 
     public void endPhase();
 
-    public float method_6846();
+    public float getMaxYAcceleration();
 
     public float method_6847();
 

@@ -58,8 +58,8 @@ extends Element {
     public void setDragging(boolean var1);
 
     @Override
-    default public boolean mouseScrolled(double d, double e, double amount) {
-        return this.hoveredElement(d, e).filter(element -> element.mouseScrolled(d, e, amount)).isPresent();
+    default public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return this.hoveredElement(mouseX, mouseY).filter(element -> element.mouseScrolled(mouseX, mouseY, amount)).isPresent();
     }
 
     @Override
@@ -84,6 +84,7 @@ extends Element {
 
     default public void setInitialFocus(@Nullable Element element) {
         this.setFocused(element);
+        element.changeFocus(true);
     }
 
     default public void focusOn(@Nullable Element element) {
@@ -91,24 +92,24 @@ extends Element {
     }
 
     @Override
-    default public boolean changeFocus(boolean bl) {
+    default public boolean changeFocus(boolean lookForwards) {
         Supplier<Element> supplier;
         BooleanSupplier booleanSupplier;
-        boolean bl2;
+        boolean bl;
         Element element = this.getFocused();
-        boolean bl3 = bl2 = element != null;
-        if (bl2 && element.changeFocus(bl)) {
+        boolean bl2 = bl = element != null;
+        if (bl && element.changeFocus(lookForwards)) {
             return true;
         }
         List<? extends Element> list = this.children();
         int i = list.indexOf(element);
-        int j = bl2 && i >= 0 ? i + (bl ? 1 : 0) : (bl ? 0 : list.size());
+        int j = bl && i >= 0 ? i + (lookForwards ? 1 : 0) : (lookForwards ? 0 : list.size());
         ListIterator<? extends Element> listIterator = list.listIterator(j);
-        BooleanSupplier booleanSupplier2 = bl ? listIterator::hasNext : (booleanSupplier = listIterator::hasPrevious);
-        Supplier<Element> supplier2 = bl ? listIterator::next : (supplier = listIterator::previous);
+        BooleanSupplier booleanSupplier2 = lookForwards ? listIterator::hasNext : (booleanSupplier = listIterator::hasPrevious);
+        Supplier<Element> supplier2 = lookForwards ? listIterator::next : (supplier = listIterator::previous);
         while (booleanSupplier.getAsBoolean()) {
             Element element2 = supplier.get();
-            if (!element2.changeFocus(bl)) continue;
+            if (!element2.changeFocus(lookForwards)) continue;
             this.setFocused(element2);
             return true;
         }

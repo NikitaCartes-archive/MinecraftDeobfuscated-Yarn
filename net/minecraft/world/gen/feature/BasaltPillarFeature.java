@@ -27,25 +27,25 @@ extends Feature<DefaultFeatureConfig> {
         if (!iWorld.isAir(blockPos) || iWorld.isAir(blockPos.up())) {
             return false;
         }
-        BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
-        BlockPos.Mutable mutable2 = new BlockPos.Mutable(blockPos);
+        BlockPos.Mutable mutable = blockPos.mutableCopy();
+        BlockPos.Mutable mutable2 = blockPos.mutableCopy();
         boolean bl = true;
         boolean bl2 = true;
         boolean bl3 = true;
         boolean bl4 = true;
         while (iWorld.isAir(mutable)) {
             iWorld.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
-            bl = bl && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.NORTH));
-            bl2 = bl2 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.SOUTH));
-            bl3 = bl3 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.WEST));
-            bl4 = bl4 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.EAST));
+            bl = bl && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.NORTH));
+            bl2 = bl2 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.SOUTH));
+            bl3 = bl3 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.WEST));
+            bl4 = bl4 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.EAST));
             mutable.setOffset(Direction.DOWN);
         }
         mutable.setOffset(Direction.UP);
-        this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.NORTH));
-        this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.SOUTH));
-        this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.WEST));
-        this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.EAST));
+        this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.NORTH));
+        this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.SOUTH));
+        this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.WEST));
+        this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.EAST));
         BlockPos.Mutable mutable3 = new BlockPos.Mutable();
         for (int i = -3; i < 4; ++i) {
             for (int j = -3; j < 4; ++j) {
@@ -53,11 +53,11 @@ extends Feature<DefaultFeatureConfig> {
                 if (random.nextInt(10) >= 10 - k) continue;
                 mutable3.set(mutable.add(i, 0, j));
                 int l = 3;
-                while (iWorld.isAir(mutable2.set(mutable3).setOffset(Direction.DOWN))) {
+                while (iWorld.isAir(mutable2.move(mutable3, Direction.DOWN))) {
                     mutable3.setOffset(Direction.DOWN);
                     if (--l > 0) continue;
                 }
-                if (iWorld.isAir(mutable2.set(mutable3).setOffset(Direction.DOWN))) continue;
+                if (iWorld.isAir(mutable2.move(mutable3, Direction.DOWN))) continue;
                 iWorld.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), 2);
             }
         }

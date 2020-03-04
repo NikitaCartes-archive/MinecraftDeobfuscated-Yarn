@@ -14,7 +14,6 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 
@@ -64,7 +63,7 @@ public class StatusEffects {
                 if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
                     return;
                 }
-                if (serverWorld.isNearOccupiedPointOfInterest(new BlockPos(entity))) {
+                if (serverWorld.isNearOccupiedPointOfInterest(entity.getSenseCenterPos())) {
                     serverWorld.getRaidManager().startRaid(serverPlayerEntity);
                 }
             }

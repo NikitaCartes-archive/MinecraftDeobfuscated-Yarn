@@ -185,7 +185,7 @@ extends ChunkGenerator<T> {
         int i = chunkPos.x;
         int j = chunkPos.z;
         ChunkRandom chunkRandom = new ChunkRandom();
-        chunkRandom.setSeed(i, j);
+        chunkRandom.setTerrainSeed(i, j);
         ChunkPos chunkPos2 = chunk.getPos();
         int k = chunkPos2.getStartX();
         int l = chunkPos2.getStartZ();
@@ -208,8 +208,8 @@ extends ChunkGenerator<T> {
         int i = chunk.getPos().getStartX();
         int j = chunk.getPos().getStartZ();
         Object chunkGeneratorConfig = this.getConfig();
-        int k = ((ChunkGeneratorConfig)chunkGeneratorConfig).getMinY();
-        int l = ((ChunkGeneratorConfig)chunkGeneratorConfig).getMaxY();
+        int k = ((ChunkGeneratorConfig)chunkGeneratorConfig).getBedrockFloorY();
+        int l = ((ChunkGeneratorConfig)chunkGeneratorConfig).getBedrockCeilingY();
         for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
             int m;
             if (l > 0) {
@@ -246,7 +246,7 @@ extends ChunkGenerator<T> {
                 StructureStart structureStart = chunk2.getStructureStart(string);
                 if (structureStart == null || !structureStart.hasChildren()) continue;
                 for (StructurePiece structurePiece : structureStart.getChildren()) {
-                    if (!structurePiece.method_16654(chunkPos, 12)) continue;
+                    if (!structurePiece.intersectsChunk(chunkPos, 12)) continue;
                     if (structurePiece instanceof PoolStructurePiece) {
                         PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
                         StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();

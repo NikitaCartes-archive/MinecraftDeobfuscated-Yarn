@@ -21,8 +21,8 @@ extends FishEntity {
     private SchoolingFishEntity leader;
     private int groupSize = 1;
 
-    public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> type, World world) {
-        super((EntityType<? extends FishEntity>)type, world);
+    public SchoolingFishEntity(EntityType<? extends SchoolingFishEntity> entityType, World world) {
+        super((EntityType<? extends FishEntity>)entityType, world);
     }
 
     @Override

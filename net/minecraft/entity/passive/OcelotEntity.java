@@ -255,7 +255,7 @@ extends AnimalEntity {
     @Override
     public boolean canSpawn(WorldView world) {
         if (world.intersectsEntities(this) && !world.containsFluid(this.getBoundingBox())) {
-            BlockPos blockPos = new BlockPos(this);
+            BlockPos blockPos = this.getSenseCenterPos();
             if (blockPos.getY() < world.getSeaLevel()) {
                 return false;
             }

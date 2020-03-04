@@ -31,7 +31,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.entity.mob.ZombiePigmanEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
@@ -80,7 +80,7 @@ implements RangedAttackMob {
         this.goalSelector.add(5, new LeaveWaterGoal(this, 1.0));
         this.goalSelector.add(6, new TargetAboveWaterGoal(this, 1.0, this.world.getSeaLevel()));
         this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
-        this.targetSelector.add(1, new RevengeGoal(this, DrownedEntity.class).setGroupRevenge(ZombiePigmanEntity.class));
+        this.targetSelector.add(1, new RevengeGoal(this, DrownedEntity.class).setGroupRevenge(ZombifiedPiglinEntity.class));
         this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>(this, PlayerEntity.class, 10, true, false, this::method_7012));
         this.targetSelector.add(3, new FollowTargetGoal<AbstractTraderEntity>((MobEntity)this, AbstractTraderEntity.class, false));
         this.targetSelector.add(3, new FollowTargetGoal<IronGolemEntity>((MobEntity)this, IronGolemEntity.class, true));
@@ -368,11 +368,11 @@ implements RangedAttackMob {
         @Nullable
         private Vec3d getWanderTarget() {
             Random random = this.mob.getRandom();
-            BlockPos blockPos = new BlockPos(this.mob);
+            BlockPos blockPos = this.mob.getSenseCenterPos();
             for (int i = 0; i < 10; ++i) {
                 BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
                 if (this.world.getBlockState(blockPos2).getBlock() != Blocks.WATER) continue;
-                return new Vec3d(blockPos2);
+                return Vec3d.method_24955(blockPos2);
             }
             return null;
         }

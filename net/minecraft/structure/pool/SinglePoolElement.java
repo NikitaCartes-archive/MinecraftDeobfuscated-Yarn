@@ -60,9 +60,9 @@ extends StructurePoolElement {
         this.processors = ImmutableList.copyOf(dynamic2.get("processors").asList(dynamic -> DynamicDeserializer.deserialize(dynamic, Registry.STRUCTURE_PROCESSOR, "processor_type", NopStructureProcessor.INSTANCE)));
     }
 
-    public List<Structure.StructureBlockInfo> method_16614(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, boolean bl) {
+    public List<Structure.StructureBlockInfo> getDataStructureBlocks(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, boolean mirroredAndRotated) {
         Structure structure = structureManager.getStructureOrBlank(this.location);
-        List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.STRUCTURE_BLOCK, bl);
+        List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(blockPos, new StructurePlacementData().setRotation(blockRotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated);
         ArrayList<Structure.StructureBlockInfo> list2 = Lists.newArrayList();
         for (Structure.StructureBlockInfo structureBlockInfo : list) {
             StructureBlockMode structureBlockMode;
@@ -75,7 +75,7 @@ extends StructurePoolElement {
     @Override
     public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
         Structure structure = structureManager.getStructureOrBlank(this.location);
-        List<Structure.StructureBlockInfo> list = structure.method_15165(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
+        List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
         Collections.shuffle(list, random);
         return list;
     }
@@ -90,8 +90,8 @@ extends StructurePoolElement {
     public boolean generate(StructureManager structureManager, IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
         StructurePlacementData structurePlacementData;
         Structure structure = structureManager.getStructureOrBlank(this.location);
-        if (structure.method_15172(world, blockPos, structurePlacementData = this.method_16616(blockRotation, blockBox), 18)) {
-            List<Structure.StructureBlockInfo> list = Structure.process(world, blockPos, structurePlacementData, this.method_16614(structureManager, blockPos, blockRotation, false));
+        if (structure.place(world, blockPos, structurePlacementData = this.createPlacementData(blockRotation, blockBox), 18)) {
+            List<Structure.StructureBlockInfo> list = Structure.process(world, blockPos, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 this.method_16756(world, structureBlockInfo, blockPos, blockRotation, random, blockBox);
             }
@@ -100,7 +100,7 @@ extends StructurePoolElement {
         return false;
     }
 
-    protected StructurePlacementData method_16616(BlockRotation blockRotation, BlockBox blockBox) {
+    protected StructurePlacementData createPlacementData(BlockRotation blockRotation, BlockBox blockBox) {
         StructurePlacementData structurePlacementData = new StructurePlacementData();
         structurePlacementData.setBoundingBox(blockBox);
         structurePlacementData.setRotation(blockRotation);
@@ -119,8 +119,8 @@ extends StructurePoolElement {
     }
 
     @Override
-    public <T> Dynamic<T> method_16625(DynamicOps<T> dynamicOps) {
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("location"), dynamicOps.createString(this.location.toString()), dynamicOps.createString("processors"), dynamicOps.createList(this.processors.stream().map(structureProcessor -> structureProcessor.method_16771(dynamicOps).getValue())))));
+    public <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
+        return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("location"), dynamicOps.createString(this.location.toString()), dynamicOps.createString("processors"), dynamicOps.createList(this.processors.stream().map(structureProcessor -> structureProcessor.toDynamic(dynamicOps).getValue())))));
     }
 
     public String toString() {

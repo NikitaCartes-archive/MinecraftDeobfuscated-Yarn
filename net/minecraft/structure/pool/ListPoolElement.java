@@ -38,7 +38,7 @@ extends StructurePoolElement {
             throw new IllegalArgumentException("Elements are empty");
         }
         this.elements = list;
-        this.method_19307(projection);
+        this.setAllElementsProjection(projection);
     }
 
     public ListPoolElement(Dynamic<?> dynamic2) {
@@ -82,13 +82,13 @@ extends StructurePoolElement {
     @Override
     public StructurePoolElement setProjection(StructurePool.Projection projection) {
         super.setProjection(projection);
-        this.method_19307(projection);
+        this.setAllElementsProjection(projection);
         return this;
     }
 
     @Override
-    public <T> Dynamic<T> method_16625(DynamicOps<T> dynamicOps) {
-        Object object = dynamicOps.createList(this.elements.stream().map(structurePoolElement -> structurePoolElement.method_16755(dynamicOps).getValue()));
+    public <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
+        Object object = dynamicOps.createList(this.elements.stream().map(structurePoolElement -> structurePoolElement.toDynamic(dynamicOps).getValue()));
         return new Dynamic<Object>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("elements"), object)));
     }
 
@@ -96,7 +96,7 @@ extends StructurePoolElement {
         return "List[" + this.elements.stream().map(Object::toString).collect(Collectors.joining(", ")) + "]";
     }
 
-    private void method_19307(StructurePool.Projection projection) {
+    private void setAllElementsProjection(StructurePool.Projection projection) {
         this.elements.forEach(structurePoolElement -> structurePoolElement.setProjection(projection));
     }
 }

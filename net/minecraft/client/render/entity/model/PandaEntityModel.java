@@ -63,7 +63,7 @@ extends QuadrupedEntityModel<T> {
         boolean bl2 = ((PandaEntity)pandaEntity).isSneezing();
         int k = ((PandaEntity)pandaEntity).getSneezeProgress();
         boolean bl3 = ((PandaEntity)pandaEntity).isEating();
-        boolean bl4 = ((PandaEntity)pandaEntity).method_6524();
+        boolean bl4 = ((PandaEntity)pandaEntity).isScaredByThunderstorm();
         if (bl) {
             this.head.yaw = 0.35f * MathHelper.sin(0.6f * h);
             this.head.roll = 0.35f * MathHelper.sin(0.6f * h);

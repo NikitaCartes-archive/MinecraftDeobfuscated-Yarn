@@ -22,8 +22,8 @@ import net.minecraft.entity.passive.PassiveEntity;
 @Environment(value=EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity>
 extends FeatureRenderer<T, CowEntityModel<T>> {
-    public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> context) {
-        super(context);
+    public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override

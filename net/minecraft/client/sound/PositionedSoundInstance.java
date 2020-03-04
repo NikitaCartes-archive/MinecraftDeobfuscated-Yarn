@@ -15,8 +15,8 @@ import net.minecraft.util.math.BlockPos;
 @Environment(value=EnvType.CLIENT)
 public class PositionedSoundInstance
 extends AbstractSoundInstance {
-    public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, BlockPos blockPos) {
-        this(sound, category, volume, pitch, (float)blockPos.getX() + 0.5f, (float)blockPos.getY() + 0.5f, (float)blockPos.getZ() + 0.5f);
+    public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, BlockPos pos) {
+        this(sound, category, volume, pitch, (float)pos.getX() + 0.5f, (float)pos.getY() + 0.5f, (float)pos.getZ() + 0.5f);
     }
 
     public static PositionedSoundInstance master(SoundEvent sound, float volume) {
@@ -35,8 +35,16 @@ extends AbstractSoundInstance {
         return new PositionedSoundInstance(sound, SoundCategory.RECORDS, 4.0f, 1.0f, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
     }
 
-    public static PositionedSoundInstance method_24877(SoundEvent soundEvent, float f, float g) {
-        return new PositionedSoundInstance(soundEvent.getId(), SoundCategory.AMBIENT, g, f, false, 0, SoundInstance.AttenuationType.NONE, 0.0f, 0.0f, 0.0f, true);
+    public static PositionedSoundInstance ambient(SoundEvent sound, float volume, float pitch) {
+        return new PositionedSoundInstance(sound.getId(), SoundCategory.AMBIENT, pitch, volume, false, 0, SoundInstance.AttenuationType.NONE, 0.0f, 0.0f, 0.0f, true);
+    }
+
+    public static PositionedSoundInstance ambient(SoundEvent sound) {
+        return PositionedSoundInstance.ambient(sound, 1.0f, 1.0f);
+    }
+
+    public static PositionedSoundInstance ambient(SoundEvent sound, float x, float y, float z) {
+        return new PositionedSoundInstance(sound, SoundCategory.AMBIENT, 1.0f, 1.0f, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
     }
 
     public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, float x, float y, float z) {

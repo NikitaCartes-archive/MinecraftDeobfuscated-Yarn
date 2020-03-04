@@ -254,7 +254,7 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        Biome biome = world.getBiome(new BlockPos(this));
+        Biome biome = world.getBiome(this.getSenseCenterPos());
         Type type = Type.fromBiome(biome);
         boolean bl = false;
         if (entityData instanceof FoxData) {
@@ -332,7 +332,7 @@ extends AnimalEntity {
         ListTag listTag = new ListTag();
         for (UUID uUID : list) {
             if (uUID == null) continue;
-            listTag.add(NbtHelper.fromUuid(uUID));
+            listTag.add(NbtHelper.fromUuidOld(uUID));
         }
         tag.put("TrustedUUIDs", listTag);
         tag.putBoolean("Sleeping", this.isSleeping());
@@ -346,7 +346,7 @@ extends AnimalEntity {
         super.readCustomDataFromTag(tag);
         ListTag listTag = tag.getList("TrustedUUIDs", 10);
         for (int i = 0; i < listTag.size(); ++i) {
-            this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompound(i)));
+            this.addTrustedUuid(NbtHelper.toUuidOld(listTag.getCompound(i)));
         }
         this.setSleeping(tag.getBoolean("Sleeping"));
         this.setType(Type.byName(tag.getString("Type")));
@@ -461,7 +461,7 @@ extends AnimalEntity {
                 this.setSitting(false);
             }
             if (this.isWalking() && this.world.random.nextFloat() < 0.2f) {
-                BlockPos blockPos = new BlockPos(this);
+                BlockPos blockPos = this.getSenseCenterPos();
                 BlockState blockState = this.world.getBlockState(blockPos);
                 this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
             }
@@ -767,7 +767,7 @@ extends AnimalEntity {
             }
             if (livingEntity != null && FoxEntity.this.distanceTo(livingEntity) <= 2.0f) {
                 FoxEntity.this.tryAttack(livingEntity);
-            } else if (FoxEntity.this.pitch > 0.0f && FoxEntity.this.onGround && (float)FoxEntity.this.getVelocity().y != 0.0f && FoxEntity.this.world.getBlockState(new BlockPos(FoxEntity.this)).getBlock() == Blocks.SNOW) {
+            } else if (FoxEntity.this.pitch > 0.0f && FoxEntity.this.onGround && (float)FoxEntity.this.getVelocity().y != 0.0f && FoxEntity.this.world.getBlockState(FoxEntity.this.getSenseCenterPos()).getBlock() == Blocks.SNOW) {
                 FoxEntity.this.pitch = 60.0f;
                 FoxEntity.this.setTarget(null);
                 FoxEntity.this.setWalking(true);
@@ -1118,7 +1118,7 @@ extends AnimalEntity {
                 return false;
             }
             this.timer = 100;
-            BlockPos blockPos = new BlockPos(this.mob);
+            BlockPos blockPos = this.mob.getSenseCenterPos();
             return FoxEntity.this.world.isDay() && FoxEntity.this.world.isSkyVisible(blockPos) && !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos) && this.targetShadedPos();
         }
 

@@ -38,7 +38,7 @@ extends MovingSoundInstance {
             this.replaced = true;
         }
         if (this.bee.removed || this.replaced) {
-            this.method_24876();
+            this.setDone();
             return;
         }
         this.x = (float)this.bee.getX();

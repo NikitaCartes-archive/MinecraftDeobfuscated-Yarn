@@ -30,7 +30,7 @@ import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.SubtitlesHud;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -44,7 +44,6 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -60,6 +59,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -329,7 +329,7 @@ extends DrawableHelper {
         }
         if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
             RenderSystem.pushMatrix();
-            RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, this.getBlitOffset());
+            RenderSystem.translatef(this.scaledWidth / 2, this.scaledHeight / 2, this.getZOffset());
             Camera camera = this.client.gameRenderer.getCamera();
             RenderSystem.rotatef(camera.getPitch(), -1.0f, 0.0f, 0.0f);
             RenderSystem.rotatef(camera.getYaw(), 0.0f, 1.0f, 0.0f);
@@ -365,7 +365,7 @@ extends DrawableHelper {
             return false;
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
-            return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerFactory;
+            return ((EntityHitResult)hitResult).getEntity() instanceof NameableScreenHandlerFactory;
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             ClientWorld world = this.client.world;
@@ -385,7 +385,7 @@ extends DrawableHelper {
         int j = 0;
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
         ArrayList<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-        this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(ScreenWithHandler.BACKGROUND_TEXTURE);
         for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             if (!statusEffectInstance.shouldShowIcon()) continue;
@@ -418,7 +418,7 @@ extends DrawableHelper {
             list.add(() -> {
                 this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, g);
-                InGameHud.blit(n + 3, o + 3, this.getBlitOffset(), 18, 18, sprite);
+                InGameHud.blit(n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
             });
         }
         list.forEach(Runnable::run);
@@ -438,10 +438,10 @@ extends DrawableHelper {
         ItemStack itemStack = playerEntity.getOffHandStack();
         Arm arm = playerEntity.getMainArm().getOpposite();
         int i = this.scaledWidth / 2;
-        int j = this.getBlitOffset();
+        int j = this.getZOffset();
         int k = 182;
         int l = 91;
-        this.setBlitOffset(-90);
+        this.setZOffset(-90);
         this.blit(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
         this.blit(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
         if (!itemStack.isEmpty()) {
@@ -451,7 +451,7 @@ extends DrawableHelper {
                 this.blit(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
             }
         }
-        this.setBlitOffset(j);
+        this.setZOffset(j);
         RenderSystem.enableRescaleNormal();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -779,7 +779,7 @@ extends DrawableHelper {
         this.client.getProfiler().swap("air");
         z = playerEntity.getAir();
         aa = playerEntity.getMaxAir();
-        if (playerEntity.isInFluid(FluidTags.WATER) || z < aa) {
+        if (playerEntity.isSubmergedIn(FluidTags.WATER) || z < aa) {
             ab = this.getHeartRows(y) - 1;
             t -= ab * 10;
             ac = MathHelper.ceil((double)(z - 2) * 10.0 / (double)aa);
@@ -971,10 +971,10 @@ extends DrawableHelper {
         this.setOverlayMessage(I18n.translate("record.nowPlaying", string), true);
     }
 
-    public void setOverlayMessage(String string, boolean bl) {
-        this.overlayMessage = string;
+    public void setOverlayMessage(String message, boolean tinted) {
+        this.overlayMessage = message;
         this.overlayRemaining = 60;
-        this.overlayTinted = bl;
+        this.overlayTinted = tinted;
     }
 
     public void setTitles(String string, String string2, int i, int j, int k) {
@@ -1007,8 +1007,8 @@ extends DrawableHelper {
         }
     }
 
-    public void setOverlayMessage(Text text, boolean bl) {
-        this.setOverlayMessage(text.getString(), bl);
+    public void setOverlayMessage(Text message, boolean tinted) {
+        this.setOverlayMessage(message.getString(), tinted);
     }
 
     public void addChatMessage(MessageType messageType, Text text) {

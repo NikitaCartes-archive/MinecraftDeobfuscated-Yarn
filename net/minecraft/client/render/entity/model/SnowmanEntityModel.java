@@ -62,7 +62,7 @@ extends CompositeEntityModel<T> {
         return ImmutableList.of(this.middleSnowball, this.bottomSnowball, this.topSnowball, this.leftArm, this.rightArm);
     }
 
-    public ModelPart method_2834() {
+    public ModelPart getTopSnowball() {
         return this.topSnowball;
     }
 }

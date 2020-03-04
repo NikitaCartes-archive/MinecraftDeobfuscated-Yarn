@@ -20,8 +20,8 @@ extends FeatureRenderer<T, M> {
     private static final Identifier SKIN = new Identifier("textures/entity/skeleton/stray_overlay.png");
     private final SkeletonEntityModel<T> model = new SkeletonEntityModel(0.25f, true);
 
-    public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> context) {
-        super(context);
+    public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override

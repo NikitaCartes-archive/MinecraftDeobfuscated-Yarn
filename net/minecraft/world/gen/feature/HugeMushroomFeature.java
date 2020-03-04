@@ -23,15 +23,15 @@ extends Feature<HugeMushroomFeatureConfig> {
         super(function);
     }
 
-    protected void method_23376(IWorld iWorld, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig, int i, BlockPos.Mutable mutable) {
-        for (int j = 0; j < i; ++j) {
-            mutable.set(blockPos).setOffset(Direction.UP, j);
-            if (iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) continue;
-            this.setBlockState(iWorld, mutable, hugeMushroomFeatureConfig.stemProvider.getBlockState(random, blockPos));
+    protected void generateStem(IWorld world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutable) {
+        for (int i = 0; i < height; ++i) {
+            mutable.set(pos).setOffset(Direction.UP, i);
+            if (world.getBlockState(mutable).isFullOpaque(world, mutable)) continue;
+            this.setBlockState(world, mutable, config.stemProvider.getBlockState(random, pos));
         }
     }
 
-    protected int method_23377(Random random) {
+    protected int getHeight(Random random) {
         int i = random.nextInt(3) + 4;
         if (random.nextInt(12) == 0) {
             i *= 2;
@@ -39,20 +39,20 @@ extends Feature<HugeMushroomFeatureConfig> {
         return i;
     }
 
-    protected boolean method_23374(IWorld iWorld, BlockPos blockPos, int i, BlockPos.Mutable mutable, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
-        int j = blockPos.getY();
-        if (j < 1 || j + i + 1 >= 256) {
+    protected boolean canGenerate(IWorld world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+        int i = pos.getY();
+        if (i < 1 || i + height + 1 >= 256) {
             return false;
         }
-        Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+        Block block = world.getBlockState(pos.down()).getBlock();
         if (!HugeMushroomFeature.isDirt(block)) {
             return false;
         }
-        for (int k = 0; k <= i; ++k) {
-            int l = this.method_23372(-1, -1, hugeMushroomFeatureConfig.capSize, k);
-            for (int m = -l; m <= l; ++m) {
-                for (int n = -l; n <= l; ++n) {
-                    BlockState blockState = iWorld.getBlockState(mutable.set(blockPos).setOffset(m, k, n));
+        for (int j = 0; j <= height; ++j) {
+            int k = this.getCapSize(-1, -1, config.capSize, j);
+            for (int l = -k; l <= k; ++l) {
+                for (int m = -k; m <= k; ++m) {
+                    BlockState blockState = world.getBlockState(mutable.setOffset(pos, l, j, m));
                     if (blockState.isAir() || blockState.matches(BlockTags.LEAVES)) continue;
                     return false;
                 }
@@ -64,17 +64,17 @@ extends Feature<HugeMushroomFeatureConfig> {
     @Override
     public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, HugeMushroomFeatureConfig hugeMushroomFeatureConfig) {
         BlockPos.Mutable mutable;
-        int i = this.method_23377(random);
-        if (!this.method_23374(iWorld, blockPos, i, mutable = new BlockPos.Mutable(), hugeMushroomFeatureConfig)) {
+        int i = this.getHeight(random);
+        if (!this.canGenerate(iWorld, blockPos, i, mutable = new BlockPos.Mutable(), hugeMushroomFeatureConfig)) {
             return false;
         }
-        this.generate(iWorld, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
-        this.method_23376(iWorld, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
+        this.generateCap(iWorld, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
+        this.generateStem(iWorld, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
         return true;
     }
 
-    protected abstract int method_23372(int var1, int var2, int var3, int var4);
+    protected abstract int getCapSize(int var1, int var2, int var3, int var4);
 
-    protected abstract void generate(IWorld var1, Random var2, BlockPos var3, int var4, BlockPos.Mutable var5, HugeMushroomFeatureConfig var6);
+    protected abstract void generateCap(IWorld var1, Random var2, BlockPos var3, int var4, BlockPos.Mutable var5, HugeMushroomFeatureConfig var6);
 }
 

@@ -108,8 +108,8 @@ implements UnbakedModel {
         }
 
         @Override
-        public MultipartUnbakedModel deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-            return new MultipartUnbakedModel(this.context.getStateFactory(), this.deserializeComponents(context, element.getAsJsonArray()));
+        public MultipartUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            return new MultipartUnbakedModel(this.context.getStateFactory(), this.deserializeComponents(jsonDeserializationContext, jsonElement.getAsJsonArray()));
         }
 
         private List<MultipartModelComponent> deserializeComponents(JsonDeserializationContext context, JsonArray array) {

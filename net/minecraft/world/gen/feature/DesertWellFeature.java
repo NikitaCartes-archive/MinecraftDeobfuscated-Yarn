@@ -24,8 +24,8 @@ extends Feature<DefaultFeatureConfig> {
     private final BlockState wall = Blocks.SANDSTONE.getDefaultState();
     private final BlockState fluidInside = Blocks.WATER.getDefaultState();
 
-    public DesertWellFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-        super(configFactory);
+    public DesertWellFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+        super(function);
     }
 
     @Override

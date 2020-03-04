@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.realms.Realms;
+import net.minecraft.client.MinecraftClient;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,7 +78,7 @@ extends ValueObject {
         StringBuilder stringBuilder = new StringBuilder();
         int i = 0;
         for (String string : serverPlayerList.players) {
-            if (string.equals(Realms.getUUID())) continue;
+            if (string.equals(MinecraftClient.getInstance().getSession().getUuid())) continue;
             String string2 = "";
             try {
                 string2 = RealmsUtil.uuidToName(string);
@@ -176,15 +176,12 @@ extends ValueObject {
     }
 
     public static RealmsServer parse(String json) {
-        RealmsServer realmsServer = new RealmsServer();
         try {
-            JsonParser jsonParser = new JsonParser();
-            JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
-            realmsServer = RealmsServer.parse(jsonObject);
+            return RealmsServer.parse(new JsonParser().parse(json).getAsJsonObject());
         } catch (Exception exception) {
             LOGGER.error("Could not parse McoServer: " + exception.getMessage());
+            return new RealmsServer();
         }
-        return realmsServer;
     }
 
     private static State getState(String state) {
@@ -204,7 +201,7 @@ extends ValueObject {
     }
 
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(this.id).append(this.name).append(this.motd).append((Object)this.state).append(this.owner).append(this.expired).toHashCode();
+        return Objects.hash(new Object[]{this.id, this.name, this.motd, this.state, this.owner, this.expired});
     }
 
     public boolean equals(Object obj) {
@@ -254,6 +251,14 @@ extends ValueObject {
         return map;
     }
 
+    public String getWorldName(int slotId) {
+        return this.name + " (" + this.slots.get(slotId).getSlotName(slotId) + ")";
+    }
+
+    public /* synthetic */ Object clone() throws CloneNotSupportedException {
+        return this.clone();
+    }
+
     @Environment(value=EnvType.CLIENT)
     public static enum WorldType {
         NORMAL,
@@ -283,7 +288,7 @@ extends ValueObject {
 
         @Override
         public int compare(RealmsServer realmsServer, RealmsServer realmsServer2) {
-            return ComparisonChain.start().compareTrueFirst(realmsServer.state.equals((Object)State.UNINITIALIZED), realmsServer2.state.equals((Object)State.UNINITIALIZED)).compareTrueFirst(realmsServer.expiredTrial, realmsServer2.expiredTrial).compareTrueFirst(realmsServer.owner.equals(this.refOwner), realmsServer2.owner.equals(this.refOwner)).compareFalseFirst(realmsServer.expired, realmsServer2.expired).compareTrueFirst(realmsServer.state.equals((Object)State.OPEN), realmsServer2.state.equals((Object)State.OPEN)).compare(realmsServer.id, realmsServer2.id).result();
+            return ComparisonChain.start().compareTrueFirst(realmsServer.state == State.UNINITIALIZED, realmsServer2.state == State.UNINITIALIZED).compareTrueFirst(realmsServer.expiredTrial, realmsServer2.expiredTrial).compareTrueFirst(realmsServer.owner.equals(this.refOwner), realmsServer2.owner.equals(this.refOwner)).compareFalseFirst(realmsServer.expired, realmsServer2.expired).compareTrueFirst(realmsServer.state == State.OPEN, realmsServer2.state == State.OPEN).compare(realmsServer.id, realmsServer2.id).result();
         }
 
         @Override

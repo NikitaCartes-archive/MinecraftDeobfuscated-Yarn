@@ -60,7 +60,7 @@ implements Waterloggable {
 
     private boolean canPlaceOn(BlockView world, BlockPos pos, Direction side) {
         BlockState blockState = world.getBlockState(pos);
-        return !blockState.emitsRedstonePower() && blockState.isSideSolidFullSquare(world, pos, side);
+        return blockState.isSideSolidFullSquare(world, pos, side);
     }
 
     @Override

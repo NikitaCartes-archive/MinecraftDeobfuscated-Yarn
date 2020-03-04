@@ -16,12 +16,12 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.container.AbstractFurnaceContainer;
-import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeGridAligner;
+import net.minecraft.screen.AbstractFurnaceScreenHandler;
+import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -49,10 +49,10 @@ Element {
         float g;
         this.client = client;
         this.resultCollection = results;
-        if (client.player.container instanceof AbstractFurnaceContainer) {
+        if (client.player.currentScreenHandler instanceof AbstractFurnaceScreenHandler) {
             this.furnace = true;
         }
-        boolean bl = client.player.getRecipeBook().isFilteringCraftable((CraftingContainer)client.player.container);
+        boolean bl = client.player.getRecipeBook().isFilteringCraftable((CraftingScreenHandler)client.player.currentScreenHandler);
         List<Recipe<?>> list = results.getRecipes(true);
         List list2 = bl ? Collections.emptyList() : results.getRecipes(false);
         int i = list.size();
@@ -89,7 +89,7 @@ Element {
     }
 
     @Override
-    public boolean changeFocus(boolean bl) {
+    public boolean changeFocus(boolean lookForwards) {
         return false;
     }
 
@@ -252,8 +252,8 @@ Element {
     @Environment(value=EnvType.CLIENT)
     class FurnaceAlternativeButtonWidget
     extends AlternativeButtonWidget {
-        public FurnaceAlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean isCraftable) {
-            super(x, y, recipe, isCraftable);
+        public FurnaceAlternativeButtonWidget(int i, int j, Recipe<?> recipe, boolean bl) {
+            super(i, j, recipe, bl);
         }
 
         @Override

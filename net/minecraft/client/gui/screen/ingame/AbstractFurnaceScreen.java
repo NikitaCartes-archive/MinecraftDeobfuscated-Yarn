@@ -6,30 +6,30 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
 import net.minecraft.client.gui.screen.recipebook.AbstractFurnaceRecipeBookScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.container.AbstractFurnaceContainer;
-import net.minecraft.container.CraftingContainer;
-import net.minecraft.container.Slot;
-import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.AbstractFurnaceScreenHandler;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer>
-extends ContainerScreen<T>
+public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandler>
+extends ScreenWithHandler<T>
 implements RecipeBookProvider {
     private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
     public final AbstractFurnaceRecipeBookScreen recipeBook;
     private boolean narrow;
     private final Identifier background;
 
-    public AbstractFurnaceScreen(T container, AbstractFurnaceRecipeBookScreen recipeBook, PlayerInventory inventory, Text title, Identifier background) {
-        super(container, inventory, title);
+    public AbstractFurnaceScreen(T handler, AbstractFurnaceRecipeBookScreen recipeBook, PlayerInventory inventory, Text title, Identifier background) {
+        super(handler, inventory, title);
         this.recipeBook = recipeBook;
         this.background = background;
     }
@@ -38,12 +38,12 @@ implements RecipeBookProvider {
     public void init() {
         super.init();
         this.narrow = this.width < 379;
-        this.recipeBook.initialize(this.width, this.height, this.minecraft, this.narrow, (CraftingContainer)this.container);
-        this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+        this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, (CraftingScreenHandler)this.handler);
+        this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
         this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
             this.recipeBook.reset(this.narrow);
             this.recipeBook.toggleOpen();
-            this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+            this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
             ((TexturedButtonWidget)buttonWidget).setPos(this.x + 20, this.height / 2 - 49);
         }));
     }
@@ -72,23 +72,23 @@ implements RecipeBookProvider {
     @Override
     protected void drawForeground(int mouseX, int mouseY) {
         String string = this.title.asFormattedString();
-        this.font.draw(string, this.containerWidth / 2 - this.font.getStringWidth(string) / 2, 6.0f, 0x404040);
-        this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.containerHeight - 96 + 2, 0x404040);
+        this.textRenderer.draw(string, this.backgroundWidth / 2 - this.textRenderer.getStringWidth(string) / 2, 6.0f, 0x404040);
+        this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.backgroundHeight - 96 + 2, 0x404040);
     }
 
     @Override
     protected void drawBackground(float delta, int mouseX, int mouseY) {
         int k;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.minecraft.getTextureManager().bindTexture(this.background);
+        this.client.getTextureManager().bindTexture(this.background);
         int i = this.x;
         int j = this.y;
-        this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
-        if (((AbstractFurnaceContainer)this.container).isBurning()) {
-            k = ((AbstractFurnaceContainer)this.container).getFuelProgress();
+        this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        if (((AbstractFurnaceScreenHandler)this.handler).isBurning()) {
+            k = ((AbstractFurnaceScreenHandler)this.handler).getFuelProgress();
             this.blit(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
         }
-        k = ((AbstractFurnaceContainer)this.container).getCookProgress();
+        k = ((AbstractFurnaceScreenHandler)this.handler).getCookProgress();
         this.blit(i + 79, j + 34, 176, 14, k + 1, 16);
     }
 
@@ -119,8 +119,8 @@ implements RecipeBookProvider {
 
     @Override
     protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
-        boolean bl = mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.containerWidth) || mouseY >= (double)(top + this.containerHeight);
-        return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.containerWidth, this.containerHeight, button) && bl;
+        boolean bl = mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.backgroundWidth) || mouseY >= (double)(top + this.backgroundHeight);
+        return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.backgroundWidth, this.backgroundHeight, button) && bl;
     }
 
     @Override

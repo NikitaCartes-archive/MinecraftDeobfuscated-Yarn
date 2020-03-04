@@ -36,23 +36,23 @@ extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
-        if (this.getFocused() == this.addressField && (i == 257 || i == 335)) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.getFocused() == this.addressField && (keyCode == 257 || keyCode == 335)) {
             this.saveAndClose();
             return true;
         }
-        return super.keyPressed(i, j, k);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     protected void init() {
-        this.minecraft.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.enableRepeatEvents(true);
         this.selectServerButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, I18n.translate("selectServer.select", new Object[0]), buttonWidget -> this.saveAndClose()));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.callback.accept(false)));
-        this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20, I18n.translate("addServer.enterIp", new Object[0]));
+        this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 116, 200, 20, I18n.translate("addServer.enterIp", new Object[0]));
         this.addressField.setMaxLength(128);
         this.addressField.setSelected(true);
-        this.addressField.setText(this.minecraft.options.lastServer);
+        this.addressField.setText(this.client.options.lastServer);
         this.addressField.setChangedListener(text -> this.onAddressFieldChanged());
         this.children.add(this.addressField);
         this.setInitialFocus(this.addressField);
@@ -73,14 +73,14 @@ extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.openScreen(this.parent);
+        this.client.openScreen(this.parent);
     }
 
     @Override
     public void removed() {
-        this.minecraft.keyboard.enableRepeatEvents(false);
-        this.minecraft.options.lastServer = this.addressField.getText();
-        this.minecraft.options.write();
+        this.client.keyboard.enableRepeatEvents(false);
+        this.client.options.lastServer = this.addressField.getText();
+        this.client.options.write();
     }
 
     private void onAddressFieldChanged() {
@@ -91,8 +91,8 @@ extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
-        this.drawString(this.font, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 100, 0xA0A0A0);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 0xFFFFFF);
+        this.drawString(this.textRenderer, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 100, 0xA0A0A0);
         this.addressField.render(mouseX, mouseY, delta);
         super.render(mouseX, mouseY, delta);
     }

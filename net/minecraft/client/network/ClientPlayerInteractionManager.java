@@ -15,11 +15,10 @@ import net.minecraft.block.StructureBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.PosAndRot;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,6 +36,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.StatHandler;
@@ -72,12 +72,6 @@ public class ClientPlayerInteractionManager {
     public ClientPlayerInteractionManager(MinecraftClient client, ClientPlayNetworkHandler networkHandler) {
         this.client = client;
         this.networkHandler = networkHandler;
-    }
-
-    public static void breakBlockOrFire(MinecraftClient client, ClientPlayerInteractionManager interactionManager, BlockPos pos, Direction direction) {
-        if (!client.world.extinguishFire(client.player, pos, direction)) {
-            interactionManager.breakBlock(pos);
-        }
     }
 
     public void copyAbilities(PlayerEntity player) {
@@ -129,7 +123,7 @@ public class ClientPlayerInteractionManager {
             BlockState blockState = this.client.world.getBlockState(pos);
             this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, 1.0f);
             this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
-            ClientPlayerInteractionManager.breakBlockOrFire(this.client, this, pos, direction);
+            this.breakBlock(pos);
             this.blockBreakingCooldown = 5;
         } else if (!this.breakingBlock || !this.isCurrentlyBreaking(pos)) {
             boolean bl;
@@ -180,7 +174,7 @@ public class ClientPlayerInteractionManager {
             BlockState blockState = this.client.world.getBlockState(pos);
             this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, 1.0f);
             this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
-            ClientPlayerInteractionManager.breakBlockOrFire(this.client, this, pos, direction);
+            this.breakBlock(pos);
             return true;
         }
         if (this.isCurrentlyBreaking(pos)) {
@@ -331,8 +325,8 @@ public class ClientPlayerInteractionManager {
     }
 
     public ItemStack clickSlot(int syncId, int slotId, int mouseButton, SlotActionType actionType, PlayerEntity player) {
-        short s = player.container.getNextActionId(player.inventory);
-        ItemStack itemStack = player.container.onSlotClick(slotId, mouseButton, actionType, player);
+        short s = player.currentScreenHandler.getNextActionId(player.inventory);
+        ItemStack itemStack = player.currentScreenHandler.onSlotClick(slotId, mouseButton, actionType, player);
         this.networkHandler.sendPacket(new ClickWindowC2SPacket(syncId, slotId, mouseButton, actionType, itemStack, s));
         return itemStack;
     }

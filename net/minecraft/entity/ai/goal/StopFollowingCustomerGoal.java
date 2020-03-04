@@ -38,7 +38,7 @@ extends Goal {
         if (this.trader.squaredDistanceTo(playerEntity) > 16.0) {
             return false;
         }
-        return playerEntity.container != null;
+        return playerEntity.currentScreenHandler != null;
     }
 
     @Override

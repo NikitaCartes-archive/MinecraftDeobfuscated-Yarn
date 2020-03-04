@@ -29,7 +29,7 @@ public class StructurePool {
     private final List<StructurePoolElement> elements;
     private final Identifier terminatorsId;
     private final Projection projection;
-    private int field_18707 = Integer.MIN_VALUE;
+    private int highestY = Integer.MIN_VALUE;
 
     public StructurePool(Identifier id, Identifier terminatorsId, List<Pair<StructurePoolElement, Integer>> elementCounts, Projection projection) {
         this.id = id;
@@ -47,11 +47,11 @@ public class StructurePool {
         this.projection = projection;
     }
 
-    public int method_19309(StructureManager structureManager) {
-        if (this.field_18707 == Integer.MIN_VALUE) {
-            this.field_18707 = this.elements.stream().mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY()).max().orElse(0);
+    public int getHighestY(StructureManager structureManager) {
+        if (this.highestY == Integer.MIN_VALUE) {
+            this.highestY = this.elements.stream().mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY()).max().orElse(0);
         }
-        return this.field_18707;
+        return this.highestY;
     }
 
     public Identifier getTerminatorsId() {

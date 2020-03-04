@@ -37,16 +37,16 @@ extends Screen {
     protected void init() {
         super.init();
         this.lines.clear();
-        this.lines.addAll(this.font.wrapStringToWidthAsList(this.message.asFormattedString(), this.width - 50));
-        int i = (this.lines.size() + 1) * this.font.fontHeight;
+        this.lines.addAll(this.textRenderer.wrapStringToWidthAsList(this.message.asFormattedString(), this.width - 50));
+        int i = (this.lines.size() + 1) * this.textRenderer.fontHeight;
         this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, this.proceedText.asFormattedString(), buttonWidget -> {
             if (this.checkbox.isChecked()) {
-                this.minecraft.options.skipMultiplayerWarning = true;
-                this.minecraft.options.write();
+                this.client.options.skipMultiplayerWarning = true;
+                this.client.options.write();
             }
-            this.minecraft.openScreen(new MultiplayerScreen(this.parent));
+            this.client.openScreen(new MultiplayerScreen(this.parent));
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, 100 + i, 150, 20, this.backText.asFormattedString(), buttonWidget -> this.minecraft.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, 100 + i, 150, 20, this.backText.asFormattedString(), buttonWidget -> this.client.openScreen(this.parent)));
         this.checkbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, this.checkMessage.asFormattedString(), false);
         this.addButton(this.checkbox);
     }
@@ -57,15 +57,15 @@ extends Screen {
     }
 
     @Override
-    public void render(int i, int j, float f) {
+    public void render(int mouseX, int mouseY, float delta) {
         this.renderDirtBackground(0);
-        this.drawCenteredString(this.font, this.header.asFormattedString(), this.width / 2, 30, 0xFFFFFF);
-        int k = 70;
+        this.drawCenteredString(this.textRenderer, this.header.asFormattedString(), this.width / 2, 30, 0xFFFFFF);
+        int i = 70;
         for (String string : this.lines) {
-            this.drawCenteredString(this.font, string, this.width / 2, k, 0xFFFFFF);
-            k += this.font.fontHeight;
+            this.drawCenteredString(this.textRenderer, string, this.width / 2, i, 0xFFFFFF);
+            i += this.textRenderer.fontHeight;
         }
-        super.render(i, j, f);
+        super.render(mouseX, mouseY, delta);
     }
 }
 

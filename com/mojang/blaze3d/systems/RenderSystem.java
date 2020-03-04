@@ -203,7 +203,7 @@ public class RenderSystem {
 
     public static void blendFunc(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFunc(srcFactor.value, dstFactor.value);
+        GlStateManager.blendFunc(srcFactor.field_22545, dstFactor.field_22528);
     }
 
     public static void blendFunc(int srcFactor, int dstFactor) {
@@ -213,7 +213,7 @@ public class RenderSystem {
 
     public static void blendFuncSeparate(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor, GlStateManager.SrcFactor srcAlpha, GlStateManager.DstFactor dstAlpha) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.blendFuncSeparate(srcFactor.value, dstFactor.value, srcAlpha.value, dstAlpha.value);
+        GlStateManager.blendFuncSeparate(srcFactor.field_22545, dstFactor.field_22528, srcAlpha.field_22545, dstAlpha.field_22528);
     }
 
     public static void blendFuncSeparate(int srcFactorRGB, int dstFactorRGB, int srcFactorAlpha, int dstFactorAlpha) {
@@ -1000,7 +1000,7 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$blendFuncSeparate$7(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor, GlStateManager.SrcFactor srcFactor2, GlStateManager.DstFactor dstFactor2) {
-        GlStateManager.blendFuncSeparate(srcFactor.value, dstFactor.value, srcFactor2.value, dstFactor2.value);
+        GlStateManager.blendFuncSeparate(srcFactor.field_22545, dstFactor.field_22528, srcFactor2.field_22545, dstFactor2.field_22528);
     }
 
     private static /* synthetic */ void lambda$blendFunc$6(int i, int j) {
@@ -1008,7 +1008,7 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$blendFunc$5(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor) {
-        GlStateManager.blendFunc(srcFactor.value, dstFactor.value);
+        GlStateManager.blendFunc(srcFactor.field_22545, dstFactor.field_22528);
     }
 
     private static /* synthetic */ void lambda$depthMask$4(boolean bl) {

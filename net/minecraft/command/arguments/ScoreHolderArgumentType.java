@@ -154,8 +154,8 @@ implements ArgumentType<ScoreHolder> {
         }
 
         @Override
-        public Collection<String> getNames(ServerCommandSource source, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
-            List<? extends Entity> list = this.selector.getEntities(source);
+        public Collection<String> getNames(ServerCommandSource serverCommandSource, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
+            List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
             if (list.isEmpty()) {
                 throw EntityArgumentType.ENTITY_NOT_FOUND_EXCEPTION.create();
             }

@@ -19,9 +19,9 @@ extends ArmorFeatureRenderer<T, M, A> {
     }
 
     @Override
-    protected void setVisible(A bipedModel, EquipmentSlot equipmentSlot) {
+    protected void setVisible(A bipedModel, EquipmentSlot slot) {
         this.setInvisible(bipedModel);
-        switch (equipmentSlot) {
+        switch (slot) {
             case HEAD: {
                 ((BipedEntityModel)bipedModel).head.visible = true;
                 ((BipedEntityModel)bipedModel).helmet.visible = true;
@@ -47,8 +47,8 @@ extends ArmorFeatureRenderer<T, M, A> {
     }
 
     @Override
-    protected void setInvisible(A bipedEntityModel) {
-        ((BipedEntityModel)bipedEntityModel).setVisible(false);
+    protected void setInvisible(A bipedModel) {
+        ((BipedEntityModel)bipedModel).setVisible(false);
     }
 }
 

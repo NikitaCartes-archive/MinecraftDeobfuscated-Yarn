@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -30,6 +31,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
@@ -39,17 +41,18 @@ import org.jetbrains.annotations.Nullable;
 
 public class ItemFrameEntity
 extends AbstractDecorationEntity {
-    private static final Logger field_7131 = LogManager.getLogger();
+    private static final Logger ITEM_FRAME_LOGGER = LogManager.getLogger();
     private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Integer> ROTATION = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private float itemDropChance = 1.0f;
+    private boolean fixed;
 
     public ItemFrameEntity(EntityType<? extends ItemFrameEntity> entityType, World world) {
         super((EntityType<? extends AbstractDecorationEntity>)entityType, world);
     }
 
-    public ItemFrameEntity(World world, BlockPos blockPos, Direction direction) {
-        super(EntityType.ITEM_FRAME, world, blockPos);
+    public ItemFrameEntity(World world, BlockPos pos, Direction direction) {
+        super(EntityType.ITEM_FRAME, world, pos);
         this.setFacing(direction);
     }
 
@@ -112,6 +115,9 @@ extends AbstractDecorationEntity {
 
     @Override
     public boolean canStayAttached() {
+        if (this.fixed) {
+            return true;
+        }
         if (!this.world.doesNotCollide(this)) {
             return false;
         }
@@ -120,6 +126,20 @@ extends AbstractDecorationEntity {
             return false;
         }
         return this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty();
+    }
+
+    @Override
+    public void move(MovementType type, Vec3d movement) {
+        if (!this.fixed) {
+            super.move(type, movement);
+        }
+    }
+
+    @Override
+    public void addVelocity(double deltaX, double deltaY, double deltaZ) {
+        if (!this.fixed) {
+            super.addVelocity(deltaX, deltaY, deltaZ);
+        }
     }
 
     @Override
@@ -135,6 +155,9 @@ extends AbstractDecorationEntity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
+        if (this.fixed) {
+            return false;
+        }
         if (this.isInvulnerableTo(source)) {
             return false;
         }
@@ -217,11 +240,11 @@ extends AbstractDecorationEntity {
         return this.getDataTracker().get(ITEM_STACK);
     }
 
-    public void setHeldItemStack(ItemStack itemStack) {
-        this.setHeldItemStack(itemStack, true);
+    public void setHeldItemStack(ItemStack stack) {
+        this.setHeldItemStack(stack, true);
     }
 
-    public void setHeldItemStack(ItemStack value, boolean bl) {
+    public void setHeldItemStack(ItemStack value, boolean update) {
         if (!value.isEmpty()) {
             value = value.copy();
             value.setCount(1);
@@ -231,8 +254,8 @@ extends AbstractDecorationEntity {
         if (!value.isEmpty()) {
             this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM, 1.0f, 1.0f);
         }
-        if (bl && this.attachmentPos != null) {
-            this.world.updateHorizontalAdjacent(this.attachmentPos, Blocks.AIR);
+        if (update && this.attachmentPos != null) {
+            this.world.updateComparators(this.attachmentPos, Blocks.AIR);
         }
     }
 
@@ -257,14 +280,14 @@ extends AbstractDecorationEntity {
         return this.getDataTracker().get(ROTATION);
     }
 
-    public void setRotation(int i) {
-        this.setRotation(i, true);
+    public void setRotation(int value) {
+        this.setRotation(value, true);
     }
 
     private void setRotation(int value, boolean bl) {
         this.getDataTracker().set(ROTATION, value % 8);
         if (bl && this.attachmentPos != null) {
-            this.world.updateHorizontalAdjacent(this.attachmentPos, Blocks.AIR);
+            this.world.updateComparators(this.attachmentPos, Blocks.AIR);
         }
     }
 
@@ -277,6 +300,8 @@ extends AbstractDecorationEntity {
             tag.putFloat("ItemDropChance", this.itemDropChance);
         }
         tag.putByte("Facing", (byte)this.facing.getId());
+        tag.putBoolean("Invisible", this.isInvisible());
+        tag.putBoolean("Fixed", this.fixed);
     }
 
     @Override
@@ -287,7 +312,7 @@ extends AbstractDecorationEntity {
             ItemStack itemStack2;
             ItemStack itemStack = ItemStack.fromTag(compoundTag);
             if (itemStack.isEmpty()) {
-                field_7131.warn("Unable to load item from: {}", (Object)compoundTag);
+                ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", (Object)compoundTag);
             }
             if (!(itemStack2 = this.getHeldItemStack()).isEmpty() && !ItemStack.areEqualIgnoreDamage(itemStack, itemStack2)) {
                 this.removeFromFrame(itemStack2);
@@ -299,6 +324,8 @@ extends AbstractDecorationEntity {
             }
         }
         this.setFacing(Direction.byId(tag.getByte("Facing")));
+        this.setInvisible(tag.getBoolean("Invisible"));
+        this.fixed = tag.getBoolean("Fixed");
     }
 
     @Override
@@ -310,7 +337,7 @@ extends AbstractDecorationEntity {
         if (this.world.isClient) {
             return bl || bl2;
         }
-        if (!bl) {
+        if (!this.fixed && !bl) {
             if (bl2 && !this.removed) {
                 this.setHeldItemStack(itemStack);
                 if (!player.abilities.creativeMode) {

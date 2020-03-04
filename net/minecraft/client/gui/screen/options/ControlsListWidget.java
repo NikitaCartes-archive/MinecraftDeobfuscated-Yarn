@@ -46,8 +46,8 @@ extends ElementListWidget<Entry> {
     }
 
     @Override
-    protected int getScrollbarPosition() {
-        return super.getScrollbarPosition() + 15;
+    protected int getScrollbarPositionX() {
+        return super.getScrollbarPositionX() + 15;
     }
 
     @Override
@@ -79,7 +79,7 @@ extends ElementListWidget<Entry> {
                 }
             };
             this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset", new Object[0]), buttonWidget -> {
-                ((ControlsListWidget)ControlsListWidget.this).minecraft.options.setKeyCode(binding, binding.getDefaultKeyCode());
+                ((ControlsListWidget)ControlsListWidget.this).client.options.setKeyCode(binding, binding.getDefaultKeyCode());
                 KeyBinding.updateKeysByCode();
             }){
 
@@ -91,30 +91,30 @@ extends ElementListWidget<Entry> {
         }
 
         @Override
-        public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-            boolean bl2 = ((ControlsListWidget)ControlsListWidget.this).gui.focusedBinding == this.binding;
-            ((ControlsListWidget)ControlsListWidget.this).minecraft.textRenderer.draw(this.bindingName, k + 90 - ControlsListWidget.this.maxKeyNameLength, j + m / 2 - ((ControlsListWidget)ControlsListWidget.this).minecraft.textRenderer.fontHeight / 2, 0xFFFFFF);
-            this.resetButton.x = k + 190;
-            this.resetButton.y = j;
+        public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+            boolean bl = ((ControlsListWidget)ControlsListWidget.this).gui.focusedBinding == this.binding;
+            ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.draw(this.bindingName, x + 90 - ControlsListWidget.this.maxKeyNameLength, y + height / 2 - ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.fontHeight / 2, 0xFFFFFF);
+            this.resetButton.x = x + 190;
+            this.resetButton.y = y;
             this.resetButton.active = !this.binding.isDefault();
-            this.resetButton.render(n, o, f);
-            this.editButton.x = k + 105;
-            this.editButton.y = j;
+            this.resetButton.render(mouseX, mouseY, delta);
+            this.editButton.x = x + 105;
+            this.editButton.y = y;
             this.editButton.setMessage(this.binding.getLocalizedName());
-            boolean bl3 = false;
+            boolean bl2 = false;
             if (!this.binding.isNotBound()) {
-                for (KeyBinding keyBinding : ((ControlsListWidget)ControlsListWidget.this).minecraft.options.keysAll) {
+                for (KeyBinding keyBinding : ((ControlsListWidget)ControlsListWidget.this).client.options.keysAll) {
                     if (keyBinding == this.binding || !this.binding.equals(keyBinding)) continue;
-                    bl3 = true;
+                    bl2 = true;
                     break;
                 }
             }
-            if (bl2) {
+            if (bl) {
                 this.editButton.setMessage((Object)((Object)Formatting.WHITE) + "> " + (Object)((Object)Formatting.YELLOW) + this.editButton.getMessage() + (Object)((Object)Formatting.WHITE) + " <");
-            } else if (bl3) {
+            } else if (bl2) {
                 this.editButton.setMessage((Object)((Object)Formatting.RED) + this.editButton.getMessage());
             }
-            this.editButton.render(n, o, f);
+            this.editButton.render(mouseX, mouseY, delta);
         }
 
         @Override
@@ -144,16 +144,16 @@ extends ElementListWidget<Entry> {
 
         public CategoryEntry(String translationKey) {
             this.name = I18n.translate(translationKey, new Object[0]);
-            this.nameWidth = ((ControlsListWidget)ControlsListWidget.this).minecraft.textRenderer.getStringWidth(this.name);
+            this.nameWidth = ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.getStringWidth(this.name);
         }
 
         @Override
-        public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-            ((ControlsListWidget)ControlsListWidget.this).minecraft.textRenderer.draw(this.name, ((ControlsListWidget)ControlsListWidget.this).minecraft.currentScreen.width / 2 - this.nameWidth / 2, j + m - ((ControlsListWidget)ControlsListWidget.this).minecraft.textRenderer.fontHeight - 1, 0xFFFFFF);
+        public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+            ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.draw(this.name, ((ControlsListWidget)ControlsListWidget.this).client.currentScreen.width / 2 - this.nameWidth / 2, y + height - ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.fontHeight - 1, 0xFFFFFF);
         }
 
         @Override
-        public boolean changeFocus(boolean bl) {
+        public boolean changeFocus(boolean lookForwards) {
             return false;
         }
 

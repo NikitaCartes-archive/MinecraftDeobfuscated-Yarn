@@ -16,8 +16,8 @@ import net.minecraft.world.gen.carver.Carver;
 
 public class CaveCarver
 extends Carver<ProbabilityConfig> {
-    public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer, int heightLimit) {
-        super(configDeserializer, heightLimit);
+    public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function, int i) {
+        super(function, i);
     }
 
     @Override

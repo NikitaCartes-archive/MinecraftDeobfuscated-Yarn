@@ -4,7 +4,6 @@
 package net.minecraft.entity.thrown;
 
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
 import net.minecraft.entity.EntityType;
@@ -26,16 +25,16 @@ extends ThrownEntity
 implements FlyingItemEntity {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(ThrownItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
-    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> type, World world) {
-        super((EntityType<? extends ThrownEntity>)type, world);
+    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
+        super((EntityType<? extends ThrownEntity>)entityType, world);
     }
 
-    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> type, double d, double e, double f, World world) {
-        super(type, d, e, f, world);
+    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, double d, double e, double f, World world) {
+        super(entityType, d, e, f, world);
     }
 
-    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> type, LivingEntity owner, World world) {
-        super(type, owner, world);
+    public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, LivingEntity livingEntity, World world) {
+        super(entityType, livingEntity, world);
     }
 
     public void setItem(ItemStack item) {
@@ -51,7 +50,6 @@ implements FlyingItemEntity {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public ItemStack getStack() {
         ItemStack itemStack = this.getItem();
         return itemStack.isEmpty() ? new ItemStack(this.getDefaultItem()) : itemStack;

@@ -16,7 +16,6 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -193,14 +192,14 @@ extends RangedWeaponItem {
     }
 
     private static void shoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated) {
-        Entity projectile2;
+        Projectile projectile2;
         boolean bl;
         if (world.isClient) {
             return;
         }
         boolean bl2 = bl = projectile.getItem() == Items.FIREWORK_ROCKET;
         if (bl) {
-            projectile2 = new FireworkEntity(world, projectile, shooter.getX(), shooter.getEyeY() - (double)0.15f, shooter.getZ(), true);
+            projectile2 = new FireworkEntity(world, projectile, shooter, shooter.getX(), shooter.getEyeY() - (double)0.15f, shooter.getZ(), true);
         } else {
             projectile2 = CrossbowItem.createArrow(world, shooter, crossbow, projectile);
             if (creative || simulated != 0.0f) {
@@ -209,7 +208,7 @@ extends RangedWeaponItem {
         }
         if (shooter instanceof CrossbowUser) {
             CrossbowUser crossbowUser = (CrossbowUser)((Object)shooter);
-            crossbowUser.shoot(crossbowUser.getTarget(), crossbow, (Projectile)((Object)projectile2), simulated);
+            crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectile2, simulated);
         } else {
             Vec3d vec3d = shooter.getOppositeRotationVector(1.0f);
             Quaternion quaternion = new Quaternion(new Vector3f(vec3d), simulated, true);

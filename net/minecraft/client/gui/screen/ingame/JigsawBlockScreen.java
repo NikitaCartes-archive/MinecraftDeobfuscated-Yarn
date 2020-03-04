@@ -38,15 +38,15 @@ extends Screen {
 
     private void onDone() {
         this.updateServer();
-        this.minecraft.openScreen(null);
+        this.client.openScreen(null);
     }
 
     private void onCancel() {
-        this.minecraft.openScreen(null);
+        this.client.openScreen(null);
     }
 
     private void updateServer() {
-        this.minecraft.getNetworkHandler().sendPacket(new UpdateJigsawC2SPacket(this.jigsaw.getPos(), new Identifier(this.attachmentTypeField.getText()), new Identifier(this.targetPoolField.getText()), this.finalStateField.getText()));
+        this.client.getNetworkHandler().sendPacket(new UpdateJigsawC2SPacket(this.jigsaw.getPos(), new Identifier(this.attachmentTypeField.getText()), new Identifier(this.targetPoolField.getText()), this.finalStateField.getText()));
     }
 
     @Override
@@ -56,20 +56,20 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.minecraft.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.enableRepeatEvents(true);
         this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.onDone()));
         this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.onCancel()));
-        this.targetPoolField = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.translate("jigsaw_block.target_pool", new Object[0]));
+        this.targetPoolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 40, 300, 20, I18n.translate("jigsaw_block.target_pool", new Object[0]));
         this.targetPoolField.setMaxLength(128);
         this.targetPoolField.setText(this.jigsaw.getTargetPool().toString());
         this.targetPoolField.setChangedListener(string -> this.updateDoneButtonState());
         this.children.add(this.targetPoolField);
-        this.attachmentTypeField = new TextFieldWidget(this.font, this.width / 2 - 152, 80, 300, 20, I18n.translate("jigsaw_block.attachement_type", new Object[0]));
+        this.attachmentTypeField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 80, 300, 20, I18n.translate("jigsaw_block.attachement_type", new Object[0]));
         this.attachmentTypeField.setMaxLength(128);
         this.attachmentTypeField.setText(this.jigsaw.getAttachmentType().toString());
         this.attachmentTypeField.setChangedListener(string -> this.updateDoneButtonState());
         this.children.add(this.attachmentTypeField);
-        this.finalStateField = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 300, 20, I18n.translate("jigsaw_block.final_state", new Object[0]));
+        this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 300, 20, I18n.translate("jigsaw_block.final_state", new Object[0]));
         this.finalStateField.setMaxLength(256);
         this.finalStateField.setText(this.jigsaw.getFinalState());
         this.children.add(this.finalStateField);
@@ -94,7 +94,7 @@ extends Screen {
 
     @Override
     public void removed() {
-        this.minecraft.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.enableRepeatEvents(false);
     }
 
     @Override
@@ -112,11 +112,11 @@ extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        this.drawString(this.font, I18n.translate("jigsaw_block.target_pool", new Object[0]), this.width / 2 - 153, 30, 0xA0A0A0);
+        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.target_pool", new Object[0]), this.width / 2 - 153, 30, 0xA0A0A0);
         this.targetPoolField.render(mouseX, mouseY, delta);
-        this.drawString(this.font, I18n.translate("jigsaw_block.attachement_type", new Object[0]), this.width / 2 - 153, 70, 0xA0A0A0);
+        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.attachement_type", new Object[0]), this.width / 2 - 153, 70, 0xA0A0A0);
         this.attachmentTypeField.render(mouseX, mouseY, delta);
-        this.drawString(this.font, I18n.translate("jigsaw_block.final_state", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
+        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.final_state", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
         this.finalStateField.render(mouseX, mouseY, delta);
         super.render(mouseX, mouseY, delta);
     }

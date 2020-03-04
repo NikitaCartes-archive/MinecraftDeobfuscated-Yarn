@@ -22,7 +22,7 @@ import net.minecraft.util.Identifier;
 public class DragonFireballEntityRenderer
 extends EntityRenderer<DragonFireballEntity> {
     private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
-    private static final RenderLayer field_21735 = RenderLayer.getEntityCutoutNoCull(SKIN);
+    private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(SKIN);
 
     public DragonFireballEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -42,17 +42,17 @@ extends EntityRenderer<DragonFireballEntity> {
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21735);
-        DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
-        DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
-        DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
-        DragonFireballEntityRenderer.method_23837(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 1, 0, 0);
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
+        DragonFireballEntityRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
+        DragonFireballEntityRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
+        DragonFireballEntityRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
+        DragonFireballEntityRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 1, 0, 0);
         matrixStack.pop();
         super.render(dragonFireballEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    private static void method_23837(VertexConsumer vertexConsumer, Matrix4f matrix4f, Matrix3f matrix3f, int i, float f, int j, int k, int l) {
-        vertexConsumer.vertex(matrix4f, f - 0.5f, (float)j - 0.25f, 0.0f).color(255, 255, 255, 255).texture(k, l).overlay(OverlayTexture.DEFAULT_UV).light(i).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
+    private static void produceVertex(VertexConsumer vertexConsumer, Matrix4f modelMatrix, Matrix3f normalMatrix, int light, float x, int y, int textureU, int textureV) {
+        vertexConsumer.vertex(modelMatrix, x - 0.5f, (float)y - 0.25f, 0.0f).color(255, 255, 255, 255).texture(textureU, textureV).overlay(OverlayTexture.DEFAULT_UV).light(light).normal(normalMatrix, 0.0f, 1.0f, 0.0f).next();
     }
 
     @Override

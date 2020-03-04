@@ -18,7 +18,6 @@ import net.minecraft.client.gui.screen.CustomizeFlatLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
@@ -52,10 +51,10 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.minecraft.keyboard.enableRepeatEvents(true);
+        this.client.keyboard.enableRepeatEvents(true);
         this.shareText = I18n.translate("createWorld.customize.presets.share", new Object[0]);
         this.listText = I18n.translate("createWorld.customize.presets.list", new Object[0]);
-        this.customPresetField = new TextFieldWidget(this.font, 50, 40, this.width - 100, 20, this.shareText);
+        this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
         this.customPresetField.setMaxLength(1230);
         this.customPresetField.setText(this.parent.getConfigString());
         this.children.add(this.customPresetField);
@@ -63,15 +62,15 @@ extends Screen {
         this.children.add(this.listWidget);
         this.selectPresetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select", new Object[0]), buttonWidget -> {
             this.parent.setConfigString(this.customPresetField.getText());
-            this.minecraft.openScreen(this.parent);
+            this.client.openScreen(this.parent);
         }));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.minecraft.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.client.openScreen(this.parent)));
         this.updateSelectButton(this.listWidget.getSelected() != null);
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double amount) {
-        return this.listWidget.mouseScrolled(d, e, amount);
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return this.listWidget.mouseScrolled(mouseX, mouseY, amount);
     }
 
     @Override
@@ -83,12 +82,12 @@ extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.openScreen(this.parent);
+        this.client.openScreen(this.parent);
     }
 
     @Override
     public void removed() {
-        this.minecraft.keyboard.enableRepeatEvents(false);
+        this.client.keyboard.enableRepeatEvents(false);
     }
 
     @Override
@@ -97,9 +96,9 @@ extends Screen {
         this.listWidget.render(mouseX, mouseY, delta);
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 400.0f);
-        this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
-        this.drawString(this.font, this.shareText, 50, 30, 0xA0A0A0);
-        this.drawString(this.font, this.listText, 50, 70, 0xA0A0A0);
+        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 0xFFFFFF);
+        this.drawString(this.textRenderer, this.shareText, 50, 30, 0xA0A0A0);
+        this.drawString(this.textRenderer, this.listText, 50, 70, 0xA0A0A0);
         RenderSystem.popMatrix();
         this.customPresetField.render(mouseX, mouseY, delta);
         super.render(mouseX, mouseY, delta);
@@ -157,7 +156,7 @@ extends Screen {
     class SuperflatPresetsListWidget
     extends AlwaysSelectedEntryListWidget<SuperflatPresetEntry> {
         public SuperflatPresetsListWidget() {
-            super(PresetsScreen.this.minecraft, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
+            super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
             for (int i = 0; i < presets.size(); ++i) {
                 this.addEntry(new SuperflatPresetEntry());
             }
@@ -172,8 +171,8 @@ extends Screen {
         }
 
         @Override
-        protected void moveSelection(int i) {
-            super.moveSelection(i);
+        protected void moveSelection(int amount) {
+            super.moveSelection(amount);
             PresetsScreen.this.updateSelectButton(true);
         }
 
@@ -193,19 +192,14 @@ extends Screen {
             return false;
         }
 
-        @Override
-        public /* synthetic */ void setSelected(@Nullable EntryListWidget.Entry entry) {
-            this.setSelected((SuperflatPresetEntry)entry);
-        }
-
         @Environment(value=EnvType.CLIENT)
         public class SuperflatPresetEntry
         extends AlwaysSelectedEntryListWidget.Entry<SuperflatPresetEntry> {
             @Override
-            public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-                SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(i);
-                this.method_2200(k, j, superflatPreset.icon);
-                PresetsScreen.this.font.draw(superflatPreset.name, k + 18 + 5, j + 6, 0xFFFFFF);
+            public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+                SuperflatPreset superflatPreset = (SuperflatPreset)presets.get(index);
+                this.method_2200(x, y, superflatPreset.icon);
+                PresetsScreen.this.textRenderer.draw(superflatPreset.name, x + 18 + 5, y + 6, 0xFFFFFF);
             }
 
             @Override
@@ -232,8 +226,8 @@ extends Screen {
 
             private void method_2198(int i, int j) {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                SuperflatPresetsListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
-                DrawableHelper.blit(i, j, PresetsScreen.this.getBlitOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
+                SuperflatPresetsListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
+                DrawableHelper.blit(i, j, PresetsScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
             }
         }
     }

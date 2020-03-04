@@ -28,8 +28,8 @@ extends FeatureRenderer<T, M> {
     private static final Identifier SKIN = new Identifier("textures/entity/elytra.png");
     private final ElytraEntityModel<T> elytra = new ElytraEntityModel();
 
-    public ElytraFeatureRenderer(FeatureRendererContext<T, M> context) {
-        super(context);
+    public ElytraFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+        super(featureRendererContext);
     }
 
     @Override

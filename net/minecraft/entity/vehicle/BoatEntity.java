@@ -404,26 +404,23 @@ extends Entity {
         int l = MathHelper.ceil(box.y2 - this.fallVelocity);
         int m = MathHelper.floor(box.z1);
         int n = MathHelper.ceil(box.z2);
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            block12: for (int o = k; o < l; ++o) {
-                float f = 0.0f;
-                for (int p = i; p < j; ++p) {
-                    for (int q = m; q < n; ++q) {
-                        pooledMutable.set(p, o, q);
-                        FluidState fluidState = this.world.getFluidState(pooledMutable);
-                        if (fluidState.matches(FluidTags.WATER)) {
-                            f = Math.max(f, fluidState.getHeight(this.world, pooledMutable));
-                        }
-                        if (f >= 1.0f) continue block12;
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        block0: for (int o = k; o < l; ++o) {
+            float f = 0.0f;
+            for (int p = i; p < j; ++p) {
+                for (int q = m; q < n; ++q) {
+                    mutable.set(p, o, q);
+                    FluidState fluidState = this.world.getFluidState(mutable);
+                    if (fluidState.matches(FluidTags.WATER)) {
+                        f = Math.max(f, fluidState.getHeight(this.world, mutable));
                     }
+                    if (f >= 1.0f) continue block0;
                 }
-                if (!(f < 1.0f)) continue;
-                float f2 = (float)pooledMutable.getY() + f;
-                return f2;
             }
-            float f = l + 1;
-            return f;
+            if (!(f < 1.0f)) continue;
+            return (float)mutable.getY() + f;
         }
+        return l + 1;
     }
 
     public float method_7548() {
@@ -438,19 +435,18 @@ extends Entity {
         VoxelShape voxelShape = VoxelShapes.cuboid(box2);
         float f = 0.0f;
         int o = 0;
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (int p = i; p < j; ++p) {
-                for (int q = m; q < n; ++q) {
-                    int r = (p == i || p == j - 1 ? 1 : 0) + (q == m || q == n - 1 ? 1 : 0);
-                    if (r == 2) continue;
-                    for (int s = k; s < l; ++s) {
-                        if (r > 0 && (s == k || s == l - 1)) continue;
-                        pooledMutable.set(p, s, q);
-                        BlockState blockState = this.world.getBlockState(pooledMutable);
-                        if (blockState.getBlock() instanceof LilyPadBlock || !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(this.world, pooledMutable).offset(p, s, q), voxelShape, BooleanBiFunction.AND)) continue;
-                        f += blockState.getBlock().getSlipperiness();
-                        ++o;
-                    }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int p = i; p < j; ++p) {
+            for (int q = m; q < n; ++q) {
+                int r = (p == i || p == j - 1 ? 1 : 0) + (q == m || q == n - 1 ? 1 : 0);
+                if (r == 2) continue;
+                for (int s = k; s < l; ++s) {
+                    if (r > 0 && (s == k || s == l - 1)) continue;
+                    mutable.set(p, s, q);
+                    BlockState blockState = this.world.getBlockState(mutable);
+                    if (blockState.getBlock() instanceof LilyPadBlock || !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(this.world, mutable).offset(p, s, q), voxelShape, BooleanBiFunction.AND)) continue;
+                    f += blockState.getBlock().getSlipperiness();
+                    ++o;
                 }
             }
         }
@@ -467,17 +463,16 @@ extends Entity {
         int n = MathHelper.ceil(box.z2);
         boolean bl = false;
         this.waterLevel = Double.MIN_VALUE;
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (int o = i; o < j; ++o) {
-                for (int p = k; p < l; ++p) {
-                    for (int q = m; q < n; ++q) {
-                        pooledMutable.set(o, p, q);
-                        FluidState fluidState = this.world.getFluidState(pooledMutable);
-                        if (!fluidState.matches(FluidTags.WATER)) continue;
-                        float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
-                        this.waterLevel = Math.max((double)f, this.waterLevel);
-                        bl |= box.y1 < (double)f;
-                    }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int o = i; o < j; ++o) {
+            for (int p = k; p < l; ++p) {
+                for (int q = m; q < n; ++q) {
+                    mutable.set(o, p, q);
+                    FluidState fluidState = this.world.getFluidState(mutable);
+                    if (!fluidState.matches(FluidTags.WATER)) continue;
+                    float f = (float)p + fluidState.getHeight(this.world, mutable);
+                    this.waterLevel = Math.max((double)f, this.waterLevel);
+                    bl |= box.y1 < (double)f;
                 }
             }
         }
@@ -495,20 +490,18 @@ extends Entity {
         int m = MathHelper.floor(box.z1);
         int n = MathHelper.ceil(box.z2);
         boolean bl = false;
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (int o = i; o < j; ++o) {
-                for (int p = k; p < l; ++p) {
-                    for (int q = m; q < n; ++q) {
-                        pooledMutable.set(o, p, q);
-                        FluidState fluidState = this.world.getFluidState(pooledMutable);
-                        if (!fluidState.matches(FluidTags.WATER) || !(d < (double)((float)pooledMutable.getY() + fluidState.getHeight(this.world, pooledMutable)))) continue;
-                        if (fluidState.isStill()) {
-                            bl = true;
-                            continue;
-                        }
-                        Location location = Location.UNDER_FLOWING_WATER;
-                        return location;
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int o = i; o < j; ++o) {
+            for (int p = k; p < l; ++p) {
+                for (int q = m; q < n; ++q) {
+                    mutable.set(o, p, q);
+                    FluidState fluidState = this.world.getFluidState(mutable);
+                    if (!fluidState.matches(FluidTags.WATER) || !(d < (double)((float)mutable.getY() + fluidState.getHeight(this.world, mutable)))) continue;
+                    if (fluidState.isStill()) {
+                        bl = true;
+                        continue;
                     }
+                    return Location.UNDER_FLOWING_WATER;
                 }
             }
         }
@@ -696,7 +689,7 @@ extends Entity {
                 }
             }
             this.fallDistance = 0.0f;
-        } else if (!this.world.getFluidState(new BlockPos(this).down()).matches(FluidTags.WATER) && heightDifference < 0.0) {
+        } else if (!this.world.getFluidState(this.getSenseCenterPos().down()).matches(FluidTags.WATER) && heightDifference < 0.0) {
             this.fallDistance = (float)((double)this.fallDistance - heightDifference);
         }
     }
@@ -752,7 +745,7 @@ extends Entity {
 
     @Override
     protected boolean canAddPassenger(Entity passenger) {
-        return this.getPassengerList().size() < 2 && !this.isInFluid(FluidTags.WATER);
+        return this.getPassengerList().size() < 2 && !this.isSubmergedIn(FluidTags.WATER);
     }
 
     @Override

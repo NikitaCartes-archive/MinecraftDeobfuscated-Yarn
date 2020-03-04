@@ -140,6 +140,8 @@ CommandOutput {
     private double x;
     private double y;
     private double z;
+    private Vec3d field_22467;
+    private BlockPos field_22468;
     private Vec3d velocity = Vec3d.ZERO;
     public float yaw;
     public float pitch;
@@ -335,10 +337,6 @@ CommandOutput {
         double e = other.y - this.y;
         double f = other.z - this.z;
         return d * d + e * e + f * f < radius * radius;
-    }
-
-    public BlockPos getSenseCenterPos() {
-        return new BlockPos(this);
     }
 
     protected void setRotation(float yaw, float pitch) {
@@ -589,13 +587,13 @@ CommandOutput {
     }
 
     protected float getJumpVelocityMultiplier() {
-        float f = this.world.getBlockState(new BlockPos(this)).getBlock().getJumpVelocityMultiplier();
+        float f = this.world.getBlockState(this.getSenseCenterPos()).getBlock().getJumpVelocityMultiplier();
         float g = this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getJumpVelocityMultiplier();
         return (double)f == 1.0 ? g : f;
     }
 
     protected float getVelocityMultiplier() {
-        Block block = this.world.getBlockState(new BlockPos(this)).getBlock();
+        Block block = this.world.getBlockState(this.getSenseCenterPos()).getBlock();
         float f = block.getVelocityMultiplier();
         if (block == Blocks.WATER || block == Blocks.BUBBLE_COLUMN) {
             return f;
@@ -757,25 +755,24 @@ CommandOutput {
 
     protected void checkBlockCollision() {
         Box box = this.getBoundingBox();
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.x1 + 0.001, box.y1 + 0.001, box.z1 + 0.001);
-             BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.x2 - 0.001, box.y2 - 0.001, box.z2 - 0.001);
-             BlockPos.PooledMutable pooledMutable3 = BlockPos.PooledMutable.get();){
-            if (this.world.isRegionLoaded(pooledMutable, pooledMutable2)) {
-                for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); ++i) {
-                    for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); ++j) {
-                        for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); ++k) {
-                            pooledMutable3.set(i, j, k);
-                            BlockState blockState = this.world.getBlockState(pooledMutable3);
-                            try {
-                                blockState.onEntityCollision(this.world, pooledMutable3, this);
-                                this.onBlockCollision(blockState);
-                                continue;
-                            } catch (Throwable throwable) {
-                                CrashReport crashReport = CrashReport.create(throwable, "Colliding entity with block");
-                                CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
-                                CrashReportSection.addBlockInfo(crashReportSection, pooledMutable3, blockState);
-                                throw new CrashException(crashReport);
-                            }
+        BlockPos blockPos = new BlockPos(box.x1 + 0.001, box.y1 + 0.001, box.z1 + 0.001);
+        BlockPos blockPos2 = new BlockPos(box.x2 - 0.001, box.y2 - 0.001, box.z2 - 0.001);
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        if (this.world.isRegionLoaded(blockPos, blockPos2)) {
+            for (int i = blockPos.getX(); i <= blockPos2.getX(); ++i) {
+                for (int j = blockPos.getY(); j <= blockPos2.getY(); ++j) {
+                    for (int k = blockPos.getZ(); k <= blockPos2.getZ(); ++k) {
+                        mutable.set(i, j, k);
+                        BlockState blockState = this.world.getBlockState(mutable);
+                        try {
+                            blockState.onEntityCollision(this.world, mutable, this);
+                            this.onBlockCollision(blockState);
+                            continue;
+                        } catch (Throwable throwable) {
+                            CrashReport crashReport = CrashReport.create(throwable, "Colliding entity with block");
+                            CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
+                            CrashReportSection.addBlockInfo(crashReportSection, mutable, blockState);
+                            throw new CrashException(crashReport);
                         }
                     }
                 }
@@ -849,7 +846,7 @@ CommandOutput {
         return null;
     }
 
-    public final boolean isFireImmune() {
+    public boolean isFireImmune() {
         return this.getType().isFireImmune();
     }
 
@@ -870,14 +867,12 @@ CommandOutput {
     }
 
     private boolean isBeingRainedOn() {
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.getEntityPos(this);){
-            boolean bl = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.set(this.getX(), this.getY() + (double)this.dimensions.height, this.getZ()));
-            return bl;
-        }
+        BlockPos blockPos = this.getSenseCenterPos();
+        return this.world.hasRain(blockPos) || this.world.hasRain(blockPos.add(0.0, this.dimensions.height, 0.0));
     }
 
     private boolean isInsideBubbleColumn() {
-        return this.world.getBlockState(new BlockPos(this)).getBlock() == Blocks.BUBBLE_COLUMN;
+        return this.world.getBlockState(this.getSenseCenterPos()).getBlock() == Blocks.BUBBLE_COLUMN;
     }
 
     public boolean isTouchingWaterOrRain() {
@@ -992,7 +987,7 @@ CommandOutput {
         }
     }
 
-    public boolean isInFluid(Tag<Fluid> fluidTag) {
+    public boolean isSubmergedIn(Tag<Fluid> fluidTag) {
         return this.isSubmergedIn(fluidTag, false);
     }
 
@@ -1274,7 +1269,7 @@ CommandOutput {
             tag.putInt("Dimension", this.dimension.getRawId());
             tag.putBoolean("Invulnerable", this.invulnerable);
             tag.putInt("PortalCooldown", this.netherPortalCooldown);
-            tag.putUuid("UUID", this.getUuid());
+            tag.putUuidOld("UUID", this.getUuid());
             Text text = this.getCustomName();
             if (text != null) {
                 tag.putString("CustomName", Text.Serializer.toJson(text));
@@ -1344,8 +1339,8 @@ CommandOutput {
             }
             this.invulnerable = tag.getBoolean("Invulnerable");
             this.netherPortalCooldown = tag.getInt("PortalCooldown");
-            if (tag.containsUuid("UUID")) {
-                this.uuid = tag.getUuid("UUID");
+            if (tag.containsUuidOld("UUID")) {
+                this.uuid = tag.getUuidOld("UUID");
                 this.uuidString = this.uuid.toString();
             }
             if (!(Double.isFinite(this.getX()) && Double.isFinite(this.getY()) && Double.isFinite(this.getZ()))) {
@@ -1451,17 +1446,15 @@ CommandOutput {
         if (this.noClip) {
             return false;
         }
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (int i = 0; i < 8; ++i) {
-                int j = MathHelper.floor(this.getY() + (double)(((float)((i >> 0) % 2) - 0.5f) * 0.1f) + (double)this.standingEyeHeight);
-                int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5f) * this.dimensions.width * 0.8f));
-                int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * this.dimensions.width * 0.8f));
-                if (pooledMutable.getX() == k && pooledMutable.getY() == j && pooledMutable.getZ() == l) continue;
-                pooledMutable.set(k, j, l);
-                if (!this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) continue;
-                boolean bl = true;
-                return bl;
-            }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int i = 0; i < 8; ++i) {
+            int j = MathHelper.floor(this.getY() + (double)(((float)((i >> 0) % 2) - 0.5f) * 0.1f) + (double)this.standingEyeHeight);
+            int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5f) * this.dimensions.width * 0.8f));
+            int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * this.dimensions.width * 0.8f));
+            if (mutable.getX() == k && mutable.getY() == j && mutable.getZ() == l) continue;
+            mutable.set(k, j, l);
+            if (!this.world.getBlockState(mutable).canSuffocate(this.world, mutable)) continue;
+            return true;
         }
         return false;
     }
@@ -1862,7 +1855,7 @@ CommandOutput {
         double d = Double.MAX_VALUE;
         for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
             double f;
-            mutable.set(blockPos).setOffset(direction2);
+            mutable.move(blockPos, direction2);
             if (this.world.getBlockState(mutable).isFullCube(this.world, mutable)) continue;
             double e = vec3d.getComponentAlongAxis(direction2.getAxis());
             double d2 = f = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - e : e;
@@ -2243,14 +2236,6 @@ CommandOutput {
     public void sendMessage(Text message) {
     }
 
-    public BlockPos getBlockPos() {
-        return new BlockPos(this);
-    }
-
-    public Vec3d getPosVector() {
-        return this.getPos();
-    }
-
     public World getEntityWorld() {
         return this.world;
     }
@@ -2444,7 +2429,7 @@ CommandOutput {
         int[][] is = new int[][]{{direction2.getOffsetX(), direction2.getOffsetZ()}, {-direction2.getOffsetX(), -direction2.getOffsetZ()}, {-direction.getOffsetX() + direction2.getOffsetX(), -direction.getOffsetZ() + direction2.getOffsetZ()}, {-direction.getOffsetX() - direction2.getOffsetX(), -direction.getOffsetZ() - direction2.getOffsetZ()}, {direction.getOffsetX() + direction2.getOffsetX(), direction.getOffsetZ() + direction2.getOffsetZ()}, {direction.getOffsetX() - direction2.getOffsetX(), direction.getOffsetZ() - direction2.getOffsetZ()}, {-direction.getOffsetX(), -direction.getOffsetZ()}, {direction.getOffsetX(), direction.getOffsetZ()}};
         BlockPos blockPos = new BlockPos(this.getX(), this.getY(), this.getZ());
         EntityContext entityContext = EntityContext.of(livingEntity);
-        ImmutableList<EntityPose> immutableList = livingEntity.method_24831();
+        ImmutableList<EntityPose> immutableList = livingEntity.getPoses();
         for (EntityPose entityPose : immutableList) {
             Iterator iterator = field_22417.get((Object)entityPose).iterator();
             while (iterator.hasNext()) {
@@ -2536,24 +2521,23 @@ CommandOutput {
         boolean bl2 = false;
         Vec3d vec3d = Vec3d.ZERO;
         int o = 0;
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (int p = i; p < j; ++p) {
-                for (int q = k; q < l; ++q) {
-                    for (int r = m; r < n; ++r) {
-                        double f;
-                        pooledMutable.set(p, q, r);
-                        FluidState fluidState = this.world.getFluidState(pooledMutable);
-                        if (!fluidState.matches(tag) || !((f = (double)((float)q + fluidState.getHeight(this.world, pooledMutable))) >= box.y1)) continue;
-                        bl2 = true;
-                        e = Math.max(f - box.y1, e);
-                        if (!bl) continue;
-                        Vec3d vec3d2 = fluidState.getVelocity(this.world, pooledMutable);
-                        if (e < 0.4) {
-                            vec3d2 = vec3d2.multiply(e);
-                        }
-                        vec3d = vec3d.add(vec3d2);
-                        ++o;
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int p = i; p < j; ++p) {
+            for (int q = k; q < l; ++q) {
+                for (int r = m; r < n; ++r) {
+                    double f;
+                    mutable.set(p, q, r);
+                    FluidState fluidState = this.world.getFluidState(mutable);
+                    if (!fluidState.matches(tag) || !((f = (double)((float)q + fluidState.getHeight(this.world, mutable))) >= box.y1)) continue;
+                    bl2 = true;
+                    e = Math.max(f - box.y1, e);
+                    if (!bl) continue;
+                    Vec3d vec3d2 = fluidState.getVelocity(this.world, mutable);
+                    if (e < 0.4) {
+                        vec3d2 = vec3d2.multiply(e);
                     }
+                    vec3d = vec3d.add(vec3d2);
+                    ++o;
                 }
             }
         }
@@ -2589,7 +2573,11 @@ CommandOutput {
     }
 
     public Vec3d getPos() {
-        return new Vec3d(this.x, this.y, this.z);
+        return this.field_22467;
+    }
+
+    public BlockPos getSenseCenterPos() {
+        return this.field_22468;
     }
 
     public Vec3d getVelocity() {
@@ -2648,6 +2636,8 @@ CommandOutput {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.field_22467 = new Vec3d(x, y, z);
+        this.field_22468 = new BlockPos(x, y, z);
     }
 
     public void checkDespawn() {

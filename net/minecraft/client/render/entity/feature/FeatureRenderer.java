@@ -24,10 +24,10 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
         this.context = context;
     }
 
-    protected static <T extends LivingEntity> void render(EntityModel<T> contextModel, EntityModel<T> model, Identifier texture, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float f, float red, float green, float blue) {
+    protected static <T extends LivingEntity> void render(EntityModel<T> contextModel, EntityModel<T> model, Identifier texture, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float age, float headYaw, float headPitch, float tickDelta, float red, float green, float blue) {
         if (!entity.isInvisible()) {
             contextModel.copyStateTo(model);
-            model.animateModel(entity, limbAngle, limbDistance, f);
+            model.animateModel(entity, limbAngle, limbDistance, tickDelta);
             model.setAngles(entity, limbAngle, limbDistance, age, headYaw, headPitch);
             FeatureRenderer.renderModel(model, texture, matrices, vertexConsumers, light, entity, red, green, blue);
         }

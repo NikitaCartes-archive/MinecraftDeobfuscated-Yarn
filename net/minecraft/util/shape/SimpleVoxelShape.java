@@ -12,8 +12,8 @@ import net.minecraft.util.shape.VoxelShape;
 
 public final class SimpleVoxelShape
 extends VoxelShape {
-    protected SimpleVoxelShape(VoxelSet shape) {
-        super(shape);
+    protected SimpleVoxelShape(VoxelSet voxelSet) {
+        super(voxelSet);
     }
 
     @Override

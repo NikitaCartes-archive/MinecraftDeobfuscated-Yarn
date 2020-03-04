@@ -28,6 +28,18 @@ implements Position {
         return new Vec3d(d, e, f);
     }
 
+    public static Vec3d method_24953(Vec3i vec3i) {
+        return new Vec3d((double)vec3i.getX() + 0.5, (double)vec3i.getY() + 0.5, (double)vec3i.getZ() + 0.5);
+    }
+
+    public static Vec3d method_24954(Vec3i vec3i) {
+        return new Vec3d(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+    }
+
+    public static Vec3d method_24955(Vec3i vec3i) {
+        return new Vec3d((double)vec3i.getX() + 0.5, vec3i.getY(), (double)vec3i.getZ() + 0.5);
+    }
+
     public Vec3d(double x, double y, double z) {
         this.x = x;
         this.y = y;
@@ -36,10 +48,6 @@ implements Position {
 
     public Vec3d(Vector3f vector3f) {
         this(vector3f.getX(), vector3f.getY(), vector3f.getZ());
-    }
-
-    public Vec3d(Vec3i vec3i) {
-        this(vec3i.getX(), vec3i.getY(), vec3i.getZ());
     }
 
     public Vec3d reverseSubtract(Vec3d vec3d) {

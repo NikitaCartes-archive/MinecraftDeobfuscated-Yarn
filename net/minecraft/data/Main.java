@@ -15,6 +15,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.SnbtProvider;
+import net.minecraft.data.client.BlockStateDefinitionProvider;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
@@ -60,6 +61,9 @@ public class Main {
         DataGenerator dataGenerator = new DataGenerator(output, inputs);
         if (includeClient || includeServer) {
             dataGenerator.install(new SnbtProvider(dataGenerator).addWriter(new StructureValidatorProvider()));
+        }
+        if (includeClient) {
+            dataGenerator.install(new BlockStateDefinitionProvider(dataGenerator));
         }
         if (includeServer) {
             dataGenerator.install(new FluidTagsProvider(dataGenerator));

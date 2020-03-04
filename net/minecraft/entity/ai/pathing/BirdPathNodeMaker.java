@@ -49,7 +49,7 @@ extends LandPathNodeMaker {
         } else {
             i = MathHelper.floor(this.entity.getY() + 0.5);
         }
-        if (this.entity.getPathfindingPenalty(pathNodeType = this.method_9(this.entity, (blockPos = new BlockPos(this.entity)).getX(), i, blockPos.getZ())) < 0.0f) {
+        if (this.entity.getPathfindingPenalty(pathNodeType = this.method_9(this.entity, (blockPos = this.entity.getSenseCenterPos()).getX(), i, blockPos.getZ())) < 0.0f) {
             HashSet<BlockPos> set = Sets.newHashSet();
             set.add(new BlockPos(this.entity.getBoundingBox().x1, (double)i, this.entity.getBoundingBox().z1));
             set.add(new BlockPos(this.entity.getBoundingBox().x1, (double)i, this.entity.getBoundingBox().z2));
@@ -211,7 +211,7 @@ extends LandPathNodeMaker {
     public PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors) {
         EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
         PathNodeType pathNodeType = PathNodeType.BLOCKED;
-        BlockPos blockPos = new BlockPos(mob);
+        BlockPos blockPos = mob.getSenseCenterPos();
         pathNodeType = this.getNodeType(world, x, y, z, sizeX, sizeY, sizeZ, canOpenDoors, canEnterOpenDoors, enumSet, pathNodeType, blockPos);
         if (enumSet.contains((Object)PathNodeType.FENCE)) {
             return PathNodeType.FENCE;

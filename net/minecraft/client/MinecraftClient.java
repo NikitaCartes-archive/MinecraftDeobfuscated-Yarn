@@ -138,9 +138,9 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.decoration.LeadKnotEntity;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -1573,7 +1573,7 @@ WindowEventHandler {
             Entity entity = ((EntityHitResult)this.crosshairTarget).getEntity();
             if (entity instanceof PaintingEntity) {
                 itemStack = new ItemStack(Items.PAINTING);
-            } else if (entity instanceof LeadKnotEntity) {
+            } else if (entity instanceof LeashKnotEntity) {
                 itemStack = new ItemStack(Items.LEAD);
             } else if (entity instanceof ItemFrameEntity) {
                 ItemFrameEntity itemFrameEntity = (ItemFrameEntity)entity;
@@ -1612,7 +1612,7 @@ WindowEventHandler {
                 itemStack = new ItemStack(((BoatEntity)entity).asItem());
             } else if (entity instanceof ArmorStandEntity) {
                 itemStack = new ItemStack(Items.ARMOR_STAND);
-            } else if (entity instanceof EnderCrystalEntity) {
+            } else if (entity instanceof EndCrystalEntity) {
                 itemStack = new ItemStack(Items.END_CRYSTAL);
             } else {
                 SpawnEggItem spawnEggItem = SpawnEggItem.forEntity(entity.getType());
@@ -1857,7 +1857,7 @@ WindowEventHandler {
                 }
                 return MusicTracker.MusicType.END;
             }
-            Biome.Category category = this.player.world.getBiome(new BlockPos(this.player)).getCategory();
+            Biome.Category category = this.player.world.getBiome(this.player.getSenseCenterPos()).getCategory();
             if (this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER) || this.player.isSubmergedInWater() && !this.musicTracker.isPlayingType(MusicTracker.MusicType.GAME) && (category == Biome.Category.OCEAN || category == Biome.Category.RIVER)) {
                 return MusicTracker.MusicType.UNDER_WATER;
             }

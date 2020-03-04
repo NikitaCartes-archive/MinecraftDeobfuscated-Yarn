@@ -32,16 +32,16 @@ public class VillagerResourceMetadata {
         private static final Map<String, HatType> byName;
         private final String name;
 
-        private HatType(String string2) {
-            this.name = string2;
+        private HatType(String name) {
+            this.name = name;
         }
 
         public String getName() {
             return this.name;
         }
 
-        public static HatType from(String string) {
-            return byName.getOrDefault(string, NONE);
+        public static HatType from(String name) {
+            return byName.getOrDefault(name, NONE);
         }
 
         static {

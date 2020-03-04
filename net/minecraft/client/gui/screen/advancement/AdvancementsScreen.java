@@ -52,7 +52,7 @@ implements ClientAdvancementManager.Listener {
     @Override
     public void removed() {
         this.advancementHandler.setListener(null);
-        ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
+        ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
         if (clientPlayNetworkHandler != null) {
             clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.close());
         }
@@ -74,9 +74,9 @@ implements ClientAdvancementManager.Listener {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (this.minecraft.options.keyAdvancements.matchesKey(keyCode, scanCode)) {
-            this.minecraft.openScreen(null);
-            this.minecraft.mouse.lockCursor();
+        if (this.client.options.keyAdvancements.matchesKey(keyCode, scanCode)) {
+            this.client.openScreen(null);
+            this.client.mouse.lockCursor();
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -111,9 +111,9 @@ implements ClientAdvancementManager.Listener {
         if (advancementTab == null) {
             AdvancementsScreen.fill(x + 9, y + 18, x + 9 + 234, y + 18 + 113, -16777216);
             String string = I18n.translate("advancements.empty", new Object[0]);
-            int i = this.font.getStringWidth(string);
-            this.font.draw(string, x + 9 + 117 - i / 2, y + 18 + 56 - this.font.fontHeight / 2, -1);
-            this.font.draw(":(", x + 9 + 117 - this.font.getStringWidth(":(") / 2, y + 18 + 113 - this.font.fontHeight, -1);
+            int i = this.textRenderer.getStringWidth(string);
+            this.textRenderer.draw(string, x + 9 + 117 - i / 2, y + 18 + 56 - this.textRenderer.fontHeight / 2, -1);
+            this.textRenderer.draw(":(", x + 9 + 117 - this.textRenderer.getStringWidth(":(") / 2, y + 18 + 113 - this.textRenderer.fontHeight, -1);
             return;
         }
         RenderSystem.pushMatrix();
@@ -127,10 +127,10 @@ implements ClientAdvancementManager.Listener {
     public void drawWidgets(int x, int y) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
-        this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
+        this.client.getTextureManager().bindTexture(WINDOW_TEXTURE);
         this.blit(x, y, 0, 0, 252, 140);
         if (this.tabs.size() > 1) {
-            this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
+            this.client.getTextureManager().bindTexture(TABS_TEXTURE);
             for (AdvancementTab advancementTab : this.tabs.values()) {
                 advancementTab.drawBackground(x, y, advancementTab == this.selectedTab);
             }
@@ -141,7 +141,7 @@ implements ClientAdvancementManager.Listener {
             }
             RenderSystem.disableBlend();
         }
-        this.font.draw(I18n.translate("gui.advancements", new Object[0]), x + 8, y + 6, 0x404040);
+        this.textRenderer.draw(I18n.translate("gui.advancements", new Object[0]), x + 8, y + 6, 0x404040);
     }
 
     private void drawWidgetTooltip(int mouseX, int mouseY, int x, int y) {
@@ -164,7 +164,7 @@ implements ClientAdvancementManager.Listener {
 
     @Override
     public void onRootAdded(Advancement root) {
-        AdvancementTab advancementTab = AdvancementTab.create(this.minecraft, this, this.tabs.size(), root);
+        AdvancementTab advancementTab = AdvancementTab.create(this.client, this, this.tabs.size(), root);
         if (advancementTab == null) {
             return;
         }

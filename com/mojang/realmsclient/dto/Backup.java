@@ -58,7 +58,7 @@ extends ValueObject {
                 continue;
             }
             char c = Character.toUpperCase(string.charAt(0));
-            stringBuilder.append(c).append(string.substring(1, string.length())).append(" ");
+            stringBuilder.append(c).append(string.substring(1)).append(" ");
         }
         return stringBuilder.toString();
     }

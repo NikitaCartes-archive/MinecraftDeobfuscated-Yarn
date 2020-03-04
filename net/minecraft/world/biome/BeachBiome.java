@@ -6,6 +6,7 @@ package net.minecraft.world.biome;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
@@ -19,7 +20,7 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 public final class BeachBiome
 extends Biome {
     public BeachBiome() {
-        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.BEACH).depth(0.0f).scale(0.025f).temperature(0.8f).downfall(0.4f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0f, 0.0f, -0.1f, 0.0f, 0.9935f))));
+        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG).precipitation(Biome.Precipitation.RAIN).category(Biome.Category.BEACH).depth(0.0f).scale(0.025f).temperature(0.8f).downfall(0.4f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(SoundEvents.AMBIENT_CAVE).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0f, 0.0f, -0.1f, 0.0f, 0.9935f))));
         this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
         this.addStructureFeature(Feature.BURIED_TREASURE.configure(new BuriedTreasureFeatureConfig(0.01f)));
         this.addStructureFeature(Feature.SHIPWRECK.configure(new ShipwreckFeatureConfig(true)));

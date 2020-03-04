@@ -49,7 +49,7 @@ public class GiveCommand {
                     itemEntity.setDespawnImmediately();
                 }
                 serverPlayerEntity.world.playSound(null, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
-                serverPlayerEntity.playerContainer.sendContentUpdates();
+                serverPlayerEntity.playerScreenHandler.sendContentUpdates();
             }
         }
         if (targets.size() == 1) {

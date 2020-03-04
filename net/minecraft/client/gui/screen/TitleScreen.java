@@ -69,7 +69,7 @@ extends Screen {
     }
 
     private boolean areRealmsNotificationsEnabled() {
-        return this.minecraft.options.realmsNotifications && this.realmsNotificationGui != null;
+        return this.client.options.realmsNotifications && this.realmsNotificationGui != null;
     }
 
     @Override
@@ -96,54 +96,54 @@ extends Screen {
     @Override
     protected void init() {
         if (this.splashText == null) {
-            this.splashText = this.minecraft.getSplashTextLoader().get();
+            this.splashText = this.client.getSplashTextLoader().get();
         }
-        this.copyrightTextWidth = this.font.getStringWidth("Copyright Mojang AB. Do not distribute!");
+        this.copyrightTextWidth = this.textRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
         this.copyrightTextX = this.width - this.copyrightTextWidth - 2;
         int i = 24;
         int j = this.height / 4 + 48;
-        if (this.minecraft.isDemo()) {
+        if (this.client.isDemo()) {
             this.initWidgetsDemo(j, 24);
         } else {
             this.initWidgetsNormal(j, 24);
         }
-        this.addButton(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_LOCATION, 256, 256, buttonWidget -> this.minecraft.openScreen(new LanguageOptionsScreen((Screen)this, this.minecraft.options, this.minecraft.getLanguageManager())), I18n.translate("narrator.button.language", new Object[0])));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options", new Object[0]), buttonWidget -> this.minecraft.openScreen(new SettingsScreen(this, this.minecraft.options))));
-        this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit", new Object[0]), buttonWidget -> this.minecraft.scheduleStop()));
-        this.addButton(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, buttonWidget -> this.minecraft.openScreen(new AccessibilityScreen(this, this.minecraft.options)), I18n.translate("narrator.button.accessibility", new Object[0])));
-        this.minecraft.setConnectedToRealms(false);
-        if (this.minecraft.options.realmsNotifications && !this.realmsNotificationsInitialized) {
+        this.addButton(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_LOCATION, 256, 256, buttonWidget -> this.client.openScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), I18n.translate("narrator.button.language", new Object[0])));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options", new Object[0]), buttonWidget -> this.client.openScreen(new SettingsScreen(this, this.client.options))));
+        this.addButton(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit", new Object[0]), buttonWidget -> this.client.scheduleStop()));
+        this.addButton(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, buttonWidget -> this.client.openScreen(new AccessibilityScreen(this, this.client.options)), I18n.translate("narrator.button.accessibility", new Object[0])));
+        this.client.setConnectedToRealms(false);
+        if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
             RealmsBridge realmsBridge = new RealmsBridge();
             this.realmsNotificationGui = realmsBridge.getNotificationScreen(this);
             this.realmsNotificationsInitialized = true;
         }
         if (this.areRealmsNotificationsEnabled()) {
-            this.realmsNotificationGui.init(this.minecraft, this.width, this.height);
+            this.realmsNotificationGui.init(this.client, this.width, this.height);
         }
     }
 
     private void initWidgetsNormal(int y, int spacingY) {
-        this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, I18n.translate("menu.singleplayer", new Object[0]), buttonWidget -> this.minecraft.openScreen(new SelectWorldScreen(this))));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, I18n.translate("menu.singleplayer", new Object[0]), buttonWidget -> this.client.openScreen(new SelectWorldScreen(this))));
         this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, I18n.translate("menu.multiplayer", new Object[0]), buttonWidget -> {
-            if (this.minecraft.options.skipMultiplayerWarning) {
-                this.minecraft.openScreen(new MultiplayerScreen(this));
+            if (this.client.options.skipMultiplayerWarning) {
+                this.client.openScreen(new MultiplayerScreen(this));
             } else {
-                this.minecraft.openScreen(new MultiplayerWarningScreen(this));
+                this.client.openScreen(new MultiplayerWarningScreen(this));
             }
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, I18n.translate("menu.online", new Object[0]), buttonWidget -> this.switchToRealms()));
     }
 
     private void initWidgetsDemo(int y, int spacingY) {
-        this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, I18n.translate("menu.playdemo", new Object[0]), buttonWidget -> this.minecraft.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.DEMO_LEVEL_INFO)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, I18n.translate("menu.playdemo", new Object[0]), buttonWidget -> this.client.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.DEMO_LEVEL_INFO)));
         this.buttonResetDemo = this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, I18n.translate("menu.resetdemo", new Object[0]), buttonWidget -> {
-            LevelStorage levelStorage = this.minecraft.getLevelStorage();
+            LevelStorage levelStorage = this.client.getLevelStorage();
             LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
             if (levelProperties != null) {
-                this.minecraft.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion", new Object[0]), new TranslatableText("selectWorld.deleteWarning", levelProperties.getLevelName()), I18n.translate("selectWorld.deleteButton", new Object[0]), I18n.translate("gui.cancel", new Object[0])));
+                this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion", new Object[0]), new TranslatableText("selectWorld.deleteWarning", levelProperties.getLevelName()), I18n.translate("selectWorld.deleteButton", new Object[0]), I18n.translate("gui.cancel", new Object[0])));
             }
         }));
-        LevelStorage levelStorage = this.minecraft.getLevelStorage();
+        LevelStorage levelStorage = this.client.getLevelStorage();
         LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
         if (levelProperties == null) {
             this.buttonResetDemo.active = false;
@@ -166,7 +166,7 @@ extends Screen {
         int i = 274;
         int j = this.width / 2 - 137;
         int k = 30;
-        this.minecraft.getTextureManager().bindTexture(PANORAMA_OVERLAY);
+        this.client.getTextureManager().bindTexture(PANORAMA_OVERLAY);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0f, 1.0f)) : 1.0f);
@@ -176,7 +176,7 @@ extends Screen {
         if ((l & 0xFC000000) == 0) {
             return;
         }
-        this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
+        this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, g);
         if (this.isMinceraft) {
             this.blit(j + 0, 30, 0, 0, 99, 44);
@@ -188,25 +188,25 @@ extends Screen {
             this.blit(j + 0, 30, 0, 0, 155, 44);
             this.blit(j + 155, 30, 0, 45, 155, 44);
         }
-        this.minecraft.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
+        this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
         TitleScreen.blit(j + 88, 67, 0.0f, 0.0f, 98, 14, 128, 16);
         if (this.splashText != null) {
             RenderSystem.pushMatrix();
             RenderSystem.translatef(this.width / 2 + 90, 70.0f, 0.0f);
             RenderSystem.rotatef(-20.0f, 0.0f, 0.0f, 1.0f);
             float h = 1.8f - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0f * ((float)Math.PI * 2)) * 0.1f);
-            h = h * 100.0f / (float)(this.font.getStringWidth(this.splashText) + 32);
+            h = h * 100.0f / (float)(this.textRenderer.getStringWidth(this.splashText) + 32);
             RenderSystem.scalef(h, h, h);
-            this.drawCenteredString(this.font, this.splashText, 0, -8, 0xFFFF00 | l);
+            this.drawCenteredString(this.textRenderer, this.splashText, 0, -8, 0xFFFF00 | l);
             RenderSystem.popMatrix();
         }
         String string = "Minecraft " + SharedConstants.getGameVersion().getName();
-        string = this.minecraft.isDemo() ? string + " Demo" : string + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType());
-        if (this.minecraft.isModded()) {
+        string = this.client.isDemo() ? string + " Demo" : string + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType());
+        if (this.client.isModded()) {
             string = string + I18n.translate("menu.modded", new Object[0]);
         }
-        this.drawString(this.font, string, 2, this.height - 10, 0xFFFFFF | l);
-        this.drawString(this.font, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
+        this.drawString(this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | l);
+        this.drawString(this.textRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
         if (mouseX > this.copyrightTextX && mouseX < this.copyrightTextX + this.copyrightTextWidth && mouseY > this.height - 10 && mouseY < this.height) {
             TitleScreen.fill(this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 0xFFFFFF | l);
         }
@@ -228,7 +228,7 @@ extends Screen {
             return true;
         }
         if (mouseX > (double)this.copyrightTextX && mouseX < (double)(this.copyrightTextX + this.copyrightTextWidth) && mouseY > (double)(this.height - 10) && mouseY < (double)this.height) {
-            this.minecraft.openScreen(new CreditsScreen(false, Runnables.doNothing()));
+            this.client.openScreen(new CreditsScreen(false, Runnables.doNothing()));
         }
         return false;
     }
@@ -242,10 +242,10 @@ extends Screen {
 
     private void onDemoDeletionConfirmed(boolean delete) {
         if (delete) {
-            LevelStorage levelStorage = this.minecraft.getLevelStorage();
+            LevelStorage levelStorage = this.client.getLevelStorage();
             levelStorage.deleteLevel("Demo_World");
         }
-        this.minecraft.openScreen(this);
+        this.client.openScreen(this);
     }
 }
 

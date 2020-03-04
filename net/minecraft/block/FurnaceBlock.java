@@ -11,9 +11,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.FurnaceBlockEntity;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -34,10 +34,10 @@ extends AbstractFurnaceBlock {
     }
 
     @Override
-    protected void openContainer(World world, BlockPos pos, PlayerEntity player) {
+    protected void openScreen(World world, BlockPos pos, PlayerEntity player) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof FurnaceBlockEntity) {
-            player.openContainer((NameableContainerFactory)((Object)blockEntity));
+            player.openHandledScreen((NameableScreenHandlerFactory)((Object)blockEntity));
             player.incrementStat(Stats.INTERACT_WITH_FURNACE);
         }
     }

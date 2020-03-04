@@ -24,7 +24,7 @@ public abstract class SaplingGenerator {
             return false;
         }
         iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
-        ((BranchedTreeFeatureConfig)configuredFeature.config).method_23916();
+        ((BranchedTreeFeatureConfig)configuredFeature.config).ignoreFluidCheck();
         if (configuredFeature.generate(iWorld, chunkGenerator, random, blockPos)) {
             return true;
         }

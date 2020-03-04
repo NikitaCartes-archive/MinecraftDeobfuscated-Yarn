@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -18,6 +19,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -34,6 +37,12 @@ extends AbstractSkeletonEntity {
     public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
         super((EntityType<? extends AbstractSkeletonEntity>)entityType, world);
         this.setPathfindingPenalty(PathNodeType.LAVA, 8.0f);
+    }
+
+    @Override
+    protected void initGoals() {
+        this.targetSelector.add(3, new FollowTargetGoal<PiglinEntity>((MobEntity)this, PiglinEntity.class, true));
+        super.initGoals();
     }
 
     @Override
@@ -102,8 +111,8 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
-        ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, f);
+    protected ProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
+        ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, damageModifier);
         projectileEntity.setOnFireFor(100);
         return projectileEntity;
     }

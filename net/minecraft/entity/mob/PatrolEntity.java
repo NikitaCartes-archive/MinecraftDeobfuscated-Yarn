@@ -34,8 +34,8 @@ extends HostileEntity {
     private boolean patrolLeader;
     private boolean patrolling;
 
-    protected PatrolEntity(EntityType<? extends PatrolEntity> type, World world) {
-        super((EntityType<? extends HostileEntity>)type, world);
+    protected PatrolEntity(EntityType<? extends PatrolEntity> entityType, World world) {
+        super((EntityType<? extends HostileEntity>)entityType, world);
     }
 
     @Override
@@ -128,7 +128,7 @@ extends HostileEntity {
     }
 
     public void setRandomPatrolTarget() {
-        this.patrolTarget = new BlockPos(this).add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
+        this.patrolTarget = this.getSenseCenterPos().add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
         this.patrolling = true;
     }
 
@@ -178,7 +178,7 @@ extends HostileEntity {
                 if (((PatrolEntity)this.actor).isRaidCenterSet() && list.isEmpty()) {
                     ((PatrolEntity)this.actor).method_22332(false);
                 } else if (!bl || !((PatrolEntity)this.actor).getPatrolTarget().isWithinDistance(((Entity)this.actor).getPos(), 10.0)) {
-                    Vec3d vec3d = new Vec3d(((PatrolEntity)this.actor).getPatrolTarget());
+                    Vec3d vec3d = Vec3d.method_24955(((PatrolEntity)this.actor).getPatrolTarget());
                     Vec3d vec3d2 = ((Entity)this.actor).getPos();
                     Vec3d vec3d3 = vec3d2.subtract(vec3d);
                     vec3d = vec3d3.rotateY(90.0f).multiply(0.4).add(vec3d);
@@ -204,7 +204,7 @@ extends HostileEntity {
 
         private boolean wander() {
             Random random = ((LivingEntity)this.actor).getRandom();
-            BlockPos blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos((Entity)this.actor).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+            BlockPos blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ((Entity)this.actor).getSenseCenterPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
             return ((MobEntity)this.actor).getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.leaderSpeed);
         }
     }

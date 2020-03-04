@@ -42,7 +42,7 @@ extends ToolItem {
     }
 
     @Override
-    public float getMiningSpeed(ItemStack stack, BlockState state) {
+    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         Block block = state.getBlock();
         if (block == Blocks.COBWEB) {
             return 15.0f;

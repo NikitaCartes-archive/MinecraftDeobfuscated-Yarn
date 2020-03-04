@@ -62,38 +62,36 @@ extends Fluid {
     public Vec3d getVelocity(BlockView world, BlockPos pos, FluidState state) {
         double d = 0.0;
         double e = 0.0;
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (Direction direction : Direction.Type.HORIZONTAL) {
-                pooledMutable.set(pos).setOffset(direction);
-                FluidState fluidState = world.getFluidState(pooledMutable);
-                if (!this.method_15748(fluidState)) continue;
-                float f = fluidState.getHeight();
-                float g = 0.0f;
-                if (f == 0.0f) {
-                    Vec3i blockPos;
-                    FluidState fluidState2;
-                    if (!world.getBlockState(pooledMutable).getMaterial().blocksMovement() && this.method_15748(fluidState2 = world.getFluidState((BlockPos)(blockPos = pooledMutable.down()))) && (f = fluidState2.getHeight()) > 0.0f) {
-                        g = state.getHeight() - (f - 0.8888889f);
-                    }
-                } else if (f > 0.0f) {
-                    g = state.getHeight() - f;
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Direction direction : Direction.Type.HORIZONTAL) {
+            mutable.move(pos, direction);
+            FluidState fluidState = world.getFluidState(mutable);
+            if (!this.method_15748(fluidState)) continue;
+            float f = fluidState.getHeight();
+            float g = 0.0f;
+            if (f == 0.0f) {
+                Vec3i blockPos;
+                FluidState fluidState2;
+                if (!world.getBlockState(mutable).getMaterial().blocksMovement() && this.method_15748(fluidState2 = world.getFluidState((BlockPos)(blockPos = mutable.down()))) && (f = fluidState2.getHeight()) > 0.0f) {
+                    g = state.getHeight() - (f - 0.8888889f);
                 }
-                if (g == 0.0f) continue;
-                d += (double)((float)direction.getOffsetX() * g);
-                e += (double)((float)direction.getOffsetZ() * g);
+            } else if (f > 0.0f) {
+                g = state.getHeight() - f;
             }
-            Vec3d vec3d = new Vec3d(d, 0.0, e);
-            if (state.get(FALLING).booleanValue()) {
-                for (Direction direction2 : Direction.Type.HORIZONTAL) {
-                    pooledMutable.set(pos).setOffset(direction2);
-                    if (!this.method_15749(world, pooledMutable, direction2) && !this.method_15749(world, pooledMutable.up(), direction2)) continue;
-                    vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
-                    break;
-                }
-            }
-            Vec3d vec3d2 = vec3d.normalize();
-            return vec3d2;
+            if (g == 0.0f) continue;
+            d += (double)((float)direction.getOffsetX() * g);
+            e += (double)((float)direction.getOffsetZ() * g);
         }
+        Vec3d vec3d = new Vec3d(d, 0.0, e);
+        if (state.get(FALLING).booleanValue()) {
+            for (Direction direction2 : Direction.Type.HORIZONTAL) {
+                mutable.move(pos, direction2);
+                if (!this.method_15749(world, mutable, direction2) && !this.method_15749(world, mutable.up(), direction2)) continue;
+                vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
+                break;
+            }
+        }
+        return vec3d.normalize();
     }
 
     private boolean method_15748(FluidState state) {

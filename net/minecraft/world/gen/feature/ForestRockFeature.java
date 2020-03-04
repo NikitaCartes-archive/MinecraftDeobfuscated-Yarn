@@ -16,8 +16,8 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class ForestRockFeature
 extends Feature<BoulderFeatureConfig> {
-    public ForestRockFeature(Function<Dynamic<?>, ? extends BoulderFeatureConfig> configFactory) {
-        super(configFactory);
+    public ForestRockFeature(Function<Dynamic<?>, ? extends BoulderFeatureConfig> function) {
+        super(function);
     }
 
     @Override

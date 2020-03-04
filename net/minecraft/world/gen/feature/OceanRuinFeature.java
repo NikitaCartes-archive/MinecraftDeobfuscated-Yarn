@@ -24,8 +24,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class OceanRuinFeature
 extends AbstractTempleFeature<OceanRuinFeatureConfig> {
-    public OceanRuinFeature(Function<Dynamic<?>, ? extends OceanRuinFeatureConfig> configFactory) {
-        super(configFactory);
+    public OceanRuinFeature(Function<Dynamic<?>, ? extends OceanRuinFeatureConfig> function) {
+        super(function);
     }
 
     @Override
@@ -84,8 +84,8 @@ extends AbstractTempleFeature<OceanRuinFeatureConfig> {
 
     public static class Start
     extends StructureStart {
-        public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-            super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+        public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+            super(structureFeature, i, j, blockBox, k, l);
         }
 
         @Override

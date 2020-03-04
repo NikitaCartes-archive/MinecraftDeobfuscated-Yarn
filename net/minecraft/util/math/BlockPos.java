@@ -4,17 +4,14 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.DynamicSerializable;
@@ -44,16 +41,12 @@ implements DynamicSerializable {
     private static final int BIT_SHIFT_Z;
     private static final int BIT_SHIFT_X;
 
-    public BlockPos(int x, int y, int i) {
-        super(x, y, i);
+    public BlockPos(int i, int j, int k) {
+        super(i, j, k);
     }
 
-    public BlockPos(double x, double d, double e) {
-        super(x, d, e);
-    }
-
-    public BlockPos(Entity entity) {
-        this(entity.getX(), entity.getY(), entity.getZ());
+    public BlockPos(double d, double e, double f) {
+        super(d, e, f);
     }
 
     public BlockPos(Vec3d pos) {
@@ -234,6 +227,10 @@ implements DynamicSerializable {
         return this;
     }
 
+    public Mutable mutableCopy() {
+        return new Mutable(this.getX(), this.getY(), this.getZ());
+    }
+
     public static Iterable<BlockPos> iterate(BlockPos pos1, BlockPos pos2) {
         return BlockPos.iterate(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()), Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
     }
@@ -294,8 +291,8 @@ implements DynamicSerializable {
     }
 
     @Override
-    public /* synthetic */ Vec3i offset(Direction direction, int i) {
-        return this.offset(direction, i);
+    public /* synthetic */ Vec3i offset(Direction direction, int distance) {
+        return this.offset(direction, distance);
     }
 
     @Override
@@ -322,156 +319,18 @@ implements DynamicSerializable {
         BIT_SHIFT_X = SIZE_BITS_Y + SIZE_BITS_Z;
     }
 
-    public static final class PooledMutable
-    extends Mutable
-    implements AutoCloseable {
-        private boolean free;
-        private static final List<PooledMutable> POOL = Lists.newArrayList();
-
-        private PooledMutable(int x, int y, int z) {
-            super(x, y, z);
-        }
-
-        public static PooledMutable get() {
-            return PooledMutable.get(0, 0, 0);
-        }
-
-        public static PooledMutable getEntityPos(Entity entity) {
-            return PooledMutable.get(entity.getX(), entity.getY(), entity.getZ());
-        }
-
-        public static PooledMutable get(double x, double y, double z) {
-            return PooledMutable.get(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
-        }
-
-        /*
-         * WARNING - Removed try catching itself - possible behaviour change.
-         */
-        public static PooledMutable get(int x, int y, int z) {
-            List<PooledMutable> list = POOL;
-            synchronized (list) {
-                PooledMutable pooledMutable;
-                if (!POOL.isEmpty() && (pooledMutable = POOL.remove(POOL.size() - 1)) != null && pooledMutable.free) {
-                    pooledMutable.free = false;
-                    pooledMutable.set(x, y, z);
-                    return pooledMutable;
-                }
-            }
-            return new PooledMutable(x, y, z);
-        }
-
-        @Override
-        public PooledMutable set(int i, int j, int k) {
-            return (PooledMutable)super.set(i, j, k);
-        }
-
-        @Override
-        public PooledMutable set(Entity entity) {
-            return (PooledMutable)super.set(entity);
-        }
-
-        @Override
-        public PooledMutable set(double d, double e, double f) {
-            return (PooledMutable)super.set(d, e, f);
-        }
-
-        @Override
-        public PooledMutable set(Vec3i vec3i) {
-            return (PooledMutable)super.set(vec3i);
-        }
-
-        @Override
-        public PooledMutable setOffset(Direction direction) {
-            return (PooledMutable)super.setOffset(direction);
-        }
-
-        @Override
-        public PooledMutable setOffset(Direction direction, int i) {
-            return (PooledMutable)super.setOffset(direction, i);
-        }
-
-        @Override
-        public PooledMutable setOffset(int i, int j, int k) {
-            return (PooledMutable)super.setOffset(i, j, k);
-        }
-
-        /*
-         * WARNING - Removed try catching itself - possible behaviour change.
-         */
-        @Override
-        public void close() {
-            List<PooledMutable> list = POOL;
-            synchronized (list) {
-                if (POOL.size() < 100) {
-                    POOL.add(this);
-                }
-                this.free = true;
-            }
-        }
-
-        @Override
-        public /* synthetic */ Mutable setOffset(int x, int y, int z) {
-            return this.setOffset(x, y, z);
-        }
-
-        @Override
-        public /* synthetic */ Mutable setOffset(Direction direction, int distance) {
-            return this.setOffset(direction, distance);
-        }
-
-        @Override
-        public /* synthetic */ Mutable setOffset(Direction direction) {
-            return this.setOffset(direction);
-        }
-
-        @Override
-        public /* synthetic */ Mutable set(Vec3i pos) {
-            return this.set(pos);
-        }
-
-        @Override
-        public /* synthetic */ Mutable set(double x, double y, double z) {
-            return this.set(x, y, z);
-        }
-
-        @Override
-        public /* synthetic */ Mutable set(Entity entity) {
-            return this.set(entity);
-        }
-
-        @Override
-        public /* synthetic */ Mutable set(int x, int y, int z) {
-            return this.set(x, y, z);
-        }
-    }
-
     public static class Mutable
     extends BlockPos {
-        protected int x;
-        protected int y;
-        protected int z;
-
         public Mutable() {
             this(0, 0, 0);
         }
 
-        public Mutable(BlockPos pos) {
-            this(pos.getX(), pos.getY(), pos.getZ());
-        }
-
-        public Mutable(int y, int z, int i) {
-            super(0, 0, 0);
-            this.x = y;
-            this.y = z;
-            this.z = i;
+        public Mutable(int i, int j, int k) {
+            super(i, j, k);
         }
 
         public Mutable(double d, double e, double f) {
             this(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
-        }
-
-        public Mutable(Entity entity) {
-            this(entity.getX(), entity.getY(), entity.getZ());
         }
 
         @Override
@@ -494,30 +353,11 @@ implements DynamicSerializable {
             return super.rotate(rotation).toImmutable();
         }
 
-        @Override
-        public int getX() {
-            return this.x;
-        }
-
-        @Override
-        public int getY() {
-            return this.y;
-        }
-
-        @Override
-        public int getZ() {
-            return this.z;
-        }
-
         public Mutable set(int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
+            this.setX(x);
+            this.setY(y);
+            this.setZ(z);
             return this;
-        }
-
-        public Mutable set(Entity entity) {
-            return this.set(entity.getX(), entity.getY(), entity.getZ());
         }
 
         public Mutable set(double x, double y, double z) {
@@ -536,28 +376,39 @@ implements DynamicSerializable {
             return this.set(axis.choose(x, y, z, Direction.Axis.X), axis.choose(x, y, z, Direction.Axis.Y), axis.choose(x, y, z, Direction.Axis.Z));
         }
 
+        public Mutable move(Vec3i pos, Direction direction) {
+            return this.set(pos.getX() + direction.getOffsetX(), pos.getY() + direction.getOffsetY(), pos.getZ() + direction.getOffsetZ());
+        }
+
+        public Mutable setOffset(Vec3i pos, int x, int y, int z) {
+            return this.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+        }
+
         public Mutable setOffset(Direction direction) {
             return this.setOffset(direction, 1);
         }
 
         public Mutable setOffset(Direction direction, int distance) {
-            return this.set(this.x + direction.getOffsetX() * distance, this.y + direction.getOffsetY() * distance, this.z + direction.getOffsetZ() * distance);
+            return this.set(this.getX() + direction.getOffsetX() * distance, this.getY() + direction.getOffsetY() * distance, this.getZ() + direction.getOffsetZ() * distance);
         }
 
         public Mutable setOffset(int x, int y, int z) {
-            return this.set(this.x + x, this.y + y, this.z + z);
+            return this.set(this.getX() + x, this.getY() + y, this.getZ() + z);
         }
 
+        @Override
         public void setX(int x) {
-            this.x = x;
+            super.setX(x);
         }
 
+        @Override
         public void setY(int y) {
-            this.y = y;
+            super.setY(y);
         }
 
+        @Override
         public void setZ(int z) {
-            this.z = z;
+            super.setZ(z);
         }
 
         @Override
@@ -571,8 +422,8 @@ implements DynamicSerializable {
         }
 
         @Override
-        public /* synthetic */ Vec3i offset(Direction direction, int i) {
-            return this.offset(direction, i);
+        public /* synthetic */ Vec3i offset(Direction direction, int distance) {
+            return this.offset(direction, distance);
         }
 
         @Override

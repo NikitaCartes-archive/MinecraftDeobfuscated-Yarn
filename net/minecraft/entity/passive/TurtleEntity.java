@@ -170,7 +170,7 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        this.setHomePos(new BlockPos(this));
+        this.setHomePos(this.getSenseCenterPos());
         this.setTravelPos(BlockPos.ORIGIN);
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
@@ -308,7 +308,7 @@ extends AnimalEntity {
     public void tickMovement() {
         BlockPos blockPos;
         super.tickMovement();
-        if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0 && this.world.getBlockState((blockPos = new BlockPos(this)).down()).getBlock() == Blocks.SAND) {
+        if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0 && this.world.getBlockState((blockPos = this.getSenseCenterPos()).down()).getBlock() == Blocks.SAND) {
             this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
         }
     }
@@ -495,7 +495,7 @@ extends AnimalEntity {
         @Override
         public void tick() {
             super.tick();
-            BlockPos blockPos = new BlockPos(this.turtle);
+            BlockPos blockPos = this.turtle.getSenseCenterPos();
             if (!this.turtle.isTouchingWater() && this.hasReached()) {
                 if (this.turtle.sandDiggingCounter < 1) {
                     this.turtle.setDiggingSand(true);
@@ -664,7 +664,7 @@ extends AnimalEntity {
                 ++this.homeReachingTryTicks;
             }
             if (this.turtle.getNavigation().isIdle()) {
-                Vec3d vec3d = new Vec3d(blockPos);
+                Vec3d vec3d = Vec3d.method_24955(blockPos);
                 Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
                     vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
@@ -717,7 +717,7 @@ extends AnimalEntity {
         @Override
         public void tick() {
             if (this.turtle.getNavigation().isIdle()) {
-                Vec3d vec3d = new Vec3d(this.turtle.getTravelPos());
+                Vec3d vec3d = Vec3d.method_24955(this.turtle.getTravelPos());
                 Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
                     vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);

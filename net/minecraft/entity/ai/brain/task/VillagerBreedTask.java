@@ -97,7 +97,7 @@ extends Task<VillagerEntity> {
     }
 
     private Optional<BlockPos> getReachableHome(ServerWorld world, VillagerEntity villager) {
-        return world.getPointOfInterestStorage().getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, (BlockPos)blockPos), new BlockPos(villager), 48);
+        return world.getPointOfInterestStorage().getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, (BlockPos)blockPos), villager.getSenseCenterPos(), 48);
     }
 
     private boolean canReachHome(VillagerEntity villager, BlockPos pos) {

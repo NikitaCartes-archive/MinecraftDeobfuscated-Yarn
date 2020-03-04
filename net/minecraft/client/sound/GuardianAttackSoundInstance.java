@@ -27,7 +27,7 @@ extends MovingSoundInstance {
     @Override
     public void tick() {
         if (this.guardian.removed || this.guardian.getTarget() != null) {
-            this.method_24876();
+            this.setDone();
             return;
         }
         this.x = (float)this.guardian.getX();

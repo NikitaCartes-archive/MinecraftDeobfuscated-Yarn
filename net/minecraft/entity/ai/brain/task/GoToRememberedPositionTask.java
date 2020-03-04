@@ -34,7 +34,7 @@ extends Task<MobEntityWithAi> {
     }
 
     public static GoToRememberedPositionTask<BlockPos> toBlock(MemoryModuleType<BlockPos> memoryType, float speed, int range, boolean requiresWalkTarget) {
-        return new GoToRememberedPositionTask<BlockPos>(memoryType, speed, range, requiresWalkTarget, Vec3d::new);
+        return new GoToRememberedPositionTask<BlockPos>(memoryType, speed, range, requiresWalkTarget, Vec3d::method_24955);
     }
 
     public static GoToRememberedPositionTask<? extends Entity> toEntity(MemoryModuleType<? extends Entity> memoryType, float speed, int range, boolean requiresWalkTarget) {

@@ -359,12 +359,12 @@ extends AnimalEntity {
         this.updateRollOverAnimation();
     }
 
-    public boolean method_6524() {
+    public boolean isScaredByThunderstorm() {
         return this.isWorried() && this.world.isThundering();
     }
 
     private void updateEatingAnimation() {
-        if (!this.isEating() && this.isScared() && !this.method_6524() && !this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && this.random.nextInt(80) == 1) {
+        if (!this.isEating() && this.isScared() && !this.isScaredByThunderstorm() && !this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && this.random.nextInt(80) == 1) {
             this.setEating(true);
         } else if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() || !this.isScared()) {
             this.setEating(false);
@@ -550,7 +550,7 @@ extends AnimalEntity {
         if (itemStack.getItem() instanceof SpawnEggItem) {
             return super.interactMob(player, hand);
         }
-        if (this.method_6524()) {
+        if (this.isScaredByThunderstorm()) {
             return false;
         }
         if (this.isLyingOnBack()) {
@@ -624,7 +624,7 @@ extends AnimalEntity {
     }
 
     public boolean method_18442() {
-        return !this.isLyingOnBack() && !this.method_6524() && !this.isEating() && !this.isPlaying() && !this.isScared();
+        return !this.isLyingOnBack() && !this.isScaredByThunderstorm() && !this.isEating() && !this.isPlaying() && !this.isScared();
     }
 
     static class ExtinguishFireGoal
@@ -823,7 +823,7 @@ extends AnimalEntity {
         }
 
         private boolean isBambooClose() {
-            BlockPos blockPos = new BlockPos(this.panda);
+            BlockPos blockPos = this.panda.getSenseCenterPos();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             for (int i = 0; i < 3; ++i) {
                 for (int j = 0; j < 8; ++j) {
@@ -832,7 +832,7 @@ extends AnimalEntity {
                         int l;
                         int n = l = k < j && k > -j ? j : 0;
                         while (l <= j) {
-                            mutable.set(blockPos).setOffset(k, i, l);
+                            mutable.setOffset(blockPos, k, i, l);
                             if (this.world.getBlockState(mutable).getBlock() == Blocks.BAMBOO) {
                                 return true;
                             }
@@ -904,7 +904,7 @@ extends AnimalEntity {
             if ((double)Math.abs(h) > 0.5) {
                 j = (int)((float)j + h / Math.abs(h));
             }
-            if (this.panda.world.getBlockState(new BlockPos(this.panda).add(i, -1, j)).isAir()) {
+            if (this.panda.world.getBlockState(this.panda.getSenseCenterPos().add(i, -1, j)).isAir()) {
                 return true;
             }
             if (this.panda.isPlayful() && this.panda.random.nextInt(60) == 1) {

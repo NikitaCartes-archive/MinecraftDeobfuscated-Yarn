@@ -40,12 +40,12 @@ extends MiningToolItem {
     }
 
     @Override
-    public float getMiningSpeed(ItemStack stack, BlockState state) {
+    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         Material material = state.getMaterial();
         if (material == Material.METAL || material == Material.ANVIL || material == Material.STONE) {
             return this.miningSpeed;
         }
-        return super.getMiningSpeed(stack, state);
+        return super.getMiningSpeedMultiplier(stack, state);
     }
 }
 

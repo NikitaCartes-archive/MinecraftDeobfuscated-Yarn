@@ -7,11 +7,11 @@ import com.google.common.collect.Sets;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.container.BlastFurnaceContainer;
-import net.minecraft.container.CraftingContainer;
-import net.minecraft.container.FurnaceContainer;
-import net.minecraft.container.SmokerContainer;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.BlastFurnaceScreenHandler;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.FurnaceScreenHandler;
+import net.minecraft.screen.SmokerScreenHandler;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,14 +92,14 @@ public class RecipeBook {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isFilteringCraftable(CraftingContainer<?> container) {
-        if (container instanceof FurnaceContainer) {
+    public boolean isFilteringCraftable(CraftingScreenHandler<?> handler) {
+        if (handler instanceof FurnaceScreenHandler) {
             return this.furnaceFilteringCraftable;
         }
-        if (container instanceof BlastFurnaceContainer) {
+        if (handler instanceof BlastFurnaceScreenHandler) {
             return this.blastFurnaceFilteringCraftable;
         }
-        if (container instanceof SmokerContainer) {
+        if (handler instanceof SmokerScreenHandler) {
             return this.smokerFilteringCraftable;
         }
         return this.filteringCraftable;

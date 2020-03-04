@@ -197,13 +197,13 @@ implements ParsableText {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) {
+        public boolean equals(Object object) {
+            if (this == object) {
                 return true;
             }
-            if (o instanceof BlockNbtText) {
-                BlockNbtText blockNbtText = (BlockNbtText)o;
-                return Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(o);
+            if (object instanceof BlockNbtText) {
+                BlockNbtText blockNbtText = (BlockNbtText)object;
+                return Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(object);
             }
             return false;
         }
@@ -261,13 +261,13 @@ implements ParsableText {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) {
+        public boolean equals(Object object) {
+            if (this == object) {
                 return true;
             }
-            if (o instanceof EntityNbtText) {
-                EntityNbtText entityNbtText = (EntityNbtText)o;
-                return Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(o);
+            if (object instanceof EntityNbtText) {
+                EntityNbtText entityNbtText = (EntityNbtText)object;
+                return Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(object);
             }
             return false;
         }

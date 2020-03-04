@@ -85,20 +85,20 @@ implements PaletteResizeListener<T> {
     }
 
     @Override
-    public int onResize(int newSize, T objectAdded) {
-        int i;
+    public int onResize(int i, T object) {
+        int j;
         this.lock();
         PackedIntegerArray packedIntegerArray = this.data;
         Palette<T> palette = this.palette;
-        this.setPaletteSize(newSize);
-        for (i = 0; i < packedIntegerArray.getSize(); ++i) {
-            T object = palette.getByIndex(packedIntegerArray.get(i));
-            if (object == null) continue;
-            this.set(i, object);
+        this.setPaletteSize(i);
+        for (j = 0; j < packedIntegerArray.getSize(); ++j) {
+            T object2 = palette.getByIndex(packedIntegerArray.get(j));
+            if (object2 == null) continue;
+            this.set(j, object2);
         }
-        i = this.palette.getIndex(objectAdded);
+        j = this.palette.getIndex(object);
         this.unlock();
-        return i;
+        return j;
     }
 
     public T setSync(int x, int y, int z, T value) {

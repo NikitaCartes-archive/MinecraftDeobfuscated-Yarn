@@ -38,7 +38,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -235,7 +234,7 @@ implements RangedAttackMob {
             if (IllusionerEntity.this.getTarget().getEntityId() == this.targetId) {
                 return false;
             }
-            return IllusionerEntity.this.world.getLocalDifficulty(new BlockPos(IllusionerEntity.this)).isHarderThan(Difficulty.NORMAL.ordinal());
+            return IllusionerEntity.this.world.getLocalDifficulty(IllusionerEntity.this.getSenseCenterPos()).isHarderThan(Difficulty.NORMAL.ordinal());
         }
 
         @Override

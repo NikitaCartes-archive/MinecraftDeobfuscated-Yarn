@@ -68,5 +68,13 @@ extends ServerConfigEntry<T> {
         }
         return this.expiryDate.before(new Date());
     }
+
+    @Override
+    protected void method_24896(JsonObject jsonObject) {
+        jsonObject.addProperty("created", DATE_FORMAT.format(this.creationDate));
+        jsonObject.addProperty("source", this.source);
+        jsonObject.addProperty("expires", this.expiryDate == null ? "forever" : DATE_FORMAT.format(this.expiryDate));
+        jsonObject.addProperty("reason", this.reason);
+    }
 }
 

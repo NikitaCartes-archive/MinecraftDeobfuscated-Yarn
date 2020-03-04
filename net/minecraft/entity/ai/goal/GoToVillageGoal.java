@@ -41,7 +41,7 @@ extends Goal {
             return false;
         }
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
-        BlockPos blockPos2 = new BlockPos(this.mob);
+        BlockPos blockPos2 = this.mob.getSenseCenterPos();
         if (!serverWorld.isNearOccupiedPointOfInterest(blockPos2, 6)) {
             return false;
         }
@@ -62,7 +62,7 @@ extends Goal {
         }
         EntityNavigation entityNavigation = this.mob.getNavigation();
         if (entityNavigation.isIdle() && !this.targetPosition.isWithinDistance(this.mob.getPos(), 10.0)) {
-            Vec3d vec3d = new Vec3d(this.targetPosition);
+            Vec3d vec3d = Vec3d.method_24955(this.targetPosition);
             Vec3d vec3d2 = this.mob.getPos();
             Vec3d vec3d3 = vec3d2.subtract(vec3d);
             vec3d = vec3d3.multiply(0.4).add(vec3d);
@@ -76,7 +76,7 @@ extends Goal {
 
     private void findOtherWaypoint() {
         Random random = this.mob.getRandom();
-        BlockPos blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.mob).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+        BlockPos blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.mob.getSenseCenterPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
         this.mob.getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0);
     }
 }

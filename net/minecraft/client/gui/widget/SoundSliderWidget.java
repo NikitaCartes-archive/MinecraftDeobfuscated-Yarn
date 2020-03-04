@@ -6,17 +6,17 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.sound.SoundCategory;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundSliderWidget
-extends SliderWidget {
+extends OptionSliderWidget {
     private final SoundCategory category;
 
     public SoundSliderWidget(MinecraftClient client, int x, int y, SoundCategory category, int width) {
-        super(client.options, x, y, width, 20, client.options.getSoundVolume(category));
+        super(client.options, x, y, width, 20, (double)client.options.getSoundVolume(category));
         this.category = category;
         this.updateMessage();
     }

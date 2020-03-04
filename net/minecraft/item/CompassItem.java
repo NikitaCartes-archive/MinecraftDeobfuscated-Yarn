@@ -32,14 +32,14 @@ extends Item {
 
             @Override
             @Environment(value=EnvType.CLIENT)
-            public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity user) {
+            public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
                 double f;
                 Entity entity;
-                if (user == null && !stack.isInFrame()) {
+                if (livingEntity == null && !itemStack.isInFrame()) {
                     return 0.0f;
                 }
-                boolean bl = user != null;
-                Entity entity2 = entity = bl ? user : stack.getFrame();
+                boolean bl = livingEntity != null;
+                Entity entity2 = entity = bl ? livingEntity : itemStack.getFrame();
                 if (world == null) {
                     world = entity.world;
                 }

@@ -135,7 +135,7 @@ implements RangedAttackMob {
                 }
             } else {
                 Potion potion = null;
-                if (this.random.nextFloat() < 0.15f && this.isInFluid(FluidTags.WATER) && !this.hasStatusEffect(StatusEffects.WATER_BREATHING)) {
+                if (this.random.nextFloat() < 0.15f && this.isSubmergedIn(FluidTags.WATER) && !this.hasStatusEffect(StatusEffects.WATER_BREATHING)) {
                     potion = Potions.WATER_BREATHING;
                 } else if (this.random.nextFloat() < 0.15f && (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isFire()) && !this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
                     potion = Potions.FIRE_RESISTANCE;
@@ -212,7 +212,7 @@ implements RangedAttackMob {
             potion = Potions.WEAKNESS;
         }
         ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this);
-        thrownPotionEntity.setItemStack(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+        thrownPotionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
         thrownPotionEntity.pitch -= -20.0f;
         thrownPotionEntity.setVelocity(d, e + (double)(g * 0.2f), f, 0.75f, 8.0f);
         this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);

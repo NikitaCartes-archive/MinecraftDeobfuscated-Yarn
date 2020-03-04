@@ -8,8 +8,8 @@ import net.minecraft.world.chunk.light.LevelPropagator;
 
 public abstract class ChunkPosDistanceLevelPropagator
 extends LevelPropagator {
-    protected ChunkPosDistanceLevelPropagator(int levelCount, int initLevelCapacity, int initTotalCapacity) {
-        super(levelCount, initLevelCapacity, initTotalCapacity);
+    protected ChunkPosDistanceLevelPropagator(int i, int j, int k) {
+        super(i, j, k);
     }
 
     @Override

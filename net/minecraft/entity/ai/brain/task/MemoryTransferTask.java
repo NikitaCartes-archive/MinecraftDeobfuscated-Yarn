@@ -37,7 +37,7 @@ extends Task<E> {
     @Override
     protected void run(ServerWorld serverWorld, E mobEntity, long l) {
         Brain<?> brain = ((LivingEntity)mobEntity).getBrain();
-        brain.remember(this.targetType, brain.getOptionalMemory(this.sourceType).get(), l, this.duration.choose(serverWorld.random));
+        brain.remember(this.targetType, brain.getOptionalMemory(this.sourceType).get(), this.duration.choose(serverWorld.random));
     }
 }
 

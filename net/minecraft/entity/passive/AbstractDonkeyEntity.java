@@ -25,8 +25,8 @@ public abstract class AbstractDonkeyEntity
 extends HorseBaseEntity {
     private static final TrackedData<Boolean> CHEST = DataTracker.registerData(AbstractDonkeyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> type, World world) {
-        super((EntityType<? extends HorseBaseEntity>)type, world);
+    protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> entityType, World world) {
+        super((EntityType<? extends HorseBaseEntity>)entityType, world);
         this.field_6964 = false;
     }
 

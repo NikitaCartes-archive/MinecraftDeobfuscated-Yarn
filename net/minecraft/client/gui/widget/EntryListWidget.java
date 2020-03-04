@@ -27,8 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class EntryListWidget<E extends Entry<E>>
 extends AbstractParentElement
 implements Drawable {
-    protected static final int DRAG_OUTSIDE = -2;
-    protected final MinecraftClient minecraft;
+    protected final MinecraftClient client;
     protected final int itemHeight;
     private final List<E> children = new Entries();
     protected int width;
@@ -47,7 +46,7 @@ implements Drawable {
     private E selected;
 
     public EntryListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
-        this.minecraft = client;
+        this.client = client;
         this.width = width;
         this.height = height;
         this.top = top;
@@ -55,10 +54,6 @@ implements Drawable {
         this.itemHeight = itemHeight;
         this.left = 0;
         this.right = width;
-    }
-
-    public void setRenderSelection(boolean renderSelection) {
-        this.renderSelection = renderSelection;
     }
 
     protected void setRenderHeader(boolean renderHeader, int headerHeight) {
@@ -125,7 +120,7 @@ implements Drawable {
         int l = j + i;
         int m = MathHelper.floor(y - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
         int n = m / this.itemHeight;
-        if (x < (double)this.getScrollbarPosition() && x >= (double)k && x <= (double)l && n >= 0 && m >= 0 && n < this.getItemCount()) {
+        if (x < (double)this.getScrollbarPositionX() && x >= (double)k && x <= (double)l && n >= 0 && m >= 0 && n < this.getItemCount()) {
             return (E)((Entry)this.children().get(n));
         }
         return null;
@@ -164,11 +159,11 @@ implements Drawable {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        int i = this.getScrollbarPosition();
+        int i = this.getScrollbarPositionX();
         int j = i + 6;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -271,15 +266,11 @@ implements Drawable {
         return Math.max(0, this.getMaxPosition() - (this.bottom - this.top - 4));
     }
 
-    public int getScrollBottom() {
-        return (int)this.getScrollAmount() - this.height - this.headerHeight;
+    protected void updateScrollingState(double mouseX, double mouseY, int button) {
+        this.scrolling = button == 0 && mouseX >= (double)this.getScrollbarPositionX() && mouseX < (double)(this.getScrollbarPositionX() + 6);
     }
 
-    protected void updateScrollingState(double d, double e, int i) {
-        this.scrolling = i == 0 && d >= (double)this.getScrollbarPosition() && d < (double)(this.getScrollbarPosition() + 6);
-    }
-
-    protected int getScrollbarPosition() {
+    protected int getScrollbarPositionX() {
         return this.width / 2 + 124;
     }
 
@@ -334,7 +325,7 @@ implements Drawable {
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double amount) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         this.setScrollAmount(this.getScrollAmount() - amount * (double)this.itemHeight / 2.0);
         return true;
     }
@@ -417,8 +408,8 @@ implements Drawable {
         return this.top + 4 - (int)this.getScrollAmount() + index * this.itemHeight + this.headerHeight;
     }
 
-    private int getRowBottom(int i) {
-        return this.getRowTop(i) + this.itemHeight;
+    private int getRowBottom(int index) {
+        return this.getRowTop(index) + this.itemHeight;
     }
 
     protected boolean isFocused() {
@@ -428,7 +419,7 @@ implements Drawable {
     protected void renderHoleBackground(int top, int bottom, int alphaTop, int alphaBottom) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -453,6 +444,12 @@ implements Drawable {
             this.setSelected(null);
         }
         return bl;
+    }
+
+    @Override
+    @Nullable
+    public /* synthetic */ Element getFocused() {
+        return this.getFocused();
     }
 
     @Environment(value=EnvType.CLIENT)

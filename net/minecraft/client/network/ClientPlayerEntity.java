@@ -17,17 +17,18 @@ import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.gui.screen.ingame.JigsawBlockScreen;
 import net.minecraft.client.gui.screen.ingame.MinecartCommandBlockScreen;
+import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.client.gui.screen.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.AmbientSoundLoops;
 import net.minecraft.client.sound.AmbientSoundPlayer;
+import net.minecraft.client.sound.BiomeEffectSoundPlayer;
 import net.minecraft.client.sound.BubbleColumnSoundPlayer;
 import net.minecraft.client.sound.ElytraSoundInstance;
 import net.minecraft.client.sound.MinecartSoundInstance;
@@ -98,13 +99,13 @@ extends AbstractClientPlayerEntity {
     private boolean lastOnGround;
     private boolean lastIsHoldingSneakKey;
     private boolean lastSprinting;
-    private int field_3923;
-    private boolean field_3918;
+    private int ticksSinceLastPositionPacketSent;
+    private boolean healthInitialized;
     private String serverBrand;
     public Input input;
     protected final MinecraftClient client;
-    protected int field_3935;
-    public int field_3921;
+    protected int ticksLeftToDoubleTapSprint;
+    public int ticksSinceSprintingChanged;
     public float renderYaw;
     public float renderPitch;
     public float lastRenderYaw;
@@ -116,21 +117,22 @@ extends AbstractClientPlayerEntity {
     private boolean usingItem;
     private Hand activeHand;
     private boolean riding;
-    private boolean lastAutoJump = true;
-    private int field_3934;
+    private boolean autoJumpEnabled = true;
+    private int ticksToNextAutojump;
     private boolean field_3939;
-    private int field_3917;
+    private int underwaterVisibilityTicks;
     private boolean showsDeathScreen = true;
 
-    public ClientPlayerEntity(MinecraftClient client, ClientWorld clientWorld, ClientPlayNetworkHandler clientPlayNetworkHandler, StatHandler statHandler, ClientRecipeBook clientRecipeBook) {
-        super(clientWorld, clientPlayNetworkHandler.getProfile());
-        this.networkHandler = clientPlayNetworkHandler;
-        this.statHandler = statHandler;
-        this.recipeBook = clientRecipeBook;
+    public ClientPlayerEntity(MinecraftClient client, ClientWorld clientWorld, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook) {
+        super(clientWorld, networkHandler.getProfile());
+        this.networkHandler = networkHandler;
+        this.statHandler = stats;
+        this.recipeBook = recipeBook;
         this.client = client;
         this.dimension = DimensionType.OVERWORLD;
         this.tickables.add(new AmbientSoundPlayer(this, client.getSoundManager()));
         this.tickables.add(new BubbleColumnSoundPlayer(this));
+        this.tickables.add(new BiomeEffectSoundPlayer(this, client.getSoundManager(), clientWorld.getBiomeAccess()));
     }
 
     @Override
@@ -223,8 +225,8 @@ extends AbstractClientPlayerEntity {
             double f = this.getZ() - this.lastZ;
             double g = this.yaw - this.lastYaw;
             double h = this.pitch - this.lastPitch;
-            ++this.field_3923;
-            boolean bl3 = d * d + e * e + f * f > 9.0E-4 || this.field_3923 >= 20;
+            ++this.ticksSinceLastPositionPacketSent;
+            boolean bl3 = d * d + e * e + f * f > 9.0E-4 || this.ticksSinceLastPositionPacketSent >= 20;
             boolean bl5 = bl4 = g != 0.0 || h != 0.0;
             if (this.hasVehicle()) {
                 Vec3d vec3d = this.getVelocity();
@@ -243,14 +245,14 @@ extends AbstractClientPlayerEntity {
                 this.lastX = this.getX();
                 this.lastBaseY = this.getY();
                 this.lastZ = this.getZ();
-                this.field_3923 = 0;
+                this.ticksSinceLastPositionPacketSent = 0;
             }
             if (bl4) {
                 this.lastYaw = this.yaw;
                 this.lastPitch = this.pitch;
             }
             this.lastOnGround = this.onGround;
-            this.lastAutoJump = this.client.options.autoJump;
+            this.autoJumpEnabled = this.client.options.autoJump;
         }
     }
 
@@ -261,8 +263,8 @@ extends AbstractClientPlayerEntity {
         return this.inventory.takeInvStack(this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1) != ItemStack.EMPTY;
     }
 
-    public void sendChatMessage(String string) {
-        this.networkHandler.sendPacket(new ChatMessageC2SPacket(string));
+    public void sendChatMessage(String message) {
+        this.networkHandler.sendPacket(new ChatMessageC2SPacket(message));
     }
 
     @Override
@@ -285,35 +287,35 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void closeContainer() {
-        this.networkHandler.sendPacket(new GuiCloseC2SPacket(this.container.syncId));
+    public void closeHandledScreen() {
+        this.networkHandler.sendPacket(new GuiCloseC2SPacket(this.currentScreenHandler.syncId));
         this.closeScreen();
     }
 
     public void closeScreen() {
         this.inventory.setCursorStack(ItemStack.EMPTY);
-        super.closeContainer();
+        super.closeHandledScreen();
         this.client.openScreen(null);
     }
 
-    public void updateHealth(float f) {
-        if (this.field_3918) {
-            float g = this.getHealth() - f;
-            if (g <= 0.0f) {
-                this.setHealth(f);
-                if (g < 0.0f) {
+    public void updateHealth(float health) {
+        if (this.healthInitialized) {
+            float f = this.getHealth() - health;
+            if (f <= 0.0f) {
+                this.setHealth(health);
+                if (f < 0.0f) {
                     this.timeUntilRegen = 10;
                 }
             } else {
-                this.lastDamageTaken = g;
+                this.lastDamageTaken = f;
                 this.setHealth(this.getHealth());
                 this.timeUntilRegen = 20;
-                this.applyDamage(DamageSource.GENERIC, g);
+                this.applyDamage(DamageSource.GENERIC, f);
                 this.hurtTime = this.maxHurtTime = 10;
             }
         } else {
-            this.setHealth(f);
-            this.field_3918 = true;
+            this.setHealth(health);
+            this.healthInitialized = true;
         }
     }
 
@@ -363,8 +365,8 @@ extends AbstractClientPlayerEntity {
         return this.clientPermissionLevel;
     }
 
-    public void setClientPermissionLevel(int i) {
-        this.clientPermissionLevel = i;
+    public void setClientPermissionLevel(int clientPermissionLevel) {
+        this.clientPermissionLevel = clientPermissionLevel;
     }
 
     @Override
@@ -425,7 +427,7 @@ extends AbstractClientPlayerEntity {
 
     private boolean cannotFitAt(BlockPos pos) {
         Box box = this.getBoundingBox();
-        BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+        BlockPos.Mutable mutable = pos.mutableCopy();
         for (int i = MathHelper.floor(box.y1); i < MathHelper.ceil(box.y2); ++i) {
             mutable.setY(i);
             if (this.doesNotSuffocate(mutable)) continue;
@@ -437,7 +439,7 @@ extends AbstractClientPlayerEntity {
     @Override
     public void setSprinting(boolean sprinting) {
         super.setSprinting(sprinting);
-        this.field_3921 = 0;
+        this.ticksSinceSprintingChanged = 0;
     }
 
     public void setExperience(float progress, int total, int level) {
@@ -621,24 +623,24 @@ extends AbstractClientPlayerEntity {
         ItemStack itemStack;
         boolean bl6;
         boolean bl5;
-        ++this.field_3921;
-        if (this.field_3935 > 0) {
-            --this.field_3935;
+        ++this.ticksSinceSprintingChanged;
+        if (this.ticksLeftToDoubleTapSprint > 0) {
+            --this.ticksLeftToDoubleTapSprint;
         }
         this.updateNausea();
         boolean bl = this.input.jumping;
         boolean bl2 = this.input.sneaking;
-        boolean bl3 = this.method_20623();
+        boolean bl3 = this.isWalking();
         this.input.tick(this.isHoldingSneakKey());
         this.client.getTutorialManager().onMovement(this.input);
         if (this.isUsingItem() && !this.hasVehicle()) {
             this.input.movementSideways *= 0.2f;
             this.input.movementForward *= 0.2f;
-            this.field_3935 = 0;
+            this.ticksLeftToDoubleTapSprint = 0;
         }
         boolean bl4 = false;
-        if (this.field_3934 > 0) {
-            --this.field_3934;
+        if (this.ticksToNextAutojump > 0) {
+            --this.ticksToNextAutojump;
             bl4 = true;
             this.input.jumping = true;
         }
@@ -649,14 +651,14 @@ extends AbstractClientPlayerEntity {
             this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
         }
         boolean bl7 = bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.abilities.allowFlying;
-        if (!(!this.onGround && !this.isSubmergedInWater() || bl2 || bl3 || !this.method_20623() || this.isSprinting() || !bl5 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
-            if (this.field_3935 > 0 || this.client.options.keySprint.isPressed()) {
+        if (!(!this.onGround && !this.isSubmergedInWater() || bl2 || bl3 || !this.isWalking() || this.isSprinting() || !bl5 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
+            if (this.ticksLeftToDoubleTapSprint > 0 || this.client.options.keySprint.isPressed()) {
                 this.setSprinting(true);
             } else {
-                this.field_3935 = 7;
+                this.ticksLeftToDoubleTapSprint = 7;
             }
         }
-        if (!this.isSprinting() && (!this.isTouchingWater() || this.isSubmergedInWater()) && this.method_20623() && bl5 && !this.isUsingItem() && !this.hasStatusEffect(StatusEffects.BLINDNESS) && this.client.options.keySprint.isPressed()) {
+        if (!this.isSprinting() && (!this.isTouchingWater() || this.isSubmergedInWater()) && this.isWalking() && bl5 && !this.isUsingItem() && !this.hasStatusEffect(StatusEffects.BLINDNESS) && this.client.options.keySprint.isPressed()) {
             this.setSprinting(true);
         }
         if (this.isSprinting()) {
@@ -680,29 +682,29 @@ extends AbstractClientPlayerEntity {
                     this.sendAbilitiesUpdate();
                 }
             } else if (!bl && this.input.jumping && !bl4) {
-                if (this.field_7489 == 0) {
-                    this.field_7489 = 7;
+                if (this.abilityResyncCountdown == 0) {
+                    this.abilityResyncCountdown = 7;
                 } else if (!this.isSwimming()) {
                     this.abilities.flying = !this.abilities.flying;
                     bl6 = true;
                     this.sendAbilitiesUpdate();
-                    this.field_7489 = 0;
+                    this.abilityResyncCountdown = 0;
                 }
             }
         }
-        if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && !this.hasVehicle() && !this.isClimbing() && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.method_23668()) {
+        if (this.input.jumping && !bl6 && !bl && !this.abilities.flying && !this.hasVehicle() && !this.isClimbing() && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack) && this.checkFallFlying()) {
             this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
         this.field_3939 = this.isFallFlying();
         if (this.isTouchingWater() && this.input.sneaking) {
             this.knockDownwards();
         }
-        if (this.isInFluid(FluidTags.WATER)) {
+        if (this.isSubmergedIn(FluidTags.WATER)) {
             i = this.isSpectator() ? 10 : 1;
-            this.field_3917 = MathHelper.clamp(this.field_3917 + i, 0, 600);
-        } else if (this.field_3917 > 0) {
-            this.isInFluid(FluidTags.WATER);
-            this.field_3917 = MathHelper.clamp(this.field_3917 - 10, 0, 600);
+            this.underwaterVisibilityTicks = MathHelper.clamp(this.underwaterVisibilityTicks + i, 0, 600);
+        } else if (this.underwaterVisibilityTicks > 0) {
+            this.isSubmergedIn(FluidTags.WATER);
+            this.underwaterVisibilityTicks = MathHelper.clamp(this.underwaterVisibilityTicks - 10, 0, 600);
         }
         if (this.abilities.flying && this.isCamera()) {
             i = 0;
@@ -749,13 +751,13 @@ extends AbstractClientPlayerEntity {
         this.lastNauseaStrength = this.nextNauseaStrength;
         if (this.inNetherPortal) {
             if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
-                if (this.client.currentScreen instanceof ContainerScreen) {
-                    this.closeContainer();
+                if (this.client.currentScreen instanceof ScreenWithHandler) {
+                    this.closeHandledScreen();
                 }
                 this.client.openScreen(null);
             }
             if (this.nextNauseaStrength == 0.0f) {
-                this.client.getSoundManager().play(PositionedSoundInstance.method_24877(SoundEvents.BLOCK_PORTAL_TRIGGER, this.random.nextFloat() * 0.4f + 0.8f, 0.25f));
+                this.client.getSoundManager().play(PositionedSoundInstance.ambient(SoundEvents.BLOCK_PORTAL_TRIGGER, this.random.nextFloat() * 0.4f + 0.8f, 0.25f));
             }
             this.nextNauseaStrength += 0.0125f;
             if (this.nextNauseaStrength >= 1.0f) {
@@ -808,40 +810,40 @@ extends AbstractClientPlayerEntity {
         double d = this.getX();
         double e = this.getZ();
         super.move(type, movement);
-        this.method_3148((float)(this.getX() - d), (float)(this.getZ() - e));
+        this.autoJump((float)(this.getX() - d), (float)(this.getZ() - e));
     }
 
-    public boolean getLastAutoJump() {
-        return this.lastAutoJump;
+    public boolean isAutoJumpEnabled() {
+        return this.autoJumpEnabled;
     }
 
-    protected void method_3148(float f, float g) {
-        float l;
-        if (!this.method_22119()) {
+    protected void autoJump(float dx, float dz) {
+        float j;
+        if (!this.shouldAutoJump()) {
             return;
         }
         Vec3d vec3d = this.getPos();
-        Vec3d vec3d2 = vec3d.add(f, 0.0, g);
-        Vec3d vec3d3 = new Vec3d(f, 0.0, g);
-        float h = this.getMovementSpeed();
-        float i = (float)vec3d3.lengthSquared();
-        if (i <= 0.001f) {
+        Vec3d vec3d2 = vec3d.add(dx, 0.0, dz);
+        Vec3d vec3d3 = new Vec3d(dx, 0.0, dz);
+        float f = this.getMovementSpeed();
+        float g = (float)vec3d3.lengthSquared();
+        if (g <= 0.001f) {
             Vec2f vec2f = this.input.getMovementInput();
-            float j = h * vec2f.x;
-            float k = h * vec2f.y;
-            l = MathHelper.sin(this.yaw * ((float)Math.PI / 180));
-            float m = MathHelper.cos(this.yaw * ((float)Math.PI / 180));
-            vec3d3 = new Vec3d(j * m - k * l, vec3d3.y, k * m + j * l);
-            i = (float)vec3d3.lengthSquared();
-            if (i <= 0.001f) {
+            float h = f * vec2f.x;
+            float i = f * vec2f.y;
+            j = MathHelper.sin(this.yaw * ((float)Math.PI / 180));
+            float k = MathHelper.cos(this.yaw * ((float)Math.PI / 180));
+            vec3d3 = new Vec3d(h * k - i * j, vec3d3.y, i * k + h * j);
+            g = (float)vec3d3.lengthSquared();
+            if (g <= 0.001f) {
                 return;
             }
         }
-        float n = MathHelper.fastInverseSqrt(i);
-        Vec3d vec3d4 = vec3d3.multiply(n);
+        float l = MathHelper.fastInverseSqrt(g);
+        Vec3d vec3d4 = vec3d3.multiply(l);
         Vec3d vec3d5 = this.getRotationVecClient();
-        l = (float)(vec3d5.x * vec3d4.x + vec3d5.z * vec3d4.z);
-        if (l < -0.15f) {
+        j = (float)(vec3d5.x * vec3d4.x + vec3d5.z * vec3d4.z);
+        if (j < -0.15f) {
             return;
         }
         EntityContext entityContext = EntityContext.of(this);
@@ -854,61 +856,61 @@ extends AbstractClientPlayerEntity {
         if (!blockState2.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
             return;
         }
-        float o = 7.0f;
-        float p = 1.2f;
+        float m = 7.0f;
+        float n = 1.2f;
         if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
-            p += (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.75f;
+            n += (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) * 0.75f;
         }
-        float q = Math.max(h * 7.0f, 1.0f / n);
+        float o = Math.max(f * 7.0f, 1.0f / l);
         Vec3d vec3d6 = vec3d;
-        Vec3d vec3d7 = vec3d2.add(vec3d4.multiply(q));
-        float r = this.getWidth();
-        float s = this.getHeight();
-        Box box = new Box(vec3d6, vec3d7.add(0.0, s, 0.0)).expand(r, 0.0, r);
+        Vec3d vec3d7 = vec3d2.add(vec3d4.multiply(o));
+        float p = this.getWidth();
+        float q = this.getHeight();
+        Box box = new Box(vec3d6, vec3d7.add(0.0, q, 0.0)).expand(p, 0.0, p);
         vec3d6 = vec3d6.add(0.0, 0.51f, 0.0);
         vec3d7 = vec3d7.add(0.0, 0.51f, 0.0);
         Vec3d vec3d8 = vec3d4.crossProduct(new Vec3d(0.0, 1.0, 0.0));
-        Vec3d vec3d9 = vec3d8.multiply(r * 0.5f);
+        Vec3d vec3d9 = vec3d8.multiply(p * 0.5f);
         Vec3d vec3d10 = vec3d6.subtract(vec3d9);
         Vec3d vec3d11 = vec3d7.subtract(vec3d9);
         Vec3d vec3d12 = vec3d6.add(vec3d9);
         Vec3d vec3d13 = vec3d7.add(vec3d9);
         Iterator iterator = this.world.getCollisions(this, box, Collections.emptySet()).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
-        float t = Float.MIN_VALUE;
+        float r = Float.MIN_VALUE;
         while (iterator.hasNext()) {
             Box box2 = (Box)iterator.next();
             if (!box2.intersects(vec3d10, vec3d11) && !box2.intersects(vec3d12, vec3d13)) continue;
-            t = (float)box2.y2;
+            r = (float)box2.y2;
             Vec3d vec3d14 = box2.getCenter();
             BlockPos blockPos2 = new BlockPos(vec3d14);
-            int u = 1;
-            while ((float)u < p) {
+            int s = 1;
+            while ((float)s < n) {
                 BlockState blockState4;
-                BlockPos blockPos3 = blockPos2.up(u);
+                BlockPos blockPos3 = blockPos2.up(s);
                 BlockState blockState3 = this.world.getBlockState(blockPos3);
                 VoxelShape voxelShape2 = blockState3.getCollisionShape(this.world, blockPos3, entityContext);
-                if (!voxelShape2.isEmpty() && (double)(t = (float)voxelShape2.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getY() > (double)p) {
+                if (!voxelShape2.isEmpty() && (double)(r = (float)voxelShape2.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getY() > (double)n) {
                     return;
                 }
-                if (u > 1 && !(blockState4 = this.world.getBlockState(blockPos = blockPos.up())).getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
+                if (s > 1 && !(blockState4 = this.world.getBlockState(blockPos = blockPos.up())).getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
                     return;
                 }
-                ++u;
+                ++s;
             }
             break block0;
         }
-        if (t == Float.MIN_VALUE) {
+        if (r == Float.MIN_VALUE) {
             return;
         }
-        float v = (float)((double)t - this.getY());
-        if (v <= 0.5f || v > p) {
+        float t = (float)((double)r - this.getY());
+        if (t <= 0.5f || t > n) {
             return;
         }
-        this.field_3934 = 1;
+        this.ticksToNextAutojump = 1;
     }
 
-    private boolean method_22119() {
-        return this.getLastAutoJump() && this.field_3934 <= 0 && this.onGround && !this.clipAtLedge() && !this.hasVehicle() && this.hasMovementInput() && (double)this.getJumpVelocityMultiplier() >= 1.0;
+    private boolean shouldAutoJump() {
+        return this.isAutoJumpEnabled() && this.ticksToNextAutojump <= 0 && this.onGround && !this.clipAtLedge() && !this.hasVehicle() && this.hasMovementInput() && (double)this.getJumpVelocityMultiplier() >= 1.0;
     }
 
     /**
@@ -921,22 +923,26 @@ extends AbstractClientPlayerEntity {
         return vec2f.x != 0.0f || vec2f.y != 0.0f;
     }
 
-    private boolean method_20623() {
+    private boolean isWalking() {
         double d = 0.8;
         return this.isSubmergedInWater() ? this.input.hasForwardMovement() : (double)this.input.movementForward >= 0.8;
     }
 
-    public float method_3140() {
-        if (!this.isInFluid(FluidTags.WATER)) {
+    /**
+     * Returns the color multiplier of vision in water, so that visibility in
+     * water is reduced when the player just entered water.
+     */
+    public float getUnderwaterVisibility() {
+        if (!this.isSubmergedIn(FluidTags.WATER)) {
             return 0.0f;
         }
         float f = 600.0f;
         float g = 100.0f;
-        if ((float)this.field_3917 >= 600.0f) {
+        if ((float)this.underwaterVisibilityTicks >= 600.0f) {
             return 1.0f;
         }
-        float h = MathHelper.clamp((float)this.field_3917 / 100.0f, 0.0f, 1.0f);
-        float i = (float)this.field_3917 < 100.0f ? 0.0f : MathHelper.clamp(((float)this.field_3917 - 100.0f) / 500.0f, 0.0f, 1.0f);
+        float h = MathHelper.clamp((float)this.underwaterVisibilityTicks / 100.0f, 0.0f, 1.0f);
+        float i = (float)this.underwaterVisibilityTicks < 100.0f ? 0.0f : MathHelper.clamp(((float)this.underwaterVisibilityTicks - 100.0f) / 500.0f, 0.0f, 1.0f);
         return h * 0.6f + i * 0.39999998f;
     }
 

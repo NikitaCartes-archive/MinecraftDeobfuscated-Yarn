@@ -18,14 +18,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.thrown.ThrownEntity;
+import net.minecraft.entity.thrown.ThrownItemEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -40,49 +38,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 @EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
 public class ThrownPotionEntity
-extends ThrownEntity
+extends ThrownItemEntity
 implements FlyingItemEntity {
-    private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ThrownPotionEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private static final Logger LOGGER = LogManager.getLogger();
     public static final Predicate<LivingEntity> WATER_HURTS = ThrownPotionEntity::doesWaterHurt;
 
     public ThrownPotionEntity(EntityType<? extends ThrownPotionEntity> entityType, World world) {
-        super((EntityType<? extends ThrownEntity>)entityType, world);
+        super((EntityType<? extends ThrownItemEntity>)entityType, world);
     }
 
     public ThrownPotionEntity(World world, LivingEntity livingEntity) {
-        super(EntityType.POTION, livingEntity, world);
+        super((EntityType<? extends ThrownItemEntity>)EntityType.POTION, livingEntity, world);
     }
 
     public ThrownPotionEntity(World world, double x, double y, double d) {
-        super(EntityType.POTION, x, y, d, world);
+        super((EntityType<? extends ThrownItemEntity>)EntityType.POTION, x, y, d, world);
     }
 
     @Override
-    protected void initDataTracker() {
-        this.getDataTracker().startTracking(ITEM_STACK, ItemStack.EMPTY);
-    }
-
-    @Override
-    public ItemStack getStack() {
-        ItemStack itemStack = this.getDataTracker().get(ITEM_STACK);
-        if (itemStack.getItem() != Items.SPLASH_POTION && itemStack.getItem() != Items.LINGERING_POTION) {
-            if (this.world != null) {
-                LOGGER.error("ThrownPotion entity {} has no item?!", (Object)this.getEntityId());
-            }
-            return new ItemStack(Items.SPLASH_POTION);
-        }
-        return itemStack;
-    }
-
-    public void setItemStack(ItemStack itemStack) {
-        this.getDataTracker().set(ITEM_STACK, itemStack.copy());
+    protected Item getDefaultItem() {
+        return Items.SPLASH_POTION;
     }
 
     @Override
@@ -91,8 +69,31 @@ implements FlyingItemEntity {
     }
 
     @Override
+    protected void method_24920(BlockHitResult blockHitResult) {
+        super.method_24920(blockHitResult);
+        if (this.world.isClient) {
+            return;
+        }
+        ItemStack itemStack = this.getStack();
+        Potion potion = PotionUtil.getPotion(itemStack);
+        List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
+        boolean bl = potion == Potions.WATER && list.isEmpty();
+        Direction direction = blockHitResult.getSide();
+        BlockPos blockPos = blockHitResult.getBlockPos();
+        BlockPos blockPos2 = blockPos.offset(direction);
+        if (bl) {
+            this.extinguishFire(blockPos2, direction);
+            this.extinguishFire(blockPos2.offset(direction.getOpposite()), direction);
+            for (Direction direction2 : Direction.Type.HORIZONTAL) {
+                this.extinguishFire(blockPos2.offset(direction2), direction2);
+            }
+        }
+    }
+
+    @Override
     protected void onCollision(HitResult hitResult) {
         boolean bl;
+        super.onCollision(hitResult);
         if (this.world.isClient) {
             return;
         }
@@ -100,21 +101,6 @@ implements FlyingItemEntity {
         Potion potion = PotionUtil.getPotion(itemStack);
         List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
         boolean bl2 = bl = potion == Potions.WATER && list.isEmpty();
-        if (hitResult.getType() == HitResult.Type.BLOCK) {
-            BlockHitResult blockHitResult = (BlockHitResult)hitResult;
-            Direction direction = blockHitResult.getSide();
-            BlockPos blockPos = blockHitResult.getBlockPos();
-            BlockPos blockPos2 = blockPos.offset(direction);
-            BlockState blockState = this.world.getBlockState(blockPos);
-            blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
-            if (bl) {
-                this.extinguishFire(blockPos2, direction);
-                this.extinguishFire(blockPos2.offset(direction.getOpposite()), direction);
-                for (Direction direction2 : Direction.Type.HORIZONTAL) {
-                    this.extinguishFire(blockPos2.offset(direction2), direction2);
-                }
-            }
-        }
         if (bl) {
             this.damageEntitiesHurtByWater();
         } else if (!list.isEmpty()) {
@@ -125,7 +111,7 @@ implements FlyingItemEntity {
             }
         }
         int i = potion.hasInstantEffect() ? 2007 : 2002;
-        this.world.playLevelEvent(i, new BlockPos(this), PotionUtil.getColor(itemStack));
+        this.world.playLevelEvent(i, this.getSenseCenterPos(), PotionUtil.getColor(itemStack));
         this.remove();
     }
 
@@ -168,7 +154,10 @@ implements FlyingItemEntity {
 
     private void applyLingeringPotion(ItemStack itemStack, Potion potion) {
         AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
-        areaEffectCloudEntity.setOwner(this.getOwner());
+        Entity entity = this.getOwner();
+        if (entity instanceof LivingEntity) {
+            areaEffectCloudEntity.setOwner((LivingEntity)entity);
+        }
         areaEffectCloudEntity.setRadius(3.0f);
         areaEffectCloudEntity.setRadiusOnUse(-0.5f);
         areaEffectCloudEntity.setWaitTime(10);
@@ -192,30 +181,10 @@ implements FlyingItemEntity {
         BlockState blockState = this.world.getBlockState(blockPos);
         Block block = blockState.getBlock();
         if (blockState.matches(BlockTags.FIRE)) {
-            this.world.extinguishFire(null, blockPos.offset(direction), direction.getOpposite());
+            this.world.removeBlock(blockPos, false);
         } else if (block == Blocks.CAMPFIRE && blockState.get(CampfireBlock.LIT).booleanValue()) {
             this.world.playLevelEvent(null, 1009, blockPos, 0);
             this.world.setBlockState(blockPos, (BlockState)blockState.with(CampfireBlock.LIT, false));
-        }
-    }
-
-    @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Potion"));
-        if (itemStack.isEmpty()) {
-            this.remove();
-        } else {
-            this.setItemStack(itemStack);
-        }
-    }
-
-    @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        ItemStack itemStack = this.getStack();
-        if (!itemStack.isEmpty()) {
-            tag.put("Potion", itemStack.toTag(new CompoundTag()));
         }
     }
 

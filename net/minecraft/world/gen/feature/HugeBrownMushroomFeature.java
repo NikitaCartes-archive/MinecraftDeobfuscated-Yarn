@@ -15,37 +15,37 @@ import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 
 public class HugeBrownMushroomFeature
 extends HugeMushroomFeature {
-    public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> configFactory) {
-        super(configFactory);
+    public HugeBrownMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
+        super(function);
     }
 
     @Override
-    protected void generate(IWorld world, Random random, BlockPos blockPos, int i, BlockPos.Mutable pos, HugeMushroomFeatureConfig config) {
-        int j = config.capSize;
-        for (int k = -j; k <= j; ++k) {
-            for (int l = -j; l <= j; ++l) {
+    protected void generateCap(IWorld world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+        int i = config.capSize;
+        for (int j = -i; j <= i; ++j) {
+            for (int k = -i; k <= i; ++k) {
                 boolean bl6;
-                boolean bl = k == -j;
-                boolean bl2 = k == j;
-                boolean bl3 = l == -j;
-                boolean bl4 = l == j;
+                boolean bl = j == -i;
+                boolean bl2 = j == i;
+                boolean bl3 = k == -i;
+                boolean bl4 = k == i;
                 boolean bl5 = bl || bl2;
                 boolean bl7 = bl6 = bl3 || bl4;
                 if (bl5 && bl6) continue;
-                pos.set(blockPos).setOffset(k, i, l);
-                if (world.getBlockState(pos).isFullOpaque(world, pos)) continue;
-                boolean bl72 = bl || bl6 && k == 1 - j;
-                boolean bl8 = bl2 || bl6 && k == j - 1;
-                boolean bl9 = bl3 || bl5 && l == 1 - j;
-                boolean bl10 = bl4 || bl5 && l == j - 1;
-                this.setBlockState(world, pos, (BlockState)((BlockState)((BlockState)((BlockState)config.capProvider.getBlockState(random, blockPos).with(MushroomBlock.WEST, bl72)).with(MushroomBlock.EAST, bl8)).with(MushroomBlock.NORTH, bl9)).with(MushroomBlock.SOUTH, bl10));
+                mutable.setOffset(start, j, y, k);
+                if (world.getBlockState(mutable).isFullOpaque(world, mutable)) continue;
+                boolean bl72 = bl || bl6 && j == 1 - i;
+                boolean bl8 = bl2 || bl6 && j == i - 1;
+                boolean bl9 = bl3 || bl5 && k == 1 - i;
+                boolean bl10 = bl4 || bl5 && k == i - 1;
+                this.setBlockState(world, mutable, (BlockState)((BlockState)((BlockState)((BlockState)config.capProvider.getBlockState(random, start).with(MushroomBlock.WEST, bl72)).with(MushroomBlock.EAST, bl8)).with(MushroomBlock.NORTH, bl9)).with(MushroomBlock.SOUTH, bl10));
             }
         }
     }
 
     @Override
-    protected int method_23372(int i, int j, int k, int l) {
-        return l <= 3 ? 0 : k;
+    protected int getCapSize(int i, int j, int capSize, int y) {
+        return y <= 3 ? 0 : capSize;
     }
 }
 

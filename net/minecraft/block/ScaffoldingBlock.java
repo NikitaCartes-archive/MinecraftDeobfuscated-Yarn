@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import java.util.Iterator;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -136,7 +137,9 @@ implements Waterloggable {
     }
 
     public static int calculateDistance(BlockView world, BlockPos pos) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable(pos).setOffset(Direction.DOWN);
+        Direction direction;
+        BlockState blockState2;
+        BlockPos.Mutable mutable = pos.mutableCopy().setOffset(Direction.DOWN);
         BlockState blockState = world.getBlockState(mutable);
         int i = 7;
         if (blockState.getBlock() == Blocks.SCAFFOLDING) {
@@ -144,10 +147,8 @@ implements Waterloggable {
         } else if (blockState.isSideSolidFullSquare(world, mutable, Direction.UP)) {
             return 0;
         }
-        for (Direction direction : Direction.Type.HORIZONTAL) {
-            BlockState blockState2 = world.getBlockState(mutable.set(pos).setOffset(direction));
-            if (blockState2.getBlock() != Blocks.SCAFFOLDING || (i = Math.min(i, blockState2.get(DISTANCE) + 1)) != 1) continue;
-            break;
+        Iterator<Direction> iterator = Direction.Type.HORIZONTAL.iterator();
+        while (iterator.hasNext() && ((blockState2 = world.getBlockState(mutable.move(pos, direction = iterator.next()))).getBlock() != Blocks.SCAFFOLDING || (i = Math.min(i, blockState2.get(DISTANCE) + 1)) != 1)) {
         }
         return i;
     }

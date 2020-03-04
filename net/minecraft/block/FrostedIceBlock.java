@@ -32,13 +32,12 @@ extends IceBlock {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if ((random.nextInt(3) == 0 || this.canMelt(world, pos, 4)) && world.getLightLevel(pos) > 11 - state.get(AGE) - state.getOpacity(world, pos) && this.increaseAge(state, world, pos)) {
-            try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-                for (Direction direction : Direction.values()) {
-                    pooledMutable.set(pos).setOffset(direction);
-                    BlockState blockState = world.getBlockState(pooledMutable);
-                    if (blockState.getBlock() != this || this.increaseAge(blockState, world, pooledMutable)) continue;
-                    world.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
-                }
+            BlockPos.Mutable mutable = new BlockPos.Mutable();
+            for (Direction direction : Direction.values()) {
+                mutable.move(pos, direction);
+                BlockState blockState = world.getBlockState(mutable);
+                if (blockState.getBlock() != this || this.increaseAge(blockState, world, mutable)) continue;
+                world.getBlockTickScheduler().schedule(mutable, this, MathHelper.nextInt(random, 20, 40));
             }
             return;
         }
@@ -65,13 +64,11 @@ extends IceBlock {
 
     private boolean canMelt(BlockView world, BlockPos pos, int maxNeighbors) {
         int i = 0;
-        try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();){
-            for (Direction direction : Direction.values()) {
-                pooledMutable.set(pos).setOffset(direction);
-                if (world.getBlockState(pooledMutable).getBlock() != this || ++i < maxNeighbors) continue;
-                boolean bl = false;
-                return bl;
-            }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Direction direction : Direction.values()) {
+            mutable.move(pos, direction);
+            if (world.getBlockState(mutable).getBlock() != this || ++i < maxNeighbors) continue;
+            return false;
         }
         return true;
     }

@@ -330,13 +330,13 @@ extends AbstractListTag<Tag> {
     }
 
     @Override
-    public /* synthetic */ void add(int value, Object object) {
-        this.add(value, (Tag)object);
+    public /* synthetic */ void add(int i, Object object) {
+        this.add(i, (Tag)object);
     }
 
     @Override
-    public /* synthetic */ Object set(int index, Object object) {
-        return this.set(index, (Tag)object);
+    public /* synthetic */ Object set(int i, Object object) {
+        return this.set(i, (Tag)object);
     }
 
     @Override

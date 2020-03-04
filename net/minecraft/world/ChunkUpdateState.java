@@ -13,8 +13,8 @@ extends PersistentState {
     private LongSet all = new LongOpenHashSet();
     private LongSet remaining = new LongOpenHashSet();
 
-    public ChunkUpdateState(String key) {
-        super(key);
+    public ChunkUpdateState(String string) {
+        super(string);
     }
 
     @Override

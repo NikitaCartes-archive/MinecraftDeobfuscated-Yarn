@@ -16,7 +16,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.container.Container;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -31,6 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -95,7 +95,7 @@ extends BlockWithEntity {
             Direction direction = state.get(FACING);
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
             if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED && world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction))) {
-                player.openContainer(shulkerBoxBlockEntity);
+                player.openHandledScreen(shulkerBoxBlockEntity);
                 player.incrementStat(Stats.OPEN_SHULKER_BOX);
                 PiglinBrain.onGoldBlockBroken(player);
             }
@@ -168,7 +168,7 @@ extends BlockWithEntity {
         }
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ShulkerBoxBlockEntity) {
-            world.updateHorizontalAdjacent(pos, state.getBlock());
+            world.updateComparators(pos, state.getBlock());
         }
         super.onBlockRemoved(state, world, pos, newState, moved);
     }
@@ -224,7 +224,7 @@ extends BlockWithEntity {
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return Container.calculateComparatorOutput((Inventory)((Object)world.getBlockEntity(pos)));
+        return ScreenHandler.calculateComparatorOutput((Inventory)((Object)world.getBlockEntity(pos)));
     }
 
     @Override

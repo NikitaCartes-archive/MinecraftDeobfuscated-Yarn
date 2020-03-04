@@ -3,17 +3,17 @@
  */
 package com.mojang.realmsclient.util;
 
-import com.google.common.collect.Maps;
-import java.util.Map;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(value=EnvType.CLIENT)
 public class UploadTokenCache {
-    private static final Map<Long, String> tokenCache = Maps.newHashMap();
+    private static final Long2ObjectMap<String> tokenCache = new Long2ObjectOpenHashMap<String>();
 
     public static String get(long worldId) {
-        return tokenCache.get(worldId);
+        return (String)tokenCache.get(worldId);
     }
 
     public static void invalidate(long world) {

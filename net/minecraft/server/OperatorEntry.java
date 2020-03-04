@@ -33,6 +33,17 @@ extends ServerConfigEntry<GameProfile> {
         return this.bypassPlayerLimit;
     }
 
+    @Override
+    protected void method_24896(JsonObject jsonObject) {
+        if (this.getKey() == null) {
+            return;
+        }
+        jsonObject.addProperty("uuid", ((GameProfile)this.getKey()).getId() == null ? "" : ((GameProfile)this.getKey()).getId().toString());
+        jsonObject.addProperty("name", ((GameProfile)this.getKey()).getName());
+        jsonObject.addProperty("level", this.permissionLevel);
+        jsonObject.addProperty("bypassesPlayerLimit", this.bypassPlayerLimit);
+    }
+
     private static GameProfile getProfileFromJson(JsonObject json) {
         UUID uUID;
         if (!json.has("uuid") || !json.has("name")) {

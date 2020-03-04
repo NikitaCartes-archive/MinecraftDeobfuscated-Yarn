@@ -7,6 +7,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.AreaEffectCloudEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -17,7 +18,6 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class DragonFireballEntity
@@ -38,13 +38,16 @@ extends ExplosiveProjectileEntity {
     @Override
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
-        if (hitResult.getType() == HitResult.Type.ENTITY && ((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
+        Entity entity = this.getOwner();
+        if (hitResult.getType() == HitResult.Type.ENTITY && ((EntityHitResult)hitResult).getEntity().isPartOf(entity)) {
             return;
         }
         if (!this.world.isClient) {
             List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
             AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
-            areaEffectCloudEntity.setOwner(this.owner);
+            if (entity instanceof LivingEntity) {
+                areaEffectCloudEntity.setOwner((LivingEntity)entity);
+            }
             areaEffectCloudEntity.setParticleType(ParticleTypes.DRAGON_BREATH);
             areaEffectCloudEntity.setRadius(3.0f);
             areaEffectCloudEntity.setDuration(600);
@@ -58,7 +61,7 @@ extends ExplosiveProjectileEntity {
                     break;
                 }
             }
-            this.world.playLevelEvent(2006, new BlockPos(this), 0);
+            this.world.playLevelEvent(2006, this.getSenseCenterPos(), 0);
             this.world.spawnEntity(areaEffectCloudEntity);
             this.remove();
         }

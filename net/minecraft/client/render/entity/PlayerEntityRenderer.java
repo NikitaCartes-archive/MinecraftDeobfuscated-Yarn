@@ -178,7 +178,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         this.setModelPose(player);
         playerEntityModel.handSwingProgress = 0.0f;
         playerEntityModel.isSneaking = false;
-        playerEntityModel.field_3396 = 0.0f;
+        playerEntityModel.leaningPitch = 0.0f;
         playerEntityModel.setAngles(player, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
         arm.pitch = 0.0f;
         arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);

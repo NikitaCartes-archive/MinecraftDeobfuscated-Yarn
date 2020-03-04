@@ -10,8 +10,8 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class LuckEnchantment
 extends Enchantment {
-    protected LuckEnchantment(Enchantment.Weight weight, EnchantmentTarget type, EquipmentSlot ... slotTypes) {
-        super(weight, type, slotTypes);
+    protected LuckEnchantment(Enchantment.Weight weight, EnchantmentTarget enchantmentTarget, EquipmentSlot ... equipmentSlots) {
+        super(weight, enchantmentTarget, equipmentSlots);
     }
 
     @Override

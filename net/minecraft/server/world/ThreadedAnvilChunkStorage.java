@@ -105,6 +105,9 @@ public class ThreadedAnvilChunkStorage
 extends VersionedChunkStorage
 implements ChunkHolder.PlayersWatchingChunkProvider {
     private static final Logger LOGGER = LogManager.getLogger();
+    /**
+     * Specifies the maximum ticket level a chunk can be before a chunk's {@link net.minecraft.server.world.ChunkHolder.LevelType} is {@link net.minecraft.server.world.ChunkHolder.LevelType#BORDER}.
+     */
     public static final int MAX_LEVEL = 33 + ChunkStatus.getMaxTargetGenerationRadius();
     private final Long2ObjectLinkedOpenHashMap<ChunkHolder> currentChunkHolders = new Long2ObjectLinkedOpenHashMap();
     private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> chunkHolders = this.currentChunkHolders.clone();
@@ -219,7 +222,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         if (chunk != null) {
             string = string + "Ch: \u00a7" + chunk.getStatus().getIndex() + chunk.getStatus() + '\u00a7' + "r\n";
         }
-        ChunkHolder.LevelType levelType = chunkHolder.method_23271();
+        ChunkHolder.LevelType levelType = chunkHolder.getLevelType();
         string = string + "\u00a7" + levelType.ordinal() + (Object)((Object)levelType);
         return string + '\u00a7' + "r";
     }
@@ -313,7 +316,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     protected void save(boolean flush) {
         if (flush) {
-            List list = this.chunkHolders.values().stream().filter(ChunkHolder::method_20384).peek(ChunkHolder::method_20385).collect(Collectors.toList());
+            List list = this.chunkHolders.values().stream().filter(ChunkHolder::isTicking).peek(ChunkHolder::updateTickingStatus).collect(Collectors.toList());
             MutableBoolean mutableBoolean = new MutableBoolean();
             do {
                 mutableBoolean.setFalse();
@@ -326,15 +329,15 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     return completableFuture.join();
                 }).filter(chunk -> chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk).filter(this::save).forEach(chunk -> mutableBoolean.setTrue());
             } while (mutableBoolean.isTrue());
-            this.method_20605(() -> true);
+            this.unloadChunks(() -> true);
             this.completeAll();
             LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object)this.saveDir.getName());
         } else {
-            this.chunkHolders.values().stream().filter(ChunkHolder::method_20384).forEach(chunkHolder -> {
+            this.chunkHolders.values().stream().filter(ChunkHolder::isTicking).forEach(chunkHolder -> {
                 Chunk chunk = chunkHolder.getFuture().getNow(null);
                 if (chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk) {
                     this.save(chunk);
-                    chunkHolder.method_20385();
+                    chunkHolder.updateTickingStatus();
                 }
             });
         }
@@ -346,45 +349,45 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.pointOfInterestStorage.tick(shouldKeepTicking);
         profiler.swap("chunk_unload");
         if (!this.world.isSavingDisabled()) {
-            this.method_20605(shouldKeepTicking);
+            this.unloadChunks(shouldKeepTicking);
         }
         profiler.pop();
     }
 
-    private void method_20605(BooleanSupplier booleanSupplier) {
+    private void unloadChunks(BooleanSupplier shouldKeepTicking) {
         Runnable runnable;
         LongIterator longIterator = this.unloadedChunks.iterator();
         int i = 0;
-        while (longIterator.hasNext() && (booleanSupplier.getAsBoolean() || i < 200 || this.unloadedChunks.size() > 2000)) {
+        while (longIterator.hasNext() && (shouldKeepTicking.getAsBoolean() || i < 200 || this.unloadedChunks.size() > 2000)) {
             long l = longIterator.nextLong();
             ChunkHolder chunkHolder = this.currentChunkHolders.remove(l);
             if (chunkHolder != null) {
                 this.field_18807.put(l, chunkHolder);
                 this.chunkHolderListDirty = true;
                 ++i;
-                this.method_20458(l, chunkHolder);
+                this.tryUnloadChunk(l, chunkHolder);
             }
             longIterator.remove();
         }
-        while ((booleanSupplier.getAsBoolean() || this.field_19343.size() > 2000) && (runnable = this.field_19343.poll()) != null) {
+        while ((shouldKeepTicking.getAsBoolean() || this.field_19343.size() > 2000) && (runnable = this.field_19343.poll()) != null) {
             runnable.run();
         }
     }
 
-    private void method_20458(long l, ChunkHolder chunkHolder) {
+    private void tryUnloadChunk(long pos, ChunkHolder chunkHolder) {
         CompletableFuture<Chunk> completableFuture = chunkHolder.getFuture();
         ((CompletableFuture)completableFuture.thenAcceptAsync(chunk -> {
             CompletableFuture<Chunk> completableFuture2 = chunkHolder.getFuture();
             if (completableFuture2 != completableFuture) {
-                this.method_20458(l, chunkHolder);
+                this.tryUnloadChunk(pos, chunkHolder);
                 return;
             }
-            if (this.field_18807.remove(l, (Object)chunkHolder) && chunk != null) {
+            if (this.field_18807.remove(pos, (Object)chunkHolder) && chunk != null) {
                 if (chunk instanceof WorldChunk) {
                     ((WorldChunk)chunk).setLoadedToWorld(false);
                 }
                 this.save((Chunk)chunk);
-                if (this.loadedChunks.remove(l) && chunk instanceof WorldChunk) {
+                if (this.loadedChunks.remove(pos) && chunk instanceof WorldChunk) {
                     WorldChunk worldChunk = (WorldChunk)chunk;
                     this.world.unloadEntities(worldChunk);
                 }
@@ -411,7 +414,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> createChunkFuture(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
         ChunkPos chunkPos = chunkHolder.getPos();
         if (chunkStatus == ChunkStatus.EMPTY) {
-            return this.method_20619(chunkPos);
+            return this.loadChunk(chunkPos);
         }
         CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.createFuture(chunkStatus.getPrevious(), this);
         return completableFuture.thenComposeAsync(either -> {
@@ -424,43 +427,43 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos);
             }
             if ((chunk2 = (Chunk)optional.get()).getStatus().isAtLeast(chunkStatus)) {
-                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus == ChunkStatus.LIGHT ? this.method_20617(chunkHolder, chunkStatus) : chunkStatus.runNoGenTask(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), chunk2);
+                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkStatus == ChunkStatus.LIGHT ? this.generateChunk(chunkHolder, chunkStatus) : chunkStatus.runNoGenTask(this.world, this.structureManager, this.serverLightingProvider, chunk -> this.convertToFullChunk(chunkHolder), chunk2);
                 this.worldGenerationProgressListener.setChunkStatus(chunkPos, chunkStatus);
                 return completableFuture;
             }
-            return this.method_20617(chunkHolder, chunkStatus);
+            return this.generateChunk(chunkHolder, chunkStatus);
         }, (Executor)this.mainThreadExecutor);
     }
 
-    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20619(ChunkPos chunkPos) {
+    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadChunk(ChunkPos pos) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 this.world.getProfiler().visit("chunkLoad");
-                CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
+                CompoundTag compoundTag = this.getUpdatedChunkTag(pos);
                 if (compoundTag != null) {
                     boolean bl;
                     boolean bl2 = bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
                     if (bl) {
-                        ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, chunkPos, compoundTag);
+                        ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, compoundTag);
                         chunk.setLastSaveTime(this.world.getTime());
                         return Either.left(chunk);
                     }
-                    LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)chunkPos);
+                    LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)pos);
                 }
             } catch (CrashException crashException) {
                 Throwable throwable = crashException.getCause();
                 if (throwable instanceof IOException) {
-                    LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)throwable);
+                    LOGGER.error("Couldn't load chunk {}", (Object)pos, (Object)throwable);
                 }
                 throw crashException;
             } catch (Exception exception) {
-                LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)exception);
+                LOGGER.error("Couldn't load chunk {}", (Object)pos, (Object)exception);
             }
-            return Either.left(new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA));
+            return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA));
         }, this.mainThreadExecutor);
     }
 
-    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20617(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
+    private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> generateChunk(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
         ChunkPos chunkPos = chunkHolder.getPos();
         CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(chunkPos, chunkStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(chunkStatus, i));
         this.world.getProfiler().visit(() -> "chunkGenerate " + chunkStatus.getId());
@@ -653,11 +656,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             ChunkHolder chunkHolder = (ChunkHolder)entry.getValue();
             Optional<Chunk> optional = Optional.ofNullable(chunkHolder.getCompletedChunk());
             Optional<Object> optional2 = optional.flatMap(chunk -> chunk instanceof WorldChunk ? Optional.of((WorldChunk)chunk) : Optional.empty());
-            csvWriter.printRow(chunkPos.x, chunkPos.z, chunkHolder.getLevel(), optional.isPresent(), optional.map(Chunk::getStatus).orElse(null), optional2.map(WorldChunk::getLevelType).orElse(null), ThreadedAnvilChunkStorage.method_21676(chunkHolder.method_20725()), ThreadedAnvilChunkStorage.method_21676(chunkHolder.getTickingFuture()), ThreadedAnvilChunkStorage.method_21676(chunkHolder.getEntityTickingFuture()), this.ticketManager.method_21623(entry.getLongKey()), !this.isTooFarFromPlayersToSpawnMobs(chunkPos), optional2.map(worldChunk -> Stream.of(worldChunk.getEntitySectionArray()).mapToInt(TypeFilterableList::size).sum()).orElse(0), optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0));
+            csvWriter.printRow(chunkPos.x, chunkPos.z, chunkHolder.getLevel(), optional.isPresent(), optional.map(Chunk::getStatus).orElse(null), optional2.map(WorldChunk::getLevelType).orElse(null), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getBorderFuture()), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getTickingFuture()), ThreadedAnvilChunkStorage.getFutureStatus(chunkHolder.getEntityTickingFuture()), this.ticketManager.getTicket(entry.getLongKey()), !this.isTooFarFromPlayersToSpawnMobs(chunkPos), optional2.map(worldChunk -> Stream.of(worldChunk.getEntitySectionArray()).mapToInt(TypeFilterableList::size).sum()).orElse(0), optional2.map(worldChunk -> worldChunk.getBlockEntities().size()).orElse(0));
         }
     }
 
-    private static String method_21676(CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture) {
+    private static String getFutureStatus(CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture) {
         try {
             Either either = completableFuture.getNow(null);
             if (either != null) {

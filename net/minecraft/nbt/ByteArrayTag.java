@@ -203,13 +203,13 @@ extends AbstractListTag<ByteTag> {
     }
 
     @Override
-    public /* synthetic */ void add(int value, Object object) {
-        this.add(value, (ByteTag)object);
+    public /* synthetic */ void add(int i, Object object) {
+        this.add(i, (ByteTag)object);
     }
 
     @Override
-    public /* synthetic */ Object set(int index, Object object) {
-        return this.method_10606(index, (ByteTag)object);
+    public /* synthetic */ Object set(int i, Object object) {
+        return this.method_10606(i, (ByteTag)object);
     }
 
     @Override

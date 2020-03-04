@@ -21,7 +21,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -49,7 +48,7 @@ public final class ProjectileUtil {
         World world = entity.world;
         Vec3d vec3d2 = entity.getPos();
         if (bl3 && !world.doesNotCollide(entity, entity.getBoundingBox(), bl2 || entity2 == null ? ImmutableSet.of() : ProjectileUtil.getEntityAndRidingEntity(entity2))) {
-            return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(entity), false);
+            return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), entity.getSenseCenterPos(), false);
         }
         Vec3d vec3d3 = vec3d2.add(vec3d);
         HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.NONE, entity));
@@ -149,12 +148,12 @@ public final class ProjectileUtil {
         return entity.getMainHandStack().getItem() == item ? Hand.MAIN_HAND : Hand.OFF_HAND;
     }
 
-    public static ProjectileEntity createArrowProjectile(LivingEntity livingEntity, ItemStack itemStack, float f) {
-        ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
-        ProjectileEntity projectileEntity = arrowItem.createArrow(livingEntity.world, itemStack, livingEntity);
-        projectileEntity.applyEnchantmentEffects(livingEntity, f);
-        if (itemStack.getItem() == Items.TIPPED_ARROW && projectileEntity instanceof ArrowEntity) {
-            ((ArrowEntity)projectileEntity).initFromStack(itemStack);
+    public static ProjectileEntity createArrowProjectile(LivingEntity entity, ItemStack stack, float damageModifier) {
+        ArrowItem arrowItem = (ArrowItem)(stack.getItem() instanceof ArrowItem ? stack.getItem() : Items.ARROW);
+        ProjectileEntity projectileEntity = arrowItem.createArrow(entity.world, stack, entity);
+        projectileEntity.applyEnchantmentEffects(entity, damageModifier);
+        if (stack.getItem() == Items.TIPPED_ARROW && projectileEntity instanceof ArrowEntity) {
+            ((ArrowEntity)projectileEntity).initFromStack(stack);
         }
         return projectileEntity;
     }

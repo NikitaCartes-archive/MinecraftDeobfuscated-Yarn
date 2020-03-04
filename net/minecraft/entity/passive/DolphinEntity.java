@@ -405,7 +405,7 @@ extends WaterCreatureEntity {
             ServerWorld serverWorld = (ServerWorld)this.dolphin.world;
             this.field_6753 = false;
             this.dolphin.getNavigation().stop();
-            BlockPos blockPos = new BlockPos(this.dolphin);
+            BlockPos blockPos = this.dolphin.getSenseCenterPos();
             String string = (double)serverWorld.random.nextFloat() >= 0.5 ? "Ocean_Ruin" : "Shipwreck";
             BlockPos blockPos2 = serverWorld.locateStructure(string, blockPos, 50, false);
             if (blockPos2 == null) {
@@ -434,7 +434,7 @@ extends WaterCreatureEntity {
             World world = this.dolphin.world;
             if (this.dolphin.isNearTarget() || this.dolphin.getNavigation().isIdle()) {
                 BlockPos blockPos;
-                Vec3d vec3d = new Vec3d(this.dolphin.getTreasurePos());
+                Vec3d vec3d = Vec3d.method_24953(this.dolphin.getTreasurePos());
                 Vec3d vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 16, 1, vec3d, 0.3926991f);
                 if (vec3d2 == null) {
                     vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 4, vec3d);
@@ -473,7 +473,7 @@ extends WaterCreatureEntity {
             if (this.closestPlayer == null) {
                 return false;
             }
-            return this.closestPlayer.isSwimming();
+            return this.closestPlayer.isSwimming() && this.dolphin.getTarget() != this.closestPlayer;
         }
 
         @Override
