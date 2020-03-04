@@ -13,7 +13,6 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -219,7 +218,7 @@ public class CrossbowItem extends RangedWeaponItem {
 			boolean bl = projectile.getItem() == Items.FIREWORK_ROCKET;
 			Projectile projectile2;
 			if (bl) {
-				projectile2 = new FireworkEntity(world, projectile, shooter.getX(), shooter.getEyeY() - 0.15F, shooter.getZ(), true);
+				projectile2 = new FireworkEntity(world, projectile, shooter, shooter.getX(), shooter.getEyeY() - 0.15F, shooter.getZ(), true);
 			} else {
 				projectile2 = createArrow(world, shooter, crossbow, projectile);
 				if (creative || simulated != 0.0F) {
@@ -240,7 +239,7 @@ public class CrossbowItem extends RangedWeaponItem {
 			}
 
 			crossbow.damage(bl ? 3 : 1, shooter, e -> e.sendToolBreakStatus(hand));
-			world.spawnEntity((Entity)projectile2);
+			world.spawnEntity(projectile2);
 			world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0F, soundPitch);
 		}
 	}

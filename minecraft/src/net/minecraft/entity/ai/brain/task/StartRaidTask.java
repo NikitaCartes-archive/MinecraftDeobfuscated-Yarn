@@ -6,7 +6,6 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 
 public class StartRaidTask extends Task<LivingEntity> {
 	public StartRaidTask() {
@@ -21,7 +20,7 @@ public class StartRaidTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		Raid raid = world.getRaidAt(new BlockPos(entity));
+		Raid raid = world.getRaidAt(entity.getSenseCenterPos());
 		if (raid != null) {
 			if (raid.hasSpawned() && !raid.isPreRaid()) {
 				brain.setDefaultActivity(Activity.RAID);

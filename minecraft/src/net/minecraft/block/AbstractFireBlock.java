@@ -15,13 +15,18 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public abstract class AbstractFireBlock extends Block {
 	private final float damage;
+	protected static final VoxelShape field_22497 = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_22498 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
+	protected static final VoxelShape field_22499 = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
+	protected static final VoxelShape field_22500 = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_22501 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+	protected static final VoxelShape field_22502 = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
 
 	public AbstractFireBlock(Block.Settings settings, float damage) {
 		super(settings);
@@ -41,7 +46,7 @@ public abstract class AbstractFireBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
-		return VoxelShapes.empty();
+		return field_22498;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -139,11 +144,17 @@ public abstract class AbstractFireBlock extends Block {
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
 		if (oldState.getBlock() != state.getBlock()) {
 			if (world.dimension.getType() != DimensionType.OVERWORLD && world.dimension.getType() != DimensionType.THE_NETHER
-				|| !((NetherPortalBlock)Blocks.NETHER_PORTAL).createPortalAt(world, pos)) {
+				|| !NetherPortalBlock.createPortalAt(world, pos)) {
 				if (!state.canPlaceAt(world, pos)) {
 					world.removeBlock(pos, false);
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		super.onBlockRemoved(state, world, pos, newState, moved);
+		world.playLevelEvent(null, 1009, pos, 0);
 	}
 }

@@ -25,16 +25,16 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 	private static final BlockState BAMBOO_TOP_2 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.LARGE);
 	private static final BlockState BAMBOO_TOP_3 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.SMALL);
 
-	public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> configFactory) {
-		super(configFactory);
+	public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
 	) {
 		int i = 0;
-		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
-		BlockPos.Mutable mutable2 = new BlockPos.Mutable(blockPos);
+		BlockPos.Mutable mutable = blockPos.mutableCopy();
+		BlockPos.Mutable mutable2 = blockPos.mutableCopy();
 		if (iWorld.isAir(mutable)) {
 			if (Blocks.BAMBOO.getDefaultState().canPlaceAt(iWorld, mutable)) {
 				int j = random.nextInt(12) + 5;

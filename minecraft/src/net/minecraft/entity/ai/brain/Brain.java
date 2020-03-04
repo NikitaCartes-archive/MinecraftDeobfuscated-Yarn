@@ -82,9 +82,8 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.remember(type, Optional.ofNullable(value));
 	}
 
-	public <U> void remember(MemoryModuleType<U> type, U value, long startTime, long duration) {
-		long l = startTime + duration;
-		this.setMemory(type, Optional.of(Memory.timed(value, l)));
+	public <U> void remember(MemoryModuleType<U> type, U value, long startTime) {
+		this.setMemory(type, Optional.of(Memory.timed(value, startTime)));
 	}
 
 	public <U> void remember(MemoryModuleType<U> type, Optional<U> value) {
@@ -236,11 +235,11 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		return brain;
 	}
 
-	public void tick(ServerWorld world, E entity) {
-		this.expireOutdatedMemories(world);
-		this.updateSensors(world, entity);
-		this.startTasks(world, entity);
-		this.updateTasks(world, entity);
+	public void tick(ServerWorld serverWorld, E entity) {
+		this.memories.forEach(this::method_24912);
+		this.sensors.values().forEach(sensor -> sensor.canSense(serverWorld, entity));
+		this.startTasks(serverWorld, entity);
+		this.updateTasks(serverWorld, entity);
 	}
 
 	public void stopAllTasks(ServerWorld serverWorld, E livingEntity) {
@@ -266,10 +265,6 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		return ops.createMap(ImmutableMap.of(ops.createString("memories"), object));
 	}
 
-	private void updateSensors(ServerWorld serverWorld, E livingEntity) {
-		this.sensors.values().forEach(sensor -> sensor.canSense(serverWorld, livingEntity));
-	}
-
 	private void startTasks(ServerWorld serverWorld, E livingEntity) {
 		long l = serverWorld.getTime();
 		this.tasks
@@ -288,9 +283,10 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.streamRunningTasks().forEach(task -> task.tick(serverWorld, livingEntity, l));
 	}
 
-	private void expireOutdatedMemories(ServerWorld serverWorld) {
-		this.memories.forEach((memoryModuleType, optional) -> {
-			if (optional.isPresent() && ((Memory)optional.get()).isExpired(serverWorld.getTime())) {
+	private void method_24912(MemoryModuleType<?> memoryModuleType, Optional<? extends Memory<?>> optional) {
+		optional.ifPresent(memory -> {
+			memory.method_24913();
+			if (memory.isExpired()) {
 				this.forget(memoryModuleType);
 			}
 		});

@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -19,8 +19,8 @@ public class HoldingPatternPhase extends AbstractPhase {
 	private Vec3d field_7045;
 	private boolean field_7044;
 
-	public HoldingPatternPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public HoldingPatternPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 		}
 
 		if (this.field_7043 == null || this.field_7043.isFinished()) {
-			int j = this.dragon.method_6818();
+			int j = this.dragon.getNearestPathNodeIndex();
 			int ix = j;
 			if (this.dragon.getRandom().nextInt(8) == 0) {
 				this.field_7044 = !this.field_7044;
@@ -98,7 +98,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 				ix += 12;
 			}
 
-			this.field_7043 = this.dragon.method_6833(j, ix, null);
+			this.field_7043 = this.dragon.findPath(j, ix, null);
 			if (this.field_7043 != null) {
 				this.field_7043.next();
 			}
@@ -129,7 +129,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 	}
 
 	@Override
-	public void crystalDestroyed(EnderCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
+	public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
 		if (player != null && !player.abilities.invulnerable) {
 			this.method_6843(player);
 		}

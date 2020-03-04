@@ -142,14 +142,14 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		}
 
 		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
+		public boolean equals(Object object) {
+			if (this == object) {
 				return true;
-			} else if (!(o instanceof NbtText.BlockNbtText)) {
+			} else if (!(object instanceof NbtText.BlockNbtText)) {
 				return false;
 			} else {
-				NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)o;
-				return Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(o);
+				NbtText.BlockNbtText blockNbtText = (NbtText.BlockNbtText)object;
+				return Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(object);
 			}
 		}
 
@@ -206,14 +206,14 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		}
 
 		@Override
-		public boolean equals(Object o) {
-			if (this == o) {
+		public boolean equals(Object object) {
+			if (this == object) {
 				return true;
-			} else if (!(o instanceof NbtText.EntityNbtText)) {
+			} else if (!(object instanceof NbtText.EntityNbtText)) {
 				return false;
 			} else {
-				NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)o;
-				return Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(o);
+				NbtText.EntityNbtText entityNbtText = (NbtText.EntityNbtText)object;
+				return Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(object);
 			}
 		}
 

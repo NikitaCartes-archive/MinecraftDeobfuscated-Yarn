@@ -168,8 +168,8 @@ public final class ItemStack {
 		}
 	}
 
-	public float getMiningSpeed(BlockState state) {
-		return this.getItem().getMiningSpeed(this, state);
+	public float getMiningSpeedMultiplier(BlockState state) {
+		return this.getItem().getMiningSpeedMultiplier(this, state);
 	}
 
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {

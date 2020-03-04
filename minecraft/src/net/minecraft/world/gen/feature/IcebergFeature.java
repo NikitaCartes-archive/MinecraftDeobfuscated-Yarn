@@ -15,8 +15,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
-	public IcebergFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> configFactory) {
-		super(configFactory);
+	public IcebergFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(

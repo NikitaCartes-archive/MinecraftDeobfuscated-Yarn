@@ -125,60 +125,48 @@ public interface DispenserBehavior {
 				}
 			}
 		);
-		DispenserBlock.registerBehavior(
-			Items.SPLASH_POTION,
-			new DispenserBehavior() {
-				@Override
-				public ItemStack dispense(BlockPointer location, ItemStack stack) {
-					return (new ProjectileDispenserBehavior() {
-							@Override
-							protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-								return Util.make(
-									new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack)
-								);
-							}
+		DispenserBlock.registerBehavior(Items.SPLASH_POTION, new DispenserBehavior() {
+			@Override
+			public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
+				return (new ProjectileDispenserBehavior() {
+					@Override
+					protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
+						return Util.make(new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItem(itemStack));
+					}
 
-							@Override
-							protected float getVariation() {
-								return super.getVariation() * 0.5F;
-							}
+					@Override
+					protected float getVariation() {
+						return super.getVariation() * 0.5F;
+					}
 
-							@Override
-							protected float getForce() {
-								return super.getForce() * 1.25F;
-							}
-						})
-						.dispense(location, stack);
-				}
+					@Override
+					protected float getForce() {
+						return super.getForce() * 1.25F;
+					}
+				}).dispense(blockPointer, itemStack);
 			}
-		);
-		DispenserBlock.registerBehavior(
-			Items.LINGERING_POTION,
-			new DispenserBehavior() {
-				@Override
-				public ItemStack dispense(BlockPointer location, ItemStack stack) {
-					return (new ProjectileDispenserBehavior() {
-							@Override
-							protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-								return Util.make(
-									new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItemStack(itemStack)
-								);
-							}
+		});
+		DispenserBlock.registerBehavior(Items.LINGERING_POTION, new DispenserBehavior() {
+			@Override
+			public ItemStack dispense(BlockPointer blockPointer, ItemStack itemStack) {
+				return (new ProjectileDispenserBehavior() {
+					@Override
+					protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
+						return Util.make(new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItem(itemStack));
+					}
 
-							@Override
-							protected float getVariation() {
-								return super.getVariation() * 0.5F;
-							}
+					@Override
+					protected float getVariation() {
+						return super.getVariation() * 0.5F;
+					}
 
-							@Override
-							protected float getForce() {
-								return super.getForce() * 1.25F;
-							}
-						})
-						.dispense(location, stack);
-				}
+					@Override
+					protected float getForce() {
+						return super.getForce() * 1.25F;
+					}
+				}).dispense(blockPointer, itemStack);
 			}
-		);
+		});
 		ItemDispenserBehavior itemDispenserBehavior = new ItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {

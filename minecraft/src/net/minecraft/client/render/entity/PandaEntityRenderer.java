@@ -76,7 +76,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 			matrixStack.translate(0.0, (double)(0.8F * q), 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0F)));
 			matrixStack.translate(0.0, (double)(-1.0F * q), 0.0);
-			if (pandaEntity.method_6524()) {
+			if (pandaEntity.isScaredByThunderstorm()) {
 				float r = (float)(Math.cos((double)pandaEntity.age * 1.25) * Math.PI * 0.05F);
 				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(r));
 				if (pandaEntity.isBaby()) {

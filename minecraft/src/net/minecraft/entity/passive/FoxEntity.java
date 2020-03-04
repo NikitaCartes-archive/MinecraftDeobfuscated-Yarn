@@ -288,7 +288,7 @@ public class FoxEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		Biome biome = world.getBiome(new BlockPos(this));
+		Biome biome = world.getBiome(this.getSenseCenterPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
@@ -367,7 +367,7 @@ public class FoxEntity extends AnimalEntity {
 
 		for (UUID uUID : list) {
 			if (uUID != null) {
-				listTag.add(NbtHelper.fromUuid(uUID));
+				listTag.add(NbtHelper.fromUuidOld(uUID));
 			}
 		}
 
@@ -384,7 +384,7 @@ public class FoxEntity extends AnimalEntity {
 		ListTag listTag = tag.getList("TrustedUUIDs", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			this.addTrustedUuid(NbtHelper.toUuid(listTag.getCompound(i)));
+			this.addTrustedUuid(NbtHelper.toUuidOld(listTag.getCompound(i)));
 		}
 
 		this.setSleeping(tag.getBoolean("Sleeping"));
@@ -501,7 +501,7 @@ public class FoxEntity extends AnimalEntity {
 			}
 
 			if (this.isWalking() && this.world.random.nextFloat() < 0.2F) {
-				BlockPos blockPos = new BlockPos(this);
+				BlockPos blockPos = this.getSenseCenterPos();
 				BlockState blockState = this.world.getBlockState(blockPos);
 				this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 			}
@@ -724,7 +724,7 @@ public class FoxEntity extends AnimalEntity {
 				return false;
 			} else {
 				this.timer = 100;
-				BlockPos blockPos = new BlockPos(this.mob);
+				BlockPos blockPos = this.mob.getSenseCenterPos();
 				return FoxEntity.this.world.isDay()
 					&& FoxEntity.this.world.isSkyVisible(blockPos)
 					&& !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos)
@@ -1137,7 +1137,7 @@ public class FoxEntity extends AnimalEntity {
 			} else if (FoxEntity.this.pitch > 0.0F
 				&& FoxEntity.this.onGround
 				&& (float)FoxEntity.this.getVelocity().y != 0.0F
-				&& FoxEntity.this.world.getBlockState(new BlockPos(FoxEntity.this)).getBlock() == Blocks.SNOW) {
+				&& FoxEntity.this.world.getBlockState(FoxEntity.this.getSenseCenterPos()).getBlock() == Blocks.SNOW) {
 				FoxEntity.this.pitch = 60.0F;
 				FoxEntity.this.setTarget(null);
 				FoxEntity.this.setWalking(true);

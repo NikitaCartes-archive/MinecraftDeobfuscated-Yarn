@@ -21,7 +21,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
@@ -161,16 +160,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 			tag.put("Offers", traderOfferList.toTag());
 		}
 
-		ListTag listTag = new ListTag();
-
-		for (int i = 0; i < this.inventory.getInvSize(); i++) {
-			ItemStack itemStack = this.inventory.getInvStack(i);
-			if (!itemStack.isEmpty()) {
-				listTag.add(itemStack.toTag(new CompoundTag()));
-			}
-		}
-
-		tag.put("Inventory", listTag);
+		tag.put("Inventory", this.inventory.getTags());
 	}
 
 	@Override
@@ -180,14 +170,7 @@ public abstract class AbstractTraderEntity extends PassiveEntity implements Npc,
 			this.offers = new TraderOfferList(tag.getCompound("Offers"));
 		}
 
-		ListTag listTag = tag.getList("Inventory", 10);
-
-		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
-			if (!itemStack.isEmpty()) {
-				this.inventory.add(itemStack);
-			}
-		}
+		this.inventory.readTags(tag.getList("Inventory", 10));
 	}
 
 	@Nullable

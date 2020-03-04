@@ -33,7 +33,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -233,7 +232,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 			} else {
 				return IllusionerEntity.this.getTarget().getEntityId() == this.targetId
 					? false
-					: IllusionerEntity.this.world.getLocalDifficulty(new BlockPos(IllusionerEntity.this)).isHarderThan((float)Difficulty.NORMAL.ordinal());
+					: IllusionerEntity.this.world.getLocalDifficulty(IllusionerEntity.this.getSenseCenterPos()).isHarderThan((float)Difficulty.NORMAL.ordinal());
 			}
 		}
 

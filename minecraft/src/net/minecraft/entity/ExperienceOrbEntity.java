@@ -57,13 +57,13 @@ public class ExperienceOrbEntity extends Entity {
 		this.prevX = this.getX();
 		this.prevY = this.getY();
 		this.prevZ = this.getZ();
-		if (this.isInFluid(FluidTags.WATER)) {
+		if (this.isSubmergedIn(FluidTags.WATER)) {
 			this.applyWaterMovement();
 		} else if (!this.hasNoGravity()) {
 			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 		}
 
-		if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
+		if (this.world.getFluidState(this.getSenseCenterPos()).matches(FluidTags.LAVA)) {
 			this.setVelocity(
 				(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 			);
@@ -160,7 +160,7 @@ public class ExperienceOrbEntity extends Entity {
 			if (this.pickupDelay == 0 && player.experiencePickUpDelay == 0) {
 				player.experiencePickUpDelay = 2;
 				player.sendPickup(this, 1);
-				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.method_24365(Enchantments.MENDING, player, ItemStack::isDamaged);
+				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getMatchingEnchantedEquipment(Enchantments.MENDING, player, ItemStack::isDamaged);
 				if (entry != null) {
 					ItemStack itemStack = (ItemStack)entry.getValue();
 					if (!itemStack.isEmpty() && itemStack.isDamaged()) {

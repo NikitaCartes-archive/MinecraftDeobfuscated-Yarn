@@ -16,8 +16,8 @@ public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEnti
 	private static final Identifier SKIN = new Identifier("textures/entity/pig/pig_saddle.png");
 	private final PigEntityModel<PigEntity> model = new PigEntityModel<>(0.5F);
 
-	public PigSaddleFeatureRenderer(FeatureRendererContext<PigEntity, PigEntityModel<PigEntity>> context) {
-		super(context);
+	public PigSaddleFeatureRenderer(FeatureRendererContext<PigEntity, PigEntityModel<PigEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

@@ -19,9 +19,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.util.PngFile;
-import net.minecraft.container.PlayerContainer;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 public class SpriteAtlasTexture extends AbstractTexture implements TextureTickListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	@Deprecated
-	public static final Identifier BLOCK_ATLAS_TEX = PlayerContainer.BLOCK_ATLAS_TEXTURE;
+	public static final Identifier BLOCK_ATLAS_TEX = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
 	@Deprecated
 	public static final Identifier PARTICLE_ATLAS_TEX = new Identifier("textures/atlas/particles.png");
 	private final List<Sprite> animatedSprites = Lists.<Sprite>newArrayList();
@@ -58,7 +58,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		this.spritesToLoad.clear();
 		this.spritesToLoad.addAll(data.spriteIds);
 		LOGGER.info("Created: {}x{}x{} {}-atlas", data.width, data.height, data.field_21795, this.id);
-		TextureUtil.prepareImage(this.getGlId(), data.field_21795, data.width, data.height);
+		TextureUtil.method_24959(this.getGlId(), data.field_21795, data.width, data.height);
 		this.clear();
 
 		for (Sprite sprite : data.sprites) {

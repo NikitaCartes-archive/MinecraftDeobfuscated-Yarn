@@ -19,7 +19,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -32,7 +32,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -48,6 +47,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -342,7 +342,7 @@ public class InGameHud extends DrawableHelper {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
 				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					RenderSystem.pushMatrix();
-					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getBlitOffset());
+					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getZOffset());
 					Camera camera = this.client.gameRenderer.getCamera();
 					RenderSystem.rotatef(camera.getPitch(), -1.0F, 0.0F, 0.0F);
 					RenderSystem.rotatef(camera.getYaw(), 0.0F, 1.0F, 0.0F);
@@ -382,7 +382,7 @@ public class InGameHud extends DrawableHelper {
 		if (hitResult == null) {
 			return false;
 		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
-			return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerFactory;
+			return ((EntityHitResult)hitResult).getEntity() instanceof NameableScreenHandlerFactory;
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			World world = this.client.world;
@@ -400,7 +400,7 @@ public class InGameHud extends DrawableHelper {
 			int j = 0;
 			StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
 			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
-			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
+			this.client.getTextureManager().bindTexture(ScreenWithHandler.BACKGROUND_TEXTURE);
 
 			for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
@@ -440,7 +440,7 @@ public class InGameHud extends DrawableHelper {
 					list.add((Runnable)() -> {
 						this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
 						RenderSystem.color4f(1.0F, 1.0F, 1.0F, g);
-						blit(n + 3, o + 3, this.getBlitOffset(), 18, 18, sprite);
+						blit(n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
 					});
 				}
 			}
@@ -457,10 +457,10 @@ public class InGameHud extends DrawableHelper {
 			ItemStack itemStack = playerEntity.getOffHandStack();
 			Arm arm = playerEntity.getMainArm().getOpposite();
 			int i = this.scaledWidth / 2;
-			int j = this.getBlitOffset();
+			int j = this.getZOffset();
 			int k = 182;
 			int l = 91;
-			this.setBlitOffset(-90);
+			this.setZOffset(-90);
 			this.blit(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
 			this.blit(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
 			if (!itemStack.isEmpty()) {
@@ -471,7 +471,7 @@ public class InGameHud extends DrawableHelper {
 				}
 			}
 
-			this.setBlitOffset(j);
+			this.setZOffset(j);
 			RenderSystem.enableRescaleNormal();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
@@ -851,7 +851,7 @@ public class InGameHud extends DrawableHelper {
 			this.client.getProfiler().swap("air");
 			int zx = playerEntity.getAir();
 			int aaxx = playerEntity.getMaxAir();
-			if (playerEntity.isInFluid(FluidTags.WATER) || zx < aaxx) {
+			if (playerEntity.isSubmergedIn(FluidTags.WATER) || zx < aaxx) {
 				int abxx = this.getHeartRows(yxx) - 1;
 				t -= abxx * 10;
 				int acxx = MathHelper.ceil((double)(zx - 2) * 10.0 / (double)aaxx);
@@ -1062,10 +1062,10 @@ public class InGameHud extends DrawableHelper {
 		this.setOverlayMessage(I18n.translate("record.nowPlaying", string), true);
 	}
 
-	public void setOverlayMessage(String string, boolean bl) {
-		this.overlayMessage = string;
+	public void setOverlayMessage(String message, boolean tinted) {
+		this.overlayMessage = message;
 		this.overlayRemaining = 60;
-		this.overlayTinted = bl;
+		this.overlayTinted = tinted;
 	}
 
 	public void setTitles(String string, String string2, int i, int j, int k) {
@@ -1097,8 +1097,8 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public void setOverlayMessage(Text text, boolean bl) {
-		this.setOverlayMessage(text.getString(), bl);
+	public void setOverlayMessage(Text message, boolean tinted) {
+		this.setOverlayMessage(message.getString(), tinted);
 	}
 
 	public void addChatMessage(MessageType messageType, Text text) {

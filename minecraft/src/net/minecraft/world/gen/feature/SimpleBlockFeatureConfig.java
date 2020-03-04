@@ -28,9 +28,9 @@ public class SimpleBlockFeatureConfig implements FeatureConfig {
 	@Override
 	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 		T object = BlockState.serialize(ops, this.toPlace).getValue();
-		T object2 = ops.createList(this.placeOn.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
-		T object3 = ops.createList(this.placeIn.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
-		T object4 = ops.createList(this.placeUnder.stream().map(blockState -> BlockState.serialize(ops, blockState).getValue()));
+		T object2 = ops.createList(this.placeOn.stream().map(state -> BlockState.serialize(ops, state).getValue()));
+		T object3 = ops.createList(this.placeIn.stream().map(state -> BlockState.serialize(ops, state).getValue()));
+		T object4 = ops.createList(this.placeUnder.stream().map(state -> BlockState.serialize(ops, state).getValue()));
 		return new Dynamic<>(
 			ops,
 			ops.createMap(

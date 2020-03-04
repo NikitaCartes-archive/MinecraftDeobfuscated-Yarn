@@ -14,16 +14,17 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.AbstractState;
@@ -209,10 +210,10 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 	}
 
 	public final boolean hasSolidTopSurface(BlockView world, BlockPos pos, Entity entity) {
-		return this.hasSolidSurface(world, pos, entity, Direction.UP);
+		return this.isSideOpaque(world, pos, entity, Direction.UP);
 	}
 
-	public final boolean hasSolidSurface(BlockView world, BlockPos pos, Entity entity, Direction side) {
+	public final boolean isSideOpaque(BlockView world, BlockPos pos, Entity entity, Direction side) {
 		return Block.isFaceFullSquare(this.getCollisionShape(world, pos, EntityContext.of(entity)), side);
 	}
 
@@ -306,8 +307,8 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 	}
 
 	@Nullable
-	public NameableContainerFactory createContainerFactory(World world, BlockPos pos) {
-		return this.getBlock().createContainerFactory(this, world, pos);
+	public NameableScreenHandlerFactory createContainerFactory(World world, BlockPos pos) {
+		return this.getBlock().createScreenHandlerFactory(this, world, pos);
 	}
 
 	public boolean matches(Tag<Block> tag) {
@@ -331,7 +332,7 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().getSoundGroup(this);
 	}
 
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity projectile) {
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
 		this.getBlock().onProjectileHit(world, state, hitResult, projectile);
 	}
 

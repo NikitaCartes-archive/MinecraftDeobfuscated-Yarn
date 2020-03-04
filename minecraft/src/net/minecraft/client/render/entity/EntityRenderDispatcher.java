@@ -49,7 +49,7 @@ import net.minecraft.world.WorldView;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher {
-	private static final RenderLayer SHADOW_LAYER = RenderLayer.method_24469(new Identifier("textures/misc/shadow.png"));
+	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityShadow(new Identifier("textures/misc/shadow.png"));
 	private final Map<EntityType<?>, EntityRenderer<?>> renderers = Maps.<EntityType<?>, EntityRenderer<?>>newHashMap();
 	private final Map<String, PlayerEntityRenderer> modelRenderers = Maps.<String, PlayerEntityRenderer>newHashMap();
 	private final PlayerEntityRenderer playerRenderer;
@@ -93,7 +93,7 @@ public class EntityRenderDispatcher {
 		this.register(EntityType.DROWNED, new DrownedEntityRenderer(this));
 		this.register(EntityType.EGG, new FlyingItemEntityRenderer<>(this, itemRenderer));
 		this.register(EntityType.ELDER_GUARDIAN, new ElderGuardianEntityRenderer(this));
-		this.register(EntityType.END_CRYSTAL, new EnderCrystalEntityRenderer(this));
+		this.register(EntityType.END_CRYSTAL, new EndCrystalEntityRenderer(this));
 		this.register(EntityType.ENDER_DRAGON, new EnderDragonEntityRenderer(this));
 		this.register(EntityType.ENDERMAN, new EndermanEntityRenderer(this));
 		this.register(EntityType.ENDERMITE, new EndermiteEntityRenderer(this));

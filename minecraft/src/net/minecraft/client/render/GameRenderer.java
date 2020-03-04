@@ -56,7 +56,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class GameRenderer implements AutoCloseable, SynchronousResourceReloadListener {
+public class GameRenderer implements SynchronousResourceReloadListener, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
 	private final ResourceManager resourceContainer;
@@ -360,7 +360,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
 			float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
 			float h = -(playerEntity.horizontalSpeed + g * f);
-			float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
+			float i = MathHelper.lerp(f, playerEntity.prevStrideDistance, playerEntity.strideDistance);
 			matrixStack.translate((double)(MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double)(-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));

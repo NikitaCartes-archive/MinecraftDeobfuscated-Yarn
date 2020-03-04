@@ -65,7 +65,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		tag.putInt("PosY", this.pos.getY());
 		tag.putInt("PosZ", this.pos.getZ());
 		tag.putInt("ground_level_delta", this.groundLevelDelta);
-		tag.put("pool_element", this.poolElement.method_16755(NbtOps.INSTANCE).getValue());
+		tag.put("pool_element", this.poolElement.toDynamic(NbtOps.INSTANCE).getValue());
 		tag.putString("rotation", this.rotation.name());
 		ListTag listTag = new ListTag();
 

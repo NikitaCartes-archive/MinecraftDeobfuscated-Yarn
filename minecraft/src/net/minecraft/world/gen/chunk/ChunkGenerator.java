@@ -49,7 +49,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
 	public void populateBiomes(Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
-		((ProtoChunk)chunk).method_22405(new BiomeArray(chunkPos, this.biomeSource));
+		((ProtoChunk)chunk).setBiomes(new BiomeArray(chunkPos, this.biomeSource));
 	}
 
 	protected Biome getDecorationBiome(BiomeAccess biomeAccess, BlockPos pos) {
@@ -73,7 +73,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 				while (listIterator.hasNext()) {
 					int n = listIterator.nextIndex();
 					ConfiguredCarver<?> configuredCarver = (ConfiguredCarver<?>)listIterator.next();
-					chunkRandom.setStructureSeed(this.seed + (long)n, l, m);
+					chunkRandom.setCarverSeed(this.seed + (long)n, l, m);
 					if (configuredCarver.shouldCarve(chunkRandom, l, m)) {
 						configuredCarver.carve(chunk, blockPos -> this.getDecorationBiome(biomeAccess, blockPos), chunkRandom, this.getSeaLevel(), l, m, j, k, bitSet);
 					}
@@ -96,7 +96,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 		BlockPos blockPos = new BlockPos(k, 0, l);
 		Biome biome = this.getDecorationBiome(region.getBiomeAccess(), blockPos.add(8, 8, 8));
 		ChunkRandom chunkRandom = new ChunkRandom();
-		long m = chunkRandom.setSeed(region.getSeed(), k, l);
+		long m = chunkRandom.setPopulationSeed(region.getSeed(), k, l);
 
 		for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
 			try {

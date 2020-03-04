@@ -14,15 +14,15 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-	public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> context) {
-		super(context);
+	public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-		if (pandaEntity.isScared() && !pandaEntity.method_6524()) {
+		if (pandaEntity.isScared() && !pandaEntity.isScaredByThunderstorm()) {
 			float m = -0.6F;
 			float n = 1.4F;
 			if (pandaEntity.isEating()) {

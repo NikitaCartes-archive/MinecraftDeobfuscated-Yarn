@@ -37,8 +37,8 @@ public class DeathScreen extends Screen {
 				20,
 				this.isHardcore ? I18n.translate("deathScreen.spectate") : I18n.translate("deathScreen.respawn"),
 				buttonWidgetx -> {
-					this.minecraft.player.requestRespawn();
-					this.minecraft.openScreen(null);
+					this.client.player.requestRespawn();
+					this.client.openScreen(null);
 				}
 			)
 		);
@@ -60,13 +60,13 @@ public class DeathScreen extends Screen {
 							I18n.translate("deathScreen.titleScreen"),
 							I18n.translate("deathScreen.respawn")
 						);
-						this.minecraft.openScreen(confirmScreen);
+						this.client.openScreen(confirmScreen);
 						confirmScreen.disableButtons(20);
 					}
 				}
 			)
 		);
-		if (!this.isHardcore && this.minecraft.getSession() == null) {
+		if (!this.isHardcore && this.client.getSession() == null) {
 			buttonWidget.active = false;
 		}
 
@@ -84,18 +84,18 @@ public class DeathScreen extends Screen {
 		if (quit) {
 			this.quitLevel();
 		} else {
-			this.minecraft.player.requestRespawn();
-			this.minecraft.openScreen(null);
+			this.client.player.requestRespawn();
+			this.client.openScreen(null);
 		}
 	}
 
 	private void quitLevel() {
-		if (this.minecraft.world != null) {
-			this.minecraft.world.disconnect();
+		if (this.client.world != null) {
+			this.client.world.disconnect();
 		}
 
-		this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
-		this.minecraft.openScreen(new TitleScreen());
+		this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+		this.client.openScreen(new TitleScreen());
 	}
 
 	@Override
@@ -103,19 +103,19 @@ public class DeathScreen extends Screen {
 		this.fillGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
 		RenderSystem.pushMatrix();
 		RenderSystem.scalef(2.0F, 2.0F, 2.0F);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2 / 2, 30, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2 / 2, 30, 16777215);
 		RenderSystem.popMatrix();
 		if (this.message != null) {
-			this.drawCenteredString(this.font, this.message.asFormattedString(), this.width / 2, 85, 16777215);
+			this.drawCenteredString(this.textRenderer, this.message.asFormattedString(), this.width / 2, 85, 16777215);
 		}
 
 		this.drawCenteredString(
-			this.font, I18n.translate("deathScreen.score") + ": " + Formatting.YELLOW + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
+			this.textRenderer, I18n.translate("deathScreen.score") + ": " + Formatting.YELLOW + this.client.player.getScore(), this.width / 2, 100, 16777215
 		);
 		if (this.message != null && mouseY > 85 && mouseY < 85 + 9) {
 			Text text = this.getTextComponentUnderMouse(mouseX);
 			if (text != null && text.getStyle().getHoverEvent() != null) {
-				this.renderComponentHoverEffect(text, mouseX, mouseY);
+				this.renderTextHoverEffect(text, mouseX, mouseY);
 			}
 		}
 
@@ -127,13 +127,13 @@ public class DeathScreen extends Screen {
 		if (this.message == null) {
 			return null;
 		} else {
-			int i = this.minecraft.textRenderer.getStringWidth(this.message.asFormattedString());
+			int i = this.client.textRenderer.getStringWidth(this.message.asFormattedString());
 			int j = this.width / 2 - i / 2;
 			int k = this.width / 2 + i / 2;
 			int l = j;
 			if (mouseX >= j && mouseX <= k) {
 				for (Text text : this.message) {
-					l += this.minecraft.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false));
+					l += this.client.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false));
 					if (l > mouseX) {
 						return text;
 					}
@@ -151,7 +151,7 @@ public class DeathScreen extends Screen {
 		if (this.message != null && mouseY > 85.0 && mouseY < (double)(85 + 9)) {
 			Text text = this.getTextComponentUnderMouse((int)mouseX);
 			if (text != null && text.getStyle().getClickEvent() != null && text.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
-				this.handleComponentClicked(text);
+				this.handleTextClick(text);
 				return false;
 			}
 		}

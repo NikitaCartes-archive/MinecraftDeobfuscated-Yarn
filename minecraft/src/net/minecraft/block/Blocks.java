@@ -1716,8 +1716,7 @@ public class Blocks {
 		"kelp", new KelpBlock(Block.Settings.of(Material.UNDERWATER_PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.WET_GRASS))
 	);
 	public static final Block KELP_PLANT = register(
-		"kelp_plant",
-		new KelpPlantBlock((KelpBlock)KELP, Block.Settings.of(Material.UNDERWATER_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS))
+		"kelp_plant", new KelpPlantBlock(Block.Settings.of(Material.UNDERWATER_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS))
 	);
 	public static final Block DRIED_KELP_BLOCK = register(
 		"dried_kelp_block", new Block(Block.Settings.of(Material.ORGANIC, MaterialColor.GREEN).strength(0.5F, 2.5F).sounds(BlockSoundGroup.GRASS))
@@ -2047,6 +2046,12 @@ public class Blocks {
 		"stripped_warped_stem",
 		new LogBlock(MaterialColor.CYAN, Block.Settings.of(Material.WOOD, MaterialColor.CYAN).strength(1.0F).sounds(BlockSoundGroup.NETHER_STEM))
 	);
+	public static final Block WARPED_HYPHAE = register(
+		"warped_hyphae", new PillarBlock(Block.Settings.of(Material.WOOD, MaterialColor.CYAN).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM))
+	);
+	public static final Block STRIPPED_WARPED_HYPHAE = register(
+		"stripped_warped_hyphae", new PillarBlock(Block.Settings.of(Material.WOOD, MaterialColor.CYAN).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM))
+	);
 	public static final Block WARPED_NYLIUM = register(
 		"warped_nylium", new NyliumBlock(Block.Settings.of(Material.STONE, MaterialColor.CYAN).strength(1.0F).sounds(BlockSoundGroup.NYLIUM).ticksRandomly())
 	);
@@ -2054,7 +2059,7 @@ public class Blocks {
 		"warped_fungus",
 		new FungusBlock(
 			Block.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS),
-			() -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.field_22433)
+			() -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG)
 		)
 	);
 	public static final Block WARPED_WART_BLOCK = register(
@@ -2075,6 +2080,12 @@ public class Blocks {
 		"stripped_crimson_stem",
 		new LogBlock(MaterialColor.RED, Block.Settings.of(Material.WOOD, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.NETHER_STEM))
 	);
+	public static final Block CRIMSON_HYPHAE = register(
+		"crimson_hyphae", new PillarBlock(Block.Settings.of(Material.WOOD, MaterialColor.RED).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM))
+	);
+	public static final Block STRIPPED_CRIMSON_HYPHAE = register(
+		"stripped_crimson_hyphae", new PillarBlock(Block.Settings.of(Material.WOOD, MaterialColor.RED).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM))
+	);
 	public static final Block CRIMSON_NYLIUM = register(
 		"crimson_nylium", new NyliumBlock(Block.Settings.of(Material.STONE, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.NYLIUM).ticksRandomly())
 	);
@@ -2082,7 +2093,7 @@ public class Blocks {
 		"crimson_fungus",
 		new FungusBlock(
 			Block.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS),
-			() -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.field_22431)
+			() -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG)
 		)
 	);
 	public static final Block SHROOMLIGHT = register(
@@ -2094,9 +2105,7 @@ public class Blocks {
 	);
 	public static final Block WEEPING_VINES_PLANT = register(
 		"weeping_vines_plant",
-		new WeepingVinesPlantBlock(
-			(WeepingVinesBlock)WEEPING_VINES, Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)
-		)
+		new WeepingVinesPlantBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES))
 	);
 	public static final Block CRIMSON_ROOTS = register(
 		"crimson_roots",

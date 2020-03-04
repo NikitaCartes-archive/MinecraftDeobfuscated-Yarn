@@ -40,7 +40,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -78,7 +77,7 @@ public class VindicatorEntity extends IllagerEntity {
 		if (!this.isAiDisabled()) {
 			EntityNavigation entityNavigation = this.getNavigation();
 			if (entityNavigation instanceof MobNavigation) {
-				boolean bl = ((ServerWorld)this.world).hasRaidAt(new BlockPos(this));
+				boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getSenseCenterPos());
 				((MobNavigation)entityNavigation).setCanPathThroughDoors(bl);
 			}
 		}
@@ -239,7 +238,7 @@ public class VindicatorEntity extends IllagerEntity {
 
 	static class FollowEntityGoal extends FollowTargetGoal<LivingEntity> {
 		public FollowEntityGoal(VindicatorEntity vindicator) {
-			super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::method_6102);
+			super(vindicator, LivingEntity.class, 0, true, true, LivingEntity::isMobOrPlayer);
 		}
 
 		@Override

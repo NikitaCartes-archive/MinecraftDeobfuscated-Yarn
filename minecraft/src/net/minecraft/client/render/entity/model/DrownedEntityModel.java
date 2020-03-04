@@ -12,14 +12,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityModel<T> {
-	public DrownedEntityModel(float scale, float f, int textureWidth, int i) {
-		super(scale, f, textureWidth, i);
+	public DrownedEntityModel(float f, float g, int i, int j) {
+		super(f, g, i, j);
 		this.rightArm = new ModelPart(this, 32, 48);
-		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
-		this.rightArm.setPivot(-5.0F, 2.0F + f, 0.0F);
+		this.rightArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
+		this.rightArm.setPivot(-5.0F, 2.0F + g, 0.0F);
 		this.rightLeg = new ModelPart(this, 16, 48);
-		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
-		this.rightLeg.setPivot(-1.9F, 12.0F + f, 0.0F);
+		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
+		this.rightLeg.setPivot(-1.9F, 12.0F + g, 0.0F);
 	}
 
 	public DrownedEntityModel(float f, boolean bl) {
@@ -53,15 +53,15 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 			this.rightArm.yaw = 0.0F;
 		}
 
-		if (this.field_3396 > 0.0F) {
-			this.rightArm.pitch = this.lerpAngle(this.rightArm.pitch, (float) (-Math.PI * 4.0 / 5.0), this.field_3396)
-				+ this.field_3396 * 0.35F * MathHelper.sin(0.1F * h);
-			this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, (float) (-Math.PI * 4.0 / 5.0), this.field_3396)
-				- this.field_3396 * 0.35F * MathHelper.sin(0.1F * h);
-			this.rightArm.roll = this.lerpAngle(this.rightArm.roll, -0.15F, this.field_3396);
-			this.leftArm.roll = this.lerpAngle(this.leftArm.roll, 0.15F, this.field_3396);
-			this.leftLeg.pitch = this.leftLeg.pitch - this.field_3396 * 0.55F * MathHelper.sin(0.1F * h);
-			this.rightLeg.pitch = this.rightLeg.pitch + this.field_3396 * 0.55F * MathHelper.sin(0.1F * h);
+		if (this.leaningPitch > 0.0F) {
+			this.rightArm.pitch = this.lerpAngle(this.rightArm.pitch, (float) (-Math.PI * 4.0 / 5.0), this.leaningPitch)
+				+ this.leaningPitch * 0.35F * MathHelper.sin(0.1F * h);
+			this.leftArm.pitch = this.lerpAngle(this.leftArm.pitch, (float) (-Math.PI * 4.0 / 5.0), this.leaningPitch)
+				- this.leaningPitch * 0.35F * MathHelper.sin(0.1F * h);
+			this.rightArm.roll = this.lerpAngle(this.rightArm.roll, -0.15F, this.leaningPitch);
+			this.leftArm.roll = this.lerpAngle(this.leftArm.roll, 0.15F, this.leaningPitch);
+			this.leftLeg.pitch = this.leftLeg.pitch - this.leaningPitch * 0.55F * MathHelper.sin(0.1F * h);
+			this.rightLeg.pitch = this.rightLeg.pitch + this.leaningPitch * 0.55F * MathHelper.sin(0.1F * h);
 			this.head.pitch = 0.0F;
 		}
 	}

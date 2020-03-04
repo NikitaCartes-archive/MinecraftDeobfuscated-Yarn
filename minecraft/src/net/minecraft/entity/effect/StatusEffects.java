@@ -5,7 +5,6 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 
@@ -100,7 +99,7 @@ public class StatusEffects {
 					return;
 				}
 
-				if (serverWorld.isNearOccupiedPointOfInterest(new BlockPos(entity))) {
+				if (serverWorld.isNearOccupiedPointOfInterest(entity.getSenseCenterPos())) {
 					serverWorld.getRaidManager().startRaid(serverPlayerEntity);
 				}
 			}

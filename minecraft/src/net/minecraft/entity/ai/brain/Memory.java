@@ -9,7 +9,7 @@ import net.minecraft.util.DynamicSerializable;
 
 public class Memory<T> implements DynamicSerializable {
 	private final T value;
-	private final long expiry;
+	private long expiry;
 
 	public Memory(T value, long expiry) {
 		this.value = value;
@@ -21,7 +21,13 @@ public class Memory<T> implements DynamicSerializable {
 	}
 
 	public Memory(Function<Dynamic<?>, T> valueReader, Dynamic<?> data) {
-		this((T)valueReader.apply(data.get("value").get().orElseThrow(RuntimeException::new)), data.get("expiry").asLong(Long.MAX_VALUE));
+		this((T)valueReader.apply(data.get("value").get().orElseThrow(RuntimeException::new)), data.get("ttl").asLong(Long.MAX_VALUE));
+	}
+
+	public void method_24913() {
+		if (this.method_24914()) {
+			this.expiry--;
+		}
 	}
 
 	/**
@@ -38,32 +44,28 @@ public class Memory<T> implements DynamicSerializable {
 		return new Memory<>(value, expiry);
 	}
 
-	public long getExpiry() {
-		return this.expiry;
-	}
-
 	public T getValue() {
 		return this.value;
 	}
 
-	public boolean isExpired(long time) {
-		return this.getTimeTillExpiry(time) <= 0L;
-	}
-
-	public long getTimeTillExpiry(long time) {
-		return this.expiry - time;
+	public boolean isExpired() {
+		return this.expiry <= 0L;
 	}
 
 	public String toString() {
-		return this.value.toString() + (this.getExpiry() != Long.MAX_VALUE ? " (expiry: " + this.expiry + ")" : "");
+		return this.value.toString() + (this.method_24914() ? " (ttl: " + this.expiry + ")" : "");
+	}
+
+	public boolean method_24914() {
+		return this.expiry != Long.MAX_VALUE;
 	}
 
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 		map.put(ops.createString("value"), ((DynamicSerializable)this.value).serialize(ops));
-		if (this.expiry != Long.MAX_VALUE) {
-			map.put(ops.createString("expiry"), ops.createLong(this.expiry));
+		if (this.method_24914()) {
+			map.put(ops.createString("ttl"), ops.createLong(this.expiry));
 		}
 
 		return ops.createMap(map);

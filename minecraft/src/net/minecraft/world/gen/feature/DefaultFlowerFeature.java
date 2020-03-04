@@ -8,19 +8,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 public class DefaultFlowerFeature extends FlowerFeature<RandomPatchFeatureConfig> {
-	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> configFactory) {
-		super(configFactory);
+	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function) {
+		super(function);
 	}
 
-	public boolean method_23369(IWorld iWorld, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
+	public boolean isPosValid(IWorld iWorld, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
 		return !randomPatchFeatureConfig.blacklist.contains(iWorld.getBlockState(blockPos));
 	}
 
-	public int method_23370(RandomPatchFeatureConfig randomPatchFeatureConfig) {
+	public int getFlowerAmount(RandomPatchFeatureConfig randomPatchFeatureConfig) {
 		return randomPatchFeatureConfig.tries;
 	}
 
-	public BlockPos method_23371(Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
+	public BlockPos getPos(Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
 		return blockPos.add(
 			random.nextInt(randomPatchFeatureConfig.spreadX) - random.nextInt(randomPatchFeatureConfig.spreadX),
 			random.nextInt(randomPatchFeatureConfig.spreadY) - random.nextInt(randomPatchFeatureConfig.spreadY),
@@ -28,7 +28,7 @@ public class DefaultFlowerFeature extends FlowerFeature<RandomPatchFeatureConfig
 		);
 	}
 
-	public BlockState getFlowerToPlace(Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
+	public BlockState getFlowerState(Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
 		return randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
 	}
 }

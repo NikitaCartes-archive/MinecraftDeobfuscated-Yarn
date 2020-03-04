@@ -21,8 +21,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	protected int spellTicks;
 	private SpellcastingIllagerEntity.Spell spell = SpellcastingIllagerEntity.Spell.NONE;
 
-	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> type, World world) {
-		super(type, world);
+	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

@@ -124,7 +124,7 @@ public class TargetFinder {
 
 		boolean bl2 = false;
 		double d = Double.NEGATIVE_INFINITY;
-		BlockPos blockPos = new BlockPos(mob);
+		BlockPos blockPos = mob.getSenseCenterPos();
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = getRandomOffset(random, maxHorizontalDistance, maxVerticalDistance, preferredYDifference, preferredAngle, maxAngleDifference);
@@ -176,7 +176,7 @@ public class TargetFinder {
 			}
 		}
 
-		return bl2 ? new Vec3d(blockPos) : null;
+		return bl2 ? Vec3d.method_24955(blockPos) : null;
 	}
 
 	@Nullable

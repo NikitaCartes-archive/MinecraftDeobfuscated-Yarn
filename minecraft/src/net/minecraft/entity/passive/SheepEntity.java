@@ -10,8 +10,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.container.Container;
-import net.minecraft.container.ContainerType;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -42,6 +40,8 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -362,7 +362,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	private static CraftingInventory createDyeMixingCraftingInventory(DyeColor dyeColor, DyeColor dyeColor2) {
-		CraftingInventory craftingInventory = new CraftingInventory(new Container(null, -1) {
+		CraftingInventory craftingInventory = new CraftingInventory(new ScreenHandler(null, -1) {
 			@Override
 			public boolean canUse(PlayerEntity player) {
 				return false;

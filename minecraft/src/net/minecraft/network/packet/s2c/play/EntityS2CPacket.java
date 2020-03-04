@@ -47,8 +47,8 @@ public class EntityS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeVarInt(this.id);
 	}
 
-	public void apply(ClientPlayPacketListener listener) {
-		listener.onEntityUpdate(this);
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+		clientPlayPacketListener.onEntityUpdate(this);
 	}
 
 	public String toString() {

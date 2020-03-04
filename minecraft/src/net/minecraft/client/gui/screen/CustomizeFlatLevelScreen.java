@@ -85,18 +85,18 @@ public class CustomizeFlatLevelScreen extends Screen {
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, I18n.translate("createWorld.customize.presets"), buttonWidget -> {
-			this.minecraft.openScreen(new PresetsScreen(this));
+			this.client.openScreen(new PresetsScreen(this));
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.parent.generatorOptionsTag = this.getConfigTag();
-			this.minecraft.openScreen(this.parent);
+			this.client.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> {
-			this.minecraft.openScreen(this.parent);
+			this.client.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
@@ -115,17 +115,17 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.minecraft.openScreen(this.parent);
+		this.client.openScreen(this.parent);
 	}
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.layers.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		int i = this.width / 2 - 92 - 16;
-		this.drawString(this.font, this.tileText, i, 32, 16777215);
-		this.drawString(this.font, this.heightText, i + 2 + 213 - this.font.getStringWidth(this.heightText), 32, 16777215);
+		this.drawString(this.textRenderer, this.tileText, i, 32, 16777215);
+		this.drawString(this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getStringWidth(this.heightText), 32, 16777215);
 		super.render(mouseX, mouseY, delta);
 	}
 
@@ -133,7 +133,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	class SuperflatLayersListWidget extends AlwaysSelectedEntryListWidget<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> {
 		public SuperflatLayersListWidget() {
 			super(
-				CustomizeFlatLevelScreen.this.minecraft,
+				CustomizeFlatLevelScreen.this.client,
 				CustomizeFlatLevelScreen.this.width,
 				CustomizeFlatLevelScreen.this.height,
 				43,
@@ -160,8 +160,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		@Override
-		protected void moveSelection(int i) {
-			super.moveSelection(i);
+		protected void moveSelection(int amount) {
+			super.moveSelection(amount);
 			CustomizeFlatLevelScreen.this.method_2145();
 		}
 
@@ -171,7 +171,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		@Override
-		protected int getScrollbarPosition() {
+		protected int getScrollbarPositionX() {
 			return this.width - 70;
 		}
 
@@ -195,10 +195,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 
 			@Override
-			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
+			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
 					.getLayers()
-					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - i - 1);
+					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - index - 1);
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
 				Block block = blockState.getBlock();
 				Item item = block.asItem();
@@ -212,19 +212,19 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 				ItemStack itemStack = new ItemStack(item);
 				String string = item.getName(itemStack).asFormattedString();
-				this.method_19375(k, j, itemStack);
-				CustomizeFlatLevelScreen.this.font.draw(string, (float)(k + 18 + 5), (float)(j + 3), 16777215);
+				this.method_19375(x, y, itemStack);
+				CustomizeFlatLevelScreen.this.textRenderer.draw(string, (float)(x + 18 + 5), (float)(y + 3), 16777215);
 				String string2;
-				if (i == 0) {
+				if (index == 0) {
 					string2 = I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness());
-				} else if (i == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1) {
+				} else if (index == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1) {
 					string2 = I18n.translate("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness());
 				} else {
 					string2 = I18n.translate("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness());
 				}
 
-				CustomizeFlatLevelScreen.this.font
-					.draw(string2, (float)(k + 2 + 213 - CustomizeFlatLevelScreen.this.font.getStringWidth(string2)), (float)(j + 3), 16777215);
+				CustomizeFlatLevelScreen.this.textRenderer
+					.draw(string2, (float)(x + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getStringWidth(string2)), (float)(y + 3), 16777215);
 			}
 
 			@Override
@@ -250,8 +250,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 			private void method_19373(int x, int y) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatLayersListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
-				DrawableHelper.blit(x, y, CustomizeFlatLevelScreen.this.getBlitOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+				SuperflatLayersListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
+				DrawableHelper.blit(x, y, CustomizeFlatLevelScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

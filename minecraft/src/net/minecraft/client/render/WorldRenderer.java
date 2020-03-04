@@ -111,7 +111,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadListener {
+public class WorldRenderer implements SynchronousResourceReloadListener, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier MOON_PHASES = new Identifier("textures/environment/moon_phases.png");
 	private static final Identifier SUN = new Identifier("textures/environment/sun.png");
@@ -2423,7 +2423,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.world.playSound(pos, SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.BLOCKS, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1032:
-				this.client.getSoundManager().play(PositionedSoundInstance.method_24877(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4F + 0.8F, 0.25F));
+				this.client.getSoundManager().play(PositionedSoundInstance.ambient(SoundEvents.BLOCK_PORTAL_TRAVEL, random.nextFloat() * 0.4F + 0.8F, 0.25F));
 				break;
 			case 1033:
 				this.world.playSound(pos, SoundEvents.BLOCK_CHORUS_FLOWER_GROW, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
@@ -2458,6 +2458,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				break;
 			case 1043:
 				this.world.playSound(pos, SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				break;
+			case 1044:
+				this.world.playSound(pos, SoundEvents.BLOCK_SMITHING_TABLE_USE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1500:
 				ComposterBlock.playEffects(this.world, pos, data > 0);

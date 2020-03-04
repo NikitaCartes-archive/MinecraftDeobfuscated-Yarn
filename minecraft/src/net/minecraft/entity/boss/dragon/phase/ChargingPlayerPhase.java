@@ -11,8 +11,8 @@ public class ChargingPlayerPhase extends AbstractPhase {
 	private Vec3d target;
 	private int field_7037;
 
-	public ChargingPlayerPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public ChargingPlayerPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class ChargingPlayerPhase extends AbstractPhase {
 	}
 
 	@Override
-	public float method_6846() {
+	public float getMaxYAcceleration() {
 		return 3.0F;
 	}
 

@@ -2,6 +2,7 @@ package net.minecraft.entity.damage;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
@@ -31,7 +32,6 @@ public class DamageSource {
 	public static final DamageSource ANVIL = new DamageSource("anvil");
 	public static final DamageSource FALLING_BLOCK = new DamageSource("fallingBlock");
 	public static final DamageSource DRAGON_BREATH = new DamageSource("dragonBreath").setBypassesArmor();
-	public static final DamageSource FIREWORKS = new DamageSource("fireworks").setExplosive();
 	public static final DamageSource DRYOUT = new DamageSource("dryout");
 	public static final DamageSource SWEET_BERRY_BUSH = new DamageSource("sweetBerryBush");
 	private boolean bypassesArmor;
@@ -69,6 +69,10 @@ public class DamageSource {
 		return new ProjectileDamageSource("trident", entity, entity2).setProjectile();
 	}
 
+	public static DamageSource method_24907(FireworkEntity fireworkEntity, @Nullable Entity entity) {
+		return new ProjectileDamageSource("fireworks", fireworkEntity, entity).setExplosive();
+	}
+
 	public static DamageSource explosiveProjectile(ExplosiveProjectileEntity projectile, @Nullable Entity attacker) {
 		return attacker == null
 			? new ProjectileDamageSource("onFire", projectile, projectile).setFire().setProjectile()
@@ -84,7 +88,7 @@ public class DamageSource {
 	}
 
 	public static DamageSource thorns(Entity attacker) {
-		return new EntityDamageSource("thorns", attacker).method_5550().setUsesMagic();
+		return new EntityDamageSource("thorns", attacker).setThorns().setUsesMagic();
 	}
 
 	public static DamageSource explosion(@Nullable Explosion explosion) {

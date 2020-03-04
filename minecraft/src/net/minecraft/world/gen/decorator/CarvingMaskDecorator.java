@@ -14,8 +14,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class CarvingMaskDecorator extends Decorator<CarvingMaskDecoratorConfig> {
-	public CarvingMaskDecorator(Function<Dynamic<?>, ? extends CarvingMaskDecoratorConfig> configDeserializer) {
-		super(configDeserializer);
+	public CarvingMaskDecorator(Function<Dynamic<?>, ? extends CarvingMaskDecoratorConfig> function) {
+		super(function);
 	}
 
 	public Stream<BlockPos> getPositions(

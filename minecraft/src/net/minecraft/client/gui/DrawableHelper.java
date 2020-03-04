@@ -18,26 +18,26 @@ public abstract class DrawableHelper {
 	public static final Identifier BACKGROUND_LOCATION = new Identifier("textures/gui/options_background.png");
 	public static final Identifier STATS_ICON_LOCATION = new Identifier("textures/gui/container/stats_icons.png");
 	public static final Identifier GUI_ICONS_LOCATION = new Identifier("textures/gui/icons.png");
-	private int blitOffset;
+	private int zOffset;
 
-	protected void hLine(int i, int j, int k, int l) {
-		if (j < i) {
-			int m = i;
-			i = j;
-			j = m;
+	protected void drawHorizontalLine(int x1, int x2, int y, int color) {
+		if (x2 < x1) {
+			int i = x1;
+			x1 = x2;
+			x2 = i;
 		}
 
-		fill(i, k, j + 1, k + 1, l);
+		fill(x1, y, x2 + 1, y + 1, color);
 	}
 
-	protected void vLine(int i, int j, int k, int l) {
-		if (k < j) {
-			int m = j;
-			j = k;
-			k = m;
+	protected void drawVerticalLine(int x, int y1, int y2, int color) {
+		if (y2 < y1) {
+			int i = y1;
+			y1 = y2;
+			y2 = i;
 		}
 
-		fill(i, j + 1, i + 1, k, l);
+		fill(x, y1 + 1, x + 1, y2, color);
 	}
 
 	public static void fill(int x1, int y1, int x2, int y2, int color) {
@@ -93,10 +93,10 @@ public abstract class DrawableHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex((double)right, (double)left, (double)this.blitOffset).color(g, h, i, f).next();
-		bufferBuilder.vertex((double)top, (double)left, (double)this.blitOffset).color(g, h, i, f).next();
-		bufferBuilder.vertex((double)top, (double)bottom, (double)this.blitOffset).color(k, l, m, j).next();
-		bufferBuilder.vertex((double)right, (double)bottom, (double)this.blitOffset).color(k, l, m, j).next();
+		bufferBuilder.vertex((double)right, (double)left, (double)this.zOffset).color(g, h, i, f).next();
+		bufferBuilder.vertex((double)top, (double)left, (double)this.zOffset).color(g, h, i, f).next();
+		bufferBuilder.vertex((double)top, (double)bottom, (double)this.zOffset).color(k, l, m, j).next();
+		bufferBuilder.vertex((double)right, (double)bottom, (double)this.zOffset).color(k, l, m, j).next();
 		tessellator.draw();
 		RenderSystem.shadeModel(7424);
 		RenderSystem.disableBlend();
@@ -108,10 +108,6 @@ public abstract class DrawableHelper {
 		textRenderer.drawWithShadow(str, (float)(centerX - textRenderer.getStringWidth(str) / 2), (float)y, color);
 	}
 
-	public void drawRightAlignedString(TextRenderer textRenderer, String str, int rightX, int y, int color) {
-		textRenderer.drawWithShadow(str, (float)(rightX - textRenderer.getStringWidth(str)), (float)y, color);
-	}
-
 	public void drawString(TextRenderer textRenderer, String str, int x, int y, int color) {
 		textRenderer.drawWithShadow(str, (float)x, (float)y, color);
 	}
@@ -121,7 +117,7 @@ public abstract class DrawableHelper {
 	}
 
 	public void blit(int x, int y, int u, int v, int width, int height) {
-		blit(x, y, this.blitOffset, (float)u, (float)v, width, height, 256, 256);
+		blit(x, y, this.zOffset, (float)u, (float)v, width, height, 256, 256);
 	}
 
 	public static void blit(int x, int y, int z, float u, float v, int width, int height, int texHeight, int texWidth) {
@@ -162,11 +158,11 @@ public abstract class DrawableHelper {
 		BufferRenderer.draw(bufferBuilder);
 	}
 
-	public int getBlitOffset() {
-		return this.blitOffset;
+	public int getZOffset() {
+		return this.zOffset;
 	}
 
-	public void setBlitOffset(int i) {
-		this.blitOffset = i;
+	public void setZOffset(int zOffset) {
+		this.zOffset = zOffset;
 	}
 }

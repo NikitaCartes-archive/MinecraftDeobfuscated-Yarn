@@ -3,7 +3,7 @@ package com.mojang.realmsclient.gui.screens;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.realms.RealmListEntry;
+import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.realms.RealmsObjectSelectionList;
 
 @Environment(EnvType.CLIENT)
@@ -43,7 +43,7 @@ public abstract class RealmsAcceptRejectButton {
 
 	public abstract void handleClick(int index);
 
-	public static void render(List<RealmsAcceptRejectButton> buttons, RealmsObjectSelectionList selectionList, int offsetX, int offsetY, int mouseX, int mouseY) {
+	public static void render(List<RealmsAcceptRejectButton> buttons, RealmsObjectSelectionList<?> selectionList, int offsetX, int offsetY, int mouseX, int mouseY) {
 		for (RealmsAcceptRejectButton realmsAcceptRejectButton : buttons) {
 			if (selectionList.getRowWidth() > realmsAcceptRejectButton.getRight()) {
 				realmsAcceptRejectButton.render(offsetX, offsetY, mouseX, mouseY);
@@ -52,12 +52,17 @@ public abstract class RealmsAcceptRejectButton {
 	}
 
 	public static void handleClick(
-		RealmsObjectSelectionList selectionList, RealmListEntry entry, List<RealmsAcceptRejectButton> buttons, int button, double mouseX, double mouseY
+		RealmsObjectSelectionList<?> selectionList,
+		AlwaysSelectedEntryListWidget.Entry<?> entry,
+		List<RealmsAcceptRejectButton> buttons,
+		int button,
+		double mouseX,
+		double mouseY
 	) {
 		if (button == 0) {
 			int i = selectionList.children().indexOf(entry);
 			if (i > -1) {
-				selectionList.selectItem(i);
+				selectionList.setSelected(i);
 				int j = selectionList.getRowLeft();
 				int k = selectionList.getRowTop(i);
 				int l = (int)(mouseX - (double)j);

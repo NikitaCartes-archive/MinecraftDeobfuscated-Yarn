@@ -14,14 +14,14 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class VinesFeature extends Feature<DefaultFeatureConfig> {
 	private static final Direction[] DIRECTIONS = Direction.values();
 
-	public VinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public VinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
+		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
 		for (int i = blockPos.getY(); i < 256; i++) {
 			mutable.set(blockPos);

@@ -4,9 +4,6 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
-import net.minecraft.container.BrewingStandContainer;
-import net.minecraft.container.Container;
-import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -16,6 +13,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.screen.BrewingStandScreenHandler;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DefaultedList;
@@ -274,7 +274,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return new BrewingStandContainer(i, playerInventory, this, this.propertyDelegate);
+	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
+		return new BrewingStandScreenHandler(i, playerInventory, this, this.propertyDelegate);
 	}
 }

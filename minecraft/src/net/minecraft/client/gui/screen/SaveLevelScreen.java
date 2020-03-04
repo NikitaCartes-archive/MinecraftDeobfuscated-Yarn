@@ -18,7 +18,7 @@ public class SaveLevelScreen extends Screen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderDirtBackground(0);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 70, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 70, 16777215);
 		super.render(mouseX, mouseY, delta);
 	}
 }

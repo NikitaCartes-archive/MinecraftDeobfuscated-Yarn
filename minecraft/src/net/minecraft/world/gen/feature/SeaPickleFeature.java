@@ -12,8 +12,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SeaPickleFeature extends Feature<SeaPickleFeatureConfig> {
-	public SeaPickleFeature(Function<Dynamic<?>, ? extends SeaPickleFeatureConfig> configFactory) {
-		super(configFactory);
+	public SeaPickleFeature(Function<Dynamic<?>, ? extends SeaPickleFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, Random random, BlockPos blockPos, SeaPickleFeatureConfig seaPickleFeatureConfig) {

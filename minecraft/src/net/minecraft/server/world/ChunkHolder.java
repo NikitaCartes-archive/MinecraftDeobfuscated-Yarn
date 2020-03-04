@@ -59,7 +59,7 @@ public class ChunkHolder {
 	private final LightingProvider lightingProvider;
 	private final ChunkHolder.LevelUpdateListener levelUpdateListener;
 	private final ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider;
-	private boolean field_19238;
+	private boolean ticking;
 
 	public ChunkHolder(
 		ChunkPos pos,
@@ -96,7 +96,7 @@ public class ChunkHolder {
 		return this.entityTickingFuture;
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> method_20725() {
+	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> getBorderFuture() {
 		return this.borderFuture;
 	}
 
@@ -271,7 +271,7 @@ public class ChunkHolder {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ChunkHolder.LevelType method_23271() {
+	public ChunkHolder.LevelType getLevelType() {
 		return getLevelType(this.level);
 	}
 
@@ -322,7 +322,7 @@ public class ChunkHolder {
 
 		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.BORDER);
 		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.BORDER);
-		this.field_19238 |= bl4;
+		this.ticking |= bl4;
 		if (!bl3 && bl4) {
 			this.borderFuture = chunkStorage.createBorderFuture(this);
 			this.updateFuture(this.borderFuture);
@@ -374,12 +374,12 @@ public class ChunkHolder {
 		return LEVEL_TYPES[MathHelper.clamp(33 - distance + 1, 0, LEVEL_TYPES.length - 1)];
 	}
 
-	public boolean method_20384() {
-		return this.field_19238;
+	public boolean isTicking() {
+		return this.ticking;
 	}
 
-	public void method_20385() {
-		this.field_19238 = getLevelType(this.level).isAfter(ChunkHolder.LevelType.BORDER);
+	public void updateTickingStatus() {
+		this.ticking = getLevelType(this.level).isAfter(ChunkHolder.LevelType.BORDER);
 	}
 
 	public void method_20456(ReadOnlyChunk readOnlyChunk) {

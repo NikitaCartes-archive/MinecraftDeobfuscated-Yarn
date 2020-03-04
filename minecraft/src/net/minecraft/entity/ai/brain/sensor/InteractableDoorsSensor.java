@@ -17,7 +17,7 @@ public class InteractableDoorsSensor extends Sensor<LivingEntity> {
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		DimensionType dimensionType = world.getDimension().getType();
-		BlockPos blockPos = new BlockPos(entity);
+		BlockPos blockPos = entity.getSenseCenterPos();
 		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
 
 		for (int i = -1; i <= 1; i++) {

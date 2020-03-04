@@ -3,11 +3,11 @@ package net.minecraft.entity.vehicle;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.container.Container;
-import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -50,7 +50,7 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	}
 
 	@Override
-	public Container getContainer(int syncId, PlayerInventory playerInventory) {
-		return GenericContainer.createGeneric9x3(syncId, playerInventory, this);
+	public ScreenHandler getScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, this);
 	}
 }

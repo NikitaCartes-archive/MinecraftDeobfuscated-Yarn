@@ -195,14 +195,14 @@ public class TranslatableText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (!(o instanceof TranslatableText)) {
+		} else if (!(object instanceof TranslatableText)) {
 			return false;
 		} else {
-			TranslatableText translatableText = (TranslatableText)o;
-			return Arrays.equals(this.args, translatableText.args) && this.key.equals(translatableText.key) && super.equals(o);
+			TranslatableText translatableText = (TranslatableText)object;
+			return Arrays.equals(this.args, translatableText.args) && this.key.equals(translatableText.key) && super.equals(object);
 		}
 	}
 

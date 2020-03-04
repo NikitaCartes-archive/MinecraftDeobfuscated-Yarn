@@ -14,6 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractFireballEntity;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -212,22 +213,13 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		}
 	}
 
-	@Nullable
-	private Entity method_23756(Entity entity) {
-		if (entity instanceof AbstractFireballEntity) {
-			return ((AbstractFireballEntity)entity).owner;
-		} else {
-			return entity instanceof ProjectileEntity ? ((ProjectileEntity)entity).getOwner() : null;
-		}
-	}
-
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
 		if (!world.isClient) {
-			boolean bl = entity instanceof AbstractFireballEntity || entity instanceof ProjectileEntity && entity.isOnFire();
+			boolean bl = projectile instanceof AbstractFireballEntity || projectile instanceof ProjectileEntity && projectile.isOnFire();
 			if (bl) {
-				Entity entity2 = this.method_23756(entity);
-				boolean bl2 = entity2 == null || entity2 instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+				Entity entity = projectile.getOwner();
+				boolean bl2 = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
 				if (bl2 && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
 					BlockPos blockPos = hitResult.getBlockPos();
 					world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), 11);

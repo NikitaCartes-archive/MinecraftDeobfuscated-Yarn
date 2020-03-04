@@ -31,13 +31,13 @@ public abstract class StructureStart {
 	private int references;
 	protected final ChunkRandom random;
 
-	public StructureStart(StructureFeature<?> feature, int chunkX, int chunkZ, BlockBox box, int references, long l) {
+	public StructureStart(StructureFeature<?> feature, int chunkX, int chunkZ, BlockBox box, int references, long seed) {
 		this.feature = feature;
 		this.chunkX = chunkX;
 		this.chunkZ = chunkZ;
 		this.references = references;
 		this.random = new ChunkRandom();
-		this.random.setStructureSeed(l, chunkX, chunkZ);
+		this.random.setCarverSeed(seed, chunkX, chunkZ);
 		this.boundingBox = box;
 	}
 
@@ -51,13 +51,13 @@ public abstract class StructureStart {
 		return this.children;
 	}
 
-	public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
+	public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
 		synchronized (this.children) {
 			Iterator<StructurePiece> iterator = this.children.iterator();
 
 			while (iterator.hasNext()) {
 				StructurePiece structurePiece = (StructurePiece)iterator.next();
-				if (structurePiece.getBoundingBox().intersects(blockBox) && !structurePiece.generate(world, chunkGenerator, random, blockBox, chunkPos)) {
+				if (structurePiece.getBoundingBox().intersects(box) && !structurePiece.generate(world, chunkGenerator, random, box, pos)) {
 					iterator.remove();
 				}
 			}

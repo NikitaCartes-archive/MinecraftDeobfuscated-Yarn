@@ -128,15 +128,15 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	}
 
 	@Override
-	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
 		ModelPart modelPart = this.getArm(arm);
 		if (this.thinArms) {
 			float f = 0.5F * (float)(arm == Arm.RIGHT ? 1 : -1);
 			modelPart.pivotX += f;
-			modelPart.rotate(matrixStack);
+			modelPart.rotate(matrices);
 			modelPart.pivotX -= f;
 		} else {
-			modelPart.rotate(matrixStack);
+			modelPart.rotate(matrices);
 		}
 	}
 

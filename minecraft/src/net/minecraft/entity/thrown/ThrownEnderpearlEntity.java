@@ -47,36 +47,39 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
-		LivingEntity livingEntity = this.getOwner();
-		if (hitResult.getType() == HitResult.Type.ENTITY) {
-			Entity entity = ((EntityHitResult)hitResult).getEntity();
-			if (entity == this.owner) {
-				return;
-			}
-
-			entity.damage(DamageSource.thrownProjectile(this, livingEntity), 0.0F);
+	protected void onEntityHit(EntityHitResult entityHitResult) {
+		super.onEntityHit(entityHitResult);
+		Entity entity = entityHitResult.getEntity();
+		if (entity != this.owner) {
+			entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0F);
 		}
+	}
 
-		if (hitResult.getType() == HitResult.Type.BLOCK) {
-			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-			BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-			if (blockEntity instanceof EndGatewayBlockEntity) {
-				EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
-				if (livingEntity != null) {
-					if (livingEntity instanceof ServerPlayerEntity) {
-						Criterions.ENTER_BLOCK.trigger((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
-					}
-
-					endGatewayBlockEntity.tryTeleportingEntity(livingEntity);
-					this.remove();
-					return;
+	@Override
+	protected void method_24920(BlockHitResult blockHitResult) {
+		super.method_24920(blockHitResult);
+		Entity entity = this.getOwner();
+		BlockPos blockPos = blockHitResult.getBlockPos();
+		BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+		if (blockEntity instanceof EndGatewayBlockEntity) {
+			EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
+			if (entity != null) {
+				if (entity instanceof ServerPlayerEntity) {
+					Criterions.ENTER_BLOCK.trigger((ServerPlayerEntity)entity, this.world.getBlockState(blockPos));
 				}
 
+				endGatewayBlockEntity.tryTeleportingEntity(entity);
+				this.remove();
+			} else {
 				endGatewayBlockEntity.tryTeleportingEntity(this);
-				return;
 			}
 		}
+	}
+
+	@Override
+	protected void onCollision(HitResult hitResult) {
+		super.onCollision(hitResult);
+		Entity entity = this.getOwner();
 
 		for (int i = 0; i < 32; i++) {
 			this.world
@@ -86,27 +89,27 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 		}
 
 		if (!this.world.isClient) {
-			if (livingEntity instanceof ServerPlayerEntity) {
-				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
+			if (entity instanceof ServerPlayerEntity) {
+				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
 					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
 						endermiteEntity.setPlayerSpawned(true);
-						endermiteEntity.refreshPositionAndAngles(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), livingEntity.yaw, livingEntity.pitch);
+						endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.yaw, entity.pitch);
 						this.world.spawnEntity(endermiteEntity);
 					}
 
-					if (livingEntity.hasVehicle()) {
-						livingEntity.stopRiding();
+					if (entity.hasVehicle()) {
+						entity.stopRiding();
 					}
 
-					livingEntity.requestTeleport(this.getX(), this.getY(), this.getZ());
-					livingEntity.fallDistance = 0.0F;
-					livingEntity.damage(DamageSource.FALL, 5.0F);
+					entity.requestTeleport(this.getX(), this.getY(), this.getZ());
+					entity.fallDistance = 0.0F;
+					entity.damage(DamageSource.FALL, 5.0F);
 				}
-			} else if (livingEntity != null) {
-				livingEntity.requestTeleport(this.getX(), this.getY(), this.getZ());
-				livingEntity.fallDistance = 0.0F;
+			} else if (entity != null) {
+				entity.requestTeleport(this.getX(), this.getY(), this.getZ());
+				entity.fallDistance = 0.0F;
 			}
 
 			this.remove();
@@ -115,8 +118,8 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 
 	@Override
 	public void tick() {
-		LivingEntity livingEntity = this.getOwner();
-		if (livingEntity != null && livingEntity instanceof PlayerEntity && !livingEntity.isAlive()) {
+		Entity entity = this.getOwner();
+		if (entity != null && entity instanceof PlayerEntity && !entity.isAlive()) {
 			this.remove();
 		} else {
 			super.tick();
@@ -126,8 +129,9 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 	@Nullable
 	@Override
 	public Entity changeDimension(DimensionType newDimension) {
-		if (this.owner.dimension != newDimension) {
-			this.owner = null;
+		Entity entity = this.getOwner();
+		if (entity.dimension != newDimension) {
+			this.setOwner(null);
 		}
 
 		return super.changeDimension(newDimension);

@@ -25,10 +25,10 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 	}
 
 	@Override
-	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateFactory) {
-		Property<?> property = stateFactory.getProperty(this.key);
+	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
+		Property<?> property = stateManager.getProperty(this.key);
 		if (property == null) {
-			throw new RuntimeException(String.format("Unknown property '%s' on '%s'", this.key, stateFactory.getOwner().toString()));
+			throw new RuntimeException(String.format("Unknown property '%s' on '%s'", this.key, stateManager.getOwner().toString()));
 		} else {
 			String string = this.valueString;
 			boolean bl = !string.isEmpty() && string.charAt(0) == '!';
@@ -38,14 +38,14 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 
 			List<String> list = VALUE_SPLITTER.splitToList(string);
 			if (list.isEmpty()) {
-				throw new RuntimeException(String.format("Empty value '%s' for property '%s' on '%s'", this.valueString, this.key, stateFactory.getOwner().toString()));
+				throw new RuntimeException(String.format("Empty value '%s' for property '%s' on '%s'", this.valueString, this.key, stateManager.getOwner().toString()));
 			} else {
 				Predicate<BlockState> predicate;
 				if (list.size() == 1) {
-					predicate = this.createPredicate(stateFactory, property, string);
+					predicate = this.createPredicate(stateManager, property, string);
 				} else {
 					List<Predicate<BlockState>> list2 = (List<Predicate<BlockState>>)list.stream()
-						.map(stringx -> this.createPredicate(stateFactory, property, stringx))
+						.map(stringx -> this.createPredicate(stateManager, property, stringx))
 						.collect(Collectors.toList());
 					predicate = blockState -> list2.stream().anyMatch(predicatex -> predicatex.test(blockState));
 				}

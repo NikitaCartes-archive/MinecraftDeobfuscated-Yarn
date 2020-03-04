@@ -380,9 +380,9 @@ public class LootCommand {
 		for (Entity entity : targets) {
 			if (entity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-				serverPlayerEntity.playerContainer.sendContentUpdates();
+				serverPlayerEntity.playerScreenHandler.sendContentUpdates();
 				replace(entity, stacks, slot, stackCount, list);
-				serverPlayerEntity.playerContainer.sendContentUpdates();
+				serverPlayerEntity.playerScreenHandler.sendContentUpdates();
 			} else {
 				replace(entity, stacks, slot, stackCount, list);
 			}

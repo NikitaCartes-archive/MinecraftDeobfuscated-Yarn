@@ -4,10 +4,10 @@ import java.util.OptionalInt;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.container.MerchantContainer;
-import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
@@ -42,8 +42,8 @@ public interface Trader {
 	}
 
 	default void sendOffers(PlayerEntity playerEntity, Text text, int i) {
-		OptionalInt optionalInt = playerEntity.openContainer(
-			new SimpleNamedContainerFactory((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), text)
+		OptionalInt optionalInt = playerEntity.openHandledScreen(
+			new SimpleNamedScreenHandlerFactory((ix, playerInventory, playerEntityx) -> new MerchantScreenHandler(ix, playerInventory, this), text)
 		);
 		if (optionalInt.isPresent()) {
 			TraderOfferList traderOfferList = this.getOffers();

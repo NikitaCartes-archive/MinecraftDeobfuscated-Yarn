@@ -18,9 +18,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class ListWidget extends AbstractParentElement implements Drawable {
-	protected static final int NO_DRAG = -1;
-	protected static final int DRAG_OUTSIDE = -2;
-	protected final MinecraftClient minecraft;
+	protected final MinecraftClient client;
 	protected int width;
 	protected int height;
 	protected int top;
@@ -30,7 +28,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	protected final int itemHeight;
 	protected boolean centerListVertically = true;
 	protected int yDrag = -2;
-	protected double scroll;
+	protected double scrollAmount;
 	protected boolean visible = true;
 	protected boolean renderSelection = true;
 	protected boolean renderHeader;
@@ -38,7 +36,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	private boolean scrolling;
 
 	public ListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
-		this.minecraft = client;
+		this.client = client;
 		this.width = width;
 		this.height = height;
 		this.top = top;
@@ -46,31 +44,6 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		this.itemHeight = itemHeight;
 		this.left = 0;
 		this.right = width;
-	}
-
-	public void updateSize(int width, int height, int y, int bottom) {
-		this.width = width;
-		this.height = height;
-		this.top = y;
-		this.bottom = bottom;
-		this.left = 0;
-		this.right = width;
-	}
-
-	public void setRenderSelection(boolean bl) {
-		this.renderSelection = bl;
-	}
-
-	protected void setRenderHeader(boolean bl, int i) {
-		this.renderHeader = bl;
-		this.headerHeight = i;
-		if (!bl) {
-			this.headerHeight = 0;
-		}
-	}
-
-	public void setVisible(boolean bl) {
-		this.visible = bl;
 	}
 
 	public boolean isVisible() {
@@ -96,57 +69,38 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 
 	protected abstract void renderBackground();
 
-	protected void updateItemPosition(int index, int i, int j, float f) {
+	protected void updateItemPosition(int index, int x, int y, float delta) {
 	}
 
-	protected abstract void renderItem(int index, int y, int i, int j, int k, int l, float f);
+	protected abstract void renderItem(int index, int x, int y, int itemHeight, int mouseX, int mouseY, float delta);
 
-	protected void renderHeader(int i, int j, Tessellator tessellator) {
+	protected void renderHeader(int x, int y, Tessellator tessellator) {
 	}
 
 	protected void clickedHeader(int i, int j) {
 	}
 
-	protected void renderDecorations(int i, int j) {
+	protected void renderDecorations(int mouseX, int mouseY) {
 	}
 
-	public int getItemAtPosition(double d, double e) {
+	public int getItemAtPosition(double mouseX, double mouseY) {
 		int i = this.left + this.width / 2 - this.getRowWidth() / 2;
 		int j = this.left + this.width / 2 + this.getRowWidth() / 2;
-		int k = MathHelper.floor(e - (double)this.top) - this.headerHeight + (int)this.scroll - 4;
+		int k = MathHelper.floor(mouseY - (double)this.top) - this.headerHeight + (int)this.scrollAmount - 4;
 		int l = k / this.itemHeight;
-		return d < (double)this.getScrollbarPosition() && d >= (double)i && d <= (double)j && l >= 0 && k >= 0 && l < this.getItemCount() ? l : -1;
+		return mouseX < (double)this.getScrollbarPosition() && mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getItemCount() ? l : -1;
 	}
 
 	protected void capYPosition() {
-		this.scroll = MathHelper.clamp(this.scroll, 0.0, (double)this.getMaxScroll());
+		this.scrollAmount = MathHelper.clamp(this.scrollAmount, 0.0, (double)this.getMaxScroll());
 	}
 
 	public int getMaxScroll() {
 		return Math.max(0, this.getMaxPosition() - (this.bottom - this.top - 4));
 	}
 
-	public void centerScrollOn(int i) {
-		this.scroll = (double)(i * this.itemHeight + this.itemHeight / 2 - (this.bottom - this.top) / 2);
-		this.capYPosition();
-	}
-
-	public int getScroll() {
-		return (int)this.scroll;
-	}
-
 	public boolean isMouseInList(double mouseX, double mouseY) {
 		return mouseY >= (double)this.top && mouseY <= (double)this.bottom && mouseX >= (double)this.left && mouseX <= (double)this.right;
-	}
-
-	public int getScrollBottom() {
-		return (int)this.scroll - this.height - this.headerHeight;
-	}
-
-	public void scroll(int amount) {
-		this.scroll += (double)amount;
-		this.capYPosition();
-		this.yDrag = -2;
 	}
 
 	@Override
@@ -158,29 +112,29 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			this.capYPosition();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
-			this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+			this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			float f = 32.0F;
 			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
 			bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0)
-				.texture((float)this.left / 32.0F, (float)(this.bottom + (int)this.scroll) / 32.0F)
+				.texture((float)this.left / 32.0F, (float)(this.bottom + (int)this.scrollAmount) / 32.0F)
 				.color(32, 32, 32, 255)
 				.next();
 			bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0)
-				.texture((float)this.right / 32.0F, (float)(this.bottom + (int)this.scroll) / 32.0F)
+				.texture((float)this.right / 32.0F, (float)(this.bottom + (int)this.scrollAmount) / 32.0F)
 				.color(32, 32, 32, 255)
 				.next();
 			bufferBuilder.vertex((double)this.right, (double)this.top, 0.0)
-				.texture((float)this.right / 32.0F, (float)(this.top + (int)this.scroll) / 32.0F)
+				.texture((float)this.right / 32.0F, (float)(this.top + (int)this.scrollAmount) / 32.0F)
 				.color(32, 32, 32, 255)
 				.next();
 			bufferBuilder.vertex((double)this.left, (double)this.top, 0.0)
-				.texture((float)this.left / 32.0F, (float)(this.top + (int)this.scroll) / 32.0F)
+				.texture((float)this.left / 32.0F, (float)(this.top + (int)this.scrollAmount) / 32.0F)
 				.color(32, 32, 32, 255)
 				.next();
 			tessellator.draw();
 			int k = this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
-			int l = this.top + 4 - (int)this.scroll;
+			int l = this.top + 4 - (int)this.scrollAmount;
 			if (this.renderHeader) {
 				this.renderHeader(k, l, tessellator);
 			}
@@ -213,7 +167,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			if (n > 0) {
 				int o = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
 				o = MathHelper.clamp(o, 32, this.bottom - this.top - 8);
-				int p = (int)this.scroll * (this.bottom - this.top - o) / n + this.top;
+				int p = (int)this.scrollAmount * (this.bottom - this.top - o) / n + this.top;
 				if (p < this.top) {
 					p = this.top;
 				}
@@ -246,8 +200,8 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		}
 	}
 
-	protected void updateScrollingState(double d, double e, int i) {
-		this.scrolling = i == 0 && d >= (double)this.getScrollbarPosition() && d < (double)(this.getScrollbarPosition() + 6);
+	protected void updateScrollingState(double mouseX, double mouseY, int button) {
+		this.scrolling = button == 0 && mouseX >= (double)this.getScrollbarPosition() && mouseX < (double)(this.getScrollbarPosition() + 6);
 	}
 
 	@Override
@@ -256,7 +210,9 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		if (this.isVisible() && this.isMouseInList(mouseX, mouseY)) {
 			int i = this.getItemAtPosition(mouseX, mouseY);
 			if (i == -1 && button == 0) {
-				this.clickedHeader((int)(mouseX - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.top) + (int)this.scroll - 4);
+				this.clickedHeader(
+					(int)(mouseX - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.top) + (int)this.scrollAmount - 4
+				);
 				return true;
 			} else if (i != -1 && this.selectItem(i, button, mouseX, mouseY)) {
 				if (this.children().size() > i) {
@@ -288,9 +244,9 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			return true;
 		} else if (this.isVisible() && button == 0 && this.scrolling) {
 			if (mouseY < (double)this.top) {
-				this.scroll = 0.0;
+				this.scrollAmount = 0.0;
 			} else if (mouseY > (double)this.bottom) {
-				this.scroll = (double)this.getMaxScroll();
+				this.scrollAmount = (double)this.getMaxScroll();
 			} else {
 				double d = (double)this.getMaxScroll();
 				if (d < 1.0) {
@@ -304,7 +260,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 					e = 1.0;
 				}
 
-				this.scroll += deltaY * e;
+				this.scrollAmount += deltaY * e;
 				this.capYPosition();
 			}
 
@@ -315,11 +271,11 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 		if (!this.isVisible()) {
 			return false;
 		} else {
-			this.scroll = this.scroll - amount * (double)this.itemHeight / 2.0;
+			this.scrollAmount = this.scrollAmount - amount * (double)this.itemHeight / 2.0;
 			return true;
 		}
 	}
@@ -341,7 +297,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		}
 	}
 
-	protected void moveSelection(int i) {
+	protected void moveSelection(int by) {
 	}
 
 	@Override
@@ -358,7 +314,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		return 220;
 	}
 
-	protected void renderList(int x, int y, int mouseX, int mouseY, float f) {
+	protected void renderList(int x, int y, int mouseX, int mouseY, float delta) {
 		int i = this.getItemCount();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -367,15 +323,15 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			int k = y + j * this.itemHeight + this.headerHeight;
 			int l = this.itemHeight - 4;
 			if (k > this.bottom || k + l < this.top) {
-				this.updateItemPosition(j, x, k, f);
+				this.updateItemPosition(j, x, k, delta);
 			}
 
 			if (this.renderSelection && this.isSelectedItem(j)) {
 				int m = this.left + this.width / 2 - this.getRowWidth() / 2;
 				int n = this.left + this.width / 2 + this.getRowWidth() / 2;
 				RenderSystem.disableTexture();
-				float g = this.isFocused() ? 1.0F : 0.5F;
-				RenderSystem.color4f(g, g, g, 1.0F);
+				float f = this.isFocused() ? 1.0F : 0.5F;
+				RenderSystem.color4f(f, f, f, 1.0F);
 				bufferBuilder.begin(7, VertexFormats.POSITION);
 				bufferBuilder.vertex((double)m, (double)(k + l + 2), 0.0).next();
 				bufferBuilder.vertex((double)n, (double)(k + l + 2), 0.0).next();
@@ -392,7 +348,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 				RenderSystem.enableTexture();
 			}
 
-			this.renderItem(j, x, k, l, mouseX, mouseY, f);
+			this.renderItem(j, x, k, l, mouseX, mouseY, delta);
 		}
 	}
 
@@ -404,26 +360,23 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		return this.width / 2 + 124;
 	}
 
-	protected void renderHoleBackground(int i, int j, int k, int l) {
+	protected void renderHoleBackground(int top, int bottom, int topAlpha, int bottomAlpha) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex((double)this.left, (double)j, 0.0).texture(0.0F, (float)j / 32.0F).color(64, 64, 64, l).next();
-		bufferBuilder.vertex((double)(this.left + this.width), (double)j, 0.0).texture((float)this.width / 32.0F, (float)j / 32.0F).color(64, 64, 64, l).next();
-		bufferBuilder.vertex((double)(this.left + this.width), (double)i, 0.0).texture((float)this.width / 32.0F, (float)i / 32.0F).color(64, 64, 64, k).next();
-		bufferBuilder.vertex((double)this.left, (double)i, 0.0).texture(0.0F, (float)i / 32.0F).color(64, 64, 64, k).next();
+		bufferBuilder.vertex((double)this.left, (double)bottom, 0.0).texture(0.0F, (float)bottom / 32.0F).color(64, 64, 64, bottomAlpha).next();
+		bufferBuilder.vertex((double)(this.left + this.width), (double)bottom, 0.0)
+			.texture((float)this.width / 32.0F, (float)bottom / 32.0F)
+			.color(64, 64, 64, bottomAlpha)
+			.next();
+		bufferBuilder.vertex((double)(this.left + this.width), (double)top, 0.0)
+			.texture((float)this.width / 32.0F, (float)top / 32.0F)
+			.color(64, 64, 64, topAlpha)
+			.next();
+		bufferBuilder.vertex((double)this.left, (double)top, 0.0).texture(0.0F, (float)top / 32.0F).color(64, 64, 64, topAlpha).next();
 		tessellator.draw();
-	}
-
-	public void setLeftPos(int x) {
-		this.left = x;
-		this.right = x + this.width;
-	}
-
-	public int getItemHeight() {
-		return this.itemHeight;
 	}
 }

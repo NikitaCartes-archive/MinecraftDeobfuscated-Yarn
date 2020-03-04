@@ -6,7 +6,7 @@ import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.gui.widget.GameOptionSliderWidget;
+import net.minecraft.client.gui.widget.DoubleOptionSliderWidget;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -38,7 +38,7 @@ public class DoubleOption extends Option {
 
 	@Override
 	public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
-		return new GameOptionSliderWidget(options, x, y, width, 20, this);
+		return new DoubleOptionSliderWidget(options, x, y, width, 20, this);
 	}
 
 	public double getRatio(double value) {

@@ -13,8 +13,8 @@ public class DrownedOverlayFeatureRenderer<T extends ZombieEntity> extends Featu
 	private static final Identifier SKIN = new Identifier("textures/entity/zombie/drowned_outer_layer.png");
 	private final DrownedEntityModel<T> model = new DrownedEntityModel<>(0.25F, 0.0F, 64, 64);
 
-	public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> context) {
-		super(context);
+	public DrownedOverlayFeatureRenderer(FeatureRendererContext<T, DrownedEntityModel<T>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

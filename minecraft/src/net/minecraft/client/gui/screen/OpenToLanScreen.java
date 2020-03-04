@@ -25,20 +25,20 @@ public class OpenToLanScreen extends Screen {
 	@Override
 	protected void init() {
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("lanServer.start"), buttonWidget -> {
-			this.minecraft.openScreen(null);
+			this.client.openScreen(null);
 			int i = NetworkUtils.findLocalPort();
 			Text text;
-			if (this.minecraft.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i)) {
+			if (this.client.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i)) {
 				text = new TranslatableText("commands.publish.started", i);
 			} else {
 				text = new TranslatableText("commands.publish.failed");
 			}
 
-			this.minecraft.inGameHud.getChatHud().addMessage(text);
-			this.minecraft.updateWindowTitle();
+			this.client.inGameHud.getChatHud().addMessage(text);
+			this.client.updateWindowTitle();
 		}));
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent))
 		);
 		this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
 			if ("spectator".equals(this.gameMode)) {
@@ -68,8 +68,8 @@ public class OpenToLanScreen extends Screen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 50, 16777215);
-		this.drawCenteredString(this.font, I18n.translate("lanServer.otherPlayers"), this.width / 2, 82, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 50, 16777215);
+		this.drawCenteredString(this.textRenderer, I18n.translate("lanServer.otherPlayers"), this.width / 2, 82, 16777215);
 		super.render(mouseX, mouseY, delta);
 	}
 }

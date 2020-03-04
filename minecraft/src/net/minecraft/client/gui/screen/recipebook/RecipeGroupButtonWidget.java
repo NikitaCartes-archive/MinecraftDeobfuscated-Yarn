@@ -6,12 +6,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
-import net.minecraft.client.recipe.book.ClientRecipeBook;
-import net.minecraft.client.recipe.book.RecipeBookGroup;
+import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.container.CraftingContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.CraftingScreenHandler;
 
 @Environment(EnvType.CLIENT)
 public class RecipeGroupButtonWidget extends ToggleButtonWidget {
@@ -27,9 +27,11 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	public void checkForNewRecipes(MinecraftClient client) {
 		ClientRecipeBook clientRecipeBook = client.player.getRecipeBook();
 		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
-		if (client.player.container instanceof CraftingContainer) {
+		if (client.player.currentScreenHandler instanceof CraftingScreenHandler) {
 			for (RecipeResultCollection recipeResultCollection : list) {
-				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)client.player.container))) {
+				for (Recipe<?> recipe : recipeResultCollection.getResults(
+					clientRecipeBook.isFilteringCraftable((CraftingScreenHandler<?>)client.player.currentScreenHandler)
+				)) {
 					if (clientRecipeBook.shouldDisplay(recipe)) {
 						this.bounce = 15.0F;
 						return;

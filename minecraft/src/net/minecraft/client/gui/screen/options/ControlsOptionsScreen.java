@@ -32,11 +32,11 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 				150,
 				20,
 				I18n.translate("options.mouse_settings"),
-				buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this, this.gameOptions))
+				buttonWidget -> this.client.openScreen(new MouseOptionsScreen(this, this.gameOptions))
 			)
 		);
 		this.addButton(Option.AUTO_JUMP.createButton(this.gameOptions, this.width / 2 - 155 + 160, 18, 150));
-		this.keyBindingListWidget = new ControlsListWidget(this, this.minecraft);
+		this.keyBindingListWidget = new ControlsListWidget(this, this.client);
 		this.children.add(this.keyBindingListWidget);
 		this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll"), buttonWidget -> {
 			for (KeyBinding keyBinding : this.gameOptions.keysAll) {
@@ -46,7 +46,7 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 			KeyBinding.updateKeysByCode();
 		}));
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(this.parent))
 		);
 	}
 
@@ -84,7 +84,7 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.keyBindingListWidget.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 8, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 16777215);
 		boolean bl = false;
 
 		for (KeyBinding keyBinding : this.gameOptions.keysAll) {

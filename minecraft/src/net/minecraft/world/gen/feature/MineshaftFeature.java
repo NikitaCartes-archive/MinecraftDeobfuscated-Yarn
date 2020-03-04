@@ -17,13 +17,13 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
-	public MineshaftFeature(Function<Dynamic<?>, ? extends MineshaftFeatureConfig> configFactory) {
-		super(configFactory);
+	public MineshaftFeature(Function<Dynamic<?>, ? extends MineshaftFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
-		((ChunkRandom)random).setStructureSeed(chunkGenerator.getSeed(), chunkZ, i);
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+		((ChunkRandom)random).setCarverSeed(chunkGenerator.getSeed(), chunkX, chunkZ);
 		if (chunkGenerator.hasStructure(biome, this)) {
 			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
 			double d = mineshaftFeatureConfig.probability;
@@ -49,8 +49,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override

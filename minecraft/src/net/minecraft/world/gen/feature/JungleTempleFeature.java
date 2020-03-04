@@ -10,8 +10,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
-	public JungleTempleFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public JungleTempleFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
@@ -35,8 +35,8 @@ public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureCon
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override

@@ -74,7 +74,7 @@ public class GiveCommand {
 							0.2F,
 							((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);
-					serverPlayerEntity.playerContainer.sendContentUpdates();
+					serverPlayerEntity.playerScreenHandler.sendContentUpdates();
 				} else {
 					ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
 					if (itemEntity != null) {

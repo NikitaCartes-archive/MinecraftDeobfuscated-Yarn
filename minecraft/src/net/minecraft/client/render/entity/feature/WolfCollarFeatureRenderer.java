@@ -12,8 +12,8 @@ import net.minecraft.util.Identifier;
 public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
 	private static final Identifier SKIN = new Identifier("textures/entity/wolf/wolf_collar.png");
 
-	public WolfCollarFeatureRenderer(FeatureRendererContext<WolfEntity, WolfEntityModel<WolfEntity>> context) {
-		super(context);
+	public WolfCollarFeatureRenderer(FeatureRendererContext<WolfEntity, WolfEntityModel<WolfEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

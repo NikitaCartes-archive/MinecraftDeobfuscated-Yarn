@@ -45,7 +45,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	@Override
 	public void removed() {
 		this.advancementHandler.setListener(null);
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.close());
 		}
@@ -70,9 +70,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (this.minecraft.options.keyAdvancements.matchesKey(keyCode, scanCode)) {
-			this.minecraft.openScreen(null);
-			this.minecraft.mouse.lockCursor();
+		if (this.client.options.keyAdvancements.matchesKey(keyCode, scanCode)) {
+			this.client.openScreen(null);
+			this.client.mouse.lockCursor();
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -110,9 +110,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		if (advancementTab == null) {
 			fill(x + 9, y + 18, x + 9 + 234, y + 18 + 113, -16777216);
 			String string = I18n.translate("advancements.empty");
-			int i = this.font.getStringWidth(string);
-			this.font.draw(string, (float)(x + 9 + 117 - i / 2), (float)(y + 18 + 56 - 9 / 2), -1);
-			this.font.draw(":(", (float)(x + 9 + 117 - this.font.getStringWidth(":(") / 2), (float)(y + 18 + 113 - 9), -1);
+			int i = this.textRenderer.getStringWidth(string);
+			this.textRenderer.draw(string, (float)(x + 9 + 117 - i / 2), (float)(y + 18 + 56 - 9 / 2), -1);
+			this.textRenderer.draw(":(", (float)(x + 9 + 117 - this.textRenderer.getStringWidth(":(") / 2), (float)(y + 18 + 113 - 9), -1);
 		} else {
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef((float)(x + 9), (float)(y + 18), 0.0F);
@@ -126,10 +126,10 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	public void drawWidgets(int x, int y) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
-		this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
+		this.client.getTextureManager().bindTexture(WINDOW_TEXTURE);
 		this.blit(x, y, 0, 0, 252, 140);
 		if (this.tabs.size() > 1) {
-			this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
+			this.client.getTextureManager().bindTexture(TABS_TEXTURE);
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
 				advancementTab.drawBackground(x, y, advancementTab == this.selectedTab);
@@ -145,7 +145,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			RenderSystem.disableBlend();
 		}
 
-		this.font.draw(I18n.translate("gui.advancements"), (float)(x + 8), (float)(y + 6), 4210752);
+		this.textRenderer.draw(I18n.translate("gui.advancements"), (float)(x + 8), (float)(y + 6), 4210752);
 	}
 
 	private void drawWidgetTooltip(int mouseX, int mouseY, int x, int y) {
@@ -170,7 +170,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void onRootAdded(Advancement root) {
-		AdvancementTab advancementTab = AdvancementTab.create(this.minecraft, this, this.tabs.size(), root);
+		AdvancementTab advancementTab = AdvancementTab.create(this.client, this, this.tabs.size(), root);
 		if (advancementTab != null) {
 			this.tabs.put(root, advancementTab);
 		}

@@ -3,11 +3,11 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.feature.TropicalFishSomethingFeatureRenderer;
+import net.minecraft.client.render.entity.feature.TropicalFishColorFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.LargeTropicalFishEntityModel;
+import net.minecraft.client.render.entity.model.SmallTropicalFishEntityModel;
 import net.minecraft.client.render.entity.model.TintableCompositeModel;
-import net.minecraft.client.render.entity.model.TropicalFishEntityModelA;
-import net.minecraft.client.render.entity.model.TropicalFishEntityModelB;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.TropicalFishEntity;
@@ -16,12 +16,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEntity, EntityModel<TropicalFishEntity>> {
-	private final TropicalFishEntityModelA<TropicalFishEntity> field_4800 = new TropicalFishEntityModelA<>(0.0F);
-	private final TropicalFishEntityModelB<TropicalFishEntity> field_4799 = new TropicalFishEntityModelB<>(0.0F);
+	private final SmallTropicalFishEntityModel<TropicalFishEntity> smallModel = new SmallTropicalFishEntityModel<>(0.0F);
+	private final LargeTropicalFishEntityModel<TropicalFishEntity> largeModel = new LargeTropicalFishEntityModel<>(0.0F);
 
 	public TropicalFishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new TropicalFishEntityModelA<>(0.0F), 0.15F);
-		this.addFeature(new TropicalFishSomethingFeatureRenderer(this));
+		super(entityRenderDispatcher, new SmallTropicalFishEntityModel<>(0.0F), 0.15F);
+		this.addFeature(new TropicalFishColorFeatureRenderer(this));
 	}
 
 	public Identifier getTexture(TropicalFishEntity tropicalFishEntity) {
@@ -30,8 +30,8 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 
 	public void render(TropicalFishEntity tropicalFishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		TintableCompositeModel<TropicalFishEntity> tintableCompositeModel = (TintableCompositeModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0
-			? this.field_4800
-			: this.field_4799);
+			? this.smallModel
+			: this.largeModel);
 		this.model = tintableCompositeModel;
 		float[] fs = tropicalFishEntity.getBaseColorComponents();
 		tintableCompositeModel.setColorMultiplier(fs[0], fs[1], fs[2]);

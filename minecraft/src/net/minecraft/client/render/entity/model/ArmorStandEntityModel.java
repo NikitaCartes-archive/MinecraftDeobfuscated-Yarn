@@ -90,11 +90,11 @@ public class ArmorStandEntityModel extends ArmorStandArmorEntityModel {
 	}
 
 	@Override
-	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
 		ModelPart modelPart = this.getArm(arm);
 		boolean bl = modelPart.visible;
 		modelPart.visible = true;
-		super.setArmAngle(arm, matrixStack);
+		super.setArmAngle(arm, matrices);
 		modelPart.visible = bl;
 	}
 }

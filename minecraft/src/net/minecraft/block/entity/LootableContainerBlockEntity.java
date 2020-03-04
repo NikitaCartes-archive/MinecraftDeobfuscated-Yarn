@@ -2,7 +2,6 @@ package net.minecraft.block.entity;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.container.Container;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -12,6 +11,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
@@ -140,10 +140,10 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 	@Nullable
 	@Override
-	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		if (this.checkUnlocked(playerEntity)) {
 			this.checkLootInteraction(playerInventory.player);
-			return this.createContainer(syncId, playerInventory);
+			return this.createContainer(i, playerInventory);
 		} else {
 			return null;
 		}

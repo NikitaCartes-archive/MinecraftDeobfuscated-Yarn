@@ -7,34 +7,34 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
 public class HugeFungusFeatureConfig implements FeatureConfig {
-	public static final HugeFungusFeatureConfig field_22431 = new HugeFungusFeatureConfig(
+	public static final HugeFungusFeatureConfig CRIMSON_FUNGUS_CONFIG = new HugeFungusFeatureConfig(
 		Blocks.CRIMSON_NYLIUM.getDefaultState(),
 		Blocks.CRIMSON_STEM.getDefaultState(),
 		Blocks.NETHER_WART_BLOCK.getDefaultState(),
 		Blocks.SHROOMLIGHT.getDefaultState(),
 		true
 	);
-	public static final HugeFungusFeatureConfig field_22432;
-	public static final HugeFungusFeatureConfig field_22433 = new HugeFungusFeatureConfig(
+	public static final HugeFungusFeatureConfig CRIMSON_FUNGUS_NOT_PLANTED_CONFIG;
+	public static final HugeFungusFeatureConfig WARPED_FUNGUS_CONFIG = new HugeFungusFeatureConfig(
 		Blocks.WARPED_NYLIUM.getDefaultState(),
 		Blocks.WARPED_STEM.getDefaultState(),
 		Blocks.WARPED_WART_BLOCK.getDefaultState(),
 		Blocks.SHROOMLIGHT.getDefaultState(),
 		true
 	);
-	public static final HugeFungusFeatureConfig field_22434;
-	public final BlockState field_22435;
+	public static final HugeFungusFeatureConfig WARPED_FUNGUS_NOT_PLANTED_CONFIG;
+	public final BlockState validBaseBlock;
 	public final BlockState stemState;
 	public final BlockState hatState;
 	public final BlockState decorationState;
 	public final boolean planted;
 
-	public HugeFungusFeatureConfig(BlockState stemState, BlockState blockState, BlockState blockState2, BlockState blockState3, boolean bl) {
-		this.field_22435 = stemState;
-		this.stemState = blockState;
-		this.hatState = blockState2;
-		this.decorationState = blockState3;
-		this.planted = bl;
+	public HugeFungusFeatureConfig(BlockState validBaseBlock, BlockState stemState, BlockState hatState, BlockState decorationState, boolean planted) {
+		this.validBaseBlock = validBaseBlock;
+		this.stemState = stemState;
+		this.hatState = hatState;
+		this.decorationState = decorationState;
+		this.planted = planted;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class HugeFungusFeatureConfig implements FeatureConfig {
 			ops.createMap(
 				ImmutableMap.of(
 					ops.createString("valid_base_block"),
-					BlockState.serialize(ops, this.field_22435).getValue(),
+					BlockState.serialize(ops, this.validBaseBlock).getValue(),
 					ops.createString("stem_state"),
 					BlockState.serialize(ops, this.stemState).getValue(),
 					ops.createString("hat_state"),
@@ -68,7 +68,11 @@ public class HugeFungusFeatureConfig implements FeatureConfig {
 	}
 
 	static {
-		field_22432 = new HugeFungusFeatureConfig(field_22431.field_22435, field_22431.stemState, field_22431.hatState, field_22431.decorationState, false);
-		field_22434 = new HugeFungusFeatureConfig(field_22433.field_22435, field_22433.stemState, field_22433.hatState, field_22433.decorationState, false);
+		CRIMSON_FUNGUS_NOT_PLANTED_CONFIG = new HugeFungusFeatureConfig(
+			CRIMSON_FUNGUS_CONFIG.validBaseBlock, CRIMSON_FUNGUS_CONFIG.stemState, CRIMSON_FUNGUS_CONFIG.hatState, CRIMSON_FUNGUS_CONFIG.decorationState, false
+		);
+		WARPED_FUNGUS_NOT_PLANTED_CONFIG = new HugeFungusFeatureConfig(
+			WARPED_FUNGUS_CONFIG.validBaseBlock, WARPED_FUNGUS_CONFIG.stemState, WARPED_FUNGUS_CONFIG.hatState, WARPED_FUNGUS_CONFIG.decorationState, false
+		);
 	}
 }

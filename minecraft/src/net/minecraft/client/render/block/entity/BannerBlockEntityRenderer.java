@@ -29,8 +29,8 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 	private final ModelPart verticalBar = new ModelPart(64, 64, 44, 0);
 	private final ModelPart topBar;
 
-	public BannerBlockEntityRenderer(BlockEntityRenderDispatcher dispatcher) {
-		super(dispatcher);
+	public BannerBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
+		super(blockEntityRenderDispatcher);
 		this.verticalBar.addCuboid(-1.0F, -30.0F, -1.0F, 2.0F, 42.0F, 2.0F, 0.0F);
 		this.topBar = new ModelPart(64, 64, 0, 42);
 		this.topBar.addCuboid(-10.0F, -32.0F, -1.0F, 20.0F, 2.0F, 2.0F, 0.0F);

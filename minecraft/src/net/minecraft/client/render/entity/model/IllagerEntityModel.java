@@ -19,7 +19,6 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 	private final ModelPart leftLeg;
 	private final ModelPart rightAttackingArm;
 	private final ModelPart leftAttackingArm;
-	private float field_3424;
 
 	public IllagerEntityModel(float f, float g, int i, int j) {
 		this.head = new ModelPart(this).setTextureSize(i, j);
@@ -142,17 +141,9 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 			this.leftAttackingArm.yaw = this.head.yaw - 0.4F;
 			this.leftAttackingArm.roll = (float) (Math.PI / 2);
 		} else if (state == IllagerEntity.State.CROSSBOW_HOLD) {
-			this.rightAttackingArm.yaw = -0.3F + this.head.yaw;
-			this.leftAttackingArm.yaw = 0.6F + this.head.yaw;
-			this.rightAttackingArm.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
-			this.leftAttackingArm.pitch = -1.5F + this.head.pitch;
+			CrossbowPosing.hold(this.rightAttackingArm, this.leftAttackingArm, this.head, true);
 		} else if (state == IllagerEntity.State.CROSSBOW_CHARGE) {
-			this.rightAttackingArm.yaw = -0.8F;
-			this.rightAttackingArm.pitch = -0.97079635F;
-			this.leftAttackingArm.pitch = -0.97079635F;
-			float k = MathHelper.clamp(this.field_3424, 0.0F, 25.0F);
-			this.leftAttackingArm.yaw = MathHelper.lerp(k / 25.0F, 0.4F, 0.85F);
-			this.leftAttackingArm.pitch = MathHelper.lerp(k / 25.0F, this.leftAttackingArm.pitch, (float) (-Math.PI / 2));
+			CrossbowPosing.charge(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, true);
 		} else if (state == IllagerEntity.State.CELEBRATING) {
 			this.rightAttackingArm.pivotZ = 0.0F;
 			this.rightAttackingArm.pivotX = -5.0F;
@@ -172,11 +163,6 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 		this.rightAttackingArm.visible = !bl;
 	}
 
-	public void animateModel(T illagerEntity, float f, float g, float h) {
-		this.field_3424 = (float)illagerEntity.getItemUseTime();
-		super.animateModel(illagerEntity, f, g, h);
-	}
-
 	private ModelPart method_2813(Arm arm) {
 		return arm == Arm.LEFT ? this.leftAttackingArm : this.rightAttackingArm;
 	}
@@ -191,7 +177,7 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 	}
 
 	@Override
-	public void setArmAngle(Arm arm, MatrixStack matrixStack) {
-		this.method_2813(arm).rotate(matrixStack);
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
+		this.method_2813(arm).rotate(matrices);
 	}
 }

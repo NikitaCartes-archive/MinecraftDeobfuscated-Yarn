@@ -25,13 +25,13 @@ public class PiglinBipedArmorFeatureRenderer<T extends LivingEntity, M extends B
 	}
 
 	@Override
-	protected Identifier getArmorTexture(EquipmentSlot slot, ArmorItem item, boolean bl, @Nullable String string) {
+	protected Identifier getArmorTexture(EquipmentSlot slot, ArmorItem item, boolean secondLayer, @Nullable String suffix) {
 		if (slot == EquipmentSlot.HEAD) {
-			String string2 = string == null ? "" : "_" + string;
-			String string3 = "textures/models/armor/" + item.getMaterial().getName() + "_piglin_helmet" + string2 + ".png";
-			return (Identifier)ARMOR_TEXTURE_CACHE.computeIfAbsent(string3, Identifier::new);
+			String string = suffix == null ? "" : "_" + suffix;
+			String string2 = "textures/models/armor/" + item.getMaterial().getName() + "_piglin_helmet" + string + ".png";
+			return (Identifier)ARMOR_TEXTURE_CACHE.computeIfAbsent(string2, Identifier::new);
 		} else {
-			return super.getArmorTexture(slot, item, bl, string);
+			return super.getArmorTexture(slot, item, secondLayer, suffix);
 		}
 	}
 }

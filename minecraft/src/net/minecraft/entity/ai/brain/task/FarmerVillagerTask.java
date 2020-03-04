@@ -70,7 +70,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				}
 			}
 
-			BlockPos.Mutable mutable = new BlockPos.Mutable(villagerEntity);
+			BlockPos.Mutable mutable = villagerEntity.getSenseCenterPos().mutableCopy();
 			this.targetPositions.clear();
 
 			for (int k = -1; k <= 1; k++) {

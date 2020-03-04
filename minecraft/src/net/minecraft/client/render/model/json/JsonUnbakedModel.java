@@ -318,19 +318,19 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<JsonUnbakedModel> {
-		public JsonUnbakedModel deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject jsonObject = element.getAsJsonObject();
-			List<ModelElement> list = this.deserializeElements(context, jsonObject);
+		public JsonUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			List<ModelElement> list = this.deserializeElements(jsonDeserializationContext, jsonObject);
 			String string = this.deserializeParent(jsonObject);
 			Map<String, Either<SpriteIdentifier, String>> map = this.deserializeTextures(jsonObject);
 			boolean bl = this.deserializeAmbientOcclusion(jsonObject);
 			ModelTransformation modelTransformation = ModelTransformation.NONE;
 			if (jsonObject.has("display")) {
 				JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "display");
-				modelTransformation = context.deserialize(jsonObject2, ModelTransformation.class);
+				modelTransformation = jsonDeserializationContext.deserialize(jsonObject2, ModelTransformation.class);
 			}
 
-			List<ModelItemOverride> list2 = this.deserializeOverrides(context, jsonObject);
+			List<ModelItemOverride> list2 = this.deserializeOverrides(jsonDeserializationContext, jsonObject);
 			JsonUnbakedModel.GuiLight guiLight = null;
 			if (jsonObject.has("gui_light")) {
 				guiLight = JsonUnbakedModel.GuiLight.deserialize(JsonHelper.getString(jsonObject, "gui_light"));

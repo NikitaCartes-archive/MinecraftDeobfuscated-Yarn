@@ -229,11 +229,11 @@ public class EnchantmentHelper {
 
 	@Nullable
 	public static Entry<EquipmentSlot, ItemStack> getRandomEnchantedEquipment(Enchantment enchantment, LivingEntity livingEntity) {
-		return method_24365(enchantment, livingEntity, itemStack -> true);
+		return getMatchingEnchantedEquipment(enchantment, livingEntity, itemStack -> true);
 	}
 
 	@Nullable
-	public static Entry<EquipmentSlot, ItemStack> method_24365(Enchantment enchantment, LivingEntity livingEntity, Predicate<ItemStack> predicate) {
+	public static Entry<EquipmentSlot, ItemStack> getMatchingEnchantedEquipment(Enchantment enchantment, LivingEntity livingEntity, Predicate<ItemStack> predicate) {
 		Map<EquipmentSlot, ItemStack> map = enchantment.getEquipment(livingEntity);
 		if (map.isEmpty()) {
 			return null;

@@ -3,14 +3,14 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.container.AnvilContainer;
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.NameableContainerFactory;
-import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.AnvilScreenHandler;
+import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -54,7 +54,7 @@ public class AnvilBlock extends FallingBlock {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerFactory(world, pos));
+			player.openHandledScreen(state.createContainerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_ANVIL);
 			return ActionResult.SUCCESS;
 		}
@@ -62,9 +62,9 @@ public class AnvilBlock extends FallingBlock {
 
 	@Nullable
 	@Override
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
-		return new SimpleNamedContainerFactory(
-			(i, playerInventory, playerEntity) -> new AnvilContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedScreenHandlerFactory(
+			(i, playerInventory, playerEntity) -> new AnvilScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
 

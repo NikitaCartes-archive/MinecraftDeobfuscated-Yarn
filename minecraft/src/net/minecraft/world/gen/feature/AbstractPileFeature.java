@@ -12,8 +12,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
-	public AbstractPileFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> configFactory) {
-		super(configFactory);
+	public AbstractPileFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(
@@ -45,9 +45,9 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}
 
-	private void addPileBlock(IWorld world, BlockPos pos, Random random, BlockPileFeatureConfig blockPileFeatureConfig) {
+	private void addPileBlock(IWorld world, BlockPos pos, Random random, BlockPileFeatureConfig config) {
 		if (world.isAir(pos) && this.canPlacePileBlock(world, pos, random)) {
-			world.setBlockState(pos, blockPileFeatureConfig.stateProvider.getBlockState(random, pos), 4);
+			world.setBlockState(pos, config.stateProvider.getBlockState(random, pos), 4);
 		}
 	}
 }

@@ -59,11 +59,6 @@ public class MathHelper {
 		return d < (double)l ? l - 1L : l;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public static int absFloor(double d) {
-		return (int)(d >= 0.0 ? d : -d + 1.0);
-	}
-
 	public static float abs(float f) {
 		return Math.abs(f);
 	}
@@ -256,20 +251,6 @@ public class MathHelper {
 	@Environment(EnvType.CLIENT)
 	public static int parseInt(String string, int fallback, int minimum) {
 		return Math.max(minimum, parseInt(string, fallback));
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static double parseDouble(String string, double fallback) {
-		try {
-			return Double.parseDouble(string);
-		} catch (Throwable var4) {
-			return fallback;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static double parseDouble(String string, double fallback, double d) {
-		return Math.max(d, parseDouble(string, fallback));
 	}
 
 	public static int smallestEncompassingPowerOfTwo(int value) {
@@ -600,16 +581,16 @@ public class MathHelper {
 
 	@Deprecated
 	@Environment(EnvType.CLIENT)
-	public static float fwrapDegrees(double d) {
-		while (d >= 180.0) {
-			d -= 360.0;
+	public static float fwrapDegrees(double degrees) {
+		while (degrees >= 180.0) {
+			degrees -= 360.0;
 		}
 
-		while (d < -180.0) {
-			d += 360.0;
+		while (degrees < -180.0) {
+			degrees += 360.0;
 		}
 
-		return (float)d;
+		return (float)degrees;
 	}
 
 	@Environment(EnvType.CLIENT)

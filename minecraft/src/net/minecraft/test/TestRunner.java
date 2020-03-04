@@ -22,7 +22,7 @@ public class TestRunner {
 	private int sizeZ = 0;
 
 	public TestRunner(Collection<GameTestBatch> batches, BlockPos pos, ServerWorld world, TestManager testManager) {
-		this.reusablePos = new BlockPos.Mutable(pos);
+		this.reusablePos = pos.mutableCopy();
 		this.pos = pos;
 		this.world = world;
 		this.testManager = testManager;

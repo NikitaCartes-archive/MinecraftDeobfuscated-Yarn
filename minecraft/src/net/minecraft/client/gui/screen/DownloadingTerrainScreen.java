@@ -19,7 +19,7 @@ public class DownloadingTerrainScreen extends Screen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderDirtBackground(0);
-		this.drawCenteredString(this.font, I18n.translate("multiplayer.downloadingTerrain"), this.width / 2, this.height / 2 - 50, 16777215);
+		this.drawCenteredString(this.textRenderer, I18n.translate("multiplayer.downloadingTerrain"), this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(mouseX, mouseY, delta);
 	}
 

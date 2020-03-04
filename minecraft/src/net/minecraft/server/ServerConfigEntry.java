@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.google.gson.JsonObject;
 import javax.annotation.Nullable;
 
 public abstract class ServerConfigEntry<T> {
@@ -18,4 +19,6 @@ public abstract class ServerConfigEntry<T> {
 	boolean isInvalid() {
 		return false;
 	}
+
+	protected abstract void method_24896(JsonObject jsonObject);
 }

@@ -122,13 +122,13 @@ public class ReplaceItemCommand {
 
 		for (Entity entity : targets) {
 			if (entity instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
+				((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
 			}
 
 			if (entity.equip(slot, item.copy())) {
 				list.add(entity);
 				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
+					((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
 				}
 			}
 		}

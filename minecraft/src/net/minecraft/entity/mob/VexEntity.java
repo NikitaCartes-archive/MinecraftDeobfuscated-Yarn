@@ -268,7 +268,7 @@ public class VexEntity extends HostileEntity {
 		public void tick() {
 			BlockPos blockPos = VexEntity.this.getBounds();
 			if (blockPos == null) {
-				blockPos = new BlockPos(VexEntity.this);
+				blockPos = VexEntity.this.getSenseCenterPos();
 			}
 
 			for (int i = 0; i < 3; i++) {

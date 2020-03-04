@@ -26,7 +26,7 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.buttonList = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
+		this.buttonList = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
 		if (InputUtil.isRawMouseMotionSupported()) {
 			this.buttonList.addAll((Option[])Stream.concat(Arrays.stream(OPTIONS), Stream.of(Option.RAW_MOUSE_INPUT)).toArray(Option[]::new));
 		} else {
@@ -36,7 +36,7 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 		this.children.add(this.buttonList);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.gameOptions.write();
-			this.minecraft.openScreen(this.parent);
+			this.client.openScreen(this.parent);
 		}));
 	}
 
@@ -44,7 +44,7 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		this.buttonList.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 5, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 5, 16777215);
 		super.render(mouseX, mouseY, delta);
 	}
 }

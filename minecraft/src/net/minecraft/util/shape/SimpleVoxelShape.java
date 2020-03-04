@@ -5,8 +5,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 public final class SimpleVoxelShape extends VoxelShape {
-	protected SimpleVoxelShape(VoxelSet shape) {
-		super(shape);
+	protected SimpleVoxelShape(VoxelSet voxelSet) {
+		super(voxelSet);
 	}
 
 	@Override

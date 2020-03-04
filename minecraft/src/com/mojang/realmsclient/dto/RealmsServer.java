@@ -13,12 +13,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.realms.Realms;
+import net.minecraft.client.MinecraftClient;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,7 +69,7 @@ public class RealmsServer extends ValueObject {
 		int i = 0;
 
 		for (String string : serverPlayerList.players) {
-			if (!string.equals(Realms.getUUID())) {
+			if (!string.equals(MinecraftClient.getInstance().getSession().getUuid())) {
 				String string2 = "";
 
 				try {
@@ -200,17 +200,12 @@ public class RealmsServer extends ValueObject {
 	}
 
 	public static RealmsServer parse(String json) {
-		RealmsServer realmsServer = new RealmsServer();
-
 		try {
-			JsonParser jsonParser = new JsonParser();
-			JsonObject jsonObject = jsonParser.parse(json).getAsJsonObject();
-			realmsServer = parse(jsonObject);
-		} catch (Exception var4) {
-			LOGGER.error("Could not parse McoServer: " + var4.getMessage());
+			return parse(new JsonParser().parse(json).getAsJsonObject());
+		} catch (Exception var2) {
+			LOGGER.error("Could not parse McoServer: " + var2.getMessage());
+			return new RealmsServer();
 		}
-
-		return realmsServer;
 	}
 
 	private static RealmsServer.State getState(String state) {
@@ -230,14 +225,7 @@ public class RealmsServer extends ValueObject {
 	}
 
 	public int hashCode() {
-		return new HashCodeBuilder(17, 37)
-			.append(this.id)
-			.append(this.name)
-			.append(this.motd)
-			.append(this.state)
-			.append(this.owner)
-			.append(this.expired)
-			.toHashCode();
+		return Objects.hash(new Object[]{this.id, this.name, this.motd, this.state, this.owner, this.expired});
 	}
 
 	public boolean equals(Object obj) {
@@ -296,6 +284,10 @@ public class RealmsServer extends ValueObject {
 		return map;
 	}
 
+	public String getWorldName(int slotId) {
+		return this.name + " (" + ((RealmsWorldOptions)this.slots.get(slotId)).getSlotName(slotId) + ")";
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static class McoServerComparator implements Comparator<RealmsServer> {
 		private final String refOwner;
@@ -306,11 +298,11 @@ public class RealmsServer extends ValueObject {
 
 		public int compare(RealmsServer realmsServer, RealmsServer realmsServer2) {
 			return ComparisonChain.start()
-				.compareTrueFirst(realmsServer.state.equals(RealmsServer.State.UNINITIALIZED), realmsServer2.state.equals(RealmsServer.State.UNINITIALIZED))
+				.compareTrueFirst(realmsServer.state == RealmsServer.State.UNINITIALIZED, realmsServer2.state == RealmsServer.State.UNINITIALIZED)
 				.compareTrueFirst(realmsServer.expiredTrial, realmsServer2.expiredTrial)
 				.compareTrueFirst(realmsServer.owner.equals(this.refOwner), realmsServer2.owner.equals(this.refOwner))
 				.compareFalseFirst(realmsServer.expired, realmsServer2.expired)
-				.compareTrueFirst(realmsServer.state.equals(RealmsServer.State.OPEN), realmsServer2.state.equals(RealmsServer.State.OPEN))
+				.compareTrueFirst(realmsServer.state == RealmsServer.State.OPEN, realmsServer2.state == RealmsServer.State.OPEN)
 				.compare(realmsServer.id, realmsServer2.id)
 				.result();
 		}

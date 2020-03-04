@@ -22,7 +22,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 	public final int trunkTopOffsetRandom;
 	public final int foliageHeight;
 	public final int foliageHeightRandom;
-	public final int maxWaterDepth;
+	public final int maxFluidDepth;
 	public final boolean noVines;
 
 	protected BranchedTreeFeatureConfig(
@@ -39,7 +39,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 		int trunkTopOffsetRandom,
 		int foliageHeight,
 		int foliageHeightRandom,
-		int maxWaterDepth,
+		int maxFluidDepth,
 		boolean noVines
 	) {
 		super(trunkProvider, leavesProvider, treeDecorators, baseHeight);
@@ -52,7 +52,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 		this.trunkTopOffsetRandom = trunkTopOffsetRandom;
 		this.foliageHeight = foliageHeight;
 		this.foliageHeightRandom = foliageHeightRandom;
-		this.maxWaterDepth = maxWaterDepth;
+		this.maxFluidDepth = maxFluidDepth;
 		this.noVines = noVines;
 	}
 
@@ -68,7 +68,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 			.put(ops.createString("trunk_top_offset_random"), ops.createInt(this.trunkTopOffsetRandom))
 			.put(ops.createString("foliage_height"), ops.createInt(this.foliageHeight))
 			.put(ops.createString("foliage_height_random"), ops.createInt(this.foliageHeightRandom))
-			.put(ops.createString("max_water_depth"), ops.createInt(this.maxWaterDepth))
+			.put(ops.createString("max_water_depth"), ops.createInt(this.maxFluidDepth))
 			.put(ops.createString("ignore_vines"), ops.createBoolean(this.noVines));
 		Dynamic<T> dynamic = new Dynamic<>(ops, ops.createMap(builder.build()));
 		return dynamic.merge(super.serialize(ops));
@@ -100,7 +100,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 	public static class Builder extends TreeFeatureConfig.Builder {
 		private final FoliagePlacer foliagePlacer;
 		private List<TreeDecorator> treeDecorators = ImmutableList.of();
-		private int field_21272;
+		private int height;
 		private int heightRandA;
 		private int heightRandB;
 		private int trunkHeight = -1;
@@ -123,7 +123,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 		}
 
 		public BranchedTreeFeatureConfig.Builder baseHeight(int i) {
-			this.field_21272 = i;
+			this.height = i;
 			return this;
 		}
 
@@ -167,8 +167,8 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 			return this;
 		}
 
-		public BranchedTreeFeatureConfig.Builder maxWaterDepth(int maxWaterDepth) {
-			this.maxWaterDepth = maxWaterDepth;
+		public BranchedTreeFeatureConfig.Builder maxFluidDepth(int maxFluidDepth) {
+			this.maxWaterDepth = maxFluidDepth;
 			return this;
 		}
 
@@ -183,7 +183,7 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 				this.leavesProvider,
 				this.foliagePlacer,
 				this.treeDecorators,
-				this.field_21272,
+				this.height,
 				this.heightRandA,
 				this.heightRandB,
 				this.trunkHeight,

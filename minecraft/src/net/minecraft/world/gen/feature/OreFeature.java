@@ -12,8 +12,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
-	public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> configFactory) {
-		super(configFactory);
+	public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(

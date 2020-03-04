@@ -59,7 +59,7 @@ public class Enchantments {
 		"vanishing_curse", new VanishingCurseEnchantment(Enchantment.Weight.VERY_RARE, EquipmentSlot.values())
 	);
 
-	private static Enchantment register(String string, Enchantment enchantment) {
-		return Registry.register(Registry.ENCHANTMENT, string, enchantment);
+	private static Enchantment register(String name, Enchantment enchantment) {
+		return Registry.register(Registry.ENCHANTMENT, name, enchantment);
 	}
 }

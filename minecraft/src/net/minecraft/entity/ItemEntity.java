@@ -77,9 +77,9 @@ public class ItemEntity extends Entity {
 			this.prevY = this.getY();
 			this.prevZ = this.getZ();
 			Vec3d vec3d = this.getVelocity();
-			if (this.isInFluid(FluidTags.WATER)) {
+			if (this.isSubmergedIn(FluidTags.WATER)) {
 				this.applyBuoyancy();
-			} else if (this.isInFluid(FluidTags.LAVA)) {
+			} else if (this.isSubmergedIn(FluidTags.LAVA)) {
 				this.method_24348();
 			} else if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
@@ -112,7 +112,7 @@ public class ItemEntity extends Entity {
 				|| MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());
 			int i = bl ? 2 : 40;
 			if (this.age % i == 0) {
-				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.LAVA)) {
+				if (this.world.getFluidState(this.getSenseCenterPos()).matches(FluidTags.LAVA) && !this.isFireImmune()) {
 					this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
@@ -213,6 +213,11 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
+	public boolean isFireImmune() {
+		return this.getStack().getItem().isFireproof() || super.isFireImmune();
+	}
+
+	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
@@ -237,11 +242,11 @@ public class ItemEntity extends Entity {
 		tag.putShort("Age", (short)this.age);
 		tag.putShort("PickupDelay", (short)this.pickupDelay);
 		if (this.getThrower() != null) {
-			tag.put("Thrower", NbtHelper.fromUuid(this.getThrower()));
+			tag.put("Thrower", NbtHelper.fromUuidOld(this.getThrower()));
 		}
 
 		if (this.getOwner() != null) {
-			tag.put("Owner", NbtHelper.fromUuid(this.getOwner()));
+			tag.put("Owner", NbtHelper.fromUuidOld(this.getOwner()));
 		}
 
 		if (!this.getStack().isEmpty()) {
@@ -258,11 +263,11 @@ public class ItemEntity extends Entity {
 		}
 
 		if (tag.contains("Owner", 10)) {
-			this.owner = NbtHelper.toUuid(tag.getCompound("Owner"));
+			this.owner = NbtHelper.toUuidOld(tag.getCompound("Owner"));
 		}
 
 		if (tag.contains("Thrower", 10)) {
-			this.thrower = NbtHelper.toUuid(tag.getCompound("Thrower"));
+			this.thrower = NbtHelper.toUuidOld(tag.getCompound("Thrower"));
 		}
 
 		CompoundTag compoundTag = tag.getCompound("Item");

@@ -14,17 +14,17 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 	}
 
 	@Override
-	public boolean changeFocus(boolean bl) {
-		boolean bl2 = super.changeFocus(bl);
-		if (bl2) {
+	public boolean changeFocus(boolean lookForwards) {
+		boolean bl = super.changeFocus(lookForwards);
+		if (bl) {
 			this.ensureVisible(this.getFocused());
 		}
 
-		return bl2;
+		return bl;
 	}
 
 	@Override
-	protected boolean isSelectedItem(int i) {
+	protected boolean isSelectedItem(int index) {
 		return false;
 	}
 

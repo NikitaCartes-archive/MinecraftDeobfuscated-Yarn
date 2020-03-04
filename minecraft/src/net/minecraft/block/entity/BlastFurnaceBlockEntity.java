@@ -1,10 +1,10 @@
 package net.minecraft.block.entity;
 
-import net.minecraft.container.BlastFurnaceContainer;
-import net.minecraft.container.Container;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.screen.BlastFurnaceScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -24,7 +24,7 @@ public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return new BlastFurnaceContainer(i, playerInventory, this, this.propertyDelegate);
+	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
+		return new BlastFurnaceScreenHandler(i, playerInventory, this, this.propertyDelegate);
 	}
 }

@@ -213,7 +213,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		int i = chunkPos.x;
 		int j = chunkPos.z;
 		ChunkRandom chunkRandom = new ChunkRandom();
-		chunkRandom.setSeed(i, j);
+		chunkRandom.setTerrainSeed(i, j);
 		ChunkPos chunkPos2 = chunk.getPos();
 		int k = chunkPos2.getStartX();
 		int l = chunkPos2.getStartZ();
@@ -241,8 +241,8 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		int i = chunk.getPos().getStartX();
 		int j = chunk.getPos().getStartZ();
 		T chunkGeneratorConfig = this.getConfig();
-		int k = chunkGeneratorConfig.getMinY();
-		int l = chunkGeneratorConfig.getMaxY();
+		int k = chunkGeneratorConfig.getBedrockFloorY();
+		int l = chunkGeneratorConfig.getBedrockCeilingY();
 
 		for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
 			if (l > 0) {
@@ -285,7 +285,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 				StructureStart structureStart = chunk2.getStructureStart(string);
 				if (structureStart != null && structureStart.hasChildren()) {
 					for (StructurePiece structurePiece : structureStart.getChildren()) {
-						if (structurePiece.method_16654(chunkPos, 12)) {
+						if (structurePiece.intersectsChunk(chunkPos, 12)) {
 							if (structurePiece instanceof PoolStructurePiece) {
 								PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
 								StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();

@@ -4,12 +4,12 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -249,7 +249,7 @@ public class LecternBlock extends BlockWithEntity {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if ((Boolean)state.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				this.openContainer(world, pos, player);
+				this.openScreen(world, pos, player);
 			}
 
 			return ActionResult.SUCCESS;
@@ -261,14 +261,14 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
-		return !state.get(HAS_BOOK) ? null : super.createContainerFactory(state, world, pos);
+	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return !state.get(HAS_BOOK) ? null : super.createScreenHandlerFactory(state, world, pos);
 	}
 
-	private void openContainer(World world, BlockPos pos, PlayerEntity player) {
+	private void openScreen(World world, BlockPos pos, PlayerEntity player) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof LecternBlockEntity) {
-			player.openContainer((LecternBlockEntity)blockEntity);
+			player.openHandledScreen((LecternBlockEntity)blockEntity);
 			player.incrementStat(Stats.INTERACT_WITH_LECTERN);
 		}
 	}

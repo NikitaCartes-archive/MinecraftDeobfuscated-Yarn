@@ -13,7 +13,7 @@ public abstract class AlwaysSelectedEntryListWidget<E extends EntryListWidget.En
 	}
 
 	@Override
-	public boolean changeFocus(boolean bl) {
+	public boolean changeFocus(boolean lookForwards) {
 		if (!this.inFocus && this.getItemCount() == 0) {
 			return false;
 		} else {
@@ -31,7 +31,7 @@ public abstract class AlwaysSelectedEntryListWidget<E extends EntryListWidget.En
 	@Environment(EnvType.CLIENT)
 	public abstract static class Entry<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends EntryListWidget.Entry<E> {
 		@Override
-		public boolean changeFocus(boolean bl) {
+		public boolean changeFocus(boolean lookForwards) {
 			return false;
 		}
 	}

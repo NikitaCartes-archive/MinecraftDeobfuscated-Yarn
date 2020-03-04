@@ -42,7 +42,6 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.text.TranslatableText;
@@ -61,7 +60,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -82,7 +80,6 @@ public class ClientWorld extends World {
 	private final WorldRenderer worldRenderer;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
-	private int ticksUntilCaveAmbientSound = this.random.nextInt(12000);
 	private Scoreboard scoreboard = new Scoreboard();
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
 	private int lightningTicksLeft;
@@ -119,7 +116,6 @@ public class ClientWorld extends World {
 		this.tickTime();
 		this.getProfiler().push("blocks");
 		this.chunkManager.tick(booleanSupplier);
-		this.tickCaveAmbientSound();
 		this.getProfiler().pop();
 	}
 
@@ -249,34 +245,6 @@ public class ClientWorld extends World {
 	@Override
 	public boolean isChunkLoaded(int chunkX, int chunkZ) {
 		return true;
-	}
-
-	private void tickCaveAmbientSound() {
-		if (this.client.player != null) {
-			if (this.ticksUntilCaveAmbientSound > 0) {
-				this.ticksUntilCaveAmbientSound--;
-			} else {
-				BlockPos blockPos = new BlockPos(this.client.player);
-				BlockPos blockPos2 = blockPos.add(4 * (this.random.nextInt(3) - 1), 4 * (this.random.nextInt(3) - 1), 4 * (this.random.nextInt(3) - 1));
-				double d = blockPos.getSquaredDistance(blockPos2);
-				if (d >= 4.0 && d <= 256.0) {
-					BlockState blockState = this.getBlockState(blockPos2);
-					if (blockState.isAir() && this.getBaseLightLevel(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos2) <= 0) {
-						this.playSound(
-							(double)blockPos2.getX() + 0.5,
-							(double)blockPos2.getY() + 0.5,
-							(double)blockPos2.getZ() + 0.5,
-							SoundEvents.AMBIENT_CAVE,
-							SoundCategory.AMBIENT,
-							0.7F,
-							0.8F + this.random.nextFloat() * 0.2F,
-							false
-						);
-						this.ticksUntilCaveAmbientSound = this.random.nextInt(12000) + 6000;
-					}
-				}
-			}
-		}
 	}
 
 	public int getRegularEntityCount() {

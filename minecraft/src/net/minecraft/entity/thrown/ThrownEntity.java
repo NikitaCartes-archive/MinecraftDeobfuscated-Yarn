@@ -1,8 +1,6 @@
 package net.minecraft.entity.thrown;
 
-import java.util.UUID;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -12,11 +10,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
@@ -25,18 +21,16 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
-public abstract class ThrownEntity extends Entity implements Projectile {
+public abstract class ThrownEntity extends Projectile {
 	private int blockX = -1;
 	private int blockY = -1;
 	private int blockZ = -1;
 	protected boolean inGround;
-	public int shake;
-	protected LivingEntity owner;
-	private UUID ownerUuid;
+	private int shake;
 	private boolean field_21975;
 
-	protected ThrownEntity(EntityType<? extends ThrownEntity> type, World world) {
-		super(type, world);
+	protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	protected ThrownEntity(EntityType<? extends ThrownEntity> type, double x, double y, double z, World world) {
@@ -46,8 +40,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 	protected ThrownEntity(EntityType<? extends ThrownEntity> type, LivingEntity owner, World world) {
 		this(type, owner.getX(), owner.getEyeY() - 0.1F, owner.getZ(), world);
-		this.owner = owner;
-		this.ownerUuid = owner.getUuid();
+		this.setOwner(owner);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -60,46 +53,6 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 
 		d *= 64.0;
 		return distance < d * d;
-	}
-
-	public void setProperties(Entity user, float pitch, float yaw, float f, float g, float h) {
-		float i = -MathHelper.sin(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
-		float j = -MathHelper.sin((pitch + f) * (float) (Math.PI / 180.0));
-		float k = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
-		this.setVelocity((double)i, (double)j, (double)k, g, h);
-		Vec3d vec3d = user.getVelocity();
-		this.setVelocity(this.getVelocity().add(vec3d.x, user.method_24828() ? 0.0 : vec3d.y, vec3d.z));
-	}
-
-	@Override
-	public void setVelocity(double x, double y, double z, float speed, float divergence) {
-		Vec3d vec3d = new Vec3d(x, y, z)
-			.normalize()
-			.add(
-				this.random.nextGaussian() * 0.0075F * (double)divergence,
-				this.random.nextGaussian() * 0.0075F * (double)divergence,
-				this.random.nextGaussian() * 0.0075F * (double)divergence
-			)
-			.multiply((double)speed);
-		this.setVelocity(vec3d);
-		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
-		this.prevYaw = this.yaw;
-		this.prevPitch = this.pitch;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void setVelocityClient(double x, double y, double z) {
-		this.setVelocity(x, y, z);
-		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
-			float f = MathHelper.sqrt(x * x + z * z);
-			this.yaw = (float)(MathHelper.atan2(x, z) * 180.0F / (float)Math.PI);
-			this.pitch = (float)(MathHelper.atan2(y, (double)f) * 180.0F / (float)Math.PI);
-			this.prevYaw = this.yaw;
-			this.prevPitch = this.pitch;
-		}
 	}
 
 	@Override
@@ -117,13 +70,14 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		}
 
 		Box box = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
-		if (this.owner == null) {
+		Entity entity = this.getOwner();
+		if (entity == null) {
 			this.field_21975 = true;
 		} else if (!this.field_21975) {
 			boolean bl = false;
 
-			for (Entity entity : this.world.getEntities(this, box, entityx -> !entityx.isSpectator() && entityx.collides())) {
-				if (this.method_24354(entity, this.owner)) {
+			for (Entity entity2 : this.world.getEntities(this, box, entityx -> !entityx.isSpectator() && entityx.collides())) {
+				if (this.method_24354(entity2, entity)) {
 					bl = true;
 					break;
 				}
@@ -134,7 +88,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			}
 		}
 
-		Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.collides() && (this.field_21975 || !this.method_24354(entityx, this.owner));
+		Predicate<Entity> predicate = entity2x -> !entity2x.isSpectator() && entity2x.collides() && (this.field_21975 || !this.method_24354(entity2x, entity));
 		HitResult hitResult = ProjectileUtil.getCollision(this, box, predicate, RayTraceContext.ShapeType.OUTLINE, true);
 		if (hitResult.getType() != HitResult.Type.MISS) {
 			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.NETHER_PORTAL) {
@@ -199,45 +153,24 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		return 0.03F;
 	}
 
-	protected abstract void onCollision(HitResult hitResult);
-
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
+		super.writeCustomDataToTag(tag);
 		tag.putInt("xTile", this.blockX);
 		tag.putInt("yTile", this.blockY);
 		tag.putInt("zTile", this.blockZ);
 		tag.putByte("shake", (byte)this.shake);
 		tag.putBoolean("inGround", this.inGround);
-		if (this.ownerUuid != null) {
-			tag.put("owner", NbtHelper.fromUuid(this.ownerUuid));
-		}
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
 		this.blockX = tag.getInt("xTile");
 		this.blockY = tag.getInt("yTile");
 		this.blockZ = tag.getInt("zTile");
 		this.shake = tag.getByte("shake") & 255;
 		this.inGround = tag.getBoolean("inGround");
-		this.owner = null;
-		if (tag.contains("owner", 10)) {
-			this.ownerUuid = NbtHelper.toUuid(tag.getCompound("owner"));
-		}
-	}
-
-	@Nullable
-	public LivingEntity getOwner() {
-		if ((this.owner == null || this.owner.removed) && this.ownerUuid != null && this.world instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
-			if (entity instanceof LivingEntity) {
-				this.owner = (LivingEntity)entity;
-			} else {
-				this.owner = null;
-			}
-		}
-
-		return this.owner;
 	}
 
 	@Override

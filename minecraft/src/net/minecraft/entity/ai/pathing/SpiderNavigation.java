@@ -8,8 +8,8 @@ import net.minecraft.world.World;
 public class SpiderNavigation extends MobNavigation {
 	private BlockPos field_6687;
 
-	public SpiderNavigation(MobEntity entity, World world) {
-		super(entity, world);
+	public SpiderNavigation(MobEntity mobEntity, World world) {
+		super(mobEntity, world);
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class SpiderNavigation extends MobNavigation {
 
 	@Override
 	public Path findPathTo(Entity entity, int distance) {
-		this.field_6687 = new BlockPos(entity);
+		this.field_6687 = entity.getSenseCenterPos();
 		return super.findPathTo(entity, distance);
 	}
 
@@ -30,7 +30,7 @@ public class SpiderNavigation extends MobNavigation {
 		if (path != null) {
 			return this.startMovingAlong(path, speed);
 		} else {
-			this.field_6687 = new BlockPos(entity);
+			this.field_6687 = entity.getSenseCenterPos();
 			this.speed = speed;
 			return true;
 		}

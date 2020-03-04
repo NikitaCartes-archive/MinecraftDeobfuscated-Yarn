@@ -26,8 +26,8 @@ public class DemoScreen extends Screen {
 			Util.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later"), buttonWidget -> {
-			this.minecraft.openScreen(null);
-			this.minecraft.mouse.lockCursor();
+			this.client.openScreen(null);
+			this.client.mouse.lockCursor();
 		}));
 	}
 
@@ -35,7 +35,7 @@ public class DemoScreen extends Screen {
 	public void renderBackground() {
 		super.renderBackground();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(DEMO_BG);
+		this.client.getTextureManager().bindTexture(DEMO_BG);
 		int i = (this.width - 248) / 2;
 		int j = (this.height - 166) / 2;
 		this.blit(i, j, 0, 0, 248, 166);
@@ -46,10 +46,10 @@ public class DemoScreen extends Screen {
 		this.renderBackground();
 		int i = (this.width - 248) / 2 + 10;
 		int j = (this.height - 166) / 2 + 8;
-		this.font.draw(this.title.asFormattedString(), (float)i, (float)j, 2039583);
+		this.textRenderer.draw(this.title.asFormattedString(), (float)i, (float)j, 2039583);
 		j += 12;
-		GameOptions gameOptions = this.minecraft.options;
-		this.font
+		GameOptions gameOptions = this.client.options;
+		this.textRenderer
 			.draw(
 				I18n.translate(
 					"demo.help.movementShort",
@@ -62,10 +62,10 @@ public class DemoScreen extends Screen {
 				(float)j,
 				5197647
 			);
-		this.font.draw(I18n.translate("demo.help.movementMouse"), (float)i, (float)(j + 12), 5197647);
-		this.font.draw(I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)i, (float)(j + 24), 5197647);
-		this.font.draw(I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)i, (float)(j + 36), 5197647);
-		this.font.drawTrimmed(I18n.translate("demo.help.fullWrapped"), i, j + 68, 218, 2039583);
+		this.textRenderer.draw(I18n.translate("demo.help.movementMouse"), (float)i, (float)(j + 12), 5197647);
+		this.textRenderer.draw(I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)i, (float)(j + 24), 5197647);
+		this.textRenderer.draw(I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)i, (float)(j + 36), 5197647);
+		this.textRenderer.drawTrimmed(I18n.translate("demo.help.fullWrapped"), i, j + 68, 218, 2039583);
 		super.render(mouseX, mouseY, delta);
 	}
 }

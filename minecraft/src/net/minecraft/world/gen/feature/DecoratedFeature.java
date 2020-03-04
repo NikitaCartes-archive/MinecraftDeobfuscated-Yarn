@@ -10,8 +10,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
-	public DecoratedFeature(Function<Dynamic<?>, ? extends DecoratedFeatureConfig> configFactory) {
-		super(configFactory);
+	public DecoratedFeature(Function<Dynamic<?>, ? extends DecoratedFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(

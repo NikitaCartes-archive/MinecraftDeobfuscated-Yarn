@@ -114,7 +114,7 @@ public class BatEntity extends AmbientEntity {
 	@Override
 	protected void mobTick() {
 		super.mobTick();
-		BlockPos blockPos = new BlockPos(this);
+		BlockPos blockPos = this.getSenseCenterPos();
 		BlockPos blockPos2 = blockPos.up();
 		if (this.isRoosting()) {
 			if (this.world.getBlockState(blockPos2).isSimpleFullBlock(this.world, blockPos)) {

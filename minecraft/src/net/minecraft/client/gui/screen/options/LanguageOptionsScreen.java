@@ -30,7 +30,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.languageSelectionList = new LanguageOptionsScreen.LanguageSelectionListWidget(this.minecraft);
+		this.languageSelectionList = new LanguageOptionsScreen.LanguageSelectionListWidget(this.client);
 		this.children.add(this.languageSelectionList);
 		this.forceUnicodeButton = this.addButton(
 			new OptionButtonWidget(
@@ -38,7 +38,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 					Option.FORCE_UNICODE_FONT.set(this.gameOptions);
 					this.gameOptions.write();
 					buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
-					this.minecraft.onResolutionChanged();
+					this.client.onResolutionChanged();
 				}
 			)
 		);
@@ -47,14 +47,14 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
 				this.languageManager.setLanguage(languageEntry.languageDefinition);
 				this.gameOptions.language = languageEntry.languageDefinition.getCode();
-				this.minecraft.reloadResources();
-				this.font.setRightToLeft(this.languageManager.isRightToLeft());
+				this.client.reloadResources();
+				this.textRenderer.setRightToLeft(this.languageManager.isRightToLeft());
 				this.doneButton.setMessage(I18n.translate("gui.done"));
 				this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
 				this.gameOptions.write();
 			}
 
-			this.minecraft.openScreen(this.parent);
+			this.client.openScreen(this.parent);
 		}));
 		super.init();
 	}
@@ -62,8 +62,8 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.languageSelectionList.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 16, 16777215);
-		this.drawCenteredString(this.font, "(" + I18n.translate("options.languageWarning") + ")", this.width / 2, this.height - 56, 8421504);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 16, 16777215);
+		this.drawCenteredString(this.textRenderer, "(" + I18n.translate("options.languageWarning") + ")", this.width / 2, this.height - 56, 8421504);
 		super.render(mouseX, mouseY, delta);
 	}
 
@@ -88,8 +88,8 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		}
 
 		@Override
-		protected int getScrollbarPosition() {
-			return super.getScrollbarPosition() + 20;
+		protected int getScrollbarPositionX() {
+			return super.getScrollbarPositionX() + 20;
 		}
 
 		@Override
@@ -123,12 +123,12 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			}
 
 			@Override
-			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				LanguageOptionsScreen.this.font.setRightToLeft(true);
+			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+				LanguageOptionsScreen.this.textRenderer.setRightToLeft(true);
 				LanguageSelectionListWidget.this.drawCenteredString(
-					LanguageOptionsScreen.this.font, this.languageDefinition.toString(), LanguageSelectionListWidget.this.width / 2, j + 1, 16777215
+					LanguageOptionsScreen.this.textRenderer, this.languageDefinition.toString(), LanguageSelectionListWidget.this.width / 2, y + 1, 16777215
 				);
-				LanguageOptionsScreen.this.font.setRightToLeft(LanguageOptionsScreen.this.languageManager.getLanguage().isRightToLeft());
+				LanguageOptionsScreen.this.textRenderer.setRightToLeft(LanguageOptionsScreen.this.languageManager.getLanguage().isRightToLeft());
 			}
 
 			@Override

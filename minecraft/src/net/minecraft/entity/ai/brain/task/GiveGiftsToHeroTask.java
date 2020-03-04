@@ -118,7 +118,7 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 			if (GIFTS.containsKey(villagerProfession)) {
 				LootTable lootTable = villager.world.getServer().getLootManager().getTable((Identifier)GIFTS.get(villagerProfession));
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.world)
-					.put(LootContextParameters.POSITION, new BlockPos(villager))
+					.put(LootContextParameters.POSITION, villager.getSenseCenterPos())
 					.put(LootContextParameters.THIS_ENTITY, villager)
 					.setRandom(villager.getRandom());
 				return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
@@ -141,8 +141,8 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 	}
 
 	private boolean isCloseEnough(VillagerEntity villager, PlayerEntity player) {
-		BlockPos blockPos = new BlockPos(player);
-		BlockPos blockPos2 = new BlockPos(villager);
+		BlockPos blockPos = player.getSenseCenterPos();
+		BlockPos blockPos2 = villager.getSenseCenterPos();
 		return blockPos2.isWithinDistance(blockPos, 5.0);
 	}
 

@@ -1,10 +1,10 @@
 package net.minecraft.block;
 
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.CraftingTableContainer;
-import net.minecraft.container.NameableContainerFactory;
-import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.CraftingTableScreenHandler;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -26,16 +26,16 @@ public class CraftingTableBlock extends Block {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerFactory(world, pos));
+			player.openHandledScreen(state.createContainerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
-		return new SimpleNamedContainerFactory(
-			(i, playerInventory, playerEntity) -> new CraftingTableContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedScreenHandlerFactory(
+			(i, playerInventory, playerEntity) -> new CraftingTableScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
 }

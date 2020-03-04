@@ -63,7 +63,7 @@ import net.minecraft.client.input.KeyboardInput;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
-import net.minecraft.client.recipe.book.ClientRecipeBook;
+import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
@@ -82,9 +82,6 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.container.Container;
-import net.minecraft.container.HorseContainer;
-import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.Entity;
@@ -104,9 +101,9 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.decoration.LeadKnotEntity;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -171,13 +168,11 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
-import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
-import net.minecraft.network.packet.s2c.play.ContainerPropertyUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -213,8 +208,8 @@ import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenContainerS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenHorseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
@@ -234,6 +229,8 @@ import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
@@ -253,7 +250,7 @@ import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.realms.DisconnectedRealmsScreen;
-import net.minecraft.realms.RealmsScreenProxy;
+import net.minecraft.realms.RealmsScreen;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
@@ -261,6 +258,9 @@ import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.screen.HorseScreenHandler;
+import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -433,7 +433,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (entityType == EntityType.ITEM_FRAME) {
 			entity = new ItemFrameEntity(this.world, new BlockPos(d, e, f), Direction.byId(packet.getEntityData()));
 		} else if (entityType == EntityType.LEASH_KNOT) {
-			entity = new LeadKnotEntity(this.world, new BlockPos(d, e, f));
+			entity = new LeashKnotEntity(this.world, new BlockPos(d, e, f));
 		} else if (entityType == EntityType.ENDER_PEARL) {
 			entity = new ThrownEnderpearlEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.EYE_OF_ENDER) {
@@ -465,7 +465,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (entityType == EntityType.ARMOR_STAND) {
 			entity = new ArmorStandEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.END_CRYSTAL) {
-			entity = new EnderCrystalEntity(this.world, d, e, f);
+			entity = new EndCrystalEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.ITEM) {
 			entity = new ItemEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.FALLING_BLOCK) {
@@ -775,8 +775,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onDisconnected(Text reason) {
 		this.client.disconnect();
 		if (this.loginScreen != null) {
-			if (this.loginScreen instanceof RealmsScreenProxy) {
-				this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.loginScreen).getScreen(), "disconnect.lost", reason).getProxy());
+			if (this.loginScreen instanceof RealmsScreen) {
+				this.client.openScreen(new DisconnectedRealmsScreen(this.loginScreen, "disconnect.lost", reason));
 			} else {
 				this.client.openScreen(new DisconnectedScreen(this.loginScreen, "disconnect.lost", reason));
 			}
@@ -1068,27 +1068,27 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onOpenHorseContainer(OpenHorseContainerS2CPacket packet) {
+	public void onOpenHorseScreen(OpenHorseScreenS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getHorseId());
 		if (entity instanceof HorseBaseEntity) {
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
 			HorseBaseEntity horseBaseEntity = (HorseBaseEntity)entity;
 			BasicInventory basicInventory = new BasicInventory(packet.getSlotCount());
-			HorseContainer horseContainer = new HorseContainer(packet.getSyncId(), clientPlayerEntity.inventory, basicInventory, horseBaseEntity);
-			clientPlayerEntity.container = horseContainer;
-			this.client.openScreen(new HorseScreen(horseContainer, clientPlayerEntity.inventory, horseBaseEntity));
+			HorseScreenHandler horseScreenHandler = new HorseScreenHandler(packet.getSyncId(), clientPlayerEntity.inventory, basicInventory, horseBaseEntity);
+			clientPlayerEntity.currentScreenHandler = horseScreenHandler;
+			this.client.openScreen(new HorseScreen(horseScreenHandler, clientPlayerEntity.inventory, horseBaseEntity));
 		}
 	}
 
 	@Override
-	public void onOpenContainer(OpenContainerS2CPacket packet) {
+	public void onOpenScreen(OpenScreenS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Screens.open(packet.getContainerType(), this.client, packet.getSyncId(), packet.getName());
+		Screens.open(packet.getScreenHandlerType(), this.client, packet.getSyncId(), packet.getName());
 	}
 
 	@Override
-	public void onContainerSlotUpdate(ContainerSlotUpdateS2CPacket packet) {
+	public void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		ItemStack itemStack = packet.getItemStack();
@@ -1109,15 +1109,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 			if (packet.getSyncId() == 0 && packet.getSlot() >= 36 && i < 45) {
 				if (!itemStack.isEmpty()) {
-					ItemStack itemStack2 = playerEntity.playerContainer.getSlot(i).getStack();
+					ItemStack itemStack2 = playerEntity.playerScreenHandler.getSlot(i).getStack();
 					if (itemStack2.isEmpty() || itemStack2.getCount() < itemStack.getCount()) {
 						itemStack.setCooldown(5);
 					}
 				}
 
-				playerEntity.playerContainer.setStackInSlot(i, itemStack);
-			} else if (packet.getSyncId() == playerEntity.container.syncId && (packet.getSyncId() != 0 || !bl)) {
-				playerEntity.container.setStackInSlot(i, itemStack);
+				playerEntity.playerScreenHandler.setStackInSlot(i, itemStack);
+			} else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId && (packet.getSyncId() != 0 || !bl)) {
+				playerEntity.currentScreenHandler.setStackInSlot(i, itemStack);
 			}
 		}
 	}
@@ -1125,15 +1125,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGuiActionConfirm(ConfirmGuiActionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Container container = null;
+		ScreenHandler screenHandler = null;
 		PlayerEntity playerEntity = this.client.player;
 		if (packet.getId() == 0) {
-			container = playerEntity.playerContainer;
-		} else if (packet.getId() == playerEntity.container.syncId) {
-			container = playerEntity.container;
+			screenHandler = playerEntity.playerScreenHandler;
+		} else if (packet.getId() == playerEntity.currentScreenHandler.syncId) {
+			screenHandler = playerEntity.currentScreenHandler;
 		}
 
-		if (container != null && !packet.wasAccepted()) {
+		if (screenHandler != null && !packet.wasAccepted()) {
 			this.sendPacket(new ConfirmGuiActionC2SPacket(packet.getId(), packet.getActionId(), true));
 		}
 	}
@@ -1143,9 +1143,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
 		if (packet.getGuiId() == 0) {
-			playerEntity.playerContainer.updateSlotStacks(packet.getSlotStacks());
-		} else if (packet.getGuiId() == playerEntity.container.syncId) {
-			playerEntity.container.updateSlotStacks(packet.getSlotStacks());
+			playerEntity.playerScreenHandler.updateSlotStacks(packet.getSlotStacks());
+		} else if (packet.getGuiId() == playerEntity.currentScreenHandler.syncId) {
+			playerEntity.currentScreenHandler.updateSlotStacks(packet.getSlotStacks());
 		}
 	}
 
@@ -1191,11 +1191,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onContainerPropertyUpdate(ContainerPropertyUpdateS2CPacket packet) {
+	public void onScreenHandlerPropertyUpdate(ScreenHandlerPropertyUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		if (playerEntity.container != null && playerEntity.container.syncId == packet.getSyncId()) {
-			playerEntity.container.setProperty(packet.getPropertyId(), packet.getValue());
+		if (playerEntity.currentScreenHandler != null && playerEntity.currentScreenHandler.syncId == packet.getSyncId()) {
+			playerEntity.currentScreenHandler.setProperty(packet.getPropertyId(), packet.getValue());
 		}
 	}
 
@@ -1209,7 +1209,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onCloseContainer(CloseContainerS2CPacket packet) {
+	public void onCloseScreen(CloseScreenS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.player.closeScreen();
 	}
@@ -2161,12 +2161,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onCraftFailedResponse(CraftFailedResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Container container = this.client.player.container;
-		if (container.syncId == packet.getSyncId() && container.isNotRestricted(this.client.player)) {
+		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
+		if (screenHandler.syncId == packet.getSyncId() && screenHandler.isNotRestricted(this.client.player)) {
 			this.recipeManager.get(packet.getRecipeId()).ifPresent(recipe -> {
 				if (this.client.currentScreen instanceof RecipeBookProvider) {
 					RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookWidget();
-					recipeBookWidget.showGhostRecipe(recipe, container.slots);
+					recipeBookWidget.showGhostRecipe(recipe, screenHandler.slots);
 				}
 			});
 		}
@@ -2191,13 +2191,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onSetTradeOffers(SetTradeOffersS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Container container = this.client.player.container;
-		if (packet.getSyncId() == container.syncId && container instanceof MerchantContainer) {
-			((MerchantContainer)container).setOffers(new TraderOfferList(packet.getOffers().toTag()));
-			((MerchantContainer)container).setExperienceFromServer(packet.getExperience());
-			((MerchantContainer)container).setLevelProgress(packet.getLevelProgress());
-			((MerchantContainer)container).setCanLevel(packet.isLeveled());
-			((MerchantContainer)container).setRefreshTrades(packet.isRefreshable());
+		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
+		if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler) {
+			((MerchantScreenHandler)screenHandler).setOffers(new TraderOfferList(packet.getOffers().toTag()));
+			((MerchantScreenHandler)screenHandler).setExperienceFromServer(packet.getExperience());
+			((MerchantScreenHandler)screenHandler).setLevelProgress(packet.getLevelProgress());
+			((MerchantScreenHandler)screenHandler).setCanLevel(packet.isLeveled());
+			((MerchantScreenHandler)screenHandler).setRefreshTrades(packet.isRefreshable());
 		}
 	}
 

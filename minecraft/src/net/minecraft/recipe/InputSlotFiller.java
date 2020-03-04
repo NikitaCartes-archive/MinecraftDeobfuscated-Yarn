@@ -6,14 +6,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.container.CraftingContainer;
-import net.minecraft.container.CraftingTableContainer;
-import net.minecraft.container.PlayerContainer;
-import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.CraftingTableScreenHandler;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,10 +22,10 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 	protected static final Logger LOGGER = LogManager.getLogger();
 	protected final RecipeFinder recipeFinder = new RecipeFinder();
 	protected PlayerInventory inventory;
-	protected CraftingContainer<C> craftingContainer;
+	protected CraftingScreenHandler<C> craftingScreenHandler;
 
-	public InputSlotFiller(CraftingContainer<C> craftingContainer) {
-		this.craftingContainer = craftingContainer;
+	public InputSlotFiller(CraftingScreenHandler<C> craftingScreenHandler) {
+		this.craftingScreenHandler = craftingScreenHandler;
 	}
 
 	public void fillInputSlots(ServerPlayerEntity entity, @Nullable Recipe<C> recipe, boolean craftAll) {
@@ -34,12 +34,12 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 			if (this.canReturnInputs() || entity.isCreative()) {
 				this.recipeFinder.clear();
 				entity.inventory.populateRecipeFinder(this.recipeFinder);
-				this.craftingContainer.populateRecipeFinder(this.recipeFinder);
+				this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
 				if (this.recipeFinder.findRecipe(recipe, null)) {
 					this.fillInputSlots(recipe, craftAll);
 				} else {
 					this.returnInputs();
-					entity.networkHandler.sendPacket(new CraftFailedResponseS2CPacket(entity.container.syncId, recipe));
+					entity.networkHandler.sendPacket(new CraftFailedResponseS2CPacket(entity.currentScreenHandler.syncId, recipe));
 				}
 
 				entity.inventory.markDirty();
@@ -48,20 +48,20 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 	}
 
 	protected void returnInputs() {
-		for (int i = 0; i < this.craftingContainer.getCraftingWidth() * this.craftingContainer.getCraftingHeight() + 1; i++) {
-			if (i != this.craftingContainer.getCraftingResultSlotIndex()
-				|| !(this.craftingContainer instanceof CraftingTableContainer) && !(this.craftingContainer instanceof PlayerContainer)) {
+		for (int i = 0; i < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; i++) {
+			if (i != this.craftingScreenHandler.getCraftingResultSlotIndex()
+				|| !(this.craftingScreenHandler instanceof CraftingTableScreenHandler) && !(this.craftingScreenHandler instanceof PlayerScreenHandler)) {
 				this.returnSlot(i);
 			}
 		}
 
-		this.craftingContainer.clearCraftingSlots();
+		this.craftingScreenHandler.clearCraftingSlots();
 	}
 
 	protected void returnSlot(int i) {
-		ItemStack itemStack = this.craftingContainer.getSlot(i).getStack();
+		ItemStack itemStack = this.craftingScreenHandler.getSlot(i).getStack();
 		if (!itemStack.isEmpty()) {
-			for (; itemStack.getCount() > 0; this.craftingContainer.getSlot(i).takeStack(1)) {
+			for (; itemStack.getCount() > 0; this.craftingScreenHandler.getSlot(i).takeStack(1)) {
 				int j = this.inventory.getOccupiedSlotWithRoomForStack(itemStack);
 				if (j == -1) {
 					j = this.inventory.getEmptySlot();
@@ -77,12 +77,12 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 	}
 
 	protected void fillInputSlots(Recipe<C> recipe, boolean craftAll) {
-		boolean bl = this.craftingContainer.matches(recipe);
+		boolean bl = this.craftingScreenHandler.matches(recipe);
 		int i = this.recipeFinder.countRecipeCrafts(recipe, null);
 		if (bl) {
-			for (int j = 0; j < this.craftingContainer.getCraftingHeight() * this.craftingContainer.getCraftingWidth() + 1; j++) {
-				if (j != this.craftingContainer.getCraftingResultSlotIndex()) {
-					ItemStack itemStack = this.craftingContainer.getSlot(j).getStack();
+			for (int j = 0; j < this.craftingScreenHandler.getCraftingHeight() * this.craftingScreenHandler.getCraftingWidth() + 1; j++) {
+				if (j != this.craftingScreenHandler.getCraftingResultSlotIndex()) {
+					ItemStack itemStack = this.craftingScreenHandler.getSlot(j).getStack();
 					if (!itemStack.isEmpty() && Math.min(i, itemStack.getMaxCount()) < itemStack.getCount() + 1) {
 						return;
 					}
@@ -105,9 +105,9 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 			if (this.recipeFinder.findRecipe(recipe, intList, k)) {
 				this.returnInputs();
 				this.alignRecipeToGrid(
-					this.craftingContainer.getCraftingWidth(),
-					this.craftingContainer.getCraftingHeight(),
-					this.craftingContainer.getCraftingResultSlotIndex(),
+					this.craftingScreenHandler.getCraftingWidth(),
+					this.craftingScreenHandler.getCraftingHeight(),
+					this.craftingScreenHandler.getCraftingResultSlotIndex(),
 					recipe,
 					intList.iterator(),
 					k
@@ -118,7 +118,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 
 	@Override
 	public void acceptAlignedInput(Iterator<Integer> inputs, int slot, int amount, int gridX, int gridY) {
-		Slot slot2 = this.craftingContainer.getSlot(slot);
+		Slot slot2 = this.craftingScreenHandler.getSlot(slot);
 		ItemStack itemStack = RecipeFinder.getStackFromId((Integer)inputs.next());
 		if (!itemStack.isEmpty()) {
 			for (int i = 0; i < amount; i++) {
@@ -134,9 +134,9 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		} else if (recipeInCraftingSlots) {
 			i = 64;
 
-			for (int j = 0; j < this.craftingContainer.getCraftingWidth() * this.craftingContainer.getCraftingHeight() + 1; j++) {
-				if (j != this.craftingContainer.getCraftingResultSlotIndex()) {
-					ItemStack itemStack = this.craftingContainer.getSlot(j).getStack();
+			for (int j = 0; j < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; j++) {
+				if (j != this.craftingScreenHandler.getCraftingResultSlotIndex()) {
+					ItemStack itemStack = this.craftingScreenHandler.getSlot(j).getStack();
 					if (!itemStack.isEmpty() && i > itemStack.getCount()) {
 						i = itemStack.getCount();
 					}
@@ -176,9 +176,9 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 		int i = this.getFreeInventorySlots();
 
-		for (int j = 0; j < this.craftingContainer.getCraftingWidth() * this.craftingContainer.getCraftingHeight() + 1; j++) {
-			if (j != this.craftingContainer.getCraftingResultSlotIndex()) {
-				ItemStack itemStack = this.craftingContainer.getSlot(j).getStack().copy();
+		for (int j = 0; j < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; j++) {
+			if (j != this.craftingScreenHandler.getCraftingResultSlotIndex()) {
+				ItemStack itemStack = this.craftingScreenHandler.getSlot(j).getStack().copy();
 				if (!itemStack.isEmpty()) {
 					int k = this.inventory.getOccupiedSlotWithRoomForStack(itemStack);
 					if (k == -1 && list.size() <= i) {

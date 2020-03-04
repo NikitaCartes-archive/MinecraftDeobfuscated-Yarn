@@ -508,6 +508,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.STRIPPED_JUNGLE_WOOD);
 		this.registerForSelfDrop(Blocks.STRIPPED_ACACIA_WOOD);
 		this.registerForSelfDrop(Blocks.STRIPPED_DARK_OAK_WOOD);
+		this.registerForSelfDrop(Blocks.STRIPPED_CRIMSON_HYPHAE);
+		this.registerForSelfDrop(Blocks.STRIPPED_WARPED_HYPHAE);
 		this.registerForSelfDrop(Blocks.SPONGE);
 		this.registerForSelfDrop(Blocks.WET_SPONGE);
 		this.registerForSelfDrop(Blocks.LAPIS_BLOCK);
@@ -810,11 +812,13 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.HONEY_BLOCK);
 		this.registerForSelfDrop(Blocks.HONEYCOMB_BLOCK);
 		this.registerForSelfDrop(Blocks.WARPED_STEM);
+		this.registerForSelfDrop(Blocks.WARPED_HYPHAE);
 		this.registerForSelfDrop(Blocks.WARPED_NYLIUM);
 		this.registerForSelfDrop(Blocks.WARPED_FUNGUS);
 		this.registerForSelfDrop(Blocks.WARPED_WART_BLOCK);
 		this.registerForSelfDrop(Blocks.WARPED_ROOTS);
 		this.registerForSelfDrop(Blocks.CRIMSON_STEM);
+		this.registerForSelfDrop(Blocks.CRIMSON_HYPHAE);
 		this.registerForSelfDrop(Blocks.CRIMSON_NYLIUM);
 		this.registerForSelfDrop(Blocks.CRIMSON_FUNGUS);
 		this.registerForSelfDrop(Blocks.SHROOMLIGHT);

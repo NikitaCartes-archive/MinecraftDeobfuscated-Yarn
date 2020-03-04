@@ -2,6 +2,7 @@ package net.minecraft.world.biome;
 
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -19,7 +20,7 @@ public final class SnowyTaigaMountainsBiome extends Biome {
 				.scale(0.4F)
 				.temperature(-0.5F)
 				.downfall(0.4F)
-				.effects(new BiomeEffects.Builder().waterColor(4020182).waterFogColor(329011).fogColor(12638463).build())
+				.effects(new BiomeEffects.Builder().waterColor(4020182).waterFogColor(329011).fogColor(12638463).moodSound(SoundEvents.AMBIENT_CAVE).build())
 				.parent("snowy_taiga")
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));

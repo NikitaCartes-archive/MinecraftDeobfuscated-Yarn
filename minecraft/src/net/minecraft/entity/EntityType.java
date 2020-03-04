@@ -15,9 +15,9 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.decoration.LeadKnotEntity;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.CaveSpiderEntity;
@@ -53,8 +53,8 @@ import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
-import net.minecraft.entity.mob.ZombiePigmanEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
+import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -159,7 +159,7 @@ public class EntityType<T extends Entity> {
 		"chicken", EntityType.Builder.create(ChickenEntity::new, EntityCategory.CREATURE).setDimensions(0.4F, 0.7F)
 	);
 	public static final EntityType<CodEntity> COD = register(
-		"cod", EntityType.Builder.create(CodEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.5F, 0.3F)
+		"cod", EntityType.Builder.create(CodEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.5F, 0.3F).method_24910(64)
 	);
 	public static final EntityType<CowEntity> COW = register("cow", EntityType.Builder.create(CowEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.4F));
 	public static final EntityType<CreeperEntity> CREEPER = register(
@@ -180,8 +180,8 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<ElderGuardianEntity> ELDER_GUARDIAN = register(
 		"elder_guardian", EntityType.Builder.create(ElderGuardianEntity::new, EntityCategory.MONSTER).setDimensions(1.9975F, 1.9975F)
 	);
-	public static final EntityType<EnderCrystalEntity> END_CRYSTAL = register(
-		"end_crystal", EntityType.Builder.<EnderCrystalEntity>create(EnderCrystalEntity::new, EntityCategory.MISC).setDimensions(2.0F, 2.0F)
+	public static final EntityType<EndCrystalEntity> END_CRYSTAL = register(
+		"end_crystal", EntityType.Builder.<EndCrystalEntity>create(EndCrystalEntity::new, EntityCategory.MISC).setDimensions(2.0F, 2.0F)
 	);
 	public static final EntityType<EnderDragonEntity> ENDER_DRAGON = register(
 		"ender_dragon", EntityType.Builder.create(EnderDragonEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(16.0F, 8.0F)
@@ -238,8 +238,8 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<FireballEntity> FIREBALL = register(
 		"fireball", EntityType.Builder.<FireballEntity>create(FireballEntity::new, EntityCategory.MISC).setDimensions(1.0F, 1.0F)
 	);
-	public static final EntityType<LeadKnotEntity> LEASH_KNOT = register(
-		"leash_knot", EntityType.Builder.<LeadKnotEntity>create(LeadKnotEntity::new, EntityCategory.MISC).disableSaving().setDimensions(0.5F, 0.5F)
+	public static final EntityType<LeashKnotEntity> LEASH_KNOT = register(
+		"leash_knot", EntityType.Builder.<LeashKnotEntity>create(LeashKnotEntity::new, EntityCategory.MISC).disableSaving().setDimensions(0.5F, 0.5F)
 	);
 	public static final EntityType<LlamaEntity> LLAMA = register(
 		"llama", EntityType.Builder.create(LlamaEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.87F)
@@ -292,10 +292,10 @@ public class EntityType<T extends Entity> {
 	);
 	public static final EntityType<PigEntity> PIG = register("pig", EntityType.Builder.create(PigEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 0.9F));
 	public static final EntityType<PufferfishEntity> PUFFERFISH = register(
-		"pufferfish", EntityType.Builder.create(PufferfishEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7F, 0.7F)
+		"pufferfish", EntityType.Builder.create(PufferfishEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7F, 0.7F).method_24910(64)
 	);
-	public static final EntityType<ZombiePigmanEntity> ZOMBIFIED_PIGLIN = register(
-		"zombified_piglin", EntityType.Builder.create(ZombiePigmanEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.95F)
+	public static final EntityType<ZombifiedPiglinEntity> ZOMBIFIED_PIGLIN = register(
+		"zombified_piglin", EntityType.Builder.create(ZombifiedPiglinEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.95F)
 	);
 	public static final EntityType<PolarBearEntity> POLAR_BEAR = register(
 		"polar_bear", EntityType.Builder.create(PolarBearEntity::new, EntityCategory.CREATURE).setDimensions(1.4F, 1.4F)
@@ -307,7 +307,7 @@ public class EntityType<T extends Entity> {
 		"rabbit", EntityType.Builder.create(RabbitEntity::new, EntityCategory.CREATURE).setDimensions(0.4F, 0.5F)
 	);
 	public static final EntityType<SalmonEntity> SALMON = register(
-		"salmon", EntityType.Builder.create(SalmonEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7F, 0.4F)
+		"salmon", EntityType.Builder.create(SalmonEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7F, 0.4F).method_24910(64)
 	);
 	public static final EntityType<SheepEntity> SHEEP = register(
 		"sheep", EntityType.Builder.create(SheepEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.3F)
@@ -355,7 +355,7 @@ public class EntityType<T extends Entity> {
 		"trader_llama", EntityType.Builder.create(TraderLlamaEntity::new, EntityCategory.CREATURE).setDimensions(0.9F, 1.87F)
 	);
 	public static final EntityType<TropicalFishEntity> TROPICAL_FISH = register(
-		"tropical_fish", EntityType.Builder.create(TropicalFishEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.5F, 0.4F)
+		"tropical_fish", EntityType.Builder.create(TropicalFishEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.5F, 0.4F).method_24910(64)
 	);
 	public static final EntityType<TurtleEntity> TURTLE = register(
 		"turtle", EntityType.Builder.create(TurtleEntity::new, EntityCategory.CREATURE).setDimensions(1.2F, 0.4F)
@@ -445,6 +445,8 @@ public class EntityType<T extends Entity> {
 	private final boolean summonable;
 	private final boolean fireImmune;
 	private final boolean spawnableFarFromPlayer;
+	private final int field_22469;
+	private final int field_22470;
 	@Nullable
 	private String translationKey;
 	@Nullable
@@ -468,19 +470,23 @@ public class EntityType<T extends Entity> {
 	public EntityType(
 		EntityType.EntityFactory<T> factory,
 		EntityCategory category,
-		boolean saveable,
+		boolean bl,
 		boolean summonable,
 		boolean fireImmune,
 		boolean spawnableFarFromPlayer,
-		EntityDimensions dimensions
+		int i,
+		int j,
+		EntityDimensions entityDimensions
 	) {
 		this.factory = factory;
 		this.category = category;
 		this.spawnableFarFromPlayer = spawnableFarFromPlayer;
-		this.saveable = saveable;
+		this.field_22469 = i;
+		this.field_22470 = j;
+		this.saveable = bl;
 		this.summonable = summonable;
 		this.fireImmune = fireImmune;
-		this.dimensions = dimensions;
+		this.dimensions = entityDimensions;
 	}
 
 	@Nullable
@@ -545,7 +551,7 @@ public class EntityType<T extends Entity> {
 				MobEntity mobEntity = (MobEntity)entity;
 				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.bodyYaw = mobEntity.yaw;
-				mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, itemTag);
+				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getSenseCenterPos()), spawnType, null, itemTag);
 				mobEntity.playAmbientSound();
 			}
 
@@ -597,6 +603,14 @@ public class EntityType<T extends Entity> {
 
 	public boolean isSpawnableFarFromPlayer() {
 		return this.spawnableFarFromPlayer;
+	}
+
+	public int method_24908() {
+		return this.field_22469;
+	}
+
+	public int method_24909() {
+		return this.field_22470;
 	}
 
 	public EntityCategory getCategory() {
@@ -790,6 +804,8 @@ public class EntityType<T extends Entity> {
 		private boolean summonable = true;
 		private boolean fireImmune;
 		private boolean spawnableFarFromPlayer;
+		private int field_22471 = 128;
+		private int field_22472 = 32;
 		private EntityDimensions size = EntityDimensions.changing(0.6F, 1.8F);
 
 		private Builder(EntityType.EntityFactory<T> factory, EntityCategory category) {
@@ -831,6 +847,11 @@ public class EntityType<T extends Entity> {
 			return this;
 		}
 
+		public EntityType.Builder<T> method_24910(int i) {
+			this.field_22471 = i;
+			return this;
+		}
+
 		public EntityType<T> build(String id) {
 			if (this.saveable) {
 				try {
@@ -844,7 +865,9 @@ public class EntityType<T extends Entity> {
 				}
 			}
 
-			return new EntityType<>(this.factory, this.category, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.size);
+			return new EntityType<>(
+				this.factory, this.category, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.field_22471, this.field_22472, this.size
+			);
 		}
 	}
 

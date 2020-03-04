@@ -10,7 +10,7 @@ public class BlockPosLookTarget implements LookTarget {
 
 	public BlockPosLookTarget(BlockPos blockPos) {
 		this.blockPos = blockPos;
-		this.pos = new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+		this.pos = Vec3d.method_24953(blockPos);
 	}
 
 	@Override

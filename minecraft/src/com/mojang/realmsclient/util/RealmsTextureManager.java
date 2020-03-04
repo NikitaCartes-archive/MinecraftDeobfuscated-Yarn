@@ -18,12 +18,14 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.TextureUtil;
-import net.minecraft.realms.Realms;
-import net.minecraft.realms.RealmsScreen;
+import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.util.Identifier;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -35,10 +37,11 @@ public class RealmsTextureManager {
 	private static final Map<String, Boolean> skinFetchStatus = Maps.<String, Boolean>newHashMap();
 	private static final Map<String, String> fetchedSkins = Maps.<String, String>newHashMap();
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Identifier field_22730 = new Identifier("textures/gui/presets/isles.png");
 
-	public static void bindWorldTemplate(String id, String image) {
+	public static void bindWorldTemplate(String id, @Nullable String image) {
 		if (image == null) {
-			RealmsScreen.bind("textures/gui/presets/isles.png");
+			MinecraftClient.getInstance().getTextureManager().bindTexture(field_22730);
 		} else {
 			int i = getTextureId(id, image);
 			RenderSystem.bindTexture(i);
@@ -57,7 +60,7 @@ public class RealmsTextureManager {
 	}
 
 	private static void bindDefaultFace(UUID uuid) {
-		RealmsScreen.bind((uuid.hashCode() & 1) == 1 ? "minecraft:textures/entity/alex.png" : "minecraft:textures/entity/steve.png");
+		MinecraftClient.getInstance().getTextureManager().bindTexture(DefaultSkinHelper.getTexture(uuid));
 	}
 
 	private static void bindFace(String uuid) {
@@ -87,7 +90,7 @@ public class RealmsTextureManager {
 
 						try {
 							try {
-								httpURLConnection = (HttpURLConnection)new URL(string).openConnection(Realms.getProxy());
+								httpURLConnection = (HttpURLConnection)new URL(string).openConnection(MinecraftClient.getInstance().getNetworkProxy());
 								httpURLConnection.setDoInput(true);
 								httpURLConnection.setDoOutput(false);
 								httpURLConnection.connect();
@@ -171,15 +174,15 @@ public class RealmsTextureManager {
 
 		RenderSystem.activeTexture(33984);
 		RenderSystem.bindTexture(i);
-		TextureUtil.initTexture(intBuffer, j, k);
+		TextureUtil.method_24963(intBuffer, j, k);
 		textures.put(id, new RealmsTextureManager.RealmsTexture(image, i));
 		return i;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class RealmsTexture {
-		String image;
-		int textureId;
+		private final String image;
+		private final int textureId;
 
 		public RealmsTexture(String image, int textureId) {
 			this.image = image;

@@ -34,32 +34,31 @@ public class Heightmap {
 		ObjectList<Heightmap> objectList = new ObjectArrayList<>(i);
 		ObjectListIterator<Heightmap> objectListIterator = objectList.iterator();
 		int j = chunk.getHighestNonEmptySectionYOffset() + 16;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int k = 0; k < 16; k++) {
-				for (int l = 0; l < 16; l++) {
-					for (Heightmap.Type type : types) {
-						objectList.add(chunk.getHeightmap(type));
-					}
+		for (int k = 0; k < 16; k++) {
+			for (int l = 0; l < 16; l++) {
+				for (Heightmap.Type type : types) {
+					objectList.add(chunk.getHeightmap(type));
+				}
 
-					for (int m = j - 1; m >= 0; m--) {
-						pooledMutable.set(k, m, l);
-						BlockState blockState = chunk.getBlockState(pooledMutable);
-						if (blockState.getBlock() != Blocks.AIR) {
-							while (objectListIterator.hasNext()) {
-								Heightmap heightmap = (Heightmap)objectListIterator.next();
-								if (heightmap.blockPredicate.test(blockState)) {
-									heightmap.set(k, l, m + 1);
-									objectListIterator.remove();
-								}
+				for (int m = j - 1; m >= 0; m--) {
+					mutable.set(k, m, l);
+					BlockState blockState = chunk.getBlockState(mutable);
+					if (blockState.getBlock() != Blocks.AIR) {
+						while (objectListIterator.hasNext()) {
+							Heightmap heightmap = (Heightmap)objectListIterator.next();
+							if (heightmap.blockPredicate.test(blockState)) {
+								heightmap.set(k, l, m + 1);
+								objectListIterator.remove();
 							}
-
-							if (objectList.isEmpty()) {
-								break;
-							}
-
-							objectListIterator.back(i);
 						}
+
+						if (objectList.isEmpty()) {
+							break;
+						}
+
+						objectListIterator.back(i);
 					}
 				}
 			}

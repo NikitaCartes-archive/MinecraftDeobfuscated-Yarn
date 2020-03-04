@@ -27,29 +27,42 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
-		super.onCollision(hitResult);
+	protected void onEntityHit(EntityHitResult entityHitResult) {
+		super.onEntityHit(entityHitResult);
 		if (!this.world.isClient) {
-			if (hitResult.getType() == HitResult.Type.ENTITY) {
-				Entity entity = ((EntityHitResult)hitResult).getEntity();
-				if (!entity.isFireImmune()) {
-					int i = entity.getFireTicks();
-					entity.setOnFireFor(5);
-					boolean bl = entity.damage(DamageSource.explosiveProjectile(this, this.owner), 5.0F);
-					if (bl) {
-						this.dealDamage(this.owner, entity);
-					} else {
-						entity.setFireTicks(i);
-					}
+			Entity entity = entityHitResult.getEntity();
+			if (!entity.isFireImmune()) {
+				Entity entity2 = this.getOwner();
+				int i = entity.getFireTicks();
+				entity.setOnFireFor(5);
+				boolean bl = entity.damage(DamageSource.explosiveProjectile(this, entity2), 5.0F);
+				if (!bl) {
+					entity.setFireTicks(i);
+				} else if (entity2 instanceof LivingEntity) {
+					this.dealDamage((LivingEntity)entity2, entity);
 				}
-			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
+			}
+		}
+	}
+
+	@Override
+	protected void method_24920(BlockHitResult blockHitResult) {
+		super.method_24920(blockHitResult);
+		if (!this.world.isClient) {
+			Entity entity = this.getOwner();
+			if (entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
 				if (this.world.isAir(blockPos)) {
 					this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
 				}
 			}
+		}
+	}
 
+	@Override
+	protected void onCollision(HitResult hitResult) {
+		super.onCollision(hitResult);
+		if (!this.world.isClient) {
 			this.remove();
 		}
 	}

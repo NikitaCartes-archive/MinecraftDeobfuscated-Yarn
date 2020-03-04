@@ -6,25 +6,25 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.container.StonecutterContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.recipe.StonecuttingRecipe;
+import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
+public class StonecutterScreen extends ScreenWithHandler<StonecutterScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
 	private float scrollAmount;
 	private boolean mouseClicked;
 	private int scrollOffset;
 	private boolean canCraft;
 
-	public StonecutterScreen(StonecutterContainer container, PlayerInventory inventory, Text title) {
-		super(container, inventory, title);
-		container.setContentsChangedListener(this::onInventoryChange);
+	public StonecutterScreen(StonecutterScreenHandler handler, PlayerInventory inventory, Text title) {
+		super(handler, inventory, title);
+		handler.setContentsChangedListener(this::onInventoryChange);
 	}
 
 	@Override
@@ -35,18 +35,18 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 
 	@Override
 	protected void drawForeground(int mouseX, int mouseY) {
-		this.font.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
-		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 94), 4210752);
+		this.textRenderer.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
+		this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.backgroundHeight - 94), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		this.renderBackground();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = this.x;
 		int j = this.y;
-		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
+		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		int k = (int)(41.0F * this.scrollAmount);
 		this.blit(i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
 		int l = this.x + 52;
@@ -63,9 +63,9 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 			int i = this.x + 52;
 			int j = this.y + 14;
 			int k = this.scrollOffset + 12;
-			List<StonecuttingRecipe> list = this.container.getAvailableRecipes();
+			List<StonecuttingRecipe> list = this.handler.getAvailableRecipes();
 
-			for (int l = this.scrollOffset; l < k && l < this.container.getAvailableRecipeCount(); l++) {
+			for (int l = this.scrollOffset; l < k && l < this.handler.getAvailableRecipeCount(); l++) {
 				int m = l - this.scrollOffset;
 				int n = i + m % 4 * 16;
 				int o = j + m / 4 * 18 + 2;
@@ -77,13 +77,13 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	}
 
 	private void renderRecipeBackground(int mouseX, int mouseY, int x, int y, int scrollOffset) {
-		for (int i = this.scrollOffset; i < scrollOffset && i < this.container.getAvailableRecipeCount(); i++) {
+		for (int i = this.scrollOffset; i < scrollOffset && i < this.handler.getAvailableRecipeCount(); i++) {
 			int j = i - this.scrollOffset;
 			int k = x + j % 4 * 16;
 			int l = j / 4;
 			int m = y + l * 18 + 2;
-			int n = this.containerHeight;
-			if (i == this.container.getSelectedRecipe()) {
+			int n = this.backgroundHeight;
+			if (i == this.handler.getSelectedRecipe()) {
 				n += 18;
 			} else if (mouseX >= k && mouseY >= m && mouseX < k + 16 && mouseY < m + 18) {
 				n += 36;
@@ -94,14 +94,14 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	}
 
 	private void renderRecipeIcons(int x, int y, int scrollOffset) {
-		List<StonecuttingRecipe> list = this.container.getAvailableRecipes();
+		List<StonecuttingRecipe> list = this.handler.getAvailableRecipes();
 
-		for (int i = this.scrollOffset; i < scrollOffset && i < this.container.getAvailableRecipeCount(); i++) {
+		for (int i = this.scrollOffset; i < scrollOffset && i < this.handler.getAvailableRecipeCount(); i++) {
 			int j = i - this.scrollOffset;
 			int k = x + j % 4 * 16;
 			int l = j / 4;
 			int m = y + l * 18 + 2;
-			this.minecraft.getItemRenderer().renderGuiItem(((StonecuttingRecipe)list.get(i)).getOutput(), k, m);
+			this.client.getItemRenderer().renderGuiItem(((StonecuttingRecipe)list.get(i)).getOutput(), k, m);
 		}
 	}
 
@@ -117,9 +117,9 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 				int m = l - this.scrollOffset;
 				double d = mouseX - (double)(i + m % 4 * 16);
 				double e = mouseY - (double)(j + m / 4 * 18);
-				if (d >= 0.0 && e >= 0.0 && d < 16.0 && e < 18.0 && this.container.onButtonClick(this.minecraft.player, l)) {
+				if (d >= 0.0 && e >= 0.0 && d < 16.0 && e < 18.0 && this.handler.onButtonClick(this.client.player, l)) {
 					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_STONECUTTER_SELECT_RECIPE, 1.0F));
-					this.minecraft.interactionManager.clickButton(this.container.syncId, l);
+					this.client.interactionManager.clickButton(this.handler.syncId, l);
 					return true;
 				}
 			}
@@ -149,7 +149,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 		if (this.shouldScroll()) {
 			int i = this.getMaxScroll();
 			this.scrollAmount = (float)((double)this.scrollAmount - amount / (double)i);
@@ -161,15 +161,15 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	}
 
 	private boolean shouldScroll() {
-		return this.canCraft && this.container.getAvailableRecipeCount() > 12;
+		return this.canCraft && this.handler.getAvailableRecipeCount() > 12;
 	}
 
 	protected int getMaxScroll() {
-		return (this.container.getAvailableRecipeCount() + 4 - 1) / 4 - 3;
+		return (this.handler.getAvailableRecipeCount() + 4 - 1) / 4 - 3;
 	}
 
 	private void onInventoryChange() {
-		this.canCraft = this.container.canCraft();
+		this.canCraft = this.handler.canCraft();
 		if (!this.canCraft) {
 			this.scrollAmount = 0.0F;
 			this.scrollOffset = 0;

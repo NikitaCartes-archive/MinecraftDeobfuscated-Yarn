@@ -1,11 +1,11 @@
 package net.minecraft.block;
 
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.LoomContainer;
-import net.minecraft.container.NameableContainerFactory;
-import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.LoomScreenHandler;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.text.TranslatableText;
@@ -27,16 +27,16 @@ public class LoomBlock extends HorizontalFacingBlock {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerFactory(world, pos));
+			player.openHandledScreen(state.createContainerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_LOOM);
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
-		return new SimpleNamedContainerFactory(
-			(i, playerInventory, playerEntity) -> new LoomContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedScreenHandlerFactory(
+			(i, playerInventory, playerEntity) -> new LoomScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
 

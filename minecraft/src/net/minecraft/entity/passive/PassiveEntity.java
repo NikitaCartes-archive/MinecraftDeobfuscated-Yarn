@@ -20,8 +20,8 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	protected int forcedAge;
 	protected int happyTicksRemaining;
 
-	protected PassiveEntity(EntityType<? extends PassiveEntity> type, World world) {
-		super(type, world);
+	protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override

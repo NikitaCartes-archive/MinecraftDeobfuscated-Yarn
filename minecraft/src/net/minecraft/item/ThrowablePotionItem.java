@@ -17,7 +17,7 @@ public class ThrowablePotionItem extends PotionItem {
 		ItemStack itemStack = user.getStackInHand(hand);
 		if (!world.isClient) {
 			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, user);
-			thrownPotionEntity.setItemStack(itemStack);
+			thrownPotionEntity.setItem(itemStack);
 			thrownPotionEntity.setProperties(user, user.pitch, user.yaw, -20.0F, 0.5F, 1.0F);
 			world.spawnEntity(thrownPotionEntity);
 		}

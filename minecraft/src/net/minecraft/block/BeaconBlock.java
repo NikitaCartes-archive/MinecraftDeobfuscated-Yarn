@@ -36,7 +36,7 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeaconBlockEntity) {
-				player.openContainer((BeaconBlockEntity)blockEntity);
+				player.openHandledScreen((BeaconBlockEntity)blockEntity);
 				player.incrementStat(Stats.INTERACT_WITH_BEACON);
 			}
 

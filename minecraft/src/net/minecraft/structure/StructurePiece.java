@@ -93,10 +93,10 @@ public abstract class StructurePiece {
 		return this.length;
 	}
 
-	public boolean method_16654(ChunkPos chunkPos, int i) {
-		int j = chunkPos.x << 4;
-		int k = chunkPos.z << 4;
-		return this.boundingBox.intersectsXZ(j - i, k - i, j + 15 + i, k + 15 + i);
+	public boolean intersectsChunk(ChunkPos chunkPos, int offset) {
+		int i = chunkPos.x << 4;
+		int j = chunkPos.z << 4;
+		return this.boundingBox.intersectsXZ(i - offset, j - offset, i + 15 + offset, j + 15 + offset);
 	}
 
 	public static StructurePiece getOverlappingPiece(List<StructurePiece> list, BlockBox blockBox) {

@@ -29,7 +29,7 @@ public class ForgetBellRingTask extends Task<LivingEntity> {
 		boolean bl = (Long)optional.get() + 300L <= time;
 		if (this.hiddenTicks <= this.maxHiddenTicks && !bl) {
 			BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.HIDING_PLACE).get()).getPos();
-			if (blockPos.isWithinDistance(new BlockPos(entity), (double)this.distance)) {
+			if (blockPos.isWithinDistance(entity.getSenseCenterPos(), (double)this.distance)) {
 				this.hiddenTicks++;
 			}
 		} else {

@@ -40,8 +40,8 @@ public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkG
 	}
 
 	@Override
-	public T create(World world, BiomeSource biomeSource, C config) {
-		return this.factory.create(world, biomeSource, config);
+	public T create(World world, BiomeSource biomeSource, C chunkGeneratorConfig) {
+		return this.factory.create(world, biomeSource, chunkGeneratorConfig);
 	}
 
 	public C createSettings() {

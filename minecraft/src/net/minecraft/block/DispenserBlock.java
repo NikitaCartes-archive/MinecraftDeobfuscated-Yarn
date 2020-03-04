@@ -8,13 +8,13 @@ import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.DropperBlockEntity;
-import net.minecraft.container.Container;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -66,7 +66,7 @@ public class DispenserBlock extends BlockWithEntity {
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				player.openContainer((DispenserBlockEntity)blockEntity);
+				player.openHandledScreen((DispenserBlockEntity)blockEntity);
 				if (blockEntity instanceof DropperBlockEntity) {
 					player.incrementStat(Stats.INSPECT_DROPPER);
 				} else {
@@ -140,7 +140,7 @@ public class DispenserBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				ItemScatterer.spawn(world, pos, (DispenserBlockEntity)blockEntity);
-				world.updateHorizontalAdjacent(pos, this);
+				world.updateComparators(pos, this);
 			}
 
 			super.onBlockRemoved(state, world, pos, newState, moved);
@@ -162,7 +162,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return Container.calculateComparatorOutput(world.getBlockEntity(pos));
+		return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
 	}
 
 	@Override

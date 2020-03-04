@@ -11,7 +11,6 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LocalDifficulty;
 
 public class SkeletonHorseTrapTriggerGoal extends Goal {
@@ -28,7 +27,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	@Override
 	public void tick() {
-		LocalDifficulty localDifficulty = this.skeletonHorse.world.getLocalDifficulty(new BlockPos(this.skeletonHorse));
+		LocalDifficulty localDifficulty = this.skeletonHorse.world.getLocalDifficulty(this.skeletonHorse.getSenseCenterPos());
 		this.skeletonHorse.setTrapped(false);
 		this.skeletonHorse.setTame(true);
 		this.skeletonHorse.setBreedingAge(0);

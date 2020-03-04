@@ -33,16 +33,16 @@ public class FeaturePoolElement extends StructurePoolElement {
 	public FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
 		super(projection);
 		this.feature = configuredFeature;
-		this.tag = this.method_19299();
+		this.tag = this.createDefaultJigsawTag();
 	}
 
 	public <T> FeaturePoolElement(Dynamic<T> dynamic) {
 		super(dynamic);
 		this.feature = ConfiguredFeature.deserialize(dynamic.get("feature").orElseEmptyMap());
-		this.tag = this.method_19299();
+		this.tag = this.createDefaultJigsawTag();
 	}
 
-	public CompoundTag method_19299() {
+	public CompoundTag createDefaultJigsawTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("target_pool", "minecraft:empty");
 		compoundTag.putString("attachement_type", "minecraft:bottom");
@@ -50,7 +50,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		return compoundTag;
 	}
 
-	public BlockPos method_16601(StructureManager structureManager, BlockRotation blockRotation) {
+	public BlockPos getStart(StructureManager structureManager, BlockRotation blockRotation) {
 		return BlockPos.ORIGIN;
 	}
 
@@ -63,7 +63,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 
 	@Override
 	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-		BlockPos blockPos = this.method_16601(structureManager, rotation);
+		BlockPos blockPos = this.getStart(structureManager, rotation);
 		return new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + blockPos.getX(), pos.getY() + blockPos.getY(), pos.getZ() + blockPos.getZ());
 	}
 
@@ -81,7 +81,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public <T> Dynamic<T> method_16625(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("feature"), this.feature.serialize(dynamicOps).getValue())));
 	}
 

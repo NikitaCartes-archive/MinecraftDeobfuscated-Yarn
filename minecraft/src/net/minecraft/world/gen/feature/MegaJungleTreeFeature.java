@@ -50,18 +50,16 @@ public class MegaJungleTreeFeature extends MegaTreeFeature<MegaTreeFeatureConfig
 				}
 			}
 
-			this.method_23400(modifiableTestableWorld, random, blockPos, i, set, blockBox, megaTreeFeatureConfig);
+			this.generateTrunk(modifiableTestableWorld, random, blockPos, i, set, blockBox, megaTreeFeatureConfig);
 			return true;
 		}
 	}
 
-	private void makeLeaves(
-		ModifiableTestableWorld world, Random random, BlockPos blockPos, int i, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
-	) {
+	private void makeLeaves(ModifiableTestableWorld world, Random random, BlockPos pos, int i, Set<BlockPos> leaves, BlockBox box, TreeFeatureConfig config) {
 		int j = 2;
 
 		for (int k = -2; k <= 0; k++) {
-			this.makeSquaredLeafLayer(world, random, blockPos.up(k), i + 1 - k, set, blockBox, treeFeatureConfig);
+			this.makeSquaredLeafLayer(world, random, pos.up(k), i + 1 - k, leaves, box, config);
 		}
 	}
 }

@@ -18,11 +18,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
-import net.minecraft.container.Container;
-import net.minecraft.container.ContainerListener;
-import net.minecraft.container.CraftingResultSlot;
-import net.minecraft.container.HorseContainer;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -45,10 +40,8 @@ import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
-import net.minecraft.network.packet.s2c.play.ContainerPropertyUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
@@ -60,8 +53,8 @@ import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenContainerS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenHorseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
@@ -69,6 +62,8 @@ import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
@@ -79,6 +74,11 @@ import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.screen.HorseScreenHandler;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.world.ServerWorld;
@@ -114,7 +114,7 @@ import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerPlayerEntity extends PlayerEntity implements ContainerListener {
+public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private String clientLanguage = "en_US";
 	public ServerPlayNetworkHandler networkHandler;
@@ -147,7 +147,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Nullable
 	private Vec3d enteredNetherPos;
 	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
-	private int containerSyncId;
+	private int screenHandlerSyncId;
 	public boolean field_13991;
 	public int pingMilliseconds;
 	public boolean notInAnyWorld;
@@ -253,7 +253,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			CompoundTag compoundTag2 = new CompoundTag();
 			CompoundTag compoundTag3 = new CompoundTag();
 			entity.saveToTag(compoundTag3);
-			compoundTag2.putUuid("Attach", entity2.getUuid());
+			compoundTag2.putUuidOld("Attach", entity2.getUuid());
 			compoundTag2.put("Entity", compoundTag3);
 			tag.put("RootVehicle", compoundTag2);
 		}
@@ -286,7 +286,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public void method_14235() {
-		this.container.addListener(this);
+		this.currentScreenHandler.addListener(this);
 	}
 
 	@Override
@@ -319,10 +319,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.timeUntilRegen--;
 		}
 
-		this.container.sendContentUpdates();
-		if (!this.world.isClient && !this.container.canUse(this)) {
-			this.closeContainer();
-			this.container = this.playerContainer;
+		this.currentScreenHandler.sendContentUpdates();
+		if (!this.world.isClient && !this.currentScreenHandler.canUse(this)) {
+			this.closeHandledScreen();
+			this.currentScreenHandler = this.playerScreenHandler;
 		}
 
 		while (!this.removedEntities.isEmpty()) {
@@ -362,7 +362,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	public void playerTick() {
 		try {
-			if (!this.isSpectator() || this.world.isChunkLoaded(new BlockPos(this))) {
+			if (!this.isSpectator() || this.world.isChunkLoaded(this.getSenseCenterPos())) {
 				super.tick();
 			}
 
@@ -704,7 +704,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void sendPickup(Entity item, int count) {
 		super.sendPickup(item, count);
-		this.container.sendContentUpdates();
+		this.currentScreenHandler.sendContentUpdates();
 	}
 
 	@Override
@@ -716,12 +716,12 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void wakeUp(boolean bl, boolean bl2) {
+	public void wakeUp(boolean bl, boolean updateSleepingPlayers) {
 		if (this.isSleeping()) {
 			this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, 2));
 		}
 
-		super.wakeUp(bl, bl2);
+		super.wakeUp(bl, updateSleepingPlayers);
 		if (this.networkHandler != null) {
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		}
@@ -782,32 +782,32 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.getPos()));
 	}
 
-	private void incrementContainerSyncId() {
-		this.containerSyncId = this.containerSyncId % 100 + 1;
+	private void incrementScreenHandlerSyncId() {
+		this.screenHandlerSyncId = this.screenHandlerSyncId % 100 + 1;
 	}
 
 	@Override
-	public OptionalInt openContainer(@Nullable NameableContainerFactory nameableContainerFactory) {
-		if (nameableContainerFactory == null) {
+	public OptionalInt openHandledScreen(@Nullable NameableScreenHandlerFactory factory) {
+		if (factory == null) {
 			return OptionalInt.empty();
 		} else {
-			if (this.container != this.playerContainer) {
-				this.closeContainer();
+			if (this.currentScreenHandler != this.playerScreenHandler) {
+				this.closeHandledScreen();
 			}
 
-			this.incrementContainerSyncId();
-			Container container = nameableContainerFactory.createMenu(this.containerSyncId, this.inventory, this);
-			if (container == null) {
+			this.incrementScreenHandlerSyncId();
+			ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.inventory, this);
+			if (screenHandler == null) {
 				if (this.isSpectator()) {
 					this.addMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
 				}
 
 				return OptionalInt.empty();
 			} else {
-				this.networkHandler.sendPacket(new OpenContainerS2CPacket(container.syncId, container.getType(), nameableContainerFactory.getDisplayName()));
-				container.addListener(this);
-				this.container = container;
-				return OptionalInt.of(this.containerSyncId);
+				this.networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandler.syncId, screenHandler.getType(), factory.getDisplayName()));
+				screenHandler.addListener(this);
+				this.currentScreenHandler = screenHandler;
+				return OptionalInt.of(this.screenHandlerSyncId);
 			}
 		}
 	}
@@ -819,14 +819,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
-		if (this.container != this.playerContainer) {
-			this.closeContainer();
+		if (this.currentScreenHandler != this.playerScreenHandler) {
+			this.closeHandledScreen();
 		}
 
-		this.incrementContainerSyncId();
-		this.networkHandler.sendPacket(new OpenHorseContainerS2CPacket(this.containerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
-		this.container = new HorseContainer(this.containerSyncId, this.inventory, inventory, horseBaseEntity);
-		this.container.addListener(this);
+		this.incrementScreenHandlerSyncId();
+		this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
+		this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.inventory, inventory, horseBaseEntity);
+		this.currentScreenHandler.addListener(this);
 	}
 
 	@Override
@@ -834,7 +834,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		Item item = book.getItem();
 		if (item == Items.WRITTEN_BOOK) {
 			if (WrittenBookItem.resolve(book, this.getCommandSource(), this)) {
-				this.container.sendContentUpdates();
+				this.currentScreenHandler.sendContentUpdates();
 			}
 
 			this.networkHandler.sendPacket(new OpenWrittenBookS2CPacket(hand));
@@ -848,48 +848,48 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void onContainerSlotUpdate(Container container, int slotId, ItemStack itemStack) {
-		if (!(container.getSlot(slotId) instanceof CraftingResultSlot)) {
-			if (container == this.playerContainer) {
+	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack) {
+		if (!(handler.getSlot(slotId) instanceof CraftingResultSlot)) {
+			if (handler == this.playerScreenHandler) {
 				Criterions.INVENTORY_CHANGED.trigger(this, this.inventory, itemStack);
 			}
 
 			if (!this.field_13991) {
-				this.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(container.syncId, slotId, itemStack));
+				this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slotId, itemStack));
 			}
 		}
 	}
 
-	public void openContainer(Container container) {
-		this.onContainerRegistered(container, container.getStacks());
+	public void openHandledScreen(ScreenHandler handler) {
+		this.onHandlerRegistered(handler, handler.getStacks());
 	}
 
 	@Override
-	public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
-		this.networkHandler.sendPacket(new InventoryS2CPacket(container.syncId, defaultedList));
-		this.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
+	public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> defaultedList) {
+		this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, defaultedList));
+		this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 	}
 
 	@Override
-	public void onContainerPropertyUpdate(Container container, int propertyId, int i) {
-		this.networkHandler.sendPacket(new ContainerPropertyUpdateS2CPacket(container.syncId, propertyId, i));
+	public void onPropertyUpdate(ScreenHandler handler, int propertyId, int i) {
+		this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, propertyId, i));
 	}
 
 	@Override
-	public void closeContainer() {
-		this.networkHandler.sendPacket(new CloseContainerS2CPacket(this.container.syncId));
+	public void closeHandledScreen() {
+		this.networkHandler.sendPacket(new CloseScreenS2CPacket(this.currentScreenHandler.syncId));
 		this.closeCurrentScreen();
 	}
 
 	public void method_14241() {
 		if (!this.field_13991) {
-			this.networkHandler.sendPacket(new ContainerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
+			this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 		}
 	}
 
 	public void closeCurrentScreen() {
-		this.container.close(this);
-		this.container = this.playerContainer;
+		this.currentScreenHandler.close(this);
+		this.currentScreenHandler = this.playerScreenHandler;
 	}
 
 	public void method_14218(float f, float g, boolean bl, boolean bl2) {
@@ -1307,14 +1307,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public ItemEntity dropItem(ItemStack stack, boolean bl, boolean bl2) {
-		ItemEntity itemEntity = super.dropItem(stack, bl, bl2);
+	public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
+		ItemEntity itemEntity = super.dropItem(stack, throwRandomly, retainOwnership);
 		if (itemEntity == null) {
 			return null;
 		} else {
 			this.world.spawnEntity(itemEntity);
 			ItemStack itemStack = itemEntity.getStack();
-			if (bl2) {
+			if (retainOwnership) {
 				if (!itemStack.isEmpty()) {
 					this.increaseStat(Stats.DROPPED.getOrCreateStat(itemStack.getItem()), stack.getCount());
 				}

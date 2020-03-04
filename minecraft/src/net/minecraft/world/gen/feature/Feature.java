@@ -128,23 +128,23 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DecoratedFeatureConfig> DECORATED_FLOWER = register(
 		"decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig::deserialize)
 	);
-	public static final BiMap<String, StructureFeature<?>> STRUCTURES = Util.make(HashBiMap.create(), hashBiMap -> {
-		hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);
-		hashBiMap.put("Mineshaft".toLowerCase(Locale.ROOT), MINESHAFT);
-		hashBiMap.put("Mansion".toLowerCase(Locale.ROOT), WOODLAND_MANSION);
-		hashBiMap.put("Jungle_Pyramid".toLowerCase(Locale.ROOT), JUNGLE_TEMPLE);
-		hashBiMap.put("Desert_Pyramid".toLowerCase(Locale.ROOT), DESERT_PYRAMID);
-		hashBiMap.put("Igloo".toLowerCase(Locale.ROOT), IGLOO);
-		hashBiMap.put("Shipwreck".toLowerCase(Locale.ROOT), SHIPWRECK);
-		hashBiMap.put("Swamp_Hut".toLowerCase(Locale.ROOT), SWAMP_HUT);
-		hashBiMap.put("Stronghold".toLowerCase(Locale.ROOT), STRONGHOLD);
-		hashBiMap.put("Monument".toLowerCase(Locale.ROOT), OCEAN_MONUMENT);
-		hashBiMap.put("Ocean_Ruin".toLowerCase(Locale.ROOT), OCEAN_RUIN);
-		hashBiMap.put("Fortress".toLowerCase(Locale.ROOT), NETHER_BRIDGE);
-		hashBiMap.put("EndCity".toLowerCase(Locale.ROOT), END_CITY);
-		hashBiMap.put("Buried_Treasure".toLowerCase(Locale.ROOT), BURIED_TREASURE);
-		hashBiMap.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
-		hashBiMap.put("Nether_Fossil".toLowerCase(Locale.ROOT), NETHER_FOSSIL);
+	public static final BiMap<String, StructureFeature<?>> STRUCTURES = Util.make(HashBiMap.create(), map -> {
+		map.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);
+		map.put("Mineshaft".toLowerCase(Locale.ROOT), MINESHAFT);
+		map.put("Mansion".toLowerCase(Locale.ROOT), WOODLAND_MANSION);
+		map.put("Jungle_Pyramid".toLowerCase(Locale.ROOT), JUNGLE_TEMPLE);
+		map.put("Desert_Pyramid".toLowerCase(Locale.ROOT), DESERT_PYRAMID);
+		map.put("Igloo".toLowerCase(Locale.ROOT), IGLOO);
+		map.put("Shipwreck".toLowerCase(Locale.ROOT), SHIPWRECK);
+		map.put("Swamp_Hut".toLowerCase(Locale.ROOT), SWAMP_HUT);
+		map.put("Stronghold".toLowerCase(Locale.ROOT), STRONGHOLD);
+		map.put("Monument".toLowerCase(Locale.ROOT), OCEAN_MONUMENT);
+		map.put("Ocean_Ruin".toLowerCase(Locale.ROOT), OCEAN_RUIN);
+		map.put("Fortress".toLowerCase(Locale.ROOT), NETHER_BRIDGE);
+		map.put("EndCity".toLowerCase(Locale.ROOT), END_CITY);
+		map.put("Buried_Treasure".toLowerCase(Locale.ROOT), BURIED_TREASURE);
+		map.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
+		map.put("Nether_Fossil".toLowerCase(Locale.ROOT), NETHER_FOSSIL);
 	});
 	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
 	private final Function<Dynamic<?>, ? extends FC> configDeserializer;

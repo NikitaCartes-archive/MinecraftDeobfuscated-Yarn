@@ -205,7 +205,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
-		Direction direction = method_24163(state).getOpposite();
+		Direction direction = getOppositePartDirection(state).getOpposite();
 		switch (direction) {
 			case NORTH:
 				return NORTH_SHAPE;
@@ -218,7 +218,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		}
 	}
 
-	public static Direction method_24163(BlockState blockState) {
+	public static Direction getOppositePartDirection(BlockState blockState) {
 		Direction direction = blockState.get(FACING);
 		return blockState.get(PART) == BedPart.HEAD ? direction.getOpposite() : direction;
 	}
@@ -264,7 +264,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		if (voxelShape.getMaximum(Direction.Axis.Y) > 0.4375) {
 			return Optional.empty();
 		} else {
-			BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+			BlockPos.Mutable mutable = pos.mutableCopy();
 
 			while (mutable.getY() >= 0 && pos.getY() - mutable.getY() <= 2 && worldView.getBlockState(mutable).getCollisionShape(worldView, mutable).isEmpty()) {
 				mutable.setOffset(Direction.DOWN);

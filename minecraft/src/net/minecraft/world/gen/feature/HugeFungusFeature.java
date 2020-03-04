@@ -27,7 +27,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 		BlockPos blockPos,
 		HugeFungusFeatureConfig hugeFungusFeatureConfig
 	) {
-		Block block = hugeFungusFeatureConfig.field_22435.getBlock();
+		Block block = hugeFungusFeatureConfig.validBaseBlock.getBlock();
 		BlockPos blockPos2 = null;
 		if (hugeFungusFeatureConfig.planted) {
 			Block block2 = iWorld.getBlockState(blockPos.down()).getBlock();
@@ -82,7 +82,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 				boolean bl = thickStem && MathHelper.abs(j) == i && MathHelper.abs(k) == i;
 
 				for (int l = 0; l < stemHeight; l++) {
-					mutable.set(blockPos).setOffset(j, l, k);
+					mutable.setOffset(blockPos, j, l, k);
 					if (method_24868(world, mutable)) {
 						if (config.planted) {
 							if (!world.getBlockState(mutable.down()).isAir()) {
@@ -126,7 +126,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 					boolean bl4 = !bl2 && !bl3 && k != hatHeight;
 					boolean bl5 = bl2 && bl3;
 					boolean bl6 = k < j + 3;
-					mutable.set(blockPos).setOffset(m, k, n);
+					mutable.setOffset(blockPos, m, k, n);
 					if (method_24868(world, mutable)) {
 						if (config.planted && !world.getBlockState(mutable.down()).isAir()) {
 							world.breakBlock(mutable, true);
@@ -175,7 +175,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 
 	@Nullable
 	private static BlockPos.Mutable getStartPos(IWorld world, BlockPos pos, Block block) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+		BlockPos.Mutable mutable = pos.mutableCopy();
 
 		for (int i = pos.getY(); i >= 1; i--) {
 			mutable.setY(i);
@@ -189,7 +189,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 	}
 
 	private static void generateVines(BlockPos blockPos, IWorld iWorld, Random random) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
+		BlockPos.Mutable mutable = blockPos.mutableCopy().setOffset(Direction.DOWN);
 		if (iWorld.isAir(mutable)) {
 			int i = MathHelper.nextInt(random, 1, 5);
 			if (random.nextInt(7) == 0) {

@@ -1411,10 +1411,10 @@ public class GlStateManager {
 		SRC_COLOR(768),
 		ZERO(0);
 
-		public final int value;
+		public final int field_22528;
 
 		private DstFactor(int j) {
-			this.value = j;
+			this.field_22528 = j;
 		}
 	}
 
@@ -1516,10 +1516,10 @@ public class GlStateManager {
 		SRC_COLOR(768),
 		ZERO(0);
 
-		public final int value;
+		public final int field_22545;
 
 		private SrcFactor(int j) {
-			this.value = j;
+			this.field_22545 = j;
 		}
 	}
 

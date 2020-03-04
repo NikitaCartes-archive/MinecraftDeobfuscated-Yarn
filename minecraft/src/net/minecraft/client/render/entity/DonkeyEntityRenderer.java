@@ -16,8 +16,8 @@ public class DonkeyEntityRenderer<T extends AbstractDonkeyEntity> extends HorseB
 		ImmutableMap.of(EntityType.DONKEY, new Identifier("textures/entity/horse/donkey.png"), EntityType.MULE, new Identifier("textures/entity/horse/mule.png"))
 	);
 
-	public DonkeyEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, float f) {
-		super(entityRenderDispatcher, new DonkeyEntityModel<>(0.0F), f);
+	public DonkeyEntityRenderer(EntityRenderDispatcher dispatcher, float scale) {
+		super(dispatcher, new DonkeyEntityModel<>(0.0F), scale);
 	}
 
 	public Identifier getTexture(T abstractDonkeyEntity) {

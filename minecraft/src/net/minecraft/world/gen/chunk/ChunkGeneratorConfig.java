@@ -108,11 +108,19 @@ public class ChunkGeneratorConfig {
 		this.defaultFluid = state;
 	}
 
-	public int getMaxY() {
+	/**
+	 * Returns the Y level of the bedrock ceiling, or {@code 0} if the bedrock
+	 * ceiling should not be generated.
+	 */
+	public int getBedrockCeilingY() {
 		return 0;
 	}
 
-	public int getMinY() {
+	/**
+	 * Returns the Y level of the bedrock floor, or {@code 256} if the bedrock
+	 * floor should not be generated.
+	 */
+	public int getBedrockFloorY() {
 		return 256;
 	}
 }

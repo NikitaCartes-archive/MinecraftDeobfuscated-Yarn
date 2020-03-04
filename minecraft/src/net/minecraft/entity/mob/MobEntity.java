@@ -35,7 +35,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
-import net.minecraft.entity.decoration.LeadKnotEntity;
+import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -101,8 +101,8 @@ public abstract class MobEntity extends LivingEntity {
 	private BlockPos positionTarget = BlockPos.ORIGIN;
 	private float positionTargetRange = -1.0F;
 
-	protected MobEntity(EntityType<? extends MobEntity> type, World world) {
-		super(type, world);
+	protected MobEntity(EntityType<? extends MobEntity> entityType, World world) {
+		super(entityType, world);
 		this.goalSelector = new GoalSelector(world.method_24367());
 		this.targetSelector = new GoalSelector(world.method_24367());
 		this.lookControl = new LookControl(this);
@@ -355,7 +355,7 @@ public abstract class MobEntity extends LivingEntity {
 			CompoundTag compoundTag2 = new CompoundTag();
 			if (this.holdingEntity instanceof LivingEntity) {
 				UUID uUID = this.holdingEntity.getUuid();
-				compoundTag2.putUuid("UUID", uUID);
+				compoundTag2.putUuidOld("UUID", uUID);
 			} else if (this.holdingEntity instanceof AbstractDecorationEntity) {
 				BlockPos blockPos = ((AbstractDecorationEntity)this.holdingEntity).getDecorationBlockPos();
 				compoundTag2.putInt("X", blockPos.getX());
@@ -505,21 +505,21 @@ public abstract class MobEntity extends LivingEntity {
 				this.dropStack(itemStack);
 			}
 
-			this.method_24834(equipmentSlot, equipment);
+			this.equipLootStack(equipmentSlot, equipment);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected void method_24834(EquipmentSlot equipmentSlot, ItemStack itemStack) {
-		this.equipStack(equipmentSlot, itemStack);
-		switch (equipmentSlot.getType()) {
+	protected void equipLootStack(EquipmentSlot slot, ItemStack stack) {
+		this.equipStack(slot, stack);
+		switch (slot.getType()) {
 			case HAND:
-				this.handDropChances[equipmentSlot.getEntitySlotId()] = 2.0F;
+				this.handDropChances[slot.getEntitySlotId()] = 2.0F;
 				break;
 			case ARMOR:
-				this.armorDropChances[equipmentSlot.getEntitySlotId()] = 2.0F;
+				this.armorDropChances[slot.getEntitySlotId()] = 2.0F;
 		}
 
 		this.persistent = true;
@@ -581,13 +581,17 @@ public abstract class MobEntity extends LivingEntity {
 			Entity entity = this.world.getClosestPlayer(this, -1.0);
 			if (entity != null) {
 				double d = entity.squaredDistanceTo(this);
-				if (d > 16384.0 && this.canImmediatelyDespawn(d)) {
+				int i = this.getType().method_24908();
+				int j = i * i;
+				if (d > (double)j && this.canImmediatelyDespawn(d)) {
 					this.remove();
 				}
 
-				if (this.despawnCounter > 600 && this.random.nextInt(800) == 0 && d > 1024.0 && this.canImmediatelyDespawn(d)) {
+				int k = this.getType().method_24909();
+				int l = k * k;
+				if (this.despawnCounter > 600 && this.random.nextInt(800) == 0 && d > (double)l && this.canImmediatelyDespawn(d)) {
 					this.remove();
-				} else if (d < 1024.0) {
+				} else if (d < (double)l) {
 					this.despawnCounter = 0;
 				}
 			}
@@ -992,7 +996,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean isInWalkTargetRange() {
-		return this.isInWalkTargetRange(new BlockPos(this));
+		return this.isInWalkTargetRange(this.getSenseCenterPos());
 	}
 
 	public boolean isInWalkTargetRange(BlockPos pos) {
@@ -1097,15 +1101,15 @@ public abstract class MobEntity extends LivingEntity {
 
 	private void deserializeLeashTag() {
 		if (this.leashTag != null && this.world instanceof ServerWorld) {
-			if (this.leashTag.containsUuid("UUID")) {
-				UUID uUID = this.leashTag.getUuid("UUID");
+			if (this.leashTag.containsUuidOld("UUID")) {
+				UUID uUID = this.leashTag.getUuidOld("UUID");
 				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
 				if (entity != null) {
 					this.attachLeash(entity, true);
 				}
 			} else if (this.leashTag.contains("X", 99) && this.leashTag.contains("Y", 99) && this.leashTag.contains("Z", 99)) {
 				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
-				this.attachLeash(LeadKnotEntity.getOrCreate(this.world, blockPos), true);
+				this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
 			} else {
 				this.detachLeash(false, true);
 			}

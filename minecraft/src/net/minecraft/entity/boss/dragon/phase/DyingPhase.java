@@ -12,8 +12,8 @@ public class DyingPhase extends AbstractPhase {
 	private Vec3d field_7041;
 	private int ticks;
 
-	public DyingPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public DyingPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class DyingPhase extends AbstractPhase {
 		this.ticks++;
 		if (this.field_7041 == null) {
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
-			this.field_7041 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			this.field_7041 = Vec3d.method_24955(blockPos);
 		}
 
 		double d = this.field_7041.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
@@ -53,7 +53,7 @@ public class DyingPhase extends AbstractPhase {
 	}
 
 	@Override
-	public float method_6846() {
+	public float getMaxYAcceleration() {
 		return 3.0F;
 	}
 

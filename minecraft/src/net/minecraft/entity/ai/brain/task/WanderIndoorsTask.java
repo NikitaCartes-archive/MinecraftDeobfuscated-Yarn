@@ -21,11 +21,11 @@ public class WanderIndoorsTask extends Task<MobEntityWithAi> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-		return !serverWorld.isSkyVisible(new BlockPos(mobEntityWithAi));
+		return !serverWorld.isSkyVisible(mobEntityWithAi.getSenseCenterPos());
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-		BlockPos blockPos = new BlockPos(mobEntityWithAi);
+		BlockPos blockPos = mobEntityWithAi.getSenseCenterPos();
 		List<BlockPos> list = (List<BlockPos>)BlockPos.stream(blockPos.add(-1, -1, -1), blockPos.add(1, 1, 1))
 			.map(BlockPos::toImmutable)
 			.collect(Collectors.toList());

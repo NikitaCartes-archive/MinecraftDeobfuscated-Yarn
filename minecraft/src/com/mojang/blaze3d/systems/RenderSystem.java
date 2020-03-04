@@ -203,7 +203,7 @@ public class RenderSystem {
 
 	public static void blendFunc(GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendFunc(srcFactor.value, dstFactor.value);
+		GlStateManager.blendFunc(srcFactor.field_22545, dstFactor.field_22528);
 	}
 
 	public static void blendFunc(int srcFactor, int dstFactor) {
@@ -215,7 +215,7 @@ public class RenderSystem {
 		GlStateManager.SrcFactor srcFactor, GlStateManager.DstFactor dstFactor, GlStateManager.SrcFactor srcAlpha, GlStateManager.DstFactor dstAlpha
 	) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.blendFuncSeparate(srcFactor.value, dstFactor.value, srcAlpha.value, dstAlpha.value);
+		GlStateManager.blendFuncSeparate(srcFactor.field_22545, dstFactor.field_22528, srcAlpha.field_22545, dstAlpha.field_22528);
 	}
 
 	public static void blendFuncSeparate(int srcFactorRGB, int dstFactorRGB, int srcFactorAlpha, int dstFactorAlpha) {

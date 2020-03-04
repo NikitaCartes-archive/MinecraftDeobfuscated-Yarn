@@ -114,6 +114,7 @@ public class TridentEntity extends ProjectileEntity {
 
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
+		super.onEntityHit(entityHitResult);
 		Entity entity = entityHitResult.getEntity();
 		float f = 8.0F;
 		if (entity instanceof LivingEntity) {
@@ -144,7 +145,7 @@ public class TridentEntity extends ProjectileEntity {
 		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
 		float g = 1.0F;
 		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
-			BlockPos blockPos = entity.getBlockPos();
+			BlockPos blockPos = entity.getSenseCenterPos();
 			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = new LightningEntity(
 					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false

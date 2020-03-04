@@ -29,17 +29,17 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends Feature<T> {
-	public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> configFactory) {
-		super(configFactory);
+	public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> function) {
+		super(function);
 	}
 
 	protected static boolean canTreeReplace(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(
 			pos,
-			blockState -> {
-				Block block = blockState.getBlock();
-				return blockState.isAir()
-					|| blockState.matches(BlockTags.LEAVES)
+			state -> {
+				Block block = state.getBlock();
+				return state.isAir()
+					|| state.matches(BlockTags.LEAVES)
 					|| isDirt(block)
 					|| block.isIn(BlockTags.LOGS)
 					|| block.isIn(BlockTags.SAPLINGS)
@@ -53,38 +53,38 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 	}
 
 	protected static boolean isNaturalDirt(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> {
-			Block block = blockState.getBlock();
+		return world.testBlockState(pos, state -> {
+			Block block = state.getBlock();
 			return isDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM;
 		});
 	}
 
 	protected static boolean isVine(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> blockState.getBlock() == Blocks.VINE);
+		return world.testBlockState(pos, state -> state.getBlock() == Blocks.VINE);
 	}
 
 	public static boolean isWater(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> blockState.getBlock() == Blocks.WATER);
+		return world.testBlockState(pos, state -> state.getBlock() == Blocks.WATER);
 	}
 
 	public static boolean isAirOrLeaves(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> blockState.isAir() || blockState.matches(BlockTags.LEAVES));
+		return world.testBlockState(pos, state -> state.isAir() || state.matches(BlockTags.LEAVES));
 	}
 
 	public static boolean isNaturalDirtOrGrass(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> isDirt(blockState.getBlock()));
+		return world.testBlockState(pos, state -> isDirt(state.getBlock()));
 	}
 
 	protected static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> {
-			Block block = blockState.getBlock();
+		return world.testBlockState(pos, state -> {
+			Block block = state.getBlock();
 			return isDirt(block) || block == Blocks.FARMLAND;
 		});
 	}
 
 	public static boolean isReplaceablePlant(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, blockState -> {
-			Material material = blockState.getMaterial();
+		return world.testBlockState(pos, state -> {
+			Material material = state.getMaterial();
 			return material == Material.REPLACEABLE_PLANT;
 		});
 	}
@@ -96,24 +96,24 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 	}
 
 	protected boolean setLogBlockState(
-		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, BlockBox blockBox, TreeFeatureConfig config
+		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, BlockBox box, TreeFeatureConfig config
 	) {
 		if (!isAirOrLeaves(world, pos) && !isReplaceablePlant(world, pos) && !isWater(world, pos)) {
 			return false;
 		} else {
-			this.setBlockState(world, pos, config.trunkProvider.getBlockState(random, pos), blockBox);
+			this.setBlockState(world, pos, config.trunkProvider.getBlockState(random, pos), box);
 			logPositions.add(pos.toImmutable());
 			return true;
 		}
 	}
 
 	protected boolean setLeavesBlockState(
-		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> leavesPositions, BlockBox blockBox, TreeFeatureConfig config
+		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> leavesPositions, BlockBox box, TreeFeatureConfig config
 	) {
 		if (!isAirOrLeaves(world, pos) && !isReplaceablePlant(world, pos) && !isWater(world, pos)) {
 			return false;
 		} else {
-			this.setBlockState(world, pos, config.leavesProvider.getBlockState(random, pos), blockBox);
+			this.setBlockState(world, pos, config.leavesProvider.getBlockState(random, pos), box);
 			leavesPositions.add(pos.toImmutable());
 			return true;
 		}
@@ -124,13 +124,13 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 		this.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
 	}
 
-	protected final void setBlockState(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, BlockBox blockBox) {
-		this.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
-		blockBox.encompass(new BlockBox(blockPos, blockPos));
+	protected final void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state, BlockBox box) {
+		this.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
+		box.encompass(new BlockBox(pos, pos));
 	}
 
-	private void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
-		modifiableWorld.setBlockState(blockPos, blockState, 19);
+	private void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
+		world.setBlockState(pos, state, 19);
 	}
 
 	public final boolean generate(
@@ -147,77 +147,77 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 				List<BlockPos> list2 = Lists.<BlockPos>newArrayList(set2);
 				list.sort(Comparator.comparingInt(Vec3i::getY));
 				list2.sort(Comparator.comparingInt(Vec3i::getY));
-				treeFeatureConfig.decorators.forEach(treeDecorator -> treeDecorator.generate(iWorld, random, list, list2, set3, blockBox));
+				treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(iWorld, random, list, list2, set3, blockBox));
 			}
 
-			VoxelSet voxelSet = this.method_23380(iWorld, blockBox, set, set3);
-			Structure.method_20532(iWorld, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
+			VoxelSet voxelSet = this.placeLogsAndLeaves(iWorld, blockBox, set, set3);
+			Structure.updateCorner(iWorld, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private VoxelSet method_23380(IWorld iWorld, BlockBox blockBox, Set<BlockPos> set, Set<BlockPos> set2) {
+	private VoxelSet placeLogsAndLeaves(IWorld world, BlockBox box, Set<BlockPos> logs, Set<BlockPos> leaves) {
 		List<Set<BlockPos>> list = Lists.<Set<BlockPos>>newArrayList();
-		VoxelSet voxelSet = new BitSetVoxelSet(blockBox.getBlockCountX(), blockBox.getBlockCountY(), blockBox.getBlockCountZ());
+		VoxelSet voxelSet = new BitSetVoxelSet(box.getBlockCountX(), box.getBlockCountY(), box.getBlockCountZ());
 		int i = 6;
 
 		for (int j = 0; j < 6; j++) {
 			list.add(Sets.newHashSet());
 		}
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (BlockPos blockPos : Lists.newArrayList(set2)) {
-				if (blockBox.contains(blockPos)) {
-					voxelSet.set(blockPos.getX() - blockBox.minX, blockPos.getY() - blockBox.minY, blockPos.getZ() - blockBox.minZ, true, true);
-				}
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (BlockPos blockPos : Lists.newArrayList(leaves)) {
+			if (box.contains(blockPos)) {
+				voxelSet.set(blockPos.getX() - box.minX, blockPos.getY() - box.minY, blockPos.getZ() - box.minZ, true, true);
+			}
+		}
+
+		for (BlockPos blockPosx : Lists.newArrayList(logs)) {
+			if (box.contains(blockPosx)) {
+				voxelSet.set(blockPosx.getX() - box.minX, blockPosx.getY() - box.minY, blockPosx.getZ() - box.minZ, true, true);
 			}
 
-			for (BlockPos blockPosx : Lists.newArrayList(set)) {
-				if (blockBox.contains(blockPosx)) {
-					voxelSet.set(blockPosx.getX() - blockBox.minX, blockPosx.getY() - blockBox.minY, blockPosx.getZ() - blockBox.minZ, true, true);
-				}
-
-				for (Direction direction : Direction.values()) {
-					pooledMutable.set(blockPosx).setOffset(direction);
-					if (!set.contains(pooledMutable)) {
-						BlockState blockState = iWorld.getBlockState(pooledMutable);
-						if (blockState.contains(Properties.DISTANCE_1_7)) {
-							((Set)list.get(0)).add(pooledMutable.toImmutable());
-							this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
-							if (blockBox.contains(pooledMutable)) {
-								voxelSet.set(pooledMutable.getX() - blockBox.minX, pooledMutable.getY() - blockBox.minY, pooledMutable.getZ() - blockBox.minZ, true, true);
-							}
+			for (Direction direction : Direction.values()) {
+				mutable.move(blockPosx, direction);
+				if (!logs.contains(mutable)) {
+					BlockState blockState = world.getBlockState(mutable);
+					if (blockState.contains(Properties.DISTANCE_1_7)) {
+						((Set)list.get(0)).add(mutable.toImmutable());
+						this.setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
+						if (box.contains(mutable)) {
+							voxelSet.set(mutable.getX() - box.minX, mutable.getY() - box.minY, mutable.getZ() - box.minZ, true, true);
 						}
 					}
 				}
 			}
+		}
 
-			for (int k = 1; k < 6; k++) {
-				Set<BlockPos> set3 = (Set<BlockPos>)list.get(k - 1);
-				Set<BlockPos> set4 = (Set<BlockPos>)list.get(k);
+		for (int k = 1; k < 6; k++) {
+			Set<BlockPos> set = (Set<BlockPos>)list.get(k - 1);
+			Set<BlockPos> set2 = (Set<BlockPos>)list.get(k);
 
-				for (BlockPos blockPos2 : set3) {
-					if (blockBox.contains(blockPos2)) {
-						voxelSet.set(blockPos2.getX() - blockBox.minX, blockPos2.getY() - blockBox.minY, blockPos2.getZ() - blockBox.minZ, true, true);
-					}
+			for (BlockPos blockPos2 : set) {
+				if (box.contains(blockPos2)) {
+					voxelSet.set(blockPos2.getX() - box.minX, blockPos2.getY() - box.minY, blockPos2.getZ() - box.minZ, true, true);
+				}
 
-					for (Direction direction2 : Direction.values()) {
-						pooledMutable.set(blockPos2).setOffset(direction2);
-						if (!set3.contains(pooledMutable) && !set4.contains(pooledMutable)) {
-							BlockState blockState2 = iWorld.getBlockState(pooledMutable);
-							if (blockState2.contains(Properties.DISTANCE_1_7)) {
-								int l = (Integer)blockState2.get(Properties.DISTANCE_1_7);
-								if (l > k + 1) {
-									BlockState blockState3 = blockState2.with(Properties.DISTANCE_1_7, Integer.valueOf(k + 1));
-									this.setBlockStateWithoutUpdatingNeighbors(iWorld, pooledMutable, blockState3);
-									if (blockBox.contains(pooledMutable)) {
-										voxelSet.set(pooledMutable.getX() - blockBox.minX, pooledMutable.getY() - blockBox.minY, pooledMutable.getZ() - blockBox.minZ, true, true);
-									}
-
-									set4.add(pooledMutable.toImmutable());
+				for (Direction direction2 : Direction.values()) {
+					mutable.move(blockPos2, direction2);
+					if (!set.contains(mutable) && !set2.contains(mutable)) {
+						BlockState blockState2 = world.getBlockState(mutable);
+						if (blockState2.contains(Properties.DISTANCE_1_7)) {
+							int l = (Integer)blockState2.get(Properties.DISTANCE_1_7);
+							if (l > k + 1) {
+								BlockState blockState3 = blockState2.with(Properties.DISTANCE_1_7, Integer.valueOf(k + 1));
+								this.setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState3);
+								if (box.contains(mutable)) {
+									voxelSet.set(mutable.getX() - box.minX, mutable.getY() - box.minY, mutable.getZ() - box.minZ, true, true);
 								}
+
+								set2.add(mutable.toImmutable());
 							}
 						}
 					}
@@ -229,6 +229,6 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 	}
 
 	protected abstract boolean generate(
-		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, Set<BlockPos> leavesPositions, BlockBox blockBox, T config
+		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, Set<BlockPos> leavesPositions, BlockBox box, T config
 	);
 }

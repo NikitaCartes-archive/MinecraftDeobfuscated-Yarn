@@ -86,22 +86,22 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	@Override
-	public int onResize(int newSize, T objectAdded) {
+	public int onResize(int i, T object) {
 		this.lock();
 		PackedIntegerArray packedIntegerArray = this.data;
 		Palette<T> palette = this.palette;
-		this.setPaletteSize(newSize);
+		this.setPaletteSize(i);
 
-		for (int i = 0; i < packedIntegerArray.getSize(); i++) {
-			T object = palette.getByIndex(packedIntegerArray.get(i));
-			if (object != null) {
-				this.set(i, object);
+		for (int j = 0; j < packedIntegerArray.getSize(); j++) {
+			T object2 = palette.getByIndex(packedIntegerArray.get(j));
+			if (object2 != null) {
+				this.set(j, object2);
 			}
 		}
 
-		int ix = this.palette.getIndex(objectAdded);
+		int jx = this.palette.getIndex(object);
 		this.unlock();
-		return ix;
+		return jx;
 	}
 
 	public T setSync(int x, int y, int z, T value) {

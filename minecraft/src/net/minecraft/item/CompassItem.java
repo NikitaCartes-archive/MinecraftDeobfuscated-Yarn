@@ -25,12 +25,12 @@ public class CompassItem extends Item {
 
 			@Environment(EnvType.CLIENT)
 			@Override
-			public float call(ItemStack stack, @Nullable World world, @Nullable LivingEntity user) {
-				if (user == null && !stack.isInFrame()) {
+			public float call(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+				if (livingEntity == null && !itemStack.isInFrame()) {
 					return 0.0F;
 				} else {
-					boolean bl = user != null;
-					Entity entity = (Entity)(bl ? user : stack.getFrame());
+					boolean bl = livingEntity != null;
+					Entity entity = (Entity)(bl ? livingEntity : itemStack.getFrame());
 					if (world == null) {
 						world = entity.world;
 					}

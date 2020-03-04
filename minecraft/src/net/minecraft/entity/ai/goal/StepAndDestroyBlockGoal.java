@@ -73,7 +73,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	public void tick() {
 		super.tick();
 		World world = this.stepAndDestroyMob.world;
-		BlockPos blockPos = new BlockPos(this.stepAndDestroyMob);
+		BlockPos blockPos = this.stepAndDestroyMob.getSenseCenterPos();
 		BlockPos blockPos2 = this.tweakToProperPos(blockPos, world);
 		Random random = this.stepAndDestroyMob.getRandom();
 		if (this.hasReached() && blockPos2 != null) {

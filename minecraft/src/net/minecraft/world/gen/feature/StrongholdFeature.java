@@ -26,12 +26,12 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	private final List<StructureStart> starts = Lists.<StructureStart>newArrayList();
 	private long lastSeed;
 
-	public StrongholdFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public StrongholdFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome) {
+	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
 		if (this.lastSeed != chunkGenerator.getSeed()) {
 			this.invalidateState();
 		}
@@ -42,7 +42,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		for (ChunkPos chunkPos : this.startPositions) {
-			if (chunkZ == chunkPos.x && i == chunkPos.z) {
+			if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
 				return true;
 			}
 		}
@@ -165,8 +165,8 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override
@@ -178,7 +178,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 			do {
 				this.children.clear();
 				this.boundingBox = BlockBox.empty();
-				this.random.setStructureSeed(l + (long)(i++), x, z);
+				this.random.setCarverSeed(l + (long)(i++), x, z);
 				StrongholdGenerator.init();
 				start = new StrongholdGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
 				this.children.add(start);

@@ -14,7 +14,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
@@ -22,6 +21,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -36,6 +36,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.screen.NameableScreenHandlerFactory;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
@@ -181,13 +182,13 @@ public class Block implements ItemConvertible {
 
 	@Deprecated
 	public void updateNeighborStates(BlockState state, IWorld world, BlockPos pos, int flags) {
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (Direction direction : FACINGS) {
-				pooledMutable.set(pos).setOffset(direction);
-				BlockState blockState = world.getBlockState(pooledMutable);
-				BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), state, world, pooledMutable, pos);
-				replaceBlock(blockState, blockState2, world, pooledMutable, flags);
-			}
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (Direction direction : FACINGS) {
+			mutable.move(pos, direction);
+			BlockState blockState = world.getBlockState(mutable);
+			BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), state, world, mutable, pos);
+			replaceBlock(blockState, blockState2, world, mutable, flags);
 		}
 	}
 
@@ -200,7 +201,7 @@ public class Block implements ItemConvertible {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : FACINGS) {
-			mutable.set(pos).setOffset(direction);
+			mutable.move(pos, direction);
 			blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
 		}
 
@@ -472,7 +473,7 @@ public class Block implements ItemConvertible {
 
 	@Nullable
 	@Deprecated
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
+	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return null;
 	}
 
@@ -721,7 +722,7 @@ public class Block implements ItemConvertible {
 		return MathHelper.hashCode(pos);
 	}
 
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
 	}
 
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {

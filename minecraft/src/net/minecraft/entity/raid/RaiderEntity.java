@@ -55,8 +55,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	private boolean ableToJoinRaid;
 	private int outOfRaidCounter;
 
-	protected RaiderEntity(EntityType<? extends RaiderEntity> type, World world) {
-		super(type, world);
+	protected RaiderEntity(EntityType<? extends RaiderEntity> entityType, World world) {
+		super(entityType, world);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.canJoinRaid()) {
 				if (raid == null) {
 					if (this.world.getTime() % 20L == 0L) {
-						Raid raid2 = ((ServerWorld)this.world).getRaidAt(new BlockPos(this));
+						Raid raid2 = ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos());
 						if (raid2 != null && RaidManager.isValidRaiderFor(this, raid2)) {
 							raid2.addRaider(raid2.getGroupsSpawned(), this, null, true);
 						}
@@ -130,7 +130,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				raid.removeFromWave(this, false);
 			}
 
-			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
+			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos()) == null) {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				PlayerEntity playerEntity = null;
 				if (entity instanceof PlayerEntity) {
@@ -314,7 +314,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		private boolean tryFindHome() {
 			ServerWorld serverWorld = (ServerWorld)this.raider.world;
-			BlockPos blockPos = new BlockPos(this.raider);
+			BlockPos blockPos = this.raider.getSenseCenterPos();
 			Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
 				.getPosition(
 					pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
@@ -359,7 +359,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		@Override
 		public void tick() {
 			if (this.raider.getNavigation().isIdle()) {
-				Vec3d vec3d = new Vec3d(this.home);
+				Vec3d vec3d = Vec3d.method_24955(this.home);
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.raider, 16, 7, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
 					vec3d2 = TargetFinder.findTargetTowards(this.raider, 8, 7, vec3d);

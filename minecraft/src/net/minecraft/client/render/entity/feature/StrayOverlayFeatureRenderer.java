@@ -15,8 +15,8 @@ public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttackMob, 
 	private static final Identifier SKIN = new Identifier("textures/entity/skeleton/stray_overlay.png");
 	private final SkeletonEntityModel<T> model = new SkeletonEntityModel<>(0.25F, true);
 
-	public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

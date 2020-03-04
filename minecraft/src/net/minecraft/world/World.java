@@ -209,7 +209,7 @@ public abstract class World implements IWorld, AutoCloseable {
 					if ((flags & 1) != 0) {
 						this.updateNeighbors(pos, blockState.getBlock());
 						if (!this.isClient && state.hasComparatorOutput()) {
-							this.updateHorizontalAdjacent(pos, block);
+							this.updateComparators(pos, block);
 						}
 					}
 
@@ -522,21 +522,20 @@ public abstract class World implements IWorld, AutoCloseable {
 		int l = MathHelper.ceil(box.y2);
 		int m = MathHelper.floor(box.z1);
 		int n = MathHelper.ceil(box.z2);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int o = i; o < j; o++) {
-				for (int p = k; p < l; p++) {
-					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-						if (!blockState.isAir()) {
-							return true;
-						}
+		for (int o = i; o < j; o++) {
+			for (int p = k; p < l; p++) {
+				for (int q = m; q < n; q++) {
+					BlockState blockState = this.getBlockState(mutable.set(o, p, q));
+					if (!blockState.isAir()) {
+						return true;
 					}
 				}
 			}
-
-			return false;
 		}
+
+		return false;
 	}
 
 	public boolean doesAreaContainFireSource(Box box) {
@@ -547,14 +546,14 @@ public abstract class World implements IWorld, AutoCloseable {
 		int m = MathHelper.floor(box.z1);
 		int n = MathHelper.ceil(box.z2);
 		if (this.isRegionLoaded(i, k, m, j, l, n)) {
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (int o = i; o < j; o++) {
-					for (int p = k; p < l; p++) {
-						for (int q = m; q < n; q++) {
-							BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-							if (blockState.matches(BlockTags.FIRE) || blockState.getBlock() == Blocks.LAVA) {
-								return true;
-							}
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			for (int o = i; o < j; o++) {
+				for (int p = k; p < l; p++) {
+					for (int q = m; q < n; q++) {
+						BlockState blockState = this.getBlockState(mutable.set(o, p, q));
+						if (blockState.matches(BlockTags.FIRE) || blockState.getBlock() == Blocks.LAVA) {
+							return true;
 						}
 					}
 				}
@@ -574,23 +573,21 @@ public abstract class World implements IWorld, AutoCloseable {
 		int m = MathHelper.floor(area.z1);
 		int n = MathHelper.ceil(area.z2);
 		if (this.isRegionLoaded(i, k, m, j, l, n)) {
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (int o = i; o < j; o++) {
-					for (int p = k; p < l; p++) {
-						for (int q = m; q < n; q++) {
-							BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-							if (blockState.getBlock() == block) {
-								return blockState;
-							}
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			for (int o = i; o < j; o++) {
+				for (int p = k; p < l; p++) {
+					for (int q = m; q < n; q++) {
+						BlockState blockState = this.getBlockState(mutable.set(o, p, q));
+						if (blockState.getBlock() == block) {
+							return blockState;
 						}
 					}
 				}
-
-				return null;
 			}
-		} else {
-			return null;
 		}
+
+		return null;
 	}
 
 	public boolean containsBlockWithMaterial(Box area, Material material) {
@@ -632,17 +629,6 @@ public abstract class World implements IWorld, AutoCloseable {
 		explosion.collectBlocksAndDamageEntities();
 		explosion.affectWorld(true);
 		return explosion;
-	}
-
-	public boolean extinguishFire(@Nullable PlayerEntity playerEntity, BlockPos blockPos, Direction direction) {
-		blockPos = blockPos.offset(direction);
-		if (this.getBlockState(blockPos).matches(BlockTags.FIRE)) {
-			this.playLevelEvent(playerEntity, 1009, blockPos, 0);
-			this.removeBlock(blockPos, false);
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -736,7 +722,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			return false;
 		} else {
 			Chunk chunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
-			return chunk == null ? false : chunk.getBlockState(blockPos).hasSolidSurface(this, blockPos, entity, direction);
+			return chunk == null ? false : chunk.getBlockState(blockPos).isSideOpaque(this, blockPos, entity, direction);
 		}
 	}
 
@@ -1103,7 +1089,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public abstract Scoreboard getScoreboard();
 
-	public void updateHorizontalAdjacent(BlockPos pos, Block block) {
+	public void updateComparators(BlockPos pos, Block block) {
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos = pos.offset(direction);
 			if (this.isChunkLoaded(blockPos)) {

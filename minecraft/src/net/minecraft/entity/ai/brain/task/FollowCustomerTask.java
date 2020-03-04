@@ -27,7 +27,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 			&& !villagerEntity.isTouchingWater()
 			&& !villagerEntity.velocityModified
 			&& villagerEntity.squaredDistanceTo(playerEntity) <= 16.0
-			&& playerEntity.container != null;
+			&& playerEntity.currentScreenHandler != null;
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {

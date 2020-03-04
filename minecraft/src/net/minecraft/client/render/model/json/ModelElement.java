@@ -66,12 +66,12 @@ public class ModelElement {
 		protected Deserializer() {
 		}
 
-		public ModelElement deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject jsonObject = element.getAsJsonObject();
+		public ModelElement deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Vector3f vector3f = this.deserializeFrom(jsonObject);
 			Vector3f vector3f2 = this.deserializeTo(jsonObject);
 			ModelRotation modelRotation = this.deserializeRotation(jsonObject);
-			Map<Direction, ModelElementFace> map = this.deserializeFacesValidating(context, jsonObject);
+			Map<Direction, ModelElementFace> map = this.deserializeFacesValidating(jsonDeserializationContext, jsonObject);
 			if (jsonObject.has("shade") && !JsonHelper.hasBoolean(jsonObject, "shade")) {
 				throw new JsonParseException("Expected shade to be a Boolean");
 			} else {

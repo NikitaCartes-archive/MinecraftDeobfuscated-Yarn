@@ -16,12 +16,12 @@ public abstract class FlowerFeature<U extends FeatureConfig> extends Feature<U> 
 
 	@Override
 	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, U config) {
-		BlockState blockState = this.getFlowerToPlace(random, pos, config);
+		BlockState blockState = this.getFlowerState(random, pos, config);
 		int i = 0;
 
-		for (int j = 0; j < this.method_23370(config); j++) {
-			BlockPos blockPos = this.method_23371(random, pos, config);
-			if (world.isAir(blockPos) && blockPos.getY() < 255 && blockState.canPlaceAt(world, blockPos) && this.method_23369(world, blockPos, config)) {
+		for (int j = 0; j < this.getFlowerAmount(config); j++) {
+			BlockPos blockPos = this.getPos(random, pos, config);
+			if (world.isAir(blockPos) && blockPos.getY() < 255 && blockState.canPlaceAt(world, blockPos) && this.isPosValid(world, blockPos, config)) {
 				world.setBlockState(blockPos, blockState, 2);
 				i++;
 			}
@@ -30,11 +30,11 @@ public abstract class FlowerFeature<U extends FeatureConfig> extends Feature<U> 
 		return i > 0;
 	}
 
-	public abstract boolean method_23369(IWorld iWorld, BlockPos blockPos, U featureConfig);
+	public abstract boolean isPosValid(IWorld world, BlockPos pos, U config);
 
-	public abstract int method_23370(U featureConfig);
+	public abstract int getFlowerAmount(U config);
 
-	public abstract BlockPos method_23371(Random random, BlockPos blockPos, U featureConfig);
+	public abstract BlockPos getPos(Random random, BlockPos pos, U config);
 
-	public abstract BlockState getFlowerToPlace(Random random, BlockPos blockPos, U featureConfig);
+	public abstract BlockState getFlowerState(Random random, BlockPos pos, U config);
 }

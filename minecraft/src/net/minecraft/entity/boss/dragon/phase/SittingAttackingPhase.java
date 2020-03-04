@@ -6,8 +6,8 @@ import net.minecraft.sound.SoundEvents;
 public class SittingAttackingPhase extends AbstractSittingPhase {
 	private int ticks;
 
-	public SittingAttackingPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public SittingAttackingPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override

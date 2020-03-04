@@ -58,17 +58,17 @@ public class OptimizeWorldScreen extends Screen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		int i = this.width / 2 - 150;
 		int j = this.width / 2 + 150;
 		int k = this.height / 4 + 100;
 		int l = k + 10;
-		this.drawCenteredString(this.font, this.updater.getStatus().asFormattedString(), this.width / 2, k - 9 - 2, 10526880);
+		this.drawCenteredString(this.textRenderer, this.updater.getStatus().asFormattedString(), this.width / 2, k - 9 - 2, 10526880);
 		if (this.updater.getTotalChunkCount() > 0) {
 			fill(i - 1, k - 1, j + 1, l + 1, -16777216);
-			this.drawString(this.font, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
-			this.drawString(this.font, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880);
-			this.drawString(this.font, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880);
+			this.drawString(this.textRenderer, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
+			this.drawString(this.textRenderer, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880);
+			this.drawString(this.textRenderer, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880);
 			int m = 0;
 
 			for (DimensionType dimensionType : DimensionType.getAll()) {
@@ -78,8 +78,8 @@ public class OptimizeWorldScreen extends Screen {
 			}
 
 			int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-			this.drawCenteredString(this.font, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * 9 + 2, 10526880);
-			this.drawCenteredString(this.font, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880);
+			this.drawCenteredString(this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * 9 + 2, 10526880);
+			this.drawCenteredString(this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880);
 		}
 
 		super.render(mouseX, mouseY, delta);

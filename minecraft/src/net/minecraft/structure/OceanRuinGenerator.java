@@ -122,7 +122,7 @@ public class OceanRuinGenerator {
 	) {
 		int i = pos.getX();
 		int j = pos.getZ();
-		BlockPos blockPos = Structure.method_15168(new BlockPos(15, 0, 15), BlockMirror.NONE, rotation, BlockPos.ORIGIN).add(i, 0, j);
+		BlockPos blockPos = Structure.transformAround(new BlockPos(15, 0, 15), BlockMirror.NONE, rotation, BlockPos.ORIGIN).add(i, 0, j);
 		BlockBox blockBox = BlockBox.create(i, 0, j, blockPos.getX(), 0, blockPos.getZ());
 		BlockPos blockPos2 = new BlockPos(Math.min(i, blockPos.getX()), 0, Math.min(j, blockPos.getZ()));
 		List<BlockPos> list = getRoomPositions(random, blockPos2.getX(), blockPos2.getZ());
@@ -135,7 +135,7 @@ public class OceanRuinGenerator {
 				int n = blockPos3.getX();
 				int o = blockPos3.getZ();
 				BlockRotation blockRotation = BlockRotation.values()[random.nextInt(BlockRotation.values().length)];
-				BlockPos blockPos4 = Structure.method_15168(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(n, 0, o);
+				BlockPos blockPos4 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(n, 0, o);
 				BlockBox blockBox2 = BlockBox.create(n, 0, o, blockPos4.getX(), 0, blockPos4.getZ());
 				if (!blockBox2.intersects(blockBox)) {
 					method_14822(manager, blockPos3, blockRotation, pieces, random, config, false, 0.8F);
@@ -267,7 +267,7 @@ public class OceanRuinGenerator {
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
-			BlockPos blockPos = Structure.method_15168(
+			BlockPos blockPos = Structure.transformAround(
 					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), BlockMirror.NONE, this.rotation, BlockPos.ORIGIN
 				)
 				.add(this.pos);

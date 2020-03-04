@@ -8,7 +8,6 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 
 public class HideWhenBellRingsTask extends Task<LivingEntity> {
 	public HideWhenBellRingsTask() {
@@ -18,7 +17,7 @@ public class HideWhenBellRingsTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
-		Raid raid = world.getRaidAt(new BlockPos(entity));
+		Raid raid = world.getRaidAt(entity.getSenseCenterPos());
 		if (raid == null) {
 			brain.method_24526(Activity.HIDE);
 		}

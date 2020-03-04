@@ -65,7 +65,7 @@ public class ZombieSiegeManager {
 	private boolean spawn(ServerWorld world) {
 		for (PlayerEntity playerEntity : world.getPlayers()) {
 			if (!playerEntity.isSpectator()) {
-				BlockPos blockPos = playerEntity.getBlockPos();
+				BlockPos blockPos = playerEntity.getSenseCenterPos();
 				if (world.isNearOccupiedPointOfInterest(blockPos) && world.getBiome(blockPos).getCategory() != Biome.Category.MUSHROOM) {
 					for (int i = 0; i < 10; i++) {
 						float f = world.random.nextFloat() * (float) (Math.PI * 2);
@@ -93,7 +93,7 @@ public class ZombieSiegeManager {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(world);
-				zombieEntity.initialize(world, world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.EVENT, null, null);
+				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getSenseCenterPos()), SpawnType.EVENT, null, null);
 			} catch (Exception var5) {
 				var5.printStackTrace();
 				return;
@@ -112,7 +112,7 @@ public class ZombieSiegeManager {
 			int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, j, k);
 			BlockPos blockPos = new BlockPos(j, l, k);
 			if (world.isNearOccupiedPointOfInterest(blockPos) && HostileEntity.canSpawnInDark(EntityType.ZOMBIE, world, SpawnType.EVENT, blockPos, world.random)) {
-				return new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
+				return Vec3d.method_24955(blockPos);
 			}
 		}
 

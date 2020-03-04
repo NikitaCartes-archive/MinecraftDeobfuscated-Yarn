@@ -55,8 +55,8 @@ public interface ParentElement extends Element {
 	void setDragging(boolean dragging);
 
 	@Override
-	default boolean mouseScrolled(double d, double e, double amount) {
-		return this.hoveredElement(d, e).filter(element -> element.mouseScrolled(d, e, amount)).isPresent();
+	default boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		return this.hoveredElement(mouseX, mouseY).filter(element -> element.mouseScrolled(mouseX, mouseY, amount)).isPresent();
 	}
 
 	@Override
@@ -81,6 +81,7 @@ public interface ParentElement extends Element {
 
 	default void setInitialFocus(@Nullable Element element) {
 		this.setFocused(element);
+		element.changeFocus(true);
 	}
 
 	default void focusOn(@Nullable Element element) {
@@ -88,30 +89,30 @@ public interface ParentElement extends Element {
 	}
 
 	@Override
-	default boolean changeFocus(boolean bl) {
+	default boolean changeFocus(boolean lookForwards) {
 		Element element = this.getFocused();
-		boolean bl2 = element != null;
-		if (bl2 && element.changeFocus(bl)) {
+		boolean bl = element != null;
+		if (bl && element.changeFocus(lookForwards)) {
 			return true;
 		} else {
 			List<? extends Element> list = this.children();
 			int i = list.indexOf(element);
 			int j;
-			if (bl2 && i >= 0) {
-				j = i + (bl ? 1 : 0);
-			} else if (bl) {
+			if (bl && i >= 0) {
+				j = i + (lookForwards ? 1 : 0);
+			} else if (lookForwards) {
 				j = 0;
 			} else {
 				j = list.size();
 			}
 
 			ListIterator<? extends Element> listIterator = list.listIterator(j);
-			BooleanSupplier booleanSupplier = bl ? listIterator::hasNext : listIterator::hasPrevious;
-			Supplier<? extends Element> supplier = bl ? listIterator::next : listIterator::previous;
+			BooleanSupplier booleanSupplier = lookForwards ? listIterator::hasNext : listIterator::hasPrevious;
+			Supplier<? extends Element> supplier = lookForwards ? listIterator::next : listIterator::previous;
 
 			while (booleanSupplier.getAsBoolean()) {
 				Element element2 = (Element)supplier.get();
-				if (element2.changeFocus(bl)) {
+				if (element2.changeFocus(lookForwards)) {
 					this.setFocused(element2);
 					return true;
 				}

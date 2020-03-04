@@ -28,7 +28,7 @@ public class DisconnectedScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.reasonFormatted = this.font.wrapStringToWidthAsList(this.reason.asFormattedString(), this.width - 50);
+		this.reasonFormatted = this.textRenderer.wrapStringToWidthAsList(this.reason.asFormattedString(), this.width - 50);
 		this.reasonHeight = this.reasonFormatted.size() * 9;
 		this.addButton(
 			new ButtonWidget(
@@ -37,7 +37,7 @@ public class DisconnectedScreen extends Screen {
 				200,
 				20,
 				I18n.translate("gui.toMenu"),
-				buttonWidget -> this.minecraft.openScreen(this.parent)
+				buttonWidget -> this.client.openScreen(this.parent)
 			)
 		);
 	}
@@ -45,11 +45,11 @@ public class DisconnectedScreen extends Screen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
 		int i = this.height / 2 - this.reasonHeight / 2;
 		if (this.reasonFormatted != null) {
 			for (String string : this.reasonFormatted) {
-				this.drawCenteredString(this.font, string, this.width / 2, i, 16777215);
+				this.drawCenteredString(this.textRenderer, string, this.width / 2, i, 16777215);
 				i += 9;
 			}
 		}

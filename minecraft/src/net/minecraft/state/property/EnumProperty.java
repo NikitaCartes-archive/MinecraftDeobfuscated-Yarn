@@ -45,11 +45,11 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object object) {
+		if (this == object) {
 			return true;
-		} else if (o instanceof EnumProperty && super.equals(o)) {
-			EnumProperty<?> enumProperty = (EnumProperty<?>)o;
+		} else if (object instanceof EnumProperty && super.equals(object)) {
+			EnumProperty<?> enumProperty = (EnumProperty<?>)object;
 			return this.values.equals(enumProperty.values) && this.byName.equals(enumProperty.byName);
 		} else {
 			return false;

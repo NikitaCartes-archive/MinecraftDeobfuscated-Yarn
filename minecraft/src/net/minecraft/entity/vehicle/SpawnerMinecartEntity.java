@@ -24,7 +24,7 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 
 		@Override
 		public BlockPos getPos() {
-			return new BlockPos(SpawnerMinecartEntity.this);
+			return SpawnerMinecartEntity.this.getSenseCenterPos();
 		}
 	};
 

@@ -11,18 +11,18 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.container.PlayerContainer;
-import net.minecraft.container.Slot;
-import net.minecraft.container.SlotActionType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
-public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> implements RecipeBookProvider {
-	private static final Identifier RECIPE_BUTTON_TEX = new Identifier("textures/gui/recipe_button.png");
+public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler> implements RecipeBookProvider {
+	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	private float mouseX;
 	private float mouseY;
 	private final RecipeBookWidget recipeBook = new RecipeBookWidget();
@@ -31,14 +31,14 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	private boolean isMouseDown;
 
 	public InventoryScreen(PlayerEntity player) {
-		super(player.playerContainer, player.inventory, new TranslatableText("container.crafting"));
+		super(player.playerScreenHandler, player.inventory, new TranslatableText("container.crafting"));
 		this.passEvents = true;
 	}
 
 	@Override
 	public void tick() {
-		if (this.minecraft.interactionManager.hasCreativeInventory()) {
-			this.minecraft.openScreen(new CreativeInventoryScreen(this.minecraft.player));
+		if (this.client.interactionManager.hasCreativeInventory()) {
+			this.client.openScreen(new CreativeInventoryScreen(this.client.player));
 		} else {
 			this.recipeBook.update();
 		}
@@ -46,20 +46,20 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 
 	@Override
 	protected void init() {
-		if (this.minecraft.interactionManager.hasCreativeInventory()) {
-			this.minecraft.openScreen(new CreativeInventoryScreen(this.minecraft.player));
+		if (this.client.interactionManager.hasCreativeInventory()) {
+			this.client.openScreen(new CreativeInventoryScreen(this.client.player));
 		} else {
 			super.init();
 			this.isNarrow = this.width < 379;
-			this.recipeBook.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
+			this.recipeBook.initialize(this.width, this.height, this.client, this.isNarrow, this.handler);
 			this.isOpen = true;
-			this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+			this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.backgroundWidth);
 			this.children.add(this.recipeBook);
 			this.setInitialFocus(this.recipeBook);
-			this.addButton(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+			this.addButton(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
 				this.recipeBook.reset(this.isNarrow);
 				this.recipeBook.toggleOpen();
-				this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+				this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.backgroundWidth);
 				((TexturedButtonWidget)buttonWidget).setPos(this.x + 104, this.height / 2 - 22);
 				this.isMouseDown = true;
 			}));
@@ -68,7 +68,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 
 	@Override
 	protected void drawForeground(int mouseX, int mouseY) {
-		this.font.draw(this.title.asFormattedString(), 97.0F, 8.0F, 4210752);
+		this.textRenderer.draw(this.title.asFormattedString(), 97.0F, 8.0F, 4210752);
 	}
 
 	@Override
@@ -94,11 +94,11 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	@Override
 	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 		int i = this.x;
 		int j = this.y;
-		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
-		drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.minecraft.player);
+		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.client.player);
 	}
 
 	public static void drawEntity(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity) {
@@ -168,9 +168,9 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerContainer> im
 	protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
 		boolean bl = mouseX < (double)left
 			|| mouseY < (double)top
-			|| mouseX >= (double)(left + this.containerWidth)
-			|| mouseY >= (double)(top + this.containerHeight);
-		return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.containerWidth, this.containerHeight, button) && bl;
+			|| mouseX >= (double)(left + this.backgroundWidth)
+			|| mouseY >= (double)(top + this.backgroundHeight);
+		return this.recipeBook.isClickOutsideBounds(mouseX, mouseY, this.x, this.y, this.backgroundWidth, this.backgroundHeight, button) && bl;
 	}
 
 	@Override

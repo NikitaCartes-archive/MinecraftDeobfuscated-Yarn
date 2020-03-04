@@ -31,8 +31,8 @@ public class GameMenuScreen extends Screen {
 		int i = -16;
 		int j = 98;
 		this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, I18n.translate("menu.returnToGame"), buttonWidgetx -> {
-			this.minecraft.openScreen(null);
-			this.minecraft.mouse.lockCursor();
+			this.client.openScreen(null);
+			this.client.mouse.lockCursor();
 		}));
 		this.addButton(
 			new ButtonWidget(
@@ -41,7 +41,7 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				I18n.translate("gui.advancements"),
-				buttonWidgetx -> this.minecraft.openScreen(new AdvancementsScreen(this.minecraft.player.networkHandler.getAdvancementHandler()))
+				buttonWidgetx -> this.client.openScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))
 			)
 		);
 		this.addButton(
@@ -51,7 +51,7 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				I18n.translate("gui.stats"),
-				buttonWidgetx -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStatHandler()))
+				buttonWidgetx -> this.client.openScreen(new StatsScreen(this, this.client.player.getStatHandler()))
 			)
 		);
 		String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
@@ -62,12 +62,12 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.sendFeedback"),
-				buttonWidgetx -> this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
+				buttonWidgetx -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
 							Util.getOperatingSystem().open(string);
 						}
 
-						this.minecraft.openScreen(this);
+						this.client.openScreen(this);
 					}, string, true))
 			)
 		);
@@ -78,12 +78,12 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.reportBugs"),
-				buttonWidgetx -> this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
+				buttonWidgetx -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
 							Util.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
 						}
 
-						this.minecraft.openScreen(this);
+						this.client.openScreen(this);
 					}, "https://aka.ms/snapshotbugs?ref=game", true))
 			)
 		);
@@ -94,7 +94,7 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.options"),
-				buttonWidgetx -> this.minecraft.openScreen(new SettingsScreen(this, this.minecraft.options))
+				buttonWidgetx -> this.client.openScreen(new SettingsScreen(this, this.client.options))
 			)
 		);
 		ButtonWidget buttonWidget = this.addButton(
@@ -104,33 +104,33 @@ public class GameMenuScreen extends Screen {
 				98,
 				20,
 				I18n.translate("menu.shareToLan"),
-				buttonWidgetx -> this.minecraft.openScreen(new OpenToLanScreen(this))
+				buttonWidgetx -> this.client.openScreen(new OpenToLanScreen(this))
 			)
 		);
-		buttonWidget.active = this.minecraft.isIntegratedServerRunning() && !this.minecraft.getServer().isRemote();
+		buttonWidget.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
 		ButtonWidget buttonWidget2 = this.addButton(
 			new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, I18n.translate("menu.returnToMenu"), buttonWidgetx -> {
-				boolean bl = this.minecraft.isInSingleplayer();
-				boolean bl2 = this.minecraft.isConnectedToRealms();
+				boolean bl = this.client.isInSingleplayer();
+				boolean bl2 = this.client.isConnectedToRealms();
 				buttonWidgetx.active = false;
-				this.minecraft.world.disconnect();
+				this.client.world.disconnect();
 				if (bl) {
-					this.minecraft.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+					this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
 				} else {
-					this.minecraft.disconnect();
+					this.client.disconnect();
 				}
 
 				if (bl) {
-					this.minecraft.openScreen(new TitleScreen());
+					this.client.openScreen(new TitleScreen());
 				} else if (bl2) {
 					RealmsBridge realmsBridge = new RealmsBridge();
 					realmsBridge.switchToRealms(new TitleScreen());
 				} else {
-					this.minecraft.openScreen(new MultiplayerScreen(new TitleScreen()));
+					this.client.openScreen(new MultiplayerScreen(new TitleScreen()));
 				}
 			})
 		);
-		if (!this.minecraft.isInSingleplayer()) {
+		if (!this.client.isInSingleplayer()) {
 			buttonWidget2.setMessage(I18n.translate("menu.disconnect"));
 		}
 	}
@@ -144,9 +144,9 @@ public class GameMenuScreen extends Screen {
 	public void render(int mouseX, int mouseY, float delta) {
 		if (this.showMenu) {
 			this.renderBackground();
-			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 40, 16777215);
+			this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 40, 16777215);
 		} else {
-			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 10, 16777215);
+			this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 10, 16777215);
 		}
 
 		super.render(mouseX, mouseY, delta);

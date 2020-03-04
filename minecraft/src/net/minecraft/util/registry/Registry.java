@@ -15,7 +15,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.container.ContainerType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -37,6 +36,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.StatType;
@@ -111,7 +111,7 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<StructurePoolElementType> STRUCTURE_POOL_ELEMENT = create(
 		"structure_pool_element", () -> StructurePoolElementType.EMPTY_POOL_ELEMENT
 	);
-	public static final Registry<ContainerType<?>> CONTAINER = create("menu", () -> ContainerType.ANVIL);
+	public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = create("menu", () -> ScreenHandlerType.ANVIL);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = create("recipe_type", () -> RecipeType.CRAFTING);
 	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create("recipe_serializer", () -> RecipeSerializer.SHAPELESS);
 	public static final Registry<StatType<?>> STAT_TYPE = create("stat_type", () -> Stats.USED);

@@ -5,6 +5,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.Carver;
@@ -42,6 +43,9 @@ public class CrimsonForestBiome extends Biome {
 								random -> random.nextGaussian() * 1.0E-6F
 							)
 						)
+						.loopSound(SoundEvents.AMBIENT_CRIMSON_FOREST_LOOP)
+						.moodSound(SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD)
+						.additionsSound(SoundEvents.AMBIENT_CRIMSON_FOREST_ADDITIONS)
 						.build()
 				)
 				.parent(null)

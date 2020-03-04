@@ -52,8 +52,8 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
 		this.placementData.setBoundingBox(box);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (this.structure.method_15172(world, this.pos, this.placementData, 2)) {
-			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.method_16445(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
+		if (this.structure.place(world, this.pos, this.placementData, 2)) {
+			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.tag != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
 					if (structureBlockMode == StructureBlockMode.DATA) {
@@ -62,7 +62,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 				}
 			}
 
-			for (Structure.StructureBlockInfo structureBlockInfo2 : this.structure.method_16445(this.pos, this.placementData, Blocks.JIGSAW)) {
+			for (Structure.StructureBlockInfo structureBlockInfo2 : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW)) {
 				if (structureBlockInfo2.tag != null) {
 					String string = structureBlockInfo2.tag.getString("final_state");
 					BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);

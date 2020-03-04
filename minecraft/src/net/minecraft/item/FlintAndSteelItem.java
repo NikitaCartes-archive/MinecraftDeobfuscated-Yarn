@@ -62,8 +62,7 @@ public class FlintAndSteelItem extends Item {
 		boolean bl = false;
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			if (world.getBlockState(pos.offset(direction)).getBlock() == Blocks.OBSIDIAN
-				&& ((NetherPortalBlock)Blocks.NETHER_PORTAL).createAreaHelper(world, pos) != null) {
+			if (world.getBlockState(pos.offset(direction)).getBlock() == Blocks.OBSIDIAN && NetherPortalBlock.createAreaHelper(world, pos) != null) {
 				bl = true;
 			}
 		}

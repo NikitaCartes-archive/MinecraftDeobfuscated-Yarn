@@ -209,7 +209,7 @@ public class GuardianEntity extends HostileEntity {
 						this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(new BlockPos(this).down(), this);
+					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(this.getSenseCenterPos().down(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;

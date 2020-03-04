@@ -1,21 +1,21 @@
 package net.minecraft.inventory;
 
-import net.minecraft.container.Container;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.DefaultedList;
 
 public class CraftingInventory implements Inventory, RecipeInputProvider {
 	private final DefaultedList<ItemStack> stacks;
 	private final int width;
 	private final int height;
-	private final Container container;
+	private final ScreenHandler handler;
 
-	public CraftingInventory(Container container, int width, int height) {
+	public CraftingInventory(ScreenHandler handler, int width, int height) {
 		this.stacks = DefaultedList.ofSize(width * height, ItemStack.EMPTY);
-		this.container = container;
+		this.handler = handler;
 		this.width = width;
 		this.height = height;
 	}
@@ -50,7 +50,7 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	public ItemStack takeInvStack(int slot, int amount) {
 		ItemStack itemStack = Inventories.splitStack(this.stacks, slot, amount);
 		if (!itemStack.isEmpty()) {
-			this.container.onContentChanged(this);
+			this.handler.onContentChanged(this);
 		}
 
 		return itemStack;
@@ -59,7 +59,7 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	@Override
 	public void setInvStack(int slot, ItemStack stack) {
 		this.stacks.set(slot, stack);
-		this.container.onContentChanged(this);
+		this.handler.onContentChanged(this);
 	}
 
 	@Override

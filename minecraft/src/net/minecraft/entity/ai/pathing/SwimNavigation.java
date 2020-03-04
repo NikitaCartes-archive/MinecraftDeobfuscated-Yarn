@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 public class SwimNavigation extends EntityNavigation {
 	private boolean field_6689;
 
-	public SwimNavigation(MobEntity entity, World world) {
-		super(entity, world);
+	public SwimNavigation(MobEntity mobEntity, World world) {
+		super(mobEntity, world);
 	}
 
 	@Override

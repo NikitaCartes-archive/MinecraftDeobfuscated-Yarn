@@ -236,7 +236,7 @@ public class DefaultBiomeFeatures {
 		.baseHeight(5)
 		.heightRandA(3)
 		.foliageHeight(3)
-		.maxWaterDepth(1)
+		.maxFluidDepth(1)
 		.treeDecorators(ImmutableList.of(new LeaveVineTreeDecorator()))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
@@ -1462,7 +1462,9 @@ public class DefaultBiomeFeatures {
 	public static void addCrimsonForestVegetation(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.field_22432).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8)))
+			Feature.HUGE_FUNGUS
+				.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_NOT_PLANTED_CONFIG)
+				.createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -1473,7 +1475,9 @@ public class DefaultBiomeFeatures {
 	public static void addWarpedForestVegetation(Biome biome) {
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.field_22434).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8)))
+			Feature.HUGE_FUNGUS
+				.configure(HugeFungusFeatureConfig.WARPED_FUNGUS_NOT_PLANTED_CONFIG)
+				.createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(8)))
 		);
 		biome.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,

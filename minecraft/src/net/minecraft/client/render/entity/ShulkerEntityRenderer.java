@@ -47,8 +47,8 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 			return true;
 		} else {
 			if (shulkerEntity.method_7113() > 0 && shulkerEntity.method_7117()) {
-				Vec3d vec3d = new Vec3d(shulkerEntity.getAttachedBlock());
-				Vec3d vec3d2 = new Vec3d(shulkerEntity.method_7120());
+				Vec3d vec3d = Vec3d.method_24954(shulkerEntity.getAttachedBlock());
+				Vec3d vec3d2 = Vec3d.method_24954(shulkerEntity.method_7120());
 				if (frustum.isVisible(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
 					return true;
 				}

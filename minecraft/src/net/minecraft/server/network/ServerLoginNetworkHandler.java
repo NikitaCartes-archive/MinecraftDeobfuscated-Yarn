@@ -42,9 +42,9 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.HELLO;
 	private int loginTicks;
 	private GameProfile profile;
-	private final String field_14165 = "";
+	private final String serverId = "";
 	private SecretKey secretKey;
-	private ServerPlayerEntity clientEntity;
+	private ServerPlayerEntity player;
 
 	public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
 		this.server = server;
@@ -59,8 +59,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity == null) {
 				this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
-				this.server.getPlayerManager().onPlayerConnect(this.connection, this.clientEntity);
-				this.clientEntity = null;
+				this.server.getPlayerManager().onPlayerConnect(this.connection, this.player);
+				this.player = null;
 			}
 		}
 
@@ -106,7 +106,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity != null) {
 				this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
-				this.clientEntity = this.server.getPlayerManager().createPlayer(this.profile);
+				this.player = this.server.getPlayerManager().createPlayer(this.profile);
 			} else {
 				this.server.getPlayerManager().onPlayerConnect(this.connection, this.server.getPlayerManager().createPlayer(this.profile));
 			}

@@ -27,4 +27,12 @@ public class BannedIpEntry extends BanEntry<String> {
 	private static String getIpFromJson(JsonObject json) {
 		return json.has("ip") ? json.get("ip").getAsString() : null;
 	}
+
+	@Override
+	protected void method_24896(JsonObject jsonObject) {
+		if (this.getKey() != null) {
+			jsonObject.addProperty("ip", this.getKey());
+			super.method_24896(jsonObject);
+		}
+	}
 }

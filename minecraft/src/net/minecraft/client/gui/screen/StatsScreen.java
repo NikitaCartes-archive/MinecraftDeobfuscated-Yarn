@@ -53,13 +53,13 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Override
 	protected void init() {
 		this.downloadingStats = true;
-		this.minecraft.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
+		this.client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.REQUEST_STATS));
 	}
 
 	public void createLists() {
-		this.generalStats = new StatsScreen.GeneralStatsListWidget(this.minecraft);
-		this.itemStats = new StatsScreen.ItemStatsListWidget(this.minecraft);
-		this.mobStats = new StatsScreen.EntityStatsListWidget(this.minecraft);
+		this.generalStats = new StatsScreen.GeneralStatsListWidget(this.client);
+		this.itemStats = new StatsScreen.ItemStatsListWidget(this.client);
+		this.mobStats = new StatsScreen.EntityStatsListWidget(this.client);
 	}
 
 	public void createButtons() {
@@ -75,7 +75,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton"), buttonWidgetx -> this.selectStatList(this.mobStats))
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.minecraft.openScreen(this.parent))
+			new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.client.openScreen(this.parent))
 		);
 		if (this.itemStats.children().isEmpty()) {
 			buttonWidget.active = false;
@@ -90,9 +90,9 @@ public class StatsScreen extends Screen implements StatsListener {
 	public void render(int mouseX, int mouseY, float delta) {
 		if (this.downloadingStats) {
 			this.renderBackground();
-			this.drawCenteredString(this.font, I18n.translate("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
+			this.drawCenteredString(this.textRenderer, I18n.translate("multiplayer.downloadingStats"), this.width / 2, this.height / 2, 16777215);
 			this.drawCenteredString(
-				this.font,
+				this.textRenderer,
 				PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)],
 				this.width / 2,
 				this.height / 2 + 9 * 2,
@@ -100,7 +100,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			);
 		} else {
 			this.getSelectedStatList().render(mouseX, mouseY, delta);
-			this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
+			this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 			super.render(mouseX, mouseY, delta);
 		}
 	}
@@ -148,8 +148,8 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	private void renderIcon(int x, int y, int u, int v) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(STATS_ICON_LOCATION);
-		blit(x, y, this.getBlitOffset(), (float)u, (float)v, 18, 18, 128, 128);
+		this.client.getTextureManager().bindTexture(STATS_ICON_LOCATION);
+		blit(x, y, this.getZOffset(), (float)u, (float)v, 18, 18, 128, 128);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -179,13 +179,15 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			@Override
-			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
+			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
 				String string = I18n.translate(Util.createTranslationKey("entity", EntityType.getId(this.entityType)));
-				int p = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(this.entityType));
-				int q = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(this.entityType));
-				EntityStatsListWidget.this.drawString(StatsScreen.this.font, string, k + 2, j + 1, 16777215);
-				EntityStatsListWidget.this.drawString(StatsScreen.this.font, this.getKilledString(string, p), k + 2 + 10, j + 1 + 9, p == 0 ? 6316128 : 9474192);
-				EntityStatsListWidget.this.drawString(StatsScreen.this.font, this.getKilledByString(string, q), k + 2 + 10, j + 1 + 9 * 2, q == 0 ? 6316128 : 9474192);
+				int i = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(this.entityType));
+				int j = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(this.entityType));
+				EntityStatsListWidget.this.drawString(StatsScreen.this.textRenderer, string, x + 2, y + 1, 16777215);
+				EntityStatsListWidget.this.drawString(StatsScreen.this.textRenderer, this.getKilledString(string, i), x + 2 + 10, y + 1 + 9, i == 0 ? 6316128 : 9474192);
+				EntityStatsListWidget.this.drawString(
+					StatsScreen.this.textRenderer, this.getKilledByString(string, j), x + 2 + 10, y + 1 + 9 * 2, j == 0 ? 6316128 : 9474192
+				);
 			}
 
 			private String getKilledString(String entityName, int killCount) {
@@ -224,12 +226,12 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			@Override
-			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
+			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
 				Text text = new TranslatableText("stat." + this.stat.getValue().toString().replace(':', '.')).formatted(Formatting.GRAY);
-				GeneralStatsListWidget.this.drawString(StatsScreen.this.font, text.getString(), k + 2, j + 1, i % 2 == 0 ? 16777215 : 9474192);
+				GeneralStatsListWidget.this.drawString(StatsScreen.this.textRenderer, text.getString(), x + 2, y + 1, index % 2 == 0 ? 16777215 : 9474192);
 				String string = this.stat.format(StatsScreen.this.statHandler.getStat(this.stat));
 				GeneralStatsListWidget.this.drawString(
-					StatsScreen.this.font, string, k + 2 + 213 - StatsScreen.this.font.getStringWidth(string), j + 1, i % 2 == 0 ? 16777215 : 9474192
+					StatsScreen.this.textRenderer, string, x + 2 + 213 - StatsScreen.this.textRenderer.getStringWidth(string), y + 1, index % 2 == 0 ? 16777215 : 9474192
 				);
 			}
 		}
@@ -292,24 +294,24 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderHeader(int i, int j, Tessellator tessellator) {
-			if (!this.minecraft.mouse.wasLeftButtonClicked()) {
+		protected void renderHeader(int x, int y, Tessellator tessellator) {
+			if (!this.client.mouse.wasLeftButtonClicked()) {
 				this.selectedHeaderColumn = -1;
 			}
 
-			for (int k = 0; k < this.HEADER_ICON_SPRITE_INDICES.length; k++) {
-				StatsScreen.this.renderIcon(i + StatsScreen.this.getColumnX(k) - 18, j + 1, 0, this.selectedHeaderColumn == k ? 0 : 18);
+			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
+				StatsScreen.this.renderIcon(x + StatsScreen.this.getColumnX(i) - 18, y + 1, 0, this.selectedHeaderColumn == i ? 0 : 18);
 			}
 
 			if (this.selectedStatType != null) {
-				int k = StatsScreen.this.getColumnX(this.getHeaderIndex(this.selectedStatType)) - 36;
-				int l = this.field_18760 == 1 ? 2 : 1;
-				StatsScreen.this.renderIcon(i + k, j + 1, 18 * l, 0);
+				int i = StatsScreen.this.getColumnX(this.getHeaderIndex(this.selectedStatType)) - 36;
+				int j = this.field_18760 == 1 ? 2 : 1;
+				StatsScreen.this.renderIcon(x + i, y + 1, 18 * j, 0);
 			}
 
-			for (int k = 0; k < this.HEADER_ICON_SPRITE_INDICES.length; k++) {
-				int l = this.selectedHeaderColumn == k ? 1 : 0;
-				StatsScreen.this.renderIcon(i + StatsScreen.this.getColumnX(k) - 18 + l, j + 1 + l, 18 * this.HEADER_ICON_SPRITE_INDICES[k], 18);
+			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
+				int j = this.selectedHeaderColumn == i ? 1 : 0;
+				StatsScreen.this.renderIcon(x + StatsScreen.this.getColumnX(i) - 18 + j, y + 1 + j, 18 * this.HEADER_ICON_SPRITE_INDICES[i], 18);
 			}
 		}
 
@@ -319,7 +321,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected int getScrollbarPosition() {
+		protected int getScrollbarPositionX() {
 			return this.width / 2 + 140;
 		}
 
@@ -329,20 +331,20 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void clickedHeader(int i, int j) {
+		protected void clickedHeader(int x, int y) {
 			this.selectedHeaderColumn = -1;
 
-			for (int k = 0; k < this.HEADER_ICON_SPRITE_INDICES.length; k++) {
-				int l = i - StatsScreen.this.getColumnX(k);
-				if (l >= -36 && l <= 0) {
-					this.selectedHeaderColumn = k;
+			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
+				int j = x - StatsScreen.this.getColumnX(i);
+				if (j >= -36 && j <= 0) {
+					this.selectedHeaderColumn = i;
 					break;
 				}
 			}
 
 			if (this.selectedHeaderColumn >= 0) {
 				this.selectStatType(this.getStatType(this.selectedHeaderColumn));
-				this.minecraft.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			}
 		}
 
@@ -396,11 +398,11 @@ public class StatsScreen extends Screen implements StatsListener {
 				String string = text.asFormattedString();
 				int i = x + 12;
 				int j = y - 12;
-				int k = StatsScreen.this.font.getStringWidth(string);
+				int k = StatsScreen.this.textRenderer.getStringWidth(string);
 				this.fillGradient(i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
 				RenderSystem.pushMatrix();
 				RenderSystem.translatef(0.0F, 0.0F, 400.0F);
-				StatsScreen.this.font.drawWithShadow(string, (float)i, (float)j, -1);
+				StatsScreen.this.textRenderer.drawWithShadow(string, (float)i, (float)j, -1);
 				RenderSystem.popMatrix();
 			}
 		}
@@ -429,34 +431,36 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			@Override
-			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				Item item = (Item)StatsScreen.this.itemStats.items.get(i);
-				StatsScreen.this.renderStatItem(k + 40, j, item);
+			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+				Item item = (Item)StatsScreen.this.itemStats.items.get(index);
+				StatsScreen.this.renderStatItem(x + 40, y, item);
 
-				for (int p = 0; p < StatsScreen.this.itemStats.blockStatTypes.size(); p++) {
+				for (int i = 0; i < StatsScreen.this.itemStats.blockStatTypes.size(); i++) {
 					Stat<Block> stat;
 					if (item instanceof BlockItem) {
-						stat = ((StatType)StatsScreen.this.itemStats.blockStatTypes.get(p)).getOrCreateStat(((BlockItem)item).getBlock());
+						stat = ((StatType)StatsScreen.this.itemStats.blockStatTypes.get(i)).getOrCreateStat(((BlockItem)item).getBlock());
 					} else {
 						stat = null;
 					}
 
-					this.render(stat, k + StatsScreen.this.getColumnX(p), j, i % 2 == 0);
+					this.render(stat, x + StatsScreen.this.getColumnX(i), y, index % 2 == 0);
 				}
 
-				for (int p = 0; p < StatsScreen.this.itemStats.itemStatTypes.size(); p++) {
+				for (int i = 0; i < StatsScreen.this.itemStats.itemStatTypes.size(); i++) {
 					this.render(
-						((StatType)StatsScreen.this.itemStats.itemStatTypes.get(p)).getOrCreateStat(item),
-						k + StatsScreen.this.getColumnX(p + StatsScreen.this.itemStats.blockStatTypes.size()),
-						j,
-						i % 2 == 0
+						((StatType)StatsScreen.this.itemStats.itemStatTypes.get(i)).getOrCreateStat(item),
+						x + StatsScreen.this.getColumnX(i + StatsScreen.this.itemStats.blockStatTypes.size()),
+						y,
+						index % 2 == 0
 					);
 				}
 			}
 
 			protected void render(@Nullable Stat<?> stat, int x, int y, boolean light) {
 				String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
-				ItemStatsListWidget.this.drawString(StatsScreen.this.font, string, x - StatsScreen.this.font.getStringWidth(string), y + 5, light ? 16777215 : 9474192);
+				ItemStatsListWidget.this.drawString(
+					StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getStringWidth(string), y + 5, light ? 16777215 : 9474192
+				);
 			}
 		}
 

@@ -178,7 +178,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.setModelPose(player);
 		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.isSneaking = false;
-		playerEntityModel.field_3396 = 0.0F;
+		playerEntityModel.leaningPitch = 0.0F;
 		playerEntityModel.setAngles(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		arm.pitch = 0.0F;
 		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);

@@ -32,7 +32,7 @@ public class EntityPropertiesLootCondition implements LootCondition {
 	public boolean test(LootContext lootContext) {
 		Entity entity = lootContext.get(this.entity.getParameter());
 		BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
-		return this.predicate.test(lootContext.getWorld(), blockPos != null ? new Vec3d(blockPos) : null, entity);
+		return this.predicate.test(lootContext.getWorld(), blockPos != null ? Vec3d.method_24954(blockPos) : null, entity);
 	}
 
 	public static LootCondition.Builder create(LootContext.EntityTarget entity) {

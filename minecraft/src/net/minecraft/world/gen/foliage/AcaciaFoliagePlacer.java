@@ -18,38 +18,45 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	public void generate(
-		ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, int i, int j, int k, BlockPos pos, Set<BlockPos> positions
+		ModifiableTestableWorld world,
+		Random random,
+		BranchedTreeFeatureConfig config,
+		int baseHeight,
+		int trunkHeight,
+		int radius,
+		BlockPos pos,
+		Set<BlockPos> leaves
 	) {
-		config.foliagePlacer.generate(world, random, config, i, pos, 0, k, positions);
-		config.foliagePlacer.generate(world, random, config, i, pos, 1, 1, positions);
+		config.foliagePlacer.generate(world, random, config, baseHeight, pos, 0, radius, leaves);
+		config.foliagePlacer.generate(world, random, config, baseHeight, pos, 1, 1, leaves);
 		BlockPos blockPos = pos.up();
 
-		for (int l = -1; l <= 1; l++) {
-			for (int m = -1; m <= 1; m++) {
-				this.method_23450(world, random, blockPos.add(l, 0, m), config, positions);
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				this.placeLeaves(world, random, blockPos.add(i, 0, j), config, leaves);
 			}
 		}
 
-		for (int l = 2; l <= k - 1; l++) {
-			this.method_23450(world, random, blockPos.east(l), config, positions);
-			this.method_23450(world, random, blockPos.west(l), config, positions);
-			this.method_23450(world, random, blockPos.south(l), config, positions);
-			this.method_23450(world, random, blockPos.north(l), config, positions);
+		for (int i = 2; i <= radius - 1; i++) {
+			this.placeLeaves(world, random, blockPos.east(i), config, leaves);
+			this.placeLeaves(world, random, blockPos.west(i), config, leaves);
+			this.placeLeaves(world, random, blockPos.south(i), config, leaves);
+			this.placeLeaves(world, random, blockPos.north(i), config, leaves);
 		}
 	}
 
 	@Override
-	public int getRadius(Random random, int i, int j, BranchedTreeFeatureConfig config) {
+	public int getRadius(Random random, int baseHeight, int trunkHeight, BranchedTreeFeatureConfig config) {
 		return this.radius + random.nextInt(this.randomRadius + 1);
 	}
 
 	@Override
-	protected boolean method_23451(Random random, int i, int j, int k, int l, int m) {
-		return Math.abs(j) == m && Math.abs(l) == m && m > 0;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int x, int y, int z, int radius) {
+		return Math.abs(x) == radius && Math.abs(z) == radius && radius > 0;
 	}
 
 	@Override
-	public int method_23447(int i, int j, int k, int l) {
-		return l == 0 ? 0 : 2;
+	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius, int currentTreeHeight) {
+		return currentTreeHeight == 0 ? 0 : 2;
 	}
 }

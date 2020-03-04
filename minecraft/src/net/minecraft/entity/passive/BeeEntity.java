@@ -101,8 +101,8 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	private BeeEntity.MoveToFlowerGoal moveToFlowerGoal;
 	private int ticksInsideWater;
 
-	public BeeEntity(EntityType<? extends BeeEntity> type, World world) {
-		super(type, world);
+	public BeeEntity(EntityType<? extends BeeEntity> entityType, World world) {
+		super(entityType, world);
 		this.moveControl = new FlightMoveControl(this, 20, true);
 		this.lookControl = new BeeEntity.BeeLookControl(this);
 		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
@@ -244,9 +244,9 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	}
 
 	private void startMovingTo(BlockPos pos) {
-		Vec3d vec3d = new Vec3d(pos);
+		Vec3d vec3d = Vec3d.method_24955(pos);
 		int i = 0;
-		BlockPos blockPos = new BlockPos(this);
+		BlockPos blockPos = this.getSenseCenterPos();
 		int j = (int)vec3d.y - blockPos.getY();
 		if (j > 2) {
 			i = 4;
@@ -617,7 +617,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	}
 
 	private boolean isWithinDistance(BlockPos pos, int distance) {
-		return pos.isWithinDistance(new BlockPos(this), (double)distance);
+		return pos.isWithinDistance(this.getSenseCenterPos(), (double)distance);
 	}
 
 	static class BeeFollowTargetGoal extends FollowTargetGoal<PlayerEntity> {
@@ -705,7 +705,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		private Vec3d getRandomLocation() {
 			Vec3d vec3d2;
 			if (BeeEntity.this.isHiveValid() && !BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 40)) {
-				Vec3d vec3d = new Vec3d(BeeEntity.this.hivePos);
+				Vec3d vec3d = Vec3d.method_24953(BeeEntity.this.hivePos);
 				vec3d2 = vec3d.subtract(BeeEntity.this.getPos()).normalize();
 			} else {
 				vec3d2 = BeeEntity.this.getRotationVec(0.0F);
@@ -785,7 +785,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		}
 
 		private List<BlockPos> getNearbyFreeHives() {
-			BlockPos blockPos = new BlockPos(BeeEntity.this);
+			BlockPos blockPos = BeeEntity.this.getSenseCenterPos();
 			PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage();
 			Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(
 				pointOfInterestType -> pointOfInterestType == PointOfInterestType.BEEHIVE || pointOfInterestType == PointOfInterestType.BEE_NEST,
@@ -822,7 +822,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		public void tick() {
 			if (BeeEntity.this.random.nextInt(30) == 0) {
 				for (int i = 1; i <= 2; i++) {
-					BlockPos blockPos = new BlockPos(BeeEntity.this).down(i);
+					BlockPos blockPos = BeeEntity.this.getSenseCenterPos().down(i);
 					BlockState blockState = BeeEntity.this.world.getBlockState(blockPos);
 					Block block = blockState.getBlock();
 					boolean bl = false;
@@ -1141,7 +1141,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 			if (this.ticks > 600) {
 				BeeEntity.this.flowerPos = null;
 			} else {
-				Vec3d vec3d = new Vec3d(BeeEntity.this.flowerPos).add(0.5, 0.6F, 0.5);
+				Vec3d vec3d = Vec3d.method_24955(BeeEntity.this.flowerPos).add(0.0, 0.6F, 0.0);
 				if (vec3d.distanceTo(BeeEntity.this.getPos()) > 1.0) {
 					this.nextTarget = vec3d;
 					this.moveToNextTarget();
@@ -1194,14 +1194,14 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		}
 
 		private Optional<BlockPos> findFlower(Predicate<BlockState> predicate, double searchDistance) {
-			BlockPos blockPos = new BlockPos(BeeEntity.this);
+			BlockPos blockPos = BeeEntity.this.getSenseCenterPos();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int i = 0; (double)i <= searchDistance; i = i > 0 ? -i : 1 - i) {
 				for (int j = 0; (double)j < searchDistance; j++) {
 					for (int k = 0; k <= j; k = k > 0 ? -k : 1 - k) {
 						for (int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l) {
-							mutable.set(blockPos).setOffset(k, i - 1, l);
+							mutable.setOffset(blockPos, k, i - 1, l);
 							if (blockPos.isWithinDistance(mutable, searchDistance) && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
 								return Optional.of(mutable);
 							}

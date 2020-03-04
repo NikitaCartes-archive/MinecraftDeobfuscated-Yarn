@@ -21,13 +21,13 @@ public abstract class StructureProcessor {
 
 	protected abstract StructureProcessorType getType();
 
-	protected abstract <T> Dynamic<T> method_16666(DynamicOps<T> dynamicOps);
+	protected abstract <T> Dynamic<T> rawToDynamic(DynamicOps<T> dynamicOps);
 
-	public <T> Dynamic<T> method_16771(DynamicOps<T> dynamicOps) {
+	public <T> Dynamic<T> toDynamic(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
 			dynamicOps,
 			dynamicOps.mergeInto(
-				this.method_16666(dynamicOps).getValue(),
+				this.rawToDynamic(dynamicOps).getValue(),
 				dynamicOps.createString("processor_type"),
 				dynamicOps.createString(Registry.STRUCTURE_PROCESSOR.getId(this.getType()).toString())
 			)

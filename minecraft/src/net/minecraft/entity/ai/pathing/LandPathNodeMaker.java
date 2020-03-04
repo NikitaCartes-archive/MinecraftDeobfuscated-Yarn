@@ -59,7 +59,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		} else if (this.entity.method_24828()) {
 			i = MathHelper.floor(this.entity.getY() + 0.5);
 		} else {
-			BlockPos blockPos = new BlockPos(this.entity);
+			BlockPos blockPos = this.entity.getSenseCenterPos();
 
 			while (
 				(
@@ -74,7 +74,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			i = blockPos.up().getY();
 		}
 
-		BlockPos blockPos = new BlockPos(this.entity);
+		BlockPos blockPos = this.entity.getSenseCenterPos();
 		PathNodeType pathNodeType = this.getNodeType(this.entity, blockPos.getX(), i, blockPos.getZ());
 		if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0F) {
 			Set<BlockPos> set = Sets.<BlockPos>newHashSet();
@@ -296,7 +296,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
 		PathNodeType pathNodeType = PathNodeType.BLOCKED;
 		double d = (double)mob.getWidth() / 2.0;
-		BlockPos blockPos = new BlockPos(mob);
+		BlockPos blockPos = mob.getSenseCenterPos();
 		pathNodeType = this.getNodeType(world, x, y, z, sizeX, sizeY, sizeZ, canOpenDoors, canEnterOpenDoors, enumSet, pathNodeType, blockPos);
 		if (enumSet.contains(PathNodeType.FENCE)) {
 			return PathNodeType.FENCE;
@@ -422,19 +422,19 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	public static PathNodeType method_59(BlockView blockView, int i, int j, int k, PathNodeType pathNodeType) {
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int l = -1; l <= 1; l++) {
-				for (int m = -1; m <= 1; m++) {
-					for (int n = -1; n <= 1; n++) {
-						if (l != 0 || n != 0) {
-							Block block = blockView.getBlockState(pooledMutable.set(l + i, m + j, n + k)).getBlock();
-							if (block == Blocks.CACTUS) {
-								pathNodeType = PathNodeType.DANGER_CACTUS;
-							} else if (block.isIn(BlockTags.FIRE) || block == Blocks.LAVA) {
-								pathNodeType = PathNodeType.DANGER_FIRE;
-							} else if (block == Blocks.SWEET_BERRY_BUSH) {
-								pathNodeType = PathNodeType.DANGER_OTHER;
-							}
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (int l = -1; l <= 1; l++) {
+			for (int m = -1; m <= 1; m++) {
+				for (int n = -1; n <= 1; n++) {
+					if (l != 0 || n != 0) {
+						Block block = blockView.getBlockState(mutable.set(l + i, m + j, n + k)).getBlock();
+						if (block == Blocks.CACTUS) {
+							pathNodeType = PathNodeType.DANGER_CACTUS;
+						} else if (block.isIn(BlockTags.FIRE) || block == Blocks.LAVA) {
+							pathNodeType = PathNodeType.DANGER_FIRE;
+						} else if (block == Blocks.SWEET_BERRY_BUSH) {
+							pathNodeType = PathNodeType.DANGER_OTHER;
 						}
 					}
 				}

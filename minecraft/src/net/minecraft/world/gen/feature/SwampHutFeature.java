@@ -19,8 +19,8 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.WITCH, 1, 1, 1));
 	private static final List<Biome.SpawnEntry> CREATURE_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.CAT, 1, 1, 1));
 
-	public SwampHutFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public SwampHutFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
@@ -53,8 +53,8 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 		return CREATURE_SPAWNS;
 	}
 
-	public boolean method_14029(IWorld iWorld, BlockPos blockPos) {
-		StructureStart structureStart = this.isInsideStructure(iWorld, blockPos, true);
+	public boolean method_14029(IWorld world, BlockPos pos) {
+		StructureStart structureStart = this.isInsideStructure(world, pos, true);
 		if (structureStart != StructureStart.DEFAULT && structureStart instanceof SwampHutFeature.Start && !structureStart.getChildren().isEmpty()) {
 			StructurePiece structurePiece = (StructurePiece)structureStart.getChildren().get(0);
 			return structurePiece instanceof SwampHutGenerator;
@@ -64,8 +64,8 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 	}
 
 	public static class Start extends StructureStart {
-		public Start(StructureFeature<?> structureFeature, int chunkX, int chunkZ, BlockBox blockBox, int i, long l) {
-			super(structureFeature, chunkX, chunkZ, blockBox, i, l);
+		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
+			super(structureFeature, i, j, blockBox, k, l);
 		}
 
 		@Override

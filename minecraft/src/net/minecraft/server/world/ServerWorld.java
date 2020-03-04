@@ -429,7 +429,7 @@ public class ServerWorld extends World {
 		Profiler profiler = this.getProfiler();
 		profiler.push("thunder");
 		if (bl && this.isThundering() && this.random.nextInt(100000) == 0) {
-			BlockPos blockPos = this.method_18210(this.getRandomPosInChunk(i, 0, j, 15));
+			BlockPos blockPos = this.getSurface(this.getRandomPosInChunk(i, 0, j, 15));
 			if (this.hasRain(blockPos)) {
 				LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
 				boolean bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
@@ -491,14 +491,14 @@ public class ServerWorld extends World {
 		profiler.pop();
 	}
 
-	protected BlockPos method_18210(BlockPos pos) {
+	protected BlockPos getSurface(BlockPos pos) {
 		BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
 		Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getHeight(), blockPos.getZ())).expand(3.0);
 		List<LivingEntity> list = this.getEntities(
-			LivingEntity.class, box, livingEntity -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos())
+			LivingEntity.class, box, livingEntity -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getSenseCenterPos())
 		);
 		if (!list.isEmpty()) {
-			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
+			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getSenseCenterPos();
 		} else {
 			if (blockPos.getY() == -1) {
 				blockPos = blockPos.up(2);
@@ -512,7 +512,7 @@ public class ServerWorld extends World {
 		return this.insideTick;
 	}
 
-	public void updatePlayersSleeping() {
+	public void updateSleepingPlayers() {
 		this.allPlayersSleeping = false;
 		if (!this.players.isEmpty()) {
 			int i = 0;
@@ -857,7 +857,7 @@ public class ServerWorld extends World {
 		}
 
 		this.players.add(player);
-		this.updatePlayersSleeping();
+		this.updateSleepingPlayers();
 		Chunk chunk = this.getChunk(MathHelper.floor(player.getX() / 16.0), MathHelper.floor(player.getZ() / 16.0), ChunkStatus.FULL, true);
 		if (chunk instanceof WorldChunk) {
 			chunk.addEntity(player);
@@ -981,7 +981,7 @@ public class ServerWorld extends World {
 	public void removePlayer(ServerPlayerEntity player) {
 		player.remove();
 		this.removeEntity(player);
-		this.updatePlayersSleeping();
+		this.updateSleepingPlayers();
 	}
 
 	public void addLightning(LightningEntity lightningEntity) {
@@ -1194,7 +1194,7 @@ public class ServerWorld extends World {
 		if (player.getServerWorld() != this) {
 			return false;
 		} else {
-			BlockPos blockPos = player.getBlockPos();
+			BlockPos blockPos = player.getSenseCenterPos();
 			if (blockPos.isWithinDistance(new Vec3d(x, y, z), force ? 512.0 : 32.0)) {
 				player.networkHandler.sendPacket(packet);
 				return true;

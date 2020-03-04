@@ -431,39 +431,32 @@ public class BoatEntity extends Entity {
 		int l = MathHelper.ceil(box.y2 - this.fallVelocity);
 		int m = MathHelper.floor(box.z1);
 		int n = MathHelper.ceil(box.z2);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			label136:
-			for (int o = k; o < l; o++) {
-				float f = 0.0F;
-				int p = i;
+		label39:
+		for (int o = k; o < l; o++) {
+			float f = 0.0F;
 
-				while (true) {
-					if (p < j) {
-						for (int q = m; q < n; q++) {
-							pooledMutable.set(p, o, q);
-							FluidState fluidState = this.world.getFluidState(pooledMutable);
-							if (fluidState.matches(FluidTags.WATER)) {
-								f = Math.max(f, fluidState.getHeight(this.world, pooledMutable));
-							}
+			for (int p = i; p < j; p++) {
+				for (int q = m; q < n; q++) {
+					mutable.set(p, o, q);
+					FluidState fluidState = this.world.getFluidState(mutable);
+					if (fluidState.matches(FluidTags.WATER)) {
+						f = Math.max(f, fluidState.getHeight(this.world, mutable));
+					}
 
-							if (f >= 1.0F) {
-								continue label136;
-							}
-						}
-
-						p++;
-					} else {
-						if (f < 1.0F) {
-							return (float)pooledMutable.getY() + f;
-						}
-						break;
+					if (f >= 1.0F) {
+						continue label39;
 					}
 				}
 			}
 
-			return (float)(l + 1);
+			if (f < 1.0F) {
+				return (float)mutable.getY() + f;
+			}
 		}
+
+		return (float)(l + 1);
 	}
 
 	public float method_7548() {
@@ -478,23 +471,22 @@ public class BoatEntity extends Entity {
 		VoxelShape voxelShape = VoxelShapes.cuboid(box2);
 		float f = 0.0F;
 		int o = 0;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int p = i; p < j; p++) {
-				for (int q = m; q < n; q++) {
-					int r = (p != i && p != j - 1 ? 0 : 1) + (q != m && q != n - 1 ? 0 : 1);
-					if (r != 2) {
-						for (int s = k; s < l; s++) {
-							if (r <= 0 || s != k && s != l - 1) {
-								pooledMutable.set(p, s, q);
-								BlockState blockState = this.world.getBlockState(pooledMutable);
-								if (!(blockState.getBlock() instanceof LilyPadBlock)
-									&& VoxelShapes.matchesAnywhere(
-										blockState.getCollisionShape(this.world, pooledMutable).offset((double)p, (double)s, (double)q), voxelShape, BooleanBiFunction.AND
-									)) {
-									f += blockState.getBlock().getSlipperiness();
-									o++;
-								}
+		for (int p = i; p < j; p++) {
+			for (int q = m; q < n; q++) {
+				int r = (p != i && p != j - 1 ? 0 : 1) + (q != m && q != n - 1 ? 0 : 1);
+				if (r != 2) {
+					for (int s = k; s < l; s++) {
+						if (r <= 0 || s != k && s != l - 1) {
+							mutable.set(p, s, q);
+							BlockState blockState = this.world.getBlockState(mutable);
+							if (!(blockState.getBlock() instanceof LilyPadBlock)
+								&& VoxelShapes.matchesAnywhere(
+									blockState.getCollisionShape(this.world, mutable).offset((double)p, (double)s, (double)q), voxelShape, BooleanBiFunction.AND
+								)) {
+								f += blockState.getBlock().getSlipperiness();
+								o++;
 							}
 						}
 					}
@@ -515,18 +507,17 @@ public class BoatEntity extends Entity {
 		int n = MathHelper.ceil(box.z2);
 		boolean bl = false;
 		this.waterLevel = Double.MIN_VALUE;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int o = i; o < j; o++) {
-				for (int p = k; p < l; p++) {
-					for (int q = m; q < n; q++) {
-						pooledMutable.set(o, p, q);
-						FluidState fluidState = this.world.getFluidState(pooledMutable);
-						if (fluidState.matches(FluidTags.WATER)) {
-							float f = (float)p + fluidState.getHeight(this.world, pooledMutable);
-							this.waterLevel = Math.max((double)f, this.waterLevel);
-							bl |= box.y1 < (double)f;
-						}
+		for (int o = i; o < j; o++) {
+			for (int p = k; p < l; p++) {
+				for (int q = m; q < n; q++) {
+					mutable.set(o, p, q);
+					FluidState fluidState = this.world.getFluidState(mutable);
+					if (fluidState.matches(FluidTags.WATER)) {
+						float f = (float)p + fluidState.getHeight(this.world, mutable);
+						this.waterLevel = Math.max((double)f, this.waterLevel);
+						bl |= box.y1 < (double)f;
 					}
 				}
 			}
@@ -546,20 +537,19 @@ public class BoatEntity extends Entity {
 		int m = MathHelper.floor(box.z1);
 		int n = MathHelper.ceil(box.z2);
 		boolean bl = false;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int o = i; o < j; o++) {
-				for (int p = k; p < l; p++) {
-					for (int q = m; q < n; q++) {
-						pooledMutable.set(o, p, q);
-						FluidState fluidState = this.world.getFluidState(pooledMutable);
-						if (fluidState.matches(FluidTags.WATER) && d < (double)((float)pooledMutable.getY() + fluidState.getHeight(this.world, pooledMutable))) {
-							if (!fluidState.isStill()) {
-								return BoatEntity.Location.UNDER_FLOWING_WATER;
-							}
-
-							bl = true;
+		for (int o = i; o < j; o++) {
+			for (int p = k; p < l; p++) {
+				for (int q = m; q < n; q++) {
+					mutable.set(o, p, q);
+					FluidState fluidState = this.world.getFluidState(mutable);
+					if (fluidState.matches(FluidTags.WATER) && d < (double)((float)mutable.getY() + fluidState.getHeight(this.world, mutable))) {
+						if (!fluidState.isStill()) {
+							return BoatEntity.Location.UNDER_FLOWING_WATER;
 						}
+
+						bl = true;
 					}
 				}
 			}
@@ -765,7 +755,7 @@ public class BoatEntity extends Entity {
 				}
 
 				this.fallDistance = 0.0F;
-			} else if (!this.world.getFluidState(new BlockPos(this).down()).matches(FluidTags.WATER) && heightDifference < 0.0) {
+			} else if (!this.world.getFluidState(this.getSenseCenterPos().down()).matches(FluidTags.WATER) && heightDifference < 0.0) {
 				this.fallDistance = (float)((double)this.fallDistance - heightDifference);
 			}
 		}
@@ -822,7 +812,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected boolean canAddPassenger(Entity passenger) {
-		return this.getPassengerList().size() < 2 && !this.isInFluid(FluidTags.WATER);
+		return this.getPassengerList().size() < 2 && !this.isSubmergedIn(FluidTags.WATER);
 	}
 
 	@Nullable

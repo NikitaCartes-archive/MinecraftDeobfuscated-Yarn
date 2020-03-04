@@ -1,11 +1,11 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.container.BlockContext;
-import net.minecraft.container.CartographyTableContainer;
-import net.minecraft.container.NameableContainerFactory;
-import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.BlockContext;
+import net.minecraft.screen.CartographyTableScreenHandler;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -26,7 +26,7 @@ public class CartographyTableBlock extends Block {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openContainer(state.createContainerFactory(world, pos));
+			player.openHandledScreen(state.createContainerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_CARTOGRAPHY_TABLE);
 			return ActionResult.SUCCESS;
 		}
@@ -34,9 +34,9 @@ public class CartographyTableBlock extends Block {
 
 	@Nullable
 	@Override
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
-		return new SimpleNamedContainerFactory(
-			(i, playerInventory, playerEntity) -> new CartographyTableContainer(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return new SimpleNamedScreenHandlerFactory(
+			(i, playerInventory, playerEntity) -> new CartographyTableScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
 		);
 	}
 }

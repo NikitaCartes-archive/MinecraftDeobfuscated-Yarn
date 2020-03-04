@@ -72,7 +72,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	private int field_7082;
 	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.PURPLE, BossBar.Style.PROGRESS).setDarkenSky(true);
 	private static final Predicate<LivingEntity> CAN_ATTACK_PREDICATE = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD
-			&& livingEntity.method_6102();
+			&& livingEntity.isMobOrPlayer();
 	private static final TargetPredicate HEAD_TARGET_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(CAN_ATTACK_PREDICATE);
 
 	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
@@ -244,7 +244,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					? Explosion.DestructionType.DESTROY
 					: Explosion.DestructionType.NONE;
 				this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, destructionType);
-				this.world.playGlobalEvent(1023, new BlockPos(this), 0);
+				this.world.playGlobalEvent(1023, this.getSenseCenterPos(), 0);
 			}
 
 			this.setInvulTimer(i);
@@ -331,7 +331,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					}
 
 					if (bl) {
-						this.world.playLevelEvent(null, 1022, new BlockPos(this), 0);
+						this.world.playLevelEvent(null, 1022, this.getSenseCenterPos(), 0);
 					}
 				}
 			}
@@ -417,7 +417,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	private void method_6877(int headIndex, double d, double e, double f, boolean bl) {
-		this.world.playLevelEvent(null, 1024, new BlockPos(this), 0);
+		this.world.playLevelEvent(null, 1024, this.getSenseCenterPos(), 0);
 		double g = this.getHeadX(headIndex);
 		double h = this.getHeadY(headIndex);
 		double i = this.getHeadZ(headIndex);

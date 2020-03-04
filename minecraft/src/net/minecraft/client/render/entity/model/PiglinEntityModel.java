@@ -33,7 +33,6 @@ public class PiglinEntityModel<T extends MobEntity> extends BipedEntityModel<T> 
 		this.head.addChild(this.leftEar);
 		this.leftEar.setTextureOffset(57, 22).addCuboid(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, scale);
 		this.helmet = new ModelPart(this);
-		this.helmet.setPivot(0.0F, 0.0F, 0.0F);
 		this.rightArm = new ModelPart(this);
 		this.rightArm.setPivot(-5.0F, 2.0F, 0.0F);
 		this.rightArm.setTextureOffset(40, 16).addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
@@ -59,18 +58,9 @@ public class PiglinEntityModel<T extends MobEntity> extends BipedEntityModel<T> 
 			PiglinEntity piglinEntity = (PiglinEntity)mobEntity;
 			PiglinEntity.Activity activity = piglinEntity.getActivity();
 			if (activity == PiglinEntity.Activity.CROSSBOW_HOLD) {
-				this.rightArm.yaw = -0.3F + this.head.yaw;
-				this.leftArm.yaw = 0.6F + this.head.yaw;
-				this.rightArm.pitch = (float) (-Math.PI / 2) + this.head.pitch + 0.1F;
-				this.leftArm.pitch = -1.5F + this.head.pitch;
+				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
 			} else if (activity == PiglinEntity.Activity.CROSSBOW_CHARGE) {
-				this.rightArm.yaw = -0.8F;
-				this.rightArm.pitch = -0.97079635F;
-				this.leftArm.pitch = -0.97079635F;
-				float n = (float)MathHelper.clamp(piglinEntity.getItemUseTime(), 0, 25);
-				float o = n / 25.0F;
-				this.leftArm.yaw = MathHelper.lerp(o, 0.4F, 0.85F);
-				this.leftArm.pitch = MathHelper.lerp(o, this.leftArm.pitch, (float) (-Math.PI / 2));
+				CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, true);
 			} else if (activity == PiglinEntity.Activity.ADMIRING_ITEM) {
 				this.leftArm.yaw = 0.5F;
 				this.leftArm.pitch = -0.9F;

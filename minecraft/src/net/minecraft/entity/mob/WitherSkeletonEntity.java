@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -28,6 +29,12 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
 		super(entityType, world);
 		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
+	}
+
+	@Override
+	protected void initGoals() {
+		this.targetSelector.add(3, new FollowTargetGoal(this, PiglinEntity.class, true));
+		super.initGoals();
 	}
 
 	@Override
@@ -100,8 +107,8 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float f) {
-		ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
+		ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, damageModifier);
 		projectileEntity.setOnFireFor(100);
 		return projectileEntity;
 	}

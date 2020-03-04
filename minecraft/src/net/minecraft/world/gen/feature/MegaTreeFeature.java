@@ -14,10 +14,10 @@ public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends Abstr
 		super(function);
 	}
 
-	protected int getHeight(Random random, MegaTreeFeatureConfig megaTreeFeatureConfig) {
-		int i = random.nextInt(3) + megaTreeFeatureConfig.baseHeight;
-		if (megaTreeFeatureConfig.heightInterval > 1) {
-			i += random.nextInt(megaTreeFeatureConfig.heightInterval);
+	protected int getHeight(Random random, MegaTreeFeatureConfig config) {
+		int i = random.nextInt(3) + config.baseHeight;
+		if (config.heightInterval > 1) {
+			i += random.nextInt(config.heightInterval);
 		}
 
 		return i;
@@ -67,78 +67,60 @@ public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends Abstr
 	}
 
 	protected void makeSquaredLeafLayer(
-		ModifiableTestableWorld modifiableTestableWorld,
-		Random random,
-		BlockPos blockPos,
-		int i,
-		Set<BlockPos> set,
-		BlockBox blockBox,
-		TreeFeatureConfig treeFeatureConfig
+		ModifiableTestableWorld world, Random random, BlockPos pos, int radius, Set<BlockPos> leaves, BlockBox box, TreeFeatureConfig config
 	) {
-		int j = i * i;
+		int i = radius * radius;
 
-		for (int k = -i; k <= i + 1; k++) {
-			for (int l = -i; l <= i + 1; l++) {
+		for (int j = -radius; j <= radius + 1; j++) {
+			for (int k = -radius; k <= radius + 1; k++) {
+				int l = Math.min(Math.abs(j), Math.abs(j - 1));
 				int m = Math.min(Math.abs(k), Math.abs(k - 1));
-				int n = Math.min(Math.abs(l), Math.abs(l - 1));
-				if (m + n < 7 && m * m + n * n <= j) {
-					this.setLeavesBlockState(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, treeFeatureConfig);
+				if (l + m < 7 && l * l + m * m <= i) {
+					this.setLeavesBlockState(world, random, pos.add(j, 0, k), leaves, box, config);
 				}
 			}
 		}
 	}
 
 	protected void makeRoundLeafLayer(
-		ModifiableTestableWorld modifiableTestableWorld,
-		Random random,
-		BlockPos blockPos,
-		int i,
-		Set<BlockPos> set,
-		BlockBox blockBox,
-		TreeFeatureConfig treeFeatureConfig
+		ModifiableTestableWorld world, Random random, BlockPos pos, int radius, Set<BlockPos> leaves, BlockBox box, TreeFeatureConfig config
 	) {
-		int j = i * i;
+		int i = radius * radius;
 
-		for (int k = -i; k <= i; k++) {
-			for (int l = -i; l <= i; l++) {
-				if (k * k + l * l <= j) {
-					this.setLeavesBlockState(modifiableTestableWorld, random, blockPos.add(k, 0, l), set, blockBox, treeFeatureConfig);
+		for (int j = -radius; j <= radius; j++) {
+			for (int k = -radius; k <= radius; k++) {
+				if (j * j + k * k <= i) {
+					this.setLeavesBlockState(world, random, pos.add(j, 0, k), leaves, box, config);
 				}
 			}
 		}
 	}
 
-	protected void method_23400(
-		ModifiableTestableWorld modifiableTestableWorld,
-		Random random,
-		BlockPos blockPos,
-		int i,
-		Set<BlockPos> set,
-		BlockBox blockBox,
-		MegaTreeFeatureConfig megaTreeFeatureConfig
+	protected void generateTrunk(
+		ModifiableTestableWorld world, Random random, BlockPos pos, int height, Set<BlockPos> logs, BlockBox box, MegaTreeFeatureConfig config
 	) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int j = 0; j < i; j++) {
-			mutable.set(blockPos).setOffset(0, j, 0);
-			if (canTreeReplace(modifiableTestableWorld, mutable)) {
-				this.setLogBlockState(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
+		for (int i = 0; i < height; i++) {
+			mutable.setOffset(pos, 0, i, 0);
+			if (canTreeReplace(world, mutable)) {
+				this.setLogBlockState(world, random, mutable, logs, box, config);
 			}
 
-			if (j < i - 1) {
-				mutable.set(blockPos).setOffset(1, j, 0);
-				if (canTreeReplace(modifiableTestableWorld, mutable)) {
-					this.setLogBlockState(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
+			if (i < height - 1) {
+				mutable.setOffset(pos, 1, i, 0);
+				if (canTreeReplace(world, mutable)) {
+					this.setLogBlockState(world, random, mutable, logs, box, config);
 				}
 
-				mutable.set(blockPos).setOffset(1, j, 1);
-				if (canTreeReplace(modifiableTestableWorld, mutable)) {
-					this.setLogBlockState(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
+				mutable.setOffset(pos, 1, i, 1);
+				if (canTreeReplace(world, mutable)) {
+					this.setLogBlockState(world, random, mutable, logs, box, config);
 				}
 
-				mutable.set(blockPos).setOffset(0, j, 1);
-				if (canTreeReplace(modifiableTestableWorld, mutable)) {
-					this.setLogBlockState(modifiableTestableWorld, random, mutable, set, blockBox, megaTreeFeatureConfig);
+				mutable.setOffset(pos, 0, i, 1);
+				if (canTreeReplace(world, mutable)) {
+					this.setLogBlockState(world, random, mutable, logs, box, config);
 				}
 			}
 		}

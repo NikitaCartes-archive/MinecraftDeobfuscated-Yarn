@@ -4,41 +4,41 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.container.Container;
-import net.minecraft.container.ContainerListener;
-import net.minecraft.container.LecternContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.LecternScreenHandler;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.DefaultedList;
 
 @Environment(EnvType.CLIENT)
-public class LecternScreen extends BookScreen implements ContainerProvider<LecternContainer> {
-	private final LecternContainer container;
-	private final ContainerListener listener = new ContainerListener() {
+public class LecternScreen extends BookScreen implements ScreenHandlerProvider<LecternScreenHandler> {
+	private final LecternScreenHandler container;
+	private final ScreenHandlerListener listener = new ScreenHandlerListener() {
 		@Override
-		public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
+		public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> defaultedList) {
 			LecternScreen.this.updatePageProvider();
 		}
 
 		@Override
-		public void onContainerSlotUpdate(Container container, int slotId, ItemStack itemStack) {
+		public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack) {
 			LecternScreen.this.updatePageProvider();
 		}
 
 		@Override
-		public void onContainerPropertyUpdate(Container container, int propertyId, int i) {
+		public void onPropertyUpdate(ScreenHandler handler, int propertyId, int i) {
 			if (propertyId == 0) {
 				LecternScreen.this.updatePage();
 			}
 		}
 	};
 
-	public LecternScreen(LecternContainer container, PlayerInventory inventory, Text title) {
+	public LecternScreen(LecternScreenHandler container, PlayerInventory inventory, Text title) {
 		this.container = container;
 	}
 
-	public LecternContainer getContainer() {
+	public LecternScreenHandler getScreenHandler() {
 		return this.container;
 	}
 
@@ -50,7 +50,7 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 
 	@Override
 	public void onClose() {
-		this.minecraft.player.closeContainer();
+		this.client.player.closeHandledScreen();
 		super.onClose();
 	}
 
@@ -62,8 +62,8 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 
 	@Override
 	protected void addCloseButton() {
-		if (this.minecraft.player.canModifyWorld()) {
-			this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(null)));
+		if (this.client.player.canModifyWorld()) {
+			this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(null)));
 			this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book"), buttonWidget -> this.sendButtonPressPacket(3)));
 		} else {
 			super.addCloseButton();
@@ -91,7 +91,7 @@ public class LecternScreen extends BookScreen implements ContainerProvider<Lecte
 	}
 
 	private void sendButtonPressPacket(int id) {
-		this.minecraft.interactionManager.clickButton(this.container.syncId, id);
+		this.client.interactionManager.clickButton(this.container.syncId, id);
 	}
 
 	@Override

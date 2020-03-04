@@ -94,7 +94,7 @@ public class BookScreen extends Screen {
 	}
 
 	protected void addCloseButton() {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(null)));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(null)));
 	}
 
 	protected void addPageButtons() {
@@ -152,43 +152,43 @@ public class BookScreen extends Screen {
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
+		this.client.getTextureManager().bindTexture(BOOK_TEXTURE);
 		int i = (this.width - 192) / 2;
 		int j = 2;
 		this.blit(i, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
 			Text text = this.contents.getPage(this.pageIndex);
-			this.cachedPage = Texts.wrapLines(text, 114, this.font, true, true);
+			this.cachedPage = Texts.wrapLines(text, 114, this.textRenderer, true, true);
 		}
 
 		this.cachedPageIndex = this.pageIndex;
 		int k = this.getStringWidth(string);
-		this.font.draw(string, (float)(i - k + 192 - 44), 18.0F, 0);
+		this.textRenderer.draw(string, (float)(i - k + 192 - 44), 18.0F, 0);
 		int l = Math.min(128 / 9, this.cachedPage.size());
 
 		for (int m = 0; m < l; m++) {
 			Text text2 = (Text)this.cachedPage.get(m);
-			this.font.draw(text2.asFormattedString(), (float)(i + 36), (float)(32 + m * 9), 0);
+			this.textRenderer.draw(text2.asFormattedString(), (float)(i + 36), (float)(32 + m * 9), 0);
 		}
 
 		Text text3 = this.getTextAt((double)mouseX, (double)mouseY);
 		if (text3 != null) {
-			this.renderComponentHoverEffect(text3, mouseX, mouseY);
+			this.renderTextHoverEffect(text3, mouseX, mouseY);
 		}
 
 		super.render(mouseX, mouseY, delta);
 	}
 
 	private int getStringWidth(String string) {
-		return this.font.getStringWidth(this.font.isRightToLeft() ? this.font.mirror(string) : string);
+		return this.textRenderer.getStringWidth(this.textRenderer.isRightToLeft() ? this.textRenderer.mirror(string) : string);
 	}
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (button == 0) {
 			Text text = this.getTextAt(mouseX, mouseY);
-			if (text != null && this.handleComponentClicked(text)) {
+			if (text != null && this.handleTextClick(text)) {
 				return true;
 			}
 		}
@@ -197,7 +197,7 @@ public class BookScreen extends Screen {
 	}
 
 	@Override
-	public boolean handleComponentClicked(Text text) {
+	public boolean handleTextClick(Text text) {
 		ClickEvent clickEvent = text.getStyle().getClickEvent();
 		if (clickEvent == null) {
 			return false;
@@ -211,9 +211,9 @@ public class BookScreen extends Screen {
 				return false;
 			}
 		} else {
-			boolean bl = super.handleComponentClicked(text);
+			boolean bl = super.handleTextClick(text);
 			if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-				this.minecraft.openScreen(null);
+				this.client.openScreen(null);
 			}
 
 			return bl;
@@ -237,7 +237,7 @@ public class BookScreen extends Screen {
 
 						for (Text text2 : text) {
 							if (text2 instanceof LiteralText) {
-								m += this.minecraft.textRenderer.getStringWidth(text2.asFormattedString());
+								m += this.client.textRenderer.getStringWidth(text2.asFormattedString());
 								if (m > i) {
 									return text2;
 								}

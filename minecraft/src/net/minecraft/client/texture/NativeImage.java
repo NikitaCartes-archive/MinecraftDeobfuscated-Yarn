@@ -85,7 +85,7 @@ public final class NativeImage implements AutoCloseable {
 
 		NativeImage var3;
 		try {
-			byteBuffer = TextureUtil.readResource(inputStream);
+			byteBuffer = TextureUtil.method_24962(inputStream);
 			byteBuffer.rewind();
 			var3 = read(format, byteBuffer);
 		} finally {

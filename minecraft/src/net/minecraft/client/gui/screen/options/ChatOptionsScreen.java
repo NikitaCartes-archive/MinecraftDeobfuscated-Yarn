@@ -41,7 +41,7 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 		for (Option option : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 + 24 * (i >> 1);
-			AbstractButtonWidget abstractButtonWidget = this.addButton(option.createButton(this.minecraft.options, j, k, 150));
+			AbstractButtonWidget abstractButtonWidget = this.addButton(option.createButton(this.client.options, j, k, 150));
 			if (option == Option.NARRATOR) {
 				this.narratorOptionButton = abstractButtonWidget;
 				abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
@@ -52,7 +52,7 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent)
+				this.width / 2 - 100, this.height / 6 + 24 * (i + 1) / 2, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(this.parent)
 			)
 		);
 	}
@@ -60,7 +60,7 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 20, 16777215);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 16777215);
 		super.render(mouseX, mouseY, delta);
 	}
 

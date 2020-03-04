@@ -28,7 +28,7 @@ import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.realms.DisconnectedRealmsScreen;
-import net.minecraft.realms.RealmsScreenProxy;
+import net.minecraft.realms.RealmsScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
@@ -102,8 +102,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	@Override
 	public void onDisconnected(Text reason) {
-		if (this.parentGui != null && this.parentGui instanceof RealmsScreenProxy) {
-			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", reason).getProxy());
+		if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
+			this.client.openScreen(new DisconnectedRealmsScreen(this.parentGui, "connect.failed", reason));
 		} else {
 			this.client.openScreen(new DisconnectedScreen(this.parentGui, "connect.failed", reason));
 		}

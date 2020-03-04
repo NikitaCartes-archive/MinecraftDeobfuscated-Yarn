@@ -13,8 +13,8 @@ import net.minecraft.world.gen.feature.EndPortalFeature;
 public class LandingPhase extends AbstractPhase {
 	private Vec3d field_7046;
 
-	public LandingPhase(EnderDragonEntity dragon) {
-		super(dragon);
+	public LandingPhase(EnderDragonEntity enderDragonEntity) {
+		super(enderDragonEntity);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class LandingPhase extends AbstractPhase {
 	@Override
 	public void serverTick() {
 		if (this.field_7046 == null) {
-			this.field_7046 = new Vec3d(this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
+			this.field_7046 = Vec3d.method_24955(this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
 		}
 
 		if (this.field_7046.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ()) < 1.0) {
@@ -49,7 +49,7 @@ public class LandingPhase extends AbstractPhase {
 	}
 
 	@Override
-	public float method_6846() {
+	public float getMaxYAcceleration() {
 		return 1.5F;
 	}
 

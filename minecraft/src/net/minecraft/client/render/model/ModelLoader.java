@@ -52,9 +52,9 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.Rotation3;
-import net.minecraft.container.PlayerContainer;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
@@ -110,11 +110,11 @@ public class ModelLoader {
 			hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, identifier));
 		}
 
-		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.EMPTY_HELMET_SLOT_TEXTURE));
-		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.EMPTY_CHESTPLATE_SLOT_TEXTURE));
-		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.EMPTY_LEGGINGS_SLOT_TEXTURE));
-		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.EMPTY_BOOTS_SLOT_TEXTURE));
-		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerContainer.EMPTY_OFFHAND_ARMOR_SLOT));
+		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE));
+		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE));
+		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE));
+		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE));
+		hashSet.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT));
 		TexturedRenderLayers.addDefaultTextures(hashSet::add);
 	});
 	private static final Logger LOGGER = LogManager.getLogger();

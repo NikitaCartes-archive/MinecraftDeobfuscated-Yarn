@@ -62,14 +62,13 @@ public class LeavesBlock extends Block {
 
 	private static BlockState updateDistanceFromLogs(BlockState state, IWorld world, BlockPos pos) {
 		int i = 7;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (Direction direction : Direction.values()) {
-				pooledMutable.set(pos).setOffset(direction);
-				i = Math.min(i, getDistanceFromLog(world.getBlockState(pooledMutable)) + 1);
-				if (i == 1) {
-					break;
-				}
+		for (Direction direction : Direction.values()) {
+			mutable.move(pos, direction);
+			i = Math.min(i, getDistanceFromLog(world.getBlockState(mutable)) + 1);
+			if (i == 1) {
+				break;
 			}
 		}
 

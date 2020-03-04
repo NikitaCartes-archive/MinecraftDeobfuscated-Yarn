@@ -27,13 +27,13 @@ public class FrostedIceBlock extends IceBlock {
 		if ((random.nextInt(3) == 0 || this.canMelt(world, pos, 4))
 			&& world.getLightLevel(pos) > 11 - (Integer)state.get(AGE) - state.getOpacity(world, pos)
 			&& this.increaseAge(state, world, pos)) {
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (Direction direction : Direction.values()) {
-					pooledMutable.set(pos).setOffset(direction);
-					BlockState blockState = world.getBlockState(pooledMutable);
-					if (blockState.getBlock() == this && !this.increaseAge(blockState, world, pooledMutable)) {
-						world.getBlockTickScheduler().schedule(pooledMutable, this, MathHelper.nextInt(random, 20, 40));
-					}
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			for (Direction direction : Direction.values()) {
+				mutable.move(pos, direction);
+				BlockState blockState = world.getBlockState(mutable);
+				if (blockState.getBlock() == this && !this.increaseAge(blockState, world, mutable)) {
+					world.getBlockTickScheduler().schedule(mutable, this, MathHelper.nextInt(random, 20, 40));
 				}
 			}
 		} else {
@@ -63,19 +63,18 @@ public class FrostedIceBlock extends IceBlock {
 
 	private boolean canMelt(BlockView world, BlockPos pos, int maxNeighbors) {
 		int i = 0;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (Direction direction : Direction.values()) {
-				pooledMutable.set(pos).setOffset(direction);
-				if (world.getBlockState(pooledMutable).getBlock() == this) {
-					if (++i >= maxNeighbors) {
-						return false;
-					}
+		for (Direction direction : Direction.values()) {
+			mutable.move(pos, direction);
+			if (world.getBlockState(mutable).getBlock() == this) {
+				if (++i >= maxNeighbors) {
+					return false;
 				}
 			}
-
-			return true;
 		}
+
+		return true;
 	}
 
 	@Override

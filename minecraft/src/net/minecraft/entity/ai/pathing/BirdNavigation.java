@@ -32,7 +32,7 @@ public class BirdNavigation extends EntityNavigation {
 
 	@Override
 	public Path findPathTo(Entity entity, int distance) {
-		return this.findPathTo(new BlockPos(entity), distance);
+		return this.findPathTo(entity.getSenseCenterPos(), distance);
 	}
 
 	@Override

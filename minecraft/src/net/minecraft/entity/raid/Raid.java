@@ -112,7 +112,7 @@ public class Raid {
 
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompound(i);
-				UUID uUID = compoundTag.getUuid("UUID");
+				UUID uUID = compoundTag.getUuidOld("UUID");
 				this.heroesOfTheVillage.add(uUID);
 			}
 		}
@@ -156,7 +156,7 @@ public class Raid {
 
 	private Predicate<ServerPlayerEntity> isInRaidDistance() {
 		return serverPlayerEntity -> {
-			BlockPos blockPos = new BlockPos(serverPlayerEntity);
+			BlockPos blockPos = serverPlayerEntity.getSenseCenterPos();
 			return serverPlayerEntity.isAlive() && this.world.getRaidAt(blockPos) == this;
 		};
 	}
@@ -400,7 +400,7 @@ public class Raid {
 			Set<RaiderEntity> set2 = (Set<RaiderEntity>)iterator.next();
 
 			for (RaiderEntity raiderEntity : set2) {
-				BlockPos blockPos = new BlockPos(raiderEntity);
+				BlockPos blockPos = raiderEntity.getSenseCenterPos();
 				if (raiderEntity.removed || raiderEntity.dimension != this.world.getDimension().getType() || this.center.getSquaredDistance(blockPos) >= 12544.0) {
 					set.add(raiderEntity);
 				} else if (raiderEntity.age > 600) {
@@ -431,7 +431,7 @@ public class Raid {
 
 		for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
 			Vec3d vec3d = serverPlayerEntity.getPos();
-			Vec3d vec3d2 = new Vec3d(pos);
+			Vec3d vec3d2 = Vec3d.method_24953(pos);
 			float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
 			double d = vec3d.x + (double)(13.0F / g) * (vec3d2.x - vec3d.x);
 			double e = vec3d.z + (double)(13.0F / g) * (vec3d2.z - vec3d.z);
@@ -713,7 +713,7 @@ public class Raid {
 
 		for (UUID uUID : this.heroesOfTheVillage) {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putUuid("UUID", uUID);
+			compoundTag.putUuidOld("UUID", uUID);
 			listTag.add(compoundTag);
 		}
 

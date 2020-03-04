@@ -3,6 +3,7 @@ package net.minecraft.world.biome.source;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 
 public class BiomeAccess {
@@ -22,6 +23,14 @@ public class BiomeAccess {
 
 	public Biome getBiome(BlockPos pos) {
 		return this.type.getBiome(this.seed, pos.getX(), pos.getY(), pos.getZ(), this.storage);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Biome getBiome(double x, double y, double z) {
+		int i = MathHelper.floor(x) >> 2;
+		int j = MathHelper.floor(y) >> 2;
+		int k = MathHelper.floor(z) >> 2;
+		return this.getBiomeForNoiseGen(i, j, k);
 	}
 
 	@Environment(EnvType.CLIENT)

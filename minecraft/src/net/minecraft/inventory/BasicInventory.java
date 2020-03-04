@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.util.DefaultedList;
@@ -197,5 +199,27 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 			source.decrement(j);
 			this.markDirty();
 		}
+	}
+
+	public void readTags(ListTag listTag) {
+		for (int i = 0; i < listTag.size(); i++) {
+			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
+			if (!itemStack.isEmpty()) {
+				this.add(itemStack);
+			}
+		}
+	}
+
+	public ListTag getTags() {
+		ListTag listTag = new ListTag();
+
+		for (int i = 0; i < this.getInvSize(); i++) {
+			ItemStack itemStack = this.getInvStack(i);
+			if (!itemStack.isEmpty()) {
+				listTag.add(itemStack.toTag(new CompoundTag()));
+			}
+		}
+
+		return listTag;
 	}
 }

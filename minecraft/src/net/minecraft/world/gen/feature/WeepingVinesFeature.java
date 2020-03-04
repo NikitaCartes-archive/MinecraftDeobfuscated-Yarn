@@ -43,12 +43,12 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
 		for (int i = 0; i < 200; i++) {
-			mutable.set(pos).setOffset(random.nextInt(6) - random.nextInt(6), random.nextInt(2) - random.nextInt(5), random.nextInt(6) - random.nextInt(6));
+			mutable.setOffset(pos, random.nextInt(6) - random.nextInt(6), random.nextInt(2) - random.nextInt(5), random.nextInt(6) - random.nextInt(6));
 			if (world.isAir(mutable)) {
 				int j = 0;
 
 				for (Direction direction : DIRECTIONS) {
-					Block block = world.getBlockState(mutable2.set(mutable).setOffset(direction)).getBlock();
+					Block block = world.getBlockState(mutable2.move(mutable, direction)).getBlock();
 					if (block == Blocks.NETHERRACK || block == Blocks.NETHER_WART_BLOCK) {
 						j++;
 					}
@@ -69,7 +69,7 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int i = 0; i < 100; i++) {
-			mutable.set(pos).setOffset(random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
+			mutable.setOffset(pos, random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
 			if (world.isAir(mutable)) {
 				Block block = world.getBlockState(mutable.up()).getBlock();
 				if (block == Blocks.NETHERRACK || block == Blocks.NETHER_WART_BLOCK) {

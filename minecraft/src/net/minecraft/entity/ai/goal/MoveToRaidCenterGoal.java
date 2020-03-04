@@ -9,7 +9,6 @@ import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaidManager;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
@@ -26,7 +25,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			&& !this.actor.hasPassengers()
 			&& this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
+			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getSenseCenterPos());
 	}
 
 	@Override
@@ -34,7 +33,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 		return this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
 			&& this.actor.world instanceof ServerWorld
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(new BlockPos(this.actor));
+			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getSenseCenterPos());
 	}
 
 	@Override
@@ -46,7 +45,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			}
 
 			if (!this.actor.isNavigating()) {
-				Vec3d vec3d = TargetFinder.findTargetTowards(this.actor, 15, 4, new Vec3d(raid.getCenter()));
+				Vec3d vec3d = TargetFinder.findTargetTowards(this.actor, 15, 4, Vec3d.method_24955(raid.getCenter()));
 				if (vec3d != null) {
 					this.actor.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
 				}

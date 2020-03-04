@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
@@ -22,7 +23,7 @@ public class EndIslandsSmallBiome extends Biome {
 				.scale(0.2F)
 				.temperature(0.5F)
 				.downfall(0.5F)
-				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).build())
+				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).moodSound(SoundEvents.AMBIENT_CAVE).build())
 				.parent(null)
 		);
 		this.addFeature(

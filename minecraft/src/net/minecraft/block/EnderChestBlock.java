@@ -7,8 +7,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
-import net.minecraft.container.GenericContainer;
-import net.minecraft.container.SimpleNamedContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,6 +15,8 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -83,9 +83,9 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 			} else {
 				EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
 				enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
-				player.openContainer(
-					new SimpleNamedContainerFactory(
-						(i, playerInventory, playerEntity) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
+				player.openHandledScreen(
+					new SimpleNamedScreenHandlerFactory(
+						(i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
 				player.incrementStat(Stats.OPEN_ENDERCHEST);

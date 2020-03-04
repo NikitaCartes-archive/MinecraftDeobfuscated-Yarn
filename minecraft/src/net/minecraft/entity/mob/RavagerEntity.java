@@ -337,8 +337,8 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	static class Navigation extends MobNavigation {
-		public Navigation(MobEntity world, World world2) {
-			super(world, world2);
+		public Navigation(MobEntity mobEntity, World world) {
+			super(mobEntity, world);
 		}
 
 		@Override

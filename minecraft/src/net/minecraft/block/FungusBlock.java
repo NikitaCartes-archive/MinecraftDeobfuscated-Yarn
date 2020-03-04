@@ -36,7 +36,7 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-		Block block = ((HugeFungusFeatureConfig)((ConfiguredFeature)this.field_22135.get()).config).field_22435.getBlock();
+		Block block = ((HugeFungusFeatureConfig)((ConfiguredFeature)this.field_22135.get()).config).validBaseBlock.getBlock();
 		Block block2 = world.getBlockState(pos.down()).getBlock();
 		return block2 == block;
 	}

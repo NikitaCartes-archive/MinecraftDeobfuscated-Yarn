@@ -89,7 +89,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	private Optional<BlockPos> getReachableHome(ServerWorld world, VillagerEntity villager) {
 		return world.getPointOfInterestStorage()
-			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, blockPos), new BlockPos(villager), 48);
+			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, blockPos), villager.getSenseCenterPos(), 48);
 	}
 
 	private boolean canReachHome(VillagerEntity villager, BlockPos pos) {

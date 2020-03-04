@@ -7,7 +7,6 @@ import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 
 public class MeleeAttackGoal extends Goal {
 	protected final MobEntityWithAi mob;
@@ -60,7 +59,7 @@ public class MeleeAttackGoal extends Goal {
 		} else if (!this.pauseWhenMobIdle) {
 			return !this.mob.getNavigation().isIdle();
 		} else {
-			return !this.mob.isInWalkTargetRange(new BlockPos(livingEntity))
+			return !this.mob.isInWalkTargetRange(livingEntity.getSenseCenterPos())
 				? false
 				: !(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative();
 		}

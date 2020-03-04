@@ -47,8 +47,8 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void tick() {
-		this.minecraft.getMusicTracker().tick();
-		this.minecraft.getSoundManager().tick(false);
+		this.client.getMusicTracker().tick();
+		this.client.getSoundManager().tick(false);
 		float f = (float)(this.creditsHeight + this.height + this.height + 24) / this.speed;
 		if (this.time > f) {
 			this.close();
@@ -62,7 +62,7 @@ public class CreditsScreen extends Screen {
 
 	private void close() {
 		this.finishAction.run();
-		this.minecraft.openScreen(null);
+		this.client.openScreen(null);
 	}
 
 	@Override
@@ -75,14 +75,14 @@ public class CreditsScreen extends Screen {
 				String string = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 				int i = 274;
 				if (this.endCredits) {
-					resource = this.minecraft.getResourceManager().getResource(new Identifier("texts/end.txt"));
+					resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
 					InputStream inputStream = resource.getInputStream();
 					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 					Random random = new Random(8124371L);
 
 					String string2;
 					while ((string2 = bufferedReader.readLine()) != null) {
-						string2 = string2.replaceAll("PLAYERNAME", this.minecraft.getSession().getUsername());
+						string2 = string2.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
 
 						while (string2.contains(string)) {
 							int j = string2.indexOf(string);
@@ -91,7 +91,7 @@ public class CreditsScreen extends Screen {
 							string2 = string3 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
 						}
 
-						this.credits.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string2, 274));
+						this.credits.addAll(this.client.textRenderer.wrapStringToWidthAsList(string2, 274));
 						this.credits.add("");
 					}
 
@@ -102,14 +102,14 @@ public class CreditsScreen extends Screen {
 					}
 				}
 
-				InputStream inputStream = this.minecraft.getResourceManager().getResource(new Identifier("texts/credits.txt")).getInputStream();
+				InputStream inputStream = this.client.getResourceManager().getResource(new Identifier("texts/credits.txt")).getInputStream();
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
 				String string5;
 				while ((string5 = bufferedReader.readLine()) != null) {
-					string5 = string5.replaceAll("PLAYERNAME", this.minecraft.getSession().getUsername());
+					string5 = string5.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
 					string5 = string5.replaceAll("\t", "    ");
-					this.credits.addAll(this.minecraft.textRenderer.wrapStringToWidthAsList(string5, 274));
+					this.credits.addAll(this.client.textRenderer.wrapStringToWidthAsList(string5, 274));
 					this.credits.add("");
 				}
 
@@ -124,7 +124,7 @@ public class CreditsScreen extends Screen {
 	}
 
 	private void renderBackground(int mouseX, int mouseY, float tickDelta) {
-		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		int i = this.width;
 		float f = -this.time * 0.5F * this.speed;
 		float g = (float)this.height - this.time * 0.5F * this.speed;
@@ -145,10 +145,10 @@ public class CreditsScreen extends Screen {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getBlitOffset()).texture(0.0F, f * 0.015625F).color(j, j, j, 1.0F).next();
-		bufferBuilder.vertex((double)i, (double)this.height, (double)this.getBlitOffset()).texture((float)i * 0.015625F, f * 0.015625F).color(j, j, j, 1.0F).next();
-		bufferBuilder.vertex((double)i, 0.0, (double)this.getBlitOffset()).texture((float)i * 0.015625F, g * 0.015625F).color(j, j, j, 1.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, g * 0.015625F).color(j, j, j, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getZOffset()).texture(0.0F, f * 0.015625F).color(j, j, j, 1.0F).next();
+		bufferBuilder.vertex((double)i, (double)this.height, (double)this.getZOffset()).texture((float)i * 0.015625F, f * 0.015625F).color(j, j, j, 1.0F).next();
+		bufferBuilder.vertex((double)i, 0.0, (double)this.getZOffset()).texture((float)i * 0.015625F, g * 0.015625F).color(j, j, j, 1.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, (double)this.getZOffset()).texture(0.0F, g * 0.015625F).color(j, j, j, 1.0F).next();
 		tessellator.draw();
 	}
 
@@ -162,12 +162,12 @@ public class CreditsScreen extends Screen {
 		float f = -this.time * this.speed;
 		RenderSystem.pushMatrix();
 		RenderSystem.translatef(0.0F, f, 0.0F);
-		this.minecraft.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
+		this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableAlphaTest();
 		this.blit(j, k, 0, 0, 155, 44);
 		this.blit(j + 155, k, 0, 45, 155, 44);
-		this.minecraft.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
+		this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
 		blit(j + 88, k + 37, 0.0F, 0.0F, 98, 14, 128, 16);
 		RenderSystem.disableAlphaTest();
 		int l = k + 100;
@@ -183,10 +183,10 @@ public class CreditsScreen extends Screen {
 			if ((float)l + f + 12.0F + 8.0F > 0.0F && (float)l + f < (float)this.height) {
 				String string = (String)this.credits.get(m);
 				if (string.startsWith("[C]")) {
-					this.font.drawWithShadow(string.substring(3), (float)(j + (274 - this.font.getStringWidth(string.substring(3))) / 2), (float)l, 16777215);
+					this.textRenderer.drawWithShadow(string.substring(3), (float)(j + (274 - this.textRenderer.getStringWidth(string.substring(3))) / 2), (float)l, 16777215);
 				} else {
-					this.font.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0F));
-					this.font.drawWithShadow(string, (float)j, (float)l, 16777215);
+					this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0F));
+					this.textRenderer.drawWithShadow(string, (float)j, (float)l, 16777215);
 				}
 			}
 
@@ -194,7 +194,7 @@ public class CreditsScreen extends Screen {
 		}
 
 		RenderSystem.popMatrix();
-		this.minecraft.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
+		this.client.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
 		int m = this.width;
@@ -202,10 +202,10 @@ public class CreditsScreen extends Screen {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)n, (double)this.getBlitOffset()).texture(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)m, (double)n, (double)this.getBlitOffset()).texture(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)m, 0.0, (double)this.getBlitOffset()).texture(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, (double)this.getBlitOffset()).texture(0.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex(0.0, (double)n, (double)this.getZOffset()).texture(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)m, (double)n, (double)this.getZOffset()).texture(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex((double)m, 0.0, (double)this.getZOffset()).texture(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
+		bufferBuilder.vertex(0.0, 0.0, (double)this.getZOffset()).texture(0.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		tessellator.draw();
 		RenderSystem.disableBlend();
 		super.render(mouseX, mouseY, delta);

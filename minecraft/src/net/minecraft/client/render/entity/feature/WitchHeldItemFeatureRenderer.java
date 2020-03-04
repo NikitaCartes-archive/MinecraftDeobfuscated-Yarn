@@ -12,8 +12,8 @@ import net.minecraft.item.Items;
 
 @Environment(EnvType.CLIENT)
 public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends VillagerHeldItemFeatureRenderer<T, WitchEntityModel<T>> {
-	public WitchHeldItemFeatureRenderer(FeatureRendererContext<T, WitchEntityModel<T>> context) {
-		super(context);
+	public WitchHeldItemFeatureRenderer(FeatureRendererContext<T, WitchEntityModel<T>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	@Override

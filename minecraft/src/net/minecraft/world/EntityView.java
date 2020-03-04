@@ -95,24 +95,6 @@ public interface EntityView {
 		return this.getClosestPlayer(x, y, z, maxDistance, predicate);
 	}
 
-	@Nullable
-	default PlayerEntity getClosestPlayer(double x, double z, double maxDistance) {
-		double d = -1.0;
-		PlayerEntity playerEntity = null;
-
-		for (PlayerEntity playerEntity2 : this.getPlayers()) {
-			if (EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity2)) {
-				double e = playerEntity2.squaredDistanceTo(x, playerEntity2.getY(), z);
-				if ((maxDistance < 0.0 || e < maxDistance * maxDistance) && (d == -1.0 || e < d)) {
-					d = e;
-					playerEntity = playerEntity2;
-				}
-			}
-		}
-
-		return playerEntity;
-	}
-
 	default boolean isPlayerInRange(double x, double y, double z, double range) {
 		for (PlayerEntity playerEntity : this.getPlayers()) {
 			if (EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity) && EntityPredicates.VALID_ENTITY_LIVING.test(playerEntity)) {

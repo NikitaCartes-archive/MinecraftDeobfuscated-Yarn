@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.Identifier;
 
@@ -21,11 +20,7 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 		return SKIN;
 	}
 
-	protected void setupTransforms(T zombieEntity, MatrixStack matrixStack, float f, float g, float h) {
-		if (zombieEntity.isConvertingInWater()) {
-			g += (float)(Math.cos((double)zombieEntity.age * 3.25) * Math.PI * 0.25);
-		}
-
-		super.setupTransforms(zombieEntity, matrixStack, f, g, h);
+	protected boolean isShaking(T zombieEntity) {
+		return zombieEntity.isConvertingInWater();
 	}
 }

@@ -361,12 +361,16 @@ public class PandaEntity extends AnimalEntity {
 		this.updateRollOverAnimation();
 	}
 
-	public boolean method_6524() {
+	public boolean isScaredByThunderstorm() {
 		return this.isWorried() && this.world.isThundering();
 	}
 
 	private void updateEatingAnimation() {
-		if (!this.isEating() && this.isScared() && !this.method_6524() && !this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && this.random.nextInt(80) == 1) {
+		if (!this.isEating()
+			&& this.isScared()
+			&& !this.isScaredByThunderstorm()
+			&& !this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()
+			&& this.random.nextInt(80) == 1) {
 			this.setEating(true);
 		} else if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() || !this.isScared()) {
 			this.setEating(false);
@@ -589,7 +593,7 @@ public class PandaEntity extends AnimalEntity {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.getItem() instanceof SpawnEggItem) {
 			return super.interactMob(player, hand);
-		} else if (this.method_6524()) {
+		} else if (this.isScaredByThunderstorm()) {
 			return false;
 		} else if (this.isLyingOnBack()) {
 			this.setLyingOnBack(false);
@@ -665,7 +669,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public boolean method_18442() {
-		return !this.isLyingOnBack() && !this.method_6524() && !this.isEating() && !this.isPlaying() && !this.isScared();
+		return !this.isLyingOnBack() && !this.isScaredByThunderstorm() && !this.isEating() && !this.isPlaying() && !this.isScared();
 	}
 
 	static class AttackGoal extends MeleeAttackGoal {
@@ -923,14 +927,14 @@ public class PandaEntity extends AnimalEntity {
 		}
 
 		private boolean isBambooClose() {
-			BlockPos blockPos = new BlockPos(this.panda);
+			BlockPos blockPos = this.panda.getSenseCenterPos();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 8; j++) {
 					for (int k = 0; k <= j; k = k > 0 ? -k : 1 - k) {
 						for (int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l) {
-							mutable.set(blockPos).setOffset(k, i, l);
+							mutable.setOffset(blockPos, k, i, l);
 							if (this.world.getBlockState(mutable).getBlock() == Blocks.BAMBOO) {
 								return true;
 							}
@@ -1073,7 +1077,7 @@ public class PandaEntity extends AnimalEntity {
 						j = (int)((float)j + h / Math.abs(h));
 					}
 
-					if (this.panda.world.getBlockState(new BlockPos(this.panda).add(i, -1, j)).isAir()) {
+					if (this.panda.world.getBlockState(this.panda.getSenseCenterPos().add(i, -1, j)).isAir()) {
 						return true;
 					} else {
 						return this.panda.isPlayful() && this.panda.random.nextInt(60) == 1 ? true : this.panda.random.nextInt(500) == 1;

@@ -110,7 +110,6 @@ public abstract class Request<T extends Request<T>> {
 		byte[] bs = new byte[1024];
 
 		try {
-			int i = 0;
 			InputStream inputStream = this.connection.getInputStream();
 
 			while (inputStream.read(bs) > 0) {
@@ -118,18 +117,17 @@ public abstract class Request<T extends Request<T>> {
 
 			inputStream.close();
 			return;
-		} catch (Exception var10) {
+		} catch (Exception var9) {
 			try {
-				InputStream inputStream = this.connection.getErrorStream();
-				int j = 0;
-				if (inputStream != null) {
-					while (inputStream.read(bs) > 0) {
+				InputStream inputStream2 = this.connection.getErrorStream();
+				if (inputStream2 != null) {
+					while (inputStream2.read(bs) > 0) {
 					}
 
-					inputStream.close();
+					inputStream2.close();
 					return;
 				}
-			} catch (IOException var9) {
+			} catch (IOException var8) {
 				return;
 			}
 		} finally {
@@ -193,8 +191,8 @@ public abstract class Request<T extends Request<T>> {
 
 	@Environment(EnvType.CLIENT)
 	public static class Delete extends Request<Request.Delete> {
-		public Delete(String uri, int connectTimeout, int readTimeout) {
-			super(uri, connectTimeout, readTimeout);
+		public Delete(String string, int i, int j) {
+			super(string, i, j);
 		}
 
 		public Request.Delete doConnect() {
@@ -211,8 +209,8 @@ public abstract class Request<T extends Request<T>> {
 
 	@Environment(EnvType.CLIENT)
 	public static class Get extends Request<Request.Get> {
-		public Get(String uri, int connectTimeout, int readTimeout) {
-			super(uri, connectTimeout, readTimeout);
+		public Get(String string, int i, int j) {
+			super(string, i, j);
 		}
 
 		public Request.Get doConnect() {

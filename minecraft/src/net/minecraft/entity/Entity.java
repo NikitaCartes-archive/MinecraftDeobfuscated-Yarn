@@ -127,6 +127,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private double x;
 	private double y;
 	private double z;
+	private Vec3d field_22467;
+	private BlockPos field_22468;
 	private Vec3d velocity = Vec3d.ZERO;
 	public float yaw;
 	public float pitch;
@@ -317,10 +319,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 		double e = other.y - this.y;
 		double f = other.z - this.z;
 		return d * d + e * e + f * f < radius * radius;
-	}
-
-	public BlockPos getSenseCenterPos() {
-		return new BlockPos(this);
 	}
 
 	protected void setRotation(float yaw, float pitch) {
@@ -599,13 +597,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected float getJumpVelocityMultiplier() {
-		float f = this.world.getBlockState(new BlockPos(this)).getBlock().getJumpVelocityMultiplier();
+		float f = this.world.getBlockState(this.getSenseCenterPos()).getBlock().getJumpVelocityMultiplier();
 		float g = this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getJumpVelocityMultiplier();
 		return (double)f == 1.0 ? g : f;
 	}
 
 	protected float getVelocityMultiplier() {
-		Block block = this.world.getBlockState(new BlockPos(this)).getBlock();
+		Block block = this.world.getBlockState(this.getSenseCenterPos()).getBlock();
 		float f = block.getVelocityMultiplier();
 		if (block != Blocks.WATER && block != Blocks.BUBBLE_COLUMN) {
 			return (double)f == 1.0 ? this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getVelocityMultiplier() : f;
@@ -803,28 +801,24 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	protected void checkBlockCollision() {
 		Box box = this.getBoundingBox();
+		BlockPos blockPos = new BlockPos(box.x1 + 0.001, box.y1 + 0.001, box.z1 + 0.001);
+		BlockPos blockPos2 = new BlockPos(box.x2 - 0.001, box.y2 - 0.001, box.z2 - 0.001);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		if (this.world.isRegionLoaded(blockPos, blockPos2)) {
+			for (int i = blockPos.getX(); i <= blockPos2.getX(); i++) {
+				for (int j = blockPos.getY(); j <= blockPos2.getY(); j++) {
+					for (int k = blockPos.getZ(); k <= blockPos2.getZ(); k++) {
+						mutable.set(i, j, k);
+						BlockState blockState = this.world.getBlockState(mutable);
 
-		try (
-			BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get(box.x1 + 0.001, box.y1 + 0.001, box.z1 + 0.001);
-			BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get(box.x2 - 0.001, box.y2 - 0.001, box.z2 - 0.001);
-			BlockPos.PooledMutable pooledMutable3 = BlockPos.PooledMutable.get();
-		) {
-			if (this.world.isRegionLoaded(pooledMutable, pooledMutable2)) {
-				for (int i = pooledMutable.getX(); i <= pooledMutable2.getX(); i++) {
-					for (int j = pooledMutable.getY(); j <= pooledMutable2.getY(); j++) {
-						for (int k = pooledMutable.getZ(); k <= pooledMutable2.getZ(); k++) {
-							pooledMutable3.set(i, j, k);
-							BlockState blockState = this.world.getBlockState(pooledMutable3);
-
-							try {
-								blockState.onEntityCollision(this.world, pooledMutable3, this);
-								this.onBlockCollision(blockState);
-							} catch (Throwable var60) {
-								CrashReport crashReport = CrashReport.create(var60, "Colliding entity with block");
-								CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
-								CrashReportSection.addBlockInfo(crashReportSection, pooledMutable3, blockState);
-								throw new CrashException(crashReport);
-							}
+						try {
+							blockState.onEntityCollision(this.world, mutable, this);
+							this.onBlockCollision(blockState);
+						} catch (Throwable var12) {
+							CrashReport crashReport = CrashReport.create(var12, "Colliding entity with block");
+							CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
+							CrashReportSection.addBlockInfo(crashReportSection, mutable, blockState);
+							throw new CrashException(crashReport);
 						}
 					}
 				}
@@ -898,7 +892,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return null;
 	}
 
-	public final boolean isFireImmune() {
+	public boolean isFireImmune() {
 		return this.getType().isFireImmune();
 	}
 
@@ -920,16 +914,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	private boolean isBeingRainedOn() {
-		boolean var3;
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.getEntityPos(this)) {
-			var3 = this.world.hasRain(pooledMutable) || this.world.hasRain(pooledMutable.set(this.getX(), this.getY() + (double)this.dimensions.height, this.getZ()));
-		}
-
-		return var3;
+		BlockPos blockPos = this.getSenseCenterPos();
+		return this.world.hasRain(blockPos) || this.world.hasRain(blockPos.add(0.0, (double)this.dimensions.height, 0.0));
 	}
 
 	private boolean isInsideBubbleColumn() {
-		return this.world.getBlockState(new BlockPos(this)).getBlock() == Blocks.BUBBLE_COLUMN;
+		return this.world.getBlockState(this.getSenseCenterPos()).getBlock() == Blocks.BUBBLE_COLUMN;
 	}
 
 	public boolean isTouchingWaterOrRain() {
@@ -1062,7 +1052,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	public boolean isInFluid(Tag<Fluid> fluidTag) {
+	public boolean isSubmergedIn(Tag<Fluid> fluidTag) {
 		return this.isSubmergedIn(fluidTag, false);
 	}
 
@@ -1348,7 +1338,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			tag.putInt("Dimension", this.dimension.getRawId());
 			tag.putBoolean("Invulnerable", this.invulnerable);
 			tag.putInt("PortalCooldown", this.netherPortalCooldown);
-			tag.putUuid("UUID", this.getUuid());
+			tag.putUuidOld("UUID", this.getUuid());
 			Text text = this.getCustomName();
 			if (text != null) {
 				tag.putString("CustomName", Text.Serializer.toJson(text));
@@ -1431,8 +1421,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 			this.invulnerable = tag.getBoolean("Invulnerable");
 			this.netherPortalCooldown = tag.getInt("PortalCooldown");
-			if (tag.containsUuid("UUID")) {
-				this.uuid = tag.getUuid("UUID");
+			if (tag.containsUuidOld("UUID")) {
+				this.uuid = tag.getUuidOld("UUID");
 				this.uuidString = this.uuid.toString();
 			}
 
@@ -1546,21 +1536,21 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.noClip) {
 			return false;
 		} else {
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (int i = 0; i < 8; i++) {
-					int j = MathHelper.floor(this.getY() + (double)(((float)((i >> 0) % 2) - 0.5F) * 0.1F) + (double)this.standingEyeHeight);
-					int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5F) * this.dimensions.width * 0.8F));
-					int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * this.dimensions.width * 0.8F));
-					if (pooledMutable.getX() != k || pooledMutable.getY() != j || pooledMutable.getZ() != l) {
-						pooledMutable.set(k, j, l);
-						if (this.world.getBlockState(pooledMutable).canSuffocate(this.world, pooledMutable)) {
-							return true;
-						}
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			for (int i = 0; i < 8; i++) {
+				int j = MathHelper.floor(this.getY() + (double)(((float)((i >> 0) % 2) - 0.5F) * 0.1F) + (double)this.standingEyeHeight);
+				int k = MathHelper.floor(this.getX() + (double)(((float)((i >> 1) % 2) - 0.5F) * this.dimensions.width * 0.8F));
+				int l = MathHelper.floor(this.getZ() + (double)(((float)((i >> 2) % 2) - 0.5F) * this.dimensions.width * 0.8F));
+				if (mutable.getX() != k || mutable.getY() != j || mutable.getZ() != l) {
+					mutable.set(k, j, l);
+					if (this.world.getBlockState(mutable).canSuffocate(this.world, mutable)) {
+						return true;
 					}
 				}
-
-				return false;
 			}
+
+			return false;
 		}
 	}
 
@@ -1981,7 +1971,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		double d = Double.MAX_VALUE;
 
 		for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
-			mutable.set(blockPos).setOffset(direction2);
+			mutable.move(blockPos, direction2);
 			if (!this.world.getBlockState(mutable).isFullCube(this.world, mutable)) {
 				double e = vec3d.getComponentAlongAxis(direction2.getAxis());
 				double f = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - e : e;
@@ -2389,14 +2379,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void sendMessage(Text message) {
 	}
 
-	public BlockPos getBlockPos() {
-		return new BlockPos(this);
-	}
-
-	public Vec3d getPosVector() {
-		return this.getPos();
-	}
-
 	public World getEntityWorld() {
 		return this.world;
 	}
@@ -2602,7 +2584,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			BlockPos blockPos = new BlockPos(this.getX(), this.getY(), this.getZ());
 			EntityContext entityContext = EntityContext.of(livingEntity);
 
-			for (EntityPose entityPose : livingEntity.method_24831()) {
+			for (EntityPose entityPose : livingEntity.getPoses()) {
 				for (int i : field_22417.get(entityPose)) {
 					for (int[] js : is) {
 						BlockPos blockPos2 = blockPos.add(js[0], i, js[1]);
@@ -2712,27 +2694,26 @@ public abstract class Entity implements Nameable, CommandOutput {
 			boolean bl2 = false;
 			Vec3d vec3d = Vec3d.ZERO;
 			int o = 0;
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-				for (int p = i; p < j; p++) {
-					for (int q = k; q < l; q++) {
-						for (int r = m; r < n; r++) {
-							pooledMutable.set(p, q, r);
-							FluidState fluidState = this.world.getFluidState(pooledMutable);
-							if (fluidState.matches(tag)) {
-								double f = (double)((float)q + fluidState.getHeight(this.world, pooledMutable));
-								if (f >= box.y1) {
-									bl2 = true;
-									e = Math.max(f - box.y1, e);
-									if (bl) {
-										Vec3d vec3d2 = fluidState.getVelocity(this.world, pooledMutable);
-										if (e < 0.4) {
-											vec3d2 = vec3d2.multiply(e);
-										}
-
-										vec3d = vec3d.add(vec3d2);
-										o++;
+			for (int p = i; p < j; p++) {
+				for (int q = k; q < l; q++) {
+					for (int r = m; r < n; r++) {
+						mutable.set(p, q, r);
+						FluidState fluidState = this.world.getFluidState(mutable);
+						if (fluidState.matches(tag)) {
+							double f = (double)((float)q + fluidState.getHeight(this.world, mutable));
+							if (f >= box.y1) {
+								bl2 = true;
+								e = Math.max(f - box.y1, e);
+								if (bl) {
+									Vec3d vec3d2 = fluidState.getVelocity(this.world, mutable);
+									if (e < 0.4) {
+										vec3d2 = vec3d2.multiply(e);
 									}
+
+									vec3d = vec3d.add(vec3d2);
+									o++;
 								}
 							}
 						}
@@ -2776,7 +2757,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public Vec3d getPos() {
-		return new Vec3d(this.x, this.y, this.z);
+		return this.field_22467;
+	}
+
+	public BlockPos getSenseCenterPos() {
+		return this.field_22468;
 	}
 
 	public Vec3d getVelocity() {
@@ -2835,6 +2820,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		this.field_22467 = new Vec3d(x, y, z);
+		this.field_22468 = new BlockPos(x, y, z);
 	}
 
 	public void checkDespawn() {

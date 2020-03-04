@@ -43,7 +43,6 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -502,7 +501,7 @@ public class EntitySelectorOptions {
 								} else {
 									LootContext lootContext = new LootContext.Builder(serverWorld)
 										.put(LootContextParameters.THIS_ENTITY, entity)
-										.put(LootContextParameters.POSITION, new BlockPos(entity))
+										.put(LootContextParameters.POSITION, entity.getSenseCenterPos())
 										.build(LootContextTypes.SELECTOR);
 									return bl ^ lootCondition.test(lootContext);
 								}

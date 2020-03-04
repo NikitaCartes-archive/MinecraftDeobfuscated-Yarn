@@ -24,7 +24,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.BlockPos;
 
 public class AdvancementRewards {
 	public static final AdvancementRewards NONE = new AdvancementRewards(0, new Identifier[0], new Identifier[0], CommandFunction.LazyContainer.EMPTY);
@@ -44,7 +43,7 @@ public class AdvancementRewards {
 		serverPlayerEntity.addExperience(this.experience);
 		LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld())
 			.put(LootContextParameters.THIS_ENTITY, serverPlayerEntity)
-			.put(LootContextParameters.POSITION, new BlockPos(serverPlayerEntity))
+			.put(LootContextParameters.POSITION, serverPlayerEntity.getSenseCenterPos())
 			.setRandom(serverPlayerEntity.getRandom())
 			.build(LootContextTypes.ADVANCEMENT_REWARD);
 		boolean bl = false;
@@ -75,7 +74,7 @@ public class AdvancementRewards {
 		}
 
 		if (bl) {
-			serverPlayerEntity.playerContainer.sendContentUpdates();
+			serverPlayerEntity.playerScreenHandler.sendContentUpdates();
 		}
 
 		if (this.recipes.length > 0) {

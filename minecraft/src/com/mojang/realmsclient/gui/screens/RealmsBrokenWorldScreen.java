@@ -8,44 +8,39 @@ import com.mojang.realmsclient.dto.RealmsServer;
 import com.mojang.realmsclient.dto.RealmsWorldOptions;
 import com.mojang.realmsclient.dto.WorldDownload;
 import com.mojang.realmsclient.exception.RealmsServiceException;
-import com.mojang.realmsclient.gui.RealmsConstants;
-import com.mojang.realmsclient.util.RealmsTasks;
+import com.mojang.realmsclient.gui.RealmsWorldSlotButton;
 import com.mojang.realmsclient.util.RealmsTextureManager;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.realms.Realms;
-import net.minecraft.realms.RealmsButton;
-import net.minecraft.realms.RealmsMth;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.realms.OpenServerTask;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.realms.SwitchSlotTask;
+import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBrokenWorldScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final RealmsScreen lastScreen;
+	private final Screen lastScreen;
 	private final RealmsMainScreen mainScreen;
 	private RealmsServer field_20492;
 	private final long serverId;
-	private String title = getLocalizedString("mco.brokenworld.title");
-	private final String message = getLocalizedString("mco.brokenworld.message.line1") + "\\n" + getLocalizedString("mco.brokenworld.message.line2");
+	private String title = I18n.translate("mco.brokenworld.title");
+	private final String message = I18n.translate("mco.brokenworld.message.line1") + "\\n" + I18n.translate("mco.brokenworld.message.line2");
 	private int left_x;
 	private int right_x;
-	private final int default_button_width = 80;
-	private final int default_button_offset = 5;
-	private static final List<Integer> playButtonIds = Arrays.asList(1, 2, 3);
-	private static final List<Integer> resetButtonIds = Arrays.asList(4, 5, 6);
-	private static final List<Integer> downloadButtonIds = Arrays.asList(7, 8, 9);
-	private static final List<Integer> downloadConfirmationIds = Arrays.asList(10, 11, 12);
 	private final List<Integer> slotsThatHasBeenDownloaded = Lists.<Integer>newArrayList();
 	private int animTick;
 
-	public RealmsBrokenWorldScreen(RealmsScreen lastScreen, RealmsMainScreen mainScreen, long serverId) {
-		this.lastScreen = lastScreen;
+	public RealmsBrokenWorldScreen(Screen screen, RealmsMainScreen mainScreen, long serverId) {
+		this.lastScreen = screen;
 		this.mainScreen = mainScreen;
 		this.serverId = serverId;
 	}
@@ -56,71 +51,84 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.left_x = this.width() / 2 - 150;
-		this.right_x = this.width() / 2 + 190;
-		this.buttonsAdd(new RealmsButton(0, this.right_x - 80 + 8, RealmsConstants.row(13) - 5, 70, 20, getLocalizedString("gui.back")) {
-			@Override
-			public void onPress() {
-				RealmsBrokenWorldScreen.this.backButtonClicked();
-			}
-		});
+		this.left_x = this.width / 2 - 150;
+		this.right_x = this.width / 2 + 190;
+		this.addButton(new ButtonWidget(this.right_x - 80 + 8, row(13) - 5, 70, 20, I18n.translate("gui.back"), buttonWidget -> this.backButtonClicked()));
 		if (this.field_20492 == null) {
 			this.fetchServerData(this.serverId);
 		} else {
 			this.addButtons();
 		}
 
-		this.setKeyboardHandlerSendRepeatsToGui(true);
+		this.client.keyboard.enableRepeatEvents(true);
 	}
 
 	public void addButtons() {
 		for (Entry<Integer, RealmsWorldOptions> entry : this.field_20492.slots.entrySet()) {
-			RealmsWorldOptions realmsWorldOptions = (RealmsWorldOptions)entry.getValue();
-			boolean bl = (Integer)entry.getKey() != this.field_20492.activeSlot || this.field_20492.worldType.equals(RealmsServer.WorldType.MINIGAME);
-			RealmsButton realmsButton;
+			int i = (Integer)entry.getKey();
+			boolean bl = i != this.field_20492.activeSlot || this.field_20492.worldType == RealmsServer.WorldType.MINIGAME;
+			ButtonWidget buttonWidget;
 			if (bl) {
-				realmsButton = new RealmsBrokenWorldScreen.PlayButton(
-					(Integer)playButtonIds.get((Integer)entry.getKey() - 1), this.getFramePositionX((Integer)entry.getKey()), getLocalizedString("mco.brokenworld.play")
-				);
-			} else {
-				realmsButton = new RealmsBrokenWorldScreen.DownloadButton(
-					(Integer)downloadButtonIds.get((Integer)entry.getKey() - 1),
-					this.getFramePositionX((Integer)entry.getKey()),
-					getLocalizedString("mco.brokenworld.download")
-				);
-			}
-
-			if (this.slotsThatHasBeenDownloaded.contains(entry.getKey())) {
-				realmsButton.active(false);
-				realmsButton.setMessage(getLocalizedString("mco.brokenworld.downloaded"));
-			}
-
-			this.buttonsAdd(realmsButton);
-			this.buttonsAdd(
-				new RealmsButton(
-					(Integer)resetButtonIds.get((Integer)entry.getKey() - 1),
-					this.getFramePositionX((Integer)entry.getKey()),
-					RealmsConstants.row(10),
+				buttonWidget = new ButtonWidget(
+					this.getFramePositionX(i),
+					row(8),
 					80,
 					20,
-					getLocalizedString("mco.brokenworld.reset")
-				) {
-					@Override
-					public void onPress() {
-						int i = RealmsBrokenWorldScreen.resetButtonIds.indexOf(this.id()) + 1;
-						RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
-							RealmsBrokenWorldScreen.this, RealmsBrokenWorldScreen.this.field_20492, RealmsBrokenWorldScreen.this
-						);
-						if (i != RealmsBrokenWorldScreen.this.field_20492.activeSlot
-							|| RealmsBrokenWorldScreen.this.field_20492.worldType.equals(RealmsServer.WorldType.MINIGAME)) {
+					I18n.translate("mco.brokenworld.play"),
+					buttonWidgetx -> {
+						if (((RealmsWorldOptions)this.field_20492.slots.get(i)).empty) {
+							RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
+								this,
+								this.field_20492,
+								I18n.translate("mco.configure.world.switch.slot"),
+								I18n.translate("mco.configure.world.switch.slot.subtitle"),
+								10526880,
+								I18n.translate("gui.cancel"),
+								this::method_25123,
+								() -> {
+									this.client.openScreen(this);
+									this.method_25123();
+								}
+							);
 							realmsResetWorldScreen.setSlot(i);
+							realmsResetWorldScreen.setResetTitle(I18n.translate("mco.create.world.reset.title"));
+							this.client.openScreen(realmsResetWorldScreen);
+						} else {
+							this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new SwitchSlotTask(this.field_20492.id, i, this::method_25123)));
 						}
-
-						realmsResetWorldScreen.setConfirmationId(14);
-						Realms.setScreen(realmsResetWorldScreen);
 					}
+				);
+			} else {
+				buttonWidget = new ButtonWidget(this.getFramePositionX(i), row(8), 80, 20, I18n.translate("mco.brokenworld.download"), buttonWidgetx -> {
+					String string = I18n.translate("mco.configure.world.restore.download.question.line1");
+					String string2 = I18n.translate("mco.configure.world.restore.download.question.line2");
+					this.client.openScreen(new RealmsLongConfirmationScreen(blx -> {
+						if (blx) {
+							this.downloadWorld(i);
+						} else {
+							this.client.openScreen(this);
+						}
+					}, RealmsLongConfirmationScreen.Type.Info, string, string2, true));
+				});
+			}
+
+			if (this.slotsThatHasBeenDownloaded.contains(i)) {
+				buttonWidget.active = false;
+				buttonWidget.setMessage(I18n.translate("mco.brokenworld.downloaded"));
+			}
+
+			this.addButton(buttonWidget);
+			this.addButton(new ButtonWidget(this.getFramePositionX(i), row(10), 80, 20, I18n.translate("mco.brokenworld.reset"), buttonWidgetx -> {
+				RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this, this.field_20492, this::method_25123, () -> {
+					this.client.openScreen(this);
+					this.method_25123();
+				});
+				if (i != this.field_20492.activeSlot || this.field_20492.worldType == RealmsServer.WorldType.MINIGAME) {
+					realmsResetWorldScreen.setSlot(i);
 				}
-			);
+
+				this.client.openScreen(realmsResetWorldScreen);
+			}));
 		}
 	}
 
@@ -130,14 +138,14 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int xm, int ym, float a) {
+	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		super.render(xm, ym, a);
-		this.drawCenteredString(this.title, this.width() / 2, 17, 16777215);
+		super.render(mouseX, mouseY, delta);
+		this.drawCenteredString(this.textRenderer, this.title, this.width / 2, 17, 16777215);
 		String[] strings = this.message.split("\\\\n");
 
 		for (int i = 0; i < strings.length; i++) {
-			this.drawCenteredString(strings[i], this.width() / 2, RealmsConstants.row(-1) + 3 + i * 12, 10526880);
+			this.drawCenteredString(this.textRenderer, strings[i], this.width / 2, row(-1) + 3 + i * 12, 10526880);
 		}
 
 		if (this.field_20492 != null) {
@@ -145,9 +153,9 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				if (((RealmsWorldOptions)entry.getValue()).templateImage != null && ((RealmsWorldOptions)entry.getValue()).templateId != -1L) {
 					this.drawSlotFrame(
 						this.getFramePositionX((Integer)entry.getKey()),
-						RealmsConstants.row(1) + 5,
-						xm,
-						ym,
+						row(1) + 5,
+						mouseX,
+						mouseY,
 						this.field_20492.activeSlot == (Integer)entry.getKey() && !this.isMinigame(),
 						((RealmsWorldOptions)entry.getValue()).getSlotName((Integer)entry.getKey()),
 						(Integer)entry.getKey(),
@@ -158,9 +166,9 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				} else {
 					this.drawSlotFrame(
 						this.getFramePositionX((Integer)entry.getKey()),
-						RealmsConstants.row(1) + 5,
-						xm,
-						ym,
+						row(1) + 5,
+						mouseX,
+						mouseY,
 						this.field_20492.activeSlot == (Integer)entry.getKey() && !this.isMinigame(),
 						((RealmsWorldOptions)entry.getValue()).getSlotName((Integer)entry.getKey()),
 						(Integer)entry.getKey(),
@@ -179,21 +187,21 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 
 	@Override
 	public void removed() {
-		this.setKeyboardHandlerSendRepeatsToGui(false);
+		this.client.keyboard.enableRepeatEvents(false);
 	}
 
 	@Override
-	public boolean keyPressed(int eventKey, int scancode, int mods) {
-		if (eventKey == 256) {
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == 256) {
 			this.backButtonClicked();
 			return true;
 		} else {
-			return super.keyPressed(eventKey, scancode, mods);
+			return super.keyPressed(keyCode, scanCode, modifiers);
 		}
 	}
 
 	private void backButtonClicked() {
-		Realms.setScreen(this.lastScreen);
+		this.client.openScreen(this.lastScreen);
 	}
 
 	private void fetchServerData(long worldId) {
@@ -205,48 +213,29 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				this.addButtons();
 			} catch (RealmsServiceException var5) {
 				LOGGER.error("Couldn't get own world");
-				Realms.setScreen(new RealmsGenericErrorScreen(var5.getMessage(), this.lastScreen));
-			} catch (IOException var6) {
-				LOGGER.error("Couldn't parse response getting own world");
+				this.client.openScreen(new RealmsGenericErrorScreen(var5.getMessage(), this.lastScreen));
 			}
 		}).start();
 	}
 
-	@Override
-	public void confirmResult(boolean result, int id) {
-		if (!result) {
-			Realms.setScreen(this);
-		} else {
-			if (id != 13 && id != 14) {
-				if (downloadButtonIds.contains(id)) {
-					this.downloadWorld(downloadButtonIds.indexOf(id) + 1);
-				} else if (downloadConfirmationIds.contains(id)) {
-					this.slotsThatHasBeenDownloaded.add(downloadConfirmationIds.indexOf(id) + 1);
-					this.childrenClear();
-					this.addButtons();
-				}
-			} else {
-				new Thread(() -> {
+	public void method_25123() {
+		new Thread(
+				() -> {
 					RealmsClient realmsClient = RealmsClient.createRealmsClient();
-					if (this.field_20492.state.equals(RealmsServer.State.CLOSED)) {
-						RealmsTasks.OpenServerTask openServerTask = new RealmsTasks.OpenServerTask(this.field_20492, this, this.lastScreen, true);
-						RealmsLongRunningMcoTaskScreen realmsLongRunningMcoTaskScreen = new RealmsLongRunningMcoTaskScreen(this, openServerTask);
-						realmsLongRunningMcoTaskScreen.start();
-						Realms.setScreen(realmsLongRunningMcoTaskScreen);
+					if (this.field_20492.state == RealmsServer.State.CLOSED) {
+						this.client
+							.execute(() -> this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.field_20492, this, this.mainScreen, true))));
 					} else {
 						try {
 							this.mainScreen.newScreen().play(realmsClient.getOwnWorld(this.serverId), this);
-						} catch (RealmsServiceException var4) {
+						} catch (RealmsServiceException var3) {
 							LOGGER.error("Couldn't get own world");
-							Realms.setScreen(this.lastScreen);
-						} catch (IOException var5) {
-							LOGGER.error("Couldn't parse response getting own world");
-							Realms.setScreen(this.lastScreen);
+							this.client.execute(() -> this.client.openScreen(this.lastScreen));
 						}
 					}
-				}).start();
-			}
-		}
+				}
+			)
+			.start();
 	}
 
 	private void downloadWorld(int slotId) {
@@ -255,31 +244,38 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		try {
 			WorldDownload worldDownload = realmsClient.download(this.field_20492.id, slotId);
 			RealmsDownloadLatestWorldScreen realmsDownloadLatestWorldScreen = new RealmsDownloadLatestWorldScreen(
-				this, worldDownload, this.field_20492.name + " (" + ((RealmsWorldOptions)this.field_20492.slots.get(slotId)).getSlotName(slotId) + ")"
+				this, worldDownload, this.field_20492.getWorldName(slotId), bl -> {
+					if (bl) {
+						this.slotsThatHasBeenDownloaded.add(slotId);
+						this.children.clear();
+						this.addButtons();
+					} else {
+						this.client.openScreen(this);
+					}
+				}
 			);
-			realmsDownloadLatestWorldScreen.setConfirmationId((Integer)downloadConfirmationIds.get(slotId - 1));
-			Realms.setScreen(realmsDownloadLatestWorldScreen);
+			this.client.openScreen(realmsDownloadLatestWorldScreen);
 		} catch (RealmsServiceException var5) {
 			LOGGER.error("Couldn't download world data");
-			Realms.setScreen(new RealmsGenericErrorScreen(var5, this));
+			this.client.openScreen(new RealmsGenericErrorScreen(var5, this));
 		}
 	}
 
 	private boolean isMinigame() {
-		return this.field_20492 != null && this.field_20492.worldType.equals(RealmsServer.WorldType.MINIGAME);
+		return this.field_20492 != null && this.field_20492.worldType == RealmsServer.WorldType.MINIGAME;
 	}
 
-	private void drawSlotFrame(int x, int y, int xm, int ym, boolean active, String text, int i, long imageId, String image, boolean empty) {
+	private void drawSlotFrame(int x, int y, int xm, int ym, boolean active, String string, int i, long imageId, String image, boolean empty) {
 		if (empty) {
-			bind("realms:textures/gui/realms/empty_frame.png");
+			this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22682);
 		} else if (image != null && imageId != -1L) {
 			RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
 		} else if (i == 1) {
-			bind("textures/gui/title/background/panorama_0.png");
+			this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22683);
 		} else if (i == 2) {
-			bind("textures/gui/title/background/panorama_2.png");
+			this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22684);
 		} else if (i == 3) {
-			bind("textures/gui/title/background/panorama_3.png");
+			this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22685);
 		} else {
 			RealmsTextureManager.bindWorldTemplate(String.valueOf(this.field_20492.minigameId), this.field_20492.minigameImage);
 		}
@@ -287,69 +283,19 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		if (!active) {
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		} else if (active) {
-			float f = 0.9F + 0.1F * RealmsMth.cos((float)this.animTick * 0.2F);
+			float f = 0.9F + 0.1F * MathHelper.cos((float)this.animTick * 0.2F);
 			RenderSystem.color4f(f, f, f, 1.0F);
 		}
 
-		RealmsScreen.blit(x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
-		bind("realms:textures/gui/realms/slot_frame.png");
+		DrawableHelper.blit(x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
+		this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22681);
 		if (active) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		} else {
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		RealmsScreen.blit(x, y, 0.0F, 0.0F, 80, 80, 80, 80);
-		this.drawCenteredString(text, x + 40, y + 66, 16777215);
-	}
-
-	private void switchSlot(int id) {
-		RealmsTasks.SwitchSlotTask switchSlotTask = new RealmsTasks.SwitchSlotTask(this.field_20492.id, id, this, 13);
-		RealmsLongRunningMcoTaskScreen realmsLongRunningMcoTaskScreen = new RealmsLongRunningMcoTaskScreen(this.lastScreen, switchSlotTask);
-		realmsLongRunningMcoTaskScreen.start();
-		Realms.setScreen(realmsLongRunningMcoTaskScreen);
-	}
-
-	@Environment(EnvType.CLIENT)
-	class DownloadButton extends RealmsButton {
-		public DownloadButton(int id, int x, String msg) {
-			super(id, x, RealmsConstants.row(8), 80, 20, msg);
-		}
-
-		@Override
-		public void onPress() {
-			String string = RealmsScreen.getLocalizedString("mco.configure.world.restore.download.question.line1");
-			String string2 = RealmsScreen.getLocalizedString("mco.configure.world.restore.download.question.line2");
-			Realms.setScreen(new RealmsLongConfirmationScreen(RealmsBrokenWorldScreen.this, RealmsLongConfirmationScreen.Type.Info, string, string2, true, this.id()));
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	class PlayButton extends RealmsButton {
-		public PlayButton(int id, int x, String msg) {
-			super(id, x, RealmsConstants.row(8), 80, 20, msg);
-		}
-
-		@Override
-		public void onPress() {
-			int i = RealmsBrokenWorldScreen.playButtonIds.indexOf(this.id()) + 1;
-			if (((RealmsWorldOptions)RealmsBrokenWorldScreen.this.field_20492.slots.get(i)).empty) {
-				RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
-					RealmsBrokenWorldScreen.this,
-					RealmsBrokenWorldScreen.this.field_20492,
-					RealmsBrokenWorldScreen.this,
-					RealmsScreen.getLocalizedString("mco.configure.world.switch.slot"),
-					RealmsScreen.getLocalizedString("mco.configure.world.switch.slot.subtitle"),
-					10526880,
-					RealmsScreen.getLocalizedString("gui.cancel")
-				);
-				realmsResetWorldScreen.setSlot(i);
-				realmsResetWorldScreen.setResetTitle(RealmsScreen.getLocalizedString("mco.create.world.reset.title"));
-				realmsResetWorldScreen.setConfirmationId(14);
-				Realms.setScreen(realmsResetWorldScreen);
-			} else {
-				RealmsBrokenWorldScreen.this.switchSlot(i);
-			}
-		}
+		DrawableHelper.blit(x, y, 0.0F, 0.0F, 80, 80, 80, 80);
+		this.drawCenteredString(this.textRenderer, string, x + 40, y + 66, 16777215);
 	}
 }

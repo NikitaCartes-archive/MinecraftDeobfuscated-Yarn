@@ -12,6 +12,14 @@ public class ChunkRandom extends Random {
 		super(seed);
 	}
 
+	/**
+	 * Skips the provided number of calls to the randomizer.
+	 * 
+	 * <p>The skips give the effect of "scrambling" the randomizer but the output is still
+	 * linearly dependent. Note that since multiple calls to a linear congruential generator is
+	 * equivalent to another linear congruence, this method could be optimized to combine
+	 * the calls into one.</p>
+	 */
 	public void consume(int count) {
 		for (int i = 0; i < count; i++) {
 			this.next(1);
@@ -23,43 +31,95 @@ public class ChunkRandom extends Random {
 		return super.next(bound);
 	}
 
-	public long setSeed(int x, int z) {
-		long l = (long)x * 341873128712L + (long)z * 132897987541L;
+	/**
+	 * Seeds the randomizer to generate the surface terrain blocks (such as grass, sand, etc.)
+	 * and the bedrock patterns.
+	 * 
+	 * <p>Note that the terrain seed does not depend on the world seed and only gets affected by
+	 * chunk coordinates.</p>
+	 */
+	public long setTerrainSeed(int chunkX, int chunkZ) {
+		long l = (long)chunkX * 341873128712L + (long)chunkZ * 132897987541L;
 		this.setSeed(l);
 		return l;
 	}
 
-	public long setSeed(long worldSeed, int x, int z) {
+	/**
+	 * Seeds the randomizer to create population features such as decorators and animals.
+	 * 
+	 * <p>This method takes in the world seed and the negative-most block coordinates of the
+	 * chunk. The coordinate pair provided is equivalent to (chunkX * 16, chunkZ * 16). The
+	 * three values are mixed together through some layers of hashing to produce the
+	 * population seed.</p>
+	 * 
+	 * <p>This function has been proved to be reversible through some exploitation of the underlying
+	 * nextLong() weaknesses. It is also important to remember that since setSeed()
+	 * truncates the 16 upper bits of world seed, only the 48 lowest bits affect the population
+	 * seed output.</p>
+	 */
+	public long setPopulationSeed(long worldSeed, int blockX, int blockZ) {
 		this.setSeed(worldSeed);
 		long l = this.nextLong() | 1L;
 		long m = this.nextLong() | 1L;
-		long n = (long)x * l + (long)z * m ^ worldSeed;
+		long n = (long)blockX * l + (long)blockZ * m ^ worldSeed;
 		this.setSeed(n);
 		return n;
 	}
 
-	public long setFeatureSeed(long worldSeed, int index, int step) {
-		long l = worldSeed + (long)index + (long)(10000 * step);
+	/**
+	 * Seeds the randomizer to generate a given feature.
+	 * 
+	 * The salt, in the form of {@code index + 10000 * step} assures that each feature is seeded
+	 * differently, making the decoration feel more random. Even though it does a good job
+	 * at doing so, many entropy issues arise from the salt being so small and result in
+	 * weird alignments between features that have an index close apart.
+	 * 
+	 * @param populationSeed The population seed computed in setPopulationSeed().
+	 * @param index The index of the feature in the feature list.
+	 * @param step The generation step's ordinal for this feature.
+	 */
+	public long setDecoratorSeed(long populationSeed, int index, int step) {
+		long l = populationSeed + (long)index + (long)(10000 * step);
 		this.setSeed(l);
 		return l;
 	}
 
-	public long setStructureSeed(long worldSeed, int x, int z) {
+	/**
+	 * Seeds the randomizer to generate larger features such as caves, ravines, mineshafts
+	 * and strongholds. It is also used to initiate structure start behaviour such as rotation.
+	 * 
+	 * <p>Similar to the population seed, only the 48 lowest bits of the world seed affect the
+	 * output since it the upper 16 bits are truncated in the setSeed() call.</p>
+	 */
+	public long setCarverSeed(long worldSeed, int chunkX, int chunkZ) {
 		this.setSeed(worldSeed);
 		long l = this.nextLong();
 		long m = this.nextLong();
-		long n = (long)x * l ^ (long)z * m ^ worldSeed;
+		long n = (long)chunkX * l ^ (long)chunkZ * m ^ worldSeed;
 		this.setSeed(n);
 		return n;
 	}
 
-	public long setStructureSeed(long worldSeed, int x, int z, int seedModifier) {
-		long l = (long)x * 341873128712L + (long)z * 132897987541L + worldSeed + (long)seedModifier;
+	/**
+	 * Seeds the randomizer to determine the start position of structure features such as
+	 * temples, monuments and buried treasures within a region.
+	 * 
+	 * <p>The region coordinates pair corresponds to the coordinates of the region the seeded
+	 * chunk lies in. For example, a swamp hut region is 32 by 32 chunks meaning that all
+	 * chunks that lie within that region get seeded the same way.</p>
+	 * 
+	 * <p>Similarly, the upper 16 bits of world seed also do not affect the region seed because
+	 * they get truncated in the setSeed() call.</p>
+	 */
+	public long setRegionSeed(long worldSeed, int regionX, int regionZ, int salt) {
+		long l = (long)regionX * 341873128712L + (long)regionZ * 132897987541L + worldSeed + (long)salt;
 		this.setSeed(l);
 		return l;
 	}
 
-	public static Random create(int x, int z, long worldSeed, long localSeed) {
-		return new Random(worldSeed + (long)(x * x * 4987142) + (long)(x * 5947611) + (long)(z * z) * 4392871L + (long)(z * 389711) ^ localSeed);
+	public static Random getSlimeRandom(int chunkX, int chunkZ, long worldSeed, long scrambler) {
+		return new Random(
+			worldSeed + (long)(chunkX * chunkX * 4987142) + (long)(chunkX * 5947611) + (long)(chunkZ * chunkZ) * 4392871L + (long)(chunkZ * 389711) ^ scrambler
+		);
 	}
 }

@@ -20,8 +20,8 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (iWorld.isAir(blockPos) && !iWorld.isAir(blockPos.up())) {
-			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
-			BlockPos.Mutable mutable2 = new BlockPos.Mutable(blockPos);
+			BlockPos.Mutable mutable = blockPos.mutableCopy();
+			BlockPos.Mutable mutable2 = blockPos.mutableCopy();
 			boolean bl = true;
 			boolean bl2 = true;
 			boolean bl3 = true;
@@ -29,18 +29,18 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 
 			while (iWorld.isAir(mutable)) {
 				iWorld.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
-				bl = bl && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.NORTH));
-				bl2 = bl2 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.SOUTH));
-				bl3 = bl3 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.WEST));
-				bl4 = bl4 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.EAST));
+				bl = bl && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.NORTH));
+				bl2 = bl2 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.SOUTH));
+				bl3 = bl3 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.WEST));
+				bl4 = bl4 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.EAST));
 				mutable.setOffset(Direction.DOWN);
 			}
 
 			mutable.setOffset(Direction.UP);
-			this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.NORTH));
-			this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.SOUTH));
-			this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.WEST));
-			this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable).setOffset(Direction.EAST));
+			this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.NORTH));
+			this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.SOUTH));
+			this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.WEST));
+			this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.EAST));
 			BlockPos.Mutable mutable3 = new BlockPos.Mutable();
 
 			for (int i = -3; i < 4; i++) {
@@ -50,14 +50,14 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 						mutable3.set(mutable.add(i, 0, j));
 						int l = 3;
 
-						while (iWorld.isAir(mutable2.set(mutable3).setOffset(Direction.DOWN))) {
+						while (iWorld.isAir(mutable2.move(mutable3, Direction.DOWN))) {
 							mutable3.setOffset(Direction.DOWN);
 							if (--l <= 0) {
 								break;
 							}
 						}
 
-						if (!iWorld.isAir(mutable2.set(mutable3).setOffset(Direction.DOWN))) {
+						if (!iWorld.isAir(mutable2.move(mutable3, Direction.DOWN))) {
 							iWorld.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), 2);
 						}
 					}

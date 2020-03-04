@@ -11,8 +11,8 @@ import net.minecraft.util.Identifier;
 public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityModel<T>> extends EyesFeatureRenderer<T, M> {
 	private static final RenderLayer SKIN = RenderLayer.getEyes(new Identifier("textures/entity/spider_eyes.png"));
 
-	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> context) {
-		super(context);
+	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	@Override

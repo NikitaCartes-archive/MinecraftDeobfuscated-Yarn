@@ -42,7 +42,7 @@ public class ProtoChunk implements Chunk {
 	private final ChunkPos pos;
 	private volatile boolean shouldSave;
 	@Nullable
-	private BiomeArray field_20656;
+	private BiomeArray biomes;
 	@Nullable
 	private volatile LightingProvider lightingProvider;
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
@@ -76,13 +76,13 @@ public class ProtoChunk implements Chunk {
 		ChunkPos chunkPos,
 		UpgradeData upgradeData,
 		@Nullable ChunkSection[] chunkSections,
-		ChunkTickScheduler<Block> chunkTickScheduler,
-		ChunkTickScheduler<Fluid> chunkTickScheduler2
+		ChunkTickScheduler<Block> blockTickScheduler,
+		ChunkTickScheduler<Fluid> fluidTickScheduler
 	) {
 		this.pos = chunkPos;
 		this.upgradeData = upgradeData;
-		this.blockTickScheduler = chunkTickScheduler;
-		this.fluidTickScheduler = chunkTickScheduler2;
+		this.blockTickScheduler = blockTickScheduler;
+		this.fluidTickScheduler = fluidTickScheduler;
 		if (chunkSections != null) {
 			if (this.sections.length == chunkSections.length) {
 				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -139,7 +139,7 @@ public class ProtoChunk implements Chunk {
 
 	@Nullable
 	@Override
-	public BlockState setBlockState(BlockPos pos, BlockState state, boolean bl) {
+	public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
 		int i = pos.getX();
 		int j = pos.getY();
 		int k = pos.getZ();
@@ -240,14 +240,14 @@ public class ProtoChunk implements Chunk {
 		return this.entities;
 	}
 
-	public void method_22405(BiomeArray biomeArray) {
-		this.field_20656 = biomeArray;
+	public void setBiomes(BiomeArray biomeArray) {
+		this.biomes = biomeArray;
 	}
 
 	@Nullable
 	@Override
 	public BiomeArray getBiomeArray() {
-		return this.field_20656;
+		return this.biomes;
 	}
 
 	@Override

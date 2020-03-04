@@ -13,8 +13,8 @@ public class CatCollarFeatureRenderer extends FeatureRenderer<CatEntity, CatEnti
 	private static final Identifier SKIN = new Identifier("textures/entity/cat/cat_collar.png");
 	private final CatEntityModel<CatEntity> model = new CatEntityModel<>(0.01F);
 
-	public CatCollarFeatureRenderer(FeatureRendererContext<CatEntity, CatEntityModel<CatEntity>> context) {
-		super(context);
+	public CatCollarFeatureRenderer(FeatureRendererContext<CatEntity, CatEntityModel<CatEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

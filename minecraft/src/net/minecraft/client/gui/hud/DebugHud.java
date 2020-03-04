@@ -163,7 +163,7 @@ public class DebugHud extends DrawableHelper {
 			string = String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), f, g);
 		}
 
-		BlockPos blockPos = new BlockPos(this.client.getCameraEntity());
+		BlockPos blockPos = this.client.getCameraEntity().getSenseCenterPos();
 		if (this.client.hasReducedDebugInfo()) {
 			return Lists.<String>newArrayList(
 				"Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")",
@@ -525,21 +525,21 @@ public class DebugHud extends DrawableHelper {
 		if (bl) {
 			fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
 			this.fontRenderer.draw("60 FPS", (float)(i + 2), (float)(t - 30 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 30, -1);
+			this.drawHorizontalLine(i, i + p - 1, t - 30, -1);
 			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
 			this.fontRenderer.draw("30 FPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 60, -1);
+			this.drawHorizontalLine(i, i + p - 1, t - 60, -1);
 		} else {
 			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
 			this.fontRenderer.draw("20 TPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
-			this.hLine(i, i + p - 1, t - 60, -1);
+			this.drawHorizontalLine(i, i + p - 1, t - 60, -1);
 		}
 
-		this.hLine(i, i + p - 1, t - 1, -1);
-		this.vLine(i, t - 60, t, -1);
-		this.vLine(i + p - 1, t - 60, t, -1);
+		this.drawHorizontalLine(i, i + p - 1, t - 1, -1);
+		this.drawVerticalLine(i, t - 60, t, -1);
+		this.drawVerticalLine(i + p - 1, t - 60, t, -1);
 		if (bl && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
-			this.hLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
+			this.drawHorizontalLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
 		}
 
 		String string = r + " ms min";

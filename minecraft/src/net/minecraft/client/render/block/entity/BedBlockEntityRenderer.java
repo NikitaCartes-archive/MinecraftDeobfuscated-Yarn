@@ -58,7 +58,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 			DoubleBlockProperties.PropertySource<? extends BedBlockEntity> propertySource = DoubleBlockProperties.toPropertySource(
 				BlockEntityType.BED,
 				BedBlock::method_24164,
-				BedBlock::method_24163,
+				BedBlock::getOppositePartDirection,
 				ChestBlock.FACING,
 				blockState,
 				world,

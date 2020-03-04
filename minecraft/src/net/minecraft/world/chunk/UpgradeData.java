@@ -99,7 +99,7 @@ public class UpgradeData {
 				BlockState blockState2 = blockState;
 
 				for (Direction direction : directions) {
-					mutable.set(blockPos).setOffset(direction);
+					mutable.move(blockPos, direction);
 					blockState2 = applyAdjacentBlock(blockState2, direction, world, blockPos, mutable);
 				}
 
@@ -114,48 +114,45 @@ public class UpgradeData {
 	}
 
 	private void upgradeCenter(WorldChunk chunk) {
-		try (
-			BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get();
-			BlockPos.PooledMutable pooledMutable2 = BlockPos.PooledMutable.get();
-		) {
-			ChunkPos chunkPos = chunk.getPos();
-			IWorld iWorld = chunk.getWorld();
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
+		ChunkPos chunkPos = chunk.getPos();
+		IWorld iWorld = chunk.getWorld();
 
-			for (int i = 0; i < 16; i++) {
-				ChunkSection chunkSection = chunk.getSectionArray()[i];
-				int[] is = this.centerIndicesToUpgrade[i];
-				this.centerIndicesToUpgrade[i] = null;
-				if (chunkSection != null && is != null && is.length > 0) {
-					Direction[] directions = Direction.values();
-					PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
+		for (int i = 0; i < 16; i++) {
+			ChunkSection chunkSection = chunk.getSectionArray()[i];
+			int[] is = this.centerIndicesToUpgrade[i];
+			this.centerIndicesToUpgrade[i] = null;
+			if (chunkSection != null && is != null && is.length > 0) {
+				Direction[] directions = Direction.values();
+				PalettedContainer<BlockState> palettedContainer = chunkSection.getContainer();
 
-					for (int j : is) {
-						int k = j & 15;
-						int l = j >> 8 & 15;
-						int m = j >> 4 & 15;
-						pooledMutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
-						BlockState blockState = palettedContainer.get(j);
-						BlockState blockState2 = blockState;
+				for (int j : is) {
+					int k = j & 15;
+					int l = j >> 8 & 15;
+					int m = j >> 4 & 15;
+					mutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
+					BlockState blockState = palettedContainer.get(j);
+					BlockState blockState2 = blockState;
 
-						for (Direction direction : directions) {
-							pooledMutable2.set(pooledMutable).setOffset(direction);
-							if (pooledMutable.getX() >> 4 == chunkPos.x && pooledMutable.getZ() >> 4 == chunkPos.z) {
-								blockState2 = applyAdjacentBlock(blockState2, direction, iWorld, pooledMutable, pooledMutable2);
-							}
+					for (Direction direction : directions) {
+						mutable2.move(mutable, direction);
+						if (mutable.getX() >> 4 == chunkPos.x && mutable.getZ() >> 4 == chunkPos.z) {
+							blockState2 = applyAdjacentBlock(blockState2, direction, iWorld, mutable, mutable2);
 						}
-
-						Block.replaceBlock(blockState, blockState2, iWorld, pooledMutable, 18);
 					}
+
+					Block.replaceBlock(blockState, blockState2, iWorld, mutable, 18);
 				}
 			}
+		}
 
-			for (int ix = 0; ix < this.centerIndicesToUpgrade.length; ix++) {
-				if (this.centerIndicesToUpgrade[ix] != null) {
-					LOGGER.warn("Discarding update data for section {} for chunk ({} {})", ix, chunkPos.x, chunkPos.z);
-				}
-
-				this.centerIndicesToUpgrade[ix] = null;
+		for (int ix = 0; ix < this.centerIndicesToUpgrade.length; ix++) {
+			if (this.centerIndicesToUpgrade[ix] != null) {
+				LOGGER.warn("Discarding update data for section {} for chunk ({} {})", ix, chunkPos.x, chunkPos.z);
 			}
+
+			this.centerIndicesToUpgrade[ix] = null;
 		}
 	}
 
@@ -308,7 +305,7 @@ public class UpgradeData {
 							world.setBlockState(blockPos, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(j)), 18);
 							if (i != 7) {
 								for (Direction direction : DIRECTIONS) {
-									mutable.set(blockPos).setOffset(direction);
+									mutable.move(blockPos, direction);
 									BlockState blockState2 = world.getBlockState(mutable);
 									if (blockState2.contains(Properties.DISTANCE_1_7) && (Integer)blockState.get(Properties.DISTANCE_1_7) > i) {
 										objectSet2.add(mutable.toImmutable());

@@ -4,8 +4,8 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.light.LevelPropagator;
 
 public abstract class SectionDistanceLevelPropagator extends LevelPropagator {
-	protected SectionDistanceLevelPropagator(int levelCount, int initialLevelCapacity, int initialTotalCapacity) {
-		super(levelCount, initialLevelCapacity, initialTotalCapacity);
+	protected SectionDistanceLevelPropagator(int i, int j, int k) {
+		super(i, j, k);
 	}
 
 	@Override

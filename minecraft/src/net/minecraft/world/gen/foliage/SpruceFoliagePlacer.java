@@ -18,36 +18,43 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	public void generate(
-		ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, int i, int j, int k, BlockPos pos, Set<BlockPos> positions
+		ModifiableTestableWorld world,
+		Random random,
+		BranchedTreeFeatureConfig config,
+		int baseHeight,
+		int trunkHeight,
+		int radius,
+		BlockPos pos,
+		Set<BlockPos> leaves
 	) {
-		int l = random.nextInt(2);
-		int m = 1;
-		int n = 0;
+		int i = random.nextInt(2);
+		int j = 1;
+		int k = 0;
 
-		for (int o = i; o >= j; o--) {
-			this.generate(world, random, config, i, pos, o, l, positions);
-			if (l >= m) {
-				l = n;
-				n = 1;
-				m = Math.min(m + 1, k);
+		for (int l = baseHeight; l >= trunkHeight; l--) {
+			this.generate(world, random, config, baseHeight, pos, l, i, leaves);
+			if (i >= j) {
+				i = k;
+				k = 1;
+				j = Math.min(j + 1, radius);
 			} else {
-				l++;
+				i++;
 			}
 		}
 	}
 
 	@Override
-	public int getRadius(Random random, int i, int j, BranchedTreeFeatureConfig config) {
+	public int getRadius(Random random, int baseHeight, int trunkHeight, BranchedTreeFeatureConfig config) {
 		return this.radius + random.nextInt(this.randomRadius + 1);
 	}
 
 	@Override
-	protected boolean method_23451(Random random, int i, int j, int k, int l, int m) {
-		return Math.abs(j) == m && Math.abs(l) == m && m > 0;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int x, int y, int z, int radius) {
+		return Math.abs(x) == radius && Math.abs(z) == radius && radius > 0;
 	}
 
 	@Override
-	public int method_23447(int i, int j, int k, int l) {
-		return l <= 1 ? 0 : 2;
+	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius, int currentTreeHeight) {
+		return currentTreeHeight <= 1 ? 0 : 2;
 	}
 }

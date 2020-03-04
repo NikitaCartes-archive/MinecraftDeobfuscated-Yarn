@@ -71,7 +71,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		this.goalSelector.add(5, new DrownedEntity.LeaveWaterGoal(this, 1.0));
 		this.goalSelector.add(6, new DrownedEntity.TargetAboveWaterGoal(this, 1.0, this.world.getSeaLevel()));
 		this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
-		this.targetSelector.add(1, new RevengeGoal(this, DrownedEntity.class).setGroupRevenge(ZombiePigmanEntity.class));
+		this.targetSelector.add(1, new RevengeGoal(this, DrownedEntity.class).setGroupRevenge(ZombifiedPiglinEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::method_7012));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
@@ -466,12 +466,12 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		@Nullable
 		private Vec3d getWanderTarget() {
 			Random random = this.mob.getRandom();
-			BlockPos blockPos = new BlockPos(this.mob);
+			BlockPos blockPos = this.mob.getSenseCenterPos();
 
 			for (int i = 0; i < 10; i++) {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
 				if (this.world.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
-					return new Vec3d(blockPos2);
+					return Vec3d.method_24955(blockPos2);
 				}
 			}
 

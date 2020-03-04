@@ -15,8 +15,8 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
-	public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> context) {
-		super(context);
+	public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(
@@ -33,7 +33,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 	) {
 		if (!snowGolemEntity.isInvisible() && snowGolemEntity.hasPumpkin()) {
 			matrixStack.push();
-			this.getContextModel().method_2834().rotate(matrixStack);
+			this.getContextModel().getTopSnowball().rotate(matrixStack);
 			float m = 0.625F;
 			matrixStack.translate(0.0, -0.34375, 0.0);
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));

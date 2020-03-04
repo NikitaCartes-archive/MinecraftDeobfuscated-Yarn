@@ -34,7 +34,7 @@ public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 		int i = this.randomCoord(random, size);
 		int j = this.randomCoord(random, size);
 		int k = this.randomCoord(random, size);
-		mutable.set(pos).setOffset(i, j, k);
+		mutable.setOffset(pos, i, j, k);
 	}
 
 	private int randomCoord(Random random, int size) {
@@ -45,7 +45,7 @@ public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : Direction.values()) {
-			mutable.set(pos).setOffset(direction);
+			mutable.move(pos, direction);
 			if (world.getBlockState(mutable).isAir()) {
 				return true;
 			}

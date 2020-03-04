@@ -66,7 +66,7 @@ public class EscapeDangerGoal extends Goal {
 
 	@Nullable
 	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX, int rangeY) {
-		BlockPos blockPos = new BlockPos(entity);
+		BlockPos blockPos = entity.getSenseCenterPos();
 		int i = blockPos.getX();
 		int j = blockPos.getY();
 		int k = blockPos.getZ();

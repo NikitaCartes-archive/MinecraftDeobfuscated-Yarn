@@ -95,7 +95,7 @@ public class LayeredTexture extends AbstractTexture {
 	}
 
 	private void method_22805(NativeImage nativeImage) {
-		TextureUtil.prepareImage(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
+		TextureUtil.method_24958(this.getGlId(), nativeImage.getWidth(), nativeImage.getHeight());
 		nativeImage.upload(0, 0, 0, true);
 	}
 }

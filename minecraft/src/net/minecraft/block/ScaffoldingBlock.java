@@ -132,7 +132,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	public static int calculateDistance(BlockView world, BlockPos pos) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(pos).setOffset(Direction.DOWN);
+		BlockPos.Mutable mutable = pos.mutableCopy().setOffset(Direction.DOWN);
 		BlockState blockState = world.getBlockState(mutable);
 		int i = 7;
 		if (blockState.getBlock() == Blocks.SCAFFOLDING) {
@@ -142,7 +142,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		}
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockState blockState2 = world.getBlockState(mutable.set(pos).setOffset(direction));
+			BlockState blockState2 = world.getBlockState(mutable.move(pos, direction));
 			if (blockState2.getBlock() == Blocks.SCAFFOLDING) {
 				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
 				if (i == 1) {

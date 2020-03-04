@@ -74,13 +74,11 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
-import net.minecraft.network.packet.s2c.play.CloseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ConfirmGuiActionS2CPacket;
-import net.minecraft.network.packet.s2c.play.ContainerPropertyUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ContainerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -116,8 +114,8 @@ import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenContainerS2CPacket;
-import net.minecraft.network.packet.s2c.play.OpenHorseContainerS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
@@ -137,6 +135,8 @@ import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
@@ -190,10 +190,10 @@ public enum NetworkState {
 					.register(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
 					.register(CommandTreeS2CPacket.class, CommandTreeS2CPacket::new)
 					.register(ConfirmGuiActionS2CPacket.class, ConfirmGuiActionS2CPacket::new)
-					.register(CloseContainerS2CPacket.class, CloseContainerS2CPacket::new)
+					.register(CloseScreenS2CPacket.class, CloseScreenS2CPacket::new)
 					.register(InventoryS2CPacket.class, InventoryS2CPacket::new)
-					.register(ContainerPropertyUpdateS2CPacket.class, ContainerPropertyUpdateS2CPacket::new)
-					.register(ContainerSlotUpdateS2CPacket.class, ContainerSlotUpdateS2CPacket::new)
+					.register(ScreenHandlerPropertyUpdateS2CPacket.class, ScreenHandlerPropertyUpdateS2CPacket::new)
+					.register(ScreenHandlerSlotUpdateS2CPacket.class, ScreenHandlerSlotUpdateS2CPacket::new)
 					.register(CooldownUpdateS2CPacket.class, CooldownUpdateS2CPacket::new)
 					.register(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
 					.register(PlaySoundIdS2CPacket.class, PlaySoundIdS2CPacket::new)
@@ -202,7 +202,7 @@ public enum NetworkState {
 					.register(ExplosionS2CPacket.class, ExplosionS2CPacket::new)
 					.register(UnloadChunkS2CPacket.class, UnloadChunkS2CPacket::new)
 					.register(GameStateChangeS2CPacket.class, GameStateChangeS2CPacket::new)
-					.register(OpenHorseContainerS2CPacket.class, OpenHorseContainerS2CPacket::new)
+					.register(OpenHorseScreenS2CPacket.class, OpenHorseScreenS2CPacket::new)
 					.register(KeepAliveS2CPacket.class, KeepAliveS2CPacket::new)
 					.register(ChunkDataS2CPacket.class, ChunkDataS2CPacket::new)
 					.register(WorldEventS2CPacket.class, WorldEventS2CPacket::new)
@@ -217,7 +217,7 @@ public enum NetworkState {
 					.register(EntityS2CPacket.class, EntityS2CPacket::new)
 					.register(VehicleMoveS2CPacket.class, VehicleMoveS2CPacket::new)
 					.register(OpenWrittenBookS2CPacket.class, OpenWrittenBookS2CPacket::new)
-					.register(OpenContainerS2CPacket.class, OpenContainerS2CPacket::new)
+					.register(OpenScreenS2CPacket.class, OpenScreenS2CPacket::new)
 					.register(SignEditorOpenS2CPacket.class, SignEditorOpenS2CPacket::new)
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)

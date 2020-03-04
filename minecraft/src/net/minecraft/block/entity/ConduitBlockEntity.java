@@ -54,7 +54,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	public void fromTag(CompoundTag tag) {
 		super.fromTag(tag);
 		if (tag.contains("target_uuid")) {
-			this.targetUuid = NbtHelper.toUuid(tag.getCompound("target_uuid"));
+			this.targetUuid = NbtHelper.toUuidOld(tag.getCompound("target_uuid"));
 		} else {
 			this.targetUuid = null;
 		}
@@ -64,7 +64,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	public CompoundTag toTag(CompoundTag tag) {
 		super.toTag(tag);
 		if (this.targetEntity != null) {
-			tag.put("target_uuid", NbtHelper.fromUuid(this.targetEntity.getUuid()));
+			tag.put("target_uuid", NbtHelper.fromUuidOld(this.targetEntity.getUuid()));
 		}
 
 		return tag;
@@ -161,7 +161,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
-				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isTouchingWaterOrRain()) {
+				if (this.pos.isWithinDistance(playerEntity.getSenseCenterPos(), (double)j) && playerEntity.isTouchingWaterOrRain()) {
 					playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
 				}
 			}
@@ -182,7 +182,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}
-		} else if (!this.targetEntity.isAlive() || !this.pos.isWithinDistance(new BlockPos(this.targetEntity), 8.0)) {
+		} else if (!this.targetEntity.isAlive() || !this.pos.isWithinDistance(this.targetEntity.getSenseCenterPos(), 8.0)) {
 			this.targetEntity = null;
 		}
 

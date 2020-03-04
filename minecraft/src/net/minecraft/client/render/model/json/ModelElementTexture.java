@@ -59,8 +59,8 @@ public class ModelElementTexture {
 		protected Deserializer() {
 		}
 
-		public ModelElementTexture deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject jsonObject = element.getAsJsonObject();
+		public ModelElementTexture deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			float[] fs = this.deserializeUVs(jsonObject);
 			int i = this.deserializeRotation(jsonObject);
 			return new ModelElementTexture(fs, i);

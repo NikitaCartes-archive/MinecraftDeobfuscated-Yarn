@@ -127,7 +127,7 @@ public class TheEndDimension extends Dimension {
 	}
 
 	@Nullable
-	public EnderDragonFight method_12513() {
+	public EnderDragonFight getEnderDragonFight() {
 		return this.enderDragonFight;
 	}
 }

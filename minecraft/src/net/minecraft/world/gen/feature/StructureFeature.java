@@ -28,8 +28,8 @@ import org.apache.logging.log4j.Logger;
 public abstract class StructureFeature<C extends FeatureConfig> extends Feature<C> {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public StructureFeature(Function<Dynamic<?>, ? extends C> configFactory) {
-		super(configFactory);
+	public StructureFeature(Function<Dynamic<?>, ? extends C> function) {
+		super(function);
 	}
 
 	@Override
@@ -81,12 +81,12 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		return StructureStart.DEFAULT;
 	}
 
-	public boolean isApproximatelyInsideStructure(IWorld iWorld, BlockPos blockPos) {
-		return this.isInsideStructure(iWorld, blockPos, false).hasChildren();
+	public boolean isApproximatelyInsideStructure(IWorld world, BlockPos pos) {
+		return this.isInsideStructure(world, pos, false).hasChildren();
 	}
 
-	public boolean isInsideStructure(IWorld iWorld, BlockPos blockPos) {
-		return this.isInsideStructure(iWorld, blockPos, true).hasChildren();
+	public boolean isInsideStructure(IWorld world, BlockPos pos) {
+		return this.isInsideStructure(world, pos, true).hasChildren();
 	}
 
 	@Nullable
@@ -157,7 +157,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 		return new ChunkPos(i + k, j + l);
 	}
 
-	public abstract boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkZ, int i, Biome biome);
+	public abstract boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome);
 
 	public abstract StructureFeature.StructureStartFactory getStructureStartFactory();
 
@@ -166,6 +166,6 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	public abstract int getRadius();
 
 	public interface StructureStartFactory {
-		StructureStart create(StructureFeature<?> feature, int x, int z, BlockBox blockBox, int i, long l);
+		StructureStart create(StructureFeature<?> feature, int x, int z, BlockBox box, int i, long l);
 	}
 }

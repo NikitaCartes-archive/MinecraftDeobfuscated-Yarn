@@ -73,12 +73,16 @@ public class Items {
 	public static final Item STRIPPED_JUNGLE_WOOD = register(Blocks.STRIPPED_JUNGLE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item STRIPPED_ACACIA_WOOD = register(Blocks.STRIPPED_ACACIA_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item STRIPPED_DARK_OAK_WOOD = register(Blocks.STRIPPED_DARK_OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_22487 = register(Blocks.STRIPPED_WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_22488 = register(Blocks.STRIPPED_CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_WOOD = register(Blocks.OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_WOOD = register(Blocks.SPRUCE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BIRCH_WOOD = register(Blocks.BIRCH_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item JUNGLE_WOOD = register(Blocks.JUNGLE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item ACACIA_WOOD = register(Blocks.ACACIA_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DARK_OAK_WOOD = register(Blocks.DARK_OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_22489 = register(Blocks.WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_22490 = register(Blocks.CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_LEAVES = register(Blocks.OAK_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item SPRUCE_LEAVES = register(Blocks.SPRUCE_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item BIRCH_LEAVES = register(Blocks.BIRCH_LEAVES, ItemGroup.DECORATIONS);
@@ -641,11 +645,11 @@ public class Items {
 	public static final Item STRING = register("string", new AliasedBlockItem(Blocks.TRIPWIRE, new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item FEATHER = register("feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item GUNPOWDER = register("gunpowder", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item WOODEN_HOE = register("wooden_hoe", new HoeItem(ToolMaterials.WOOD, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item STONE_HOE = register("stone_hoe", new HoeItem(ToolMaterials.STONE, -2.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item IRON_HOE = register("iron_hoe", new HoeItem(ToolMaterials.IRON, -1.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item DIAMOND_HOE = register("diamond_hoe", new HoeItem(ToolMaterials.DIAMOND, 0.0F, new Item.Settings().group(ItemGroup.TOOLS)));
-	public static final Item GOLDEN_HOE = register("golden_hoe", new HoeItem(ToolMaterials.GOLD, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item WOODEN_HOE = register("wooden_hoe", new HoeItem(ToolMaterials.WOOD, 0, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item STONE_HOE = register("stone_hoe", new HoeItem(ToolMaterials.STONE, -1, -2.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item IRON_HOE = register("iron_hoe", new HoeItem(ToolMaterials.IRON, -2, -1.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item DIAMOND_HOE = register("diamond_hoe", new HoeItem(ToolMaterials.DIAMOND, -3, 0.0F, new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item GOLDEN_HOE = register("golden_hoe", new HoeItem(ToolMaterials.GOLD, 0, -3.0F, new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item WHEAT_SEEDS = register("wheat_seeds", new AliasedBlockItem(Blocks.WHEAT, new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item WHEAT = register("wheat", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item BREAD = register("bread", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.BREAD)));
@@ -1329,7 +1333,7 @@ public class Items {
 		"netherite_axe", new AxeItem(ToolMaterials.NETHERITE, 5.0F, -3.0F, new Item.Settings().group(ItemGroup.TOOLS).fireproof())
 	);
 	public static final Item NETHERITE_HOE = register(
-		"netherite_hoe", new HoeItem(ToolMaterials.NETHERITE, 0.0F, new Item.Settings().group(ItemGroup.TOOLS).fireproof())
+		"netherite_hoe", new HoeItem(ToolMaterials.NETHERITE, -4, 0.0F, new Item.Settings().group(ItemGroup.TOOLS).fireproof())
 	);
 	public static final Item NETHERITE_HELMET = register(
 		"netherite_helmet", new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.HEAD, new Item.Settings().group(ItemGroup.COMBAT).fireproof())

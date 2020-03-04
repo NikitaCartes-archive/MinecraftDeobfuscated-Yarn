@@ -21,14 +21,14 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
-	protected final A modelLeggings;
-	protected final A modelBody;
+	protected final A leggingsModel;
+	protected final A bodyModel;
 	protected static final Map<String, Identifier> ARMOR_TEXTURE_CACHE = Maps.<String, Identifier>newHashMap();
 
-	protected ArmorFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, A bipedEntityModel, A bipedEntityModel2) {
-		super(featureRendererContext);
-		this.modelLeggings = bipedEntityModel;
-		this.modelBody = bipedEntityModel2;
+	protected ArmorFeatureRenderer(FeatureRendererContext<T, M> context, A leggingsModel, A bodyModel) {
+		super(context);
+		this.leggingsModel = leggingsModel;
+		this.bodyModel = bodyModel;
 	}
 
 	public void render(
@@ -41,77 +41,77 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 	}
 
 	private void renderArmor(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		T livingEntity,
-		float f,
-		float g,
-		float h,
-		float i,
-		float j,
-		float k,
-		EquipmentSlot equipmentSlot,
-		int l,
-		A bipedEntityModel
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		T entity,
+		float limbAngle,
+		float limbDistance,
+		float tickDelta,
+		float customAngle,
+		float headYaw,
+		float headPitch,
+		EquipmentSlot slot,
+		int light,
+		A armorModel
 	) {
-		ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
+		ItemStack itemStack = entity.getEquippedStack(slot);
 		if (itemStack.getItem() instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem)itemStack.getItem();
-			if (armorItem.getSlotType() == equipmentSlot) {
-				this.getContextModel().setAttributes(bipedEntityModel);
-				bipedEntityModel.animateModel(livingEntity, f, g, h);
-				this.setVisible(bipedEntityModel, equipmentSlot);
-				bipedEntityModel.setAngles(livingEntity, f, g, i, j, k);
-				boolean bl = this.isLegs(equipmentSlot);
+			if (armorItem.getSlotType() == slot) {
+				this.getContextModel().setAttributes(armorModel);
+				armorModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
+				this.setVisible(armorModel, slot);
+				armorModel.setAngles(entity, limbAngle, limbDistance, customAngle, headYaw, headPitch);
+				boolean bl = this.usesSecondLayer(slot);
 				boolean bl2 = itemStack.hasEnchantmentGlint();
 				if (armorItem instanceof DyeableArmorItem) {
-					int m = ((DyeableArmorItem)armorItem).getColor(itemStack);
-					float n = (float)(m >> 16 & 0xFF) / 255.0F;
-					float o = (float)(m >> 8 & 0xFF) / 255.0F;
-					float p = (float)(m & 0xFF) / 255.0F;
-					this.renderArmorParts(equipmentSlot, matrixStack, vertexConsumerProvider, l, armorItem, bl2, bipedEntityModel, bl, n, o, p, null);
-					this.renderArmorParts(equipmentSlot, matrixStack, vertexConsumerProvider, l, armorItem, bl2, bipedEntityModel, bl, 1.0F, 1.0F, 1.0F, "overlay");
+					int i = ((DyeableArmorItem)armorItem).getColor(itemStack);
+					float f = (float)(i >> 16 & 0xFF) / 255.0F;
+					float g = (float)(i >> 8 & 0xFF) / 255.0F;
+					float h = (float)(i & 0xFF) / 255.0F;
+					this.renderArmorParts(slot, matrices, vertexConsumers, light, armorItem, bl2, armorModel, bl, f, g, h, null);
+					this.renderArmorParts(slot, matrices, vertexConsumers, light, armorItem, bl2, armorModel, bl, 1.0F, 1.0F, 1.0F, "overlay");
 				} else {
-					this.renderArmorParts(equipmentSlot, matrixStack, vertexConsumerProvider, l, armorItem, bl2, bipedEntityModel, bl, 1.0F, 1.0F, 1.0F, null);
+					this.renderArmorParts(slot, matrices, vertexConsumers, light, armorItem, bl2, armorModel, bl, 1.0F, 1.0F, 1.0F, null);
 				}
 			}
 		}
 	}
 
 	private void renderArmorParts(
-		EquipmentSlot equipmentSlot,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		ArmorItem armorItem,
-		boolean bl,
-		A bipedEntityModel,
-		boolean bl2,
-		float f,
-		float g,
-		float h,
-		@Nullable String string
+		EquipmentSlot slot,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		ArmorItem item,
+		boolean glint,
+		A armorModel,
+		boolean secondLayer,
+		float red,
+		float green,
+		float blue,
+		@Nullable String suffix
 	) {
 		VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
-			vertexConsumerProvider, RenderLayer.getEntityCutoutNoCull(this.getArmorTexture(equipmentSlot, armorItem, bl2, string)), false, bl
+			vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(slot, item, secondLayer, suffix)), false, glint
 		);
-		bipedEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, f, g, h, 1.0F);
+		armorModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0F);
 	}
 
 	public A getArmor(EquipmentSlot slot) {
-		return this.isLegs(slot) ? this.modelLeggings : this.modelBody;
+		return this.usesSecondLayer(slot) ? this.leggingsModel : this.bodyModel;
 	}
 
-	private boolean isLegs(EquipmentSlot equipmentSlot) {
-		return equipmentSlot == EquipmentSlot.LEGS;
+	private boolean usesSecondLayer(EquipmentSlot slot) {
+		return slot == EquipmentSlot.LEGS;
 	}
 
-	protected Identifier getArmorTexture(EquipmentSlot slot, ArmorItem item, boolean bl, @Nullable String string) {
-		String string2 = "textures/models/armor/" + item.getMaterial().getName() + "_layer_" + (bl ? 2 : 1) + (string == null ? "" : "_" + string) + ".png";
-		return (Identifier)ARMOR_TEXTURE_CACHE.computeIfAbsent(string2, Identifier::new);
+	protected Identifier getArmorTexture(EquipmentSlot slot, ArmorItem item, boolean secondLayer, @Nullable String suffix) {
+		String string = "textures/models/armor/" + item.getMaterial().getName() + "_layer_" + (secondLayer ? 2 : 1) + (suffix == null ? "" : "_" + suffix) + ".png";
+		return (Identifier)ARMOR_TEXTURE_CACHE.computeIfAbsent(string, Identifier::new);
 	}
 
-	protected abstract void setVisible(A bipedModel, EquipmentSlot equipmentSlot);
+	protected abstract void setVisible(A bipedModel, EquipmentSlot slot);
 
-	protected abstract void setInvisible(A bipedEntityModel);
+	protected abstract void setInvisible(A bipedModel);
 }

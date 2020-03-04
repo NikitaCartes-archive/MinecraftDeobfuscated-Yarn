@@ -5,6 +5,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.Carver;
@@ -38,6 +39,9 @@ public class WarpedForestBiome extends Biome {
 								ParticleTypes.WARPED_SPORE, 0.01428F, random -> 0.0, random -> (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1, random -> 0.0
 							)
 						)
+						.loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP)
+						.moodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD)
+						.additionsSound(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS)
 						.build()
 				)
 				.parent(null)

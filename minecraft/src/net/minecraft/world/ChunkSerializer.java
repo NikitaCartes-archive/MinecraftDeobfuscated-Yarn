@@ -138,7 +138,7 @@ public class ChunkSerializer {
 			);
 		} else {
 			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2);
-			protoChunk.method_22405(biomeArray);
+			protoChunk.setBiomes(biomeArray);
 			chunk = protoChunk;
 			protoChunk.setInhabitedTime(l);
 			protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));

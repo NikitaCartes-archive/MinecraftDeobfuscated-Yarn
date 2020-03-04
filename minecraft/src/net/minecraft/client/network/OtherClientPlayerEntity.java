@@ -66,7 +66,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.headTrackingIncrements--;
 		}
 
-		this.field_7505 = this.field_7483;
+		this.prevStrideDistance = this.strideDistance;
 		this.tickHandSwing();
 		float g;
 		if (this.onGround && !(this.getHealth() <= 0.0F)) {
@@ -81,7 +81,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 			float h = 0.0F;
 		}
 
-		this.field_7483 = this.field_7483 + (g - this.field_7483) * 0.4F;
+		this.strideDistance = this.strideDistance + (g - this.strideDistance) * 0.4F;
 		this.world.getProfiler().push("push");
 		this.tickCramming();
 		this.world.getProfiler().pop();

@@ -8,7 +8,6 @@ import com.mojang.realmsclient.gui.screens.RealmsDownloadLatestWorldScreen;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,10 +18,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.realms.Realms;
-import net.minecraft.realms.RealmsAnvilLevelStorageSource;
-import net.minecraft.realms.RealmsLevelSummary;
-import net.minecraft.realms.RealmsSharedConstants;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -108,12 +109,7 @@ public class FileDownload {
 		return var5;
 	}
 
-	public void method_22100(
-		WorldDownload worldDownload,
-		String string,
-		RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus,
-		RealmsAnvilLevelStorageSource realmsAnvilLevelStorageSource
-	) {
+	public void method_22100(WorldDownload worldDownload, String string, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, LevelStorage levelStorage) {
 		if (this.currentThread == null) {
 			this.currentThread = new Thread(
 				() -> {
@@ -127,9 +123,7 @@ public class FileDownload {
 						downloadStatus.totalBytes = Long.parseLong(httpResponse.getFirstHeader("Content-Length").getValue());
 						if (httpResponse.getStatusLine().getStatusCode() == 200) {
 							OutputStream outputStream2 = new FileOutputStream(this.field_20490);
-							FileDownload.ProgressListener progressListener = new FileDownload.ProgressListener(
-								string.trim(), this.field_20490, realmsAnvilLevelStorageSource, downloadStatus, worldDownload
-							);
+							FileDownload.ProgressListener progressListener = new FileDownload.ProgressListener(string.trim(), this.field_20490, levelStorage, downloadStatus);
 							FileDownload.DownloadCountingOutputStream downloadCountingOutputStream2 = new FileDownload.DownloadCountingOutputStream(outputStream2);
 							downloadCountingOutputStream2.setListener(progressListener);
 							IOUtils.copy(httpResponse.getEntity().getContent(), downloadCountingOutputStream2);
@@ -233,11 +227,11 @@ public class FileDownload {
 		return folder;
 	}
 
-	private void untarGzipArchive(String name, File file, RealmsAnvilLevelStorageSource levelStorageSource) throws IOException {
+	private void untarGzipArchive(String name, File file, LevelStorage levelStorage) throws IOException {
 		Pattern pattern = Pattern.compile(".*-([0-9]+)$");
 		int i = 1;
 
-		for (char c : RealmsSharedConstants.ILLEGAL_FILE_CHARACTERS) {
+		for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
 			name = name.replace(c, '_');
 		}
 
@@ -248,9 +242,9 @@ public class FileDownload {
 		name = findAvailableFolderName(name);
 
 		try {
-			for (RealmsLevelSummary realmsLevelSummary : levelStorageSource.getLevelList()) {
-				if (realmsLevelSummary.getLevelId().toLowerCase(Locale.ROOT).startsWith(name.toLowerCase(Locale.ROOT))) {
-					Matcher matcher = pattern.matcher(realmsLevelSummary.getLevelId());
+			for (LevelSummary levelSummary : levelStorage.getLevelList()) {
+				if (levelSummary.getName().toLowerCase(Locale.ROOT).startsWith(name.toLowerCase(Locale.ROOT))) {
+					Matcher matcher = pattern.matcher(levelSummary.getName());
 					if (matcher.matches()) {
 						if (Integer.valueOf(matcher.group(1)) > i) {
 							i = Integer.valueOf(matcher.group(1));
@@ -260,24 +254,24 @@ public class FileDownload {
 					}
 				}
 			}
-		} catch (Exception var22) {
-			LOGGER.error("Error getting level list", (Throwable)var22);
+		} catch (Exception var38) {
+			LOGGER.error("Error getting level list", (Throwable)var38);
 			this.error = true;
 			return;
 		}
 
 		String string;
-		if (levelStorageSource.isNewLevelIdAcceptable(name) && i <= 1) {
+		if (levelStorage.isLevelNameValid(name) && i <= 1) {
 			string = name;
 		} else {
 			string = name + (i == 1 ? "" : "-" + i);
-			if (!levelStorageSource.isNewLevelIdAcceptable(string)) {
+			if (!levelStorage.isLevelNameValid(string)) {
 				boolean bl = false;
 
 				while (!bl) {
 					i++;
 					string = name + (i == 1 ? "" : "-" + i);
-					if (levelStorageSource.isNewLevelIdAcceptable(string)) {
+					if (levelStorage.isLevelNameValid(string)) {
 						bl = true;
 					}
 				}
@@ -285,7 +279,7 @@ public class FileDownload {
 		}
 
 		TarArchiveInputStream tarArchiveInputStream = null;
-		File file2 = new File(Realms.getGameDirectoryPath(), "saves");
+		File file2 = new File(MinecraftClient.getInstance().runDirectory.getAbsolutePath(), "saves");
 
 		try {
 			file2.mkdir();
@@ -300,20 +294,31 @@ public class FileDownload {
 					file3.mkdirs();
 				} else {
 					file3.createNewFile();
-					byte[] bs = new byte[1024];
-					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file3));
-					int j = 0;
+					FileOutputStream fileOutputStream = new FileOutputStream(file3);
+					Throwable var12 = null;
 
-					while ((j = tarArchiveInputStream.read(bs)) != -1) {
-						bufferedOutputStream.write(bs, 0, j);
+					try {
+						IOUtils.copy(tarArchiveInputStream, fileOutputStream);
+					} catch (Throwable var34) {
+						var12 = var34;
+						throw var34;
+					} finally {
+						if (fileOutputStream != null) {
+							if (var12 != null) {
+								try {
+									fileOutputStream.close();
+								} catch (Throwable var33) {
+									var12.addSuppressed(var33);
+								}
+							} else {
+								fileOutputStream.close();
+							}
+						}
 					}
-
-					bufferedOutputStream.close();
-					bs = null;
 				}
 			}
-		} catch (Exception var20) {
-			LOGGER.error("Error extracting world", (Throwable)var20);
+		} catch (Exception var36) {
+			LOGGER.error("Error extracting world", (Throwable)var36);
 			this.error = true;
 		} finally {
 			if (tarArchiveInputStream != null) {
@@ -324,10 +329,23 @@ public class FileDownload {
 				file.delete();
 			}
 
-			levelStorageSource.renameLevel(string, string.trim());
+			levelStorage.renameLevel(string, string.trim());
 			File file4 = new File(file2, string + File.separator + "level.dat");
-			Realms.deletePlayerTag(file4);
+			method_25031(file4);
 			this.resourcePackPath = new File(file2, string + File.separator + "resources.zip");
+		}
+	}
+
+	private static void method_25031(File file) {
+		if (file.exists()) {
+			try {
+				CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
+				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
+				compoundTag2.remove("Player");
+				NbtIo.writeCompressed(compoundTag, new FileOutputStream(file));
+			} catch (Exception var3) {
+				var3.printStackTrace();
+			}
 		}
 	}
 
@@ -356,22 +374,14 @@ public class FileDownload {
 	class ProgressListener implements ActionListener {
 		private final String worldName;
 		private final File tempFile;
-		private final RealmsAnvilLevelStorageSource levelStorageSource;
+		private final LevelStorage levelStorageSource;
 		private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
-		private final WorldDownload worldDownload;
 
-		private ProgressListener(
-			String worldName,
-			File tempFile,
-			RealmsAnvilLevelStorageSource levelStorageSource,
-			RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus,
-			WorldDownload worldDownload
-		) {
+		private ProgressListener(String worldName, File tempFile, LevelStorage levelStorage, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus) {
 			this.worldName = worldName;
 			this.tempFile = tempFile;
-			this.levelStorageSource = levelStorageSource;
+			this.levelStorageSource = levelStorage;
 			this.downloadStatus = downloadStatus;
-			this.worldDownload = worldDownload;
 		}
 
 		public void actionPerformed(ActionEvent e) {

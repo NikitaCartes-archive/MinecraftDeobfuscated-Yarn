@@ -16,14 +16,14 @@ import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.container.LoomContainer;
-import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.screen.LoomScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -31,7 +31,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class LoomScreen extends ContainerScreen<LoomContainer> {
+public class LoomScreen extends ScreenWithHandler<LoomScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
 	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
 	private final ModelPart field_21694;
@@ -47,10 +47,10 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 	private boolean scrollbarClicked;
 	private int firstPatternButtonId = 1;
 
-	public LoomScreen(LoomContainer container, PlayerInventory inventory, Text title) {
-		super(container, inventory, title);
+	public LoomScreen(LoomScreenHandler handler, PlayerInventory inventory, Text title) {
+		super(handler, inventory, title);
 		this.field_21694 = BannerBlockEntityRenderer.createField();
-		container.setInventoryChangeListener(this::onInventoryChanged);
+		handler.setInventoryChangeListener(this::onInventoryChanged);
 	}
 
 	@Override
@@ -61,38 +61,38 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 
 	@Override
 	protected void drawForeground(int mouseX, int mouseY) {
-		this.font.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
-		this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
+		this.textRenderer.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
+		this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		this.renderBackground();
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = this.x;
 		int j = this.y;
-		this.blit(i, j, 0, 0, this.containerWidth, this.containerHeight);
-		Slot slot = this.container.getBannerSlot();
-		Slot slot2 = this.container.getDyeSlot();
-		Slot slot3 = this.container.getPatternSlot();
-		Slot slot4 = this.container.getOutputSlot();
+		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		Slot slot = this.handler.getBannerSlot();
+		Slot slot2 = this.handler.getDyeSlot();
+		Slot slot3 = this.handler.getPatternSlot();
+		Slot slot4 = this.handler.getOutputSlot();
 		if (!slot.hasStack()) {
-			this.blit(i + slot.xPosition, j + slot.yPosition, this.containerWidth, 0, 16, 16);
+			this.blit(i + slot.xPosition, j + slot.yPosition, this.backgroundWidth, 0, 16, 16);
 		}
 
 		if (!slot2.hasStack()) {
-			this.blit(i + slot2.xPosition, j + slot2.yPosition, this.containerWidth + 16, 0, 16, 16);
+			this.blit(i + slot2.xPosition, j + slot2.yPosition, this.backgroundWidth + 16, 0, 16, 16);
 		}
 
 		if (!slot3.hasStack()) {
-			this.blit(i + slot3.xPosition, j + slot3.yPosition, this.containerWidth + 32, 0, 16, 16);
+			this.blit(i + slot3.xPosition, j + slot3.yPosition, this.backgroundWidth + 32, 0, 16, 16);
 		}
 
 		int k = (int)(41.0F * this.scrollPosition);
 		this.blit(i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
 		DiffuseLighting.disableGuiDepthLighting();
 		if (this.field_21841 != null && !this.hasTooManyPatterns) {
-			VertexConsumerProvider.Immediate immediate = this.minecraft.getBufferBuilders().getEntityVertexConsumers();
+			VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.translate((double)(i + 139), (double)(j + 52), 0.0);
 			matrixStack.scale(24.0F, -24.0F, 1.0F);
@@ -106,7 +106,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 			);
 			immediate.draw();
 		} else if (this.hasTooManyPatterns) {
-			this.blit(i + slot4.xPosition - 2, j + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
+			this.blit(i + slot4.xPosition - 2, j + slot4.yPosition - 2, this.backgroundWidth, 17, 17, 16);
 		}
 
 		if (this.canApplyDyePattern) {
@@ -118,9 +118,9 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 				int p = o - this.firstPatternButtonId;
 				int q = l + p % 4 * 14;
 				int r = m + p / 4 * 14;
-				this.minecraft.getTextureManager().bindTexture(TEXTURE);
-				int s = this.containerHeight;
-				if (o == this.container.getSelectedPattern()) {
+				this.client.getTextureManager().bindTexture(TEXTURE);
+				int s = this.backgroundHeight;
+				if (o == this.handler.getSelectedPattern()) {
 					s += 14;
 				} else if (mouseX >= q && mouseY >= r && mouseX < q + 14 && mouseY < r + 14) {
 					s += 28;
@@ -132,9 +132,9 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 		} else if (this.canApplySpecialPattern) {
 			int l = i + 60;
 			int m = j + 13;
-			this.minecraft.getTextureManager().bindTexture(TEXTURE);
-			this.blit(l, m, 0, this.containerHeight, 14, 14);
-			int n = this.container.getSelectedPattern();
+			this.client.getTextureManager().bindTexture(TEXTURE);
+			this.blit(l, m, 0, this.backgroundHeight, 14, 14);
+			int n = this.handler.getSelectedPattern();
 			this.method_22692(n, l, m);
 		}
 
@@ -154,7 +154,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 		matrixStack.translate(0.5, 0.5, 0.5);
 		float f = 0.6666667F;
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
-		VertexConsumerProvider.Immediate immediate = this.minecraft.getBufferBuilders().getEntityVertexConsumers();
+		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
 		this.field_21694.pitch = 0.0F;
 		this.field_21694.pivotY = -32.0F;
 		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.method_24281(itemStack));
@@ -175,9 +175,9 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 				int m = l - this.firstPatternButtonId;
 				double d = mouseX - (double)(i + m % 4 * 14);
 				double e = mouseY - (double)(j + m / 4 * 14);
-				if (d >= 0.0 && e >= 0.0 && d < 14.0 && e < 14.0 && this.container.onButtonClick(this.minecraft.player, l)) {
+				if (d >= 0.0 && e >= 0.0 && d < 14.0 && e < 14.0 && this.handler.onButtonClick(this.client.player, l)) {
 					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_LOOM_SELECT_PATTERN, 1.0F));
-					this.minecraft.interactionManager.clickButton(this.container.syncId, l);
+					this.client.interactionManager.clickButton(this.handler.syncId, l);
 					return true;
 				}
 			}
@@ -213,7 +213,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 		if (this.canApplyDyePattern) {
 			int i = PATTERN_BUTTON_ROW_COUNT - 4;
 			this.scrollPosition = (float)((double)this.scrollPosition - amount / (double)i);
@@ -226,20 +226,20 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 
 	@Override
 	protected boolean isClickOutsideBounds(double mouseX, double mouseY, int left, int top, int button) {
-		return mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.containerWidth) || mouseY >= (double)(top + this.containerHeight);
+		return mouseX < (double)left || mouseY < (double)top || mouseX >= (double)(left + this.backgroundWidth) || mouseY >= (double)(top + this.backgroundHeight);
 	}
 
 	private void onInventoryChanged() {
-		ItemStack itemStack = this.container.getOutputSlot().getStack();
+		ItemStack itemStack = this.handler.getOutputSlot().getStack();
 		if (itemStack.isEmpty()) {
 			this.field_21841 = null;
 		} else {
 			this.field_21841 = BannerBlockEntity.method_24280(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.method_24281(itemStack));
 		}
 
-		ItemStack itemStack2 = this.container.getBannerSlot().getStack();
-		ItemStack itemStack3 = this.container.getDyeSlot().getStack();
-		ItemStack itemStack4 = this.container.getPatternSlot().getStack();
+		ItemStack itemStack2 = this.handler.getBannerSlot().getStack();
+		ItemStack itemStack3 = this.handler.getDyeSlot().getStack();
+		ItemStack itemStack4 = this.handler.getPatternSlot().getStack();
 		CompoundTag compoundTag = itemStack2.getOrCreateSubTag("BlockEntityTag");
 		this.hasTooManyPatterns = compoundTag.contains("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 		if (this.hasTooManyPatterns) {

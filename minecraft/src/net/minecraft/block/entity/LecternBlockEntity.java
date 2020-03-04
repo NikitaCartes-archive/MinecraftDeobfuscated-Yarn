@@ -2,10 +2,6 @@ package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.LecternBlock;
-import net.minecraft.container.Container;
-import net.minecraft.container.LecternContainer;
-import net.minecraft.container.NameableContainerFactory;
-import net.minecraft.container.PropertyDelegate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -14,6 +10,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.LecternScreenHandler;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
-public class LecternBlockEntity extends BlockEntity implements Clearable, NameableContainerFactory {
+public class LecternBlockEntity extends BlockEntity implements Clearable, NameableScreenHandlerFactory {
 	private final Inventory inventory = new Inventory() {
 		@Override
 		public int getInvSize() {
@@ -194,7 +194,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 			text = player.getDisplayName();
 		}
 
-		Vec3d vec3d = new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5);
+		Vec3d vec3d = Vec3d.method_24953(this.pos);
 		return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player);
 	}
 
@@ -233,8 +233,8 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 	}
 
 	@Override
-	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return new LecternContainer(syncId, this.inventory, this.propertyDelegate);
+	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+		return new LecternScreenHandler(i, this.inventory, this.propertyDelegate);
 	}
 
 	@Override

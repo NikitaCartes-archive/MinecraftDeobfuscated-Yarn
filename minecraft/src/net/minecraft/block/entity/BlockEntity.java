@@ -96,7 +96,7 @@ public abstract class BlockEntity {
 			this.cachedState = this.world.getBlockState(this.pos);
 			this.world.markDirty(this.pos, this);
 			if (!this.cachedState.isAir()) {
-				this.world.updateHorizontalAdjacent(this.pos, this.cachedState.getBlock());
+				this.world.updateComparators(this.pos, this.cachedState.getBlock());
 			}
 		}
 	}

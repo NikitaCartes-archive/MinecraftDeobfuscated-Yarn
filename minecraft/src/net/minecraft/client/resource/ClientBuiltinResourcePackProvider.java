@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -22,6 +23,8 @@ import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.resource.DefaultResourcePack;
+import net.minecraft.resource.DirectoryResourcePack;
+import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
@@ -67,18 +70,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			registry.put("server", this.serverContainer);
 		}
 
-		File file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"));
-		if (file != null && file.isFile()) {
-			T resourcePackProfile2 = ResourcePackProfile.of("programer_art", false, () -> new ZipResourcePack(file) {
-					@Override
-					public String getName() {
-						return "Programmer Art";
-					}
-				}, factory, ResourcePackProfile.InsertionPosition.TOP);
-			if (resourcePackProfile2 != null) {
-				registry.put("programer_art", resourcePackProfile2);
-			}
-		}
+		this.method_25454(registry, factory);
 	}
 
 	public DefaultResourcePack getPack() {
@@ -296,5 +288,47 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			);
 			return MinecraftClient.getInstance().reloadResourcesConcurrently();
 		}
+	}
+
+	private <T extends ResourcePackProfile> void method_25454(Map<String, T> map, ResourcePackProfile.Factory<T> factory) {
+		File file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"));
+		if (file == null || !file.isFile() || !method_25453(map, factory, () -> method_16048(file))) {
+			if (SharedConstants.isDevelopment) {
+				File file2 = this.index.findFile("../resourcepacks/programmer_art");
+				if (file2 != null && file2.isDirectory()) {
+					method_25453(map, factory, () -> method_25455(file2));
+				}
+			}
+		}
+	}
+
+	private static <T extends ResourcePackProfile> boolean method_25453(
+		Map<String, T> map, ResourcePackProfile.Factory<T> factory, Supplier<ResourcePack> supplier
+	) {
+		T resourcePackProfile = ResourcePackProfile.of("programer_art", false, supplier, factory, ResourcePackProfile.InsertionPosition.TOP);
+		if (resourcePackProfile != null) {
+			map.put("programer_art", resourcePackProfile);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private static DirectoryResourcePack method_25455(File file) {
+		return new DirectoryResourcePack(file) {
+			@Override
+			public String getName() {
+				return "Programmer Art";
+			}
+		};
+	}
+
+	private static ResourcePack method_16048(File file) {
+		return new ZipResourcePack(file) {
+			@Override
+			public String getName() {
+				return "Programmer Art";
+			}
+		};
 	}
 }

@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.ArmorBipedFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.model.ZombieVillagerEntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.util.Identifier;
@@ -24,11 +23,7 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 		return SKIN;
 	}
 
-	protected void setupTransforms(ZombieVillagerEntity zombieVillagerEntity, MatrixStack matrixStack, float f, float g, float h) {
-		if (zombieVillagerEntity.isConverting()) {
-			g += (float)(Math.cos((double)zombieVillagerEntity.age * 3.25) * Math.PI * 0.25);
-		}
-
-		super.setupTransforms(zombieVillagerEntity, matrixStack, f, g, h);
+	protected boolean isShaking(ZombieVillagerEntity zombieVillagerEntity) {
+		return zombieVillagerEntity.isConverting();
 	}
 }

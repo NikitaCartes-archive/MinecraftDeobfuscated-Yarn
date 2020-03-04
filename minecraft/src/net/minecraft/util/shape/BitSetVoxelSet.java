@@ -13,8 +13,8 @@ public final class BitSetVoxelSet extends VoxelSet {
 	private int yMax;
 	private int zMax;
 
-	public BitSetVoxelSet(int xSize, int ySize, int zSize) {
-		this(xSize, ySize, zSize, xSize, ySize, zSize, 0, 0, 0);
+	public BitSetVoxelSet(int i, int j, int k) {
+		this(i, j, k, i, j, k, 0, 0, 0);
 	}
 
 	public BitSetVoxelSet(int xMask, int yMask, int zMask, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {

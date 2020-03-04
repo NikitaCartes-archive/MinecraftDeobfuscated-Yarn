@@ -3,7 +3,7 @@ package net.minecraft.entity.boss.dragon;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.explosion.Explosion;
@@ -16,11 +16,11 @@ import net.minecraft.world.gen.feature.Feature;
 public enum EnderDragonSpawnState {
 	START {
 		@Override
-		public void run(ServerWorld world, EnderDragonFight fight, List<EnderCrystalEntity> crystals, int i, BlockPos blockPos) {
+		public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos blockPos) {
 			BlockPos blockPos2 = new BlockPos(0, 128, 0);
 
-			for (EnderCrystalEntity enderCrystalEntity : crystals) {
-				enderCrystalEntity.setBeamTarget(blockPos2);
+			for (EndCrystalEntity endCrystalEntity : crystals) {
+				endCrystalEntity.setBeamTarget(blockPos2);
 			}
 
 			fight.setSpawnState(PREPARING_TO_SUMMON_PILLARS);
@@ -28,7 +28,7 @@ public enum EnderDragonSpawnState {
 	},
 	PREPARING_TO_SUMMON_PILLARS {
 		@Override
-		public void run(ServerWorld world, EnderDragonFight fight, List<EnderCrystalEntity> crystals, int i, BlockPos blockPos) {
+		public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos blockPos) {
 			if (i < 100) {
 				if (i == 0 || i == 50 || i == 51 || i == 52 || i >= 95) {
 					world.playLevelEvent(3001, new BlockPos(0, 128, 0), 0);
@@ -40,7 +40,7 @@ public enum EnderDragonSpawnState {
 	},
 	SUMMONING_PILLARS {
 		@Override
-		public void run(ServerWorld world, EnderDragonFight fight, List<EnderCrystalEntity> crystals, int i, BlockPos blockPos) {
+		public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos blockPos) {
 			int j = 40;
 			boolean bl = i % 40 == 0;
 			boolean bl2 = i % 40 == 39;
@@ -50,8 +50,8 @@ public enum EnderDragonSpawnState {
 				if (k < list.size()) {
 					EndSpikeFeature.Spike spike = (EndSpikeFeature.Spike)list.get(k);
 					if (bl) {
-						for (EnderCrystalEntity enderCrystalEntity : crystals) {
-							enderCrystalEntity.setBeamTarget(new BlockPos(spike.getCenterX(), spike.getHeight() + 1, spike.getCenterZ()));
+						for (EndCrystalEntity endCrystalEntity : crystals) {
+							endCrystalEntity.setBeamTarget(new BlockPos(spike.getCenterX(), spike.getHeight() + 1, spike.getCenterZ()));
 						}
 					} else {
 						int l = 10;
@@ -89,23 +89,21 @@ public enum EnderDragonSpawnState {
 	},
 	SUMMONING_DRAGON {
 		@Override
-		public void run(ServerWorld world, EnderDragonFight fight, List<EnderCrystalEntity> crystals, int i, BlockPos blockPos) {
+		public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos blockPos) {
 			if (i >= 100) {
 				fight.setSpawnState(END);
 				fight.resetEndCrystals();
 
-				for (EnderCrystalEntity enderCrystalEntity : crystals) {
-					enderCrystalEntity.setBeamTarget(null);
-					world.createExplosion(
-						enderCrystalEntity, enderCrystalEntity.getX(), enderCrystalEntity.getY(), enderCrystalEntity.getZ(), 6.0F, Explosion.DestructionType.NONE
-					);
-					enderCrystalEntity.remove();
+				for (EndCrystalEntity endCrystalEntity : crystals) {
+					endCrystalEntity.setBeamTarget(null);
+					world.createExplosion(endCrystalEntity, endCrystalEntity.getX(), endCrystalEntity.getY(), endCrystalEntity.getZ(), 6.0F, Explosion.DestructionType.NONE);
+					endCrystalEntity.remove();
 				}
 			} else if (i >= 80) {
 				world.playLevelEvent(3001, new BlockPos(0, 128, 0), 0);
 			} else if (i == 0) {
-				for (EnderCrystalEntity enderCrystalEntity : crystals) {
-					enderCrystalEntity.setBeamTarget(new BlockPos(0, 128, 0));
+				for (EndCrystalEntity endCrystalEntity : crystals) {
+					endCrystalEntity.setBeamTarget(new BlockPos(0, 128, 0));
 				}
 			} else if (i < 5) {
 				world.playLevelEvent(3001, new BlockPos(0, 128, 0), 0);
@@ -114,12 +112,12 @@ public enum EnderDragonSpawnState {
 	},
 	END {
 		@Override
-		public void run(ServerWorld world, EnderDragonFight fight, List<EnderCrystalEntity> crystals, int i, BlockPos blockPos) {
+		public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos blockPos) {
 		}
 	};
 
 	private EnderDragonSpawnState() {
 	}
 
-	public abstract void run(ServerWorld world, EnderDragonFight fight, List<EnderCrystalEntity> crystals, int i, BlockPos blockPos);
+	public abstract void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos blockPos);
 }

@@ -97,24 +97,24 @@ public class ModelTransformation {
 		protected Deserializer() {
 		}
 
-		public ModelTransformation deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-			JsonObject jsonObject = element.getAsJsonObject();
-			Transformation transformation = this.parseModelTransformation(context, jsonObject, "thirdperson_righthand");
-			Transformation transformation2 = this.parseModelTransformation(context, jsonObject, "thirdperson_lefthand");
+		public ModelTransformation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			Transformation transformation = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_righthand");
+			Transformation transformation2 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "thirdperson_lefthand");
 			if (transformation2 == Transformation.IDENTITY) {
 				transformation2 = transformation;
 			}
 
-			Transformation transformation3 = this.parseModelTransformation(context, jsonObject, "firstperson_righthand");
-			Transformation transformation4 = this.parseModelTransformation(context, jsonObject, "firstperson_lefthand");
+			Transformation transformation3 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_righthand");
+			Transformation transformation4 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "firstperson_lefthand");
 			if (transformation4 == Transformation.IDENTITY) {
 				transformation4 = transformation3;
 			}
 
-			Transformation transformation5 = this.parseModelTransformation(context, jsonObject, "head");
-			Transformation transformation6 = this.parseModelTransformation(context, jsonObject, "gui");
-			Transformation transformation7 = this.parseModelTransformation(context, jsonObject, "ground");
-			Transformation transformation8 = this.parseModelTransformation(context, jsonObject, "fixed");
+			Transformation transformation5 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "head");
+			Transformation transformation6 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "gui");
+			Transformation transformation7 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "ground");
+			Transformation transformation8 = this.parseModelTransformation(jsonDeserializationContext, jsonObject, "fixed");
 			return new ModelTransformation(
 				transformation2, transformation, transformation4, transformation3, transformation5, transformation6, transformation7, transformation8
 			);

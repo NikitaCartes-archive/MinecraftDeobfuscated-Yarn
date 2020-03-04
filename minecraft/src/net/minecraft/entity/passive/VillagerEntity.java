@@ -257,7 +257,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		if (!this.isAiDisabled() && this.random.nextInt(100) == 0) {
-			Raid raid = ((ServerWorld)this.world).getRaidAt(new BlockPos(this));
+			Raid raid = ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos());
 			if (raid != null && raid.isActive() && !raid.isFinished()) {
 				this.world.sendEntityStatus(this, (byte)42);
 			}
@@ -694,7 +694,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		if (spawnType == SpawnType.COMMAND || spawnType == SpawnType.SPAWN_EGG || spawnType == SpawnType.SPAWNER || spawnType == SpawnType.DISPENSER) {
-			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(new BlockPos(this)))));
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getSenseCenterPos()))));
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
@@ -704,7 +704,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
 		if (d < 0.5) {
-			villagerType = VillagerType.forBiome(this.world.getBiome(new BlockPos(this)));
+			villagerType = VillagerType.forBiome(this.world.getBiome(this.getSenseCenterPos()));
 		} else if (d < 0.75) {
 			villagerType = this.getVillagerData().getType();
 		} else {
@@ -712,7 +712,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
-		villagerEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.BREEDING, null, null);
+		villagerEntity.initialize(this.world, this.world.getLocalDifficulty(villagerEntity.getSenseCenterPos()), SpawnType.BREEDING, null, null);
 		return villagerEntity;
 	}
 
@@ -720,7 +720,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	public void onStruckByLightning(LightningEntity lightning) {
 		WitchEntity witchEntity = EntityType.WITCH.create(this.world);
 		witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-		witchEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.CONVERSION, null, null);
+		witchEntity.initialize(this.world, this.world.getLocalDifficulty(witchEntity.getSenseCenterPos()), SpawnType.CONVERSION, null, null);
 		witchEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
 			witchEntity.setCustomName(this.getCustomName());
@@ -884,7 +884,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	@Nullable
 	private IronGolemEntity spawnIronGolem() {
-		BlockPos blockPos = new BlockPos(this);
+		BlockPos blockPos = this.getSenseCenterPos();
 
 		for (int i = 0; i < 10; i++) {
 			double d = (double)(this.world.random.nextInt(16) - 8);

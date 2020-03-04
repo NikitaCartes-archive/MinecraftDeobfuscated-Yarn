@@ -36,7 +36,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -59,8 +58,8 @@ public class ArmorStandEntity extends LivingEntity {
 			&& ((AbstractMinecartEntity)entity).getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE;
 	private final DefaultedList<ItemStack> heldItems = DefaultedList.ofSize(2, ItemStack.EMPTY);
 	private final DefaultedList<ItemStack> armorItems = DefaultedList.ofSize(4, ItemStack.EMPTY);
-	private boolean field_7111;
-	public long field_7112;
+	private boolean invisible;
+	public long lastHitTime;
 	private int disabledSlots;
 	private EulerAngle headRotation = DEFAULT_HEAD_ROTATION;
 	private EulerAngle bodyRotation = DEFAULT_BODY_ROTATION;
@@ -74,9 +73,9 @@ public class ArmorStandEntity extends LivingEntity {
 		this.stepHeight = 0.0F;
 	}
 
-	public ArmorStandEntity(World world, double d, double e, double f) {
+	public ArmorStandEntity(World world, double x, double y, double z) {
 		this(EntityType.ARMOR_STAND, world);
-		this.updatePosition(d, e, f);
+		this.updatePosition(x, y, z);
 	}
 
 	@Override
@@ -176,7 +175,7 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public boolean canPickUp(ItemStack stack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
-		return this.getEquippedStack(equipmentSlot).isEmpty() && !this.method_6915(equipmentSlot);
+		return this.getEquippedStack(equipmentSlot).isEmpty() && !this.isSlotDisabled(equipmentSlot);
 	}
 
 	@Override
@@ -325,13 +324,13 @@ public class ArmorStandEntity extends LivingEntity {
 		} else {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
-				EquipmentSlot equipmentSlot2 = this.method_6916(hitPos);
-				EquipmentSlot equipmentSlot3 = this.method_6915(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
-				if (this.hasStackEquipped(equipmentSlot3) && this.method_6904(player, equipmentSlot3, itemStack, hand)) {
+				EquipmentSlot equipmentSlot2 = this.slotFromPosition(hitPos);
+				EquipmentSlot equipmentSlot3 = this.isSlotDisabled(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
+				if (this.hasStackEquipped(equipmentSlot3) && this.equip(player, equipmentSlot3, itemStack, hand)) {
 					return ActionResult.SUCCESS;
 				}
 			} else {
-				if (this.method_6915(equipmentSlot)) {
+				if (this.isSlotDisabled(equipmentSlot)) {
 					return ActionResult.FAIL;
 				}
 
@@ -339,7 +338,7 @@ public class ArmorStandEntity extends LivingEntity {
 					return ActionResult.FAIL;
 				}
 
-				if (this.method_6904(player, equipmentSlot, itemStack, hand)) {
+				if (this.equip(player, equipmentSlot, itemStack, hand)) {
 					return ActionResult.SUCCESS;
 				}
 			}
@@ -348,7 +347,7 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 	}
 
-	private EquipmentSlot method_6916(Vec3d vec3d) {
+	private EquipmentSlot slotFromPosition(Vec3d vec3d) {
 		EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
 		boolean bl = this.isSmall();
 		double d = bl ? vec3d.y * 2.0 : vec3d.y;
@@ -368,11 +367,11 @@ public class ArmorStandEntity extends LivingEntity {
 		return equipmentSlot;
 	}
 
-	private boolean method_6915(EquipmentSlot equipmentSlot) {
+	private boolean isSlotDisabled(EquipmentSlot equipmentSlot) {
 		return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0 || equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
 	}
 
-	private boolean method_6904(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
+	private boolean equip(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
 		ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 		if (!itemStack2.isEmpty() && (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 8) != 0) {
 			return false;
@@ -405,22 +404,22 @@ public class ArmorStandEntity extends LivingEntity {
 		} else if (DamageSource.OUT_OF_WORLD.equals(source)) {
 			this.remove();
 			return false;
-		} else if (this.isInvulnerableTo(source) || this.field_7111 || this.isMarker()) {
+		} else if (this.isInvulnerableTo(source) || this.invisible || this.isMarker()) {
 			return false;
 		} else if (source.isExplosive()) {
-			this.method_6908(source);
+			this.onBreak(source);
 			this.remove();
 			return false;
 		} else if (DamageSource.IN_FIRE.equals(source)) {
 			if (this.isOnFire()) {
-				this.method_6905(source, 0.15F);
+				this.updateHealth(source, 0.15F);
 			} else {
 				this.setOnFireFor(5);
 			}
 
 			return false;
 		} else if (DamageSource.ON_FIRE.equals(source) && this.getHealth() > 0.5F) {
-			this.method_6905(source, 4.0F);
+			this.updateHealth(source, 4.0F);
 			return false;
 		} else {
 			boolean bl = source.getSource() instanceof ProjectileEntity;
@@ -431,18 +430,18 @@ public class ArmorStandEntity extends LivingEntity {
 			} else if (source.getAttacker() instanceof PlayerEntity && !((PlayerEntity)source.getAttacker()).abilities.allowModifyWorld) {
 				return false;
 			} else if (source.isSourceCreativePlayer()) {
-				this.method_6920();
-				this.method_6898();
+				this.playBreakSound();
+				this.spawnBreakParticles();
 				this.remove();
 				return bl2;
 			} else {
 				long l = this.world.getTime();
-				if (l - this.field_7112 > 5L && !bl) {
+				if (l - this.lastHitTime > 5L && !bl) {
 					this.world.sendEntityStatus(this, (byte)32);
-					this.field_7112 = l;
+					this.lastHitTime = l;
 				} else {
-					this.method_6924(source);
-					this.method_6898();
+					this.breakAndDropItem(source);
+					this.spawnBreakParticles();
 					this.remove();
 				}
 
@@ -457,7 +456,7 @@ public class ArmorStandEntity extends LivingEntity {
 		if (status == 32) {
 			if (this.world.isClient) {
 				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMOR_STAND_HIT, this.getSoundCategory(), 0.3F, 1.0F, false);
-				this.field_7112 = this.world.getTime();
+				this.lastHitTime = this.world.getTime();
 			}
 		} else {
 			super.handleStatus(status);
@@ -476,7 +475,7 @@ public class ArmorStandEntity extends LivingEntity {
 		return distance < d * d;
 	}
 
-	private void method_6898() {
+	private void spawnBreakParticles() {
 		if (this.world instanceof ServerWorld) {
 			((ServerWorld)this.world)
 				.spawnParticles(
@@ -493,30 +492,30 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 	}
 
-	private void method_6905(DamageSource damageSource, float f) {
-		float g = this.getHealth();
-		g -= f;
-		if (g <= 0.5F) {
-			this.method_6908(damageSource);
+	private void updateHealth(DamageSource damageSource, float amount) {
+		float f = this.getHealth();
+		f -= amount;
+		if (f <= 0.5F) {
+			this.onBreak(damageSource);
 			this.remove();
 		} else {
-			this.setHealth(g);
+			this.setHealth(f);
 		}
 	}
 
-	private void method_6924(DamageSource damageSource) {
-		Block.dropStack(this.world, new BlockPos(this), new ItemStack(Items.ARMOR_STAND));
-		this.method_6908(damageSource);
+	private void breakAndDropItem(DamageSource damageSource) {
+		Block.dropStack(this.world, this.getSenseCenterPos(), new ItemStack(Items.ARMOR_STAND));
+		this.onBreak(damageSource);
 	}
 
-	private void method_6908(DamageSource damageSource) {
-		this.method_6920();
+	private void onBreak(DamageSource damageSource) {
+		this.playBreakSound();
 		this.drop(damageSource);
 
 		for (int i = 0; i < this.heldItems.size(); i++) {
 			ItemStack itemStack = this.heldItems.get(i);
 			if (!itemStack.isEmpty()) {
-				Block.dropStack(this.world, new BlockPos(this).up(), itemStack);
+				Block.dropStack(this.world, this.getSenseCenterPos().up(), itemStack);
 				this.heldItems.set(i, ItemStack.EMPTY);
 			}
 		}
@@ -524,13 +523,13 @@ public class ArmorStandEntity extends LivingEntity {
 		for (int ix = 0; ix < this.armorItems.size(); ix++) {
 			ItemStack itemStack = this.armorItems.get(ix);
 			if (!itemStack.isEmpty()) {
-				Block.dropStack(this.world, new BlockPos(this).up(), itemStack);
+				Block.dropStack(this.world, this.getSenseCenterPos().up(), itemStack);
 				this.armorItems.set(ix, ItemStack.EMPTY);
 			}
 		}
 	}
 
-	private void method_6920() {
+	private void playBreakSound() {
 		this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMOR_STAND_BREAK, this.getSoundCategory(), 1.0F, 1.0F);
 	}
 
@@ -606,12 +605,12 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	protected void updatePotionVisibility() {
-		this.setInvisible(this.field_7111);
+		this.setInvisible(this.invisible);
 	}
 
 	@Override
 	public void setInvisible(boolean invisible) {
-		this.field_7111 = invisible;
+		this.invisible = invisible;
 		super.setInvisible(invisible);
 	}
 
@@ -635,32 +634,32 @@ public class ArmorStandEntity extends LivingEntity {
 		return this.isMarker() ? PistonBehavior.IGNORE : super.getPistonBehavior();
 	}
 
-	private void setSmall(boolean bl) {
-		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 1, bl));
+	private void setSmall(boolean small) {
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 1, small));
 	}
 
 	public boolean isSmall() {
 		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 1) != 0;
 	}
 
-	private void setShowArms(boolean bl) {
-		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 4, bl));
+	private void setShowArms(boolean showArms) {
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 4, showArms));
 	}
 
 	public boolean shouldShowArms() {
 		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 4) != 0;
 	}
 
-	private void setHideBasePlate(boolean bl) {
-		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 8, bl));
+	private void setHideBasePlate(boolean hideBasePlate) {
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 8, hideBasePlate));
 	}
 
 	public boolean shouldHideBasePlate() {
 		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 8) != 0;
 	}
 
-	private void setMarker(boolean bl) {
-		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 16, bl));
+	private void setMarker(boolean marker) {
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 16, marker));
 	}
 
 	public boolean isMarker() {
@@ -742,7 +741,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public boolean handleAttack(Entity attacker) {
-		return attacker instanceof PlayerEntity && !this.world.canPlayerModifyAt((PlayerEntity)attacker, new BlockPos(this));
+		return attacker instanceof PlayerEntity && !this.world.canPlayerModifyAt((PlayerEntity)attacker, this.getSenseCenterPos());
 	}
 
 	@Override
@@ -787,7 +786,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_6102() {
+	public boolean isMobOrPlayer() {
 		return false;
 	}
 

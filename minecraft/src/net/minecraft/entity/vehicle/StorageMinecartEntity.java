@@ -1,8 +1,6 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
-import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -16,25 +14,26 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NameableContainerFactory {
+public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NameableScreenHandlerFactory {
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
 	private boolean field_7733 = true;
 	@Nullable
 	private Identifier lootTableId;
 	private long lootSeed;
 
-	protected StorageMinecartEntity(EntityType<?> type, World world) {
-		super(type, world);
+	protected StorageMinecartEntity(EntityType<?> entityType, World world) {
+		super(entityType, world);
 	}
 
 	protected StorageMinecartEntity(EntityType<?> type, double x, double y, double z, World world) {
@@ -155,7 +154,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Override
 	public boolean interact(PlayerEntity player, Hand hand) {
-		player.openContainer(this);
+		player.openHandledScreen(this);
 		return true;
 	}
 
@@ -163,7 +162,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	protected void applySlowdown() {
 		float f = 0.98F;
 		if (this.lootTableId == null) {
-			int i = 15 - Container.calculateComparatorOutput(this);
+			int i = 15 - ScreenHandler.calculateComparatorOutput(this);
 			f += (float)i * 0.001F;
 		}
 
@@ -175,7 +174,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.put(LootContextParameters.POSITION, new BlockPos(this))
+				.put(LootContextParameters.POSITION, this.getSenseCenterPos())
 				.setRandom(this.lootSeed);
 			if (playerEntity != null) {
 				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
@@ -198,14 +197,14 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Nullable
 	@Override
-	public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		if (this.lootTableId != null && playerEntity.isSpectator()) {
 			return null;
 		} else {
 			this.method_7563(playerInventory.player);
-			return this.getContainer(syncId, playerInventory);
+			return this.getScreenHandler(i, playerInventory);
 		}
 	}
 
-	protected abstract Container getContainer(int syncId, PlayerInventory playerInventory);
+	protected abstract ScreenHandler getScreenHandler(int syncId, PlayerInventory playerInventory);
 }

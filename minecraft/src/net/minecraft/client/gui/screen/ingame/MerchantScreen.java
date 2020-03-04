@@ -5,10 +5,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.SelectVillagerTradeC2SPacket;
+import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -17,29 +17,29 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.village.VillagerData;
 
 @Environment(EnvType.CLIENT)
-public class MerchantScreen extends ContainerScreen<MerchantContainer> {
+public class MerchantScreen extends ScreenWithHandler<MerchantScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
 	private int selectedIndex;
 	private final MerchantScreen.WidgetButtonPage[] offers = new MerchantScreen.WidgetButtonPage[7];
 	private int indexStartOffset;
 	private boolean scrolling;
 
-	public MerchantScreen(MerchantContainer container, PlayerInventory inventory, Text title) {
-		super(container, inventory, title);
-		this.containerWidth = 276;
+	public MerchantScreen(MerchantScreenHandler handler, PlayerInventory inventory, Text title) {
+		super(handler, inventory, title);
+		this.backgroundWidth = 276;
 	}
 
 	private void syncRecipeIndex() {
-		this.container.setRecipeIndex(this.selectedIndex);
-		this.container.switchTo(this.selectedIndex);
-		this.minecraft.getNetworkHandler().sendPacket(new SelectVillagerTradeC2SPacket(this.selectedIndex));
+		this.handler.setRecipeIndex(this.selectedIndex);
+		this.handler.switchTo(this.selectedIndex);
+		this.client.getNetworkHandler().sendPacket(new SelectVillagerTradeC2SPacket(this.selectedIndex));
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		int i = (this.width - this.containerWidth) / 2;
-		int j = (this.height - this.containerHeight) / 2;
+		int i = (this.width - this.backgroundWidth) / 2;
+		int j = (this.height - this.backgroundHeight) / 2;
 		int k = j + 16 + 2;
 
 		for (int l = 0; l < 7; l++) {
@@ -55,37 +55,37 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 
 	@Override
 	protected void drawForeground(int mouseX, int mouseY) {
-		int i = this.container.getLevelProgress();
-		int j = this.containerHeight - 94;
-		if (i > 0 && i <= 5 && this.container.isLevelled()) {
+		int i = this.handler.getLevelProgress();
+		int j = this.backgroundHeight - 94;
+		if (i > 0 && i <= 5 && this.handler.isLevelled()) {
 			String string = this.title.asFormattedString();
 			String string2 = "- " + I18n.translate("merchant.level." + i);
-			int k = this.font.getStringWidth(string);
-			int l = this.font.getStringWidth(string2);
+			int k = this.textRenderer.getStringWidth(string);
+			int l = this.textRenderer.getStringWidth(string2);
 			int m = k + l + 3;
-			int n = 49 + this.containerWidth / 2 - m / 2;
-			this.font.draw(string, (float)n, 6.0F, 4210752);
-			this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 107.0F, (float)j, 4210752);
-			this.font.draw(string2, (float)(n + k + 3), 6.0F, 4210752);
+			int n = 49 + this.backgroundWidth / 2 - m / 2;
+			this.textRenderer.draw(string, (float)n, 6.0F, 4210752);
+			this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 107.0F, (float)j, 4210752);
+			this.textRenderer.draw(string2, (float)(n + k + 3), 6.0F, 4210752);
 		} else {
 			String string = this.title.asFormattedString();
-			this.font.draw(string, (float)(49 + this.containerWidth / 2 - this.font.getStringWidth(string) / 2), 6.0F, 4210752);
-			this.font.draw(this.playerInventory.getDisplayName().asFormattedString(), 107.0F, (float)j, 4210752);
+			this.textRenderer.draw(string, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getStringWidth(string) / 2), 6.0F, 4210752);
+			this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 107.0F, (float)j, 4210752);
 		}
 
 		String string = I18n.translate("merchant.trades");
-		int o = this.font.getStringWidth(string);
-		this.font.draw(string, (float)(5 - o / 2 + 48), 6.0F, 4210752);
+		int o = this.textRenderer.getStringWidth(string);
+		this.textRenderer.draw(string, (float)(5 - o / 2 + 48), 6.0F, 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float delta, int mouseX, int mouseY) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
-		int i = (this.width - this.containerWidth) / 2;
-		int j = (this.height - this.containerHeight) / 2;
-		blit(i, j, this.getBlitOffset(), 0.0F, 0.0F, this.containerWidth, this.containerHeight, 256, 512);
-		TraderOfferList traderOfferList = this.container.getRecipes();
+		this.client.getTextureManager().bindTexture(TEXTURE);
+		int i = (this.width - this.backgroundWidth) / 2;
+		int j = (this.height - this.backgroundHeight) / 2;
+		blit(i, j, this.getZOffset(), 0.0F, 0.0F, this.backgroundWidth, this.backgroundHeight, 256, 512);
+		TraderOfferList traderOfferList = this.handler.getRecipes();
 		if (!traderOfferList.isEmpty()) {
 			int k = this.selectedIndex;
 			if (k < 0 || k >= traderOfferList.size()) {
@@ -94,29 +94,29 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 
 			TradeOffer tradeOffer = (TradeOffer)traderOfferList.get(k);
 			if (tradeOffer.isDisabled()) {
-				this.minecraft.getTextureManager().bindTexture(TEXTURE);
+				this.client.getTextureManager().bindTexture(TEXTURE);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				blit(this.x + 83 + 99, this.y + 35, this.getBlitOffset(), 311.0F, 0.0F, 28, 21, 256, 512);
+				blit(this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0F, 0.0F, 28, 21, 256, 512);
 			}
 		}
 	}
 
 	private void drawLevelInfo(int i, int j, TradeOffer tradeOffer) {
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
-		int k = this.container.getLevelProgress();
-		int l = this.container.getExperience();
+		this.client.getTextureManager().bindTexture(TEXTURE);
+		int k = this.handler.getLevelProgress();
+		int l = this.handler.getExperience();
 		if (k < 5) {
-			blit(i + 136, j + 16, this.getBlitOffset(), 0.0F, 186.0F, 102, 5, 256, 512);
+			blit(i + 136, j + 16, this.getZOffset(), 0.0F, 186.0F, 102, 5, 256, 512);
 			int m = VillagerData.getLowerLevelExperience(k);
 			if (l >= m && VillagerData.canLevelUp(k)) {
 				int n = 100;
 				float f = (float)(100 / (VillagerData.getUpperLevelExperience(k) - m));
 				int o = Math.min(MathHelper.floor(f * (float)(l - m)), 100);
-				blit(i + 136, j + 16, this.getBlitOffset(), 0.0F, 191.0F, o + 1, 5, 256, 512);
-				int p = this.container.getTraderRewardedExperience();
+				blit(i + 136, j + 16, this.getZOffset(), 0.0F, 191.0F, o + 1, 5, 256, 512);
+				int p = this.handler.getTraderRewardedExperience();
 				if (p > 0) {
 					int q = Math.min(MathHelper.floor((float)p * f), 100 - o);
-					blit(i + 136 + o + 1, j + 16 + 1, this.getBlitOffset(), 2.0F, 182.0F, q, 3, 256, 512);
+					blit(i + 136 + o + 1, j + 16 + 1, this.getZOffset(), 2.0F, 182.0F, q, 3, 256, 512);
 				}
 			}
 		}
@@ -133,9 +133,9 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 				o = 113;
 			}
 
-			blit(i + 94, j + 18 + o, this.getBlitOffset(), 0.0F, 199.0F, 6, 27, 256, 512);
+			blit(i + 94, j + 18 + o, this.getZOffset(), 0.0F, 199.0F, 6, 27, 256, 512);
 		} else {
-			blit(i + 94, j + 18, this.getBlitOffset(), 6.0F, 199.0F, 6, 27, 256, 512);
+			blit(i + 94, j + 18, this.getZOffset(), 6.0F, 199.0F, 6, 27, 256, 512);
 		}
 	}
 
@@ -143,15 +143,15 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
 		super.render(mouseX, mouseY, delta);
-		TraderOfferList traderOfferList = this.container.getRecipes();
+		TraderOfferList traderOfferList = this.handler.getRecipes();
 		if (!traderOfferList.isEmpty()) {
-			int i = (this.width - this.containerWidth) / 2;
-			int j = (this.height - this.containerHeight) / 2;
+			int i = (this.width - this.backgroundWidth) / 2;
+			int j = (this.height - this.backgroundHeight) / 2;
 			int k = j + 16 + 1;
 			int l = i + 5 + 5;
 			RenderSystem.pushMatrix();
 			RenderSystem.enableRescaleNormal();
-			this.minecraft.getTextureManager().bindTexture(TEXTURE);
+			this.client.getTextureManager().bindTexture(TEXTURE);
 			this.method_20221(i, j, traderOfferList);
 			int m = 0;
 
@@ -166,12 +166,12 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 					this.method_20222(itemStack2, itemStack, l, n);
 					if (!itemStack3.isEmpty()) {
 						this.itemRenderer.renderGuiItem(itemStack3, i + 5 + 35, n);
-						this.itemRenderer.renderGuiItemOverlay(this.font, itemStack3, i + 5 + 35, n);
+						this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack3, i + 5 + 35, n);
 					}
 
 					this.method_20223(tradeOffer, i, n);
 					this.itemRenderer.renderGuiItem(itemStack4, i + 5 + 68, n);
-					this.itemRenderer.renderGuiItemOverlay(this.font, itemStack4, i + 5 + 68, n);
+					this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack4, i + 5 + 68, n);
 					this.itemRenderer.zOffset = 0.0F;
 					k += 20;
 					m++;
@@ -182,11 +182,11 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 
 			int o = this.selectedIndex;
 			TradeOffer tradeOfferx = (TradeOffer)traderOfferList.get(o);
-			if (this.container.isLevelled()) {
+			if (this.handler.isLevelled()) {
 				this.drawLevelInfo(i, j, tradeOfferx);
 			}
 
-			if (tradeOfferx.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, (double)mouseX, (double)mouseY) && this.container.canRefreshTrades()) {
+			if (tradeOfferx.isDisabled() && this.isPointWithinBounds(186, 35, 22, 21, (double)mouseX, (double)mouseY) && this.handler.canRefreshTrades()) {
 				this.renderTooltip(I18n.translate("merchant.deprecated"), mouseX, mouseY);
 			}
 
@@ -195,7 +195,7 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 					widgetButtonPage.renderToolTip(mouseX, mouseY);
 				}
 
-				widgetButtonPage.visible = widgetButtonPage.index < this.container.getRecipes().size();
+				widgetButtonPage.visible = widgetButtonPage.index < this.handler.getRecipes().size();
 			}
 
 			RenderSystem.popMatrix();
@@ -207,25 +207,25 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 
 	private void method_20223(TradeOffer tradeOffer, int i, int j) {
 		RenderSystem.enableBlend();
-		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		this.client.getTextureManager().bindTexture(TEXTURE);
 		if (tradeOffer.isDisabled()) {
-			blit(i + 5 + 35 + 20, j + 3, this.getBlitOffset(), 25.0F, 171.0F, 10, 9, 256, 512);
+			blit(i + 5 + 35 + 20, j + 3, this.getZOffset(), 25.0F, 171.0F, 10, 9, 256, 512);
 		} else {
-			blit(i + 5 + 35 + 20, j + 3, this.getBlitOffset(), 15.0F, 171.0F, 10, 9, 256, 512);
+			blit(i + 5 + 35 + 20, j + 3, this.getZOffset(), 15.0F, 171.0F, 10, 9, 256, 512);
 		}
 	}
 
 	private void method_20222(ItemStack itemStack, ItemStack itemStack2, int i, int j) {
 		this.itemRenderer.renderGuiItem(itemStack, i, j);
 		if (itemStack2.getCount() == itemStack.getCount()) {
-			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i, j);
+			this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i, j);
 		} else {
-			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack2, i, j, itemStack2.getCount() == 1 ? "1" : null);
-			this.itemRenderer.renderGuiItemOverlay(this.font, itemStack, i + 14, j, itemStack.getCount() == 1 ? "1" : null);
-			this.minecraft.getTextureManager().bindTexture(TEXTURE);
-			this.setBlitOffset(this.getBlitOffset() + 300);
-			blit(i + 7, j + 12, this.getBlitOffset(), 0.0F, 176.0F, 9, 2, 256, 512);
-			this.setBlitOffset(this.getBlitOffset() - 300);
+			this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack2, i, j, itemStack2.getCount() == 1 ? "1" : null);
+			this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i + 14, j, itemStack.getCount() == 1 ? "1" : null);
+			this.client.getTextureManager().bindTexture(TEXTURE);
+			this.setZOffset(this.getZOffset() + 300);
+			blit(i + 7, j + 12, this.getZOffset(), 0.0F, 176.0F, 9, 2, 256, 512);
+			this.setZOffset(this.getZOffset() - 300);
 		}
 	}
 
@@ -234,8 +234,8 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 	}
 
 	@Override
-	public boolean mouseScrolled(double d, double e, double amount) {
-		int i = this.container.getRecipes().size();
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		int i = this.handler.getRecipes().size();
 		if (this.canScroll(i)) {
 			int j = i - 7;
 			this.indexStartOffset = (int)((double)this.indexStartOffset - amount);
@@ -247,7 +247,7 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		int i = this.container.getRecipes().size();
+		int i = this.handler.getRecipes().size();
 		if (this.scrolling) {
 			int j = this.y + 18;
 			int k = j + 139;
@@ -264,9 +264,9 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		this.scrolling = false;
-		int i = (this.width - this.containerWidth) / 2;
-		int j = (this.height - this.containerHeight) / 2;
-		if (this.canScroll(this.container.getRecipes().size())
+		int i = (this.width - this.backgroundWidth) / 2;
+		int j = (this.height - this.backgroundHeight) / 2;
+		if (this.canScroll(this.handler.getRecipes().size())
 			&& mouseX > (double)(i + 94)
 			&& mouseX < (double)(i + 94 + 6)
 			&& mouseY > (double)(j + 18)
@@ -293,18 +293,18 @@ public class MerchantScreen extends ContainerScreen<MerchantContainer> {
 
 		@Override
 		public void renderToolTip(int mouseX, int mouseY) {
-			if (this.isHovered && MerchantScreen.this.container.getRecipes().size() > this.index + MerchantScreen.this.indexStartOffset) {
+			if (this.hovered && MerchantScreen.this.handler.getRecipes().size() > this.index + MerchantScreen.this.indexStartOffset) {
 				if (mouseX < this.x + 20) {
-					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset))
+					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset))
 						.getAdjustedFirstBuyItem();
 					MerchantScreen.this.renderTooltip(itemStack, mouseX, mouseY);
 				} else if (mouseX < this.x + 50 && mouseX > this.x + 30) {
-					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getSecondBuyItem();
+					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getSecondBuyItem();
 					if (!itemStack.isEmpty()) {
 						MerchantScreen.this.renderTooltip(itemStack, mouseX, mouseY);
 					}
 				} else if (mouseX > this.x + 65) {
-					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.container.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getMutableSellItem();
+					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getMutableSellItem();
 					MerchantScreen.this.renderTooltip(itemStack, mouseX, mouseY);
 				}
 			}

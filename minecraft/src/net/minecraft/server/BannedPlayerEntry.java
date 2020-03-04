@@ -23,6 +23,15 @@ public class BannedPlayerEntry extends BanEntry<GameProfile> {
 	}
 
 	@Override
+	protected void method_24896(JsonObject jsonObject) {
+		if (this.getKey() != null) {
+			jsonObject.addProperty("uuid", this.getKey().getId() == null ? "" : this.getKey().getId().toString());
+			jsonObject.addProperty("name", this.getKey().getName());
+			super.method_24896(jsonObject);
+		}
+	}
+
+	@Override
 	public Text toText() {
 		GameProfile gameProfile = this.getKey();
 		return new LiteralText(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));

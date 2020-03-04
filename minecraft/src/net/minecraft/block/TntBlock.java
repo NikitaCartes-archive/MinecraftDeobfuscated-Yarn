@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -101,13 +102,12 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
-		if (!world.isClient && entity instanceof ProjectileEntity) {
-			ProjectileEntity projectileEntity = (ProjectileEntity)entity;
-			Entity entity2 = projectileEntity.getOwner();
-			if (projectileEntity.isOnFire()) {
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
+		if (!world.isClient && projectile instanceof ProjectileEntity) {
+			Entity entity = projectile.getOwner();
+			if (projectile.isOnFire()) {
 				BlockPos blockPos = hitResult.getBlockPos();
-				primeTnt(world, blockPos, entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null);
+				primeTnt(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
 				world.removeBlock(blockPos, false);
 			}
 		}

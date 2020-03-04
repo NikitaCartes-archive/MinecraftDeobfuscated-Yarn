@@ -66,8 +66,8 @@ public class NetherPortalBlock extends Block {
 		}
 	}
 
-	public boolean createPortalAt(IWorld world, BlockPos pos) {
-		NetherPortalBlock.AreaHelper areaHelper = this.createAreaHelper(world, pos);
+	public static boolean createPortalAt(IWorld iWorld, BlockPos blockPos) {
+		NetherPortalBlock.AreaHelper areaHelper = createAreaHelper(iWorld, blockPos);
 		if (areaHelper != null) {
 			areaHelper.createPortal();
 			return true;
@@ -77,12 +77,12 @@ public class NetherPortalBlock extends Block {
 	}
 
 	@Nullable
-	public NetherPortalBlock.AreaHelper createAreaHelper(IWorld world, BlockPos pos) {
-		NetherPortalBlock.AreaHelper areaHelper = new NetherPortalBlock.AreaHelper(world, pos, Direction.Axis.X);
+	public static NetherPortalBlock.AreaHelper createAreaHelper(IWorld iWorld, BlockPos blockPos) {
+		NetherPortalBlock.AreaHelper areaHelper = new NetherPortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.X);
 		if (areaHelper.isValid() && areaHelper.foundPortalBlocks == 0) {
 			return areaHelper;
 		} else {
-			NetherPortalBlock.AreaHelper areaHelper2 = new NetherPortalBlock.AreaHelper(world, pos, Direction.Axis.Z);
+			NetherPortalBlock.AreaHelper areaHelper2 = new NetherPortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.Z);
 			return areaHelper2.isValid() && areaHelper2.foundPortalBlocks == 0 ? areaHelper2 : null;
 		}
 	}

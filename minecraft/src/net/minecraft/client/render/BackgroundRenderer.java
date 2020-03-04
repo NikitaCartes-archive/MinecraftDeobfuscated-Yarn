@@ -156,7 +156,7 @@ public class BackgroundRenderer {
 			float vx = 0.0F;
 			if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
 				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
-				vx = clientPlayerEntity.method_3140();
+				vx = clientPlayerEntity.getUnderwaterVisibility();
 			}
 
 			float wx = Math.min(1.0F / red, Math.min(1.0F / green, 1.0F / blue));
@@ -189,8 +189,8 @@ public class BackgroundRenderer {
 				f = 0.05F;
 				if (entity instanceof ClientPlayerEntity) {
 					ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
-					f -= clientPlayerEntity.method_3140() * clientPlayerEntity.method_3140() * 0.03F;
-					Biome biome = clientPlayerEntity.world.getBiome(new BlockPos(clientPlayerEntity));
+					f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F;
+					Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getSenseCenterPos());
 					if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
 						f += 0.005F;
 					}

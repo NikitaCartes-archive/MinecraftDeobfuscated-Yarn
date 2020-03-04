@@ -1490,7 +1490,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public ServerCommandSource getCommandSource() {
 		return new ServerCommandSource(
 			this,
-			this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : new Vec3d(this.getWorld(DimensionType.OVERWORLD).getSpawnPos()),
+			this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : Vec3d.method_24954(this.getWorld(DimensionType.OVERWORLD).getSpawnPos()),
 			Vec2f.ZERO,
 			this.getWorld(DimensionType.OVERWORLD),
 			4,

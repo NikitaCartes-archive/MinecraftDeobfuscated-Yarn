@@ -8,6 +8,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
@@ -32,7 +33,7 @@ import net.minecraft.world.WorldView;
 
 public class BellBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-	private static final EnumProperty<Attachment> ATTACHMENT = Properties.ATTACHMENT;
+	public static final EnumProperty<Attachment> ATTACHMENT = Properties.ATTACHMENT;
 	public static final BooleanProperty field_20648 = Properties.POWERED;
 	private static final VoxelShape NORTH_SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 4.0, 16.0, 16.0, 12.0);
 	private static final VoxelShape EAST_WEST_SHAPE = Block.createCuboidShape(4.0, 0.0, 0.0, 12.0, 16.0, 16.0);
@@ -67,10 +68,10 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Entity entity) {
-		if (entity instanceof ProjectileEntity) {
-			Entity entity2 = ((ProjectileEntity)entity).getOwner();
-			PlayerEntity playerEntity = entity2 instanceof PlayerEntity ? (PlayerEntity)entity2 : null;
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
+		if (projectile instanceof ProjectileEntity) {
+			Entity entity = projectile.getOwner();
+			PlayerEntity playerEntity = entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
 			this.ring(world, state, hitResult, playerEntity, true);
 		}
 	}

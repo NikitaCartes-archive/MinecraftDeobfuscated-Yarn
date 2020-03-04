@@ -34,7 +34,7 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 				150,
 				20,
 				I18n.translate("resourcePack.openFolder"),
-				buttonWidget -> Util.getOperatingSystem().open(this.minecraft.getResourcePackDir())
+				buttonWidget -> Util.getOperatingSystem().open(this.client.getResourcePackDir())
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
@@ -46,7 +46,7 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 				}
 
 				Collections.reverse(listx);
-				this.minecraft.getResourcePackManager().setEnabledProfiles(listx);
+				this.client.getResourcePackManager().setEnabledProfiles(listx);
 				this.gameOptions.resourcePacks.clear();
 				this.gameOptions.incompatibleResourcePacks.clear();
 
@@ -60,22 +60,22 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 				}
 
 				this.gameOptions.write();
-				this.minecraft.openScreen(this.parent);
-				this.minecraft.reloadResources();
+				this.client.openScreen(this.parent);
+				this.client.reloadResources();
 			} else {
-				this.minecraft.openScreen(this.parent);
+				this.client.openScreen(this.parent);
 			}
 		}));
 		AvailableResourcePackListWidget availableResourcePackListWidget = this.availablePacks;
 		SelectedResourcePackListWidget selectedResourcePackListWidget = this.enabledPacks;
-		this.availablePacks = new AvailableResourcePackListWidget(this.minecraft, 200, this.height);
+		this.availablePacks = new AvailableResourcePackListWidget(this.client, 200, this.height);
 		this.availablePacks.setLeftPos(this.width / 2 - 4 - 200);
 		if (availableResourcePackListWidget != null) {
 			this.availablePacks.children().addAll(availableResourcePackListWidget.children());
 		}
 
 		this.children.add(this.availablePacks);
-		this.enabledPacks = new SelectedResourcePackListWidget(this.minecraft, 200, this.height);
+		this.enabledPacks = new SelectedResourcePackListWidget(this.client, 200, this.height);
 		this.enabledPacks.setLeftPos(this.width / 2 + 4);
 		if (selectedResourcePackListWidget != null) {
 			selectedResourcePackListWidget.children().forEach(resourcePackEntry -> {
@@ -88,7 +88,7 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 		if (!this.dirty) {
 			this.availablePacks.children().clear();
 			this.enabledPacks.children().clear();
-			ResourcePackManager<ClientResourcePackProfile> resourcePackManager = this.minecraft.getResourcePackManager();
+			ResourcePackManager<ClientResourcePackProfile> resourcePackManager = this.client.getResourcePackManager();
 			resourcePackManager.scanPacks();
 			List<ClientResourcePackProfile> list = Lists.<ClientResourcePackProfile>newArrayList(resourcePackManager.getProfiles());
 			list.removeAll(resourcePackManager.getEnabledProfiles());
@@ -124,8 +124,8 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 		this.renderDirtBackground(0);
 		this.availablePacks.render(mouseX, mouseY, delta);
 		this.enabledPacks.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.font, this.title.asFormattedString(), this.width / 2, 16, 16777215);
-		this.drawCenteredString(this.font, I18n.translate("resourcePack.folderInfo"), this.width / 2 - 77, this.height - 26, 8421504);
+		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 16, 16777215);
+		this.drawCenteredString(this.textRenderer, I18n.translate("resourcePack.folderInfo"), this.width / 2 - 77, this.height - 26, 8421504);
 		super.render(mouseX, mouseY, delta);
 	}
 

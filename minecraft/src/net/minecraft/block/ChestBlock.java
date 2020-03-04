@@ -13,9 +13,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
-import net.minecraft.container.Container;
-import net.minecraft.container.GenericContainer;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
@@ -28,6 +25,9 @@ import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -74,17 +74,17 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			return Optional.empty();
 		}
 	};
-	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableContainerFactory>>() {
-		public Optional<NameableContainerFactory> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableScreenHandlerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableScreenHandlerFactory>>() {
+		public Optional<NameableScreenHandlerFactory> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			final Inventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
-			return Optional.of(new NameableContainerFactory() {
+			return Optional.of(new NameableScreenHandlerFactory() {
 				@Nullable
 				@Override
-				public Container createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+				public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 					if (chestBlockEntity.checkUnlocked(playerEntity) && chestBlockEntity2.checkUnlocked(playerEntity)) {
 						chestBlockEntity.checkLootInteraction(playerInventory.player);
 						chestBlockEntity2.checkLootInteraction(playerInventory.player);
-						return GenericContainer.createGeneric9x6(syncId, playerInventory, inventory);
+						return GenericContainerScreenHandler.createGeneric9x6(i, playerInventory, inventory);
 					} else {
 						return null;
 					}
@@ -101,11 +101,11 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			});
 		}
 
-		public Optional<NameableContainerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
+		public Optional<NameableScreenHandlerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
 			return Optional.of(chestBlockEntity);
 		}
 
-		public Optional<NameableContainerFactory> getFallback() {
+		public Optional<NameableScreenHandlerFactory> getFallback() {
 			return Optional.empty();
 		}
 	};
@@ -229,7 +229,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof Inventory) {
 				ItemScatterer.spawn(world, pos, (Inventory)blockEntity);
-				world.updateHorizontalAdjacent(pos, this);
+				world.updateComparators(pos, this);
 			}
 
 			super.onBlockRemoved(state, world, pos, newState, moved);
@@ -241,9 +241,9 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			NameableContainerFactory nameableContainerFactory = this.createContainerFactory(state, world, pos);
-			if (nameableContainerFactory != null) {
-				player.openContainer(nameableContainerFactory);
+			NameableScreenHandlerFactory nameableScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
+			if (nameableScreenHandlerFactory != null) {
+				player.openHandledScreen(nameableScreenHandlerFactory);
 				player.incrementStat(this.getOpenStat());
 				PiglinBrain.onGoldBlockBroken(player);
 			}
@@ -286,8 +286,8 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	@Nullable
 	@Override
-	public NameableContainerFactory createContainerFactory(BlockState state, World world, BlockPos pos) {
-		return (NameableContainerFactory)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
+	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return (NameableScreenHandlerFactory)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -346,7 +346,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return Container.calculateComparatorOutput(getInventory(this, state, world, pos, false));
+		return ScreenHandler.calculateComparatorOutput(getInventory(this, state, world, pos, false));
 	}
 
 	@Override

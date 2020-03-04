@@ -79,7 +79,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		tag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
 		if (this.converter != null) {
-			tag.putUuid("ConversionPlayer", this.converter);
+			tag.putUuidOld("ConversionPlayer", this.converter);
 		}
 
 		tag.putInt("Xp", this.xp);
@@ -101,7 +101,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		if (tag.contains("ConversionTime", 99) && tag.getInt("ConversionTime") > -1) {
-			this.setConverting(tag.containsUuid("ConversionPlayer") ? tag.getUuid("ConversionPlayer") : null, tag.getInt("ConversionTime"));
+			this.setConverting(tag.containsUuidOld("ConversionPlayer") ? tag.getUuidOld("ConversionPlayer") : null, tag.getInt("ConversionTime"));
 		}
 
 		if (tag.contains("Xp", 3)) {
@@ -214,7 +214,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		villagerEntity.setExperience(this.xp);
-		villagerEntity.initialize(world, world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.CONVERSION, null, null);
+		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getSenseCenterPos()), SpawnType.CONVERSION, null, null);
 		if (this.isBaby()) {
 			villagerEntity.setBreedingAge(-24000);
 		}
@@ -241,7 +241,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-		world.playLevelEvent(null, 1027, new BlockPos(this), 0);
+		world.playLevelEvent(null, 1027, this.getSenseCenterPos(), 0);
 	}
 
 	private int getConversionRate() {
@@ -310,7 +310,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Nullable
 	@Override
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(new BlockPos(this)))));
+		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getSenseCenterPos()))));
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
 

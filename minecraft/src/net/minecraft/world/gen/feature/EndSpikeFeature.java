@@ -19,7 +19,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.decoration.EnderCrystalEntity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -32,12 +32,12 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		.expireAfterWrite(5L, TimeUnit.MINUTES)
 		.build(new EndSpikeFeature.SpikeCache());
 
-	public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> configFactory) {
-		super(configFactory);
+	public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> function) {
+		super(function);
 	}
 
-	public static List<EndSpikeFeature.Spike> getSpikes(IWorld iWorld) {
-		Random random = new Random(iWorld.getSeed());
+	public static List<EndSpikeFeature.Spike> getSpikes(IWorld world) {
+		Random random = new Random(world.getSeed());
 		long l = random.nextLong() & 65535L;
 		return CACHE.getUnchecked(l);
 	}
@@ -101,13 +101,13 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			}
 		}
 
-		EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(world.getWorld());
-		enderCrystalEntity.setBeamTarget(config.getPos());
-		enderCrystalEntity.setInvulnerable(config.isCrystalInvulerable());
-		enderCrystalEntity.refreshPositionAndAngles(
+		EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.getWorld());
+		endCrystalEntity.setBeamTarget(config.getPos());
+		endCrystalEntity.setInvulnerable(config.isCrystalInvulerable());
+		endCrystalEntity.refreshPositionAndAngles(
 			(double)((float)spike.getCenterX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)spike.getCenterZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
 		);
-		world.spawnEntity(enderCrystalEntity);
+		world.spawnEntity(endCrystalEntity);
 		this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
 	}
 
@@ -156,14 +156,14 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			return this.boundingBox;
 		}
 
-		public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 			Builder<T, T> builder = ImmutableMap.builder();
-			builder.put(dynamicOps.createString("centerX"), dynamicOps.createInt(this.centerX));
-			builder.put(dynamicOps.createString("centerZ"), dynamicOps.createInt(this.centerZ));
-			builder.put(dynamicOps.createString("radius"), dynamicOps.createInt(this.radius));
-			builder.put(dynamicOps.createString("height"), dynamicOps.createInt(this.height));
-			builder.put(dynamicOps.createString("guarded"), dynamicOps.createBoolean(this.guarded));
-			return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build()));
+			builder.put(ops.createString("centerX"), ops.createInt(this.centerX));
+			builder.put(ops.createString("centerZ"), ops.createInt(this.centerZ));
+			builder.put(ops.createString("radius"), ops.createInt(this.radius));
+			builder.put(ops.createString("height"), ops.createInt(this.height));
+			builder.put(ops.createString("guarded"), ops.createBoolean(this.guarded));
+			return new Dynamic<>(ops, ops.createMap(builder.build()));
 		}
 
 		public static <T> EndSpikeFeature.Spike deserialize(Dynamic<T> dynamic) {

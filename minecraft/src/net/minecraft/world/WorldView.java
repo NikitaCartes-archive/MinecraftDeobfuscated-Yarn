@@ -121,21 +121,20 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		int l = MathHelper.ceil(box.y2);
 		int m = MathHelper.floor(box.z1);
 		int n = MathHelper.ceil(box.z2);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
-			for (int o = i; o < j; o++) {
-				for (int p = k; p < l; p++) {
-					for (int q = m; q < n; q++) {
-						BlockState blockState = this.getBlockState(pooledMutable.set(o, p, q));
-						if (!blockState.getFluidState().isEmpty()) {
-							return true;
-						}
+		for (int o = i; o < j; o++) {
+			for (int p = k; p < l; p++) {
+				for (int q = m; q < n; q++) {
+					BlockState blockState = this.getBlockState(mutable.set(o, p, q));
+					if (!blockState.getFluidState().isEmpty()) {
+						return true;
 					}
 				}
 			}
-
-			return false;
 		}
+
+		return false;
 	}
 
 	default int getLightLevel(BlockPos pos) {

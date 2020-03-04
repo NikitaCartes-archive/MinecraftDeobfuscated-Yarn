@@ -10,8 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.InventoryProvider;
-import net.minecraft.container.Container;
-import net.minecraft.container.HopperContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,6 +19,8 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.screen.HopperScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BooleanBiFunction;
@@ -411,7 +411,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return new HopperContainer(i, playerInventory, this);
+	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
+		return new HopperScreenHandler(i, playerInventory, this);
 	}
 }

@@ -10,8 +10,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class SpringFeature extends Feature<SpringFeatureConfig> {
-	public SpringFeature(Function<Dynamic<?>, ? extends SpringFeatureConfig> configFactory) {
-		super(configFactory);
+	public SpringFeature(Function<Dynamic<?>, ? extends SpringFeatureConfig> function) {
+		super(function);
 	}
 
 	public boolean generate(

@@ -35,12 +35,12 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < randomPatchFeatureConfig.tries; j++) {
-			mutable.set(blockPos2)
-				.setOffset(
-					random.nextInt(randomPatchFeatureConfig.spreadX + 1) - random.nextInt(randomPatchFeatureConfig.spreadX + 1),
-					random.nextInt(randomPatchFeatureConfig.spreadY + 1) - random.nextInt(randomPatchFeatureConfig.spreadY + 1),
-					random.nextInt(randomPatchFeatureConfig.spreadZ + 1) - random.nextInt(randomPatchFeatureConfig.spreadZ + 1)
-				);
+			mutable.setOffset(
+				blockPos2,
+				random.nextInt(randomPatchFeatureConfig.spreadX + 1) - random.nextInt(randomPatchFeatureConfig.spreadX + 1),
+				random.nextInt(randomPatchFeatureConfig.spreadY + 1) - random.nextInt(randomPatchFeatureConfig.spreadY + 1),
+				random.nextInt(randomPatchFeatureConfig.spreadZ + 1) - random.nextInt(randomPatchFeatureConfig.spreadZ + 1)
+			);
 			BlockPos blockPos3 = mutable.down();
 			BlockState blockState2 = iWorld.getBlockState(blockPos3);
 			if ((iWorld.isAir(mutable) || randomPatchFeatureConfig.canReplace && iWorld.getBlockState(mutable).getMaterial().isReplaceable())

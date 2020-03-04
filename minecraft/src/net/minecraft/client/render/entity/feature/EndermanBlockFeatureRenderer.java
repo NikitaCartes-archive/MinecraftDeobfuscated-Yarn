@@ -13,8 +13,8 @@ import net.minecraft.entity.mob.EndermanEntity;
 
 @Environment(EnvType.CLIENT)
 public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
-	public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> context) {
-		super(context);
+	public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> featureRendererContext) {
+		super(featureRendererContext);
 	}
 
 	public void render(

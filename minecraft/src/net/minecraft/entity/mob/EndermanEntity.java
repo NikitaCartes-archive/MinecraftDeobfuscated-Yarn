@@ -213,7 +213,7 @@ public class EndermanEntity extends HostileEntity {
 
 		if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600) {
 			float f = this.getBrightnessAtEyes();
-			if (f > 0.5F && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
+			if (f > 0.5F && this.world.isSkyVisible(this.getSenseCenterPos()) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
 				this.setTarget(null);
 				this.teleportRandomly();
 			}
@@ -303,14 +303,7 @@ public class EndermanEntity extends HostileEntity {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (!(source instanceof ProjectileDamageSource) && source != DamageSource.FIREWORKS) {
-			boolean bl = super.damage(source, amount);
-			if (!this.world.isClient() && source.bypassesArmor() && this.random.nextInt(10) != 0) {
-				this.teleportRandomly();
-			}
-
-			return bl;
-		} else {
+		} else if (source instanceof ProjectileDamageSource) {
 			for (int i = 0; i < 64; i++) {
 				if (this.teleportRandomly()) {
 					return true;
@@ -318,6 +311,13 @@ public class EndermanEntity extends HostileEntity {
 			}
 
 			return false;
+		} else {
+			boolean bl = super.damage(source, amount);
+			if (!this.world.isClient() && source.bypassesArmor() && this.random.nextInt(10) != 0) {
+				this.teleportRandomly();
+			}
+
+			return bl;
 		}
 	}
 

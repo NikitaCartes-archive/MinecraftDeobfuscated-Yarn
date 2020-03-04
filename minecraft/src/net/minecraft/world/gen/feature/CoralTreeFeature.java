@@ -12,13 +12,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class CoralTreeFeature extends CoralFeature {
-	public CoralTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> configFactory) {
-		super(configFactory);
+	public CoralTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
+		super(function);
 	}
 
 	@Override
 	protected boolean spawnCoral(IWorld world, Random random, BlockPos pos, BlockState state) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(pos);
+		BlockPos.Mutable mutable = pos.mutableCopy();
 		int i = random.nextInt(3) + 1;
 
 		for (int j = 0; j < i; j++) {
