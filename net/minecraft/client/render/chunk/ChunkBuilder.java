@@ -296,7 +296,7 @@ public class ChunkBuilder {
             this.origin.set(x, y, z);
             this.boundingBox = new Box(x, y, z, x + 16, y + 16, z + 16);
             for (Direction direction : Direction.values()) {
-                this.neighborPositions[direction.ordinal()].set(this.origin).setOffset(direction, 16);
+                this.neighborPositions[direction.ordinal()].set(this.origin).move(direction, 16);
             }
         }
 

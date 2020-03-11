@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -14,10 +13,11 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -245,7 +245,7 @@ extends BlockWithEntity {
 
     @Override
     @Nullable
-    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         if (!state.get(HAS_BOOK).booleanValue()) {
             return null;
         }
@@ -261,7 +261,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         return false;
     }
 }

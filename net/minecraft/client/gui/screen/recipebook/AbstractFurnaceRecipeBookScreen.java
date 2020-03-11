@@ -18,7 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -83,7 +83,7 @@ extends RecipeBookWidget {
     public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
         ItemStack itemStack = recipe.getOutput();
         this.ghostSlots.setRecipe(recipe);
-        this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)2).xPosition, slots.get((int)2).yPosition);
+        this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)2).x, slots.get((int)2).y);
         DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
         this.outputSlot = slots.get(1);
         if (this.fuels == null) {
@@ -99,7 +99,7 @@ extends RecipeBookWidget {
             Ingredient ingredient = (Ingredient)iterator.next();
             if (ingredient.isEmpty()) continue;
             Slot slot = slots.get(i);
-            this.ghostSlots.addSlot(ingredient, slot.xPosition, slot.yPosition);
+            this.ghostSlots.addSlot(ingredient, slot.x, slot.y);
         }
     }
 
@@ -114,8 +114,8 @@ extends RecipeBookWidget {
         if (!Screen.hasControlDown()) {
             this.frameTime += lastFrameDuration;
         }
-        int i = this.outputSlot.xPosition + left;
-        int j = this.outputSlot.yPosition + top;
+        int i = this.outputSlot.x + left;
+        int j = this.outputSlot.y + top;
         DrawableHelper.fill(i, j, i + 16, j + 16, 0x30FF0000);
         this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), i, j);
         RenderSystem.depthFunc(516);

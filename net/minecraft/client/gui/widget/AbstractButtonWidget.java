@@ -111,8 +111,8 @@ Element {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        this.blit(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-        this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+        this.drawTexture(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+        this.drawTexture(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
         this.renderBg(minecraftClient, mouseX, mouseY);
         int j = this.active ? 0xFFFFFF : 0xA0A0A0;
         this.drawCenteredString(textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0f) << 24);

@@ -13,27 +13,27 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class ShulkerBulletEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
-    private final ModelPart field_3556;
+    private final ModelPart bullet;
 
     public ShulkerBulletEntityModel() {
         this.textureWidth = 64;
         this.textureHeight = 32;
-        this.field_3556 = new ModelPart(this);
-        this.field_3556.setTextureOffset(0, 0).addCuboid(-4.0f, -4.0f, -1.0f, 8.0f, 8.0f, 2.0f, 0.0f);
-        this.field_3556.setTextureOffset(0, 10).addCuboid(-1.0f, -4.0f, -4.0f, 2.0f, 8.0f, 8.0f, 0.0f);
-        this.field_3556.setTextureOffset(20, 0).addCuboid(-4.0f, -1.0f, -4.0f, 8.0f, 2.0f, 8.0f, 0.0f);
-        this.field_3556.setPivot(0.0f, 0.0f, 0.0f);
+        this.bullet = new ModelPart(this);
+        this.bullet.setTextureOffset(0, 0).addCuboid(-4.0f, -4.0f, -1.0f, 8.0f, 8.0f, 2.0f, 0.0f);
+        this.bullet.setTextureOffset(0, 10).addCuboid(-1.0f, -4.0f, -4.0f, 2.0f, 8.0f, 8.0f, 0.0f);
+        this.bullet.setTextureOffset(20, 0).addCuboid(-4.0f, -1.0f, -4.0f, 8.0f, 2.0f, 8.0f, 0.0f);
+        this.bullet.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.field_3556);
+        return ImmutableList.of(this.bullet);
     }
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
-        this.field_3556.yaw = headYaw * ((float)Math.PI / 180);
-        this.field_3556.pitch = headPitch * ((float)Math.PI / 180);
+        this.bullet.yaw = headYaw * ((float)Math.PI / 180);
+        this.bullet.pitch = headPitch * ((float)Math.PI / 180);
     }
 }
 

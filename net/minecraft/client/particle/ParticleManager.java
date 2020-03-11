@@ -64,6 +64,7 @@ import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.particle.RainSplashParticle;
 import net.minecraft.client.particle.RedDustParticle;
+import net.minecraft.client.particle.SoulParticle;
 import net.minecraft.client.particle.SpellParticle;
 import net.minecraft.client.particle.SpitParticle;
 import net.minecraft.client.particle.SpriteProvider;
@@ -162,6 +163,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
         this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
         this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);
+        this.registerFactory(ParticleTypes.SOUL, SoulParticle.Factory::new);
         this.registerFactory(ParticleTypes.SOUL_FIRE_FLAME, FlameParticle.Factory::new);
         this.registerFactory(ParticleTypes.FLASH, FireworksSparkParticle.FlashFactory::new);
         this.registerFactory(ParticleTypes.HAPPY_VILLAGER, SuspendParticle.HappyVillagerFactory::new);

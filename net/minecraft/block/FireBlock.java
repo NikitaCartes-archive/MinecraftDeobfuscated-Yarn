@@ -163,7 +163,7 @@ extends AbstractFireBlock {
                     if (n > 1) {
                         o += (n - 1) * 100;
                     }
-                    mutable.setOffset(pos, l, n, m);
+                    mutable.set(pos, l, n, m);
                     int p = this.getBurnChance(world, mutable);
                     if (p <= 0) continue;
                     int q = (p + 40 + world.getDifficulty().getId() * 7) / (i + 30);

@@ -12,7 +12,7 @@ import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
 import net.minecraft.structure.rule.RuleTest;
-import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 

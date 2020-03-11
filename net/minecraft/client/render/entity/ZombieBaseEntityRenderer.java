@@ -16,16 +16,16 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends ZombieEntityModel<T>>
 extends BipedEntityRenderer<T, M> {
-    private static final Identifier SKIN = new Identifier("textures/entity/zombie/zombie.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/zombie.png");
 
-    protected ZombieBaseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M zombieEntityModel, M zombieEntityModel2, M zombieEntityModel3) {
-        super(entityRenderDispatcher, zombieEntityModel, 0.5f);
+    protected ZombieBaseEntityRenderer(EntityRenderDispatcher dispatcher, M zombieEntityModel, M zombieEntityModel2, M zombieEntityModel3) {
+        super(dispatcher, zombieEntityModel, 0.5f);
         this.addFeature(new ArmorBipedFeatureRenderer(this, zombieEntityModel2, zombieEntityModel3));
     }
 
     @Override
     public Identifier getTexture(ZombieEntity zombieEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

@@ -37,7 +37,7 @@ extends ButtonWidget {
         if (!this.isNextPageButton) {
             j += 13;
         }
-        this.blit(this.x, this.y, i, j, 23, 13);
+        this.drawTexture(this.x, this.y, i, j, 23, 13);
     }
 
     @Override

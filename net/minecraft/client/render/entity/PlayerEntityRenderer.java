@@ -48,8 +48,8 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         this(entityRenderDispatcher, false);
     }
 
-    public PlayerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, boolean bl) {
-        super(entityRenderDispatcher, new PlayerEntityModel(0.0f, bl), 0.5f);
+    public PlayerEntityRenderer(EntityRenderDispatcher dispatcher, boolean bl) {
+        super(dispatcher, new PlayerEntityModel(0.0f, bl), 0.5f);
         this.addFeature(new ArmorBipedFeatureRenderer(this, new BipedEntityModel(0.5f), new BipedEntityModel(1.0f)));
         this.addFeature(new HeldItemFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
         this.addFeature(new StuckArrowsFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
@@ -153,7 +153,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
     protected void renderLabelIfPresent(AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         Scoreboard scoreboard;
         ScoreboardObjective scoreboardObjective;
-        double d = this.renderManager.getSquaredDistanceToCamera(abstractClientPlayerEntity);
+        double d = this.dispatcher.getSquaredDistanceToCamera(abstractClientPlayerEntity);
         matrixStack.push();
         if (d < 100.0 && (scoreboardObjective = (scoreboard = abstractClientPlayerEntity.getScoreboard()).getObjectiveForSlot(2)) != null) {
             ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);

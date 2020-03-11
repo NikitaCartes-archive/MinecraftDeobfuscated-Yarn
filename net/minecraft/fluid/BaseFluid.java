@@ -64,7 +64,7 @@ extends Fluid {
         double e = 0.0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.Type.HORIZONTAL) {
-            mutable.move(pos, direction);
+            mutable.set(pos, direction);
             FluidState fluidState = world.getFluidState(mutable);
             if (!this.method_15748(fluidState)) continue;
             float f = fluidState.getHeight();
@@ -85,7 +85,7 @@ extends Fluid {
         Vec3d vec3d = new Vec3d(d, 0.0, e);
         if (state.get(FALLING).booleanValue()) {
             for (Direction direction2 : Direction.Type.HORIZONTAL) {
-                mutable.move(pos, direction2);
+                mutable.set(pos, direction2);
                 if (!this.method_15749(world, mutable, direction2) && !this.method_15749(world, mutable.up(), direction2)) continue;
                 vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
                 break;

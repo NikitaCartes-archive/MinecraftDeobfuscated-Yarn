@@ -39,63 +39,63 @@ public class PathMinHeap {
         return pathNode;
     }
 
-    public void setNodeWeight(PathNode node, float f) {
-        float g = node.heapWeight;
-        node.heapWeight = f;
-        if (f < g) {
+    public void setNodeWeight(PathNode node, float weight) {
+        float f = node.heapWeight;
+        node.heapWeight = weight;
+        if (weight < f) {
             this.shiftUp(node.heapIndex);
         } else {
             this.shiftDown(node.heapIndex);
         }
     }
 
-    private void shiftUp(int i) {
-        PathNode pathNode = this.pathNodes[i];
+    private void shiftUp(int index) {
+        PathNode pathNode = this.pathNodes[index];
         float f = pathNode.heapWeight;
-        while (i > 0) {
-            int j = i - 1 >> 1;
-            PathNode pathNode2 = this.pathNodes[j];
+        while (index > 0) {
+            int i = index - 1 >> 1;
+            PathNode pathNode2 = this.pathNodes[i];
             if (!(f < pathNode2.heapWeight)) break;
-            this.pathNodes[i] = pathNode2;
-            pathNode2.heapIndex = i;
-            i = j;
+            this.pathNodes[index] = pathNode2;
+            pathNode2.heapIndex = index;
+            index = i;
         }
-        this.pathNodes[i] = pathNode;
-        pathNode.heapIndex = i;
+        this.pathNodes[index] = pathNode;
+        pathNode.heapIndex = index;
     }
 
-    private void shiftDown(int i) {
-        PathNode pathNode = this.pathNodes[i];
+    private void shiftDown(int index) {
+        PathNode pathNode = this.pathNodes[index];
         float f = pathNode.heapWeight;
         while (true) {
             float h;
             PathNode pathNode3;
-            int j = 1 + (i << 1);
-            int k = j + 1;
-            if (j >= this.count) break;
-            PathNode pathNode2 = this.pathNodes[j];
+            int i = 1 + (index << 1);
+            int j = i + 1;
+            if (i >= this.count) break;
+            PathNode pathNode2 = this.pathNodes[i];
             float g = pathNode2.heapWeight;
-            if (k >= this.count) {
+            if (j >= this.count) {
                 pathNode3 = null;
                 h = Float.POSITIVE_INFINITY;
             } else {
-                pathNode3 = this.pathNodes[k];
+                pathNode3 = this.pathNodes[j];
                 h = pathNode3.heapWeight;
             }
             if (g < h) {
                 if (!(g < f)) break;
-                this.pathNodes[i] = pathNode2;
-                pathNode2.heapIndex = i;
-                i = j;
+                this.pathNodes[index] = pathNode2;
+                pathNode2.heapIndex = index;
+                index = i;
                 continue;
             }
             if (!(h < f)) break;
-            this.pathNodes[i] = pathNode3;
-            pathNode3.heapIndex = i;
-            i = k;
+            this.pathNodes[index] = pathNode3;
+            pathNode3.heapIndex = index;
+            index = j;
         }
-        this.pathNodes[i] = pathNode;
-        pathNode.heapIndex = i;
+        this.pathNodes[index] = pathNode;
+        pathNode.heapIndex = index;
     }
 
     public boolean isEmpty() {

@@ -19,8 +19,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class WitherSkullEntityRenderer
 extends EntityRenderer<WitherSkullEntity> {
-    private static final Identifier INVINCIBLE_SKIN = new Identifier("textures/entity/wither/wither_invulnerable.png");
-    private static final Identifier SKIN = new Identifier("textures/entity/wither/wither.png");
+    private static final Identifier INVULNERABLE_TEXTURE = new Identifier("textures/entity/wither/wither_invulnerable.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/wither/wither.png");
     private final SkullEntityModel model = new SkullEntityModel();
 
     public WitherSkullEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -47,7 +47,7 @@ extends EntityRenderer<WitherSkullEntity> {
 
     @Override
     public Identifier getTexture(WitherSkullEntity witherSkullEntity) {
-        return witherSkullEntity.isCharged() ? INVINCIBLE_SKIN : SKIN;
+        return witherSkullEntity.isCharged() ? INVULNERABLE_TEXTURE : TEXTURE;
     }
 }
 

@@ -8,8 +8,8 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.BlastFurnaceScreenHandler;
-import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.FurnaceScreenHandler;
 import net.minecraft.screen.SmokerScreenHandler;
 import net.minecraft.util.Identifier;
@@ -92,7 +92,7 @@ public class RecipeBook {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isFilteringCraftable(CraftingScreenHandler<?> handler) {
+    public boolean isFilteringCraftable(AbstractRecipeScreenHandler<?> handler) {
         if (handler instanceof FurnaceScreenHandler) {
             return this.furnaceFilteringCraftable;
         }

@@ -19,7 +19,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public final class HorseEntityRenderer
 extends HorseBaseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
-    private static final Map<String, Identifier> SKINS = Maps.newHashMap();
+    private static final Map<String, Identifier> TEXTURES = Maps.newHashMap();
 
     public HorseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new HorseEntityModel(0.0f), 1.1f);
@@ -29,11 +29,11 @@ extends HorseBaseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
     @Override
     public Identifier getTexture(HorseEntity horseEntity) {
         String string = horseEntity.getTextureLocation();
-        Identifier identifier = SKINS.get(string);
+        Identifier identifier = TEXTURES.get(string);
         if (identifier == null) {
             identifier = new Identifier(string);
             MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, new LayeredTexture(horseEntity.getTextureLayers()));
-            SKINS.put(string, identifier);
+            TEXTURES.put(string, identifier);
         }
         return identifier;
     }

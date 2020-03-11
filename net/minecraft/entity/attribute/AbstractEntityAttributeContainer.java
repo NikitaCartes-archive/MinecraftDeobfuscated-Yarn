@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.LowercaseMap;
+import net.minecraft.util.collection.LowercaseMap;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractEntityAttributeContainer {

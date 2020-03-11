@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class TridentEntityRenderer
 extends EntityRenderer<TridentEntity> {
-    public static final Identifier SKIN = new Identifier("textures/entity/trident.png");
+    public static final Identifier TEXTURE = new Identifier("textures/entity/trident.png");
     private final TridentEntityModel model = new TridentEntityModel();
 
     public TridentEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -41,7 +41,7 @@ extends EntityRenderer<TridentEntity> {
 
     @Override
     public Identifier getTexture(TridentEntity tridentEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

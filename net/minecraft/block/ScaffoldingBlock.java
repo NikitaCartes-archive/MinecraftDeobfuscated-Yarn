@@ -139,7 +139,7 @@ implements Waterloggable {
     public static int calculateDistance(BlockView world, BlockPos pos) {
         Direction direction;
         BlockState blockState2;
-        BlockPos.Mutable mutable = pos.mutableCopy().setOffset(Direction.DOWN);
+        BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.DOWN);
         BlockState blockState = world.getBlockState(mutable);
         int i = 7;
         if (blockState.getBlock() == Blocks.SCAFFOLDING) {
@@ -148,7 +148,7 @@ implements Waterloggable {
             return 0;
         }
         Iterator<Direction> iterator = Direction.Type.HORIZONTAL.iterator();
-        while (iterator.hasNext() && ((blockState2 = world.getBlockState(mutable.move(pos, direction = iterator.next()))).getBlock() != Blocks.SCAFFOLDING || (i = Math.min(i, blockState2.get(DISTANCE) + 1)) != 1)) {
+        while (iterator.hasNext() && ((blockState2 = world.getBlockState(mutable.set(pos, direction = iterator.next()))).getBlock() != Blocks.SCAFFOLDING || (i = Math.min(i, blockState2.get(DISTANCE) + 1)) != 1)) {
         }
         return i;
     }

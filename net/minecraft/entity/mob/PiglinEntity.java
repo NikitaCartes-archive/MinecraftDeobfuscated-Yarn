@@ -43,6 +43,7 @@ import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -50,6 +51,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -165,11 +167,6 @@ implements CrossbowUser {
     }
 
     @Override
-    public boolean isLeftHanded() {
-        return false;
-    }
-
-    @Override
     protected boolean isDisallowedInPeaceful() {
         return false;
     }
@@ -273,21 +270,32 @@ implements CrossbowUser {
         return this.experiencePoints;
     }
 
-    private void zombify(ServerWorld world) {
-        ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
+    private void zombify(ServerWorld serverWorld) {
+        ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorld);
         if (zombifiedPiglinEntity == null) {
             return;
         }
         zombifiedPiglinEntity.copyPositionAndRotation(this);
-        zombifiedPiglinEntity.initialize(world, world.getLocalDifficulty(zombifiedPiglinEntity.getSenseCenterPos()), SpawnType.CONVERSION, null, null);
+        zombifiedPiglinEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(zombifiedPiglinEntity.getSenseCenterPos()), SpawnType.CONVERSION, null, null);
         zombifiedPiglinEntity.setBaby(this.isBaby());
-        this.remove();
         zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
+        PiglinBrain.method_25948(this);
+        for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
+            ItemStack itemStack;
+            if (this.isAdult() && equipmentSlot == EquipmentSlot.MAINHAND || (itemStack = this.getEquippedStack(equipmentSlot)).isEmpty()) continue;
+            zombifiedPiglinEntity.equipStack(equipmentSlot, itemStack.copy());
+            zombifiedPiglinEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
+            itemStack.setCount(0);
+        }
         if (this.hasCustomName()) {
             zombifiedPiglinEntity.setCustomName(this.getCustomName());
             zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
         }
-        world.spawnEntity(zombifiedPiglinEntity);
+        if (this.isPersistent()) {
+            zombifiedPiglinEntity.setPersistent();
+        }
+        this.remove();
+        serverWorld.spawnEntity(zombifiedPiglinEntity);
         zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
     }
 
@@ -358,6 +366,11 @@ implements CrossbowUser {
         this.shoot(this, target, projectile, multiShotSpray, 1.6f);
     }
 
+    @Override
+    public boolean method_25938(RangedWeaponItem rangedWeaponItem) {
+        return rangedWeaponItem == Items.CROSSBOW;
+    }
+
     protected void equipToMainHand(ItemStack stack) {
         this.equipLootStack(EquipmentSlot.MAINHAND, stack);
     }
@@ -365,6 +378,7 @@ implements CrossbowUser {
     protected void equipToOffHand(ItemStack stack) {
         if (stack.getItem() == Items.GOLD_INGOT) {
             this.equipStack(EquipmentSlot.OFFHAND, stack);
+            this.method_25939(EquipmentSlot.OFFHAND);
         } else {
             this.equipLootStack(EquipmentSlot.OFFHAND, stack);
         }
@@ -372,7 +386,7 @@ implements CrossbowUser {
 
     @Override
     public boolean canGather(ItemStack stack) {
-        return PiglinBrain.canGather(this, stack);
+        return this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) && PiglinBrain.canGather(this, stack);
     }
 
     protected boolean method_24846(ItemStack stack) {

@@ -139,8 +139,8 @@ implements StatsListener {
 
     private void renderIcon(int x, int y, int u, int v) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(STATS_ICON_LOCATION);
-        StatsScreen.blit(x, y, this.getZOffset(), u, v, 18, 18, 128, 128);
+        this.client.getTextureManager().bindTexture(STATS_ICON_TEXTURE);
+        StatsScreen.drawTexture(x, y, this.getZOffset(), u, v, 18, 18, 128, 128);
     }
 
     @Environment(value=EnvType.CLIENT)

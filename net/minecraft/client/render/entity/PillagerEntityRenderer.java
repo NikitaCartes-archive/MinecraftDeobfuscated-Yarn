@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class PillagerEntityRenderer
 extends IllagerEntityRenderer<PillagerEntity> {
-    private static final Identifier SKIN = new Identifier("textures/entity/illager/pillager.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/illager/pillager.png");
 
     public PillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new IllagerEntityModel(0.0f, 0.0f, 64, 64), 0.5f);
@@ -24,7 +24,7 @@ extends IllagerEntityRenderer<PillagerEntity> {
 
     @Override
     public Identifier getTexture(PillagerEntity pillagerEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

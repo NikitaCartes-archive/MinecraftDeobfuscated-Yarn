@@ -9,7 +9,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class MendingEnchantment
 extends Enchantment {
-    public MendingEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+    public MendingEnchantment(Enchantment.Rarity weight, EquipmentSlot ... slotTypes) {
         super(weight, EnchantmentTarget.BREAKABLE, slotTypes);
     }
 

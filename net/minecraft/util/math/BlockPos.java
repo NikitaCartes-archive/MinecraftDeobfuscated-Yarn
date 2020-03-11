@@ -6,15 +6,14 @@ package net.minecraft.util.math;
 import com.google.common.collect.AbstractIterator;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Optional;
 import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.CuboidBlockIterator;
-import net.minecraft.util.DynamicSerializable;
+import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.AxisCycleDirection;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.Direction;
@@ -24,13 +23,26 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+/**
+ * Represents the position of a block in a three-dimensional volume.
+ * 
+ * <p>The position is integer-valued.
+ * 
+ * <p>A block position may be mutable; hence, when using block positions
+ * obtained from other places as map keys, etc., you should call {@link
+ * #toImmutable()} to obtain an immutable block position.
+ */
 @Unmodifiable
 public class BlockPos
 extends Vec3i
 implements DynamicSerializable {
     private static final Logger LOGGER = LogManager.getLogger();
+    /**
+     * The block position which x, y, and z values are all zero.
+     */
     public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
     private static final int SIZE_BITS_X;
     private static final int SIZE_BITS_Z;
@@ -223,59 +235,141 @@ implements DynamicSerializable {
         return new BlockPos(this.getY() * pos.getZ() - this.getZ() * pos.getY(), this.getZ() * pos.getX() - this.getX() * pos.getZ(), this.getX() * pos.getY() - this.getY() * pos.getX());
     }
 
+    /**
+     * Returns an immutable block position with the same x, y, and z as this
+     * position.
+     * 
+     * <p>This method should be called when a block position is used as map
+     * keys as to prevent side effects of mutations of mutable block positions.
+     */
     public BlockPos toImmutable() {
         return this;
     }
 
+    /**
+     * Returns a mutable copy of this block position.
+     * 
+     * <p>If this block position is a mutable one, mutation to this block
+     * position won't affect the returned position.
+     */
     public Mutable mutableCopy() {
         return new Mutable(this.getX(), this.getY(), this.getZ());
     }
 
-    public static Iterable<BlockPos> iterate(BlockPos pos1, BlockPos pos2) {
-        return BlockPos.iterate(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()), Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
+    /**
+     * Iterates block positions around the {@code center}. The iteration order
+     * is mainly based on the manhattan distance of the position from the
+     * center.
+     * 
+     * <p>For the same manhattan distance, the positions are iterated by y
+     * offset, from negative to positive. For the same y offset, the positions
+     * are iterated by x offset, from negative to positive. For the two
+     * positions with the same x and y offsets and the same manhattan distance,
+     * the one with a positive z offset is visited first before the one with a
+     * negative z offset.
+     * 
+     * @param center the center of iteration
+     * @param xRange the maximum x difference from the center
+     * @param yRange the maximum y difference from the center
+     * @param zRange the maximum z difference from the center
+     */
+    public static Iterable<BlockPos> iterateOutwards(final BlockPos center, final int xRange, final int yRange, final int zRange) {
+        final int i = xRange + yRange + zRange;
+        return () -> new AbstractIterator<BlockPos>(){
+            private int manhattanDistance;
+            private int limitX;
+            private int limitY;
+            private int dx;
+            private int dy;
+            @Nullable
+            private BlockPos pendingOpposite;
+
+            @Override
+            protected BlockPos computeNext() {
+                if (this.pendingOpposite != null) {
+                    BlockPos blockPos = this.pendingOpposite;
+                    this.pendingOpposite = null;
+                    return blockPos;
+                }
+                BlockPos blockPos = null;
+                while (blockPos == null) {
+                    if (this.dy > this.limitY) {
+                        ++this.dx;
+                        if (this.dx > this.limitX) {
+                            ++this.manhattanDistance;
+                            if (this.manhattanDistance > i) {
+                                return (BlockPos)this.endOfData();
+                            }
+                            this.limitX = Math.min(xRange, this.manhattanDistance);
+                            this.dx = -this.limitX;
+                        }
+                        this.limitY = Math.min(yRange, this.manhattanDistance - Math.abs(this.dx));
+                        this.dy = -this.limitY;
+                    }
+                    int i2 = this.dx;
+                    int j = this.dy;
+                    int k = this.manhattanDistance - Math.abs(i2) - Math.abs(j);
+                    if (k <= zRange) {
+                        if (k != 0) {
+                            this.pendingOpposite = center.add(i2, j, -k);
+                        }
+                        blockPos = center.add(i2, j, k);
+                    }
+                    ++this.dy;
+                }
+                return blockPos;
+            }
+
+            @Override
+            protected /* synthetic */ Object computeNext() {
+                return this.computeNext();
+            }
+        };
     }
 
-    public static Stream<BlockPos> stream(BlockPos pos1, BlockPos pos2) {
-        return BlockPos.stream(Math.min(pos1.getX(), pos2.getX()), Math.min(pos1.getY(), pos2.getY()), Math.min(pos1.getZ(), pos2.getZ()), Math.max(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()));
+    public static Optional<BlockPos> findClosest(BlockPos pos, int horizontalRange, int verticalRange, Predicate<BlockPos> condition) {
+        return BlockPos.streamOutwards(pos, horizontalRange, verticalRange, horizontalRange).filter(condition).findFirst();
+    }
+
+    public static Stream<BlockPos> streamOutwards(BlockPos center, int maxX, int maxY, int maxZ) {
+        return StreamSupport.stream(BlockPos.iterateOutwards(center, maxX, maxY, maxZ).spliterator(), false);
+    }
+
+    public static Iterable<BlockPos> iterate(BlockPos start, BlockPos end) {
+        return BlockPos.iterate(Math.min(start.getX(), end.getX()), Math.min(start.getY(), end.getY()), Math.min(start.getZ(), end.getZ()), Math.max(start.getX(), end.getX()), Math.max(start.getY(), end.getY()), Math.max(start.getZ(), end.getZ()));
+    }
+
+    public static Stream<BlockPos> stream(BlockPos start, BlockPos end) {
+        return StreamSupport.stream(BlockPos.iterate(start, end).spliterator(), false);
     }
 
     public static Stream<BlockPos> stream(BlockBox box) {
         return BlockPos.stream(Math.min(box.minX, box.maxX), Math.min(box.minY, box.maxY), Math.min(box.minZ, box.maxZ), Math.max(box.minX, box.maxX), Math.max(box.minY, box.maxY), Math.max(box.minZ, box.maxZ));
     }
 
-    public static Stream<BlockPos> stream(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ) {
-        return StreamSupport.stream(new Spliterators.AbstractSpliterator<BlockPos>((long)((maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1)), 64){
-            final CuboidBlockIterator connector;
-            final Mutable position;
-            {
-                super(l, i);
-                this.connector = new CuboidBlockIterator(minX, minY, minZ, maxX, maxY, maxZ);
-                this.position = new Mutable();
-            }
-
-            @Override
-            public boolean tryAdvance(Consumer<? super BlockPos> consumer) {
-                if (this.connector.step()) {
-                    consumer.accept(this.position.set(this.connector.getX(), this.connector.getY(), this.connector.getZ()));
-                    return true;
-                }
-                return false;
-            }
-        }, false);
+    public static Stream<BlockPos> stream(int startX, int startY, int startZ, int endX, int endY, int endZ) {
+        return StreamSupport.stream(BlockPos.iterate(startX, startY, startZ, endX, endY, endZ).spliterator(), false);
     }
 
-    public static Iterable<BlockPos> iterate(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ) {
+    public static Iterable<BlockPos> iterate(final int startX, final int startY, final int startZ, int endX, int endY, int endZ) {
+        final int i = endX - startX + 1;
+        final int j = endY - startY + 1;
+        int k = endZ - startZ + 1;
+        final int l = i * j * k;
         return () -> new AbstractIterator<BlockPos>(){
-            final CuboidBlockIterator iterator;
-            final Mutable pos;
-            {
-                this.iterator = new CuboidBlockIterator(minX, minY, minZ, maxX, maxY, maxZ);
-                this.pos = new Mutable();
-            }
+            private int index;
 
             @Override
             protected BlockPos computeNext() {
-                return this.iterator.step() ? this.pos.set(this.iterator.getX(), this.iterator.getY(), this.iterator.getZ()) : (BlockPos)this.endOfData();
+                if (this.index == l) {
+                    return (BlockPos)this.endOfData();
+                }
+                int i2 = this.index % i;
+                int j2 = this.index / i;
+                int k = j2 % j;
+                int l2 = j2 / j;
+                ++this.index;
+                return new BlockPos(startX + i2, startY + k, startZ + l2);
             }
 
             @Override
@@ -376,24 +470,24 @@ implements DynamicSerializable {
             return this.set(axis.choose(x, y, z, Direction.Axis.X), axis.choose(x, y, z, Direction.Axis.Y), axis.choose(x, y, z, Direction.Axis.Z));
         }
 
-        public Mutable move(Vec3i pos, Direction direction) {
+        public Mutable set(Vec3i pos, Direction direction) {
             return this.set(pos.getX() + direction.getOffsetX(), pos.getY() + direction.getOffsetY(), pos.getZ() + direction.getOffsetZ());
         }
 
-        public Mutable setOffset(Vec3i pos, int x, int y, int z) {
+        public Mutable set(Vec3i pos, int x, int y, int z) {
             return this.set(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
         }
 
-        public Mutable setOffset(Direction direction) {
-            return this.setOffset(direction, 1);
+        public Mutable move(Direction direction) {
+            return this.move(direction, 1);
         }
 
-        public Mutable setOffset(Direction direction, int distance) {
+        public Mutable move(Direction direction, int distance) {
             return this.set(this.getX() + direction.getOffsetX() * distance, this.getY() + direction.getOffsetY() * distance, this.getZ() + direction.getOffsetZ() * distance);
         }
 
-        public Mutable setOffset(int x, int y, int z) {
-            return this.set(this.getX() + x, this.getY() + y, this.getZ() + z);
+        public Mutable move(int dx, int dy, int dz) {
+            return this.set(this.getX() + dx, this.getY() + dy, this.getZ() + dz);
         }
 
         @Override

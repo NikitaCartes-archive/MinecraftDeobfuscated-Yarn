@@ -37,7 +37,7 @@ extends ButtonWidget {
         MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         IconLocation iconLocation = !this.active ? (this.locked ? IconLocation.LOCKED_DISABLED : IconLocation.UNLOCKED_DISABLED) : (this.isHovered() ? (this.locked ? IconLocation.LOCKED_HOVER : IconLocation.UNLOCKED_HOVER) : (this.locked ? IconLocation.LOCKED : IconLocation.UNLOCKED));
-        this.blit(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
+        this.drawTexture(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
     }
 
     @Environment(value=EnvType.CLIENT)

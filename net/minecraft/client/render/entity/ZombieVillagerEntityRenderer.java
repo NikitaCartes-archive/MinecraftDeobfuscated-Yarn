@@ -18,17 +18,17 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class ZombieVillagerEntityRenderer
 extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
 
-    public ZombieVillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager reloadableResourceManager) {
-        super(entityRenderDispatcher, new ZombieVillagerEntityModel(0.0f, false), 0.5f);
+    public ZombieVillagerEntityRenderer(EntityRenderDispatcher dispatcher, ReloadableResourceManager reloadableResourceManager) {
+        super(dispatcher, new ZombieVillagerEntityModel(0.0f, false), 0.5f);
         this.addFeature(new ArmorBipedFeatureRenderer(this, new ZombieVillagerEntityModel(0.5f, true), new ZombieVillagerEntityModel(1.0f, true)));
         this.addFeature(new VillagerClothingFeatureRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>>(this, reloadableResourceManager, "zombie_villager"));
     }
 
     @Override
     public Identifier getTexture(ZombieVillagerEntity zombieVillagerEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class HoglinEntityRenderer
 extends MobEntityRenderer<HoglinEntity, HoglinEntityModel> {
-    private static final Identifier SKIN = new Identifier("textures/entity/hoglin/hoglin.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/hoglin/hoglin.png");
 
     public HoglinEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new HoglinEntityModel(), 0.7f);
@@ -22,7 +22,7 @@ extends MobEntityRenderer<HoglinEntity, HoglinEntityModel> {
 
     @Override
     public Identifier getTexture(HoglinEntity hoglinEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

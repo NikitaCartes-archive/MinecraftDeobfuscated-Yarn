@@ -5,7 +5,7 @@ package net.minecraft.command.arguments.serialize;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.ArgumentType;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public interface ArgumentSerializer<T extends ArgumentType<?>> {
     public void toPacket(T var1, PacketByteBuf var2);

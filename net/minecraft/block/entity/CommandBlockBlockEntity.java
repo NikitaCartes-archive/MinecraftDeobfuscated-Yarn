@@ -30,8 +30,8 @@ extends BlockEntity {
     private final CommandBlockExecutor commandExecutor = new CommandBlockExecutor(){
 
         @Override
-        public void setCommand(String string) {
-            super.setCommand(string);
+        public void setCommand(String command) {
+            super.setCommand(command);
             CommandBlockBlockEntity.this.markDirty();
         }
 

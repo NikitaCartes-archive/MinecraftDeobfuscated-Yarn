@@ -124,6 +124,7 @@ import net.minecraft.world.gen.feature.StrongholdFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.SwampHutFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
+import net.minecraft.world.gen.feature.TwistingVinesFeature;
 import net.minecraft.world.gen.feature.VillageFeature;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import net.minecraft.world.gen.feature.VinesFeature;
@@ -193,6 +194,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<HugeFungusFeatureConfig> HUGE_FUNGUS = Feature.register("huge_fungus", new HugeFungusFeature((Function<Dynamic<?>, ? extends HugeFungusFeatureConfig>)((Function<Dynamic<?>, HugeFungusFeatureConfig>)HugeFungusFeatureConfig::deserialize)));
     public static final Feature<BlockPileFeatureConfig> NETHER_FOREST_VEGETATION = Feature.register("nether_forest_vegetation", new NetherForestVegetationFeature((Function<Dynamic<?>, ? extends BlockPileFeatureConfig>)((Function<Dynamic<?>, BlockPileFeatureConfig>)BlockPileFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> WEEPING_VINES = Feature.register("weeping_vines", new WeepingVinesFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
+    public static final Feature<DefaultFeatureConfig> TWISTING_VINES = Feature.register("twisting_vines", new TwistingVinesFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<FillLayerFeatureConfig> FILL_LAYER = Feature.register("fill_layer", new FillLayerFeature((Function<Dynamic<?>, ? extends FillLayerFeatureConfig>)((Function<Dynamic<?>, FillLayerFeatureConfig>)FillLayerFeatureConfig::deserialize)));
     public static final BonusChestFeature BONUS_CHEST = Feature.register("bonus_chest", new BonusChestFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> BASALT_PILLAR = Feature.register("basalt_pillar", new BasaltPillarFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));

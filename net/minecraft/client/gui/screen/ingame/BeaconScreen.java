@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -24,12 +24,12 @@ import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 
 @Environment(value=EnvType.CLIENT)
 public class BeaconScreen
-extends ScreenWithHandler<BeaconScreenHandler> {
+extends HandledScreen<BeaconScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
     private DoneButtonWidget doneButton;
     private boolean consumeGem;
@@ -43,15 +43,15 @@ extends ScreenWithHandler<BeaconScreenHandler> {
         handler.addListener(new ScreenHandlerListener(){
 
             @Override
-            public void onHandlerRegistered(ScreenHandler handler2, DefaultedList<ItemStack> defaultedList) {
+            public void onHandlerRegistered(ScreenHandler handler2, DefaultedList<ItemStack> stacks) {
             }
 
             @Override
-            public void onSlotUpdate(ScreenHandler handler2, int slotId, ItemStack itemStack) {
+            public void onSlotUpdate(ScreenHandler handler2, int slotId, ItemStack stack) {
             }
 
             @Override
-            public void onPropertyUpdate(ScreenHandler handler2, int propertyId, int i) {
+            public void onPropertyUpdate(ScreenHandler handler2, int propertyId, int value) {
                 BeaconScreen.this.primaryEffect = handler.getPrimaryEffect();
                 BeaconScreen.this.secondaryEffect = handler.getSecondaryEffect();
                 BeaconScreen.this.consumeGem = true;
@@ -139,7 +139,7 @@ extends ScreenWithHandler<BeaconScreenHandler> {
         this.client.getTextureManager().bindTexture(TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         this.itemRenderer.zOffset = 100.0f;
         this.itemRenderer.renderGuiItem(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
         this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), i + 41, j + 109);
@@ -209,7 +209,7 @@ extends ScreenWithHandler<BeaconScreenHandler> {
 
         @Override
         protected void renderExtra() {
-            this.blit(this.x + 2, this.y + 2, this.u, this.v, 18, 18);
+            this.drawTexture(this.x + 2, this.y + 2, this.u, this.v, 18, 18);
         }
     }
 
@@ -255,7 +255,7 @@ extends ScreenWithHandler<BeaconScreenHandler> {
         @Override
         protected void renderExtra() {
             MinecraftClient.getInstance().getTextureManager().bindTexture(this.sprite.getAtlas().getId());
-            EffectButtonWidget.blit(this.x + 2, this.y + 2, this.getZOffset(), 18, 18, this.sprite);
+            EffectButtonWidget.drawSprite(this.x + 2, this.y + 2, this.getZOffset(), 18, 18, this.sprite);
         }
     }
 
@@ -281,7 +281,7 @@ extends ScreenWithHandler<BeaconScreenHandler> {
             } else if (this.isHovered()) {
                 j += this.width * 3;
             }
-            this.blit(this.x, this.y, j, 219, this.width, this.height);
+            this.drawTexture(this.x, this.y, j, 219, this.width, this.height);
             this.renderExtra();
         }
 

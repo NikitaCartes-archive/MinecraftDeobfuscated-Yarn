@@ -7,8 +7,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.BlockContext;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.screen.SmithingScreenHandler;
 import net.minecraft.stat.Stats;
@@ -28,8 +28,8 @@ extends CraftingTableBlock {
     }
 
     @Override
-    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new SmithingScreenHandler(i, playerInventory, BlockContext.create(world, pos)), SCREEN_TITLE);
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+        return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new SmithingScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), SCREEN_TITLE);
     }
 
     @Override
@@ -37,7 +37,7 @@ extends CraftingTableBlock {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        player.openHandledScreen(state.createContainerFactory(world, pos));
+        player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
         player.incrementStat(Stats.INTERACT_WITH_SMITHING_TABLE);
         return ActionResult.SUCCESS;
     }

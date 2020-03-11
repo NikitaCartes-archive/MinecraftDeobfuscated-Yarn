@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class CaveSpiderEntityRenderer
 extends SpiderEntityRenderer<CaveSpiderEntity> {
-    private static final Identifier SKIN = new Identifier("textures/entity/spider/cave_spider.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/spider/cave_spider.png");
 
     public CaveSpiderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -28,7 +28,7 @@ extends SpiderEntityRenderer<CaveSpiderEntity> {
 
     @Override
     public Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

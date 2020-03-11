@@ -6,8 +6,8 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class HorseScreen
-extends ScreenWithHandler<HorseScreenHandler> {
+extends HandledScreen<HorseScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/horse.png");
     private final HorseBaseEntity entity;
     private float mouseX;
@@ -42,18 +42,18 @@ extends ScreenWithHandler<HorseScreenHandler> {
         this.client.getTextureManager().bindTexture(TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         if (this.entity instanceof AbstractDonkeyEntity && (abstractDonkeyEntity = (AbstractDonkeyEntity)this.entity).hasChest()) {
-            this.blit(i + 79, j + 17, 0, this.backgroundHeight, abstractDonkeyEntity.method_6702() * 18, 54);
+            this.drawTexture(i + 79, j + 17, 0, this.backgroundHeight, abstractDonkeyEntity.method_6702() * 18, 54);
         }
         if (this.entity.canBeSaddled()) {
-            this.blit(i + 7, j + 35 - 18, 18, this.backgroundHeight + 54, 18, 18);
+            this.drawTexture(i + 7, j + 35 - 18, 18, this.backgroundHeight + 54, 18, 18);
         }
         if (this.entity.canEquip()) {
             if (this.entity instanceof LlamaEntity) {
-                this.blit(i + 7, j + 35, 36, this.backgroundHeight + 54, 18, 18);
+                this.drawTexture(i + 7, j + 35, 36, this.backgroundHeight + 54, 18, 18);
             } else {
-                this.blit(i + 7, j + 35, 0, this.backgroundHeight + 54, 18, 18);
+                this.drawTexture(i + 7, j + 35, 0, this.backgroundHeight + 54, 18, 18);
             }
         }
         InventoryScreen.drawEntity(i + 51, j + 60, 17, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.entity);

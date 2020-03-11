@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FacingBlock;
@@ -23,6 +22,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -219,7 +219,7 @@ extends FacingBlock {
 
     public static boolean isMovable(BlockState state, World world, BlockPos pos, Direction motionDir, boolean canBreak, Direction pistonDir) {
         Block block = state.getBlock();
-        if (block == Blocks.OBSIDIAN) {
+        if (block == Blocks.OBSIDIAN || block == Blocks.CRYING_OBSIDIAN) {
             return false;
         }
         if (!world.getWorldBorder().contains(pos)) {
@@ -352,7 +352,7 @@ extends FacingBlock {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         return false;
     }
 }

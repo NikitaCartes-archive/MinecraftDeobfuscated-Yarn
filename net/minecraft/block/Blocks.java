@@ -173,6 +173,8 @@ import net.minecraft.block.TrappedChestBlock;
 import net.minecraft.block.TripwireBlock;
 import net.minecraft.block.TripwireHookBlock;
 import net.minecraft.block.TurtleEggBlock;
+import net.minecraft.block.TwistingVinesBlock;
+import net.minecraft.block.TwistingVinesPlantBlock;
 import net.minecraft.block.VineBlock;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.WallBlock;
@@ -241,6 +243,7 @@ public class Blocks {
     public static final Block GOLD_ORE = Blocks.register("gold_ore", new OreBlock(Block.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
     public static final Block IRON_ORE = Blocks.register("iron_ore", new OreBlock(Block.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
     public static final Block COAL_ORE = Blocks.register("coal_ore", new OreBlock(Block.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
+    public static final Block NETHER_GOLD_ORE = Blocks.register("nether_gold_ore", new OreBlock(Block.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
     public static final Block OAK_LOG = Blocks.register("oak_log", new LogBlock(MaterialColor.WOOD, Block.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block SPRUCE_LOG = Blocks.register("spruce_log", new LogBlock(MaterialColor.SPRUCE, Block.Settings.of(Material.WOOD, MaterialColor.BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BIRCH_LOG = Blocks.register("birch_log", new LogBlock(MaterialColor.SAND, Block.Settings.of(Material.WOOD, MaterialColor.QUARTZ).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
@@ -349,8 +352,8 @@ public class Blocks {
     public static final Block OBSIDIAN = Blocks.register("obsidian", new Block(Block.Settings.of(Material.STONE, MaterialColor.BLACK).strength(50.0f, 1200.0f)));
     public static final Block TORCH = Blocks.register("torch", new TorchBlock(Block.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(14).sounds(BlockSoundGroup.WOOD), ParticleTypes.FLAME));
     public static final Block WALL_TORCH = Blocks.register("wall_torch", new WallTorchBlock(Block.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(14).sounds(BlockSoundGroup.WOOD).dropsLike(TORCH), ParticleTypes.FLAME));
-    public static final Block FIRE = Blocks.register("fire", new FireBlock(Block.Settings.of(Material.FIRE, MaterialColor.LAVA).noCollision().ticksRandomly().breakInstantly().lightLevel(15).sounds(BlockSoundGroup.WOOL).dropsNothing()));
-    public static final Block SOUL_FIRE = Blocks.register("soul_fire", new SoulFireBlock(Block.Settings.of(Material.FIRE, MaterialColor.LIGHT_BLUE).noCollision().ticksRandomly().breakInstantly().lightLevel(10).sounds(BlockSoundGroup.WOOL).dropsNothing()));
+    public static final Block FIRE = Blocks.register("fire", new FireBlock(Block.Settings.of(Material.FIRE, MaterialColor.LAVA).noCollision().ticksRandomly().breakInstantly().lightLevel(15).sounds(BlockSoundGroup.WOOL)));
+    public static final Block SOUL_FIRE = Blocks.register("soul_fire", new SoulFireBlock(Block.Settings.of(Material.FIRE, MaterialColor.LIGHT_BLUE).noCollision().ticksRandomly().breakInstantly().lightLevel(10).sounds(BlockSoundGroup.WOOL)));
     public static final Block SPAWNER = Blocks.register("spawner", new SpawnerBlock(Block.Settings.of(Material.STONE).strength(5.0f).sounds(BlockSoundGroup.METAL).nonOpaque()));
     public static final Block OAK_STAIRS = Blocks.register("oak_stairs", new StairsBlock(OAK_PLANKS.getDefaultState(), Block.Settings.copy(OAK_PLANKS)));
     public static final Block CHEST = Blocks.register("chest", new ChestBlock(Block.Settings.of(Material.WOOD).strength(2.5f).sounds(BlockSoundGroup.WOOD), () -> BlockEntityType.CHEST));
@@ -453,7 +456,7 @@ public class Blocks {
     public static final Block ATTACHED_MELON_STEM = Blocks.register("attached_melon_stem", new AttachedStemBlock((GourdBlock)MELON, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD)));
     public static final Block PUMPKIN_STEM = Blocks.register("pumpkin_stem", new StemBlock((GourdBlock)PUMPKIN, Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block MELON_STEM = Blocks.register("melon_stem", new StemBlock((GourdBlock)MELON, Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
-    public static final Block VINE = Blocks.register("vine", new VineBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2f).sounds(BlockSoundGroup.GRASS)));
+    public static final Block VINE = Blocks.register("vine", new VineBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2f).sounds(BlockSoundGroup.field_23083)));
     public static final Block OAK_FENCE_GATE = Blocks.register("oak_fence_gate", new FenceGateBlock(Block.Settings.of(Material.WOOD, Blocks.OAK_PLANKS.materialColor).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BRICK_STAIRS = Blocks.register("brick_stairs", new StairsBlock(BRICKS.getDefaultState(), Block.Settings.copy(BRICKS)));
     public static final Block STONE_BRICK_STAIRS = Blocks.register("stone_brick_stairs", new StairsBlock(STONE_BRICKS.getDefaultState(), Block.Settings.copy(STONE_BRICKS)));
@@ -904,6 +907,8 @@ public class Blocks {
     public static final Block SHROOMLIGHT = Blocks.register("shroomlight", new Block(Block.Settings.of(Material.WOOD, MaterialColor.RED).strength(1.0f).sounds(BlockSoundGroup.SHROOMLIGHT).lightLevel(15)));
     public static final Block WEEPING_VINES = Blocks.register("weeping_vines", new WeepingVinesBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).ticksRandomly().noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
     public static final Block WEEPING_VINES_PLANT = Blocks.register("weeping_vines_plant", new WeepingVinesPlantBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
+    public static final Block TWISTING_VINES = Blocks.register("twisting_vines", new TwistingVinesBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).ticksRandomly().noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
+    public static final Block TWISTING_VINES_PLANT = Blocks.register("twisting_vines_plant", new TwistingVinesPlantBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
     public static final Block CRIMSON_ROOTS = Blocks.register("crimson_roots", new RootsBlock(Block.Settings.of(Material.REPLACEABLE_PLANT, MaterialColor.NETHER).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS)));
     public static final Block CRIMSON_PLANKS = Blocks.register("crimson_planks", new Block(Block.Settings.of(Material.NETHER_WOOD, MaterialColor.NETHER).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block WARPED_PLANKS = Blocks.register("warped_planks", new Block(Block.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));

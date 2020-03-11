@@ -129,7 +129,7 @@ extends Screen {
     }
 
     private void renderBackground(int mouseX, int mouseY, float tickDelta) {
-        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_TEXTURE);
         int i = this.width;
         float f = -this.time * 0.5f * this.speed;
         float g = (float)this.height - this.time * 0.5f * this.speed;
@@ -169,10 +169,10 @@ extends Screen {
         this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableAlphaTest();
-        this.blit(j, k, 0, 0, 155, 44);
-        this.blit(j + 155, k, 0, 45, 155, 44);
+        this.drawTexture(j, k, 0, 0, 155, 44);
+        this.drawTexture(j + 155, k, 0, 45, 155, 44);
         this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
-        CreditsScreen.blit(j + 88, k + 37, 0.0f, 0.0f, 98, 14, 128, 16);
+        CreditsScreen.drawTexture(j + 88, k + 37, 0.0f, 0.0f, 98, 14, 128, 16);
         RenderSystem.disableAlphaTest();
         int l = k + 100;
         for (m = 0; m < this.credits.size(); ++m) {

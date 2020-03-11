@@ -57,7 +57,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
             BlockState blockState6 = chunk.getBlockState(mutable);
             if (blockState5.getBlock() == blockState.getBlock() && (blockState6.isAir() || blockState6 == blockState2)) {
                 for (u = 0; u < q; ++u) {
-                    mutable.setOffset(Direction.UP);
+                    mutable.move(Direction.UP);
                     if (chunk.getBlockState(mutable).getBlock() != blockState.getBlock()) break;
                     chunk.setBlockState(mutable, blockState3, false);
                 }
@@ -70,7 +70,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                     } else {
                         chunk.setBlockState(mutable, blockState4, false);
                     }
-                    mutable.setOffset(Direction.DOWN);
+                    mutable.move(Direction.DOWN);
                 }
             }
             blockState5 = blockState6;

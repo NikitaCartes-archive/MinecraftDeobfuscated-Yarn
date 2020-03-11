@@ -4,10 +4,10 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HorizontalConnectingBlock;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -44,7 +44,7 @@ extends HorizontalConnectingBlock {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         return false;
     }
 

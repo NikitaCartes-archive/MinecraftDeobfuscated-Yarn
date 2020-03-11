@@ -128,7 +128,7 @@ implements ClientAdvancementManager.Listener {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         this.client.getTextureManager().bindTexture(WINDOW_TEXTURE);
-        this.blit(x, y, 0, 0, 252, 140);
+        this.drawTexture(x, y, 0, 0, 252, 140);
         if (this.tabs.size() > 1) {
             this.client.getTextureManager().bindTexture(TABS_TEXTURE);
             for (AdvancementTab advancementTab : this.tabs.values()) {

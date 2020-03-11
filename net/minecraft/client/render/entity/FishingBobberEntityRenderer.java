@@ -28,8 +28,8 @@ import net.minecraft.util.math.Vec3d;
 @Environment(value=EnvType.CLIENT)
 public class FishingBobberEntityRenderer
 extends EntityRenderer<FishingBobberEntity> {
-    private static final Identifier SKIN = new Identifier("textures/entity/fishing_hook.png");
-    private static final RenderLayer field_21742 = RenderLayer.getEntityCutout(SKIN);
+    private static final Identifier TEXTURE = new Identifier("textures/entity/fishing_hook.png");
+    private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
 
     public FishingBobberEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -49,12 +49,12 @@ extends EntityRenderer<FishingBobberEntity> {
         matrixStack.push();
         matrixStack.push();
         matrixStack.scale(0.5f, 0.5f, 0.5f);
-        matrixStack.multiply(this.renderManager.getRotation());
+        matrixStack.multiply(this.dispatcher.getRotation());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21742);
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
         FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0f, 0, 0, 1);
         FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 0, 1, 1);
         FishingBobberEntityRenderer.method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0f, 1, 1, 0);
@@ -72,13 +72,13 @@ extends EntityRenderer<FishingBobberEntity> {
         double e = MathHelper.cos(l);
         double m = (double)j * 0.35;
         double n = 0.8;
-        if (this.renderManager.gameOptions != null && this.renderManager.gameOptions.perspective > 0 || playerEntity != MinecraftClient.getInstance().player) {
+        if (this.dispatcher.gameOptions != null && this.dispatcher.gameOptions.perspective > 0 || playerEntity != MinecraftClient.getInstance().player) {
             o = MathHelper.lerp((double)g, playerEntity.prevX, playerEntity.getX()) - e * m - d * 0.8;
             p = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.getY() - playerEntity.prevY) * (double)g - 0.45;
             q = MathHelper.lerp((double)g, playerEntity.prevZ, playerEntity.getZ()) - d * m + e * 0.8;
             r = playerEntity.isInSneakingPose() ? -0.1875f : 0.0f;
         } else {
-            s = this.renderManager.gameOptions.fov;
+            s = this.dispatcher.gameOptions.fov;
             Vec3d vec3d = new Vec3d((double)j * -0.36 * (s /= 100.0), -0.045 * s, 0.4);
             vec3d = vec3d.rotateX(-MathHelper.lerp(g, playerEntity.prevPitch, playerEntity.pitch) * ((float)Math.PI / 180));
             vec3d = vec3d.rotateY(-MathHelper.lerp(g, playerEntity.prevYaw, playerEntity.yaw) * ((float)Math.PI / 180));
@@ -120,7 +120,7 @@ extends EntityRenderer<FishingBobberEntity> {
 
     @Override
     public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

@@ -18,8 +18,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.AnvilScreenHandler;
-import net.minecraft.screen.BlockContext;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
@@ -27,8 +27,8 @@ import net.minecraft.world.World;
 
 public class GrindstoneScreenHandler
 extends ScreenHandler {
-    private final Inventory resultInventory = new CraftingResultInventory();
-    private final Inventory craftingInventory = new BasicInventory(2){
+    private final Inventory result = new CraftingResultInventory();
+    private final Inventory input = new BasicInventory(2){
 
         @Override
         public void markDirty() {
@@ -36,31 +36,31 @@ extends ScreenHandler {
             GrindstoneScreenHandler.this.onContentChanged(this);
         }
     };
-    private final BlockContext context;
+    private final ScreenHandlerContext context;
 
     public GrindstoneScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, BlockContext.EMPTY);
+        this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
     }
 
-    public GrindstoneScreenHandler(int syncId, PlayerInventory playerInventory, final BlockContext blockContext) {
+    public GrindstoneScreenHandler(int syncId, PlayerInventory playerInventory, final ScreenHandlerContext context) {
         super(ScreenHandlerType.GRINDSTONE, syncId);
         int i;
-        this.context = blockContext;
-        this.addSlot(new Slot(this.craftingInventory, 0, 49, 19){
+        this.context = context;
+        this.addSlot(new Slot(this.input, 0, 49, 19){
 
             @Override
             public boolean canInsert(ItemStack stack) {
                 return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.hasEnchantments();
             }
         });
-        this.addSlot(new Slot(this.craftingInventory, 1, 49, 40){
+        this.addSlot(new Slot(this.input, 1, 49, 40){
 
             @Override
             public boolean canInsert(ItemStack stack) {
                 return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.hasEnchantments();
             }
         });
-        this.addSlot(new Slot(this.resultInventory, 2, 129, 34){
+        this.addSlot(new Slot(this.result, 2, 129, 34){
 
             @Override
             public boolean canInsert(ItemStack stack) {
@@ -69,7 +69,7 @@ extends ScreenHandler {
 
             @Override
             public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-                blockContext.run((world, blockPos) -> {
+                context.run((world, blockPos) -> {
                     int j;
                     for (int i = this.getExperience((World)world); i > 0; i -= j) {
                         j = ExperienceOrbEntity.roundToOrbSize(i);
@@ -77,15 +77,15 @@ extends ScreenHandler {
                     }
                     world.playLevelEvent(1042, (BlockPos)blockPos, 0);
                 });
-                GrindstoneScreenHandler.this.craftingInventory.setInvStack(0, ItemStack.EMPTY);
-                GrindstoneScreenHandler.this.craftingInventory.setInvStack(1, ItemStack.EMPTY);
+                GrindstoneScreenHandler.this.input.setInvStack(0, ItemStack.EMPTY);
+                GrindstoneScreenHandler.this.input.setInvStack(1, ItemStack.EMPTY);
                 return stack;
             }
 
             private int getExperience(World world) {
                 int i = 0;
-                i += this.getExperience(GrindstoneScreenHandler.this.craftingInventory.getInvStack(0));
-                if ((i += this.getExperience(GrindstoneScreenHandler.this.craftingInventory.getInvStack(1))) > 0) {
+                i += this.getExperience(GrindstoneScreenHandler.this.input.getInvStack(0));
+                if ((i += this.getExperience(GrindstoneScreenHandler.this.input.getInvStack(1))) > 0) {
                     int j = (int)Math.ceil((double)i / 2.0);
                     return j + world.random.nextInt(j);
                 }
@@ -94,7 +94,7 @@ extends ScreenHandler {
 
             private int getExperience(ItemStack stack) {
                 int i = 0;
-                Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack);
+                Map<Enchantment, Integer> map = EnchantmentHelper.get(stack);
                 for (Map.Entry<Enchantment, Integer> entry : map.entrySet()) {
                     Enchantment enchantment = entry.getKey();
                     Integer integer = entry.getValue();
@@ -117,7 +117,7 @@ extends ScreenHandler {
     @Override
     public void onContentChanged(Inventory inventory) {
         super.onContentChanged(inventory);
-        if (inventory == this.craftingInventory) {
+        if (inventory == this.input) {
             this.updateResult();
         }
     }
@@ -127,8 +127,8 @@ extends ScreenHandler {
      */
     private void updateResult() {
         boolean bl2;
-        ItemStack itemStack = this.craftingInventory.getInvStack(0);
-        ItemStack itemStack2 = this.craftingInventory.getInvStack(1);
+        ItemStack itemStack = this.input.getInvStack(0);
+        ItemStack itemStack2 = this.input.getInvStack(1);
         boolean bl = !itemStack.isEmpty() || !itemStack2.isEmpty();
         boolean bl3 = bl2 = !itemStack.isEmpty() && !itemStack2.isEmpty();
         if (bl) {
@@ -137,14 +137,14 @@ extends ScreenHandler {
             boolean bl32;
             boolean bl4 = bl32 = !itemStack.isEmpty() && itemStack.getItem() != Items.ENCHANTED_BOOK && !itemStack.hasEnchantments() || !itemStack2.isEmpty() && itemStack2.getItem() != Items.ENCHANTED_BOOK && !itemStack2.hasEnchantments();
             if (itemStack.getCount() > 1 || itemStack2.getCount() > 1 || !bl2 && bl32) {
-                this.resultInventory.setInvStack(0, ItemStack.EMPTY);
+                this.result.setInvStack(0, ItemStack.EMPTY);
                 this.sendContentUpdates();
                 return;
             }
             int i = 1;
             if (bl2) {
                 if (itemStack.getItem() != itemStack2.getItem()) {
-                    this.resultInventory.setInvStack(0, ItemStack.EMPTY);
+                    this.result.setInvStack(0, ItemStack.EMPTY);
                     this.sendContentUpdates();
                     return;
                 }
@@ -155,8 +155,8 @@ extends ScreenHandler {
                 m = Math.max(item.getMaxDamage() - l, 0);
                 itemStack3 = this.transferEnchantments(itemStack, itemStack2);
                 if (!itemStack3.isDamageable()) {
-                    if (!ItemStack.areEqualIgnoreDamage(itemStack, itemStack2)) {
-                        this.resultInventory.setInvStack(0, ItemStack.EMPTY);
+                    if (!ItemStack.areEqual(itemStack, itemStack2)) {
+                        this.result.setInvStack(0, ItemStack.EMPTY);
                         this.sendContentUpdates();
                         return;
                     }
@@ -167,16 +167,16 @@ extends ScreenHandler {
                 m = bl42 ? itemStack.getDamage() : itemStack2.getDamage();
                 itemStack3 = bl42 ? itemStack : itemStack2;
             }
-            this.resultInventory.setInvStack(0, this.grind(itemStack3, m, i));
+            this.result.setInvStack(0, this.grind(itemStack3, m, i));
         } else {
-            this.resultInventory.setInvStack(0, ItemStack.EMPTY);
+            this.result.setInvStack(0, ItemStack.EMPTY);
         }
         this.sendContentUpdates();
     }
 
     private ItemStack transferEnchantments(ItemStack target, ItemStack source) {
         ItemStack itemStack = target.copy();
-        Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(source);
+        Map<Enchantment, Integer> map = EnchantmentHelper.get(source);
         for (Map.Entry<Enchantment, Integer> entry : map.entrySet()) {
             Enchantment enchantment = entry.getKey();
             if (enchantment.isCursed() && EnchantmentHelper.getLevel(enchantment, itemStack) != 0) continue;
@@ -195,7 +195,7 @@ extends ScreenHandler {
             itemStack.removeSubTag("Damage");
         }
         itemStack.setCount(amount);
-        Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(item).entrySet().stream().filter(entry -> ((Enchantment)entry.getKey()).isCursed()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<Enchantment, Integer> map = EnchantmentHelper.get(item).entrySet().stream().filter(entry -> ((Enchantment)entry.getKey()).isCursed()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         EnchantmentHelper.set(map, itemStack);
         itemStack.setRepairCost(0);
         if (itemStack.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
@@ -213,7 +213,7 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.context.run((world, blockPos) -> this.dropInventory(player, (World)world, this.craftingInventory));
+        this.context.run((world, blockPos) -> this.dropInventory(player, (World)world, this.input));
     }
 
     @Override
@@ -222,20 +222,20 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            ItemStack itemStack3 = this.craftingInventory.getInvStack(0);
-            ItemStack itemStack4 = this.craftingInventory.getInvStack(1);
-            if (invSlot == 2) {
+            ItemStack itemStack3 = this.input.getInvStack(0);
+            ItemStack itemStack4 = this.input.getInvStack(1);
+            if (index == 2) {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (invSlot == 0 || invSlot == 1 ? !this.insertItem(itemStack2, 3, 39, false) : (itemStack3.isEmpty() || itemStack4.isEmpty() ? !this.insertItem(itemStack2, 0, 2, false) : (invSlot >= 3 && invSlot < 30 ? !this.insertItem(itemStack2, 30, 39, false) : invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false)))) {
+            } else if (index == 0 || index == 1 ? !this.insertItem(itemStack2, 3, 39, false) : (itemStack3.isEmpty() || itemStack4.isEmpty() ? !this.insertItem(itemStack2, 0, 2, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack2, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false)))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

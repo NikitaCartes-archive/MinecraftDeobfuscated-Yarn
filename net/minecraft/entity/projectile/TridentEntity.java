@@ -122,7 +122,6 @@ extends ProjectileEntity {
     protected void onEntityHit(EntityHitResult entityHitResult) {
         BlockPos blockPos;
         Entity entity2;
-        super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
         float f = 8.0f;
         if (entity instanceof LivingEntity) {

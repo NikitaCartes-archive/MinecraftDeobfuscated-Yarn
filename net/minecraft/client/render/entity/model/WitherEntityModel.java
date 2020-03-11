@@ -19,29 +19,29 @@ extends CompositeEntityModel<T> {
     private final ModelPart[] field_3612;
     private final ImmutableList<ModelPart> field_20943;
 
-    public WitherEntityModel(float f) {
+    public WitherEntityModel(float scale) {
         this.textureWidth = 64;
         this.textureHeight = 64;
         this.field_3613 = new ModelPart[3];
         this.field_3613[0] = new ModelPart(this, 0, 16);
-        this.field_3613[0].addCuboid(-10.0f, 3.9f, -0.5f, 20.0f, 3.0f, 3.0f, f);
+        this.field_3613[0].addCuboid(-10.0f, 3.9f, -0.5f, 20.0f, 3.0f, 3.0f, scale);
         this.field_3613[1] = new ModelPart(this).setTextureSize(this.textureWidth, this.textureHeight);
         this.field_3613[1].setPivot(-2.0f, 6.9f, -0.5f);
-        this.field_3613[1].setTextureOffset(0, 22).addCuboid(0.0f, 0.0f, 0.0f, 3.0f, 10.0f, 3.0f, f);
-        this.field_3613[1].setTextureOffset(24, 22).addCuboid(-4.0f, 1.5f, 0.5f, 11.0f, 2.0f, 2.0f, f);
-        this.field_3613[1].setTextureOffset(24, 22).addCuboid(-4.0f, 4.0f, 0.5f, 11.0f, 2.0f, 2.0f, f);
-        this.field_3613[1].setTextureOffset(24, 22).addCuboid(-4.0f, 6.5f, 0.5f, 11.0f, 2.0f, 2.0f, f);
+        this.field_3613[1].setTextureOffset(0, 22).addCuboid(0.0f, 0.0f, 0.0f, 3.0f, 10.0f, 3.0f, scale);
+        this.field_3613[1].setTextureOffset(24, 22).addCuboid(-4.0f, 1.5f, 0.5f, 11.0f, 2.0f, 2.0f, scale);
+        this.field_3613[1].setTextureOffset(24, 22).addCuboid(-4.0f, 4.0f, 0.5f, 11.0f, 2.0f, 2.0f, scale);
+        this.field_3613[1].setTextureOffset(24, 22).addCuboid(-4.0f, 6.5f, 0.5f, 11.0f, 2.0f, 2.0f, scale);
         this.field_3613[2] = new ModelPart(this, 12, 22);
-        this.field_3613[2].addCuboid(0.0f, 0.0f, 0.0f, 3.0f, 6.0f, 3.0f, f);
+        this.field_3613[2].addCuboid(0.0f, 0.0f, 0.0f, 3.0f, 6.0f, 3.0f, scale);
         this.field_3612 = new ModelPart[3];
         this.field_3612[0] = new ModelPart(this, 0, 0);
-        this.field_3612[0].addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f, f);
+        this.field_3612[0].addCuboid(-4.0f, -4.0f, -4.0f, 8.0f, 8.0f, 8.0f, scale);
         this.field_3612[1] = new ModelPart(this, 32, 0);
-        this.field_3612[1].addCuboid(-4.0f, -4.0f, -4.0f, 6.0f, 6.0f, 6.0f, f);
+        this.field_3612[1].addCuboid(-4.0f, -4.0f, -4.0f, 6.0f, 6.0f, 6.0f, scale);
         this.field_3612[1].pivotX = -8.0f;
         this.field_3612[1].pivotY = 4.0f;
         this.field_3612[2] = new ModelPart(this, 32, 0);
-        this.field_3612[2].addCuboid(-4.0f, -4.0f, -4.0f, 6.0f, 6.0f, 6.0f, f);
+        this.field_3612[2].addCuboid(-4.0f, -4.0f, -4.0f, 6.0f, 6.0f, 6.0f, scale);
         this.field_3612[2].pivotX = 10.0f;
         this.field_3612[2].pivotY = 4.0f;
         ImmutableList.Builder builder = ImmutableList.builder();

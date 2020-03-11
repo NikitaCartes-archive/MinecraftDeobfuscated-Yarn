@@ -4,10 +4,10 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
@@ -73,7 +73,7 @@ extends FallingBlock {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         return false;
     }
 }

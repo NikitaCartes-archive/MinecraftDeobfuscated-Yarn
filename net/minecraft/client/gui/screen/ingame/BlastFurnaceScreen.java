@@ -15,10 +15,10 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class BlastFurnaceScreen
 extends AbstractFurnaceScreen<BlastFurnaceScreenHandler> {
-    private static final Identifier BG_TEX = new Identifier("textures/gui/container/blast_furnace.png");
+    private static final Identifier TEXTURE = new Identifier("textures/gui/container/blast_furnace.png");
 
     public BlastFurnaceScreen(BlastFurnaceScreenHandler container, PlayerInventory inventory, Text title) {
-        super(container, new BlastFurnaceRecipeBookScreen(), inventory, title, BG_TEX);
+        super(container, new BlastFurnaceRecipeBookScreen(), inventory, title, TEXTURE);
     }
 }
 

@@ -52,7 +52,9 @@ extends MiningToolItem {
                 world.playSound(playerEntity, blockPos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 blockState3 = blockState2;
             } else if (blockState.getBlock() instanceof CampfireBlock && blockState.get(CampfireBlock.LIT).booleanValue()) {
-                world.playLevelEvent(null, 1009, blockPos, 0);
+                if (!world.isClient()) {
+                    world.playLevelEvent(null, 1009, blockPos, 0);
+                }
                 blockState3 = (BlockState)blockState.with(CampfireBlock.LIT, false);
             }
             if (blockState3 != null) {

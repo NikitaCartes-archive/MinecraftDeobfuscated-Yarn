@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class SalmonEntityRenderer
 extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/fish/salmon.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/fish/salmon.png");
 
     public SalmonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new SalmonEntityModel(), 0.4f);
@@ -25,7 +25,7 @@ extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
 
     @Override
     public Identifier getTexture(SalmonEntity salmonEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

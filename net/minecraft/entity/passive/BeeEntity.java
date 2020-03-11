@@ -926,7 +926,7 @@ implements Flutterer {
                         int l;
                         int n = l = k < j && k > -j ? j : 0;
                         while (l <= j) {
-                            mutable.setOffset(blockPos, k, i - 1, l);
+                            mutable.set(blockPos, k, i - 1, l);
                             if (blockPos.isWithinDistance(mutable, searchDistance) && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
                                 return Optional.of(mutable);
                             }
@@ -1004,7 +1004,7 @@ implements Flutterer {
                 BeeEntity.this.flowerPos = null;
                 return;
             }
-            if (BeeEntity.this.navigation.method_23966()) {
+            if (BeeEntity.this.navigation.isFollowingPath()) {
                 return;
             }
             if (BeeEntity.this.isTooFar(BeeEntity.this.flowerPos)) {
@@ -1066,7 +1066,7 @@ implements Flutterer {
                 this.makeChosenHivePossibleHive();
                 return;
             }
-            if (BeeEntity.this.navigation.method_23966()) {
+            if (BeeEntity.this.navigation.isFollowingPath()) {
                 return;
             }
             if (BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 16)) {
@@ -1142,7 +1142,7 @@ implements Flutterer {
 
         @Override
         public boolean shouldContinue() {
-            return BeeEntity.this.navigation.method_23966();
+            return BeeEntity.this.navigation.isFollowingPath();
         }
 
         @Override

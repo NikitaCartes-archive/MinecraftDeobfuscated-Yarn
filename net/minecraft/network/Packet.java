@@ -4,8 +4,8 @@
 package net.minecraft.network;
 
 import java.io.IOException;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.PacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public interface Packet<T extends PacketListener> {
     public void read(PacketByteBuf var1) throws IOException;

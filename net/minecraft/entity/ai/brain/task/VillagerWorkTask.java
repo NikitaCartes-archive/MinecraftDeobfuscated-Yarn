@@ -13,7 +13,7 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
-import net.minecraft.util.Timestamp;
+import net.minecraft.util.dynamic.Timestamp;
 
 public class VillagerWorkTask
 extends Task<VillagerEntity> {

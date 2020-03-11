@@ -71,7 +71,7 @@ public class EntityTrackerEntry {
         this.lastYaw = MathHelper.floor(entity.yaw * 256.0f / 360.0f);
         this.lastPitch = MathHelper.floor(entity.pitch * 256.0f / 360.0f);
         this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0f / 360.0f);
-        this.lastOnGround = entity.method_24828();
+        this.lastOnGround = entity.isOnGround();
     }
 
     public void tick() {
@@ -102,7 +102,7 @@ public class EntityTrackerEntry {
                 int j = MathHelper.floor(this.entity.pitch * 256.0f / 360.0f);
                 boolean bl2 = bl = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
                 if (bl) {
-                    this.receiver.accept(new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.method_24828()));
+                    this.receiver.accept(new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.isOnGround()));
                     this.lastYaw = i;
                     this.lastPitch = j;
                 }
@@ -127,16 +127,16 @@ public class EntityTrackerEntry {
                     long m = EntityS2CPacket.encodePacketCoordinate(vec3d.y);
                     long n = EntityS2CPacket.encodePacketCoordinate(vec3d.z);
                     boolean bl6 = bl5 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
-                    if (bl5 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.method_24828()) {
-                        this.lastOnGround = this.entity.method_24828();
+                    if (bl5 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
+                        this.lastOnGround = this.entity.isOnGround();
                         this.updatesWithoutVehicle = 0;
                         packet2 = new EntityPositionS2CPacket(this.entity);
                     } else if (bl3 && bl4 || this.entity instanceof ProjectileEntity) {
-                        packet2 = new EntityS2CPacket.RotateAndMoveRelative(this.entity.getEntityId(), (short)l, (short)m, (short)n, (byte)i, (byte)j, this.entity.method_24828());
+                        packet2 = new EntityS2CPacket.RotateAndMoveRelative(this.entity.getEntityId(), (short)l, (short)m, (short)n, (byte)i, (byte)j, this.entity.isOnGround());
                     } else if (bl3) {
-                        packet2 = new EntityS2CPacket.MoveRelative(this.entity.getEntityId(), (short)l, (short)m, (short)n, this.entity.method_24828());
+                        packet2 = new EntityS2CPacket.MoveRelative(this.entity.getEntityId(), (short)l, (short)m, (short)n, this.entity.isOnGround());
                     } else if (bl4) {
-                        packet2 = new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.method_24828());
+                        packet2 = new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.isOnGround());
                     }
                 }
                 if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying()) && this.trackingTick > 0 && ((d = (vec3d2 = this.entity.getVelocity()).squaredDistanceTo(this.velocity)) > 1.0E-7 || d > 0.0 && vec3d2.lengthSquared() == 0.0)) {

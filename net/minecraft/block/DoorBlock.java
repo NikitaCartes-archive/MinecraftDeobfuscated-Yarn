@@ -6,7 +6,6 @@ package net.minecraft.block;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -17,6 +16,7 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -116,7 +116,7 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         switch (env) {
             case LAND: {
                 return state.get(OPEN);
@@ -264,12 +264,12 @@ extends Block {
         builder.add(HALF, FACING, OPEN, HINGE, POWERED);
     }
 
-    public static boolean method_24795(World world, BlockPos blockPos) {
-        return DoorBlock.method_24796(world.getBlockState(blockPos));
+    public static boolean isWoodenDoor(World world, BlockPos pos) {
+        return DoorBlock.isWoodenDoor(world.getBlockState(pos));
     }
 
-    public static boolean method_24796(BlockState blockState) {
-        return blockState.getBlock() instanceof DoorBlock && (blockState.getMaterial() == Material.WOOD || blockState.getMaterial() == Material.NETHER_WOOD);
+    public static boolean isWoodenDoor(BlockState state) {
+        return state.getBlock() instanceof DoorBlock && (state.getMaterial() == Material.WOOD || state.getMaterial() == Material.NETHER_WOOD);
     }
 }
 

@@ -739,6 +739,7 @@ public class SoundEvents {
     public static final SoundEvent BLOCK_SOUL_SOIL_PLACE = SoundEvents.register("block.soul_soil.place");
     public static final SoundEvent BLOCK_SOUL_SOIL_HIT = SoundEvents.register("block.soul_soil.hit");
     public static final SoundEvent BLOCK_SOUL_SOIL_FALL = SoundEvents.register("block.soul_soil.fall");
+    public static final SoundEvent PARTICLE_SOUL_ESCAPE = SoundEvents.register("particle.soul_escape");
     public static final SoundEvent ENTITY_SLIME_DEATH_SMALL = SoundEvents.register("entity.slime.death_small");
     public static final SoundEvent ENTITY_SLIME_HURT_SMALL = SoundEvents.register("entity.slime.hurt_small");
     public static final SoundEvent ENTITY_SLIME_JUMP_SMALL = SoundEvents.register("entity.slime.jump_small");
@@ -850,6 +851,7 @@ public class SoundEvents {
     public static final SoundEvent ENTITY_VINDICATOR_CELEBRATE = SoundEvents.register("entity.vindicator.celebrate");
     public static final SoundEvent ENTITY_VINDICATOR_DEATH = SoundEvents.register("entity.vindicator.death");
     public static final SoundEvent ENTITY_VINDICATOR_HURT = SoundEvents.register("entity.vindicator.hurt");
+    public static final SoundEvent BLOCK_VINE_STEP = SoundEvents.register("block.vine.step");
     public static final SoundEvent BLOCK_LILY_PAD_PLACE = SoundEvents.register("block.lily_pad.place");
     public static final SoundEvent ENTITY_WANDERING_TRADER_AMBIENT = SoundEvents.register("entity.wandering_trader.ambient");
     public static final SoundEvent ENTITY_WANDERING_TRADER_DEATH = SoundEvents.register("entity.wandering_trader.death");

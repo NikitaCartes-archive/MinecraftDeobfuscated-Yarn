@@ -7,10 +7,10 @@ import java.io.IOException;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTracker;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.PacketByteBuf;
 
 public class CombatEventS2CPacket
 implements Packet<ClientPlayPacketListener> {

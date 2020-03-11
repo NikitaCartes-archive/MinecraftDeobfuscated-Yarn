@@ -78,7 +78,7 @@ import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.HorseScreenHandler;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.CraftingResultSlot;
@@ -99,12 +99,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -286,7 +286,7 @@ implements ScreenHandlerListener {
         this.syncedExperience = -1;
     }
 
-    public void method_14235() {
+    public void onSpawn() {
         this.currentScreenHandler.addListener(this);
     }
 
@@ -613,7 +613,7 @@ implements ScreenHandlerListener {
         this.interactionManager.setWorld(serverWorld2);
         this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
         playerManager.sendWorldInfo(this, serverWorld2);
-        playerManager.method_14594(this);
+        playerManager.sendPlayerStatus(this);
         for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
             this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), statusEffectInstance));
         }
@@ -738,7 +738,7 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public OptionalInt openHandledScreen(@Nullable NameableScreenHandlerFactory factory) {
+    public OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory) {
         if (factory == null) {
             return OptionalInt.empty();
         }
@@ -793,17 +793,17 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack) {
+    public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
         if (handler.getSlot(slotId) instanceof CraftingResultSlot) {
             return;
         }
         if (handler == this.playerScreenHandler) {
-            Criterions.INVENTORY_CHANGED.trigger(this, this.inventory, itemStack);
+            Criterions.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
         }
         if (this.field_13991) {
             return;
         }
-        this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slotId, itemStack));
+        this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slotId, stack));
     }
 
     public void openHandledScreen(ScreenHandler handler) {
@@ -811,14 +811,14 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> defaultedList) {
-        this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, defaultedList));
+    public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
+        this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, stacks));
         this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
     }
 
     @Override
-    public void onPropertyUpdate(ScreenHandler handler, int propertyId, int i) {
-        this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, propertyId, i));
+    public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
+        this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, propertyId, value));
     }
 
     @Override
@@ -1065,7 +1065,7 @@ implements ScreenHandlerListener {
         });
     }
 
-    public String getServerBrand() {
+    public String getIp() {
         String string = this.networkHandler.connection.getAddress().toString();
         string = string.substring(string.indexOf("/") + 1);
         string = string.substring(0, string.indexOf(":"));
@@ -1204,7 +1204,7 @@ implements ScreenHandlerListener {
             this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
             this.interactionManager.setWorld(targetWorld);
             this.server.getPlayerManager().sendWorldInfo(this, targetWorld);
-            this.server.getPlayerManager().method_14594(this);
+            this.server.getPlayerManager().sendPlayerStatus(this);
         }
     }
 

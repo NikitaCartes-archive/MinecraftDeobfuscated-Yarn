@@ -94,7 +94,7 @@ extends AnimalModel<T> {
         this.rightAntenna.pitch = 0.0f;
         this.body.pitch = 0.0f;
         this.body.pivotY = 19.0f;
-        boolean bl2 = bl = ((Entity)beeEntity).method_24828() && ((Entity)beeEntity).getVelocity().lengthSquared() < 1.0E-7;
+        boolean bl2 = bl = ((Entity)beeEntity).isOnGround() && ((Entity)beeEntity).getVelocity().lengthSquared() < 1.0E-7;
         if (bl) {
             this.rightWing.yaw = -0.2618f;
             this.rightWing.roll = 0.0f;

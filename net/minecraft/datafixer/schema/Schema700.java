@@ -11,8 +11,8 @@ import net.minecraft.datafixer.schema.Schema100;
 
 public class Schema700
 extends Schema {
-    public Schema700(int i, Schema schema) {
-        super(i, schema);
+    public Schema700(int versionKey, Schema parent) {
+        super(versionKey, parent);
     }
 
     protected static void method_5288(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {

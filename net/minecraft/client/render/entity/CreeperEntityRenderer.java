@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class CreeperEntityRenderer
 extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/creeper/creeper.png");
 
     public CreeperEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new CreeperEntityModel(), 0.5f);
@@ -48,7 +48,7 @@ extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
 
     @Override
     public Identifier getTexture(CreeperEntity creeperEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

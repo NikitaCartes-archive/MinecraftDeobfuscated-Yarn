@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class SkeletonEntityRenderer
 extends BipedEntityRenderer<AbstractSkeletonEntity, SkeletonEntityModel<AbstractSkeletonEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/skeleton/skeleton.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/skeleton/skeleton.png");
 
     public SkeletonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new SkeletonEntityModel(), 0.5f);
@@ -26,7 +26,7 @@ extends BipedEntityRenderer<AbstractSkeletonEntity, SkeletonEntityModel<Abstract
 
     @Override
     public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

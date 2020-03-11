@@ -45,6 +45,7 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundEvent;
@@ -95,6 +96,11 @@ implements CrossbowUser {
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(CHARGING, false);
+    }
+
+    @Override
+    public boolean method_25938(RangedWeaponItem rangedWeaponItem) {
+        return rangedWeaponItem == Items.CROSSBOW;
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -18,7 +18,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -60,7 +60,7 @@ implements RecipeBookProvider {
         }
         super.init();
         this.isNarrow = this.width < 379;
-        this.recipeBook.initialize(this.width, this.height, this.client, this.isNarrow, (CraftingScreenHandler)this.handler);
+        this.recipeBook.initialize(this.width, this.height, this.client, this.isNarrow, (AbstractRecipeScreenHandler)this.handler);
         this.isOpen = true;
         this.x = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.backgroundWidth);
         this.children.add(this.recipeBook);
@@ -82,7 +82,7 @@ implements RecipeBookProvider {
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         this.renderBackground();
-        boolean bl = this.offsetGuiForEffects = !this.recipeBook.isOpen();
+        boolean bl = this.drawStatusEffects = !this.recipeBook.isOpen();
         if (this.recipeBook.isOpen() && this.isNarrow) {
             this.drawBackground(delta, mouseX, mouseY);
             this.recipeBook.render(mouseX, mouseY, delta);
@@ -104,7 +104,7 @@ implements RecipeBookProvider {
         this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
         int i = this.x;
         int j = this.y;
-        this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         InventoryScreen.drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.client.player);
     }
 

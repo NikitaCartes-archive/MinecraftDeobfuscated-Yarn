@@ -16,8 +16,8 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class WitherEntityRenderer
 extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
-    private static final Identifier INVINCIBLE_SKIN = new Identifier("textures/entity/wither/wither_invulnerable.png");
-    private static final Identifier SKIN = new Identifier("textures/entity/wither/wither.png");
+    private static final Identifier INVULNERABLE_TEXTURE = new Identifier("textures/entity/wither/wither_invulnerable.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/wither/wither.png");
 
     public WitherEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new WitherEntityModel(0.0f), 1.0f);
@@ -33,9 +33,9 @@ extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
     public Identifier getTexture(WitherEntity witherEntity) {
         int i = witherEntity.getInvulnerableTimer();
         if (i <= 0 || i <= 80 && i / 5 % 2 == 1) {
-            return SKIN;
+            return TEXTURE;
         }
-        return INVINCIBLE_SKIN;
+        return INVULNERABLE_TEXTURE;
     }
 
     @Override

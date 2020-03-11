@@ -20,9 +20,9 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.BlastFurnaceScreenHandler;
 import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.CraftingTableScreenHandler;
 import net.minecraft.screen.FurnaceScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.SmokerScreenHandler;
@@ -124,8 +124,8 @@ extends RecipeBook {
         return RecipeBookGroup.MISC;
     }
 
-    public static List<RecipeBookGroup> getGroups(CraftingScreenHandler<?> handler) {
-        if (handler instanceof CraftingTableScreenHandler || handler instanceof PlayerScreenHandler) {
+    public static List<RecipeBookGroup> getGroups(AbstractRecipeScreenHandler<?> handler) {
+        if (handler instanceof CraftingScreenHandler || handler instanceof PlayerScreenHandler) {
             return Lists.newArrayList(RecipeBookGroup.SEARCH, RecipeBookGroup.EQUIPMENT, RecipeBookGroup.BUILDING_BLOCKS, RecipeBookGroup.MISC, RecipeBookGroup.REDSTONE);
         }
         if (handler instanceof FurnaceScreenHandler) {

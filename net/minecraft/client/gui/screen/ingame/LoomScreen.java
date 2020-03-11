@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
@@ -36,10 +36,10 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class LoomScreen
-extends ScreenWithHandler<LoomScreenHandler> {
+extends HandledScreen<LoomScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
     private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
-    private final ModelPart field_21694;
+    private final ModelPart bannerField;
     @Nullable
     private List<Pair<BannerPattern, DyeColor>> field_21841;
     private ItemStack banner = ItemStack.EMPTY;
@@ -54,7 +54,7 @@ extends ScreenWithHandler<LoomScreenHandler> {
 
     public LoomScreen(LoomScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.field_21694 = BannerBlockEntityRenderer.createField();
+        this.bannerField = BannerBlockEntityRenderer.createField();
         handler.setInventoryChangeListener(this::onInventoryChanged);
     }
 
@@ -76,22 +76,22 @@ extends ScreenWithHandler<LoomScreenHandler> {
         this.client.getTextureManager().bindTexture(TEXTURE);
         int i = this.x;
         int j = this.y;
-        this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         Slot slot = ((LoomScreenHandler)this.handler).getBannerSlot();
         Slot slot2 = ((LoomScreenHandler)this.handler).getDyeSlot();
         Slot slot3 = ((LoomScreenHandler)this.handler).getPatternSlot();
         Slot slot4 = ((LoomScreenHandler)this.handler).getOutputSlot();
         if (!slot.hasStack()) {
-            this.blit(i + slot.xPosition, j + slot.yPosition, this.backgroundWidth, 0, 16, 16);
+            this.drawTexture(i + slot.x, j + slot.y, this.backgroundWidth, 0, 16, 16);
         }
         if (!slot2.hasStack()) {
-            this.blit(i + slot2.xPosition, j + slot2.yPosition, this.backgroundWidth + 16, 0, 16, 16);
+            this.drawTexture(i + slot2.x, j + slot2.y, this.backgroundWidth + 16, 0, 16, 16);
         }
         if (!slot3.hasStack()) {
-            this.blit(i + slot3.xPosition, j + slot3.yPosition, this.backgroundWidth + 32, 0, 16, 16);
+            this.drawTexture(i + slot3.x, j + slot3.y, this.backgroundWidth + 32, 0, 16, 16);
         }
         int k = (int)(41.0f * this.scrollPosition);
-        this.blit(i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
+        this.drawTexture(i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
         DiffuseLighting.disableGuiDepthLighting();
         if (this.field_21841 != null && !this.hasTooManyPatterns) {
             VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
@@ -101,12 +101,12 @@ extends ScreenWithHandler<LoomScreenHandler> {
             matrixStack.translate(0.5, 0.5, 0.5);
             float f = 0.6666667f;
             matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-            this.field_21694.pitch = 0.0f;
-            this.field_21694.pivotY = -32.0f;
-            BannerBlockEntityRenderer.method_23802(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.field_21694, ModelLoader.BANNER_BASE, true, this.field_21841);
+            this.bannerField.pitch = 0.0f;
+            this.bannerField.pivotY = -32.0f;
+            BannerBlockEntityRenderer.method_23802(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.field_21841);
             immediate.draw();
         } else if (this.hasTooManyPatterns) {
-            this.blit(i + slot4.xPosition - 2, j + slot4.yPosition - 2, this.backgroundWidth, 17, 17, 16);
+            this.drawTexture(i + slot4.x - 2, j + slot4.y - 2, this.backgroundWidth, 17, 17, 16);
         }
         if (this.canApplyDyePattern) {
             int l = i + 60;
@@ -123,14 +123,14 @@ extends ScreenWithHandler<LoomScreenHandler> {
                 } else if (mouseX >= q && mouseY >= r && mouseX < q + 14 && mouseY < r + 14) {
                     s += 28;
                 }
-                this.blit(q, r, 0, s, 14, 14);
+                this.drawTexture(q, r, 0, s, 14, 14);
                 this.method_22692(o, q, r);
             }
         } else if (this.canApplySpecialPattern) {
             int l = i + 60;
             int m = j + 13;
             this.client.getTextureManager().bindTexture(TEXTURE);
-            this.blit(l, m, 0, this.backgroundHeight, 14, 14);
+            this.drawTexture(l, m, 0, this.backgroundHeight, 14, 14);
             int n = ((LoomScreenHandler)this.handler).getSelectedPattern();
             this.method_22692(n, l, m);
         }
@@ -151,10 +151,10 @@ extends ScreenWithHandler<LoomScreenHandler> {
         float f = 0.6666667f;
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-        this.field_21694.pitch = 0.0f;
-        this.field_21694.pivotY = -32.0f;
+        this.bannerField.pitch = 0.0f;
+        this.bannerField.pivotY = -32.0f;
         List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.method_24281(itemStack));
-        BannerBlockEntityRenderer.method_23802(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.field_21694, ModelLoader.BANNER_BASE, true, list);
+        BannerBlockEntityRenderer.method_23802(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
         matrixStack.pop();
         immediate.draw();
     }
@@ -229,7 +229,7 @@ extends ScreenWithHandler<LoomScreenHandler> {
         if (this.hasTooManyPatterns) {
             this.field_21841 = null;
         }
-        if (!(ItemStack.areEqualIgnoreDamage(itemStack2, this.banner) && ItemStack.areEqualIgnoreDamage(itemStack3, this.dye) && ItemStack.areEqualIgnoreDamage(itemStack4, this.pattern))) {
+        if (!(ItemStack.areEqual(itemStack2, this.banner) && ItemStack.areEqual(itemStack3, this.dye) && ItemStack.areEqual(itemStack4, this.pattern))) {
             this.canApplyDyePattern = !itemStack2.isEmpty() && !itemStack3.isEmpty() && itemStack4.isEmpty() && !this.hasTooManyPatterns;
             this.canApplySpecialPattern = !this.hasTooManyPatterns && !itemStack4.isEmpty() && !itemStack2.isEmpty() && !itemStack3.isEmpty();
         }

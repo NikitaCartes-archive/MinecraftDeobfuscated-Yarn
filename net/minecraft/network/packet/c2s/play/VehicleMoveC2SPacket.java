@@ -6,8 +6,8 @@ package net.minecraft.network.packet.c2s.play;
 import java.io.IOException;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class VehicleMoveC2SPacket
 implements Packet<ServerPlayPacketListener> {

@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 
 public class SpiderNavigation
 extends MobNavigation {
-    private BlockPos field_6687;
+    private BlockPos targetPos;
 
     public SpiderNavigation(MobEntity mobEntity, World world) {
         super(mobEntity, world);
@@ -20,13 +20,13 @@ extends MobNavigation {
 
     @Override
     public Path findPathTo(BlockPos target, int distance) {
-        this.field_6687 = target;
+        this.targetPos = target;
         return super.findPathTo(target, distance);
     }
 
     @Override
     public Path findPathTo(Entity entity, int distance) {
-        this.field_6687 = entity.getSenseCenterPos();
+        this.targetPos = entity.getSenseCenterPos();
         return super.findPathTo(entity, distance);
     }
 
@@ -36,7 +36,7 @@ extends MobNavigation {
         if (path != null) {
             return this.startMovingAlong(path, speed);
         }
-        this.field_6687 = entity.getSenseCenterPos();
+        this.targetPos = entity.getSenseCenterPos();
         this.speed = speed;
         return true;
     }
@@ -44,11 +44,11 @@ extends MobNavigation {
     @Override
     public void tick() {
         if (this.isIdle()) {
-            if (this.field_6687 != null) {
-                if (this.field_6687.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth()) || this.entity.getY() > (double)this.field_6687.getY() && new BlockPos((double)this.field_6687.getX(), this.entity.getY(), (double)this.field_6687.getZ()).isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())) {
-                    this.field_6687 = null;
+            if (this.targetPos != null) {
+                if (this.targetPos.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth()) || this.entity.getY() > (double)this.targetPos.getY() && new BlockPos((double)this.targetPos.getX(), this.entity.getY(), (double)this.targetPos.getZ()).isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())) {
+                    this.targetPos = null;
                 } else {
-                    this.entity.getMoveControl().moveTo(this.field_6687.getX(), this.field_6687.getY(), this.field_6687.getZ(), this.speed);
+                    this.entity.getMoveControl().moveTo(this.targetPos.getX(), this.targetPos.getY(), this.targetPos.getZ(), this.speed);
                 }
             }
             return;

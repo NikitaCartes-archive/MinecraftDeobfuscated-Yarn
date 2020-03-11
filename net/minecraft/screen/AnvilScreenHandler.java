@@ -15,9 +15,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.screen.BlockContext;
 import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.Property;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.LiteralText;
@@ -34,11 +34,11 @@ extends ForgingScreenHandler {
     private final Property levelCost = Property.create();
 
     public AnvilScreenHandler(int syncId, PlayerInventory inventory) {
-        this(syncId, inventory, BlockContext.EMPTY);
+        this(syncId, inventory, ScreenHandlerContext.EMPTY);
     }
 
-    public AnvilScreenHandler(int syncId, PlayerInventory inventory, BlockContext blockContext) {
-        super(ScreenHandlerType.ANVIL, syncId, inventory, blockContext);
+    public AnvilScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context) {
+        super(ScreenHandlerType.ANVIL, syncId, inventory, context);
         this.addProperty(this.levelCost);
     }
 
@@ -102,7 +102,7 @@ extends ForgingScreenHandler {
         }
         ItemStack itemStack2 = itemStack.copy();
         ItemStack itemStack3 = this.input.getInvStack(1);
-        Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack2);
+        Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack2);
         j += itemStack.getRepairCost() + (itemStack3.isEmpty() ? 0 : itemStack3.getRepairCost());
         this.repairItemUsage = 0;
         if (!itemStack3.isEmpty()) {
@@ -143,7 +143,7 @@ extends ForgingScreenHandler {
                         i += 2;
                     }
                 }
-                Map<Enchantment, Integer> map2 = EnchantmentHelper.getEnchantments(itemStack3);
+                Map<Enchantment, Integer> map2 = EnchantmentHelper.get(itemStack3);
                 boolean bl22 = false;
                 boolean bl3 = false;
                 for (Enchantment enchantment : map2.keySet()) {
@@ -156,7 +156,7 @@ extends ForgingScreenHandler {
                         bl4 = true;
                     }
                     for (Enchantment enchantment2 : map.keySet()) {
-                        if (enchantment2 == enchantment || enchantment.isDifferent(enchantment2)) continue;
+                        if (enchantment2 == enchantment || enchantment.canCombine(enchantment2)) continue;
                         bl4 = false;
                         ++i;
                     }
@@ -170,7 +170,7 @@ extends ForgingScreenHandler {
                     }
                     map.put(enchantment, r);
                     int s = 0;
-                    switch (enchantment.getWeight()) {
+                    switch (enchantment.getRarity()) {
                         case COMMON: {
                             s = 1;
                             break;

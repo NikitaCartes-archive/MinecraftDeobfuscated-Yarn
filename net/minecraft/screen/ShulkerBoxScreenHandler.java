@@ -25,7 +25,7 @@ extends ScreenHandler {
         super(ScreenHandlerType.SHULKER_BOX, syncId);
         int l;
         int k;
-        ShulkerBoxScreenHandler.checkContainerSize(inventory, 27);
+        ShulkerBoxScreenHandler.checkSize(inventory, 27);
         this.inventory = inventory;
         inventory.onInvOpen(playerInventory.player);
         int i = 3;
@@ -51,13 +51,13 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (invSlot < this.inventory.getInvSize() ? !this.insertItem(itemStack2, this.inventory.getInvSize(), this.slots.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
+            if (index < this.inventory.getInvSize() ? !this.insertItem(itemStack2, this.inventory.getInvSize(), this.slots.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

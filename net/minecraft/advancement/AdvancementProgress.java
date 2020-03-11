@@ -22,8 +22,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.CriterionProgress;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 public class AdvancementProgress

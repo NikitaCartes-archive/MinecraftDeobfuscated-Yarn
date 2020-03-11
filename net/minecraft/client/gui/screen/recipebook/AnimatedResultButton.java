@@ -16,7 +16,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -24,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
 public class AnimatedResultButton
 extends AbstractButtonWidget {
     private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
-    private CraftingScreenHandler<?> craftingScreenHandler;
+    private AbstractRecipeScreenHandler<?> craftingScreenHandler;
     private RecipeBook recipeBook;
     private RecipeResultCollection results;
     private float time;
@@ -37,7 +37,7 @@ extends AbstractButtonWidget {
 
     public void showResultCollection(RecipeResultCollection recipeResultCollection, RecipeBookResults recipeBookResults) {
         this.results = recipeResultCollection;
-        this.craftingScreenHandler = (CraftingScreenHandler)recipeBookResults.getMinecraftClient().player.currentScreenHandler;
+        this.craftingScreenHandler = (AbstractRecipeScreenHandler)recipeBookResults.getMinecraftClient().player.currentScreenHandler;
         this.recipeBook = recipeBookResults.getRecipeBook();
         List<Recipe<?>> list = recipeResultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
         for (Recipe<?> recipe : list) {
@@ -82,7 +82,7 @@ extends AbstractButtonWidget {
             RenderSystem.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
             this.bounce -= delta;
         }
-        this.blit(this.x, this.y, i, j, this.width, this.height);
+        this.drawTexture(this.x, this.y, i, j, this.width, this.height);
         List<Recipe<?>> list = this.getResults();
         this.currentResultIndex = MathHelper.floor(this.time / 30.0f) % list.size();
         ItemStack itemStack = list.get(this.currentResultIndex).getOutput();

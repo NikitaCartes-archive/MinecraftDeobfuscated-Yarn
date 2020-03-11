@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class SquidEntityRenderer
 extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/squid.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/squid.png");
 
     public SquidEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new SquidEntityModel(), 0.7f);
@@ -25,7 +25,7 @@ extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
 
     @Override
     public Identifier getTexture(SquidEntity squidEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

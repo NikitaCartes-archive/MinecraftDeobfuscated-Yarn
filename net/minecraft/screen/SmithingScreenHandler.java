@@ -13,8 +13,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.screen.BlockContext;
 import net.minecraft.screen.ForgingScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.math.BlockPos;
 
@@ -23,10 +23,10 @@ extends ForgingScreenHandler {
     private static final Map<Item, Item> RECIPES = ImmutableMap.builder().put(Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE).put(Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS).put(Items.DIAMOND_HELMET, Items.NETHERITE_HELMET).put(Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS).put(Items.DIAMOND_SWORD, Items.NETHERITE_SWORD).put(Items.DIAMOND_AXE, Items.NETHERITE_AXE).put(Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE).put(Items.DIAMOND_HOE, Items.NETHERITE_HOE).put(Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL).build();
 
     public SmithingScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, BlockContext.EMPTY);
+        this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
     }
 
-    public SmithingScreenHandler(int syncId, PlayerInventory playerInventory, BlockContext context) {
+    public SmithingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(ScreenHandlerType.SMITHING, syncId, playerInventory, context);
     }
 

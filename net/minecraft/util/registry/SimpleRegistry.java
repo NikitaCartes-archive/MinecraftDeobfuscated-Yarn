@@ -14,7 +14,7 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Int2ObjectBiMap;
+import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.util.registry.MutableRegistry;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -93,7 +93,6 @@ extends MutableRegistry<T> {
         return this.entries.isEmpty();
     }
 
-    @Override
     @Nullable
     public T getRandom(Random random) {
         if (this.randomEntries == null) {

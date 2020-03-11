@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class DrownedEntityRenderer
 extends ZombieBaseEntityRenderer<DrownedEntity, DrownedEntityModel<DrownedEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/zombie/drowned.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/drowned.png");
 
     public DrownedEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new DrownedEntityModel(0.0f, 0.0f, 64, 64), new DrownedEntityModel(0.5f, true), new DrownedEntityModel(1.0f, true));
@@ -28,7 +28,7 @@ extends ZombieBaseEntityRenderer<DrownedEntity, DrownedEntityModel<DrownedEntity
 
     @Override
     public Identifier getTexture(ZombieEntity zombieEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

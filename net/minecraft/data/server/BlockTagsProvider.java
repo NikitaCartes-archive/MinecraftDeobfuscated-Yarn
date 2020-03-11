@@ -70,7 +70,7 @@ extends AbstractTagProvider<Block> {
         this.getOrCreateTagBuilder(BlockTags.SIGNS).add(BlockTags.STANDING_SIGNS).add(BlockTags.WALL_SIGNS);
         this.getOrCreateTagBuilder(BlockTags.BEDS).add((Block[])new Block[]{Blocks.RED_BED, Blocks.BLACK_BED, Blocks.BLUE_BED, Blocks.BROWN_BED, Blocks.CYAN_BED, Blocks.GRAY_BED, Blocks.GREEN_BED, Blocks.LIGHT_BLUE_BED, Blocks.LIGHT_GRAY_BED, Blocks.LIME_BED, Blocks.MAGENTA_BED, Blocks.ORANGE_BED, Blocks.PINK_BED, Blocks.PURPLE_BED, Blocks.WHITE_BED, Blocks.YELLOW_BED});
         this.getOrCreateTagBuilder(BlockTags.FENCES).add(BlockTags.WOODEN_FENCES).add(Blocks.NETHER_BRICK_FENCE);
-        this.getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE).add((Block[])new Block[]{Blocks.BARRIER, Blocks.BEDROCK, Blocks.END_PORTAL, Blocks.END_PORTAL_FRAME, Blocks.END_GATEWAY, Blocks.COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.STRUCTURE_BLOCK, Blocks.JIGSAW, Blocks.MOVING_PISTON, Blocks.OBSIDIAN, Blocks.END_STONE, Blocks.IRON_BARS});
+        this.getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE).add((Block[])new Block[]{Blocks.BARRIER, Blocks.BEDROCK, Blocks.END_PORTAL, Blocks.END_PORTAL_FRAME, Blocks.END_GATEWAY, Blocks.COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.STRUCTURE_BLOCK, Blocks.JIGSAW, Blocks.MOVING_PISTON, Blocks.OBSIDIAN, Blocks.CRYING_OBSIDIAN, Blocks.END_STONE, Blocks.IRON_BARS});
         this.getOrCreateTagBuilder(BlockTags.WITHER_IMMUNE).add((Block[])new Block[]{Blocks.BARRIER, Blocks.BEDROCK, Blocks.END_PORTAL, Blocks.END_PORTAL_FRAME, Blocks.END_GATEWAY, Blocks.COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.STRUCTURE_BLOCK, Blocks.JIGSAW, Blocks.MOVING_PISTON});
         this.getOrCreateTagBuilder(BlockTags.WITHER_SUMMON_BASE_BLOCKS).add((Block[])new Block[]{Blocks.SOUL_SAND, Blocks.SOUL_SOIL});
         this.getOrCreateTagBuilder(BlockTags.TALL_FLOWERS).add((Block[])new Block[]{Blocks.SUNFLOWER, Blocks.LILAC, Blocks.PEONY, Blocks.ROSE_BUSH});
@@ -84,10 +84,12 @@ extends AbstractTagProvider<Block> {
         this.getOrCreateTagBuilder(BlockTags.NYLIUM).add((Block[])new Block[]{Blocks.CRIMSON_NYLIUM, Blocks.WARPED_NYLIUM});
         this.getOrCreateTagBuilder(BlockTags.WART_BLOCKS).add((Block[])new Block[]{Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK});
         this.getOrCreateTagBuilder(BlockTags.BEACON_BASE_BLOCKS).add((Block[])new Block[]{Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK, Blocks.DIAMOND_BLOCK, Blocks.GOLD_BLOCK, Blocks.IRON_BLOCK});
+        this.getOrCreateTagBuilder(BlockTags.SOUL_SPEED_BLOCKS).add((Block[])new Block[]{Blocks.SOUL_SAND, Blocks.SOUL_SOIL});
         this.getOrCreateTagBuilder(BlockTags.WALL_POST_OVERRIDE).add((Block[])new Block[]{Blocks.LANTERN, Blocks.SOUL_FIRE_LANTERN, Blocks.TORCH, Blocks.SOUL_FIRE_TORCH, Blocks.REDSTONE_TORCH, Blocks.TRIPWIRE});
-        this.getOrCreateTagBuilder(BlockTags.CLIMBABLE).add((Block[])new Block[]{Blocks.LADDER, Blocks.VINE, Blocks.SCAFFOLDING, Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT});
+        this.getOrCreateTagBuilder(BlockTags.CLIMBABLE).add((Block[])new Block[]{Blocks.LADDER, Blocks.VINE, Blocks.SCAFFOLDING, Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT, Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT});
         this.getOrCreateTagBuilder(BlockTags.PIGLIN_REPELLENTS).add(Blocks.SOUL_FIRE).add(Blocks.SOUL_FIRE_TORCH).add(Blocks.SOUL_FIRE_LANTERN).add(Blocks.SOUL_FIRE_WALL_TORCH);
-        this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS);
+        this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS).add(Blocks.POTTED_WARPED_FUNGUS);
+        this.getOrCreateTagBuilder(BlockTags.GOLD_ORES).add((Block[])new Block[]{Blocks.GOLD_ORE, Blocks.NETHER_GOLD_ORE});
     }
 
     @Override

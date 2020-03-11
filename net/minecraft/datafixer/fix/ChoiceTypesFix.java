@@ -24,16 +24,16 @@ extends DataFix {
     public TypeRewriteRule makeRule() {
         TaggedChoice.TaggedChoiceType<?> taggedChoiceType = this.getInputSchema().findChoiceType(this.types);
         TaggedChoice.TaggedChoiceType<?> taggedChoiceType2 = this.getOutputSchema().findChoiceType(this.types);
-        return this.method_15476(this.name, taggedChoiceType, taggedChoiceType2);
+        return this.fixChoiceTypes(this.name, taggedChoiceType, taggedChoiceType2);
     }
 
-    protected final <K> TypeRewriteRule method_15476(String name, TaggedChoice.TaggedChoiceType<K> taggedChoiceType, TaggedChoice.TaggedChoiceType<?> taggedChoiceType2) {
-        if (taggedChoiceType.getKeyType() != taggedChoiceType2.getKeyType()) {
+    protected final <K> TypeRewriteRule fixChoiceTypes(String name, TaggedChoice.TaggedChoiceType<K> inputChoiceType, TaggedChoice.TaggedChoiceType<?> outputChoiceType) {
+        if (inputChoiceType.getKeyType() != outputChoiceType.getKeyType()) {
             throw new IllegalStateException("Could not inject: key type is not the same");
         }
-        TaggedChoice.TaggedChoiceType<?> taggedChoiceType3 = taggedChoiceType2;
-        return this.fixTypeEverywhere(name, taggedChoiceType, taggedChoiceType3, dynamicOps -> pair -> {
-            if (!taggedChoiceType3.hasType(pair.getFirst())) {
+        TaggedChoice.TaggedChoiceType<?> taggedChoiceType = outputChoiceType;
+        return this.fixTypeEverywhere(name, inputChoiceType, taggedChoiceType, dynamicOps -> pair -> {
+            if (!taggedChoiceType.hasType(pair.getFirst())) {
                 throw new IllegalArgumentException(String.format("Unknown type %s in %s ", pair.getFirst(), this.types));
             }
             return pair;

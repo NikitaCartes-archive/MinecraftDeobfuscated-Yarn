@@ -36,7 +36,7 @@ extends BlockItem {
         if (blockState.getBlock() == block) {
             Direction direction = context.shouldCancelInteraction() ? (context.hitsInsideBlock() ? context.getSide().getOpposite() : context.getSide()) : (context.getSide() == Direction.UP ? context.getPlayerFacing() : Direction.UP);
             int i = 0;
-            BlockPos.Mutable mutable = blockPos.mutableCopy().setOffset(direction);
+            BlockPos.Mutable mutable = blockPos.mutableCopy().move(direction);
             while (i < 7) {
                 if (!world.isClient && !World.method_24794(mutable)) {
                     PlayerEntity playerEntity = context.getPlayer();
@@ -51,7 +51,7 @@ extends BlockItem {
                     if (!blockState.canReplace(context)) break;
                     return ItemPlacementContext.offset(context, mutable, direction);
                 }
-                mutable.setOffset(direction);
+                mutable.move(direction);
                 if (!direction.getAxis().isHorizontal()) continue;
                 ++i;
             }

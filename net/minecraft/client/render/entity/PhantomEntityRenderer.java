@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class PhantomEntityRenderer
 extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/phantom.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/phantom.png");
 
     public PhantomEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new PhantomEntityModel(), 0.75f);
@@ -26,7 +26,7 @@ extends MobEntityRenderer<PhantomEntity, PhantomEntityModel<PhantomEntity>> {
 
     @Override
     public Identifier getTexture(PhantomEntity phantomEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

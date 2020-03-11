@@ -22,7 +22,7 @@ import net.minecraft.datafixer.schema.Schema99;
 
 public class Schema704
 extends Schema {
-    protected static final Map<String, String> field_5744 = DataFixUtils.make(Maps.newHashMap(), hashMap -> {
+    protected static final Map<String, String> BLOCK_RENAMES = DataFixUtils.make(Maps.newHashMap(), hashMap -> {
         hashMap.put("minecraft:furnace", "minecraft:furnace");
         hashMap.put("minecraft:lit_furnace", "minecraft:furnace");
         hashMap.put("minecraft:chest", "minecraft:chest");
@@ -99,12 +99,12 @@ extends Schema {
 
         @Override
         public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-            return Schema99.method_5359(new Dynamic<T>(dynamicOps, object), field_5744, "ArmorStand");
+            return Schema99.method_5359(new Dynamic<T>(dynamicOps, object), BLOCK_RENAMES, "ArmorStand");
         }
     };
 
-    public Schema704(int i, Schema schema) {
-        super(i, schema);
+    public Schema704(int versionKey, Schema parent) {
+        super(versionKey, parent);
     }
 
     protected static void method_5296(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
@@ -149,9 +149,9 @@ extends Schema {
     }
 
     @Override
-    public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
-        super.registerTypes(schema, map, map2);
-        schema.registerType(false, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), map2));
+    public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
+        super.registerTypes(schema, entityTypes, blockEntityTypes);
+        schema.registerType(false, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), blockEntityTypes));
         schema.registerType(true, TypeReferences.ITEM_STACK, () -> DSL.hook(DSL.optionalFields("id", TypeReferences.ITEM_NAME.in(schema), "tag", DSL.optionalFields("EntityTag", TypeReferences.ENTITY_TREE.in(schema), "BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema), "CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema)), "CanPlaceOn", DSL.list(TypeReferences.BLOCK_NAME.in(schema)))), field_5745, Hook.HookFunction.IDENTITY));
     }
 }

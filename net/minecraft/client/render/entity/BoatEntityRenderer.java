@@ -22,7 +22,7 @@ import net.minecraft.util.math.Quaternion;
 @Environment(value=EnvType.CLIENT)
 public class BoatEntityRenderer
 extends EntityRenderer<BoatEntity> {
-    private static final Identifier[] SKIN = new Identifier[]{new Identifier("textures/entity/boat/oak.png"), new Identifier("textures/entity/boat/spruce.png"), new Identifier("textures/entity/boat/birch.png"), new Identifier("textures/entity/boat/jungle.png"), new Identifier("textures/entity/boat/acacia.png"), new Identifier("textures/entity/boat/dark_oak.png")};
+    private static final Identifier[] TEXTURES = new Identifier[]{new Identifier("textures/entity/boat/oak.png"), new Identifier("textures/entity/boat/spruce.png"), new Identifier("textures/entity/boat/birch.png"), new Identifier("textures/entity/boat/jungle.png"), new Identifier("textures/entity/boat/acacia.png"), new Identifier("textures/entity/boat/dark_oak.png")};
     protected final BoatEntityModel model = new BoatEntityModel();
 
     public BoatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -60,7 +60,7 @@ extends EntityRenderer<BoatEntity> {
 
     @Override
     public Identifier getTexture(BoatEntity boatEntity) {
-        return SKIN[boatEntity.getBoatType().ordinal()];
+        return TEXTURES[boatEntity.getBoatType().ordinal()];
     }
 }
 

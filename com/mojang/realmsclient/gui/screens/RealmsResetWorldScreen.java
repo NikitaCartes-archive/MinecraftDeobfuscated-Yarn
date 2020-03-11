@@ -169,14 +169,14 @@ extends RealmsScreenWithCallback {
         } else {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
-        DrawableHelper.blit(i + 2, y + 14, 0.0f, 0.0f, 56, 56, 56, 56);
+        DrawableHelper.drawTexture(i + 2, y + 14, 0.0f, 0.0f, 56, 56, 56, 56);
         this.client.getTextureManager().bindTexture(field_22713);
         if (bl) {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         } else {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
-        DrawableHelper.blit(i, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
+        DrawableHelper.drawTexture(i, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
         int j = bl ? 0xA0A0A0 : 0xFFFFFF;
         this.drawCenteredString(this.textRenderer, text, i + 30, y, j);
     }

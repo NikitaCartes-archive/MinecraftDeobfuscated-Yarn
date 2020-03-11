@@ -317,17 +317,17 @@ public final class ItemStack {
         return left.tag == null || left.tag.equals(right.tag);
     }
 
-    public static boolean areEqualIgnoreDamage(ItemStack left, ItemStack right) {
+    public static boolean areEqual(ItemStack left, ItemStack right) {
         if (left.isEmpty() && right.isEmpty()) {
             return true;
         }
         if (left.isEmpty() || right.isEmpty()) {
             return false;
         }
-        return left.isEqualIgnoreDamage(right);
+        return left.isEqual(right);
     }
 
-    private boolean isEqualIgnoreDamage(ItemStack stack) {
+    private boolean isEqual(ItemStack stack) {
         if (this.count != stack.count) {
             return false;
         }

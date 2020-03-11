@@ -17,7 +17,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.server.LanServerPinger;
-import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

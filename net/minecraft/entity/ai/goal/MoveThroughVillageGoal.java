@@ -94,7 +94,7 @@ extends Goal {
         for (int i = 0; i < this.targetPath.getLength(); ++i) {
             PathNode pathNode = this.targetPath.getNode(i);
             BlockPos blockPos22 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-            if (!DoorBlock.method_24795(this.mob.world, blockPos22)) continue;
+            if (!DoorBlock.isWoodenDoor(this.mob.world, blockPos22)) continue;
             this.targetPath = this.mob.getNavigation().findPathTo(pathNode.x, pathNode.y, pathNode.z, 0);
             break;
         }

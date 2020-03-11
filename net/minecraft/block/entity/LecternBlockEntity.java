@@ -15,7 +15,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.LecternScreenHandler;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.command.CommandOutput;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 public class LecternBlockEntity
 extends BlockEntity
 implements Clearable,
-NameableScreenHandlerFactory {
+NamedScreenHandlerFactory {
     private final Inventory inventory = new Inventory(){
 
         @Override

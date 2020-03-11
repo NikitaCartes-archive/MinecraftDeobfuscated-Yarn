@@ -22,12 +22,12 @@ import net.minecraft.world.LightType;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
-    protected final EntityRenderDispatcher renderManager;
+    protected final EntityRenderDispatcher dispatcher;
     protected float shadowSize;
     protected float shadowDarkness = 1.0f;
 
     protected EntityRenderer(EntityRenderDispatcher dispatcher) {
-        this.renderManager = dispatcher;
+        this.dispatcher = dispatcher;
     }
 
     public final int getLight(T entity, float tickDelta) {
@@ -78,11 +78,11 @@ public abstract class EntityRenderer<T extends Entity> {
     public abstract Identifier getTexture(T var1);
 
     public TextRenderer getFontRenderer() {
-        return this.renderManager.getTextRenderer();
+        return this.dispatcher.getTextRenderer();
     }
 
     protected void renderLabelIfPresent(T entity, String label, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        double d = this.renderManager.getSquaredDistanceToCamera((Entity)entity);
+        double d = this.dispatcher.getSquaredDistanceToCamera((Entity)entity);
         if (d > 4096.0) {
             return;
         }
@@ -91,7 +91,7 @@ public abstract class EntityRenderer<T extends Entity> {
         int i = "deadmau5".equals(label) ? -10 : 0;
         matrices.push();
         matrices.translate(0.0, f, 0.0);
-        matrices.multiply(this.renderManager.getRotation());
+        matrices.multiply(this.dispatcher.getRotation());
         matrices.scale(-0.025f, -0.025f, 0.025f);
         Matrix4f matrix4f = matrices.peek().getModel();
         float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
@@ -106,7 +106,7 @@ public abstract class EntityRenderer<T extends Entity> {
     }
 
     public EntityRenderDispatcher getRenderManager() {
-        return this.renderManager;
+        return this.dispatcher;
     }
 }
 

@@ -33,26 +33,26 @@ extends ScreenHandler {
         this(syncId, playerInventory, new BasicInventory(5), new ArrayPropertyDelegate(2));
     }
 
-    public BrewingStandScreenHandler(int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-        super(ScreenHandlerType.BREWING_STAND, i);
-        int j;
-        BrewingStandScreenHandler.checkContainerSize(inventory, 5);
-        BrewingStandScreenHandler.checkContainerDataCount(propertyDelegate, 2);
+    public BrewingStandScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+        super(ScreenHandlerType.BREWING_STAND, syncId);
+        int i;
+        BrewingStandScreenHandler.checkSize(inventory, 5);
+        BrewingStandScreenHandler.checkDataCount(propertyDelegate, 2);
         this.inventory = inventory;
         this.propertyDelegate = propertyDelegate;
-        this.addSlot(new SlotPotion(inventory, 0, 56, 51));
-        this.addSlot(new SlotPotion(inventory, 1, 79, 58));
-        this.addSlot(new SlotPotion(inventory, 2, 102, 51));
-        this.ingredientSlot = this.addSlot(new SlotIngredient(inventory, 3, 79, 17));
-        this.addSlot(new SlotFuel(inventory, 4, 17, 17));
+        this.addSlot(new PotionSlot(inventory, 0, 56, 51));
+        this.addSlot(new PotionSlot(inventory, 1, 79, 58));
+        this.addSlot(new PotionSlot(inventory, 2, 102, 51));
+        this.ingredientSlot = this.addSlot(new IngredientSlot(inventory, 3, 79, 17));
+        this.addSlot(new FuelSlot(inventory, 4, 17, 17));
         this.addProperties(propertyDelegate);
-        for (j = 0; j < 3; ++j) {
-            for (int k = 0; k < 9; ++k) {
-                this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+        for (i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
-        for (j = 0; j < 9; ++j) {
-            this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+        for (i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
     }
 
@@ -62,18 +62,18 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (invSlot >= 0 && invSlot <= 2 || invSlot == 3 || invSlot == 4) {
+            if (index >= 0 && index <= 2 || index == 3 || index == 4) {
                 if (!this.insertItem(itemStack2, 5, 41, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (SlotFuel.matches(itemStack) ? this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false) : (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (SlotPotion.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (invSlot >= 5 && invSlot < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (invSlot >= 32 && invSlot < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
+            } else if (FuelSlot.matches(itemStack) ? this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false) : (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (PotionSlot.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (index >= 5 && index < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (index >= 32 && index < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -99,19 +99,19 @@ extends ScreenHandler {
         return this.propertyDelegate.get(0);
     }
 
-    static class SlotFuel
+    static class FuelSlot
     extends Slot {
-        public SlotFuel(Inventory inventory, int i, int j, int k) {
+        public FuelSlot(Inventory inventory, int i, int j, int k) {
             super(inventory, i, j, k);
         }
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            return SlotFuel.matches(stack);
+            return FuelSlot.matches(stack);
         }
 
-        public static boolean matches(ItemStack itemStack) {
-            return itemStack.getItem() == Items.BLAZE_POWDER;
+        public static boolean matches(ItemStack stack) {
+            return stack.getItem() == Items.BLAZE_POWDER;
         }
 
         @Override
@@ -120,9 +120,9 @@ extends ScreenHandler {
         }
     }
 
-    static class SlotIngredient
+    static class IngredientSlot
     extends Slot {
-        public SlotIngredient(Inventory inventory, int i, int j, int k) {
+        public IngredientSlot(Inventory inventory, int i, int j, int k) {
             super(inventory, i, j, k);
         }
 
@@ -137,15 +137,15 @@ extends ScreenHandler {
         }
     }
 
-    static class SlotPotion
+    static class PotionSlot
     extends Slot {
-        public SlotPotion(Inventory inventory, int i, int j, int k) {
+        public PotionSlot(Inventory inventory, int i, int j, int k) {
             super(inventory, i, j, k);
         }
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            return SlotPotion.matches(stack);
+            return PotionSlot.matches(stack);
         }
 
         @Override
@@ -163,8 +163,8 @@ extends ScreenHandler {
             return stack;
         }
 
-        public static boolean matches(ItemStack itemStack) {
-            Item item = itemStack.getItem();
+        public static boolean matches(ItemStack stack) {
+            Item item = stack.getItem();
             return item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE;
         }
     }

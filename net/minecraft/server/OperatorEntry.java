@@ -19,10 +19,10 @@ extends ServerConfigEntry<GameProfile> {
         this.bypassPlayerLimit = bypassPlayerLimit;
     }
 
-    public OperatorEntry(JsonObject jsonObject) {
-        super(OperatorEntry.getProfileFromJson(jsonObject));
-        this.permissionLevel = jsonObject.has("level") ? jsonObject.get("level").getAsInt() : 0;
-        this.bypassPlayerLimit = jsonObject.has("bypassesPlayerLimit") && jsonObject.get("bypassesPlayerLimit").getAsBoolean();
+    public OperatorEntry(JsonObject json) {
+        super(OperatorEntry.getProfileFromJson(json));
+        this.permissionLevel = json.has("level") ? json.get("level").getAsInt() : 0;
+        this.bypassPlayerLimit = json.has("bypassesPlayerLimit") && json.get("bypassesPlayerLimit").getAsBoolean();
     }
 
     public int getPermissionLevel() {
@@ -34,14 +34,14 @@ extends ServerConfigEntry<GameProfile> {
     }
 
     @Override
-    protected void method_24896(JsonObject jsonObject) {
+    protected void fromJson(JsonObject json) {
         if (this.getKey() == null) {
             return;
         }
-        jsonObject.addProperty("uuid", ((GameProfile)this.getKey()).getId() == null ? "" : ((GameProfile)this.getKey()).getId().toString());
-        jsonObject.addProperty("name", ((GameProfile)this.getKey()).getName());
-        jsonObject.addProperty("level", this.permissionLevel);
-        jsonObject.addProperty("bypassesPlayerLimit", this.bypassPlayerLimit);
+        json.addProperty("uuid", ((GameProfile)this.getKey()).getId() == null ? "" : ((GameProfile)this.getKey()).getId().toString());
+        json.addProperty("name", ((GameProfile)this.getKey()).getName());
+        json.addProperty("level", this.permissionLevel);
+        json.addProperty("bypassesPlayerLimit", this.bypassPlayerLimit);
     }
 
     private static GameProfile getProfileFromJson(JsonObject json) {

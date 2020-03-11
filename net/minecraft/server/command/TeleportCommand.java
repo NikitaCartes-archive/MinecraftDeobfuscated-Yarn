@@ -98,7 +98,7 @@ public class TeleportCommand {
 
     private static void teleport(ServerCommandSource source, Entity target, ServerWorld world, double x, double y, double z, Set<PlayerPositionLookS2CPacket.Flag> movementFlags, float yaw, float pitch, @Nullable LookTarget facingLocation) throws CommandSyntaxException {
         BlockPos blockPos = new BlockPos(x, y, z);
-        if (!World.isValid(blockPos)) {
+        if (!World.method_25953(blockPos)) {
             throw field_22255.create();
         }
         if (target instanceof ServerPlayerEntity) {
@@ -142,7 +142,7 @@ public class TeleportCommand {
         }
         if (!(target instanceof LivingEntity) || !((LivingEntity)target).isFallFlying()) {
             target.setVelocity(target.getVelocity().multiply(1.0, 0.0, 1.0));
-            target.method_24830(true);
+            target.setOnGround(true);
         }
     }
 

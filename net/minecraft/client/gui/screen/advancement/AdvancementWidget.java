@@ -126,7 +126,7 @@ extends DrawableHelper {
             float f = this.progress == null ? 0.0f : this.progress.getProgressBarPercentage();
             AdvancementObtainedStatus advancementObtainedStatus = f >= 1.0f ? AdvancementObtainedStatus.OBTAINED : AdvancementObtainedStatus.UNOBTAINED;
             this.client.getTextureManager().bindTexture(WIDGETS_TEX);
-            this.blit(x + this.xPos + 3, y + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
+            this.drawTexture(x + this.xPos + 3, y + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
             this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), x + this.xPos + 8, y + this.yPos + 5);
         }
         for (AdvancementWidget advancementWidget : this.children) {
@@ -186,9 +186,9 @@ extends DrawableHelper {
                 this.method_2324(m, l, this.width, n, 10, 200, 26, 0, 52);
             }
         }
-        this.blit(m, l, 0, advancementObtainedStatus.getSpriteIndex() * 26, j, 26);
-        this.blit(m + j, l, 200 - k, advancementObtainedStatus2.getSpriteIndex() * 26, k, 26);
-        this.blit(originX + this.xPos + 3, originY + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
+        this.drawTexture(m, l, 0, advancementObtainedStatus.getSpriteIndex() * 26, j, 26);
+        this.drawTexture(m + j, l, 200 - k, advancementObtainedStatus2.getSpriteIndex() * 26, k, 26);
+        this.drawTexture(originX + this.xPos + 3, originY + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
         if (bl) {
             this.client.textRenderer.drawWithShadow(this.title, m + 5, originY + this.yPos + 9, -1);
             if (string != null) {
@@ -213,12 +213,12 @@ extends DrawableHelper {
     }
 
     protected void method_2324(int i, int j, int k, int l, int m, int n, int o, int p, int q) {
-        this.blit(i, j, p, q, m, m);
+        this.drawTexture(i, j, p, q, m, m);
         this.method_2321(i + m, j, k - m - m, m, p + m, q, n - m - m, o);
-        this.blit(i + k - m, j, p + n - m, q, m, m);
-        this.blit(i, j + l - m, p, q + o - m, m, m);
+        this.drawTexture(i + k - m, j, p + n - m, q, m, m);
+        this.drawTexture(i, j + l - m, p, q + o - m, m, m);
         this.method_2321(i + m, j + l - m, k - m - m, m, p + m, q + o - m, n - m - m, o);
-        this.blit(i + k - m, j + l - m, p + n - m, q + o - m, m, m);
+        this.drawTexture(i + k - m, j + l - m, p + n - m, q + o - m, m, m);
         this.method_2321(i, j + m, m, l - m - m, p, q + m, n, o - m - m);
         this.method_2321(i + m, j + m, k - m - m, l - m - m, p + m, q + m, n - m - m, o - m - m);
         this.method_2321(i + k - m, j + m, m, l - m - m, p + n - m, q + m, n, o - m - m);
@@ -231,7 +231,7 @@ extends DrawableHelper {
             for (int t = 0; t < l; t += p) {
                 int u = j + t;
                 int v = Math.min(p, l - t);
-                this.blit(r, u, m, n, s, v);
+                this.drawTexture(r, u, m, n, s, v);
             }
         }
     }

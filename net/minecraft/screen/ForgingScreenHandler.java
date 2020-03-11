@@ -10,8 +10,8 @@ import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.BlockContext;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
@@ -29,7 +29,7 @@ extends ScreenHandler {
             ForgingScreenHandler.this.onContentChanged(this);
         }
     };
-    protected final BlockContext context;
+    protected final ScreenHandlerContext context;
     protected final PlayerEntity player;
 
     protected abstract boolean canTakeOutput(PlayerEntity var1, boolean var2);
@@ -38,7 +38,7 @@ extends ScreenHandler {
 
     protected abstract boolean canUse(BlockState var1);
 
-    public ForgingScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, BlockContext context) {
+    public ForgingScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(type, syncId);
         int i;
         this.context = context;
@@ -99,18 +99,18 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (invSlot == 2) {
+            if (index == 2) {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (invSlot == 0 || invSlot == 1 ? !this.insertItem(itemStack2, 3, 39, false) : invSlot >= 3 && invSlot < 39 && !this.insertItem(itemStack2, 0, 2, false)) {
+            } else if (index == 0 || index == 1 ? !this.insertItem(itemStack2, 3, 39, false) : index >= 3 && index < 39 && !this.insertItem(itemStack2, 0, 2, false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

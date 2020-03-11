@@ -81,7 +81,7 @@ extends Overlay {
         this.client.getTextureManager().bindTexture(LOGO);
         RenderSystem.enableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, h);
-        this.blit(k, m, 0, 0, 256, 256);
+        this.drawTexture(k, m, 0, 0, 256, 256);
         float n = this.reloadMonitor.getProgress();
         this.progress = MathHelper.clamp(this.progress * 0.95f + n * 0.050000012f, 0.0f, 1.0f);
         if (f < 1.0f) {

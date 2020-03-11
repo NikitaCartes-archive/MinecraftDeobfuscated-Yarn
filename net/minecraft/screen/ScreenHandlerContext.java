@@ -1,0 +1,54 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.screen;
+
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+/**
+ * Screen handler contexts allow screen handlers to interact with the
+ * logical server's world safely.
+ */
+public interface ScreenHandlerContext {
+    /**
+     * The dummy screen handler context for clientside screen handlers.
+     */
+    public static final ScreenHandlerContext EMPTY = new ScreenHandlerContext(){
+
+        @Override
+        public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
+            return Optional.empty();
+        }
+    };
+
+    /**
+     * Returns an active screen handler context. Used on the logical server.
+     */
+    public static ScreenHandlerContext create(final World world, final BlockPos pos) {
+        return new ScreenHandlerContext(){
+
+            @Override
+            public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
+                return Optional.of(function.apply(world, pos));
+            }
+        };
+    }
+
+    public <T> Optional<T> run(BiFunction<World, BlockPos, T> var1);
+
+    default public <T> T run(BiFunction<World, BlockPos, T> function, T defaultValue) {
+        return this.run(function).orElse(defaultValue);
+    }
+
+    default public void run(BiConsumer<World, BlockPos> function) {
+        this.run((World world, BlockPos blockPos) -> {
+            function.accept((World)world, (BlockPos)blockPos);
+            return Optional.empty();
+        });
+    }
+}
+

@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class IronGolemEntityRenderer
 extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/iron_golem/iron_golem.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/iron_golem/iron_golem.png");
 
     public IronGolemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new IronGolemEntityModel(), 0.7f);
@@ -28,7 +28,7 @@ extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>
 
     @Override
     public Identifier getTexture(IronGolemEntity ironGolemEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

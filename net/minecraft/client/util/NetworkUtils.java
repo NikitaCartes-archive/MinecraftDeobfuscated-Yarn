@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.ProgressListener;
-import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;

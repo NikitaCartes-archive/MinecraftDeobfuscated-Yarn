@@ -10,7 +10,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class RiptideEnchantment
 extends Enchantment {
-    public RiptideEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+    public RiptideEnchantment(Enchantment.Rarity weight, EquipmentSlot ... slotTypes) {
         super(weight, EnchantmentTarget.TRIDENT, slotTypes);
     }
 
@@ -30,8 +30,8 @@ extends Enchantment {
     }
 
     @Override
-    public boolean differs(Enchantment other) {
-        return super.differs(other) && other != Enchantments.LOYALTY && other != Enchantments.CHANNELING;
+    public boolean canAccept(Enchantment other) {
+        return super.canAccept(other) && other != Enchantments.LOYALTY && other != Enchantments.CHANNELING;
     }
 }
 

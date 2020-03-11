@@ -92,20 +92,20 @@ extends AbstractTreeFeature<T> {
     protected void generateTrunk(ModifiableTestableWorld world, Random random, BlockPos pos, int height, Set<BlockPos> logs, BlockBox box, MegaTreeFeatureConfig config) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < height; ++i) {
-            mutable.setOffset(pos, 0, i, 0);
+            mutable.set(pos, 0, i, 0);
             if (MegaTreeFeature.canTreeReplace(world, mutable)) {
                 this.setLogBlockState(world, random, mutable, logs, box, config);
             }
             if (i >= height - 1) continue;
-            mutable.setOffset(pos, 1, i, 0);
+            mutable.set(pos, 1, i, 0);
             if (MegaTreeFeature.canTreeReplace(world, mutable)) {
                 this.setLogBlockState(world, random, mutable, logs, box, config);
             }
-            mutable.setOffset(pos, 1, i, 1);
+            mutable.set(pos, 1, i, 1);
             if (MegaTreeFeature.canTreeReplace(world, mutable)) {
                 this.setLogBlockState(world, random, mutable, logs, box, config);
             }
-            mutable.setOffset(pos, 0, i, 1);
+            mutable.set(pos, 0, i, 1);
             if (!MegaTreeFeature.canTreeReplace(world, mutable)) continue;
             this.setLogBlockState(world, random, mutable, logs, box, config);
         }

@@ -36,7 +36,7 @@ extends Feature<OreFeatureConfig> {
         int i = this.randomCoord(random, size);
         int j = this.randomCoord(random, size);
         int k = this.randomCoord(random, size);
-        mutable.setOffset(pos, i, j, k);
+        mutable.set(pos, i, j, k);
     }
 
     private int randomCoord(Random random, int size) {
@@ -46,7 +46,7 @@ extends Feature<OreFeatureConfig> {
     private boolean checkAir(IWorld world, BlockPos pos) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.values()) {
-            mutable.move(pos, direction);
+            mutable.set(pos, direction);
             if (!world.getBlockState(mutable).isAir()) continue;
             return true;
         }

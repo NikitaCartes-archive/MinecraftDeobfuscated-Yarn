@@ -186,7 +186,7 @@ implements Tickable {
     }
 
     private static boolean method_23671(Box box, Entity entity) {
-        return entity.getPistonBehavior() == PistonBehavior.NORMAL && entity.method_24828() && entity.getX() >= box.x1 && entity.getX() <= box.x2 && entity.getZ() >= box.z1 && entity.getZ() <= box.z2;
+        return entity.getPistonBehavior() == PistonBehavior.NORMAL && entity.isOnGround() && entity.getX() >= box.x1 && entity.getX() <= box.x2 && entity.getZ() >= box.z1 && entity.getZ() <= box.z2;
     }
 
     private boolean method_23364() {

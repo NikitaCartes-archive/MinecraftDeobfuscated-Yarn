@@ -34,7 +34,7 @@ extends IceBlock {
         if ((random.nextInt(3) == 0 || this.canMelt(world, pos, 4)) && world.getLightLevel(pos) > 11 - state.get(AGE) - state.getOpacity(world, pos) && this.increaseAge(state, world, pos)) {
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             for (Direction direction : Direction.values()) {
-                mutable.move(pos, direction);
+                mutable.set(pos, direction);
                 BlockState blockState = world.getBlockState(mutable);
                 if (blockState.getBlock() != this || this.increaseAge(blockState, world, mutable)) continue;
                 world.getBlockTickScheduler().schedule(mutable, this, MathHelper.nextInt(random, 20, 40));
@@ -66,7 +66,7 @@ extends IceBlock {
         int i = 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.values()) {
-            mutable.move(pos, direction);
+            mutable.set(pos, direction);
             if (world.getBlockState(mutable).getBlock() != this || ++i < maxNeighbors) continue;
             return false;
         }

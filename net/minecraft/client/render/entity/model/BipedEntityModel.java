@@ -240,12 +240,12 @@ ModelWithHead {
         if (this.rightArmPose == ArmPose.CROSSBOW_CHARGE) {
             CrossbowPosing.charge(this.rightArm, this.leftArm, livingEntity, true);
         } else if (this.leftArmPose == ArmPose.CROSSBOW_CHARGE) {
-            CrossbowPosing.charge(this.leftArm, this.rightArm, livingEntity, false);
+            CrossbowPosing.charge(this.rightArm, this.leftArm, livingEntity, false);
         }
         if (this.rightArmPose == ArmPose.CROSSBOW_HOLD && this.handSwingProgress <= 0.0f) {
             CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
         } else if (this.leftArmPose == ArmPose.CROSSBOW_HOLD) {
-            CrossbowPosing.hold(this.leftArm, this.rightArm, this.head, false);
+            CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
         }
         if (this.leaningPitch > 0.0f) {
             float p;

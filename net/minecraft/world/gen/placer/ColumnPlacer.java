@@ -36,7 +36,7 @@ extends BlockPlacer {
         int i = this.minSize + random.nextInt(random.nextInt(this.extraSize + 1) + 1);
         for (int j = 0; j < i; ++j) {
             iWorld.setBlockState(mutable, blockState, 2);
-            mutable.setOffset(Direction.UP);
+            mutable.move(Direction.UP);
         }
     }
 

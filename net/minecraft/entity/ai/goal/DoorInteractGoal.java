@@ -61,12 +61,12 @@ extends Goal {
             PathNode pathNode = path.getNode(i);
             this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
             if (this.mob.squaredDistanceTo(this.doorPos.getX(), this.mob.getY(), this.doorPos.getZ()) > 2.25) continue;
-            this.doorValid = DoorBlock.method_24795(this.mob.world, this.doorPos);
+            this.doorValid = DoorBlock.isWoodenDoor(this.mob.world, this.doorPos);
             if (!this.doorValid) continue;
             return true;
         }
         this.doorPos = this.mob.getSenseCenterPos().up();
-        this.doorValid = DoorBlock.method_24795(this.mob.world, this.doorPos);
+        this.doorValid = DoorBlock.isWoodenDoor(this.mob.world, this.doorPos);
         return this.doorValid;
     }
 

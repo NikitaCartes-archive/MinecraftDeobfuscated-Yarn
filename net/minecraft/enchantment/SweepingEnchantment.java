@@ -9,7 +9,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class SweepingEnchantment
 extends Enchantment {
-    public SweepingEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+    public SweepingEnchantment(Enchantment.Rarity weight, EquipmentSlot ... slotTypes) {
         super(weight, EnchantmentTarget.WEAPON, slotTypes);
     }
 

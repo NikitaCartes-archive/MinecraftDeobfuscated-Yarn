@@ -832,7 +832,7 @@ extends AnimalEntity {
                         int l;
                         int n = l = k < j && k > -j ? j : 0;
                         while (l <= j) {
-                            mutable.setOffset(blockPos, k, i, l);
+                            mutable.set(blockPos, k, i, l);
                             if (this.world.getBlockState(mutable).getBlock() == Blocks.BAMBOO) {
                                 return true;
                             }

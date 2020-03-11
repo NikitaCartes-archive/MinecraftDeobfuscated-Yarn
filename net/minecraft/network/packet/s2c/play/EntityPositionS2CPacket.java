@@ -8,8 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class EntityPositionS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -31,7 +31,7 @@ implements Packet<ClientPlayPacketListener> {
         this.z = entity.getZ();
         this.yaw = (byte)(entity.yaw * 256.0f / 360.0f);
         this.pitch = (byte)(entity.pitch * 256.0f / 360.0f);
-        this.onGround = entity.method_24828();
+        this.onGround = entity.isOnGround();
     }
 
     @Override

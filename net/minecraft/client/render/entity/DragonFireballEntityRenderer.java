@@ -21,8 +21,8 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class DragonFireballEntityRenderer
 extends EntityRenderer<DragonFireballEntity> {
-    private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
-    private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(SKIN);
+    private static final Identifier TEXTURE = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
+    private static final RenderLayer LAYER = RenderLayer.getEntityCutoutNoCull(TEXTURE);
 
     public DragonFireballEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -37,7 +37,7 @@ extends EntityRenderer<DragonFireballEntity> {
     public void render(DragonFireballEntity dragonFireballEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.scale(2.0f, 2.0f, 2.0f);
-        matrixStack.multiply(this.renderManager.getRotation());
+        matrixStack.multiply(this.dispatcher.getRotation());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
@@ -57,7 +57,7 @@ extends EntityRenderer<DragonFireballEntity> {
 
     @Override
     public Identifier getTexture(DragonFireballEntity dragonFireballEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

@@ -72,12 +72,12 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.loot.function.SetContentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.BoundedIntUnaryOperator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.registry.Registry;
@@ -243,6 +243,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.RED_SAND);
         this.registerForSelfDrop(Blocks.GOLD_ORE);
         this.registerForSelfDrop(Blocks.IRON_ORE);
+        this.registerForSelfDrop(Blocks.NETHER_GOLD_ORE);
         this.registerForSelfDrop(Blocks.OAK_LOG);
         this.registerForSelfDrop(Blocks.SPRUCE_LOG);
         this.registerForSelfDrop(Blocks.BIRCH_LOG);
@@ -584,7 +585,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.CRIMSON_FUNGUS);
         this.registerForSelfDrop(Blocks.SHROOMLIGHT);
         this.registerForSelfDrop(Blocks.CRIMSON_ROOTS);
-        this.registerForSelfDrop(Blocks.WEEPING_VINES);
         this.registerForSelfDrop(Blocks.CRIMSON_PLANKS);
         this.registerForSelfDrop(Blocks.WARPED_PLANKS);
         this.registerForSelfDrop(Blocks.WARPED_PRESSURE_PLATE);
@@ -608,7 +608,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.register(Blocks.GRASS_PATH, Blocks.DIRT);
         this.register(Blocks.KELP_PLANT, Blocks.KELP);
         this.register(Blocks.BAMBOO_SAPLING, Blocks.BAMBOO);
-        this.register(Blocks.WEEPING_VINES_PLANT, Blocks.WEEPING_VINES);
         this.registerWithFunction(Blocks.STONE, block -> BlockLootTableGenerator.createForBlockWithItemDrops(block, Blocks.COBBLESTONE));
         this.registerWithFunction(Blocks.GRASS_BLOCK, block -> BlockLootTableGenerator.createForBlockWithItemDrops(block, Blocks.DIRT));
         this.registerWithFunction(Blocks.PODZOL, block -> BlockLootTableGenerator.createForBlockWithItemDrops(block, Blocks.DIRT));
@@ -889,9 +888,13 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForNeedingSilkTouch(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS);
         this.registerForNeedingSilkTouch(Blocks.INFESTED_CRACKED_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS);
         this.registerForNeedingSilkTouch(Blocks.INFESTED_CHISELED_STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS);
+        this.method_26000(Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT);
+        this.method_26000(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT);
         this.register(Blocks.CAKE, BlockLootTableGenerator.createEmpty());
         this.register(Blocks.FROSTED_ICE, BlockLootTableGenerator.createEmpty());
         this.register(Blocks.SPAWNER, BlockLootTableGenerator.createEmpty());
+        this.register(Blocks.FIRE, BlockLootTableGenerator.createEmpty());
+        this.register(Blocks.SOUL_FIRE, BlockLootTableGenerator.createEmpty());
         HashSet<Identifier> set = Sets.newHashSet();
         for (Block block2 : Registry.BLOCK) {
             Identifier identifier = block2.getDropTableId();
@@ -905,6 +908,12 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         if (!this.lootTables.isEmpty()) {
             throw new IllegalStateException("Created block loot tables for non-blocks: " + this.lootTables.keySet());
         }
+    }
+
+    private void method_26000(Block block, Block block2) {
+        LootTable.Builder builder = LootTable.builder().withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(block).withCondition(RandomChanceLootCondition.builder(0.33333334f))).withFunction(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE, 2))));
+        this.register(block, builder);
+        this.register(block2, builder);
     }
 
     public static LootTable.Builder method_24817(Block block) {

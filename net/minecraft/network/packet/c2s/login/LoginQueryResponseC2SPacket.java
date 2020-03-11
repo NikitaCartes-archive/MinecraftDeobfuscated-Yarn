@@ -7,8 +7,8 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerLoginPacketListener;
-import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 public class LoginQueryResponseC2SPacket

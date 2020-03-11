@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoubleBlockProperties;
@@ -25,6 +24,7 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,7 +36,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
@@ -96,12 +96,12 @@ implements Waterloggable {
             return this.getFallback();
         }
     };
-    private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableScreenHandlerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableScreenHandlerFactory>>(){
+    private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NamedScreenHandlerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NamedScreenHandlerFactory>>(){
 
         @Override
-        public Optional<NameableScreenHandlerFactory> getFromBoth(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
+        public Optional<NamedScreenHandlerFactory> getFromBoth(final ChestBlockEntity chestBlockEntity, final ChestBlockEntity chestBlockEntity2) {
             final DoubleInventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
-            return Optional.of(new NameableScreenHandlerFactory(){
+            return Optional.of(new NamedScreenHandlerFactory(){
 
                 @Override
                 @Nullable
@@ -128,12 +128,12 @@ implements Waterloggable {
         }
 
         @Override
-        public Optional<NameableScreenHandlerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
+        public Optional<NamedScreenHandlerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
             return Optional.of(chestBlockEntity);
         }
 
         @Override
-        public Optional<NameableScreenHandlerFactory> getFallback() {
+        public Optional<NamedScreenHandlerFactory> getFallback() {
             return Optional.empty();
         }
 
@@ -267,9 +267,9 @@ implements Waterloggable {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        NameableScreenHandlerFactory nameableScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
-        if (nameableScreenHandlerFactory != null) {
-            player.openHandledScreen(nameableScreenHandlerFactory);
+        NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
+        if (namedScreenHandlerFactory != null) {
+            player.openHandledScreen(namedScreenHandlerFactory);
             player.incrementStat(this.getOpenStat());
             PiglinBrain.onGoldBlockBroken(player);
         }
@@ -293,7 +293,7 @@ implements Waterloggable {
 
     @Override
     @Nullable
-    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         return this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
     }
 
@@ -374,7 +374,7 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         return false;
     }
 

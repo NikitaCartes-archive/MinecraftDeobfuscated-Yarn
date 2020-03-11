@@ -32,7 +32,7 @@ extends HugeMushroomFeature {
                 boolean bl5 = bl || bl2;
                 boolean bl7 = bl6 = bl3 || bl4;
                 if (bl5 && bl6) continue;
-                mutable.setOffset(start, j, y, k);
+                mutable.set(start, j, y, k);
                 if (world.getBlockState(mutable).isFullOpaque(world, mutable)) continue;
                 boolean bl72 = bl || bl6 && j == 1 - i;
                 boolean bl8 = bl2 || bl6 && j == i - 1;

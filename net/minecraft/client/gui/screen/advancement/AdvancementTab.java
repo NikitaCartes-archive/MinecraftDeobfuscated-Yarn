@@ -101,7 +101,7 @@ extends DrawableHelper {
         int l = j % 16;
         for (int m = -1; m <= 15; ++m) {
             for (int n = -1; n <= 8; ++n) {
-                AdvancementTab.blit(k + 16 * m, l + 16 * n, 0.0f, 0.0f, 16, 16, 16, 16);
+                AdvancementTab.drawTexture(k + 16 * m, l + 16 * n, 0.0f, 0.0f, 16, 16, 16, 16);
             }
         }
         this.rootWidget.renderLines(i, j, true);

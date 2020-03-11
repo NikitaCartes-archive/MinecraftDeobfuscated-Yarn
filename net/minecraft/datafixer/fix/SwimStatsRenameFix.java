@@ -14,8 +14,8 @@ import net.minecraft.datafixer.TypeReferences;
 
 public class SwimStatsRenameFix
 extends DataFix {
-    public SwimStatsRenameFix(Schema schema, boolean bl) {
-        super(schema, bl);
+    public SwimStatsRenameFix(Schema outputSchema, boolean changesType) {
+        super(outputSchema, changesType);
     }
 
     @Override

@@ -329,10 +329,10 @@ extends RealmsScreen {
         private void drawImage(int x, int y, int xm, int ym, WorldTemplate worldTemplate) {
             RealmsTextureManager.bindWorldTemplate(worldTemplate.id, worldTemplate.image);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.blit(x + 1, y + 1, 0.0f, 0.0f, 38, 38, 38, 38);
+            DrawableHelper.drawTexture(x + 1, y + 1, 0.0f, 0.0f, 38, 38, 38, 38);
             RealmsSelectWorldTemplateScreen.this.client.getTextureManager().bindTexture(field_22721);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.blit(x, y, 0.0f, 0.0f, 40, 40, 40, 40);
+            DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 40, 40, 40, 40);
         }
 
         private void drawIcons(int x, int y, int xm, int ym, String link, String trailerLink, String recommendedPlayers) {
@@ -359,7 +359,7 @@ extends RealmsScreen {
                 RenderSystem.pushMatrix();
                 RenderSystem.scalef(1.0f, 1.0f, 1.0f);
                 float f = bl ? 15.0f : 0.0f;
-                DrawableHelper.blit(x + i, y, f, 0.0f, 15, 15, 30, 15);
+                DrawableHelper.drawTexture(x + i, y, f, 0.0f, 15, 15, 30, 15);
                 RenderSystem.popMatrix();
             }
             if (!"".equals(trailerLink)) {
@@ -369,7 +369,7 @@ extends RealmsScreen {
                 RenderSystem.scalef(1.0f, 1.0f, 1.0f);
                 int j = x + i + ("".equals(link) ? 0 : 17);
                 float g = bl2 ? 15.0f : 0.0f;
-                DrawableHelper.blit(j, y, g, 0.0f, 15, 15, 30, 15);
+                DrawableHelper.drawTexture(j, y, g, 0.0f, 15, 15, 30, 15);
                 RenderSystem.popMatrix();
             }
             if (bl && !"".equals(link)) {

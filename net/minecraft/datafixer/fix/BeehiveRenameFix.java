@@ -8,13 +8,13 @@ import net.minecraft.datafixer.fix.PointOfInterestRenameFix;
 
 public class BeehiveRenameFix
 extends PointOfInterestRenameFix {
-    public BeehiveRenameFix(Schema schema) {
-        super(schema, false);
+    public BeehiveRenameFix(Schema outputSchema) {
+        super(outputSchema, false);
     }
 
     @Override
-    protected String rename(String string) {
-        return string.equals("minecraft:bee_hive") ? "minecraft:beehive" : string;
+    protected String rename(String input) {
+        return input.equals("minecraft:bee_hive") ? "minecraft:beehive" : input;
     }
 }
 

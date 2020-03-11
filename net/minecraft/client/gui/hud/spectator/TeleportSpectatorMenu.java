@@ -63,7 +63,7 @@ SpectatorMenuCommand {
     @Override
     public void renderIcon(float brightness, int alpha) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-        DrawableHelper.blit(0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
+        DrawableHelper.drawTexture(0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
     }
 
     @Override

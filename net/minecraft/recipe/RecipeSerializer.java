@@ -4,6 +4,7 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.ArmorDyeRecipe;
 import net.minecraft.recipe.BannerDuplicateRecipe;
 import net.minecraft.recipe.BlastingRecipe;
@@ -29,7 +30,6 @@ import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.recipe.SuspiciousStewRecipe;
 import net.minecraft.recipe.TippedArrowRecipe;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public interface RecipeSerializer<T extends Recipe<?>> {

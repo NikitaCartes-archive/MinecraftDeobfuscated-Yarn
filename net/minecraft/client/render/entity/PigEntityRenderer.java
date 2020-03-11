@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class PigEntityRenderer
 extends MobEntityRenderer<PigEntity, PigEntityModel<PigEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/pig/pig.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/pig/pig.png");
 
     public PigEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new PigEntityModel(), 0.7f);
@@ -24,7 +24,7 @@ extends MobEntityRenderer<PigEntity, PigEntityModel<PigEntity>> {
 
     @Override
     public Identifier getTexture(PigEntity pigEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

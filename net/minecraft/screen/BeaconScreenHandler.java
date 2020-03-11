@@ -12,9 +12,9 @@ import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.BlockContext;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.tag.ItemTags;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeaconScreenHandler
 extends ScreenHandler {
-    private final Inventory paymentInv = new BasicInventory(1){
+    private final Inventory payment = new BasicInventory(1){
 
         @Override
         public boolean isValidInvStack(int slot, ItemStack stack) {
@@ -34,21 +34,21 @@ extends ScreenHandler {
             return 1;
         }
     };
-    private final SlotPayment paymentSlot;
-    private final BlockContext context;
+    private final PaymentSlot paymentSlot;
+    private final ScreenHandlerContext context;
     private final PropertyDelegate propertyDelegate;
 
     public BeaconScreenHandler(int syncId, Inventory inventory) {
-        this(syncId, inventory, new ArrayPropertyDelegate(3), BlockContext.EMPTY);
+        this(syncId, inventory, new ArrayPropertyDelegate(3), ScreenHandlerContext.EMPTY);
     }
 
-    public BeaconScreenHandler(int syncId, Inventory inventory, PropertyDelegate propertyDelegate, BlockContext blockContext) {
+    public BeaconScreenHandler(int syncId, Inventory inventory, PropertyDelegate propertyDelegate, ScreenHandlerContext context) {
         super(ScreenHandlerType.BEACON, syncId);
         int k;
-        BeaconScreenHandler.checkContainerDataCount(propertyDelegate, 3);
+        BeaconScreenHandler.checkDataCount(propertyDelegate, 3);
         this.propertyDelegate = propertyDelegate;
-        this.context = blockContext;
-        this.paymentSlot = new SlotPayment(this.paymentInv, 0, 136, 110);
+        this.context = context;
+        this.paymentSlot = new PaymentSlot(this.payment, 0, 136, 110);
         this.addSlot(this.paymentSlot);
         this.addProperties(propertyDelegate);
         int i = 36;
@@ -87,18 +87,18 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (invSlot == 0) {
+            if (index == 0) {
                 if (!this.insertItem(itemStack2, 1, 37, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getCount() == 1 ? !this.insertItem(itemStack2, 0, 1, false) : (invSlot >= 1 && invSlot < 28 ? !this.insertItem(itemStack2, 28, 37, false) : (invSlot >= 28 && invSlot < 37 ? !this.insertItem(itemStack2, 1, 28, false) : !this.insertItem(itemStack2, 1, 37, false)))) {
+            } else if (!this.paymentSlot.hasStack() && this.paymentSlot.canInsert(itemStack2) && itemStack2.getCount() == 1 ? !this.insertItem(itemStack2, 0, 1, false) : (index >= 1 && index < 28 ? !this.insertItem(itemStack2, 28, 37, false) : (index >= 28 && index < 37 ? !this.insertItem(itemStack2, 1, 28, false) : !this.insertItem(itemStack2, 1, 37, false)))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
@@ -141,13 +141,13 @@ extends ScreenHandler {
 
     @Environment(value=EnvType.CLIENT)
     public boolean hasPayment() {
-        return !this.paymentInv.getInvStack(0).isEmpty();
+        return !this.payment.getInvStack(0).isEmpty();
     }
 
-    class SlotPayment
+    class PaymentSlot
     extends Slot {
-        public SlotPayment(Inventory inventory, int i, int j, int k) {
-            super(inventory, i, j, k);
+        public PaymentSlot(Inventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
         }
 
         @Override

@@ -32,7 +32,7 @@ extends LivingEntityRenderer<T, M> {
 
     @Override
     protected boolean hasLabel(T mobEntity) {
-        return super.hasLabel(mobEntity) && (((LivingEntity)mobEntity).shouldRenderName() || ((Entity)mobEntity).hasCustomName() && mobEntity == this.renderManager.targetedEntity);
+        return super.hasLabel(mobEntity) && (((LivingEntity)mobEntity).shouldRenderName() || ((Entity)mobEntity).hasCustomName() && mobEntity == this.dispatcher.targetedEntity);
     }
 
     @Override
@@ -90,7 +90,7 @@ extends LivingEntityRenderer<T, M> {
         float w = t * v;
         float x = r * v;
         int y = this.getBlockLight(mobEntity, f);
-        int z = this.renderManager.getRenderer(entity).getBlockLight(entity, f);
+        int z = this.dispatcher.getRenderer(entity).getBlockLight(entity, f);
         int aa = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)mobEntity).getCameraPosVec(f)));
         int ab = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(f)));
         MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025f, 0.025f, w, x);

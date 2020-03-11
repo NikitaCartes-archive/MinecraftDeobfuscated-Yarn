@@ -27,14 +27,14 @@ import org.jetbrains.annotations.Nullable;
 public abstract class CommandBlockExecutor
 implements CommandOutput {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
-    private static final Text field_21515 = new LiteralText("@");
+    private static final Text DEFAULT_NAME = new LiteralText("@");
     private long lastExecution = -1L;
     private boolean updateLastExecution = true;
     private int successCount;
     private boolean trackOutput = true;
     private Text lastOutput;
     private String command = "";
-    private Text customName = field_21515;
+    private Text customName = DEFAULT_NAME;
 
     public int getSuccessCount() {
         return this.successCount;
@@ -48,47 +48,47 @@ implements CommandOutput {
         return this.lastOutput == null ? new LiteralText("") : this.lastOutput;
     }
 
-    public CompoundTag serialize(CompoundTag compoundTag) {
-        compoundTag.putString("Command", this.command);
-        compoundTag.putInt("SuccessCount", this.successCount);
-        compoundTag.putString("CustomName", Text.Serializer.toJson(this.customName));
-        compoundTag.putBoolean("TrackOutput", this.trackOutput);
+    public CompoundTag serialize(CompoundTag tag) {
+        tag.putString("Command", this.command);
+        tag.putInt("SuccessCount", this.successCount);
+        tag.putString("CustomName", Text.Serializer.toJson(this.customName));
+        tag.putBoolean("TrackOutput", this.trackOutput);
         if (this.lastOutput != null && this.trackOutput) {
-            compoundTag.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
+            tag.putString("LastOutput", Text.Serializer.toJson(this.lastOutput));
         }
-        compoundTag.putBoolean("UpdateLastExecution", this.updateLastExecution);
+        tag.putBoolean("UpdateLastExecution", this.updateLastExecution);
         if (this.updateLastExecution && this.lastExecution > 0L) {
-            compoundTag.putLong("LastExecution", this.lastExecution);
+            tag.putLong("LastExecution", this.lastExecution);
         }
-        return compoundTag;
+        return tag;
     }
 
-    public void deserialize(CompoundTag compoundTag) {
-        this.command = compoundTag.getString("Command");
-        this.successCount = compoundTag.getInt("SuccessCount");
-        if (compoundTag.contains("CustomName", 8)) {
-            this.setCustomName(Text.Serializer.fromJson(compoundTag.getString("CustomName")));
+    public void deserialize(CompoundTag tag) {
+        this.command = tag.getString("Command");
+        this.successCount = tag.getInt("SuccessCount");
+        if (tag.contains("CustomName", 8)) {
+            this.setCustomName(Text.Serializer.fromJson(tag.getString("CustomName")));
         }
-        if (compoundTag.contains("TrackOutput", 1)) {
-            this.trackOutput = compoundTag.getBoolean("TrackOutput");
+        if (tag.contains("TrackOutput", 1)) {
+            this.trackOutput = tag.getBoolean("TrackOutput");
         }
-        if (compoundTag.contains("LastOutput", 8) && this.trackOutput) {
+        if (tag.contains("LastOutput", 8) && this.trackOutput) {
             try {
-                this.lastOutput = Text.Serializer.fromJson(compoundTag.getString("LastOutput"));
+                this.lastOutput = Text.Serializer.fromJson(tag.getString("LastOutput"));
             } catch (Throwable throwable) {
                 this.lastOutput = new LiteralText(throwable.getMessage());
             }
         } else {
             this.lastOutput = null;
         }
-        if (compoundTag.contains("UpdateLastExecution")) {
-            this.updateLastExecution = compoundTag.getBoolean("UpdateLastExecution");
+        if (tag.contains("UpdateLastExecution")) {
+            this.updateLastExecution = tag.getBoolean("UpdateLastExecution");
         }
-        this.lastExecution = this.updateLastExecution && compoundTag.contains("LastExecution") ? compoundTag.getLong("LastExecution") : -1L;
+        this.lastExecution = this.updateLastExecution && tag.contains("LastExecution") ? tag.getLong("LastExecution") : -1L;
     }
 
-    public void setCommand(String string) {
-        this.command = string;
+    public void setCommand(String command) {
+        this.command = command;
         this.successCount = 0;
     }
 
@@ -132,8 +132,8 @@ implements CommandOutput {
         return this.customName;
     }
 
-    public void setCustomName(@Nullable Text text) {
-        this.customName = text != null ? text : field_21515;
+    public void setCustomName(@Nullable Text name) {
+        this.customName = name != null ? name : DEFAULT_NAME;
     }
 
     @Override

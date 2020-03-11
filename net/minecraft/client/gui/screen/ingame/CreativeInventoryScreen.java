@@ -48,9 +48,9 @@ import net.minecraft.tag.TagContainer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -544,7 +544,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         for (ItemGroup itemGroup : ItemGroup.GROUPS) {
             if (this.renderTabTooltipIfHovered(itemGroup, mouseX, mouseY)) break;
         }
-        if (this.deleteItemSlot != null && selectedTab == ItemGroup.INVENTORY.getIndex() && this.isPointWithinBounds(this.deleteItemSlot.xPosition, this.deleteItemSlot.yPosition, 16, 16, mouseX, mouseY)) {
+        if (this.deleteItemSlot != null && selectedTab == ItemGroup.INVENTORY.getIndex() && this.isPointWithinBounds(this.deleteItemSlot.x, this.deleteItemSlot.y, 16, 16, mouseX, mouseY)) {
             this.renderTooltip(I18n.translate("inventory.binSlot", new Object[0]), mouseX, mouseY);
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -562,7 +562,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             }
             Item item = stack.getItem();
             ItemGroup itemGroup = item.getGroup();
-            if (itemGroup == null && item == Items.ENCHANTED_BOOK && (map = EnchantmentHelper.getEnchantments(stack)).size() == 1) {
+            if (itemGroup == null && item == Items.ENCHANTED_BOOK && (map = EnchantmentHelper.get(stack)).size() == 1) {
                 Enchantment enchantment = map.keySet().iterator().next();
                 for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
                     if (!itemGroup2.containsEnchantments(enchantment.type)) continue;
@@ -601,7 +601,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             this.renderTabIcon(itemGroup2);
         }
         this.client.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
-        this.blit(this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.drawTexture(this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
         this.searchBox.render(mouseX, mouseY, delta);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int i = this.x + 175;
@@ -609,7 +609,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         int k = j + 112;
         this.client.getTextureManager().bindTexture(TEXTURE);
         if (itemGroup.hasScrollbar()) {
-            this.blit(i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
+            this.drawTexture(i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
         }
         this.renderTabIcon(itemGroup);
         if (itemGroup == ItemGroup.INVENTORY) {
@@ -670,7 +670,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             k += 64;
             m += this.backgroundHeight - 4;
         }
-        this.blit(l, m, j, k, 28, 32);
+        this.drawTexture(l, m, j, k, 28, 32);
         this.setZOffset(100);
         this.itemRenderer.zOffset = 100.0f;
         int n2 = bl2 ? 1 : -1;
@@ -755,8 +755,8 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         }
 
         @Override
-        public void setStack(ItemStack itemStack) {
-            this.slot.setStack(itemStack);
+        public void setStack(ItemStack stack) {
+            this.slot.setStack(stack);
         }
 
         @Override
@@ -770,8 +770,8 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         }
 
         @Override
-        public int getMaxStackAmount(ItemStack itemStack) {
-            return this.slot.getMaxStackAmount(itemStack);
+        public int getMaxStackAmount(ItemStack stack) {
+            return this.slot.getMaxStackAmount(stack);
         }
 
         @Override
@@ -844,9 +844,9 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         }
 
         @Override
-        public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+        public ItemStack transferSlot(PlayerEntity player, int index) {
             Slot slot;
-            if (invSlot >= this.slots.size() - 9 && invSlot < this.slots.size() && (slot = (Slot)this.slots.get(invSlot)) != null && slot.hasStack()) {
+            if (index >= this.slots.size() - 9 && index < this.slots.size() && (slot = (Slot)this.slots.get(index)) != null && slot.hasStack()) {
                 slot.setStack(ItemStack.EMPTY);
             }
             return ItemStack.EMPTY;

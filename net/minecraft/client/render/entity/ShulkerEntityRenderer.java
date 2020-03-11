@@ -22,8 +22,8 @@ import net.minecraft.util.math.Vec3d;
 @Environment(value=EnvType.CLIENT)
 public class ShulkerEntityRenderer
 extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-    public static final Identifier SKIN = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
-    public static final Identifier[] SKIN_COLOR = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.stream().map(spriteIdentifier -> new Identifier("textures/" + spriteIdentifier.getTextureId().getPath() + ".png")).toArray(Identifier[]::new);
+    public static final Identifier TEXTURE = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
+    public static final Identifier[] COLORED_TEXTURES = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.stream().map(spriteIdentifier -> new Identifier("textures/" + spriteIdentifier.getTextureId().getPath() + ".png")).toArray(Identifier[]::new);
 
     public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new ShulkerEntityModel(), 0.0f);
@@ -64,9 +64,9 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
     @Override
     public Identifier getTexture(ShulkerEntity shulkerEntity) {
         if (shulkerEntity.getColor() == null) {
-            return SKIN;
+            return TEXTURE;
         }
-        return SKIN_COLOR[shulkerEntity.getColor().getId()];
+        return COLORED_TEXTURES[shulkerEntity.getColor().getId()];
     }
 
     @Override

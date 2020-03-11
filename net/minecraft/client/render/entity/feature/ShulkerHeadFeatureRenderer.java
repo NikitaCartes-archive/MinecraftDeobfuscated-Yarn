@@ -41,7 +41,7 @@ extends FeatureRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         modelPart.yaw = k * ((float)Math.PI / 180);
         modelPart.pitch = l * ((float)Math.PI / 180);
         DyeColor dyeColor = shulkerEntity.getColor();
-        Identifier identifier = dyeColor == null ? ShulkerEntityRenderer.SKIN : ShulkerEntityRenderer.SKIN_COLOR[dyeColor.getId()];
+        Identifier identifier = dyeColor == null ? ShulkerEntityRenderer.TEXTURE : ShulkerEntityRenderer.COLORED_TEXTURES[dyeColor.getId()];
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(identifier));
         modelPart.render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(shulkerEntity, 0.0f));
         matrixStack.pop();

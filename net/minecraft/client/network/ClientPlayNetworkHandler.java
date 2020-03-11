@@ -49,12 +49,12 @@ import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.Screens;
 import net.minecraft.client.gui.screen.StatsListener;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
@@ -158,6 +158,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.ConfirmGuiActionC2SPacket;
@@ -285,7 +286,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -354,7 +354,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
         this.chunkLoadDistance = packet.getChunkLoadDistance();
-        this.world = new ClientWorld(this, new LevelInfo(packet.getSeed(), packet.getGameMode(), false, packet.isHardcore(), packet.getGeneratorType()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
+        this.world = new ClientWorld(this, new LevelInfo(packet.getSeed(), packet.getGameMode(), false, packet.isHardcore(), packet.getGeneratorType().getDefaultOptions()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
         this.client.joinWorld(this.world);
         if (this.client.player == null) {
             this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
@@ -536,7 +536,7 @@ implements ClientPlayPacketListener {
             } else {
                 entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), g, h, 3, true);
             }
-            entity.method_24830(packet.isOnGround());
+            entity.setOnGround(packet.isOnGround());
         }
     }
 
@@ -569,7 +569,7 @@ implements ClientPlayPacketListener {
                 float f = (float)(packet.getPitch() * 360) / 256.0f;
                 entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, f, 3, false);
             }
-            entity.method_24830(packet.isOnGround());
+            entity.setOnGround(packet.isOnGround());
         }
     }
 
@@ -912,7 +912,7 @@ implements ClientPlayPacketListener {
         if (dimensionType != clientPlayerEntity.dimension) {
             this.positionLookSetup = false;
             Scoreboard scoreboard = this.world.getScoreboard();
-            this.world = new ClientWorld(this, new LevelInfo(packet.getSha256Seed(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
+            this.world = new ClientWorld(this, new LevelInfo(packet.getSha256Seed(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType().getDefaultOptions()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
             this.world.setScoreboard(scoreboard);
             this.client.joinWorld(this.world);
             this.client.openScreen(new DownloadingTerrainScreen());
@@ -967,7 +967,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onOpenScreen(OpenScreenS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        Screens.open(packet.getScreenHandlerType(), this.client, packet.getSyncId(), packet.getName());
+        HandledScreens.open(packet.getScreenHandlerType(), this.client, packet.getSyncId(), packet.getName());
     }
 
     @Override
@@ -1020,10 +1020,10 @@ implements ClientPlayPacketListener {
     public void onInventory(InventoryS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ClientPlayerEntity playerEntity = this.client.player;
-        if (packet.getGuiId() == 0) {
-            playerEntity.playerScreenHandler.updateSlotStacks(packet.getSlotStacks());
-        } else if (packet.getGuiId() == playerEntity.currentScreenHandler.syncId) {
-            playerEntity.currentScreenHandler.updateSlotStacks(packet.getSlotStacks());
+        if (packet.getSyncId() == 0) {
+            playerEntity.playerScreenHandler.updateSlotStacks(packet.getContents());
+        } else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId) {
+            playerEntity.currentScreenHandler.updateSlotStacks(packet.getContents());
         }
     }
 

@@ -130,7 +130,7 @@ extends Goal {
     }
 
     private boolean canTeleportTo(BlockPos pos) {
-        PathNodeType pathNodeType = LandPathNodeMaker.getPathNodeType(this.world, pos.getX(), pos.getY(), pos.getZ());
+        PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(this.world, pos.getX(), pos.getY(), pos.getZ());
         if (pathNodeType != PathNodeType.WALKABLE) {
             return false;
         }

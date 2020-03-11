@@ -166,7 +166,7 @@ extends Feature<T> {
             }
             for (Direction direction : Direction.values()) {
                 BlockState blockState;
-                mutable.move(blockPos, direction);
+                mutable.set(blockPos, direction);
                 if (logs.contains(mutable) || !(blockState = world.getBlockState(mutable)).contains(Properties.DISTANCE_1_7)) continue;
                 ((Set)list.get(0)).add(mutable.toImmutable());
                 this.setBlockStateWithoutUpdatingNeighbors(world, mutable, (BlockState)blockState.with(Properties.DISTANCE_1_7, 1));
@@ -184,7 +184,7 @@ extends Feature<T> {
                 for (Direction direction2 : Direction.values()) {
                     int l;
                     BlockState blockState2;
-                    mutable.move(blockPos2, direction2);
+                    mutable.set(blockPos2, direction2);
                     if (set.contains(mutable) || set2.contains(mutable) || !(blockState2 = world.getBlockState(mutable)).contains(Properties.DISTANCE_1_7) || (l = blockState2.get(Properties.DISTANCE_1_7).intValue()) <= k + 1) continue;
                     BlockState blockState3 = (BlockState)blockState2.with(Properties.DISTANCE_1_7, k + 1);
                     this.setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState3);

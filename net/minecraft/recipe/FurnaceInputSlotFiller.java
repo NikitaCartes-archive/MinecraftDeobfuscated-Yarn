@@ -11,15 +11,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.InputSlotFiller;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
 public class FurnaceInputSlotFiller<C extends Inventory>
 extends InputSlotFiller<C> {
     private boolean slotMatchesRecipe;
 
-    public FurnaceInputSlotFiller(CraftingScreenHandler<C> craftingScreenHandler) {
-        super(craftingScreenHandler);
+    public FurnaceInputSlotFiller(AbstractRecipeScreenHandler<C> abstractRecipeScreenHandler) {
+        super(abstractRecipeScreenHandler);
     }
 
     @Override

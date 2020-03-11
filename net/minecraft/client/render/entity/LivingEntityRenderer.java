@@ -239,7 +239,7 @@ implements FeatureRendererContext<T, M> {
     protected boolean hasLabel(T livingEntity) {
         boolean bl;
         float f;
-        double d = this.renderManager.getSquaredDistanceToCamera((Entity)livingEntity);
+        double d = this.dispatcher.getSquaredDistanceToCamera((Entity)livingEntity);
         float f2 = f = ((Entity)livingEntity).isSneaky() ? 32.0f : 64.0f;
         if (d >= (double)(f * f)) {
             return false;

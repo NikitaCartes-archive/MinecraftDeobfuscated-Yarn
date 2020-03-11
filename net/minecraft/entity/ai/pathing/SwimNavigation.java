@@ -19,22 +19,22 @@ import net.minecraft.world.World;
 
 public class SwimNavigation
 extends EntityNavigation {
-    private boolean field_6689;
+    private boolean canJumpOutOfWater;
 
     public SwimNavigation(MobEntity mobEntity, World world) {
         super(mobEntity, world);
     }
 
     @Override
-    protected PathNodeNavigator createPathNodeNavigator(int i) {
-        this.field_6689 = this.entity instanceof DolphinEntity;
-        this.nodeMaker = new WaterPathNodeMaker(this.field_6689);
-        return new PathNodeNavigator(this.nodeMaker, i);
+    protected PathNodeNavigator createPathNodeNavigator(int range) {
+        this.canJumpOutOfWater = this.entity instanceof DolphinEntity;
+        this.nodeMaker = new WaterPathNodeMaker(this.canJumpOutOfWater);
+        return new PathNodeNavigator(this.nodeMaker, range);
     }
 
     @Override
     protected boolean isAtValidPosition() {
-        return this.field_6689 || this.isInLiquid();
+        return this.canJumpOutOfWater || this.isInLiquid();
     }
 
     @Override
@@ -53,7 +53,7 @@ extends EntityNavigation {
             return;
         }
         if (this.isAtValidPosition()) {
-            this.method_6339();
+            this.continueFollowingPath();
         } else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
             vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
             if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x) && MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y) && MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {
@@ -69,7 +69,7 @@ extends EntityNavigation {
     }
 
     @Override
-    protected void method_6339() {
+    protected void continueFollowingPath() {
         if (this.currentPath == null) {
             return;
         }
@@ -91,34 +91,34 @@ extends EntityNavigation {
             this.currentPath.setCurrentNodeIndex(j);
             break;
         }
-        this.method_6346(vec3d);
+        this.checkTimeouts(vec3d);
     }
 
     @Override
-    protected void method_6346(Vec3d vec3d) {
-        if (this.tickCount - this.field_6674 > 100) {
-            if (vec3d.squaredDistanceTo(this.field_6672) < 2.25) {
+    protected void checkTimeouts(Vec3d currentPos) {
+        if (this.tickCount - this.pathStartTime > 100) {
+            if (currentPos.squaredDistanceTo(this.pathStartPos) < 2.25) {
                 this.stop();
             }
-            this.field_6674 = this.tickCount;
-            this.field_6672 = vec3d;
+            this.pathStartTime = this.tickCount;
+            this.pathStartPos = currentPos;
         }
         if (this.currentPath != null && !this.currentPath.isFinished()) {
-            Vec3d vec3d2 = this.currentPath.getCurrentPosition();
-            if (vec3d2.equals(this.field_6680)) {
-                this.field_6670 += Util.getMeasuringTimeMs() - this.field_6669;
+            Vec3d vec3d = this.currentPath.getCurrentPosition();
+            if (vec3d.equals(this.lastNodePosition)) {
+                this.currentNodeMs += Util.getMeasuringTimeMs() - this.lastActiveTickMs;
             } else {
-                this.field_6680 = vec3d2;
-                double d = vec3d.distanceTo(this.field_6680);
-                double d2 = this.field_6682 = this.entity.getMovementSpeed() > 0.0f ? d / (double)this.entity.getMovementSpeed() * 100.0 : 0.0;
+                this.lastNodePosition = vec3d;
+                double d = currentPos.distanceTo(this.lastNodePosition);
+                double d2 = this.currentNodeTimeout = this.entity.getMovementSpeed() > 0.0f ? d / (double)this.entity.getMovementSpeed() * 100.0 : 0.0;
             }
-            if (this.field_6682 > 0.0 && (double)this.field_6670 > this.field_6682 * 2.0) {
-                this.field_6680 = Vec3d.ZERO;
-                this.field_6670 = 0L;
-                this.field_6682 = 0.0;
+            if (this.currentNodeTimeout > 0.0 && (double)this.currentNodeMs > this.currentNodeTimeout * 2.0) {
+                this.lastNodePosition = Vec3d.ZERO;
+                this.currentNodeMs = 0L;
+                this.currentNodeTimeout = 0.0;
                 this.stop();
             }
-            this.field_6669 = Util.getMeasuringTimeMs();
+            this.lastActiveTickMs = Util.getMeasuringTimeMs();
         }
     }
 

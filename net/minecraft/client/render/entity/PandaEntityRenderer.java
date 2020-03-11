@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class PandaEntityRenderer
 extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-    private static final Map<PandaEntity.Gene, Identifier> SKIN_MAP = Util.make(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
+    private static final Map<PandaEntity.Gene, Identifier> TEXTURES = Util.make(Maps.newEnumMap(PandaEntity.Gene.class), enumMap -> {
         enumMap.put(PandaEntity.Gene.NORMAL, new Identifier("textures/entity/panda/panda.png"));
         enumMap.put(PandaEntity.Gene.LAZY, new Identifier("textures/entity/panda/lazy_panda.png"));
         enumMap.put(PandaEntity.Gene.WORRIED, new Identifier("textures/entity/panda/worried_panda.png"));
@@ -38,7 +38,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
 
     @Override
     public Identifier getTexture(PandaEntity pandaEntity) {
-        return SKIN_MAP.getOrDefault((Object)pandaEntity.getProductGene(), SKIN_MAP.get((Object)PandaEntity.Gene.NORMAL));
+        return TEXTURES.getOrDefault((Object)pandaEntity.getProductGene(), TEXTURES.get((Object)PandaEntity.Gene.NORMAL));
     }
 
     @Override

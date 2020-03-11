@@ -76,16 +76,16 @@ extends ChunkManager {
     private final ChunkStatus[] chunkStatusCache = new ChunkStatus[4];
     private final Chunk[] chunkCache = new Chunk[4];
 
-    public ServerChunkManager(ServerWorld serverWorld, File file, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator<?> chunkGenerator, int i, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier) {
-        this.world = serverWorld;
-        this.mainThreadExecutor = new MainThreadExecutor(serverWorld);
+    public ServerChunkManager(ServerWorld world, File worldDirectory, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator<?> chunkGenerator, int viewDistance, WorldGenerationProgressListener progressListener, Supplier<PersistentStateManager> mainWorldPersistentStateManagerGetter) {
+        this.world = world;
+        this.mainThreadExecutor = new MainThreadExecutor(world);
         this.chunkGenerator = chunkGenerator;
         this.serverThread = Thread.currentThread();
-        File file2 = serverWorld.getDimension().getType().getSaveDirectory(file);
-        File file3 = new File(file2, "data");
-        file3.mkdirs();
-        this.persistentStateManager = new PersistentStateManager(file3, dataFixer);
-        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, file, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, supplier, i);
+        File file = world.getDimension().getType().getSaveDirectory(worldDirectory);
+        File file2 = new File(file, "data");
+        file2.mkdirs();
+        this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
+        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(world, worldDirectory, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), progressListener, mainWorldPersistentStateManagerGetter, viewDistance);
         this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
         this.initChunkCaches();
@@ -105,14 +105,14 @@ extends ChunkManager {
         return this.threadedAnvilChunkStorage.getTotalChunksLoadedCount();
     }
 
-    private void method_21738(long l, Chunk chunk, ChunkStatus chunkStatus) {
+    private void putInCache(long pos, Chunk chunk, ChunkStatus status) {
         for (int i = 3; i > 0; --i) {
             this.chunkPosCache[i] = this.chunkPosCache[i - 1];
             this.chunkStatusCache[i] = this.chunkStatusCache[i - 1];
             this.chunkCache[i] = this.chunkCache[i - 1];
         }
-        this.chunkPosCache[0] = l;
-        this.chunkStatusCache[0] = chunkStatus;
+        this.chunkPosCache[0] = pos;
+        this.chunkStatusCache[0] = status;
         this.chunkCache[0] = chunk;
     }
 
@@ -139,7 +139,7 @@ extends ChunkManager {
             }
             return null;
         });
-        this.method_21738(l, chunk2, leastStatus);
+        this.putInCache(l, chunk2, leastStatus);
         return chunk2;
     }
 
@@ -160,13 +160,13 @@ extends ChunkManager {
         if (chunkHolder == null) {
             return null;
         }
-        Either either = chunkHolder.method_21737(ChunkStatus.FULL).getNow(null);
+        Either either = chunkHolder.getNowFuture(ChunkStatus.FULL).getNow(null);
         if (either == null) {
             return null;
         }
         Chunk chunk2 = either.left().orElse(null);
         if (chunk2 != null) {
-            this.method_21738(l, chunk2, ChunkStatus.FULL);
+            this.putInCache(l, chunk2, ChunkStatus.FULL);
             if (chunk2 instanceof WorldChunk) {
                 return (WorldChunk)chunk2;
             }
@@ -271,31 +271,31 @@ extends ChunkManager {
     @Override
     public boolean shouldTickEntity(Entity entity) {
         long l = ChunkPos.toLong(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
-        return this.method_20585(l, ChunkHolder::getEntityTickingFuture);
+        return this.isFutureReady(l, ChunkHolder::getEntityTickingFuture);
     }
 
     @Override
     public boolean shouldTickChunk(ChunkPos pos) {
-        return this.method_20585(pos.toLong(), ChunkHolder::getEntityTickingFuture);
+        return this.isFutureReady(pos.toLong(), ChunkHolder::getEntityTickingFuture);
     }
 
     @Override
     public boolean shouldTickBlock(BlockPos pos) {
         long l = ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4);
-        return this.method_20585(l, ChunkHolder::getTickingFuture);
+        return this.isFutureReady(l, ChunkHolder::getTickingFuture);
     }
 
     public boolean method_20727(Entity entity) {
         long l = ChunkPos.toLong(MathHelper.floor(entity.getX()) >> 4, MathHelper.floor(entity.getZ()) >> 4);
-        return this.method_20585(l, ChunkHolder::getBorderFuture);
+        return this.isFutureReady(l, ChunkHolder::getBorderFuture);
     }
 
-    private boolean method_20585(long pos, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> function) {
+    private boolean isFutureReady(long pos, Function<ChunkHolder, CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>>> futureFunction) {
         ChunkHolder chunkHolder = this.getChunkHolder(pos);
         if (chunkHolder == null) {
             return false;
         }
-        Either<WorldChunk, ChunkHolder.Unloaded> either = function.apply(chunkHolder).getNow(ChunkHolder.UNLOADED_WORLD_CHUNK);
+        Either<WorldChunk, ChunkHolder.Unloaded> either = futureFunction.apply(chunkHolder).getNow(ChunkHolder.UNLOADED_WORLD_CHUNK);
         return either.left().isPresent();
     }
 

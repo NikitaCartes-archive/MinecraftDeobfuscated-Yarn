@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 
 public class Schema143
 extends Schema {
-    public Schema143(int i, Schema schema) {
-        super(i, schema);
+    public Schema143(int versionKey, Schema parent) {
+        super(versionKey, parent);
     }
 
     @Override

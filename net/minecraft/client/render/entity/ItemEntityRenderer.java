@@ -28,9 +28,9 @@ extends EntityRenderer<ItemEntity> {
     private final ItemRenderer itemRenderer;
     private final Random random = new Random();
 
-    public ItemEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer renderer) {
+    public ItemEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer itemRenderer) {
         super(dispatcher);
-        this.itemRenderer = renderer;
+        this.itemRenderer = itemRenderer;
         this.shadowSize = 0.15f;
         this.shadowDarkness = 0.75f;
     }

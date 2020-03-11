@@ -6,14 +6,14 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.recipebook.AbstractFurnaceRecipeBookScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandler>
-extends ScreenWithHandler<T>
+extends HandledScreen<T>
 implements RecipeBookProvider {
     private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
     public final AbstractFurnaceRecipeBookScreen recipeBook;
@@ -38,7 +38,7 @@ implements RecipeBookProvider {
     public void init() {
         super.init();
         this.narrow = this.width < 379;
-        this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, (CraftingScreenHandler)this.handler);
+        this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, (AbstractRecipeScreenHandler)this.handler);
         this.x = this.recipeBook.findLeftEdge(this.narrow, this.width, this.backgroundWidth);
         this.addButton(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
             this.recipeBook.reset(this.narrow);
@@ -83,13 +83,13 @@ implements RecipeBookProvider {
         this.client.getTextureManager().bindTexture(this.background);
         int i = this.x;
         int j = this.y;
-        this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         if (((AbstractFurnaceScreenHandler)this.handler).isBurning()) {
             k = ((AbstractFurnaceScreenHandler)this.handler).getFuelProgress();
-            this.blit(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
+            this.drawTexture(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
         }
         k = ((AbstractFurnaceScreenHandler)this.handler).getCookProgress();
-        this.blit(i + 79, j + 34, 176, 14, k + 1, 16);
+        this.drawTexture(i + 79, j + 34, 176, 14, k + 1, 16);
     }
 
     @Override

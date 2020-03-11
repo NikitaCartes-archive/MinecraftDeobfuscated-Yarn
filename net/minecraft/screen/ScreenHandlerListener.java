@@ -5,7 +5,7 @@ package net.minecraft.screen;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 public interface ScreenHandlerListener {
     public void onHandlerRegistered(ScreenHandler var1, DefaultedList<ItemStack> var2);

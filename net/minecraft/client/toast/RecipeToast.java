@@ -36,7 +36,7 @@ implements Toast {
         }
         manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-        manager.blit(0, 0, 0, 32, 160, 32);
+        manager.drawTexture(0, 0, 0, 32, 160, 32);
         manager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title", new Object[0]), 30.0f, 7.0f, -11534256);
         manager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description", new Object[0]), 30.0f, 18.0f, -16777216);
         Recipe<?> recipe = this.recipes.get((int)(currentTime / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));

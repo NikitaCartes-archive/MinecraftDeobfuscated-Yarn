@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class StringArgumentSerializer
 implements ArgumentSerializer<StringArgumentType> {

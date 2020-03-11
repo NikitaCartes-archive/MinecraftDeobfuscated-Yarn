@@ -88,8 +88,9 @@ implements Monster {
     public boolean tryAttack(Entity target) {
         this.movementCooldownTicks = 10;
         this.world.sendEntityStatus(this, (byte)4);
-        float f = this.isBaby() ? 0.5f : this.getAttackDamage() / 2.0f + (float)this.random.nextInt((int)this.getAttackDamage());
-        boolean bl = target.damage(DamageSource.mob(this), f);
+        float f = this.getAttackDamage();
+        float g = this.isAdult() || (int)f > 0 ? f / 2.0f + (float)this.random.nextInt((int)f) : f;
+        boolean bl = target.damage(DamageSource.mob(this), g);
         if (bl) {
             this.dealDamage(this, target);
             if (this.isAdult()) {
@@ -154,6 +155,8 @@ implements Monster {
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (world.getRandom().nextFloat() < 0.2f) {
             this.setBaby(true);
+            this.experiencePoints = 3;
+            this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(0.5);
         }
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
@@ -197,6 +200,11 @@ implements Monster {
     @Environment(value=EnvType.CLIENT)
     public int getMovementCooldownTicks() {
         return this.movementCooldownTicks;
+    }
+
+    @Override
+    protected boolean canDropLootAndXp() {
+        return true;
     }
 
     @Override

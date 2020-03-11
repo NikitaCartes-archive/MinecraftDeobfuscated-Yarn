@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 public class SpectatorTeleportC2SPacket

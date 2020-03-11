@@ -137,6 +137,7 @@ public class Items {
     public static final Item GOLD_ORE = Items.register(Blocks.GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item IRON_ORE = Items.register(Blocks.IRON_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item COAL_ORE = Items.register(Blocks.COAL_ORE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_23069 = Items.register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_LOG = Items.register(Blocks.OAK_LOG, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPRUCE_LOG = Items.register(Blocks.SPRUCE_LOG, ItemGroup.BUILDING_BLOCKS);
     public static final Item BIRCH_LOG = Items.register(Blocks.BIRCH_LOG, ItemGroup.BUILDING_BLOCKS);
@@ -232,6 +233,7 @@ public class Items {
     public static final Item WARPED_ROOTS = Items.register(Blocks.WARPED_ROOTS, ItemGroup.DECORATIONS);
     public static final Item NETHER_SPROUTS = Items.register(Blocks.NETHER_SPROUTS, ItemGroup.DECORATIONS);
     public static final Item WEEPING_VINES = Items.register(Blocks.WEEPING_VINES, ItemGroup.DECORATIONS);
+    public static final Item field_23070 = Items.register(Blocks.TWISTING_VINES, ItemGroup.DECORATIONS);
     public static final Item GOLD_BLOCK = Items.register(Blocks.GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item IRON_BLOCK = Items.register(Blocks.IRON_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_SLAB = Items.register(Blocks.OAK_SLAB, ItemGroup.BUILDING_BLOCKS);
@@ -690,6 +692,10 @@ public class Items {
     public static final Item GOLDEN_SHOVEL = Items.register("golden_shovel", (Item)new ShovelItem(ToolMaterials.GOLD, 1.5f, -3.0f, new Item.Settings().group(ItemGroup.TOOLS)));
     public static final Item GOLDEN_PICKAXE = Items.register("golden_pickaxe", (Item)new PickaxeItem(ToolMaterials.GOLD, 1, -2.8f, new Item.Settings().group(ItemGroup.TOOLS)));
     public static final Item GOLDEN_AXE = Items.register("golden_axe", (Item)new AxeItem(ToolMaterials.GOLD, 6.0f, -3.0f, new Item.Settings().group(ItemGroup.TOOLS)));
+    public static final Item NETHERITE_SWORD = Items.register("netherite_sword", (Item)new SwordItem(ToolMaterials.NETHERITE, 3, -2.4f, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
+    public static final Item NETHERITE_SHOVEL = Items.register("netherite_shovel", (Item)new ShovelItem(ToolMaterials.NETHERITE, 1.5f, -3.0f, new Item.Settings().group(ItemGroup.TOOLS).fireproof()));
+    public static final Item NETHERITE_PICKAXE = Items.register("netherite_pickaxe", (Item)new PickaxeItem(ToolMaterials.NETHERITE, 1, -2.8f, new Item.Settings().group(ItemGroup.TOOLS).fireproof()));
+    public static final Item NETHERITE_AXE = Items.register("netherite_axe", (Item)new AxeItem(ToolMaterials.NETHERITE, 5.0f, -3.0f, new Item.Settings().group(ItemGroup.TOOLS).fireproof()));
     public static final Item STRING = Items.register("string", (Item)new AliasedBlockItem(Blocks.TRIPWIRE, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item FEATHER = Items.register("feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item GUNPOWDER = Items.register("gunpowder", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -698,6 +704,7 @@ public class Items {
     public static final Item IRON_HOE = Items.register("iron_hoe", (Item)new HoeItem(ToolMaterials.IRON, -2, -1.0f, new Item.Settings().group(ItemGroup.TOOLS)));
     public static final Item DIAMOND_HOE = Items.register("diamond_hoe", (Item)new HoeItem(ToolMaterials.DIAMOND, -3, 0.0f, new Item.Settings().group(ItemGroup.TOOLS)));
     public static final Item GOLDEN_HOE = Items.register("golden_hoe", (Item)new HoeItem(ToolMaterials.GOLD, 0, -3.0f, new Item.Settings().group(ItemGroup.TOOLS)));
+    public static final Item NETHERITE_HOE = Items.register("netherite_hoe", (Item)new HoeItem(ToolMaterials.NETHERITE, -4, 0.0f, new Item.Settings().group(ItemGroup.TOOLS).fireproof()));
     public static final Item WHEAT_SEEDS = Items.register("wheat_seeds", (Item)new AliasedBlockItem(Blocks.WHEAT, new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item WHEAT = Items.register("wheat", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item BREAD = Items.register("bread", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.BREAD)));
@@ -721,6 +728,10 @@ public class Items {
     public static final Item GOLDEN_CHESTPLATE = Items.register("golden_chestplate", (Item)new ArmorItem(ArmorMaterials.GOLD, EquipmentSlot.CHEST, new Item.Settings().group(ItemGroup.COMBAT)));
     public static final Item GOLDEN_LEGGINGS = Items.register("golden_leggings", (Item)new ArmorItem(ArmorMaterials.GOLD, EquipmentSlot.LEGS, new Item.Settings().group(ItemGroup.COMBAT)));
     public static final Item GOLDEN_BOOTS = Items.register("golden_boots", (Item)new ArmorItem(ArmorMaterials.GOLD, EquipmentSlot.FEET, new Item.Settings().group(ItemGroup.COMBAT)));
+    public static final Item NETHERITE_HELMET = Items.register("netherite_helmet", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.HEAD, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
+    public static final Item NETHERITE_CHESTPLATE = Items.register("netherite_chestplate", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.CHEST, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
+    public static final Item NETHERITE_LEGGINGS = Items.register("netherite_leggings", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.LEGS, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
+    public static final Item NETHERITE_BOOTS = Items.register("netherite_boots", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.FEET, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
     public static final Item FLINT = Items.register("flint", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item PORKCHOP = Items.register("porkchop", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.PORKCHOP)));
     public static final Item COOKED_PORKCHOP = Items.register("cooked_porkchop", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COOKED_PORKCHOP)));
@@ -1033,15 +1044,6 @@ public class Items {
     public static final Item ANCIENT_DEBRIS = Items.register(new BlockItem(Blocks.ANCIENT_DEBRIS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
     public static final Item NETHERITE_INGOT = Items.register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
     public static final Item NETHERITE_SCRAP = Items.register("netherite_scrap", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
-    public static final Item NETHERITE_SWORD = Items.register("netherite_sword", (Item)new SwordItem(ToolMaterials.NETHERITE, 3, -2.4f, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
-    public static final Item NETHERITE_SHOVEL = Items.register("netherite_shovel", (Item)new ShovelItem(ToolMaterials.NETHERITE, 1.5f, -3.0f, new Item.Settings().group(ItemGroup.TOOLS).fireproof()));
-    public static final Item NETHERITE_PICKAXE = Items.register("netherite_pickaxe", (Item)new PickaxeItem(ToolMaterials.NETHERITE, 1, -2.8f, new Item.Settings().group(ItemGroup.TOOLS).fireproof()));
-    public static final Item NETHERITE_AXE = Items.register("netherite_axe", (Item)new AxeItem(ToolMaterials.NETHERITE, 5.0f, -3.0f, new Item.Settings().group(ItemGroup.TOOLS).fireproof()));
-    public static final Item NETHERITE_HOE = Items.register("netherite_hoe", (Item)new HoeItem(ToolMaterials.NETHERITE, -4, 0.0f, new Item.Settings().group(ItemGroup.TOOLS).fireproof()));
-    public static final Item NETHERITE_HELMET = Items.register("netherite_helmet", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.HEAD, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
-    public static final Item NETHERITE_CHESTPLATE = Items.register("netherite_chestplate", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.CHEST, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
-    public static final Item NETHERITE_LEGGINGS = Items.register("netherite_leggings", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.LEGS, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
-    public static final Item NETHERITE_BOOTS = Items.register("netherite_boots", (Item)new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.FEET, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
     public static final Item TARGET = Items.register(Blocks.TARGET, ItemGroup.REDSTONE);
     public static final Item CRYING_OBSIDIAN = Items.register(Blocks.CRYING_OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
 

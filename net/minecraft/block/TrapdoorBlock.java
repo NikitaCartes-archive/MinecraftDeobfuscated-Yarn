@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.Material;
@@ -12,6 +11,7 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -71,7 +71,7 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         switch (env) {
             case LAND: {
                 return state.get(OPEN);

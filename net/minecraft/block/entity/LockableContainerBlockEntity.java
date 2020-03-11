@@ -10,7 +10,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class LockableContainerBlockEntity
 extends BlockEntity
 implements Inventory,
-NameableScreenHandlerFactory,
+NamedScreenHandlerFactory,
 Nameable {
     private ContainerLock lock = ContainerLock.EMPTY;
     private Text customName;

@@ -13,8 +13,8 @@ public class FurnaceFuelSlot
 extends Slot {
     private final AbstractFurnaceScreenHandler handler;
 
-    public FurnaceFuelSlot(AbstractFurnaceScreenHandler handler, Inventory inventory, int invSlot, int xPosition, int yPosition) {
-        super(inventory, invSlot, xPosition, yPosition);
+    public FurnaceFuelSlot(AbstractFurnaceScreenHandler handler, Inventory inventory, int index, int x, int y) {
+        super(inventory, index, x, y);
         this.handler = handler;
     }
 
@@ -24,8 +24,8 @@ extends Slot {
     }
 
     @Override
-    public int getMaxStackAmount(ItemStack itemStack) {
-        return FurnaceFuelSlot.isBucket(itemStack) ? 1 : super.getMaxStackAmount(itemStack);
+    public int getMaxStackAmount(ItemStack stack) {
+        return FurnaceFuelSlot.isBucket(stack) ? 1 : super.getMaxStackAmount(stack);
     }
 
     public static boolean isBucket(ItemStack stack) {

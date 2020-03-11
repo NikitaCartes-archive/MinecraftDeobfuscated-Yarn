@@ -50,7 +50,8 @@ public class BlockTags {
     public static final Tag<Block> FENCES;
     public static final Tag<Block> TALL_FLOWERS;
     public static final Tag<Block> FLOWERS;
-    public static final Tag<Block> SHULKER_BOXES;
+    public static final Tag<Block> PIGLIN_REPELLENTS;
+    public static final Tag<Block> GOLD_ORES;
     public static final Tag<Block> FLOWER_POTS;
     public static final Tag<Block> ENDERMAN_HOLDABLE;
     public static final Tag<Block> ICE;
@@ -76,9 +77,10 @@ public class BlockTags {
     public static final Tag<Block> NYLIUM;
     public static final Tag<Block> WART_BLOCKS;
     public static final Tag<Block> BEACON_BASE_BLOCKS;
+    public static final Tag<Block> SOUL_SPEED_BLOCKS;
     public static final Tag<Block> WALL_POST_OVERRIDE;
     public static final Tag<Block> CLIMBABLE;
-    public static final Tag<Block> PIGLIN_REPELLENTS;
+    public static final Tag<Block> SHULKER_BOXES;
     public static final Tag<Block> HOGLIN_REPELLENTS;
 
     public static void setContainer(TagContainer<Block> container) {
@@ -132,7 +134,8 @@ public class BlockTags {
         FENCES = BlockTags.register("fences");
         TALL_FLOWERS = BlockTags.register("tall_flowers");
         FLOWERS = BlockTags.register("flowers");
-        SHULKER_BOXES = BlockTags.register("shulker_boxes");
+        PIGLIN_REPELLENTS = BlockTags.register("piglin_repellents");
+        GOLD_ORES = BlockTags.register("gold_ores");
         FLOWER_POTS = BlockTags.register("flower_pots");
         ENDERMAN_HOLDABLE = BlockTags.register("enderman_holdable");
         ICE = BlockTags.register("ice");
@@ -158,9 +161,10 @@ public class BlockTags {
         NYLIUM = BlockTags.register("nylium");
         WART_BLOCKS = BlockTags.register("wart_blocks");
         BEACON_BASE_BLOCKS = BlockTags.register("beacon_base_blocks");
+        SOUL_SPEED_BLOCKS = BlockTags.register("soul_speed_blocks");
         WALL_POST_OVERRIDE = BlockTags.register("wall_post_override");
         CLIMBABLE = BlockTags.register("climbable");
-        PIGLIN_REPELLENTS = BlockTags.register("piglin_repellents");
+        SHULKER_BOXES = BlockTags.register("shulker_boxes");
         HOGLIN_REPELLENTS = BlockTags.register("hoglin_repellents");
     }
 

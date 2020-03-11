@@ -34,7 +34,7 @@ implements Toast {
         }
         manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-        manager.blit(0, 0, 0, 64, 160, 32);
+        manager.drawTexture(0, 0, 0, 64, 160, 32);
         if (this.description == null) {
             manager.getGame().textRenderer.draw(this.title, 18.0f, 12.0f, -256);
         } else {

@@ -65,14 +65,19 @@ extends BipedEntityModel<T> {
             PiglinEntity piglinEntity = (PiglinEntity)mobEntity;
             PiglinEntity.Activity activity = piglinEntity.getActivity();
             if (activity == PiglinEntity.Activity.CROSSBOW_HOLD) {
-                CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
+                CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, !((MobEntity)mobEntity).isLeftHanded());
             } else if (activity == PiglinEntity.Activity.CROSSBOW_CHARGE) {
-                CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, true);
+                CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, !((MobEntity)mobEntity).isLeftHanded());
             } else if (activity == PiglinEntity.Activity.ADMIRING_ITEM) {
-                this.leftArm.yaw = 0.5f;
-                this.leftArm.pitch = -0.9f;
                 this.head.pitch = 0.5f;
                 this.head.yaw = 0.0f;
+                if (((MobEntity)mobEntity).isLeftHanded()) {
+                    this.rightArm.yaw = -0.5f;
+                    this.rightArm.pitch = -0.9f;
+                } else {
+                    this.leftArm.yaw = 0.5f;
+                    this.leftArm.pitch = -0.9f;
+                }
             }
         }
     }

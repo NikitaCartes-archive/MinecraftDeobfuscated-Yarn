@@ -13,8 +13,8 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class ArrowEntityRenderer
 extends ProjectileEntityRenderer<ArrowEntity> {
-    public static final Identifier SKIN = new Identifier("textures/entity/projectiles/arrow.png");
-    public static final Identifier TIPPED_SKIN = new Identifier("textures/entity/projectiles/tipped_arrow.png");
+    public static final Identifier TEXTURE = new Identifier("textures/entity/projectiles/arrow.png");
+    public static final Identifier TIPPED_TEXTURE = new Identifier("textures/entity/projectiles/tipped_arrow.png");
 
     public ArrowEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -22,7 +22,7 @@ extends ProjectileEntityRenderer<ArrowEntity> {
 
     @Override
     public Identifier getTexture(ArrowEntity arrowEntity) {
-        return arrowEntity.getColor() > 0 ? TIPPED_SKIN : SKIN;
+        return arrowEntity.getColor() > 0 ? TIPPED_TEXTURE : TEXTURE;
     }
 }
 

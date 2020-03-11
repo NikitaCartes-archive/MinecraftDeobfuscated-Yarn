@@ -98,7 +98,7 @@ public class UpgradeData {
             BlockState blockState;
             BlockState blockState2 = blockState = world.getBlockState(blockPos);
             for (Direction direction : directions) {
-                mutable.move(blockPos, direction);
+                mutable.set(blockPos, direction);
                 blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, world, blockPos, mutable);
             }
             Block.replaceBlock(blockState, blockState2, world, blockPos, 18);
@@ -130,7 +130,7 @@ public class UpgradeData {
                 mutable.set(chunkPos.getStartX() + k, (i << 4) + l, chunkPos.getStartZ() + m);
                 BlockState blockState2 = blockState = palettedContainer.get(j);
                 for (Direction direction : directions) {
-                    mutable2.move(mutable, direction);
+                    mutable2.set(mutable, direction);
                     if (mutable.getX() >> 4 != chunkPos.x || mutable.getZ() >> 4 != chunkPos.z) continue;
                     blockState2 = UpgradeData.applyAdjacentBlock(blockState2, direction, iWorld, mutable, mutable2);
                 }
@@ -247,7 +247,7 @@ public class UpgradeData {
                         world.setBlockState(blockPos, (BlockState)blockState.with(Properties.DISTANCE_1_7, j), 18);
                         if (i == 7) continue;
                         for (Direction direction : DIRECTIONS) {
-                            mutable.move(blockPos, direction);
+                            mutable.set(blockPos, direction);
                             BlockState blockState2 = world.getBlockState(mutable);
                             if (!blockState2.contains(Properties.DISTANCE_1_7) || blockState.get(Properties.DISTANCE_1_7) <= i) continue;
                             objectSet2.add(mutable.toImmutable());

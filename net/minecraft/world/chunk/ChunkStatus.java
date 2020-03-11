@@ -66,7 +66,7 @@ public class ChunkStatus {
         }
         return CompletableFuture.completedFuture(Either.left(chunk));
     });
-    public static final ChunkStatus LIGHT = ChunkStatus.register("light", FEATURES, 1, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> ChunkStatus.method_20610(chunkStatus, serverLightingProvider, chunk), (chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> ChunkStatus.method_20610(chunkStatus, serverLightingProvider, chunk));
+    public static final ChunkStatus LIGHT = ChunkStatus.register("light", FEATURES, 1, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> ChunkStatus.getLightingFuture(chunkStatus, serverLightingProvider, chunk), (chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> ChunkStatus.getLightingFuture(chunkStatus, serverLightingProvider, chunk));
     public static final ChunkStatus SPAWN = ChunkStatus.register("spawn", LIGHT, 0, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk) -> chunkGenerator.populateEntities(new ChunkRegion(serverWorld, list)));
     public static final ChunkStatus HEIGHTMAPS = ChunkStatus.register("heightmaps", SPAWN, 0, POST_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk) -> {});
     public static final ChunkStatus FULL = ChunkStatus.register("full", HEIGHTMAPS, 0, POST_CARVER_HEIGHTMAPS, ChunkType.LEVELCHUNK, (chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> (CompletableFuture)function.apply(chunk), (chunkStatus, serverWorld, structureManager, serverLightingProvider, function, chunk) -> (CompletableFuture)function.apply(chunk));
@@ -89,12 +89,12 @@ public class ChunkStatus {
     private final ChunkType chunkType;
     private final EnumSet<Heightmap.Type> heightMapTypes;
 
-    private static CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_20610(ChunkStatus chunkStatus, ServerLightingProvider serverLightingProvider, Chunk chunk) {
-        boolean bl = ChunkStatus.method_20608(chunkStatus, chunk);
-        if (!chunk.getStatus().isAtLeast(chunkStatus)) {
-            ((ProtoChunk)chunk).setStatus(chunkStatus);
+    private static CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getLightingFuture(ChunkStatus status, ServerLightingProvider lightingProvider, Chunk chunk) {
+        boolean bl = ChunkStatus.shouldExcludeBlockLight(status, chunk);
+        if (!chunk.getStatus().isAtLeast(status)) {
+            ((ProtoChunk)chunk).setStatus(status);
         }
-        return serverLightingProvider.light(chunk, bl).thenApply(Either::left);
+        return lightingProvider.light(chunk, bl).thenApply(Either::left);
     }
 
     private static ChunkStatus register(String id, @Nullable ChunkStatus previous, int taskMargin, EnumSet<Heightmap.Type> heightMapTypes, ChunkType chunkType, SimpleTask task) {
@@ -120,8 +120,8 @@ public class ChunkStatus {
         return list;
     }
 
-    private static boolean method_20608(ChunkStatus chunkStatus, Chunk chunk) {
-        return chunk.getStatus().isAtLeast(chunkStatus) && chunk.isLightOn();
+    private static boolean shouldExcludeBlockLight(ChunkStatus status, Chunk chunk) {
+        return chunk.getStatus().isAtLeast(status) && chunk.isLightOn();
     }
 
     public static ChunkStatus getTargetGenerationStatus(int distance) {

@@ -8,7 +8,7 @@ import net.minecraft.structure.pool.FeaturePoolElement;
 import net.minecraft.structure.pool.ListPoolElement;
 import net.minecraft.structure.pool.SinglePoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 
 public interface StructurePoolElementType

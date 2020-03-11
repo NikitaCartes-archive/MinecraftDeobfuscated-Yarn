@@ -16,22 +16,22 @@ extends SkullEntityModel {
     private final ModelPart head;
     private final ModelPart jaw;
 
-    public DragonHeadEntityModel(float f) {
+    public DragonHeadEntityModel(float scale) {
         this.textureWidth = 256;
         this.textureHeight = 256;
-        float g = -16.0f;
+        float f = -16.0f;
         this.head = new ModelPart(this);
-        this.head.addCuboid("upperlip", -6.0f, -1.0f, -24.0f, 12, 5, 16, f, 176, 44);
-        this.head.addCuboid("upperhead", -8.0f, -8.0f, -10.0f, 16, 16, 16, f, 112, 30);
+        this.head.addCuboid("upperlip", -6.0f, -1.0f, -24.0f, 12, 5, 16, scale, 176, 44);
+        this.head.addCuboid("upperhead", -8.0f, -8.0f, -10.0f, 16, 16, 16, scale, 112, 30);
         this.head.mirror = true;
-        this.head.addCuboid("scale", -5.0f, -12.0f, -4.0f, 2, 4, 6, f, 0, 0);
-        this.head.addCuboid("nostril", -5.0f, -3.0f, -22.0f, 2, 2, 4, f, 112, 0);
+        this.head.addCuboid("scale", -5.0f, -12.0f, -4.0f, 2, 4, 6, scale, 0, 0);
+        this.head.addCuboid("nostril", -5.0f, -3.0f, -22.0f, 2, 2, 4, scale, 112, 0);
         this.head.mirror = false;
-        this.head.addCuboid("scale", 3.0f, -12.0f, -4.0f, 2, 4, 6, f, 0, 0);
-        this.head.addCuboid("nostril", 3.0f, -3.0f, -22.0f, 2, 2, 4, f, 112, 0);
+        this.head.addCuboid("scale", 3.0f, -12.0f, -4.0f, 2, 4, 6, scale, 0, 0);
+        this.head.addCuboid("nostril", 3.0f, -3.0f, -22.0f, 2, 2, 4, scale, 112, 0);
         this.jaw = new ModelPart(this);
         this.jaw.setPivot(0.0f, 4.0f, -8.0f);
-        this.jaw.addCuboid("jaw", -6.0f, 0.0f, -16.0f, 12, 4, 16, f, 176, 65);
+        this.jaw.addCuboid("jaw", -6.0f, 0.0f, -16.0f, 12, 4, 16, scale, 176, 65);
         this.head.addChild(this.jaw);
     }
 

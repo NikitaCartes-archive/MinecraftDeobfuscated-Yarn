@@ -636,7 +636,7 @@ extends RealmsScreen {
             if ((Util.getMeasuringTimeMs() / 800L & 1L) == 1L) {
                 k = 8;
             }
-            DrawableHelper.blit(this.createTrialButton.x + this.createTrialButton.getWidth() - 8 - 4, this.createTrialButton.y + this.createTrialButton.getHeight() / 2 - 4, 0.0f, k, 8, 8, 8, 16);
+            DrawableHelper.drawTexture(this.createTrialButton.x + this.createTrialButton.getWidth() - 8 - 4, this.createTrialButton.y + this.createTrialButton.getHeight() / 2 - 4, 0.0f, k, 8, 8, 8, 16);
         }
     }
 
@@ -645,7 +645,7 @@ extends RealmsScreen {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(0.5f, 0.5f, 0.5f);
-        DrawableHelper.blit(x * 2, y * 2 - 5, 0.0f, 0.0f, 200, 50, 200, 50);
+        DrawableHelper.drawTexture(x * 2, y * 2 - 5, 0.0f, 0.0f, 200, 50, 200, 50);
         RenderSystem.popMatrix();
     }
 
@@ -689,15 +689,15 @@ extends RealmsScreen {
         this.client.getTextureManager().bindTexture(field_22548);
         boolean k = false;
         int l = 32;
-        DrawableHelper.blit(0, 32, 0.0f, 0.0f, this.width, this.height - 40 - 32, 310, 166);
+        DrawableHelper.drawTexture(0, 32, 0.0f, 0.0f, this.width, this.height - 40 - 32, 310, 166);
         RenderSystem.disableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(field_22564);
-        DrawableHelper.blit(i, j, 0.0f, 0.0f, 310, 166, 310, 166);
+        DrawableHelper.drawTexture(i, j, 0.0f, 0.0f, 310, 166, 310, 166);
         if (!field_21517.isEmpty()) {
             this.client.getTextureManager().bindTexture(field_21517.get(this.carouselIndex));
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.blit(i + 7, j + 7, 0.0f, 0.0f, 195, 152, 195, 152);
+            DrawableHelper.drawTexture(i + 7, j + 7, 0.0f, 0.0f, 195, 152, 195, 152);
             if (this.carouselTick % 95 < 5) {
                 if (!this.hasSwitchedCarouselImage) {
                     this.carouselIndex = (this.carouselIndex + 1) % field_21517.size();
@@ -745,7 +745,7 @@ extends RealmsScreen {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         boolean bl32 = active && selectedOrHovered;
         float g = bl32 ? 16.0f : 0.0f;
-        DrawableHelper.blit(x, y - 6, g, 0.0f, 15, 25, 31, 25);
+        DrawableHelper.drawTexture(x, y - 6, g, 0.0f, 15, 25, 31, 25);
         boolean bl6 = bl4 = active && i != 0;
         if (bl4) {
             k = (Math.min(i, 6) - 1) * 8;
@@ -753,7 +753,7 @@ extends RealmsScreen {
             this.client.getTextureManager().bindTexture(field_22557);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             float h = bl ? 8.0f : 0.0f;
-            DrawableHelper.blit(x + 4, y + 4 + l, k, h, 8, 8, 48, 16);
+            DrawableHelper.drawTexture(x + 4, y + 4 + l, k, h, 8, 8, 48, 16);
         }
         k = xm + 12;
         l = ym;
@@ -809,7 +809,7 @@ extends RealmsScreen {
     private void drawExpired(int x, int y, int xm, int ym) {
         this.client.getTextureManager().bindTexture(field_22554);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        DrawableHelper.blit(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
+        DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27 && ym < this.height - 40 && ym > 32 && !this.shouldShowPopup()) {
             this.toolTip = I18n.translate("mco.selectServer.expired", new Object[0]);
         }
@@ -819,9 +819,9 @@ extends RealmsScreen {
         this.client.getTextureManager().bindTexture(field_22555);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         if (this.animTick % 20 < 10) {
-            DrawableHelper.blit(i, j, 0.0f, 0.0f, 10, 28, 20, 28);
+            DrawableHelper.drawTexture(i, j, 0.0f, 0.0f, 10, 28, 20, 28);
         } else {
-            DrawableHelper.blit(i, j, 10.0f, 0.0f, 10, 28, 20, 28);
+            DrawableHelper.drawTexture(i, j, 10.0f, 0.0f, 10, 28, 20, 28);
         }
         if (k >= i && k <= i + 9 && l >= j && l <= j + 27 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
             this.toolTip = m <= 0 ? I18n.translate("mco.selectServer.expires.soon", new Object[0]) : (m == 1 ? I18n.translate("mco.selectServer.expires.day", new Object[0]) : I18n.translate("mco.selectServer.expires.days", m));
@@ -831,7 +831,7 @@ extends RealmsScreen {
     private void drawOpen(int x, int y, int xm, int ym) {
         this.client.getTextureManager().bindTexture(field_22552);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        DrawableHelper.blit(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
+        DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27 && ym < this.height - 40 && ym > 32 && !this.shouldShowPopup()) {
             this.toolTip = I18n.translate("mco.selectServer.open", new Object[0]);
         }
@@ -840,7 +840,7 @@ extends RealmsScreen {
     private void drawClose(int x, int y, int xm, int ym) {
         this.client.getTextureManager().bindTexture(field_22553);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        DrawableHelper.blit(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
+        DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27 && ym < this.height - 40 && ym > 32 && !this.shouldShowPopup()) {
             this.toolTip = I18n.translate("mco.selectServer.closed", new Object[0]);
         }
@@ -854,7 +854,7 @@ extends RealmsScreen {
         this.client.getTextureManager().bindTexture(field_22556);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 28.0f : 0.0f;
-        DrawableHelper.blit(x, y, f, 0.0f, 28, 28, 56, 28);
+        DrawableHelper.drawTexture(x, y, f, 0.0f, 28, 28, 56, 28);
         if (bl) {
             this.toolTip = I18n.translate("mco.selectServer.leave", new Object[0]);
         }
@@ -868,7 +868,7 @@ extends RealmsScreen {
         this.client.getTextureManager().bindTexture(field_22561);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 28.0f : 0.0f;
-        DrawableHelper.blit(x, y, f, 0.0f, 28, 28, 56, 28);
+        DrawableHelper.drawTexture(x, y, f, 0.0f, 28, 28, 56, 28);
         if (bl) {
             this.toolTip = I18n.translate("mco.selectServer.configure", new Object[0]);
         }
@@ -906,7 +906,7 @@ extends RealmsScreen {
         this.client.getTextureManager().bindTexture(field_22562);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = hoveredOrFocused ? 20.0f : 0.0f;
-        DrawableHelper.blit(x, y, f, 0.0f, 20, 20, 40, 20);
+        DrawableHelper.drawTexture(x, y, f, 0.0f, 20, 20, 40, 20);
         if (bl) {
             this.toolTip = I18n.translate("mco.selectServer.info", new Object[0]);
         }
@@ -925,7 +925,7 @@ extends RealmsScreen {
         }
         boolean bl2 = active && selectedOrHovered;
         float f = bl2 ? 20.0f : 0.0f;
-        DrawableHelper.blit(x, y, f, 0.0f, 20, 20, 40, 20);
+        DrawableHelper.drawTexture(x, y, f, 0.0f, 20, 20, 40, 20);
         if (bl && active) {
             this.toolTip = I18n.translate("mco.news", new Object[0]);
         }
@@ -933,7 +933,7 @@ extends RealmsScreen {
             int i = bl ? 0 : (int)(Math.max(0.0f, Math.max(MathHelper.sin((float)(10 + this.animTick) * 0.57f), MathHelper.cos((float)this.animTick * 0.35f))) * -6.0f);
             this.client.getTextureManager().bindTexture(field_22557);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.blit(x + 10, y + 2 + i, 40.0f, 0.0f, 8, 8, 48, 16);
+            DrawableHelper.drawTexture(x + 10, y + 2 + i, 40.0f, 0.0f, 8, 8, 48, 16);
         }
     }
 
@@ -988,7 +988,7 @@ extends RealmsScreen {
             RealmsMainScreen.this.client.getTextureManager().bindTexture(field_22549);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             float f = this.isHovered() ? 12.0f : 0.0f;
-            CloseButton.blit(this.x, this.y, 0.0f, f, 12, 12, 12, 24);
+            CloseButton.drawTexture(this.x, this.y, 0.0f, f, 12, 12, 12, 24);
             if (this.isMouseOver(mouseX, mouseY)) {
                 RealmsMainScreen.this.toolTip = this.getMessage();
             }
@@ -1087,7 +1087,7 @@ extends RealmsScreen {
                 RealmsMainScreen.this.client.getTextureManager().bindTexture(field_22559);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 RenderSystem.enableAlphaTest();
-                DrawableHelper.blit(x + 10, y + 6, 0.0f, 0.0f, 40, 20, 40, 20);
+                DrawableHelper.drawTexture(x + 10, y + 6, 0.0f, 0.0f, 40, 20, 40, 20);
                 float f = 0.5f + (1.0f + MathHelper.sin((float)RealmsMainScreen.this.animTick * 0.25f)) * 0.25f;
                 int i = 0xFF000000 | (int)(127.0f * f) << 16 | (int)(255.0f * f) << 8 | (int)(127.0f * f);
                 RealmsMainScreen.this.drawCenteredString(RealmsMainScreen.this.textRenderer, I18n.translate("mco.selectServer.uninitialized", new Object[0]), x + 10 + 40 + 75, y + 12, i);
@@ -1137,10 +1137,10 @@ extends RealmsScreen {
                     RealmsMainScreen.this.expiredHover = true;
                 }
                 int o = bl ? 2 : 1;
-                DrawableHelper.blit(m, n, 0.0f, 46 + o * 20, k / 2, 8, 256, 256);
-                DrawableHelper.blit(m + k / 2, n, 200 - k / 2, 46 + o * 20, k / 2, 8, 256, 256);
-                DrawableHelper.blit(m, n + 8, 0.0f, 46 + o * 20 + 12, k / 2, 8, 256, 256);
-                DrawableHelper.blit(m + k / 2, n + 8, 200 - k / 2, 46 + o * 20 + 12, k / 2, 8, 256, 256);
+                DrawableHelper.drawTexture(m, n, 0.0f, 46 + o * 20, k / 2, 8, 256, 256);
+                DrawableHelper.drawTexture(m + k / 2, n, 200 - k / 2, 46 + o * 20, k / 2, 8, 256, 256);
+                DrawableHelper.drawTexture(m, n + 8, 0.0f, 46 + o * 20 + 12, k / 2, 8, 256, 256);
+                DrawableHelper.drawTexture(m + k / 2, n + 8, 200 - k / 2, 46 + o * 20 + 12, k / 2, 8, 256, 256);
                 RenderSystem.disableBlend();
                 int p = y + 11 + 5;
                 int q = bl ? 0xFFFFA0 : 0xFFFFFF;
@@ -1163,8 +1163,8 @@ extends RealmsScreen {
             RealmsMainScreen.this.textRenderer.draw(serverData.getName(), x + 2, y + 1, 0xFFFFFF);
             RealmsTextureManager.withBoundFace(serverData.ownerUUID, () -> {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                DrawableHelper.blit(x - 36, y, 32, 32, 8.0f, 8.0f, 8, 8, 64, 64);
-                DrawableHelper.blit(x - 36, y, 32, 32, 40.0f, 8.0f, 8, 8, 64, 64);
+                DrawableHelper.drawTexture(x - 36, y, 32, 32, 8.0f, 8.0f, 8, 8, 64, 64);
+                DrawableHelper.drawTexture(x - 36, y, 32, 32, 40.0f, 8.0f, 8, 8, 64, 64);
             });
         }
     }

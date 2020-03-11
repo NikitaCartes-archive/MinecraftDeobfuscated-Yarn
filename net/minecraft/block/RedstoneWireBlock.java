@@ -107,15 +107,15 @@ extends Block {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.Type.HORIZONTAL) {
             WireConnection wireConnection = (WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
-            if (wireConnection == WireConnection.NONE || world.getBlockState(mutable.move(pos, direction)).getBlock() == this) continue;
-            mutable.setOffset(Direction.DOWN);
+            if (wireConnection == WireConnection.NONE || world.getBlockState(mutable.set(pos, direction)).getBlock() == this) continue;
+            mutable.move(Direction.DOWN);
             BlockState blockState = world.getBlockState(mutable);
             if (blockState.getBlock() != Blocks.OBSERVER) {
                 BlockPos blockPos = mutable.offset(direction.getOpposite());
                 BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos), world, mutable, blockPos);
                 RedstoneWireBlock.replaceBlock(blockState, blockState2, world, mutable, flags);
             }
-            mutable.move(pos, direction).setOffset(Direction.UP);
+            mutable.set(pos, direction).move(Direction.UP);
             BlockState blockState3 = world.getBlockState(mutable);
             if (blockState3.getBlock() == Blocks.OBSERVER) continue;
             BlockPos blockPos2 = mutable.offset(direction.getOpposite());

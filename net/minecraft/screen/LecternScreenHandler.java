@@ -26,8 +26,8 @@ extends ScreenHandler {
 
     public LecternScreenHandler(int syncId, Inventory inventory, PropertyDelegate propertyDelegate) {
         super(ScreenHandlerType.LECTERN, syncId);
-        LecternScreenHandler.checkContainerSize(inventory, 1);
-        LecternScreenHandler.checkContainerDataCount(propertyDelegate, 1);
+        LecternScreenHandler.checkSize(inventory, 1);
+        LecternScreenHandler.checkDataCount(propertyDelegate, 1);
         this.inventory = inventory;
         this.propertyDelegate = propertyDelegate;
         this.addSlot(new Slot(inventory, 0, 0, 0){

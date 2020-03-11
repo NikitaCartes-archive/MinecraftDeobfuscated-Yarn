@@ -4,15 +4,15 @@
 package net.minecraft.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.BlockContext;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.stat.Stats;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class StonecutterBlock
 extends Block {
-    private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.stonecutter", new Object[0]);
+    private static final TranslatableText TITLE = new TranslatableText("container.stonecutter", new Object[0]);
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
@@ -52,15 +52,15 @@ extends Block {
         if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-        player.openHandledScreen(state.createContainerFactory(world, pos));
+        player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
         player.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
         return ActionResult.SUCCESS;
     }
 
     @Override
     @Nullable
-    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new StonecutterScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME);
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+        return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new StonecutterScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE);
     }
 
     @Override
@@ -94,7 +94,7 @@ extends Block {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         return false;
     }
 }

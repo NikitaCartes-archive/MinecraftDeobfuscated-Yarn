@@ -153,7 +153,7 @@ extends Entity {
             ItemStack itemStack;
             player.experiencePickUpDelay = 2;
             player.sendPickup(this, 1);
-            Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getMatchingEnchantedEquipment(Enchantments.MENDING, player, ItemStack::isDamaged);
+            Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.MENDING, player, ItemStack::isDamaged);
             if (entry != null && !(itemStack = entry.getValue()).isEmpty() && itemStack.isDamaged()) {
                 int i = Math.min(this.getMendingRepairAmount(this.amount), itemStack.getDamage());
                 this.amount -= this.getMendingRepairCost(i);

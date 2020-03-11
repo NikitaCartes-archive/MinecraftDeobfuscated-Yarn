@@ -17,8 +17,8 @@ import net.minecraft.datafixer.TypeReferences;
 
 public class EntityProjectileOwnerFix
 extends DataFix {
-    public EntityProjectileOwnerFix(Schema schema) {
-        super(schema, false);
+    public EntityProjectileOwnerFix(Schema outputSchema) {
+        super(outputSchema, false);
     }
 
     @Override

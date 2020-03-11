@@ -6,7 +6,6 @@ package net.minecraft.util.registry;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -49,7 +48,7 @@ import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.IndexedIterable;
+import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.SimpleRegistry;
@@ -151,9 +150,6 @@ implements IndexedIterable<T> {
     public abstract Optional<T> getOrEmpty(@Nullable Identifier var1);
 
     public abstract Set<Identifier> getIds();
-
-    @Nullable
-    public abstract T getRandom(Random var1);
 
     public Stream<T> stream() {
         return StreamSupport.stream(this.spliterator(), false);

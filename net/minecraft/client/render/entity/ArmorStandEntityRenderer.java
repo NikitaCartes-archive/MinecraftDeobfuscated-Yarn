@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ArmorStandEntityRenderer
 extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
-    public static final Identifier SKIN = new Identifier("textures/entity/armorstand/wood.png");
+    public static final Identifier TEXTURE = new Identifier("textures/entity/armorstand/wood.png");
 
     public ArmorStandEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new ArmorStandEntityModel(), 0.0f);
@@ -36,7 +36,7 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
 
     @Override
     public Identifier getTexture(ArmorStandEntity armorStandEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override
@@ -51,7 +51,7 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
     @Override
     protected boolean hasLabel(ArmorStandEntity armorStandEntity) {
         float f;
-        double d = this.renderManager.getSquaredDistanceToCamera(armorStandEntity);
+        double d = this.dispatcher.getSquaredDistanceToCamera(armorStandEntity);
         float f2 = f = armorStandEntity.isInSneakingPose() ? 32.0f : 64.0f;
         if (d >= (double)(f * f)) {
             return false;

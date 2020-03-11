@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Schema99
 extends Schema {
-    private static final Logger field_5749 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<String, String> field_5748 = DataFixUtils.make(Maps.newHashMap(), hashMap -> {
         hashMap.put("minecraft:furnace", "Furnace");
         hashMap.put("minecraft:lit_furnace", "Furnace");
@@ -67,16 +67,16 @@ extends Schema {
         }
     };
 
-    public Schema99(int i, Schema schema) {
-        super(i, schema);
+    public Schema99(int versionKey, Schema parent) {
+        super(versionKey, parent);
     }
 
-    protected static TypeTemplate method_5353(Schema schema) {
+    protected static TypeTemplate targetEquipment(Schema schema) {
         return DSL.optionalFields("Equipment", DSL.list(TypeReferences.ITEM_STACK.in(schema)));
     }
 
     protected static void method_5339(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> Schema99.method_5353(schema));
+        schema.register(map, string, () -> Schema99.targetEquipment(schema));
     }
 
     protected static void method_5368(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
@@ -132,7 +132,7 @@ extends Schema {
         Schema99.method_5339(schema, map, "Slime");
         Schema99.method_5339(schema, map, "Ghast");
         Schema99.method_5339(schema, map, "PigZombie");
-        schema.register(map, "Enderman", (String string) -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), Schema99.method_5353(schema)));
+        schema.register(map, "Enderman", (String string) -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), Schema99.targetEquipment(schema)));
         Schema99.method_5339(schema, map, "CaveSpider");
         Schema99.method_5339(schema, map, "Silverfish");
         Schema99.method_5339(schema, map, "Blaze");
@@ -153,9 +153,9 @@ extends Schema {
         Schema99.method_5339(schema, map, "SnowMan");
         Schema99.method_5339(schema, map, "Ozelot");
         Schema99.method_5339(schema, map, "VillagerGolem");
-        schema.register(map, "EntityHorse", (String string) -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "ArmorItem", TypeReferences.ITEM_STACK.in(schema), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema99.method_5353(schema)));
+        schema.register(map, "EntityHorse", (String string) -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "ArmorItem", TypeReferences.ITEM_STACK.in(schema), "SaddleItem", TypeReferences.ITEM_STACK.in(schema), Schema99.targetEquipment(schema)));
         Schema99.method_5339(schema, map, "Rabbit");
-        schema.register(map, "Villager", (String string) -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "Offers", DSL.optionalFields("Recipes", DSL.list(DSL.optionalFields("buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)))), Schema99.method_5353(schema)));
+        schema.register(map, "Villager", (String string) -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "Offers", DSL.optionalFields("Recipes", DSL.list(DSL.optionalFields("buy", TypeReferences.ITEM_STACK.in(schema), "buyB", TypeReferences.ITEM_STACK.in(schema), "sell", TypeReferences.ITEM_STACK.in(schema)))), Schema99.targetEquipment(schema)));
         schema.registerSimple(map, "EnderCrystal");
         schema.registerSimple(map, "AreaEffectCloud");
         schema.registerSimple(map, "ShulkerBullet");
@@ -193,14 +193,14 @@ extends Schema {
     }
 
     @Override
-    public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
+    public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
         schema.registerType(false, TypeReferences.LEVEL, DSL::remainder);
         schema.registerType(false, TypeReferences.PLAYER, () -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "EnderItems", DSL.list(TypeReferences.ITEM_STACK.in(schema))));
         schema.registerType(false, TypeReferences.CHUNK, () -> DSL.fields("Level", DSL.optionalFields("Entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema)), "TileEntities", DSL.list(TypeReferences.BLOCK_ENTITY.in(schema)), "TileTicks", DSL.list(DSL.fields("i", TypeReferences.BLOCK_NAME.in(schema))))));
-        schema.registerType(true, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), map2));
+        schema.registerType(true, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), blockEntityTypes));
         schema.registerType(true, TypeReferences.ENTITY_TREE, () -> DSL.optionalFields("Riding", TypeReferences.ENTITY_TREE.in(schema), TypeReferences.ENTITY.in(schema)));
         schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(DSL.namespacedString()));
-        schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), map));
+        schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), entityTypes));
         schema.registerType(true, TypeReferences.ITEM_STACK, () -> DSL.hook(DSL.optionalFields("id", DSL.or(DSL.constType(DSL.intType()), TypeReferences.ITEM_NAME.in(schema)), "tag", DSL.optionalFields("EntityTag", TypeReferences.ENTITY_TREE.in(schema), "BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema), "CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema)), "CanPlaceOn", DSL.list(TypeReferences.BLOCK_NAME.in(schema)))), field_5747, Hook.HookFunction.IDENTITY));
         schema.registerType(false, TypeReferences.OPTIONS, DSL::remainder);
         schema.registerType(false, TypeReferences.BLOCK_NAME, () -> DSL.or(DSL.constType(DSL.intType()), DSL.constType(DSL.namespacedString())));
@@ -221,7 +221,7 @@ extends Schema {
             if (string2 != null) {
                 return dynamic2.set("id", dynamic.createString(string2));
             }
-            field_5749.warn("Unable to resolve BlockEntity for ItemStack: {}", (Object)string);
+            LOGGER.warn("Unable to resolve BlockEntity for ItemStack: {}", (Object)string);
             return dynamic2;
         }).update("EntityTag", dynamic2 -> {
             String string2 = dynamic.get("id").asString("");

@@ -24,7 +24,7 @@ extends ScreenHandler {
         super(ScreenHandlerType.HOPPER, syncId);
         int j;
         this.inventory = inventory;
-        HopperScreenHandler.checkContainerSize(inventory, 5);
+        HopperScreenHandler.checkSize(inventory, 5);
         inventory.onInvOpen(playerInventory.player);
         int i = 51;
         for (j = 0; j < 5; ++j) {
@@ -46,13 +46,13 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (invSlot < this.inventory.getInvSize() ? !this.insertItem(itemStack2, this.inventory.getInvSize(), this.slots.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
+            if (index < this.inventory.getInvSize() ? !this.insertItem(itemStack2, this.inventory.getInvSize(), this.slots.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

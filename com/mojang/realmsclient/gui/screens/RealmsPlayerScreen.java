@@ -224,7 +224,7 @@ extends RealmsScreen {
         this.client.getTextureManager().bindTexture(field_22706);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 7.0f : 0.0f;
-        DrawableHelper.blit(x, y, 0.0f, f, 8, 7, 8, 14);
+        DrawableHelper.drawTexture(x, y, 0.0f, f, 8, 7, 8, 14);
         if (bl) {
             this.toolTip = I18n.translate("mco.configure.world.invites.remove.tooltip", new Object[0]);
         }
@@ -235,7 +235,7 @@ extends RealmsScreen {
         this.client.getTextureManager().bindTexture(field_22704);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 8.0f : 0.0f;
-        DrawableHelper.blit(x, y, 0.0f, f, 8, 8, 8, 16);
+        DrawableHelper.drawTexture(x, y, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
             this.toolTip = I18n.translate("mco.configure.world.invites.ops.tooltip", new Object[0]);
         }
@@ -246,7 +246,7 @@ extends RealmsScreen {
         this.client.getTextureManager().bindTexture(field_22705);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 8.0f : 0.0f;
-        DrawableHelper.blit(x, y, 0.0f, f, 8, 8, 8, 16);
+        DrawableHelper.drawTexture(x, y, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
             this.toolTip = I18n.translate("mco.configure.world.invites.normal.tooltip", new Object[0]);
         }
@@ -278,8 +278,8 @@ extends RealmsScreen {
             RealmsPlayerScreen.this.textRenderer.draw(I18n.translate("mco.configure.world.activityfeed.disabled", new Object[0]), RealmsPlayerScreen.this.column2_x, RealmsPlayerScreen.row(5), 0xA0A0A0);
             RealmsTextureManager.withBoundFace(invited.getUuid(), () -> {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                DrawableHelper.blit(RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0f, 8.0f, 8, 8, 64, 64);
-                DrawableHelper.blit(RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 40.0f, 8.0f, 8, 8, 64, 64);
+                DrawableHelper.drawTexture(RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0f, 8.0f, 8, 8, 64, 64);
+                DrawableHelper.drawTexture(RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 40.0f, 8.0f, 8, 8, 64, 64);
             });
         }
     }

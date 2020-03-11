@@ -43,7 +43,7 @@ extends AbstractPressableButtonWidget {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        CheckboxWidget.blit(this.x, this.y, 0.0f, this.checked ? 20.0f : 0.0f, 20, this.height, 32, 64);
+        CheckboxWidget.drawTexture(this.x, this.y, 0.0f, this.checked ? 20.0f : 0.0f, 20, this.height, 32, 64);
         this.renderBg(minecraftClient, mouseX, mouseY);
         int i = 0xE0E0E0;
         this.drawString(textRenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);

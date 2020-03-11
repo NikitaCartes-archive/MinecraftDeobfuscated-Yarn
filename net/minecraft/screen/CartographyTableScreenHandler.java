@@ -14,8 +14,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
-import net.minecraft.screen.BlockContext;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class CartographyTableScreenHandler
 extends ScreenHandler {
-    private final BlockContext context;
+    private final ScreenHandlerContext context;
     private boolean currentlyTakingItem;
     private long lastTakeResultTime;
     public final Inventory inventory = new BasicInventory(2){
@@ -45,10 +45,10 @@ extends ScreenHandler {
     };
 
     public CartographyTableScreenHandler(int syncId, PlayerInventory inventory) {
-        this(syncId, inventory, BlockContext.EMPTY);
+        this(syncId, inventory, ScreenHandlerContext.EMPTY);
     }
 
-    public CartographyTableScreenHandler(int syncId, PlayerInventory inventory, final BlockContext context) {
+    public CartographyTableScreenHandler(int syncId, PlayerInventory inventory, final ScreenHandlerContext context) {
         super(ScreenHandlerType.CARTOGRAPHY_TABLE, syncId);
         int i;
         this.context = context;
@@ -162,7 +162,7 @@ extends ScreenHandler {
                 this.sendContentUpdates();
                 return;
             }
-            if (!ItemStack.areEqualIgnoreDamage(itemStack4, oldResult)) {
+            if (!ItemStack.areEqual(itemStack4, oldResult)) {
                 this.resultSlot.setInvStack(2, itemStack4);
                 this.sendContentUpdates();
             }
@@ -175,15 +175,15 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2;
             ItemStack itemStack3 = itemStack2 = slot.getStack();
             Item item = itemStack3.getItem();
             itemStack = itemStack3.copy();
-            if (invSlot == 2) {
+            if (index == 2) {
                 if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
                     itemStack3 = this.context.run((world, blockPos) -> {
                         ItemStack itemStack2 = FilledMapItem.copyMap(world, this.inventory.getInvStack(0));
@@ -199,7 +199,7 @@ extends ScreenHandler {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack3, itemStack);
-            } else if (invSlot == 1 || invSlot == 0 ? !this.insertItem(itemStack3, 3, 39, false) : (item == Items.FILLED_MAP ? !this.insertItem(itemStack3, 0, 1, false) : (item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE ? !this.insertItem(itemStack3, 1, 2, false) : (invSlot >= 3 && invSlot < 30 ? !this.insertItem(itemStack3, 30, 39, false) : invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack3, 3, 30, false))))) {
+            } else if (index == 1 || index == 0 ? !this.insertItem(itemStack3, 3, 39, false) : (item == Items.FILLED_MAP ? !this.insertItem(itemStack3, 0, 1, false) : (item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE ? !this.insertItem(itemStack3, 1, 2, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack3, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack3, 3, 30, false))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack3.isEmpty()) {

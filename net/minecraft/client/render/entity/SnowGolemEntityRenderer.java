@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class SnowGolemEntityRenderer
 extends MobEntityRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/snow_golem.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/snow_golem.png");
 
     public SnowGolemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new SnowmanEntityModel(), 0.5f);
@@ -24,7 +24,7 @@ extends MobEntityRenderer<SnowGolemEntity, SnowmanEntityModel<SnowGolemEntity>> 
 
     @Override
     public Identifier getTexture(SnowGolemEntity snowGolemEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -30,6 +29,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.fluid.Fluid;
@@ -46,7 +46,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
@@ -60,13 +60,13 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.BooleanBiFunction;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
-import net.minecraft.util.IdList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.collection.IdList;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -199,7 +199,7 @@ implements ItemConvertible {
     public void updateNeighborStates(BlockState state, IWorld world, BlockPos pos, int flags) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : FACINGS) {
-            mutable.move(pos, direction);
+            mutable.set(pos, direction);
             BlockState blockState = world.getBlockState(mutable);
             BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), state, world, mutable, pos);
             Block.replaceBlock(blockState, blockState2, world, mutable, flags);
@@ -214,7 +214,7 @@ implements ItemConvertible {
         BlockState blockState = state;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : FACINGS) {
-            mutable.move(pos, direction);
+            mutable.set(pos, direction);
             blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
         }
         return blockState;
@@ -293,7 +293,7 @@ implements ItemConvertible {
     }
 
     @Deprecated
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         switch (env) {
             case LAND: {
                 return !state.isFullCube(world, pos);
@@ -395,6 +395,11 @@ implements ItemConvertible {
     }
 
     @Deprecated
+    public VoxelShape method_25959(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+        return this.getCollisionShape(blockState, blockView, blockPos, EntityContext.absent());
+    }
+
+    @Deprecated
     public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return state.getOutlineShape(world, pos);
     }
@@ -406,16 +411,16 @@ implements ItemConvertible {
 
     public static boolean topCoversMediumSquare(BlockView world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
-        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(world, pos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+        return !VoxelShapes.matchesAnywhere(blockState.method_25962(world, pos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
     public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
         BlockState blockState = world.getBlockState(pos);
-        return !blockState.matches(BlockTags.LEAVES) && !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(world, pos).getFace(side), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+        return !VoxelShapes.matchesAnywhere(blockState.method_25962(world, pos).getFace(side), SOLID_SMALL_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }
 
     public static boolean isSideSolidFullSquare(BlockState state, BlockView world, BlockPos pos, Direction side) {
-        return !state.matches(BlockTags.LEAVES) && Block.isFaceFullSquare(state.getCollisionShape(world, pos), side);
+        return Block.isFaceFullSquare(state.method_25962(world, pos), side);
     }
 
     public static boolean isFaceFullSquare(VoxelShape shape, Direction side) {
@@ -479,7 +484,7 @@ implements ItemConvertible {
 
     @Nullable
     @Deprecated
-    public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+    public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         return null;
     }
 

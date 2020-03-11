@@ -5,8 +5,8 @@ package net.minecraft.network.packet.c2s.query;
 
 import java.io.IOException;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerQueryPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class QueryRequestC2SPacket
 implements Packet<ServerQueryPacketListener> {

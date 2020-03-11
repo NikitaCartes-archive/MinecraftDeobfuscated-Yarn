@@ -8,7 +8,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.recipe.StonecuttingRecipe;
@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class StonecutterScreen
-extends ScreenWithHandler<StonecutterScreenHandler> {
+extends HandledScreen<StonecutterScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
     private float scrollAmount;
     private boolean mouseClicked;
@@ -51,9 +51,9 @@ extends ScreenWithHandler<StonecutterScreenHandler> {
         this.client.getTextureManager().bindTexture(TEXTURE);
         int i = this.x;
         int j = this.y;
-        this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         int k = (int)(41.0f * this.scrollAmount);
-        this.blit(i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
+        this.drawTexture(i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
         int l = this.x + 52;
         int m = this.y + 14;
         int n = this.scrollOffset + 12;
@@ -91,7 +91,7 @@ extends ScreenWithHandler<StonecutterScreenHandler> {
             } else if (mouseX >= k && mouseY >= m && mouseX < k + 16 && mouseY < m + 18) {
                 n += 36;
             }
-            this.blit(k, m - 1, 0, n, 16, 18);
+            this.drawTexture(k, m - 1, 0, n, 16, 18);
         }
     }
 

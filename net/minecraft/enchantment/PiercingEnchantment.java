@@ -10,7 +10,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class PiercingEnchantment
 extends Enchantment {
-    public PiercingEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+    public PiercingEnchantment(Enchantment.Rarity weight, EquipmentSlot ... slotTypes) {
         super(weight, EnchantmentTarget.CROSSBOW, slotTypes);
     }
 
@@ -30,8 +30,8 @@ extends Enchantment {
     }
 
     @Override
-    public boolean differs(Enchantment other) {
-        return super.differs(other) && other != Enchantments.MULTISHOT;
+    public boolean canAccept(Enchantment other) {
+        return super.canAccept(other) && other != Enchantments.MULTISHOT;
     }
 }
 

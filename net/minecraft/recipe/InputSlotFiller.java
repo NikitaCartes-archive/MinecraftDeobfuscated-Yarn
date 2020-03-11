@@ -15,8 +15,8 @@ import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.CraftingTableScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -29,10 +29,10 @@ implements RecipeGridAligner<Integer> {
     protected static final Logger LOGGER = LogManager.getLogger();
     protected final RecipeFinder recipeFinder = new RecipeFinder();
     protected PlayerInventory inventory;
-    protected CraftingScreenHandler<C> craftingScreenHandler;
+    protected AbstractRecipeScreenHandler<C> craftingScreenHandler;
 
-    public InputSlotFiller(CraftingScreenHandler<C> craftingScreenHandler) {
-        this.craftingScreenHandler = craftingScreenHandler;
+    public InputSlotFiller(AbstractRecipeScreenHandler<C> abstractRecipeScreenHandler) {
+        this.craftingScreenHandler = abstractRecipeScreenHandler;
     }
 
     public void fillInputSlots(ServerPlayerEntity entity, @Nullable Recipe<C> recipe, boolean craftAll) {
@@ -57,7 +57,7 @@ implements RecipeGridAligner<Integer> {
 
     protected void returnInputs() {
         for (int i = 0; i < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; ++i) {
-            if (i == this.craftingScreenHandler.getCraftingResultSlotIndex() && (this.craftingScreenHandler instanceof CraftingTableScreenHandler || this.craftingScreenHandler instanceof PlayerScreenHandler)) continue;
+            if (i == this.craftingScreenHandler.getCraftingResultSlotIndex() && (this.craftingScreenHandler instanceof CraftingScreenHandler || this.craftingScreenHandler instanceof PlayerScreenHandler)) continue;
             this.returnSlot(i);
         }
         this.craftingScreenHandler.clearCraftingSlots();

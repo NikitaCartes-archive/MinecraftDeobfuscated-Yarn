@@ -5,6 +5,7 @@ package net.minecraft.loot.function;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -16,14 +17,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.InfoEnchantment;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
+import net.minecraft.loot.function.LootFunction;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
@@ -62,7 +65,7 @@ extends ConditionalLootFunction {
         int i = MathHelper.nextInt(random, enchantment2.getMinimumLevel(), enchantment2.getMaximumLevel());
         if (stack.getItem() == Items.BOOK) {
             stack = new ItemStack(Items.ENCHANTED_BOOK);
-            EnchantedBookItem.addEnchantment(stack, new InfoEnchantment(enchantment2, i));
+            EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment2, i));
         } else {
             stack.addEnchantment(enchantment2, i);
         }
@@ -112,6 +115,31 @@ extends ConditionalLootFunction {
         @Override
         public /* synthetic */ ConditionalLootFunction fromJson(JsonObject json, JsonDeserializationContext context, LootCondition[] conditions) {
             return this.fromJson(json, context, conditions);
+        }
+    }
+
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
+        private final Set<Enchantment> enchantments = Sets.newHashSet();
+
+        @Override
+        protected Builder getThisBuilder() {
+            return this;
+        }
+
+        public Builder add(Enchantment enchantment) {
+            this.enchantments.add(enchantment);
+            return this;
+        }
+
+        @Override
+        public LootFunction build() {
+            return new EnchantRandomlyLootFunction(this.getConditions(), this.enchantments);
+        }
+
+        @Override
+        protected /* synthetic */ ConditionalLootFunction.Builder getThisBuilder() {
+            return this.getThisBuilder();
         }
     }
 }

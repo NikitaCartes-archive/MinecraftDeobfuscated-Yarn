@@ -18,10 +18,10 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class TurtleEntityModel<T extends TurtleEntity>
 extends QuadrupedEntityModel<T> {
-    private final ModelPart field_3594;
+    private final ModelPart tail;
 
-    public TurtleEntityModel(float f) {
-        super(12, f, true, 120.0f, 0.0f, 9.0f, 6.0f, 120);
+    public TurtleEntityModel(float scale) {
+        super(12, scale, true, 120.0f, 0.0f, 9.0f, 6.0f, 120);
         this.textureWidth = 128;
         this.textureHeight = 64;
         this.head = new ModelPart(this, 3, 0);
@@ -31,9 +31,9 @@ extends QuadrupedEntityModel<T> {
         this.torso.setTextureOffset(7, 37).addCuboid(-9.5f, 3.0f, -10.0f, 19.0f, 20.0f, 6.0f, 0.0f);
         this.torso.setTextureOffset(31, 1).addCuboid(-5.5f, 3.0f, -13.0f, 11.0f, 18.0f, 3.0f, 0.0f);
         this.torso.setPivot(0.0f, 11.0f, -10.0f);
-        this.field_3594 = new ModelPart(this);
-        this.field_3594.setTextureOffset(70, 33).addCuboid(-4.5f, 3.0f, -14.0f, 9.0f, 18.0f, 1.0f, 0.0f);
-        this.field_3594.setPivot(0.0f, 11.0f, -10.0f);
+        this.tail = new ModelPart(this);
+        this.tail.setTextureOffset(70, 33).addCuboid(-4.5f, 3.0f, -14.0f, 9.0f, 18.0f, 1.0f, 0.0f);
+        this.tail.setPivot(0.0f, 11.0f, -10.0f);
         boolean i = true;
         this.backRightLeg = new ModelPart(this, 1, 23);
         this.backRightLeg.addCuboid(-2.0f, 0.0f, 0.0f, 4.0f, 1.0f, 10.0f, 0.0f);
@@ -51,7 +51,7 @@ extends QuadrupedEntityModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.field_3594));
+        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.tail));
     }
 
     @Override
@@ -67,8 +67,8 @@ extends QuadrupedEntityModel<T> {
         this.frontLeftLeg.yaw = 0.0f;
         this.backRightLeg.yaw = 0.0f;
         this.backLeftLeg.yaw = 0.0f;
-        this.field_3594.pitch = 1.5707964f;
-        if (!((Entity)turtleEntity).isTouchingWater() && ((Entity)turtleEntity).method_24828()) {
+        this.tail.pitch = 1.5707964f;
+        if (!((Entity)turtleEntity).isTouchingWater() && ((Entity)turtleEntity).isOnGround()) {
             float k = ((TurtleEntity)turtleEntity).isDiggingSand() ? 4.0f : 1.0f;
             float l = ((TurtleEntity)turtleEntity).isDiggingSand() ? 2.0f : 1.0f;
             float m = 5.0f;
@@ -81,12 +81,12 @@ extends QuadrupedEntityModel<T> {
             this.backLeftLeg.yaw = MathHelper.cos(f * 5.0f) * 3.0f * g;
             this.backLeftLeg.pitch = 0.0f;
         }
-        this.field_3594.visible = !this.child && ((TurtleEntity)turtleEntity).hasEgg();
+        this.tail.visible = !this.child && ((TurtleEntity)turtleEntity).hasEgg();
     }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        boolean bl = this.field_3594.visible;
+        boolean bl = this.tail.visible;
         if (bl) {
             matrices.push();
             matrices.translate(0.0, -0.08f, 0.0);

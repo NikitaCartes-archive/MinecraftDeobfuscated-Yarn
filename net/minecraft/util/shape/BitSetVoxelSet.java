@@ -4,7 +4,7 @@
 package net.minecraft.util.shape;
 
 import java.util.BitSet;
-import net.minecraft.util.BooleanBiFunction;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.PairList;
 import net.minecraft.util.shape.VoxelSet;

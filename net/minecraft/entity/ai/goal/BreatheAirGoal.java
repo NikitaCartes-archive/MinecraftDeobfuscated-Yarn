@@ -4,11 +4,11 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -68,7 +68,7 @@ extends Goal {
 
     private boolean isAirPos(WorldView world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
-        return (world.getFluidState(pos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN) && blockState.canPlaceAtSide(world, pos, BlockPlacementEnvironment.LAND);
+        return (world.getFluidState(pos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN) && blockState.canPathfindThrough(world, pos, NavigationType.LAND);
     }
 }
 

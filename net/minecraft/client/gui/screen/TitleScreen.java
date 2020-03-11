@@ -170,7 +170,7 @@ extends Screen {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0f, 1.0f)) : 1.0f);
-        TitleScreen.blit(0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128);
+        TitleScreen.drawTexture(0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128);
         float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0f, 0.0f, 1.0f) : 1.0f;
         int l = MathHelper.ceil(g * 255.0f) << 24;
         if ((l & 0xFC000000) == 0) {
@@ -179,17 +179,17 @@ extends Screen {
         this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, g);
         if (this.isMinceraft) {
-            this.blit(j + 0, 30, 0, 0, 99, 44);
-            this.blit(j + 99, 30, 129, 0, 27, 44);
-            this.blit(j + 99 + 26, 30, 126, 0, 3, 44);
-            this.blit(j + 99 + 26 + 3, 30, 99, 0, 26, 44);
-            this.blit(j + 155, 30, 0, 45, 155, 44);
+            this.drawTexture(j + 0, 30, 0, 0, 99, 44);
+            this.drawTexture(j + 99, 30, 129, 0, 27, 44);
+            this.drawTexture(j + 99 + 26, 30, 126, 0, 3, 44);
+            this.drawTexture(j + 99 + 26 + 3, 30, 99, 0, 26, 44);
+            this.drawTexture(j + 155, 30, 0, 45, 155, 44);
         } else {
-            this.blit(j + 0, 30, 0, 0, 155, 44);
-            this.blit(j + 155, 30, 0, 45, 155, 44);
+            this.drawTexture(j + 0, 30, 0, 0, 155, 44);
+            this.drawTexture(j + 155, 30, 0, 45, 155, 44);
         }
         this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
-        TitleScreen.blit(j + 88, 67, 0.0f, 0.0f, 98, 14, 128, 16);
+        TitleScreen.drawTexture(j + 88, 67, 0.0f, 0.0f, 98, 14, 128, 16);
         if (this.splashText != null) {
             RenderSystem.pushMatrix();
             RenderSystem.translatef(this.width / 2 + 90, 70.0f, 0.0f);

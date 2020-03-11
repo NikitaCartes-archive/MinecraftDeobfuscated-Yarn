@@ -6,10 +6,10 @@ package net.minecraft.tag;
 import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class RegistryTagContainer<T>

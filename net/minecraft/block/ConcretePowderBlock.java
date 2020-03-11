@@ -53,7 +53,7 @@ extends FallingBlock {
         for (Direction direction : Direction.values()) {
             BlockState blockState = world.getBlockState(mutable);
             if (direction == Direction.DOWN && !ConcretePowderBlock.hardensIn(blockState)) continue;
-            mutable.move(pos, direction);
+            mutable.set(pos, direction);
             blockState = world.getBlockState(mutable);
             if (!ConcretePowderBlock.hardensIn(blockState) || blockState.isSideSolidFullSquare(world, pos, direction.getOpposite())) continue;
             bl = true;

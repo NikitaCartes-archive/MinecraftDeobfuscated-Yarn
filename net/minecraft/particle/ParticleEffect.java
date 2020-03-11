@@ -5,8 +5,8 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.PacketByteBuf;
 
 public interface ParticleEffect {
     public ParticleType<?> getType();

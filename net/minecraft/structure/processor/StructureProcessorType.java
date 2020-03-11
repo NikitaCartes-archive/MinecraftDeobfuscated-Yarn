@@ -10,7 +10,7 @@ import net.minecraft.structure.processor.JigsawReplacementStructureProcessor;
 import net.minecraft.structure.processor.NopStructureProcessor;
 import net.minecraft.structure.processor.RuleStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
-import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 
 public interface StructureProcessorType

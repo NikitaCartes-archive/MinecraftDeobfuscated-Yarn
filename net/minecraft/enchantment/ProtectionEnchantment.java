@@ -16,7 +16,7 @@ public class ProtectionEnchantment
 extends Enchantment {
     public final Type protectionType;
 
-    public ProtectionEnchantment(Enchantment.Weight weight, Type type, EquipmentSlot ... slotTypes) {
+    public ProtectionEnchantment(Enchantment.Rarity weight, Type type, EquipmentSlot ... slotTypes) {
         super(weight, EnchantmentTarget.ARMOR, slotTypes);
         this.protectionType = type;
         if (type == Type.FALL) {
@@ -63,7 +63,7 @@ extends Enchantment {
     }
 
     @Override
-    public boolean differs(Enchantment other) {
+    public boolean canAccept(Enchantment other) {
         if (other instanceof ProtectionEnchantment) {
             ProtectionEnchantment protectionEnchantment = (ProtectionEnchantment)other;
             if (this.protectionType == protectionEnchantment.protectionType) {
@@ -71,7 +71,7 @@ extends Enchantment {
             }
             return this.protectionType == Type.FALL || protectionEnchantment.protectionType == Type.FALL;
         }
-        return super.differs(other);
+        return super.canAccept(other);
     }
 
     public static int transformFireDuration(LivingEntity entity, int duration) {

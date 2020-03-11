@@ -18,12 +18,12 @@ extends CompositeEntityModel<T> {
     private final ModelPart leftEye;
     private final ModelPart mouth;
 
-    public SlimeEntityModel(int i) {
-        this.innerCube = new ModelPart(this, 0, i);
+    public SlimeEntityModel(int size) {
+        this.innerCube = new ModelPart(this, 0, size);
         this.rightEye = new ModelPart(this, 32, 0);
         this.leftEye = new ModelPart(this, 32, 4);
         this.mouth = new ModelPart(this, 32, 8);
-        if (i > 0) {
+        if (size > 0) {
             this.innerCube.addCuboid(-3.0f, 17.0f, -3.0f, 6.0f, 6.0f, 6.0f);
             this.rightEye.addCuboid(-3.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);
             this.leftEye.addCuboid(1.25f, 18.0f, -3.5f, 2.0f, 2.0f, 2.0f);

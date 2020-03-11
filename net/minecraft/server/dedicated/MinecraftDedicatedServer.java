@@ -11,6 +11,8 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.JsonOps;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -47,13 +49,13 @@ import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.UncaughtExceptionHandler;
-import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.logging.UncaughtExceptionHandler;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
@@ -62,6 +64,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -203,13 +206,9 @@ implements DedicatedServer {
         SkullBlockEntity.setSessionService(this.getSessionService());
         UserCache.setUseRemote(this.isOnlineMode());
         LOGGER.info("Preparing level \"{}\"", (Object)this.getLevelName());
-        JsonObject jsonObject = new JsonObject();
-        if (levelGeneratorType == LevelGeneratorType.FLAT) {
-            jsonObject.addProperty("flat_world_options", string2);
-        } else if (!string2.isEmpty()) {
-            jsonObject = JsonHelper.deserialize(string2);
-        }
-        this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
+        JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();
+        LevelGeneratorOptions levelGeneratorOptions = levelGeneratorType.loadOptions(new Dynamic<JsonObject>(JsonOps.INSTANCE, jsonObject));
+        this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorOptions);
         long o = Util.getMeasuringTimeNano() - l;
         String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
         LOGGER.info("Done ({})! For help, type \"help\"", (Object)string3);
@@ -294,13 +293,13 @@ implements DedicatedServer {
     @Override
     public CrashReport populateCrashReport(CrashReport crashReport) {
         crashReport = super.populateCrashReport(crashReport);
-        crashReport.getSystemDetailsSection().add("Is Modded", () -> this.method_24307().orElse("Unknown (can't tell)"));
+        crashReport.getSystemDetailsSection().add("Is Modded", () -> this.getModdedStatusMessage().orElse("Unknown (can't tell)"));
         crashReport.getSystemDetailsSection().add("Type", () -> "Dedicated Server (map_server.txt)");
         return crashReport;
     }
 
     @Override
-    public Optional<String> method_24307() {
+    public Optional<String> getModdedStatusMessage() {
         String string = this.getServerModName();
         if (!"vanilla".equals(string)) {
             return Optional.of("Definitely; Server brand changed to '" + string + "'");

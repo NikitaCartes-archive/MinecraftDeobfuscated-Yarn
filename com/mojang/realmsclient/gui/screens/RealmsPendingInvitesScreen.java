@@ -203,8 +203,8 @@ extends RealmsScreen {
             RealmsAcceptRejectButton.render(this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
             RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                DrawableHelper.blit(x, y, 32, 32, 8.0f, 8.0f, 8, 8, 64, 64);
-                DrawableHelper.blit(x, y, 32, 32, 40.0f, 8.0f, 8, 8, 64, 64);
+                DrawableHelper.drawTexture(x, y, 32, 32, 8.0f, 8.0f, 8, 8, 64, 64);
+                DrawableHelper.drawTexture(x, y, 32, 32, 40.0f, 8.0f, 8, 8, 64, 64);
             });
         }
 
@@ -220,7 +220,7 @@ extends RealmsScreen {
                 RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(field_22703);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = hovered ? 19.0f : 0.0f;
-                DrawableHelper.blit(x, y, f, 0.0f, 18, 18, 37, 18);
+                DrawableHelper.drawTexture(x, y, f, 0.0f, 18, 18, 37, 18);
                 if (hovered) {
                     RealmsPendingInvitesScreen.this.toolTip = I18n.translate("mco.invites.button.reject", new Object[0]);
                 }
@@ -244,7 +244,7 @@ extends RealmsScreen {
                 RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(field_22702);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = hovered ? 19.0f : 0.0f;
-                DrawableHelper.blit(x, y, f, 0.0f, 18, 18, 37, 18);
+                DrawableHelper.drawTexture(x, y, f, 0.0f, 18, 18, 37, 18);
                 if (hovered) {
                     RealmsPendingInvitesScreen.this.toolTip = I18n.translate("mco.invites.button.accept", new Object[0]);
                 }

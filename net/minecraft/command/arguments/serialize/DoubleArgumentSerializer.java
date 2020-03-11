@@ -8,7 +8,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import net.minecraft.command.arguments.BrigadierArgumentTypes;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class DoubleArgumentSerializer
 implements ArgumentSerializer<DoubleArgumentType> {

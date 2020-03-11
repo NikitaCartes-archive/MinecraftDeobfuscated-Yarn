@@ -21,12 +21,12 @@ public class ServerPropertiesLoader {
     }
 
     public void store() {
-        this.propertiesHandler.store(this.path);
+        this.propertiesHandler.saveProperties(this.path);
     }
 
     public ServerPropertiesLoader apply(UnaryOperator<ServerPropertiesHandler> unaryOperator) {
         this.propertiesHandler = (ServerPropertiesHandler)unaryOperator.apply(this.propertiesHandler);
-        this.propertiesHandler.store(this.path);
+        this.propertiesHandler.saveProperties(this.path);
         return this;
     }
 }

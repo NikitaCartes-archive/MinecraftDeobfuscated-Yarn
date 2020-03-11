@@ -31,7 +31,7 @@ import javax.swing.text.Document;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.dedicated.gui.PlayerListGui;
 import net.minecraft.server.dedicated.gui.PlayerStatsGui;
-import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

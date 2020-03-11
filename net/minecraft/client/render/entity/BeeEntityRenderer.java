@@ -14,10 +14,10 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class BeeEntityRenderer
 extends MobEntityRenderer<BeeEntity, BeeEntityModel<BeeEntity>> {
-    private static final Identifier ANGRY_SKIN = new Identifier("textures/entity/bee/bee_angry.png");
-    private static final Identifier ANGRY_NECTAR_SKIN = new Identifier("textures/entity/bee/bee_angry_nectar.png");
-    private static final Identifier PASSIVE_SKIN = new Identifier("textures/entity/bee/bee.png");
-    private static final Identifier NECTAR_SKIN = new Identifier("textures/entity/bee/bee_nectar.png");
+    private static final Identifier ANGRY_TEXTURE = new Identifier("textures/entity/bee/bee_angry.png");
+    private static final Identifier ANGRY_NECTAR_TEXTURE = new Identifier("textures/entity/bee/bee_angry_nectar.png");
+    private static final Identifier PASSIVE_TEXTURE = new Identifier("textures/entity/bee/bee.png");
+    private static final Identifier NECTAR_TEXTURE = new Identifier("textures/entity/bee/bee_nectar.png");
 
     public BeeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new BeeEntityModel(), 0.4f);
@@ -27,14 +27,14 @@ extends MobEntityRenderer<BeeEntity, BeeEntityModel<BeeEntity>> {
     public Identifier getTexture(BeeEntity beeEntity) {
         if (beeEntity.isAngry()) {
             if (beeEntity.hasNectar()) {
-                return ANGRY_NECTAR_SKIN;
+                return ANGRY_NECTAR_TEXTURE;
             }
-            return ANGRY_SKIN;
+            return ANGRY_TEXTURE;
         }
         if (beeEntity.hasNectar()) {
-            return NECTAR_SKIN;
+            return NECTAR_TEXTURE;
         }
-        return PASSIVE_SKIN;
+        return PASSIVE_TEXTURE;
     }
 }
 

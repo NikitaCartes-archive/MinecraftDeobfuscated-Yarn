@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
@@ -22,8 +22,8 @@ import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractInventoryScreen<T extends ScreenHandler>
-extends ScreenWithHandler<T> {
-    protected boolean offsetGuiForEffects;
+extends HandledScreen<T> {
+    protected boolean drawStatusEffects;
 
     public AbstractInventoryScreen(T screenHandler, PlayerInventory playerInventory, Text text) {
         super(screenHandler, playerInventory, text);
@@ -38,17 +38,17 @@ extends ScreenWithHandler<T> {
     protected void applyStatusEffectOffset() {
         if (this.client.player.getStatusEffects().isEmpty()) {
             this.x = (this.width - this.backgroundWidth) / 2;
-            this.offsetGuiForEffects = false;
+            this.drawStatusEffects = false;
         } else {
             this.x = 160 + (this.width - this.backgroundWidth - 200) / 2;
-            this.offsetGuiForEffects = true;
+            this.drawStatusEffects = true;
         }
     }
 
     @Override
     public void render(int mouseX, int mouseY, float delta) {
         super.render(mouseX, mouseY, delta);
-        if (this.offsetGuiForEffects) {
+        if (this.drawStatusEffects) {
             this.drawStatusEffects();
         }
     }
@@ -75,7 +75,7 @@ extends ScreenWithHandler<T> {
         int i = this.y;
         for (StatusEffectInstance statusEffectInstance : effects) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.blit(x, i, 0, 166, 140, 32);
+            this.drawTexture(x, i, 0, 166, 140, 32);
             i += yIncrement;
         }
     }
@@ -87,7 +87,7 @@ extends ScreenWithHandler<T> {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
             this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-            AbstractInventoryScreen.blit(x + 6, i + 7, this.getZOffset(), 18, 18, sprite);
+            AbstractInventoryScreen.drawSprite(x + 6, i + 7, this.getZOffset(), 18, 18, sprite);
             i += yIncrement;
         }
     }

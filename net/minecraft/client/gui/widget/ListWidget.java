@@ -122,7 +122,7 @@ implements Drawable {
         this.capYPosition();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -346,7 +346,7 @@ implements Drawable {
     protected void renderHoleBackground(int top, int bottom, int topAlpha, int bottomAlpha) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+        this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);

@@ -13,6 +13,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.timer.Timer;
@@ -131,7 +132,7 @@ extends LevelProperties {
     }
 
     @Override
-    public void setSpawnPos(BlockPos blockPos) {
+    public void setSpawnPos(BlockPos pos) {
     }
 
     @Override
@@ -174,7 +175,7 @@ extends LevelProperties {
     }
 
     @Override
-    public void setGeneratorType(LevelGeneratorType levelGeneratorType) {
+    public void setGeneratorOptions(LevelGeneratorOptions options) {
     }
 
     @Override
@@ -224,19 +225,19 @@ extends LevelProperties {
     }
 
     @Override
-    public void setWorldData(DimensionType type, CompoundTag compoundTag) {
-        this.properties.setWorldData(type, compoundTag);
+    public void setWorldData(DimensionType type, CompoundTag tag) {
+        this.properties.setWorldData(type, tag);
     }
 
     @Override
-    public CompoundTag getWorldData(DimensionType dimensionType) {
-        return this.properties.getWorldData(dimensionType);
+    public CompoundTag getWorldData(DimensionType type) {
+        return this.properties.getWorldData(type);
     }
 
     @Override
-    public void populateCrashReport(CrashReportSection crashReportSection) {
-        crashReportSection.add("Derived", true);
-        this.properties.populateCrashReport(crashReportSection);
+    public void populateCrashReport(CrashReportSection section) {
+        section.add("Derived", true);
+        this.properties.populateCrashReport(section);
     }
 }
 

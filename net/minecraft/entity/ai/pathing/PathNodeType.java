@@ -29,8 +29,8 @@ public enum PathNodeType {
 
     private final float defaultPenalty;
 
-    private PathNodeType(float f) {
-        this.defaultPenalty = f;
+    private PathNodeType(float defaultPenalty) {
+        this.defaultPenalty = defaultPenalty;
     }
 
     public float getDefaultPenalty() {

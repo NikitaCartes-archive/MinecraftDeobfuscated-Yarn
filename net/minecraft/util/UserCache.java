@@ -55,9 +55,9 @@ public class UserCache {
     private final File cacheFile;
     private static final TypeToken<List<Entry>> ENTRY_LIST_TYPE;
 
-    public UserCache(GameProfileRepository profileRepository, File file) {
+    public UserCache(GameProfileRepository profileRepository, File cacheFile) {
         this.profileRepository = profileRepository;
-        this.cacheFile = file;
+        this.cacheFile = cacheFile;
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeHierarchyAdapter(Entry.class, new JsonConverter());
         this.gson = gsonBuilder.create();
@@ -231,9 +231,9 @@ public class UserCache {
         private final GameProfile profile;
         private final Date expirationDate;
 
-        private Entry(GameProfile gameProfile, Date date) {
-            this.profile = gameProfile;
-            this.expirationDate = date;
+        private Entry(GameProfile profile, Date expiryDate) {
+            this.profile = profile;
+            this.expirationDate = expiryDate;
         }
 
         public GameProfile getProfile() {

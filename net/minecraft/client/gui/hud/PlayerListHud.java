@@ -135,11 +135,11 @@ extends DrawableHelper {
                 this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
                 y = 8 + (bl22 ? 8 : 0);
                 int z = 8 * (bl22 ? -1 : 1);
-                DrawableHelper.blit(w, x, 8, 8, 8.0f, y, 8, z, 64, 64);
+                DrawableHelper.drawTexture(w, x, 8, 8, 8.0f, y, 8, z, 64, 64);
                 if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
                     int aa = 8 + (bl22 ? 8 : 0);
                     int ab = 8 * (bl22 ? -1 : 1);
-                    DrawableHelper.blit(w, x, 8, 8, 40.0f, aa, 8, ab, 64, 64);
+                    DrawableHelper.drawTexture(w, x, 8, 8, 40.0f, aa, 8, ab, 64, 64);
                 }
                 w += 9;
             }
@@ -166,11 +166,11 @@ extends DrawableHelper {
 
     protected void renderLatencyIcon(int i, int j, int y, PlayerListEntry playerEntry) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+        this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
         boolean k = false;
         int l = playerEntry.getLatency() < 0 ? 5 : (playerEntry.getLatency() < 150 ? 0 : (playerEntry.getLatency() < 300 ? 1 : (playerEntry.getLatency() < 600 ? 2 : (playerEntry.getLatency() < 1000 ? 3 : 4))));
         this.setZOffset(this.getZOffset() + 100);
-        this.blit(j + i - 11, y, 0, 176 + l * 8, 10, 8);
+        this.drawTexture(j + i - 11, y, 0, 176 + l * 8, 10, 8);
         this.setZOffset(this.getZOffset() - 100);
     }
 
@@ -178,7 +178,7 @@ extends DrawableHelper {
         int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
         if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
             boolean bl;
-            this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+            this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
             long m = Util.getMeasuringTimeMs();
             if (this.showTime == playerListEntry.method_2976()) {
                 if (l < playerListEntry.method_2973()) {
@@ -204,23 +204,23 @@ extends DrawableHelper {
                 if (p > 3) {
                     int q;
                     for (q = n; q < o; ++q) {
-                        this.blit(j + q * p, i, bl ? 25 : 16, 0, 9, 9);
+                        this.drawTexture(j + q * p, i, bl ? 25 : 16, 0, 9, 9);
                     }
                     for (q = 0; q < n; ++q) {
-                        this.blit(j + q * p, i, bl ? 25 : 16, 0, 9, 9);
+                        this.drawTexture(j + q * p, i, bl ? 25 : 16, 0, 9, 9);
                         if (bl) {
                             if (q * 2 + 1 < playerListEntry.method_2960()) {
-                                this.blit(j + q * p, i, 70, 0, 9, 9);
+                                this.drawTexture(j + q * p, i, 70, 0, 9, 9);
                             }
                             if (q * 2 + 1 == playerListEntry.method_2960()) {
-                                this.blit(j + q * p, i, 79, 0, 9, 9);
+                                this.drawTexture(j + q * p, i, 79, 0, 9, 9);
                             }
                         }
                         if (q * 2 + 1 < l) {
-                            this.blit(j + q * p, i, q >= 10 ? 160 : 52, 0, 9, 9);
+                            this.drawTexture(j + q * p, i, q >= 10 ? 160 : 52, 0, 9, 9);
                         }
                         if (q * 2 + 1 != l) continue;
-                        this.blit(j + q * p, i, q >= 10 ? 169 : 61, 0, 9, 9);
+                        this.drawTexture(j + q * p, i, q >= 10 ? 169 : 61, 0, 9, 9);
                     }
                 } else {
                     float f = MathHelper.clamp((float)l / 20.0f, 0.0f, 1.0f);

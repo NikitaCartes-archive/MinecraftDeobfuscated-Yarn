@@ -72,9 +72,10 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.DynamicSerializableBoolean;
-import net.minecraft.util.DynamicSerializableUuid;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
+import net.minecraft.util.dynamic.DynamicSerializableBoolean;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.Vec3d;
@@ -119,7 +120,7 @@ public class PiglinBrain {
 
     private static void addFightActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
         float f = piglin.getWalkSpeed();
-        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(new ForgetAttackTargetTask(livingEntity -> !PiglinBrain.isPreferredAttackTarget(piglin, livingEntity)), new ConditionalTask<PiglinEntity>(PiglinBrain::isHoldingCrossbow, new AttackTask(5, 0.75f)), new RangedApproachTask(f * 1.2f), new MeleeAttackTask(1.5, 20), new CrossbowAttackTask(), new HuntFinishTask()), MemoryModuleType.ATTACK_TARGET);
+        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(new ForgetAttackTargetTask(livingEntity -> !PiglinBrain.isPreferredAttackTarget(piglin, livingEntity)), new ConditionalTask<PiglinEntity>(PiglinBrain::isHoldingCrossbow, new AttackTask(5, 0.75f)), new RangedApproachTask(f * 1.2f), new MeleeAttackTask(20), new CrossbowAttackTask(), new HuntFinishTask()), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static void addCelebrateActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
@@ -240,6 +241,13 @@ public class PiglinBrain {
         }
     }
 
+    protected static void method_25948(PiglinEntity piglinEntity) {
+        if (PiglinBrain.isAdmiringItem(piglinEntity) && !piglinEntity.getOffHandStack().isEmpty()) {
+            piglinEntity.dropStack(piglinEntity.getOffHandStack());
+            piglinEntity.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
+        }
+    }
+
     private static void method_24849(PiglinEntity piglin, ItemStack stack) {
         ItemStack itemStack = piglin.addItem(stack);
         PiglinBrain.dropBarteredItem(piglin, itemStack);
@@ -279,6 +287,9 @@ public class PiglinBrain {
         Item item = stack.getItem();
         if (item == Items.GOLD_NUGGET) {
             return true;
+        }
+        if (item.isIn(ItemTags.PIGLIN_REPELLENTS)) {
+            return false;
         }
         if (PiglinBrain.hasBeenHitByPlayer(piglin) && piglin.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET)) {
             return false;

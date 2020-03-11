@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ChickenEntityRenderer
 extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/chicken.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/chicken.png");
 
     public ChickenEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new ChickenEntityModel(), 0.3f);
@@ -23,7 +23,7 @@ extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
 
     @Override
     public Identifier getTexture(ChickenEntity chickenEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

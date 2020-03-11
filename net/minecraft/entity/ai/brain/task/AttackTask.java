@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
 
 public class AttackTask<E extends MobEntity>
 extends Task<E> {
@@ -31,8 +32,9 @@ extends Task<E> {
 
     @Override
     protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-        ((MobEntity)mobEntity).getMoveControl().strafeTo(-this.forwardMovement, 0.0f);
         ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(this.getAttackTarget(mobEntity)));
+        ((MobEntity)mobEntity).getMoveControl().strafeTo(-this.forwardMovement, 0.0f);
+        ((MobEntity)mobEntity).yaw = MathHelper.capRotation(((MobEntity)mobEntity).yaw, ((MobEntity)mobEntity).headYaw, 0.0f);
     }
 
     private boolean isAttackTargetVisible(E entity) {

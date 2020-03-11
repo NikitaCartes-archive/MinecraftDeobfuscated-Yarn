@@ -96,13 +96,12 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.BooleanBiFunction;
-import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
-import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.TypeFilterableList;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -111,6 +110,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.CsvWriter;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -905,7 +905,7 @@ extends World {
         }
         for (EntityNavigation entityNavigation : this.entityNavigations) {
             if (entityNavigation.shouldRecalculatePath()) continue;
-            entityNavigation.method_18053(pos);
+            entityNavigation.onBlockChanged(pos);
         }
     }
 

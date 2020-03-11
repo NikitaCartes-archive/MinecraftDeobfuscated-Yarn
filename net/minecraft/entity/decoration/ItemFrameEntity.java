@@ -314,7 +314,7 @@ extends AbstractDecorationEntity {
             if (itemStack.isEmpty()) {
                 ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", (Object)compoundTag);
             }
-            if (!(itemStack2 = this.getHeldItemStack()).isEmpty() && !ItemStack.areEqualIgnoreDamage(itemStack, itemStack2)) {
+            if (!(itemStack2 = this.getHeldItemStack()).isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
                 this.removeFromFrame(itemStack2);
             }
             this.setHeldItemStack(itemStack, false);

@@ -31,7 +31,7 @@ extends CoralFeature {
             if (!this.spawnCoralPiece(world, random, mutable, state)) {
                 return true;
             }
-            mutable.setOffset(Direction.UP);
+            mutable.move(Direction.UP);
         }
         BlockPos blockPos = mutable.toImmutable();
         int k = random.nextInt(3) + 2;
@@ -40,13 +40,13 @@ extends CoralFeature {
         List list2 = list.subList(0, k);
         for (Direction direction : list2) {
             mutable.set(blockPos);
-            mutable.setOffset(direction);
+            mutable.move(direction);
             int l = random.nextInt(5) + 2;
             int m = 0;
             for (int n = 0; n < l && this.spawnCoralPiece(world, random, mutable, state); ++n) {
-                mutable.setOffset(Direction.UP);
+                mutable.move(Direction.UP);
                 if (n != 0 && (++m < 2 || !(random.nextFloat() < 0.25f))) continue;
-                mutable.setOffset(direction);
+                mutable.move(direction);
                 m = 0;
             }
         }

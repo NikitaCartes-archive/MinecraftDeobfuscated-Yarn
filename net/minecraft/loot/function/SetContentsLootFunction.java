@@ -20,9 +20,9 @@ import net.minecraft.loot.entry.LootEntry;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.collection.DefaultedList;
 
 public class SetContentsLootFunction
 extends ConditionalLootFunction {

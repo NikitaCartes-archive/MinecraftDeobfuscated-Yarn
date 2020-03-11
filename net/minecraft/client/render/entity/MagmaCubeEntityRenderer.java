@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class MagmaCubeEntityRenderer
 extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/slime/magmacube.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/slime/magmacube.png");
 
     public MagmaCubeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new MagmaCubeEntityModel(), 0.25f);
@@ -29,7 +29,7 @@ extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>
 
     @Override
     public Identifier getTexture(MagmaCubeEntity magmaCubeEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

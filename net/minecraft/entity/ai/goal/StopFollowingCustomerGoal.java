@@ -25,7 +25,7 @@ extends Goal {
         if (this.trader.isTouchingWater()) {
             return false;
         }
-        if (!this.trader.method_24828()) {
+        if (!this.trader.isOnGround()) {
             return false;
         }
         if (this.trader.velocityModified) {

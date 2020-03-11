@@ -30,7 +30,7 @@ extends Feature<DefaultFeatureConfig> {
         BlockPos.Mutable mutable = blockPos.mutableCopy();
         block0: for (int i = blockPos.getY(); i < 256; ++i) {
             mutable.set(blockPos);
-            mutable.setOffset(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
+            mutable.move(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
             mutable.setY(i);
             if (!iWorld.isAir(mutable)) continue;
             for (Direction direction : DIRECTIONS) {

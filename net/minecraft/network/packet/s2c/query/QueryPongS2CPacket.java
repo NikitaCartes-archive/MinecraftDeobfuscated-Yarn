@@ -5,8 +5,8 @@ package net.minecraft.network.packet.s2c.query;
 
 import java.io.IOException;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientQueryPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class QueryPongS2CPacket
 implements Packet<ClientQueryPacketListener> {

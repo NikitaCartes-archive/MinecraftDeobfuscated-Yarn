@@ -6,7 +6,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -22,7 +22,7 @@ import net.minecraft.village.VillagerData;
 
 @Environment(value=EnvType.CLIENT)
 public class MerchantScreen
-extends ScreenWithHandler<MerchantScreenHandler> {
+extends HandledScreen<MerchantScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
     private int selectedIndex;
     private final WidgetButtonPage[] offers = new WidgetButtonPage[7];
@@ -88,7 +88,7 @@ extends ScreenWithHandler<MerchantScreenHandler> {
         this.client.getTextureManager().bindTexture(TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        MerchantScreen.blit(i, j, this.getZOffset(), 0.0f, 0.0f, this.backgroundWidth, this.backgroundHeight, 256, 512);
+        MerchantScreen.drawTexture(i, j, this.getZOffset(), 0.0f, 0.0f, this.backgroundWidth, this.backgroundHeight, 256, 512);
         TraderOfferList traderOfferList = ((MerchantScreenHandler)this.handler).getRecipes();
         if (!traderOfferList.isEmpty()) {
             int k = this.selectedIndex;
@@ -99,7 +99,7 @@ extends ScreenWithHandler<MerchantScreenHandler> {
             if (tradeOffer.isDisabled()) {
                 this.client.getTextureManager().bindTexture(TEXTURE);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                MerchantScreen.blit(this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0f, 0.0f, 28, 21, 256, 512);
+                MerchantScreen.drawTexture(this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0f, 0.0f, 28, 21, 256, 512);
             }
         }
     }
@@ -111,7 +111,7 @@ extends ScreenWithHandler<MerchantScreenHandler> {
         if (k >= 5) {
             return;
         }
-        MerchantScreen.blit(i + 136, j + 16, this.getZOffset(), 0.0f, 186.0f, 102, 5, 256, 512);
+        MerchantScreen.drawTexture(i + 136, j + 16, this.getZOffset(), 0.0f, 186.0f, 102, 5, 256, 512);
         int m = VillagerData.getLowerLevelExperience(k);
         if (l < m || !VillagerData.canLevelUp(k)) {
             return;
@@ -119,11 +119,11 @@ extends ScreenWithHandler<MerchantScreenHandler> {
         int n = 100;
         float f = 100 / (VillagerData.getUpperLevelExperience(k) - m);
         int o = Math.min(MathHelper.floor(f * (float)(l - m)), 100);
-        MerchantScreen.blit(i + 136, j + 16, this.getZOffset(), 0.0f, 191.0f, o + 1, 5, 256, 512);
+        MerchantScreen.drawTexture(i + 136, j + 16, this.getZOffset(), 0.0f, 191.0f, o + 1, 5, 256, 512);
         int p = ((MerchantScreenHandler)this.handler).getTraderRewardedExperience();
         if (p > 0) {
             int q = Math.min(MathHelper.floor((float)p * f), 100 - o);
-            MerchantScreen.blit(i + 136 + o + 1, j + 16 + 1, this.getZOffset(), 2.0f, 182.0f, q, 3, 256, 512);
+            MerchantScreen.drawTexture(i + 136 + o + 1, j + 16 + 1, this.getZOffset(), 2.0f, 182.0f, q, 3, 256, 512);
         }
     }
 
@@ -137,9 +137,9 @@ extends ScreenWithHandler<MerchantScreenHandler> {
             if (this.indexStartOffset == k - 1) {
                 o = 113;
             }
-            MerchantScreen.blit(i + 94, j + 18 + o, this.getZOffset(), 0.0f, 199.0f, 6, 27, 256, 512);
+            MerchantScreen.drawTexture(i + 94, j + 18 + o, this.getZOffset(), 0.0f, 199.0f, 6, 27, 256, 512);
         } else {
-            MerchantScreen.blit(i + 94, j + 18, this.getZOffset(), 6.0f, 199.0f, 6, 27, 256, 512);
+            MerchantScreen.drawTexture(i + 94, j + 18, this.getZOffset(), 6.0f, 199.0f, 6, 27, 256, 512);
         }
     }
 
@@ -206,9 +206,9 @@ extends ScreenWithHandler<MerchantScreenHandler> {
         RenderSystem.enableBlend();
         this.client.getTextureManager().bindTexture(TEXTURE);
         if (tradeOffer.isDisabled()) {
-            MerchantScreen.blit(i + 5 + 35 + 20, j + 3, this.getZOffset(), 25.0f, 171.0f, 10, 9, 256, 512);
+            MerchantScreen.drawTexture(i + 5 + 35 + 20, j + 3, this.getZOffset(), 25.0f, 171.0f, 10, 9, 256, 512);
         } else {
-            MerchantScreen.blit(i + 5 + 35 + 20, j + 3, this.getZOffset(), 15.0f, 171.0f, 10, 9, 256, 512);
+            MerchantScreen.drawTexture(i + 5 + 35 + 20, j + 3, this.getZOffset(), 15.0f, 171.0f, 10, 9, 256, 512);
         }
     }
 
@@ -221,7 +221,7 @@ extends ScreenWithHandler<MerchantScreenHandler> {
             this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i + 14, j, itemStack.getCount() == 1 ? "1" : null);
             this.client.getTextureManager().bindTexture(TEXTURE);
             this.setZOffset(this.getZOffset() + 300);
-            MerchantScreen.blit(i + 7, j + 12, this.getZOffset(), 0.0f, 176.0f, 9, 2, 256, 512);
+            MerchantScreen.drawTexture(i + 7, j + 12, this.getZOffset(), 0.0f, 176.0f, 9, 2, 256, 512);
             this.setZOffset(this.getZOffset() - 300);
         }
     }

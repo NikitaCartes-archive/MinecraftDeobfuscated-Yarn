@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import net.minecraft.state.AbstractState;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.MapUtil;
+import net.minecraft.util.collection.MapUtil;
 import org.jetbrains.annotations.Nullable;
 
 public class StateManager<O, S extends State<S>> {

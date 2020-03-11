@@ -47,8 +47,8 @@ implements SpectatorMenuCommand {
     public void renderIcon(float brightness, int alpha) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, (float)alpha / 255.0f);
-        DrawableHelper.blit(2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
-        DrawableHelper.blit(2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
+        DrawableHelper.drawTexture(2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
+        DrawableHelper.drawTexture(2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
     }
 
     @Override

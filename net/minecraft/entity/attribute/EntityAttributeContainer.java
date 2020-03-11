@@ -13,7 +13,7 @@ import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeInstanceImpl;
-import net.minecraft.util.LowercaseMap;
+import net.minecraft.util.collection.LowercaseMap;
 
 public class EntityAttributeContainer
 extends AbstractEntityAttributeContainer {

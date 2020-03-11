@@ -82,7 +82,7 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -260,7 +260,7 @@ extends LivingEntity {
         }
         ++this.lastAttackedTicks;
         ItemStack itemStack = this.getMainHandStack();
-        if (!ItemStack.areEqualIgnoreDamage(this.selectedItem, itemStack)) {
+        if (!ItemStack.areEqual(this.selectedItem, itemStack)) {
             if (!ItemStack.areItemsEqual(this.selectedItem, itemStack)) {
                 this.resetLastAttackedTicks();
             }
@@ -857,7 +857,7 @@ extends LivingEntity {
     public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
     }
 
-    public OptionalInt openHandledScreen(@Nullable NameableScreenHandlerFactory factory) {
+    public OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory) {
         return OptionalInt.empty();
     }
 
@@ -869,8 +869,8 @@ extends LivingEntity {
 
     public ActionResult interact(Entity entity, Hand hand) {
         if (this.isSpectator()) {
-            if (entity instanceof NameableScreenHandlerFactory) {
-                this.openHandledScreen((NameableScreenHandlerFactory)((Object)entity));
+            if (entity instanceof NamedScreenHandlerFactory) {
+                this.openHandledScreen((NamedScreenHandlerFactory)((Object)entity));
             }
             return ActionResult.PASS;
         }

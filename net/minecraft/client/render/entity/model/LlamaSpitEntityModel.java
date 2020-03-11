@@ -13,22 +13,22 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class LlamaSpitEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
-    private final ModelPart field_3433 = new ModelPart(this);
+    private final ModelPart spit = new ModelPart(this);
 
     public LlamaSpitEntityModel() {
         this(0.0f);
     }
 
-    public LlamaSpitEntityModel(float f) {
+    public LlamaSpitEntityModel(float scale) {
         int i = 2;
-        this.field_3433.setTextureOffset(0, 0).addCuboid(-4.0f, 0.0f, 0.0f, 2.0f, 2.0f, 2.0f, f);
-        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, -4.0f, 0.0f, 2.0f, 2.0f, 2.0f, f);
-        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, -4.0f, 2.0f, 2.0f, 2.0f, f);
-        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, 0.0f, 2.0f, 2.0f, 2.0f, f);
-        this.field_3433.setTextureOffset(0, 0).addCuboid(2.0f, 0.0f, 0.0f, 2.0f, 2.0f, 2.0f, f);
-        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 2.0f, 0.0f, 2.0f, 2.0f, 2.0f, f);
-        this.field_3433.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, 2.0f, 2.0f, 2.0f, 2.0f, f);
-        this.field_3433.setPivot(0.0f, 0.0f, 0.0f);
+        this.spit.setTextureOffset(0, 0).addCuboid(-4.0f, 0.0f, 0.0f, 2.0f, 2.0f, 2.0f, scale);
+        this.spit.setTextureOffset(0, 0).addCuboid(0.0f, -4.0f, 0.0f, 2.0f, 2.0f, 2.0f, scale);
+        this.spit.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, -4.0f, 2.0f, 2.0f, 2.0f, scale);
+        this.spit.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, 0.0f, 2.0f, 2.0f, 2.0f, scale);
+        this.spit.setTextureOffset(0, 0).addCuboid(2.0f, 0.0f, 0.0f, 2.0f, 2.0f, 2.0f, scale);
+        this.spit.setTextureOffset(0, 0).addCuboid(0.0f, 2.0f, 0.0f, 2.0f, 2.0f, 2.0f, scale);
+        this.spit.setTextureOffset(0, 0).addCuboid(0.0f, 0.0f, 2.0f, 2.0f, 2.0f, 2.0f, scale);
+        this.spit.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override
@@ -37,7 +37,7 @@ extends CompositeEntityModel<T> {
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.field_3433);
+        return ImmutableList.of(this.spit);
     }
 }
 

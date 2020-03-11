@@ -22,8 +22,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer
 extends EntityRenderer<ExperienceOrbEntity> {
-    private static final Identifier SKIN = new Identifier("textures/entity/experience_orb.png");
-    private static final RenderLayer TEXTURE_LAYER = RenderLayer.getEntityTranslucent(SKIN);
+    private static final Identifier TEXTURE = new Identifier("textures/entity/experience_orb.png");
+    private static final RenderLayer LAYER = RenderLayer.getEntityTranslucent(TEXTURE);
 
     public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -53,11 +53,11 @@ extends EntityRenderer<ExperienceOrbEntity> {
         int t = 255;
         int u = (int)((MathHelper.sin(r + 4.1887903f) + 1.0f) * 0.1f * 255.0f);
         matrixStack.translate(0.0, 0.1f, 0.0);
-        matrixStack.multiply(this.renderManager.getRotation());
+        matrixStack.multiply(this.dispatcher.getRotation());
         matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         float v = 0.3f;
         matrixStack.scale(0.3f, 0.3f, 0.3f);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(TEXTURE_LAYER);
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
@@ -75,7 +75,7 @@ extends EntityRenderer<ExperienceOrbEntity> {
 
     @Override
     public Identifier getTexture(ExperienceOrbEntity experienceOrbEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

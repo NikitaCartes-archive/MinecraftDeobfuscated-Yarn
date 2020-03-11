@@ -125,6 +125,9 @@ public final class ProjectileUtil {
 
     public static final void method_7484(Entity entity, float f) {
         Vec3d vec3d = entity.getVelocity();
+        if (vec3d.lengthSquared() == 0.0) {
+            return;
+        }
         float g = MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d));
         entity.yaw = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 57.2957763671875) + 90.0f;
         entity.pitch = (float)(MathHelper.atan2(g, vec3d.y) * 57.2957763671875) - 90.0f;

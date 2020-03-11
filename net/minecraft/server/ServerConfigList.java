@@ -50,8 +50,8 @@ public abstract class ServerConfigList<K, V extends ServerConfigEntry<K>> {
         return this.file;
     }
 
-    public void add(V serverConfigEntry) {
-        this.map.put(this.toString(((ServerConfigEntry)serverConfigEntry).getKey()), serverConfigEntry);
+    public void add(V entry) {
+        this.map.put(this.toString(((ServerConfigEntry)entry).getKey()), entry);
         try {
             this.save();
         } catch (IOException iOException) {
@@ -60,13 +60,13 @@ public abstract class ServerConfigList<K, V extends ServerConfigEntry<K>> {
     }
 
     @Nullable
-    public V get(K object) {
+    public V get(K key) {
         this.removeInvalidEntries();
-        return (V)((ServerConfigEntry)this.map.get(this.toString(object)));
+        return (V)((ServerConfigEntry)this.map.get(this.toString(key)));
     }
 
-    public void remove(K object) {
-        this.map.remove(this.toString(object));
+    public void remove(K key) {
+        this.map.remove(this.toString(key));
         try {
             this.save();
         } catch (IOException iOException) {
@@ -74,8 +74,8 @@ public abstract class ServerConfigList<K, V extends ServerConfigEntry<K>> {
         }
     }
 
-    public void removeEntry(ServerConfigEntry<K> serverConfigEntry) {
-        this.remove(serverConfigEntry.getKey());
+    public void remove(ServerConfigEntry<K> entry) {
+        this.remove(entry.getKey());
     }
 
     public String[] getNames() {
@@ -113,7 +113,7 @@ public abstract class ServerConfigList<K, V extends ServerConfigEntry<K>> {
 
     public void save() throws IOException {
         JsonArray jsonArray = new JsonArray();
-        this.map.values().stream().map(serverConfigEntry -> Util.make(new JsonObject(), serverConfigEntry::method_24896)).forEach(jsonArray::add);
+        this.map.values().stream().map(serverConfigEntry -> Util.make(new JsonObject(), serverConfigEntry::fromJson)).forEach(jsonArray::add);
         try (BufferedWriter bufferedWriter = Files.newWriter(this.file, StandardCharsets.UTF_8);){
             GSON.toJson((JsonElement)jsonArray, (Appendable)bufferedWriter);
         }

@@ -349,7 +349,7 @@ implements Drawable {
     public void renderDirtBackground(int alpha) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.client.getTextureManager().bindTexture(BACKGROUND_LOCATION);
+        this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);

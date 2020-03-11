@@ -136,7 +136,7 @@ implements TickableRealmsButton {
         } else {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         }
-        RealmsWorldSlotButton.blit(x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
+        RealmsWorldSlotButton.drawTexture(x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
         textureManager.bindTexture(field_22681);
         boolean bl3 = bl2 = bl && action != Action.NOTHING;
         if (bl2) {
@@ -146,7 +146,7 @@ implements TickableRealmsButton {
         } else {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         }
-        RealmsWorldSlotButton.blit(x, y, 0.0f, 0.0f, 80, 80, 80, 80);
+        RealmsWorldSlotButton.drawTexture(x, y, 0.0f, 0.0f, 80, 80, 80, 80);
         this.drawCenteredString(minecraftClient.textRenderer, text, x + 40, y + 66, 0xFFFFFF);
     }
 

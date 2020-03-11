@@ -68,9 +68,9 @@ implements SpectatorMenuCloseCallback {
         RenderSystem.defaultBlendFunc();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, height);
         this.client.getTextureManager().bindTexture(WIDGETS_TEX);
-        this.blit(x - 91, i, 0, 0, 182, 22);
+        this.drawTexture(x - 91, i, 0, 0, 182, 22);
         if (state.getSelectedSlot() >= 0) {
-            this.blit(x - 91 - 1 + state.getSelectedSlot() * 20, i - 1, 0, 22, 24, 22);
+            this.drawTexture(x - 91 - 1 + state.getSelectedSlot() * 20, i - 1, 0, 22, 24, 22);
         }
         for (int j = 0; j < 9; ++j) {
             this.renderSpectatorCommand(j, this.client.getWindow().getScaledWidth() / 2 - 90 + j * 20 + 2, i + 3, height, state.getCommand(j));

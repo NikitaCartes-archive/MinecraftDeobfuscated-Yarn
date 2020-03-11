@@ -269,7 +269,7 @@ extends ChunkGeneratorConfig {
     }
 
     public static FlatChunkGeneratorConfig fromDynamic(Dynamic<?> dynamic2) {
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createSettings();
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
         List<Pair> list = dynamic2.get("layers").asList(dynamic -> Pair.of(dynamic.get("height").asInt(1), FlatChunkGeneratorConfig.parseBlock(dynamic.get("block").asString(""))));
         if (list.stream().anyMatch(pair -> pair.getSecond() == null)) {
             return FlatChunkGeneratorConfig.getDefaultConfig();
@@ -291,7 +291,7 @@ extends ChunkGeneratorConfig {
         if (!iterator.hasNext()) {
             return FlatChunkGeneratorConfig.getDefaultConfig();
         }
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createSettings();
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
         List<FlatChunkGeneratorLayer> list = FlatChunkGeneratorConfig.parseLayersString(iterator.next());
         if (list.isEmpty()) {
             return FlatChunkGeneratorConfig.getDefaultConfig();
@@ -368,7 +368,7 @@ extends ChunkGeneratorConfig {
     }
 
     public static FlatChunkGeneratorConfig getDefaultConfig() {
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createSettings();
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
         flatChunkGeneratorConfig.setBiome(Biomes.PLAINS);
         flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
         flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(2, Blocks.DIRT));

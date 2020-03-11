@@ -187,6 +187,15 @@ extends Entity {
         return true;
     }
 
+    @Override
+    protected float getVelocityMultiplier() {
+        BlockState blockState = this.world.getBlockState(this.getSenseCenterPos());
+        if (blockState.matches(BlockTags.RAILS)) {
+            return 1.0f;
+        }
+        return super.getVelocityMultiplier();
+    }
+
     public void dropItems(DamageSource damageSource) {
         this.remove();
         if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {

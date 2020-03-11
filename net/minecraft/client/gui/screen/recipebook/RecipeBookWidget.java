@@ -36,7 +36,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +56,7 @@ RecipeGridAligner<Ingredient> {
     private final List<RecipeGroupButtonWidget> tabButtons = Lists.newArrayList();
     private RecipeGroupButtonWidget currentTab;
     protected ToggleButtonWidget toggleCraftableButton;
-    protected CraftingScreenHandler<?> craftingScreenHandler;
+    protected AbstractRecipeScreenHandler<?> craftingScreenHandler;
     protected MinecraftClient client;
     private TextFieldWidget searchField;
     private String searchText = "";
@@ -66,7 +66,7 @@ RecipeGridAligner<Ingredient> {
     private int cachedInvChangeCount;
     private boolean searching;
 
-    public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean isNarrow, CraftingScreenHandler<?> craftingScreenHandler) {
+    public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean isNarrow, AbstractRecipeScreenHandler<?> craftingScreenHandler) {
         this.client = client;
         this.parentWidth = parentWidth;
         this.parentHeight = parentHeight;
@@ -221,7 +221,7 @@ RecipeGridAligner<Ingredient> {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int i = (this.parentWidth - 147) / 2 - this.leftOffset;
         int j = (this.parentHeight - 166) / 2;
-        this.blit(i, j, 1, 1, 147, 166);
+        this.drawTexture(i, j, 1, 1, 147, 166);
         this.searchField.render(mouseX, mouseY, delta);
         for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
             recipeGroupButtonWidget.render(mouseX, mouseY, delta);
@@ -421,7 +421,7 @@ RecipeGridAligner<Ingredient> {
     public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
         ItemStack itemStack = recipe.getOutput();
         this.ghostSlots.setRecipe(recipe);
-        this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)0).xPosition, slots.get((int)0).yPosition);
+        this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)0).x, slots.get((int)0).y);
         this.alignRecipeToGrid(this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.craftingScreenHandler.getCraftingResultSlotIndex(), recipe, recipe.getPreviewInputs().iterator(), 0);
     }
 
@@ -430,7 +430,7 @@ RecipeGridAligner<Ingredient> {
         Ingredient ingredient = inputs.next();
         if (!ingredient.isEmpty()) {
             Slot slot2 = (Slot)this.craftingScreenHandler.slots.get(slot);
-            this.ghostSlots.addSlot(ingredient, slot2.xPosition, slot2.yPosition);
+            this.ghostSlots.addSlot(ingredient, slot2.x, slot2.y);
         }
     }
 

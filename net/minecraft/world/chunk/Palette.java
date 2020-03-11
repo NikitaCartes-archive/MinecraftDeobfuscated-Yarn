@@ -6,7 +6,7 @@ package net.minecraft.world.chunk;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 public interface Palette<T> {

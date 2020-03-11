@@ -78,7 +78,7 @@ extends Feature<HugeFungusFeatureConfig> {
             for (int k = -i; k <= i; ++k) {
                 boolean bl = thickStem && MathHelper.abs(j) == i && MathHelper.abs(k) == i;
                 for (int l = 0; l < stemHeight; ++l) {
-                    mutable.setOffset(blockPos, j, l, k);
+                    mutable.set(blockPos, j, l, k);
                     if (!HugeFungusFeature.method_24868(world, mutable)) continue;
                     if (config.planted) {
                         if (!world.getBlockState((BlockPos)mutable.down()).isAir()) {
@@ -119,7 +119,7 @@ extends Feature<HugeFungusFeatureConfig> {
                     boolean bl4 = !bl2 && !bl3 && k != hatHeight;
                     boolean bl5 = bl2 && bl3;
                     boolean bl6 = k < j + 3;
-                    mutable.setOffset(blockPos, m, k, n2);
+                    mutable.set(blockPos, m, k, n2);
                     if (!HugeFungusFeature.method_24868(world, mutable)) continue;
                     if (config.planted && !world.getBlockState((BlockPos)mutable.down()).isAir()) {
                         world.breakBlock(mutable, true);
@@ -178,7 +178,7 @@ extends Feature<HugeFungusFeatureConfig> {
     }
 
     private static void generateVines(BlockPos blockPos, IWorld iWorld, Random random) {
-        BlockPos.Mutable mutable = blockPos.mutableCopy().setOffset(Direction.DOWN);
+        BlockPos.Mutable mutable = blockPos.mutableCopy().move(Direction.DOWN);
         if (!iWorld.isAir(mutable)) {
             return;
         }
@@ -188,7 +188,7 @@ extends Feature<HugeFungusFeatureConfig> {
         }
         int j = 23;
         int k = 25;
-        WeepingVinesFeature.generateVines(iWorld, random, mutable, i, 23, 25);
+        WeepingVinesFeature.generateVineColumn(iWorld, random, mutable, i, 23, 25);
     }
 }
 

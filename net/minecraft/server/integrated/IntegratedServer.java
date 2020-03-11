@@ -4,7 +4,6 @@
 package net.minecraft.server.integrated;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -36,7 +35,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
@@ -66,7 +65,7 @@ extends MinecraftServer {
     }
 
     @Override
-    public void loadWorld(String name, String serverName, long seed, LevelGeneratorType generatorType, JsonElement generatorSettings) {
+    public void loadWorld(String name, String serverName, long seed, LevelGeneratorOptions levelGeneratorOptions) {
         this.upgradeWorld(name);
         WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(name, this);
         this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
@@ -76,7 +75,7 @@ extends MinecraftServer {
         } else {
             levelProperties.setLevelName(serverName);
         }
-        levelProperties.method_24285(this.getServerModName(), this.method_24307().isPresent());
+        levelProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
         this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
         WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
         this.createWorlds(worldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
@@ -96,7 +95,7 @@ extends MinecraftServer {
         this.setFlightEnabled(true);
         LOGGER.info("Generating keypair");
         this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
-        this.loadWorld(this.getLevelName(), this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorType(), this.levelInfo.getGeneratorOptions());
+        this.loadWorld(this.getLevelName(), this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorOptions());
         this.setMotd(this.getUserName() + " - " + this.getWorld(DimensionType.OVERWORLD).getLevelProperties().getLevelName());
         return true;
     }
@@ -178,12 +177,12 @@ extends MinecraftServer {
     public CrashReport populateCrashReport(CrashReport crashReport) {
         crashReport = super.populateCrashReport(crashReport);
         crashReport.getSystemDetailsSection().add("Type", "Integrated Server (map_client.txt)");
-        crashReport.getSystemDetailsSection().add("Is Modded", () -> this.method_24307().orElse("Probably not. Jar signature remains and both client + server brands are untouched."));
+        crashReport.getSystemDetailsSection().add("Is Modded", () -> this.getModdedStatusMessage().orElse("Probably not. Jar signature remains and both client + server brands are untouched."));
         return crashReport;
     }
 
     @Override
-    public Optional<String> method_24307() {
+    public Optional<String> getModdedStatusMessage() {
         String string = ClientBrandRetriever.getClientModName();
         if (!string.equals("vanilla")) {
             return Optional.of("Definitely; Client brand changed to '" + string + "'");

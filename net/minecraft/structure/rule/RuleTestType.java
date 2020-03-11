@@ -10,7 +10,7 @@ import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
 import net.minecraft.structure.rule.RandomBlockStateMatchRuleTest;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.structure.rule.TagMatchRuleTest;
-import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 
 public interface RuleTestType

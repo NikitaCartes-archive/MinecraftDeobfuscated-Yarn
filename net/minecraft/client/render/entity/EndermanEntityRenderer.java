@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 @Environment(value=EnvType.CLIENT)
 public class EndermanEntityRenderer
 extends MobEntityRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/enderman/enderman.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/enderman/enderman.png");
     private final Random random = new Random();
 
     public EndermanEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -51,7 +51,7 @@ extends MobEntityRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
 
     @Override
     public Identifier getTexture(EndermanEntity endermanEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

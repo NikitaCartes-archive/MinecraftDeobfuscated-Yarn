@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
-import net.minecraft.util.BoundedIntUnaryOperator;
+import net.minecraft.loot.operator.BoundedIntUnaryOperator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 

@@ -21,7 +21,6 @@ import net.minecraft.server.world.ServerWorld;
 
 public class CrossbowAttackTask<E extends MobEntity, T extends LivingEntity>
 extends Task<E> {
-    private final int range = 8;
     private int chargingCooldown;
     private CrossbowState state = CrossbowState.UNCHARGED;
 
@@ -31,12 +30,13 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
-        return ((LivingEntity)mobEntity).isHolding(Items.CROSSBOW) && LookTargetUtil.isAttackTargetClose(mobEntity, 8.0);
+        LivingEntity livingEntity = CrossbowAttackTask.getAttackTarget(mobEntity);
+        return ((LivingEntity)mobEntity).isHolding(Items.CROSSBOW) && LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity) && LookTargetUtil.method_25940(mobEntity, livingEntity, 0);
     }
 
     @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, E mobEntity, long l) {
-        return this.shouldRun(serverWorld, mobEntity);
+        return ((LivingEntity)mobEntity).getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET) && this.shouldRun(serverWorld, mobEntity);
     }
 
     @Override

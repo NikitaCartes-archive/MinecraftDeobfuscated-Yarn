@@ -29,8 +29,8 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Util;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -193,8 +193,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 string3 = I18n.translate("multiplayer.status.pinging", new Object[0]);
             }
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
-            DrawableHelper.blit(x + width - 15, y, k * 10, 176 + l * 8, 10, 8, 256, 256);
+            this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
+            DrawableHelper.drawTexture(x + width - 15, y, k * 10, 176 + l * 8, 10, 8, 256, 256);
             if (this.server.getIcon() != null && !this.server.getIcon().equals(this.iconUri)) {
                 this.iconUri = this.server.getIcon();
                 this.updateIcon();
@@ -220,23 +220,23 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 int p = mouseY - y;
                 if (this.method_20136()) {
                     if (o < 32 && o > 16) {
-                        DrawableHelper.blit(x, y, 0.0f, 32.0f, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 0.0f, 32.0f, 32, 32, 256, 256);
                     } else {
-                        DrawableHelper.blit(x, y, 0.0f, 0.0f, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 32, 32, 256, 256);
                     }
                 }
                 if (index > 0) {
                     if (o < 16 && p < 16) {
-                        DrawableHelper.blit(x, y, 96.0f, 32.0f, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 96.0f, 32.0f, 32, 32, 256, 256);
                     } else {
-                        DrawableHelper.blit(x, y, 96.0f, 0.0f, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 96.0f, 0.0f, 32, 32, 256, 256);
                     }
                 }
                 if (index < this.screen.getServerList().size() - 1) {
                     if (o < 16 && p > 16) {
-                        DrawableHelper.blit(x, y, 64.0f, 32.0f, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 64.0f, 32.0f, 32, 32, 256, 256);
                     } else {
-                        DrawableHelper.blit(x, y, 64.0f, 0.0f, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 64.0f, 0.0f, 32, 32, 256, 256);
                     }
                 }
             }
@@ -245,7 +245,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         protected void draw(int x, int y, Identifier textureId) {
             this.client.getTextureManager().bindTexture(textureId);
             RenderSystem.enableBlend();
-            DrawableHelper.blit(x, y, 0.0f, 0.0f, 32, 32, 32, 32);
+            DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             RenderSystem.disableBlend();
         }
 

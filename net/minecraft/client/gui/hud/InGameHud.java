@@ -30,7 +30,7 @@ import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.SubtitlesHud;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -59,7 +59,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -166,7 +166,7 @@ extends DrawableHelper {
         }
         if (!this.client.options.hudHidden) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+            this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
             RenderSystem.enableBlend();
             RenderSystem.enableAlphaTest();
             this.renderCrosshair();
@@ -175,7 +175,7 @@ extends DrawableHelper {
             this.bossBarHud.render();
             this.client.getProfiler().pop();
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+            this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
             if (this.client.interactionManager.hasStatusBars()) {
                 this.renderStatusBars();
             }
@@ -339,7 +339,7 @@ extends DrawableHelper {
         } else {
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
             int i = 15;
-            this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
+            this.drawTexture((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
             if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
                 float f = this.client.player.getAttackCooldownProgress(0.0f);
                 boolean bl = false;
@@ -350,11 +350,11 @@ extends DrawableHelper {
                 int j = this.scaledHeight / 2 - 7 + 16;
                 int k = this.scaledWidth / 2 - 8;
                 if (bl) {
-                    this.blit(k, j, 68, 94, 16, 16);
+                    this.drawTexture(k, j, 68, 94, 16, 16);
                 } else if (f < 1.0f) {
                     int l = (int)(f * 17.0f);
-                    this.blit(k, j, 36, 94, 16, 4);
-                    this.blit(k, j, 52, 94, l, 4);
+                    this.drawTexture(k, j, 36, 94, 16, 4);
+                    this.drawTexture(k, j, 52, 94, l, 4);
                 }
             }
         }
@@ -365,12 +365,12 @@ extends DrawableHelper {
             return false;
         }
         if (hitResult.getType() == HitResult.Type.ENTITY) {
-            return ((EntityHitResult)hitResult).getEntity() instanceof NameableScreenHandlerFactory;
+            return ((EntityHitResult)hitResult).getEntity() instanceof NamedScreenHandlerFactory;
         }
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             ClientWorld world = this.client.world;
             BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-            return world.getBlockState(blockPos).createContainerFactory(world, blockPos) != null;
+            return world.getBlockState(blockPos).createScreenHandlerFactory(world, blockPos) != null;
         }
         return false;
     }
@@ -385,7 +385,7 @@ extends DrawableHelper {
         int j = 0;
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
         ArrayList<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
-        this.client.getTextureManager().bindTexture(ScreenWithHandler.BACKGROUND_TEXTURE);
+        this.client.getTextureManager().bindTexture(HandledScreen.BACKGROUND_TEXTURE);
         for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             if (!statusEffectInstance.shouldShowIcon()) continue;
@@ -403,9 +403,9 @@ extends DrawableHelper {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             float f = 1.0f;
             if (statusEffectInstance.isAmbient()) {
-                this.blit(k, l, 165, 166, 24, 24);
+                this.drawTexture(k, l, 165, 166, 24, 24);
             } else {
-                this.blit(k, l, 141, 166, 24, 24);
+                this.drawTexture(k, l, 141, 166, 24, 24);
                 if (statusEffectInstance.getDuration() <= 200) {
                     int m = 10 - statusEffectInstance.getDuration() / 20;
                     f = MathHelper.clamp((float)statusEffectInstance.getDuration() / 10.0f / 5.0f * 0.5f, 0.0f, 0.5f) + MathHelper.cos((float)statusEffectInstance.getDuration() * (float)Math.PI / 5.0f) * MathHelper.clamp((float)m / 10.0f * 0.25f, 0.0f, 0.25f);
@@ -418,7 +418,7 @@ extends DrawableHelper {
             list.add(() -> {
                 this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, g);
-                InGameHud.blit(n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
+                InGameHud.drawSprite(n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
             });
         }
         list.forEach(Runnable::run);
@@ -442,13 +442,13 @@ extends DrawableHelper {
         int k = 182;
         int l = 91;
         this.setZOffset(-90);
-        this.blit(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
-        this.blit(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
+        this.drawTexture(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
+        this.drawTexture(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
         if (!itemStack.isEmpty()) {
             if (arm == Arm.LEFT) {
-                this.blit(i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
+                this.drawTexture(i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
             } else {
-                this.blit(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
+                this.drawTexture(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
             }
         }
         this.setZOffset(j);
@@ -474,11 +474,11 @@ extends DrawableHelper {
             if (arm == Arm.RIGHT) {
                 o = i - 91 - 22;
             }
-            this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+            this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
             int p = (int)(g * 19.0f);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.blit(o, n, 0, 94, 18, 18);
-            this.blit(o, n + 18 - p, 18, 112 - p, 18, p);
+            this.drawTexture(o, n, 0, 94, 18, 18);
+            this.drawTexture(o, n + 18 - p, 18, 112 - p, 18, p);
         }
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableBlend();
@@ -486,14 +486,14 @@ extends DrawableHelper {
 
     public void renderMountJumpBar(int i) {
         this.client.getProfiler().push("jumpBar");
-        this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+        this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
         float f = this.client.player.method_3151();
         int j = 182;
         int k = (int)(f * 183.0f);
         int l = this.scaledHeight - 32 + 3;
-        this.blit(i, l, 0, 84, 182, 5);
+        this.drawTexture(i, l, 0, 84, 182, 5);
         if (k > 0) {
-            this.blit(i, l, 0, 89, k, 5);
+            this.drawTexture(i, l, 0, 89, k, 5);
         }
         this.client.getProfiler().pop();
     }
@@ -502,15 +502,15 @@ extends DrawableHelper {
         int m;
         int l;
         this.client.getProfiler().push("expBar");
-        this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+        this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
         int j = this.client.player.getNextLevelExperience();
         if (j > 0) {
             int k = 182;
             l = (int)(this.client.player.experienceProgress * 183.0f);
             m = this.scaledHeight - 32 + 3;
-            this.blit(i, m, 0, 64, 182, 5);
+            this.drawTexture(i, m, 0, 64, 182, 5);
             if (l > 0) {
-                this.blit(i, m, 0, 69, l, 5);
+                this.drawTexture(i, m, 0, 69, l, 5);
             }
         }
         this.client.getProfiler().pop();
@@ -693,13 +693,13 @@ extends DrawableHelper {
             if (v <= 0) continue;
             y = m + x * 8;
             if (x * 2 + 1 < v) {
-                this.blit(y, s, 34, 9, 9, 9);
+                this.drawTexture(y, s, 34, 9, 9, 9);
             }
             if (x * 2 + 1 == v) {
-                this.blit(y, s, 25, 9, 9, 9);
+                this.drawTexture(y, s, 25, 9, 9, 9);
             }
             if (x * 2 + 1 <= v) continue;
-            this.blit(y, s, 16, 9, 9, 9);
+            this.drawTexture(y, s, 16, 9, 9, 9);
         }
         this.client.getProfiler().swap("health");
         for (x = MathHelper.ceil((f + (float)p) / 2.0f) - 1; x >= 0; --x) {
@@ -726,30 +726,30 @@ extends DrawableHelper {
             if (playerEntity.world.getLevelProperties().isHardcore()) {
                 ad = 5;
             }
-            this.blit(ab, ac, 16 + z * 9, 9 * ad, 9, 9);
+            this.drawTexture(ab, ac, 16 + z * 9, 9 * ad, 9, 9);
             if (bl) {
                 if (x * 2 + 1 < j) {
-                    this.blit(ab, ac, y + 54, 9 * ad, 9, 9);
+                    this.drawTexture(ab, ac, y + 54, 9 * ad, 9, 9);
                 }
                 if (x * 2 + 1 == j) {
-                    this.blit(ab, ac, y + 63, 9 * ad, 9, 9);
+                    this.drawTexture(ab, ac, y + 63, 9 * ad, 9, 9);
                 }
             }
             if (u > 0) {
                 if (u == p && p % 2 == 1) {
-                    this.blit(ab, ac, y + 153, 9 * ad, 9, 9);
+                    this.drawTexture(ab, ac, y + 153, 9 * ad, 9, 9);
                     --u;
                     continue;
                 }
-                this.blit(ab, ac, y + 144, 9 * ad, 9, 9);
+                this.drawTexture(ab, ac, y + 144, 9 * ad, 9, 9);
                 u -= 2;
                 continue;
             }
             if (x * 2 + 1 < i) {
-                this.blit(ab, ac, y + 36, 9 * ad, 9, 9);
+                this.drawTexture(ab, ac, y + 36, 9 * ad, 9, 9);
             }
             if (x * 2 + 1 != i) continue;
-            this.blit(ab, ac, y + 45, 9 * ad, 9, 9);
+            this.drawTexture(ab, ac, y + 45, 9 * ad, 9, 9);
         }
         LivingEntity livingEntity = this.getRiddenEntity();
         y = this.getHeartCount(livingEntity);
@@ -767,12 +767,12 @@ extends DrawableHelper {
                     aa += this.random.nextInt(3) - 1;
                 }
                 ad = n - z * 8 - 9;
-                this.blit(ad, aa, 16 + ac * 9, 27, 9, 9);
+                this.drawTexture(ad, aa, 16 + ac * 9, 27, 9, 9);
                 if (z * 2 + 1 < k) {
-                    this.blit(ad, aa, ab + 36, 27, 9, 9);
+                    this.drawTexture(ad, aa, ab + 36, 27, 9, 9);
                 }
                 if (z * 2 + 1 != k) continue;
-                this.blit(ad, aa, ab + 45, 27, 9, 9);
+                this.drawTexture(ad, aa, ab + 45, 27, 9, 9);
             }
             t -= 10;
         }
@@ -786,10 +786,10 @@ extends DrawableHelper {
             ad = MathHelper.ceil((double)z * 10.0 / (double)aa) - ac;
             for (int ae = 0; ae < ac + ad; ++ae) {
                 if (ae < ac) {
-                    this.blit(n - ae * 8 - 9, t, 16, 18, 9, 9);
+                    this.drawTexture(n - ae * 8 - 9, t, 16, 18, 9, 9);
                     continue;
                 }
-                this.blit(n - ae * 8 - 9, t, 25, 18, 9, 9);
+                this.drawTexture(n - ae * 8 - 9, t, 25, 18, 9, 9);
             }
         }
         this.client.getProfiler().pop();
@@ -818,12 +818,12 @@ extends DrawableHelper {
                 int q = 52;
                 int r = 0;
                 int s = l - p * 8 - 9;
-                this.blit(s, m, 52 + r * 9, 9, 9, 9);
+                this.drawTexture(s, m, 52 + r * 9, 9, 9, 9);
                 if (p * 2 + 1 + n < j) {
-                    this.blit(s, m, 88, 9, 9, 9);
+                    this.drawTexture(s, m, 88, 9, 9, 9);
                 }
                 if (p * 2 + 1 + n != j) continue;
-                this.blit(s, m, 97, 9, 9, 9);
+                this.drawTexture(s, m, 97, 9, 9, 9);
             }
             m -= 10;
             n += 20;

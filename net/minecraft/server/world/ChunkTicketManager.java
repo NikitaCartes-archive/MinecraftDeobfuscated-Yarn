@@ -29,7 +29,7 @@ import net.minecraft.server.world.ChunkTicket;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.ChunkPosDistanceLevelPropagator;
-import net.minecraft.util.SortedArraySet;
+import net.minecraft.util.collection.SortedArraySet;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.thread.MessageListener;

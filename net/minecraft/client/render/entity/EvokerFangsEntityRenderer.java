@@ -19,7 +19,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class EvokerFangsEntityRenderer
 extends EntityRenderer<EvokerFangsEntity> {
-    private static final Identifier SKIN = new Identifier("textures/entity/illager/evoker_fangs.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/illager/evoker_fangs.png");
     private final EvokerFangsEntityModel<EvokerFangsEntity> model = new EvokerFangsEntityModel();
 
     public EvokerFangsEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -43,7 +43,7 @@ extends EntityRenderer<EvokerFangsEntity> {
         matrixStack.translate(0.0, -0.626f, 0.0);
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         this.model.setAngles(evokerFangsEntity, h, 0.0f, 0.0f, evokerFangsEntity.yaw, evokerFangsEntity.pitch);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
         this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
         super.render(evokerFangsEntity, f, g, matrixStack, vertexConsumerProvider, i);
@@ -51,7 +51,7 @@ extends EntityRenderer<EvokerFangsEntity> {
 
     @Override
     public Identifier getTexture(EvokerFangsEntity evokerFangsEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

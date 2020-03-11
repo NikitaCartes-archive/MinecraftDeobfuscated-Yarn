@@ -28,10 +28,10 @@ import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.BeaconScreenHandler;
-import net.minecraft.screen.BlockContext;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -47,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeaconBlockEntity
 extends BlockEntity
-implements NameableScreenHandlerFactory,
+implements NamedScreenHandlerFactory,
 Tickable {
     public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}};
     private static final Set<StatusEffect> EFFECTS = Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
@@ -305,7 +305,7 @@ Tickable {
     @Nullable
     public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())) {
-            return new BeaconScreenHandler(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()));
+            return new BeaconScreenHandler(i, playerInventory, this.propertyDelegate, ScreenHandlerContext.create(this.world, this.getPos()));
         }
         return null;
     }

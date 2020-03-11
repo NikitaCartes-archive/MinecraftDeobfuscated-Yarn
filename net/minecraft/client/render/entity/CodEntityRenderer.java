@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class CodEntityRenderer
 extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/fish/cod.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/fish/cod.png");
 
     public CodEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new CodEntityModel(), 0.3f);
@@ -25,7 +25,7 @@ extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
 
     @Override
     public Identifier getTexture(CodEntity codEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

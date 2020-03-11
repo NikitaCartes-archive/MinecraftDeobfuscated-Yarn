@@ -52,7 +52,7 @@ extends ButtonWidget {
         if (this.isHovered()) {
             i += this.hoveredVOffset;
         }
-        TexturedButtonWidget.blit(this.x, this.y, this.u, i, this.width, this.height, this.textureWidth, this.textureHeight);
+        TexturedButtonWidget.drawTexture(this.x, this.y, this.u, i, this.width, this.height, this.textureWidth, this.textureHeight);
         RenderSystem.enableDepthTest();
     }
 }

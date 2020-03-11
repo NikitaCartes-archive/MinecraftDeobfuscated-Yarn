@@ -50,6 +50,8 @@ public class ItemTags {
     public static final Tag<Item> FENCES;
     public static final Tag<Item> TALL_FLOWERS;
     public static final Tag<Item> FLOWERS;
+    public static final Tag<Item> PIGLIN_REPELLENTS;
+    public static final Tag<Item> GOLD_ORES;
     public static final Tag<Item> BOATS;
     public static final Tag<Item> FISHES;
     public static final Tag<Item> SIGNS;
@@ -110,6 +112,8 @@ public class ItemTags {
         FENCES = ItemTags.register("fences");
         TALL_FLOWERS = ItemTags.register("tall_flowers");
         FLOWERS = ItemTags.register("flowers");
+        PIGLIN_REPELLENTS = ItemTags.register("piglin_repellents");
+        GOLD_ORES = ItemTags.register("gold_ores");
         BOATS = ItemTags.register("boats");
         FISHES = ItemTags.register("fishes");
         SIGNS = ItemTags.register("signs");

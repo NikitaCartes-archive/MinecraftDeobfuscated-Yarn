@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class VindicatorEntityRenderer
 extends IllagerEntityRenderer<VindicatorEntity> {
-    private static final Identifier SKIN = new Identifier("textures/entity/illager/vindicator.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/illager/vindicator.png");
 
     public VindicatorEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new IllagerEntityModel(0.0f, 0.0f, 64, 64), 0.5f);
@@ -35,7 +35,7 @@ extends IllagerEntityRenderer<VindicatorEntity> {
 
     @Override
     public Identifier getTexture(VindicatorEntity vindicatorEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 

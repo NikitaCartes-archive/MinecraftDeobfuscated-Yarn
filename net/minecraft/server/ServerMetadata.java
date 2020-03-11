@@ -27,8 +27,8 @@ public class ServerMetadata {
         return this.description;
     }
 
-    public void setDescription(Text text) {
-        this.description = text;
+    public void setDescription(Text description) {
+        this.description = description;
     }
 
     public Players getPlayers() {

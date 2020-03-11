@@ -167,13 +167,13 @@ implements Comparable<Identifier> {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((Identifier)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object id, Type type, JsonSerializationContext context) {
+            return this.serialize((Identifier)id, type, context);
         }
 
         @Override
-        public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            return this.deserialize(jsonElement, type, jsonDeserializationContext);
+        public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+            return this.deserialize(json, type, context);
         }
     }
 }

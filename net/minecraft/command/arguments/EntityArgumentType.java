@@ -20,11 +20,11 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.PacketByteBuf;
 
 public class EntityArgumentType
 implements ArgumentType<EntitySelector> {

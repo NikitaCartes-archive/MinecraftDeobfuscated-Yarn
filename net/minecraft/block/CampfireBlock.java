@@ -8,7 +8,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -20,11 +19,10 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.entity.projectile.Projectile;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -42,9 +40,9 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -188,17 +186,13 @@ implements Waterloggable {
 
     @Override
     public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
-        if (!world.isClient) {
+        if (!world.isClient && projectile.isOnFire()) {
             boolean bl;
-            boolean bl2 = bl = projectile instanceof AbstractFireballEntity || projectile instanceof ProjectileEntity && projectile.isOnFire();
-            if (bl) {
-                boolean bl22;
-                Entity entity = projectile.getOwner();
-                boolean bl3 = bl22 = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
-                if (bl22 && !state.get(LIT).booleanValue() && !state.get(WATERLOGGED).booleanValue()) {
-                    BlockPos blockPos = hitResult.getBlockPos();
-                    world.setBlockState(blockPos, (BlockState)state.with(Properties.LIT, true), 11);
-                }
+            Entity entity = projectile.getOwner();
+            boolean bl2 = bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+            if (bl && !state.get(LIT).booleanValue() && !state.get(WATERLOGGED).booleanValue()) {
+                BlockPos blockPos = hitResult.getBlockPos();
+                world.setBlockState(blockPos, (BlockState)state.with(Properties.LIT, true), 11);
             }
         }
     }
@@ -260,7 +254,7 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
         return false;
     }
 }

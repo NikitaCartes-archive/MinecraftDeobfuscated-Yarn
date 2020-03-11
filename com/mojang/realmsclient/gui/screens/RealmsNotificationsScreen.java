@@ -109,14 +109,14 @@ extends RealmsScreen {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.pushMatrix();
             RenderSystem.scalef(0.4f, 0.4f, 0.4f);
-            DrawableHelper.blit((int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0f, 0.0f, 40, 40, 40, 40);
+            DrawableHelper.drawTexture((int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0f, 0.0f, 40, 40, 40, 40);
             RenderSystem.popMatrix();
             n += 14;
         }
         if (i != 0) {
             this.client.getTextureManager().bindTexture(field_22698);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.blit(l - n, m - 6, 0.0f, 0.0f, 15, 25, 31, 25);
+            DrawableHelper.drawTexture(l - n, m - 6, 0.0f, 0.0f, 15, 25, 31, 25);
             n += 16;
         }
         if (trialAvailable) {
@@ -126,7 +126,7 @@ extends RealmsScreen {
             if ((Util.getMeasuringTimeMs() / 800L & 1L) == 1L) {
                 o = 8;
             }
-            DrawableHelper.blit(l + 4 - n, m + 4, 0.0f, o, 8, 8, 8, 16);
+            DrawableHelper.drawTexture(l + 4 - n, m + 4, 0.0f, o, 8, 8, 8, 16);
         }
     }
 

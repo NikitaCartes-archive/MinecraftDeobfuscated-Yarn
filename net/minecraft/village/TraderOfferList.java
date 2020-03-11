@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.village.TradeOffer;
 import org.jetbrains.annotations.Nullable;
 

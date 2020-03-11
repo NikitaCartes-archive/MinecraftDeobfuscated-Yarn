@@ -200,7 +200,7 @@ extends BlockWithEntity {
         while (i-- > 0) {
             CommandBlockBlockEntity commandBlockBlockEntity;
             BlockEntity blockEntity;
-            mutable.setOffset(facing);
+            mutable.move(facing);
             BlockState blockState = world.getBlockState(mutable);
             Block block = blockState.getBlock();
             if (block != Blocks.CHAIN_COMMAND_BLOCK || !((blockEntity = world.getBlockEntity(mutable)) instanceof CommandBlockBlockEntity) || (commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity).getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) break;

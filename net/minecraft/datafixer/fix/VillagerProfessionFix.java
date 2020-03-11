@@ -14,14 +14,14 @@ import net.minecraft.datafixer.fix.ChoiceFix;
 
 public class VillagerProfessionFix
 extends ChoiceFix {
-    public VillagerProfessionFix(Schema outputSchema, String string) {
-        super(outputSchema, false, "Villager profession data fix (" + string + ")", TypeReferences.ENTITY, string);
+    public VillagerProfessionFix(Schema outputSchema, String entity) {
+        super(outputSchema, false, "Villager profession data fix (" + entity + ")", TypeReferences.ENTITY, entity);
     }
 
     @Override
-    protected Typed<?> transform(Typed<?> typed) {
-        Dynamic dynamic = typed.get(DSL.remainderFinder());
-        return typed.set(DSL.remainderFinder(), dynamic.remove("Profession").remove("Career").remove("CareerLevel").set("VillagerData", dynamic.createMap(ImmutableMap.of(dynamic.createString("type"), dynamic.createString("minecraft:plains"), dynamic.createString("profession"), dynamic.createString(VillagerProfessionFix.convertProfessionId(dynamic.get("Profession").asInt(0), dynamic.get("Career").asInt(0))), dynamic.createString("level"), DataFixUtils.orElse(dynamic.get("CareerLevel").get(), dynamic.createInt(1))))));
+    protected Typed<?> transform(Typed<?> inputType) {
+        Dynamic dynamic = inputType.get(DSL.remainderFinder());
+        return inputType.set(DSL.remainderFinder(), dynamic.remove("Profession").remove("Career").remove("CareerLevel").set("VillagerData", dynamic.createMap(ImmutableMap.of(dynamic.createString("type"), dynamic.createString("minecraft:plains"), dynamic.createString("profession"), dynamic.createString(VillagerProfessionFix.convertProfessionId(dynamic.get("Profession").asInt(0), dynamic.get("Career").asInt(0))), dynamic.createString("level"), DataFixUtils.orElse(dynamic.get("CareerLevel").get(), dynamic.createInt(1))))));
     }
 
     private static String convertProfessionId(int professionId, int careerId) {

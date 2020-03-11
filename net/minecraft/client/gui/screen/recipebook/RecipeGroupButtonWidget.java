@@ -16,7 +16,7 @@ import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 
 @Environment(value=EnvType.CLIENT)
 public class RecipeGroupButtonWidget
@@ -33,11 +33,11 @@ extends ToggleButtonWidget {
     public void checkForNewRecipes(MinecraftClient client) {
         ClientRecipeBook clientRecipeBook = client.player.getRecipeBook();
         List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
-        if (!(client.player.currentScreenHandler instanceof CraftingScreenHandler)) {
+        if (!(client.player.currentScreenHandler instanceof AbstractRecipeScreenHandler)) {
             return;
         }
         for (RecipeResultCollection recipeResultCollection : list) {
-            for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingScreenHandler)client.player.currentScreenHandler))) {
+            for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((AbstractRecipeScreenHandler)client.player.currentScreenHandler))) {
                 if (!clientRecipeBook.shouldDisplay(recipe)) continue;
                 this.bounce = 15.0f;
                 return;
@@ -70,7 +70,7 @@ extends ToggleButtonWidget {
             k -= 2;
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.blit(k, this.y, i, j, this.width, this.height);
+        this.drawTexture(k, this.y, i, j, this.width, this.height);
         RenderSystem.enableDepthTest();
         this.renderIcons(minecraftClient.getItemRenderer());
         if (this.bounce > 0.0f) {

@@ -20,18 +20,18 @@ extends ChoiceFix {
     }
 
     @Override
-    protected Typed<?> transform(Typed<?> typed) {
+    protected Typed<?> transform(Typed<?> inputType) {
         Type<?> type = this.getOutputSchema().getChoiceType(TypeReferences.BLOCK_ENTITY, "minecraft:piston");
         Type<?> type2 = type.findFieldType("blockState");
         OpticFinder<?> opticFinder = DSL.fieldFinder("blockState", type2);
-        Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
+        Dynamic<?> dynamic = inputType.get(DSL.remainderFinder());
         int i = dynamic.get("blockId").asInt(0);
         dynamic = dynamic.remove("blockId");
         int j = dynamic.get("blockData").asInt(0) & 0xF;
         dynamic = dynamic.remove("blockData");
         Dynamic<?> dynamic2 = BlockStateFlattening.lookupState(i << 4 | j);
-        Typed<?> typed2 = type.pointTyped(typed.getOps()).orElseThrow(() -> new IllegalStateException("Could not create new piston block entity."));
-        return typed2.set(DSL.remainderFinder(), dynamic).set(opticFinder, type2.readTyped(dynamic2).getSecond().orElseThrow(() -> new IllegalStateException("Could not parse newly created block state tag.")));
+        Typed<?> typed = type.pointTyped(inputType.getOps()).orElseThrow(() -> new IllegalStateException("Could not create new piston block entity."));
+        return typed.set(DSL.remainderFinder(), dynamic).set(opticFinder, type2.readTyped(dynamic2).getSecond().orElseThrow(() -> new IllegalStateException("Could not parse newly created block state tag.")));
     }
 }
 

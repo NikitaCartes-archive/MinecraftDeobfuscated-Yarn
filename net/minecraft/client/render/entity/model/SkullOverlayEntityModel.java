@@ -13,25 +13,25 @@ import net.minecraft.client.util.math.MatrixStack;
 @Environment(value=EnvType.CLIENT)
 public class SkullOverlayEntityModel
 extends SkullEntityModel {
-    private final ModelPart field_3377 = new ModelPart(this, 32, 0);
+    private final ModelPart skullOverlay = new ModelPart(this, 32, 0);
 
     public SkullOverlayEntityModel() {
         super(0, 0, 64, 64);
-        this.field_3377.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, 0.25f);
-        this.field_3377.setPivot(0.0f, 0.0f, 0.0f);
+        this.skullOverlay.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, 0.25f);
+        this.skullOverlay.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override
     public void render(float f, float g, float h) {
         super.render(f, g, h);
-        this.field_3377.yaw = this.skull.yaw;
-        this.field_3377.pitch = this.skull.pitch;
+        this.skullOverlay.yaw = this.skull.yaw;
+        this.skullOverlay.pitch = this.skull.pitch;
     }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         super.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-        this.field_3377.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        this.skullOverlay.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 }
 

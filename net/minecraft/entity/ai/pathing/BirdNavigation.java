@@ -22,10 +22,10 @@ extends EntityNavigation {
     }
 
     @Override
-    protected PathNodeNavigator createPathNodeNavigator(int i) {
+    protected PathNodeNavigator createPathNodeNavigator(int range) {
         this.nodeMaker = new BirdPathNodeMaker();
         this.nodeMaker.setCanEnterOpenDoors(true);
-        return new PathNodeNavigator(this.nodeMaker, i);
+        return new PathNodeNavigator(this.nodeMaker, range);
     }
 
     @Override
@@ -54,7 +54,7 @@ extends EntityNavigation {
             return;
         }
         if (this.isAtValidPosition()) {
-            this.method_6339();
+            this.continueFollowingPath();
         } else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
             vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
             if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x) && MathHelper.floor(this.entity.getY()) == MathHelper.floor(vec3d.y) && MathHelper.floor(this.entity.getZ()) == MathHelper.floor(vec3d.z)) {

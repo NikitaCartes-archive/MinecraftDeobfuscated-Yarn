@@ -4,7 +4,6 @@
 package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,10 +22,11 @@ import net.minecraft.datafixer.NbtOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
+import net.minecraft.world.level.LevelGeneratorOptions;
+import net.minecraft.world.level.LevelGeneratorType;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -39,26 +39,20 @@ extends Screen {
     private SuperflatLayersListWidget layers;
     private ButtonWidget widgetButtonRemoveLayer;
 
-    public CustomizeFlatLevelScreen(CreateWorldScreen parent, CompoundTag generatorOptions) {
+    public CustomizeFlatLevelScreen(CreateWorldScreen parent, LevelGeneratorOptions levelGeneratorOptions) {
         super(new TranslatableText("createWorld.customize.flat.title", new Object[0]));
         this.parent = parent;
-        this.setConfigTag(generatorOptions);
+        if (levelGeneratorOptions.getType() == LevelGeneratorType.FLAT) {
+            this.config = FlatChunkGeneratorConfig.fromDynamic(levelGeneratorOptions.getDynamic());
+        }
     }
 
     public String getConfigString() {
         return this.config.toString();
     }
 
-    public CompoundTag getConfigTag() {
-        return (CompoundTag)this.config.toDynamic(NbtOps.INSTANCE).getValue();
-    }
-
     public void setConfigString(String config) {
         this.config = FlatChunkGeneratorConfig.fromString(config);
-    }
-
-    public void setConfigTag(CompoundTag config) {
-        this.config = FlatChunkGeneratorConfig.fromDynamic(new Dynamic<CompoundTag>(NbtOps.INSTANCE, config));
     }
 
     @Override
@@ -85,7 +79,7 @@ extends Screen {
             this.method_2145();
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
-            this.parent.generatorOptionsTag = this.getConfigTag();
+            this.parent.generatorOptions = LevelGeneratorType.FLAT.loadOptions(this.config.toDynamic(NbtOps.INSTANCE));
             this.client.openScreen(this.parent);
             this.config.updateLayerBlocks();
             this.method_2145();
@@ -220,8 +214,8 @@ extends Screen {
 
             private void method_19373(int x, int y) {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                SuperflatLayersListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
-                DrawableHelper.blit(x, y, CustomizeFlatLevelScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
+                SuperflatLayersListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_TEXTURE);
+                DrawableHelper.drawTexture(x, y, CustomizeFlatLevelScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
             }
         }
     }

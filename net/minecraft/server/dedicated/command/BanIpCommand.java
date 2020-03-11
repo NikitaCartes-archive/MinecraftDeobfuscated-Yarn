@@ -39,7 +39,7 @@ public class BanIpCommand {
         }
         ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(string);
         if (serverPlayerEntity != null) {
-            return BanIpCommand.banIp(serverCommandSource, serverPlayerEntity.getServerBrand(), text);
+            return BanIpCommand.banIp(serverCommandSource, serverPlayerEntity.getIp(), text);
         }
         throw INVALID_IP_EXCEPTION.create();
     }

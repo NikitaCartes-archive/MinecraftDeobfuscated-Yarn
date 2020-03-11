@@ -22,7 +22,7 @@ extends Enchantment {
     private static final int[] field_9064 = new int[]{20, 20, 20};
     public final int typeIndex;
 
-    public DamageEnchantment(Enchantment.Weight weight, int typeIndex, EquipmentSlot ... slots) {
+    public DamageEnchantment(Enchantment.Rarity weight, int typeIndex, EquipmentSlot ... slots) {
         super(weight, EnchantmentTarget.WEAPON, slots);
         this.typeIndex = typeIndex;
     }
@@ -57,7 +57,7 @@ extends Enchantment {
     }
 
     @Override
-    public boolean differs(Enchantment other) {
+    public boolean canAccept(Enchantment other) {
         return !(other instanceof DamageEnchantment);
     }
 

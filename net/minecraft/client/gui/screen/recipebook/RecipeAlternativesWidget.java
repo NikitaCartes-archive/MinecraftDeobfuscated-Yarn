@@ -21,7 +21,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeGridAligner;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -52,7 +52,7 @@ Element {
         if (client.player.currentScreenHandler instanceof AbstractFurnaceScreenHandler) {
             this.furnace = true;
         }
-        boolean bl = client.player.getRecipeBook().isFilteringCraftable((CraftingScreenHandler)client.player.currentScreenHandler);
+        boolean bl = client.player.getRecipeBook().isFilteringCraftable((AbstractRecipeScreenHandler)client.player.currentScreenHandler);
         List<Recipe<?>> list = results.getRecipes(true);
         List list2 = bl ? Collections.emptyList() : results.getRecipes(false);
         int i = list.size();
@@ -146,28 +146,28 @@ Element {
     }
 
     private void renderGrid(int columns, int rows, int squareSize, int borderSize, int u, int v) {
-        this.blit(this.buttonX, this.buttonY, u, v, borderSize, borderSize);
-        this.blit(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY, u + squareSize + borderSize, v, borderSize, borderSize);
-        this.blit(this.buttonX, this.buttonY + borderSize * 2 + rows * squareSize, u, v + squareSize + borderSize, borderSize, borderSize);
-        this.blit(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY + borderSize * 2 + rows * squareSize, u + squareSize + borderSize, v + squareSize + borderSize, borderSize, borderSize);
+        this.drawTexture(this.buttonX, this.buttonY, u, v, borderSize, borderSize);
+        this.drawTexture(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY, u + squareSize + borderSize, v, borderSize, borderSize);
+        this.drawTexture(this.buttonX, this.buttonY + borderSize * 2 + rows * squareSize, u, v + squareSize + borderSize, borderSize, borderSize);
+        this.drawTexture(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY + borderSize * 2 + rows * squareSize, u + squareSize + borderSize, v + squareSize + borderSize, borderSize, borderSize);
         for (int i = 0; i < columns; ++i) {
-            this.blit(this.buttonX + borderSize + i * squareSize, this.buttonY, u + borderSize, v, squareSize, borderSize);
-            this.blit(this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY, u + borderSize, v, borderSize, borderSize);
+            this.drawTexture(this.buttonX + borderSize + i * squareSize, this.buttonY, u + borderSize, v, squareSize, borderSize);
+            this.drawTexture(this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY, u + borderSize, v, borderSize, borderSize);
             for (int j = 0; j < rows; ++j) {
                 if (i == 0) {
-                    this.blit(this.buttonX, this.buttonY + borderSize + j * squareSize, u, v + borderSize, borderSize, squareSize);
-                    this.blit(this.buttonX, this.buttonY + borderSize + (j + 1) * squareSize, u, v + borderSize, borderSize, borderSize);
+                    this.drawTexture(this.buttonX, this.buttonY + borderSize + j * squareSize, u, v + borderSize, borderSize, squareSize);
+                    this.drawTexture(this.buttonX, this.buttonY + borderSize + (j + 1) * squareSize, u, v + borderSize, borderSize, borderSize);
                 }
-                this.blit(this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize + j * squareSize, u + borderSize, v + borderSize, squareSize, squareSize);
-                this.blit(this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY + borderSize + j * squareSize, u + borderSize, v + borderSize, borderSize, squareSize);
-                this.blit(this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize + (j + 1) * squareSize, u + borderSize, v + borderSize, squareSize, borderSize);
-                this.blit(this.buttonX + borderSize + (i + 1) * squareSize - 1, this.buttonY + borderSize + (j + 1) * squareSize - 1, u + borderSize, v + borderSize, borderSize + 1, borderSize + 1);
+                this.drawTexture(this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize + j * squareSize, u + borderSize, v + borderSize, squareSize, squareSize);
+                this.drawTexture(this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY + borderSize + j * squareSize, u + borderSize, v + borderSize, borderSize, squareSize);
+                this.drawTexture(this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize + (j + 1) * squareSize, u + borderSize, v + borderSize, squareSize, borderSize);
+                this.drawTexture(this.buttonX + borderSize + (i + 1) * squareSize - 1, this.buttonY + borderSize + (j + 1) * squareSize - 1, u + borderSize, v + borderSize, borderSize + 1, borderSize + 1);
                 if (i != columns - 1) continue;
-                this.blit(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY + borderSize + j * squareSize, u + squareSize + borderSize, v + borderSize, borderSize, squareSize);
-                this.blit(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY + borderSize + (j + 1) * squareSize, u + squareSize + borderSize, v + borderSize, borderSize, borderSize);
+                this.drawTexture(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY + borderSize + j * squareSize, u + squareSize + borderSize, v + borderSize, borderSize, squareSize);
+                this.drawTexture(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY + borderSize + (j + 1) * squareSize, u + squareSize + borderSize, v + borderSize, borderSize, borderSize);
             }
-            this.blit(this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize * 2 + rows * squareSize, u + borderSize, v + squareSize + borderSize, squareSize, borderSize);
-            this.blit(this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY + borderSize * 2 + rows * squareSize, u + borderSize, v + squareSize + borderSize, borderSize, borderSize);
+            this.drawTexture(this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize * 2 + rows * squareSize, u + borderSize, v + squareSize + borderSize, squareSize, borderSize);
+            this.drawTexture(this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY + borderSize * 2 + rows * squareSize, u + borderSize, v + squareSize + borderSize, borderSize, borderSize);
         }
     }
 
@@ -222,7 +222,7 @@ Element {
             if (this.isHovered()) {
                 j += 26;
             }
-            this.blit(this.x, this.y, i, j, this.width, this.height);
+            this.drawTexture(this.x, this.y, i, j, this.width, this.height);
             for (InputSlot inputSlot : this.slots) {
                 RenderSystem.pushMatrix();
                 float f = 0.42f;

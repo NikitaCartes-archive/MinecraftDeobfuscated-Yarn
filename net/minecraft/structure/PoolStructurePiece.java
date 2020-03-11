@@ -18,7 +18,7 @@ import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;

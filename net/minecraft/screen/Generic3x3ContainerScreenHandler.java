@@ -24,7 +24,7 @@ extends ScreenHandler {
         super(ScreenHandlerType.GENERIC_3X3, syncId);
         int j;
         int i;
-        Generic3x3ContainerScreenHandler.checkContainerSize(inventory, 9);
+        Generic3x3ContainerScreenHandler.checkSize(inventory, 9);
         this.inventory = inventory;
         inventory.onInvOpen(playerInventory.player);
         for (i = 0; i < 3; ++i) {
@@ -48,13 +48,13 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (invSlot < 9 ? !this.insertItem(itemStack2, 9, 45, true) : !this.insertItem(itemStack2, 0, 9, false)) {
+            if (index < 9 ? !this.insertItem(itemStack2, 9, 45, true) : !this.insertItem(itemStack2, 0, 9, false)) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

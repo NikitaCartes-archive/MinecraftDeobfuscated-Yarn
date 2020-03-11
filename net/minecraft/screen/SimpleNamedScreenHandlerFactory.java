@@ -5,13 +5,13 @@ package net.minecraft.screen;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerFactory;
 import net.minecraft.text.Text;
 
 public final class SimpleNamedScreenHandlerFactory
-implements NameableScreenHandlerFactory {
+implements NamedScreenHandlerFactory {
     private final Text name;
     private final ScreenHandlerFactory baseFactory;
 

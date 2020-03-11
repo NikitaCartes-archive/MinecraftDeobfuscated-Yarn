@@ -16,8 +16,8 @@ extends ChoiceFix {
     }
 
     @Override
-    protected Typed<?> transform(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), dynamic -> dynamic.remove("Color"));
+    protected Typed<?> transform(Typed<?> inputType) {
+        return inputType.update(DSL.remainderFinder(), dynamic -> dynamic.remove("Color"));
     }
 }
 

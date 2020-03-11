@@ -95,8 +95,8 @@ extends ChoiceFix {
     }
 
     @Override
-    protected Typed<?> transform(Typed<?> typed) {
-        return typed.update(DSL.remainderFinder(), dynamic -> {
+    protected Typed<?> transform(Typed<?> inputType) {
+        return inputType.update(DSL.remainderFinder(), dynamic -> {
             dynamic = this.fix((Dynamic<?>)dynamic, "Text1");
             dynamic = this.fix((Dynamic<?>)dynamic, "Text2");
             dynamic = this.fix((Dynamic<?>)dynamic, "Text3");

@@ -57,7 +57,7 @@ public class MoveControl {
 
     public void tick() {
         if (this.state == State.STRAFE) {
-            PathNodeMaker pathNodeMaker;
+            float n;
             float f = (float)this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
             float g = (float)this.speed * f;
             float h = this.forwardMovement;
@@ -70,12 +70,9 @@ public class MoveControl {
             float k = MathHelper.sin(this.entity.yaw * ((float)Math.PI / 180));
             float l = MathHelper.cos(this.entity.yaw * ((float)Math.PI / 180));
             float m = (h *= j) * l - (i *= j) * k;
-            float n = i * l + h * k;
-            EntityNavigation entityNavigation = this.entity.getNavigation();
-            if (entityNavigation != null && (pathNodeMaker = entityNavigation.getNodeMaker()) != null && pathNodeMaker.getNodeType(this.entity.world, MathHelper.floor(this.entity.getX() + (double)m), MathHelper.floor(this.entity.getY()), MathHelper.floor(this.entity.getZ() + (double)n)) != PathNodeType.WALKABLE) {
+            if (!this.method_25946(m, n = i * l + h * k)) {
                 this.forwardMovement = 1.0f;
                 this.sidewaysMovement = 0.0f;
-                g = f;
             }
             this.entity.setMovementSpeed(g);
             this.entity.setForwardSpeed(this.forwardMovement);
@@ -104,12 +101,18 @@ public class MoveControl {
             }
         } else if (this.state == State.JUMPING) {
             this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
-            if (this.entity.method_24828()) {
+            if (this.entity.isOnGround()) {
                 this.state = State.WAIT;
             }
         } else {
             this.entity.setForwardSpeed(0.0f);
         }
+    }
+
+    private boolean method_25946(float f, float g) {
+        PathNodeMaker pathNodeMaker;
+        EntityNavigation entityNavigation = this.entity.getNavigation();
+        return entityNavigation == null || (pathNodeMaker = entityNavigation.getNodeMaker()) == null || pathNodeMaker.getDefaultNodeType(this.entity.world, MathHelper.floor(this.entity.getX() + (double)f), MathHelper.floor(this.entity.getY()), MathHelper.floor(this.entity.getZ() + (double)g)) == PathNodeType.WALKABLE;
     }
 
     protected float changeAngle(float from, float to, float max) {

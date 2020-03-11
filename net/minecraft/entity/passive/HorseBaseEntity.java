@@ -929,7 +929,7 @@ JumpingMount {
             if (!Double.isInfinite(h) && h < 1.0 && this.world.getBlockCollisions(livingEntity, box2 = box.offset(d, (double)mutable.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
                 return new Vec3d(d, (double)mutable.getY() + h, f);
             }
-            mutable.setOffset(Direction.UP);
+            mutable.move(Direction.UP);
         } while ((double)mutable.getY() < g);
         return new Vec3d(this.getX(), this.getY(), this.getZ());
     }

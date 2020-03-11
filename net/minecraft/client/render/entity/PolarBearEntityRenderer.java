@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class PolarBearEntityRenderer
 extends MobEntityRenderer<PolarBearEntity, PolarBearEntityModel<PolarBearEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/bear/polarbear.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/bear/polarbear.png");
 
     public PolarBearEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new PolarBearEntityModel(), 0.9f);
@@ -23,7 +23,7 @@ extends MobEntityRenderer<PolarBearEntity, PolarBearEntityModel<PolarBearEntity>
 
     @Override
     public Identifier getTexture(PolarBearEntity polarBearEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

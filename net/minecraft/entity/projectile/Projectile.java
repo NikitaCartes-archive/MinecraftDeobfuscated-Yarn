@@ -69,7 +69,7 @@ extends Entity {
         float h = MathHelper.cos(yaw * ((float)Math.PI / 180)) * MathHelper.cos(pitch * ((float)Math.PI / 180));
         this.setVelocity(f, g, h, modifierZ, modifierXYZ);
         Vec3d vec3d = user.getVelocity();
-        this.setVelocity(this.getVelocity().add(vec3d.x, user.method_24828() ? 0.0 : vec3d.y, vec3d.z));
+        this.setVelocity(this.getVelocity().add(vec3d.x, user.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
     }
 
     protected void onCollision(HitResult hitResult) {

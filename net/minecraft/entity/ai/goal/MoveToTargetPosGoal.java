@@ -104,7 +104,7 @@ extends Goal {
                     int n;
                     int n2 = n = m < l && m > -l ? l : 0;
                     while (n <= l) {
-                        mutable.setOffset(blockPos, m, k - 1, n);
+                        mutable.set(blockPos, m, k - 1, n);
                         if (this.mob.isInWalkTargetRange(mutable) && this.isTargetPos(this.mob.world, mutable)) {
                             this.targetPos = mutable;
                             return true;

@@ -237,14 +237,14 @@ extends RealmsScreen {
             float f = 0.9f + 0.1f * MathHelper.cos((float)this.animTick * 0.2f);
             RenderSystem.color4f(f, f, f, 1.0f);
         }
-        DrawableHelper.blit(x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
+        DrawableHelper.drawTexture(x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
         this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22681);
         if (active) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         } else {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         }
-        DrawableHelper.blit(x, y, 0.0f, 0.0f, 80, 80, 80, 80);
+        DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 80, 80, 80, 80);
         this.drawCenteredString(this.textRenderer, string, x + 40, y + 66, 0xFFFFFF);
     }
 }

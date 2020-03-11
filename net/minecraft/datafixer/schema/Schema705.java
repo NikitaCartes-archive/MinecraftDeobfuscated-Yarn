@@ -25,7 +25,7 @@ extends IdentifierNormalizingSchema {
 
         @Override
         public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-            return Schema99.method_5359(new Dynamic<T>(dynamicOps, object), Schema704.field_5744, "minecraft:armor_stand");
+            return Schema99.method_5359(new Dynamic<T>(dynamicOps, object), Schema704.BLOCK_RENAMES, "minecraft:armor_stand");
         }
     };
 
@@ -131,9 +131,9 @@ extends IdentifierNormalizingSchema {
     }
 
     @Override
-    public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
-        super.registerTypes(schema, map, map2);
-        schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), map));
+    public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
+        super.registerTypes(schema, entityTypes, blockEntityTypes);
+        schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), entityTypes));
         schema.registerType(true, TypeReferences.ITEM_STACK, () -> DSL.hook(DSL.optionalFields("id", TypeReferences.ITEM_NAME.in(schema), "tag", DSL.optionalFields("EntityTag", TypeReferences.ENTITY_TREE.in(schema), "BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema), "CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema)), "CanPlaceOn", DSL.list(TypeReferences.BLOCK_NAME.in(schema)))), field_5746, Hook.HookFunction.IDENTITY));
     }
 }

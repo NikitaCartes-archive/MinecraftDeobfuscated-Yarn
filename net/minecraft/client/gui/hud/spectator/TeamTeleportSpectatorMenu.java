@@ -61,7 +61,7 @@ SpectatorMenuCommand {
     @Override
     public void renderIcon(float brightness, int alpha) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-        DrawableHelper.blit(0, 0, 16.0f, 0.0f, 16, 16, 256, 256);
+        DrawableHelper.drawTexture(0, 0, 16.0f, 0.0f, 16, 16, 256, 256);
     }
 
     @Override
@@ -118,8 +118,8 @@ SpectatorMenuCommand {
             }
             MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
             RenderSystem.color4f(brightness, brightness, brightness, (float)alpha / 255.0f);
-            DrawableHelper.blit(2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
-            DrawableHelper.blit(2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
+            DrawableHelper.drawTexture(2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
+            DrawableHelper.drawTexture(2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
         }
 
         @Override

@@ -17,8 +17,8 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.FurnaceFuelSlot;
@@ -28,22 +28,22 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceScreenHandler
-extends CraftingScreenHandler<Inventory> {
+extends AbstractRecipeScreenHandler<Inventory> {
     private final Inventory inventory;
     private final PropertyDelegate propertyDelegate;
     protected final World world;
     private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
-    protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> screenHandlerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory) {
-        this(screenHandlerType, recipeType, syncId, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
+    protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory) {
+        this(type, recipeType, syncId, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
     }
 
-    protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> screenHandlerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-        super(screenHandlerType, syncId);
+    protected AbstractFurnaceScreenHandler(ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+        super(type, syncId);
         int i;
         this.recipeType = recipeType;
-        AbstractFurnaceScreenHandler.checkContainerSize(inventory, 3);
-        AbstractFurnaceScreenHandler.checkContainerDataCount(propertyDelegate, 4);
+        AbstractFurnaceScreenHandler.checkSize(inventory, 3);
+        AbstractFurnaceScreenHandler.checkDataCount(propertyDelegate, 4);
         this.inventory = inventory;
         this.propertyDelegate = propertyDelegate;
         this.world = playerInventory.player.world;
@@ -62,9 +62,9 @@ extends CraftingScreenHandler<Inventory> {
     }
 
     @Override
-    public void populateRecipeFinder(RecipeFinder recipeFinder) {
+    public void populateRecipeFinder(RecipeFinder finder) {
         if (this.inventory instanceof RecipeInputProvider) {
-            ((RecipeInputProvider)((Object)this.inventory)).provideRecipeInputs(recipeFinder);
+            ((RecipeInputProvider)((Object)this.inventory)).provideRecipeInputs(finder);
         }
     }
 
@@ -74,8 +74,8 @@ extends CraftingScreenHandler<Inventory> {
     }
 
     @Override
-    public void fillInputSlots(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
-        new FurnaceInputSlotFiller<Inventory>(this).fillInputSlots(serverPlayerEntity, recipe, bl);
+    public void fillInputSlots(boolean craftAll, Recipe<?> recipe, ServerPlayerEntity player) {
+        new FurnaceInputSlotFiller<Inventory>(this).fillInputSlots(player, recipe, craftAll);
     }
 
     @Override
@@ -110,18 +110,18 @@ extends CraftingScreenHandler<Inventory> {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+    public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(invSlot);
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            if (invSlot == 2) {
+            if (index == 2) {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onStackChanged(itemStack2, itemStack);
-            } else if (invSlot == 1 || invSlot == 0 ? !this.insertItem(itemStack2, 3, 39, false) : (this.isSmeltable(itemStack2) ? !this.insertItem(itemStack2, 0, 1, false) : (this.isFuel(itemStack2) ? !this.insertItem(itemStack2, 1, 2, false) : (invSlot >= 3 && invSlot < 30 ? !this.insertItem(itemStack2, 30, 39, false) : invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false))))) {
+            } else if (index == 1 || index == 0 ? !this.insertItem(itemStack2, 3, 39, false) : (this.isSmeltable(itemStack2) ? !this.insertItem(itemStack2, 0, 1, false) : (this.isFuel(itemStack2) ? !this.insertItem(itemStack2, 1, 2, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack2, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

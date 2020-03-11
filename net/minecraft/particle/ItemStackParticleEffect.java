@@ -10,9 +10,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.command.arguments.ItemStackArgument;
 import net.minecraft.command.arguments.ItemStringReader;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class ItemStackParticleEffect

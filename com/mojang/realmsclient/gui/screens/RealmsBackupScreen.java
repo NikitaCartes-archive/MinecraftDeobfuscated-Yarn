@@ -269,7 +269,7 @@ extends RealmsScreen {
             RenderSystem.pushMatrix();
             RenderSystem.scalef(0.5f, 0.5f, 0.5f);
             float f = bl ? 28.0f : 0.0f;
-            DrawableHelper.blit(x * 2, y * 2, 0.0f, f, 23, 28, 23, 56);
+            DrawableHelper.drawTexture(x * 2, y * 2, 0.0f, f, 23, 28, 23, 56);
             RenderSystem.popMatrix();
             if (bl) {
                 RealmsBackupScreen.this.toolTip = I18n.translate("mco.backup.button.restore", new Object[0]);
@@ -283,7 +283,7 @@ extends RealmsScreen {
             RenderSystem.pushMatrix();
             RenderSystem.scalef(0.5f, 0.5f, 0.5f);
             float f = bl ? 15.0f : 0.0f;
-            DrawableHelper.blit(x * 2, y * 2, 0.0f, f, 15, 15, 15, 30);
+            DrawableHelper.drawTexture(x * 2, y * 2, 0.0f, f, 15, 15, 15, 30);
             RenderSystem.popMatrix();
             if (bl) {
                 RealmsBackupScreen.this.toolTip = I18n.translate("mco.backup.changes.tooltip", new Object[0]);

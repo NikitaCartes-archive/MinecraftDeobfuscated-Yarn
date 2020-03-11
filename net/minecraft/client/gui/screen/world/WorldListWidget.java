@@ -181,7 +181,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : UNKNOWN_SERVER_LOCATION);
             RenderSystem.enableBlend();
-            DrawableHelper.blit(x, y, 0.0f, 0.0f, 32, 32, 32, 32);
+            DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             RenderSystem.disableBlend();
             if (this.client.options.touchscreen || hovering) {
                 int j;
@@ -191,26 +191,26 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 int i = mouseX - x;
                 int n = j = i < 32 ? 32 : 0;
                 if (this.level.isDifferentVersion()) {
-                    DrawableHelper.blit(x, y, 32.0f, j, 32, 32, 256, 256);
+                    DrawableHelper.drawTexture(x, y, 32.0f, j, 32, 32, 256, 256);
                     if (this.level.isLegacyCustomizedWorld()) {
-                        DrawableHelper.blit(x, y, 96.0f, j, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 96.0f, j, 32, 32, 256, 256);
                         if (i < 32) {
                             Text text = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
                             this.screen.setTooltip(this.client.textRenderer.wrapStringToWidth(text.asFormattedString(), 175));
                         }
                     } else if (this.level.isFutureLevel()) {
-                        DrawableHelper.blit(x, y, 96.0f, j, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 96.0f, j, 32, 32, 256, 256);
                         if (i < 32) {
                             this.screen.setTooltip((Object)((Object)Formatting.RED) + I18n.translate("selectWorld.tooltip.fromNewerVersion1", new Object[0]) + "\n" + (Object)((Object)Formatting.RED) + I18n.translate("selectWorld.tooltip.fromNewerVersion2", new Object[0]));
                         }
                     } else if (!SharedConstants.getGameVersion().isStable()) {
-                        DrawableHelper.blit(x, y, 64.0f, j, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(x, y, 64.0f, j, 32, 32, 256, 256);
                         if (i < 32) {
                             this.screen.setTooltip((Object)((Object)Formatting.GOLD) + I18n.translate("selectWorld.tooltip.snapshot1", new Object[0]) + "\n" + (Object)((Object)Formatting.GOLD) + I18n.translate("selectWorld.tooltip.snapshot2", new Object[0]));
                         }
                     }
                 } else {
-                    DrawableHelper.blit(x, y, 0.0f, j, 32, 32, 256, 256);
+                    DrawableHelper.drawTexture(x, y, 0.0f, j, 32, 32, 256, 256);
                 }
             }
         }

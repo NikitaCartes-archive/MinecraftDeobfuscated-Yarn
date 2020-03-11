@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class EndermiteEntityRenderer
 extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>> {
-    private static final Identifier SKIN = new Identifier("textures/entity/endermite.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/endermite.png");
 
     public EndermiteEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new EndermiteEntityModel(), 0.3f);
@@ -29,7 +29,7 @@ extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>
 
     @Override
     public Identifier getTexture(EndermiteEntity endermiteEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.HashMap;
 import java.util.function.Function;
-import net.minecraft.util.DynamicSerializable;
+import net.minecraft.util.dynamic.DynamicSerializable;
 
 public class Memory<T>
 implements DynamicSerializable {

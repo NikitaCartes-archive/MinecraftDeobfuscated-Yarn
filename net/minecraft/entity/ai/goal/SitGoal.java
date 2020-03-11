@@ -30,7 +30,7 @@ extends Goal {
         if (this.tameable.isInsideWaterOrBubbleColumn()) {
             return false;
         }
-        if (!this.tameable.method_24828()) {
+        if (!this.tameable.isOnGround()) {
             return false;
         }
         LivingEntity livingEntity = this.tameable.getOwner();

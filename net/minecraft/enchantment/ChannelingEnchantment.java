@@ -9,7 +9,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class ChannelingEnchantment
 extends Enchantment {
-    public ChannelingEnchantment(Enchantment.Weight weight, EquipmentSlot ... slotTypes) {
+    public ChannelingEnchantment(Enchantment.Rarity weight, EquipmentSlot ... slotTypes) {
         super(weight, EnchantmentTarget.TRIDENT, slotTypes);
     }
 
@@ -29,8 +29,8 @@ extends Enchantment {
     }
 
     @Override
-    public boolean differs(Enchantment other) {
-        return super.differs(other);
+    public boolean canAccept(Enchantment other) {
+        return super.canAccept(other);
     }
 }
 

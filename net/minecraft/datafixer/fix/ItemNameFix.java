@@ -37,8 +37,8 @@ extends DataFix {
         return new ItemNameFix(outputSchema, name){
 
             @Override
-            protected String rename(String string) {
-                return (String)rename.apply(string);
+            protected String rename(String input) {
+                return (String)rename.apply(input);
             }
         };
     }

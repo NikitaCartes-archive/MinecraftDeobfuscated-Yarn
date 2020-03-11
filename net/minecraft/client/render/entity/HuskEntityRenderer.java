@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 @Environment(value=EnvType.CLIENT)
 public class HuskEntityRenderer
 extends ZombieEntityRenderer {
-    private static final Identifier SKIN = new Identifier("textures/entity/zombie/husk.png");
+    private static final Identifier TEXTURE = new Identifier("textures/entity/zombie/husk.png");
 
     public HuskEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
@@ -29,7 +29,7 @@ extends ZombieEntityRenderer {
 
     @Override
     public Identifier getTexture(ZombieEntity zombieEntity) {
-        return SKIN;
+        return TEXTURE;
     }
 }
 
