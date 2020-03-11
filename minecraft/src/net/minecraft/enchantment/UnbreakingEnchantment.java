@@ -6,7 +6,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 
 public class UnbreakingEnchantment extends Enchantment {
-	protected UnbreakingEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	protected UnbreakingEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.BREAKABLE, slotTypes);
 	}
 

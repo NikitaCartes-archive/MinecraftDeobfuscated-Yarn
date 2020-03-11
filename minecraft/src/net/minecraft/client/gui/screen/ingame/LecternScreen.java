@@ -10,24 +10,24 @@ import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class LecternScreen extends BookScreen implements ScreenHandlerProvider<LecternScreenHandler> {
 	private final LecternScreenHandler container;
 	private final ScreenHandlerListener listener = new ScreenHandlerListener() {
 		@Override
-		public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> defaultedList) {
+		public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
 			LecternScreen.this.updatePageProvider();
 		}
 
 		@Override
-		public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack) {
+		public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
 			LecternScreen.this.updatePageProvider();
 		}
 
 		@Override
-		public void onPropertyUpdate(ScreenHandler handler, int propertyId, int i) {
+		public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
 			if (propertyId == 0) {
 				LecternScreen.this.updatePage();
 			}

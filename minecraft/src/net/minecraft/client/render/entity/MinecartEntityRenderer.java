@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
-	private static final Identifier SKIN = new Identifier("textures/entity/minecart.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/minecart.png");
 	protected final EntityModel<T> model = new MinecartEntityModel<>();
 
 	public MinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -95,7 +95,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	}
 
 	public Identifier getTexture(T abstractMinecartEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 
 	protected void renderBlock(

@@ -29,34 +29,34 @@ public class CoralClawFeature extends CoralFeature {
 			for (Direction direction2 : list.subList(0, i)) {
 				BlockPos.Mutable mutable = pos.mutableCopy();
 				int j = random.nextInt(2) + 1;
-				mutable.setOffset(direction2);
+				mutable.move(direction2);
 				int k;
 				Direction direction3;
 				if (direction2 == direction) {
 					direction3 = direction;
 					k = random.nextInt(3) + 2;
 				} else {
-					mutable.setOffset(Direction.UP);
+					mutable.move(Direction.UP);
 					Direction[] directions = new Direction[]{direction2, Direction.UP};
 					direction3 = directions[random.nextInt(directions.length)];
 					k = random.nextInt(3) + 3;
 				}
 
 				for (int l = 0; l < j && this.spawnCoralPiece(world, random, mutable, state); l++) {
-					mutable.setOffset(direction3);
+					mutable.move(direction3);
 				}
 
-				mutable.setOffset(direction3.getOpposite());
-				mutable.setOffset(Direction.UP);
+				mutable.move(direction3.getOpposite());
+				mutable.move(Direction.UP);
 
 				for (int l = 0; l < k; l++) {
-					mutable.setOffset(direction);
+					mutable.move(direction);
 					if (!this.spawnCoralPiece(world, random, mutable, state)) {
 						break;
 					}
 
 					if (random.nextFloat() < 0.25F) {
-						mutable.setOffset(Direction.UP);
+						mutable.move(Direction.UP);
 					}
 				}
 			}

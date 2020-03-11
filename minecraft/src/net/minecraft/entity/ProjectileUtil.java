@@ -146,28 +146,30 @@ public final class ProjectileUtil {
 
 	public static final void method_7484(Entity entity, float f) {
 		Vec3d vec3d = entity.getVelocity();
-		float g = MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d));
-		entity.yaw = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) + 90.0F;
-		entity.pitch = (float)(MathHelper.atan2((double)g, vec3d.y) * 180.0F / (float)Math.PI) - 90.0F;
+		if (vec3d.lengthSquared() != 0.0) {
+			float g = MathHelper.sqrt(Entity.squaredHorizontalLength(vec3d));
+			entity.yaw = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) + 90.0F;
+			entity.pitch = (float)(MathHelper.atan2((double)g, vec3d.y) * 180.0F / (float)Math.PI) - 90.0F;
 
-		while (entity.pitch - entity.prevPitch < -180.0F) {
-			entity.prevPitch -= 360.0F;
+			while (entity.pitch - entity.prevPitch < -180.0F) {
+				entity.prevPitch -= 360.0F;
+			}
+
+			while (entity.pitch - entity.prevPitch >= 180.0F) {
+				entity.prevPitch += 360.0F;
+			}
+
+			while (entity.yaw - entity.prevYaw < -180.0F) {
+				entity.prevYaw -= 360.0F;
+			}
+
+			while (entity.yaw - entity.prevYaw >= 180.0F) {
+				entity.prevYaw += 360.0F;
+			}
+
+			entity.pitch = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
+			entity.yaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
 		}
-
-		while (entity.pitch - entity.prevPitch >= 180.0F) {
-			entity.prevPitch += 360.0F;
-		}
-
-		while (entity.yaw - entity.prevYaw < -180.0F) {
-			entity.prevYaw -= 360.0F;
-		}
-
-		while (entity.yaw - entity.prevYaw >= 180.0F) {
-			entity.prevYaw += 360.0F;
-		}
-
-		entity.pitch = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
-		entity.yaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
 	}
 
 	public static Hand getHandPossiblyHolding(LivingEntity entity, Item item) {

@@ -18,7 +18,7 @@ import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
-public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory> {
+public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInventory> {
 	public static final Identifier BLOCK_ATLAS_TEXTURE = new Identifier("textures/atlas/blocks.png");
 	public static final Identifier EMPTY_HELMET_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_helmet");
 	public static final Identifier EMPTY_CHESTPLATE_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_chestplate");
@@ -31,8 +31,8 @@ public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
 		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
 	};
-	private final CraftingInventory craftingInventory = new CraftingInventory(this, 2, 2);
-	private final CraftingResultInventory craftingResultInventory = new CraftingResultInventory();
+	private final CraftingInventory craftingInput = new CraftingInventory(this, 2, 2);
+	private final CraftingResultInventory craftingResult = new CraftingResultInventory();
 	public final boolean onServer;
 	private final PlayerEntity owner;
 
@@ -40,11 +40,11 @@ public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory
 		super(null, 0);
 		this.onServer = onServer;
 		this.owner = owner;
-		this.addSlot(new CraftingResultSlot(inventory.player, this.craftingInventory, this.craftingResultInventory, 0, 154, 28));
+		this.addSlot(new CraftingResultSlot(inventory.player, this.craftingInput, this.craftingResult, 0, 154, 28));
 
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				this.addSlot(new Slot(this.craftingInventory, j + i * 2, 98 + j * 18, 18 + i * 18));
+				this.addSlot(new Slot(this.craftingInput, j + i * 2, 98 + j * 18, 18 + i * 18));
 			}
 		}
 
@@ -95,32 +95,32 @@ public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory
 	}
 
 	@Override
-	public void populateRecipeFinder(RecipeFinder recipeFinder) {
-		this.craftingInventory.provideRecipeInputs(recipeFinder);
+	public void populateRecipeFinder(RecipeFinder finder) {
+		this.craftingInput.provideRecipeInputs(finder);
 	}
 
 	@Override
 	public void clearCraftingSlots() {
-		this.craftingResultInventory.clear();
-		this.craftingInventory.clear();
+		this.craftingResult.clear();
+		this.craftingInput.clear();
 	}
 
 	@Override
 	public boolean matches(Recipe<? super CraftingInventory> recipe) {
-		return recipe.matches(this.craftingInventory, this.owner.world);
+		return recipe.matches(this.craftingInput, this.owner.world);
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		CraftingTableScreenHandler.updateResult(this.syncId, this.owner.world, this.owner, this.craftingInventory, this.craftingResultInventory);
+		CraftingScreenHandler.updateResult(this.syncId, this.owner.world, this.owner, this.craftingInput, this.craftingResult);
 	}
 
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.craftingResultInventory.clear();
+		this.craftingResult.clear();
 		if (!player.world.isClient) {
-			this.dropInventory(player, player.world, this.craftingInventory);
+			this.dropInventory(player, player.world, this.craftingInput);
 		}
 	}
 
@@ -130,24 +130,24 @@ public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-			if (invSlot == 0) {
+			if (index == 0) {
 				if (!this.insertItem(itemStack2, 9, 45, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (invSlot >= 1 && invSlot < 5) {
+			} else if (index >= 1 && index < 5) {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (invSlot >= 5 && invSlot < 9) {
+			} else if (index >= 5 && index < 9) {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -160,11 +160,11 @@ public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory
 				if (!this.insertItem(itemStack2, 45, 46, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (invSlot >= 9 && invSlot < 36) {
+			} else if (index >= 9 && index < 36) {
 				if (!this.insertItem(itemStack2, 36, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (invSlot >= 36 && invSlot < 45) {
+			} else if (index >= 36 && index < 45) {
 				if (!this.insertItem(itemStack2, 9, 36, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -183,7 +183,7 @@ public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory
 			}
 
 			ItemStack itemStack3 = slot.onTakeItem(player, itemStack2);
-			if (invSlot == 0) {
+			if (index == 0) {
 				player.dropItem(itemStack3, false);
 			}
 		}
@@ -193,7 +193,7 @@ public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory
 
 	@Override
 	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-		return slot.inventory != this.craftingResultInventory && super.canInsertIntoSlot(stack, slot);
+		return slot.inventory != this.craftingResult && super.canInsertIntoSlot(stack, slot);
 	}
 
 	@Override
@@ -203,12 +203,12 @@ public class PlayerScreenHandler extends CraftingScreenHandler<CraftingInventory
 
 	@Override
 	public int getCraftingWidth() {
-		return this.craftingInventory.getWidth();
+		return this.craftingInput.getWidth();
 	}
 
 	@Override
 	public int getCraftingHeight() {
-		return this.craftingInventory.getHeight();
+		return this.craftingInput.getHeight();
 	}
 
 	@Environment(EnvType.CLIENT)

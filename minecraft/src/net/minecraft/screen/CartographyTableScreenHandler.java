@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CartographyTableScreenHandler extends ScreenHandler {
-	private final BlockContext context;
+	private final ScreenHandlerContext context;
 	private boolean currentlyTakingItem;
 	private long lastTakeResultTime;
 	public final Inventory inventory = new BasicInventory(2) {
@@ -39,10 +39,10 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	};
 
 	public CartographyTableScreenHandler(int syncId, PlayerInventory inventory) {
-		this(syncId, inventory, BlockContext.EMPTY);
+		this(syncId, inventory, ScreenHandlerContext.EMPTY);
 	}
 
-	public CartographyTableScreenHandler(int syncId, PlayerInventory inventory, BlockContext context) {
+	public CartographyTableScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context) {
 		super(ScreenHandlerType.CARTOGRAPHY_TABLE, syncId);
 		this.context = context;
 		this.addSlot(new Slot(this.inventory, 0, 15, 15) {
@@ -160,7 +160,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 					this.sendContentUpdates();
 				}
 
-				if (!ItemStack.areEqualIgnoreDamage(itemStack4, oldResult)) {
+				if (!ItemStack.areEqual(itemStack4, oldResult)) {
 					this.resultSlot.setInvStack(2, itemStack4);
 					this.sendContentUpdates();
 				}
@@ -174,15 +174,15 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			ItemStack itemStack3 = itemStack2;
 			Item item = itemStack2.getItem();
 			itemStack = itemStack2.copy();
-			if (invSlot == 2) {
+			if (index == 2) {
 				if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
 						ItemStack itemStack2x = FilledMapItem.copyMap(world, this.inventory.getInvStack(0));
@@ -201,17 +201,17 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				}
 
 				slot.onStackChanged(itemStack3, itemStack);
-			} else if (invSlot != 1 && invSlot != 0) {
+			} else if (index != 1 && index != 0) {
 				if (item == Items.FILLED_MAP) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (item != Items.PAPER && item != Items.MAP && item != Items.GLASS_PANE) {
-					if (invSlot >= 3 && invSlot < 30) {
+					if (index >= 3 && index < 30) {
 						if (!this.insertItem(itemStack2, 30, 39, false)) {
 							return ItemStack.EMPTY;
 						}
-					} else if (invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
+					} else if (index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (!this.insertItem(itemStack2, 1, 2, false)) {

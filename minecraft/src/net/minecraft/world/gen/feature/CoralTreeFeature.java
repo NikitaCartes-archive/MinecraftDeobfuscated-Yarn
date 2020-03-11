@@ -26,7 +26,7 @@ public class CoralTreeFeature extends CoralFeature {
 				return true;
 			}
 
-			mutable.setOffset(Direction.UP);
+			mutable.move(Direction.UP);
 		}
 
 		BlockPos blockPos = mutable.toImmutable();
@@ -36,15 +36,15 @@ public class CoralTreeFeature extends CoralFeature {
 
 		for (Direction direction : list.subList(0, k)) {
 			mutable.set(blockPos);
-			mutable.setOffset(direction);
+			mutable.move(direction);
 			int l = random.nextInt(5) + 2;
 			int m = 0;
 
 			for (int n = 0; n < l && this.spawnCoralPiece(world, random, mutable, state); n++) {
 				m++;
-				mutable.setOffset(Direction.UP);
+				mutable.move(Direction.UP);
 				if (n == 0 || m >= 2 && random.nextFloat() < 0.25F) {
-					mutable.setOffset(direction);
+					mutable.move(direction);
 					m = 0;
 				}
 			}

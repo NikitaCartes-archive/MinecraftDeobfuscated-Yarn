@@ -24,7 +24,10 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 		this.properties = properties;
 	}
 
-	public static Properties load(Path path) {
+	/**
+	 * Loads a map of properties from the {@code path}.
+	 */
+	public static Properties loadProperties(Path path) {
 		Properties properties = new Properties();
 
 		try {
@@ -56,7 +59,10 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 		return properties;
 	}
 
-	public void store(Path path) {
+	/**
+	 * Saves the properties of this handler to the {@code path}.
+	 */
+	public void saveProperties(Path path) {
 		try {
 			OutputStream outputStream = Files.newOutputStream(path);
 			Throwable var3 = null;
@@ -84,135 +90,146 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 		}
 	}
 
-	private static <V extends Number> Function<String, V> wrapNumberParsingFunction(Function<String, V> function) {
+	private static <V extends Number> Function<String, V> wrapNumberParser(Function<String, V> parser) {
 		return string -> {
 			try {
-				return (Number)function.apply(string);
+				return (Number)parser.apply(string);
 			} catch (NumberFormatException var3) {
 				return null;
 			}
 		};
 	}
 
-	protected static <V> Function<String, V> wrapIntParsingFunction(IntFunction<V> intFunction, Function<String, V> function) {
+	protected static <V> Function<String, V> combineParser(IntFunction<V> intParser, Function<String, V> fallbackParser) {
 		return string -> {
 			try {
-				return intFunction.apply(Integer.parseInt(string));
+				return intParser.apply(Integer.parseInt(string));
 			} catch (NumberFormatException var4) {
-				return function.apply(string);
+				return fallbackParser.apply(string);
 			}
 		};
 	}
 
 	@Nullable
-	private String getStringValue(String string) {
-		return (String)this.properties.get(string);
+	private String getStringValue(String key) {
+		return (String)this.properties.get(key);
 	}
 
 	@Nullable
-	protected <V> V getDeprecated(String string, Function<String, V> function) {
-		String string2 = this.getStringValue(string);
-		if (string2 == null) {
+	protected <V> V getDeprecated(String key, Function<String, V> stringifier) {
+		String string = this.getStringValue(key);
+		if (string == null) {
 			return null;
 		} else {
-			this.properties.remove(string);
-			return (V)function.apply(string2);
+			this.properties.remove(key);
+			return (V)stringifier.apply(string);
 		}
 	}
 
-	protected <V> V get(String string, Function<String, V> function, Function<V, String> function2, V object) {
-		String string2 = this.getStringValue(string);
-		V object2 = MoreObjects.firstNonNull((V)(string2 != null ? function.apply(string2) : null), object);
-		this.properties.put(string, function2.apply(object2));
-		return object2;
+	protected <V> V get(String key, Function<String, V> parser, Function<V, String> stringifier, V fallback) {
+		String string = this.getStringValue(key);
+		V object = MoreObjects.firstNonNull((V)(string != null ? parser.apply(string) : null), fallback);
+		this.properties.put(key, stringifier.apply(object));
+		return object;
 	}
 
-	protected <V> AbstractPropertiesHandler<T>.PropertyAccessor<V> accessor(String string, Function<String, V> function, Function<V, String> function2, V object) {
-		String string2 = this.getStringValue(string);
-		V object2 = MoreObjects.firstNonNull((V)(string2 != null ? function.apply(string2) : null), object);
-		this.properties.put(string, function2.apply(object2));
-		return new AbstractPropertiesHandler.PropertyAccessor<>(string, object2, function2);
+	protected <V> AbstractPropertiesHandler<T>.PropertyAccessor<V> accessor(String key, Function<String, V> parser, Function<V, String> stringifier, V fallback) {
+		String string = this.getStringValue(key);
+		V object = MoreObjects.firstNonNull((V)(string != null ? parser.apply(string) : null), fallback);
+		this.properties.put(key, stringifier.apply(object));
+		return new AbstractPropertiesHandler.PropertyAccessor<>(key, object, stringifier);
 	}
 
-	protected <V> V getWithOperation(String string, Function<String, V> function, UnaryOperator<V> unaryOperator, Function<V, String> function2, V object) {
-		return this.get(string, stringx -> {
-			V objectx = (V)function.apply(stringx);
-			return objectx != null ? unaryOperator.apply(objectx) : null;
-		}, function2, object);
+	protected <V> V get(String key, Function<String, V> parser, UnaryOperator<V> parsedTransformer, Function<V, String> stringifier, V fallback) {
+		return this.get(key, string -> {
+			V object = (V)parser.apply(string);
+			return object != null ? parsedTransformer.apply(object) : null;
+		}, stringifier, fallback);
 	}
 
-	protected <V> V getString(String string, Function<String, V> function, V object) {
-		return this.get(string, function, Objects::toString, object);
+	protected <V> V get(String key, Function<String, V> parser, V fallback) {
+		return this.get(key, parser, Objects::toString, fallback);
 	}
 
-	protected <V> AbstractPropertiesHandler<T>.PropertyAccessor<V> accessor(String string, Function<String, V> function, V object) {
-		return this.accessor(string, function, Objects::toString, object);
+	protected <V> AbstractPropertiesHandler<T>.PropertyAccessor<V> accessor(String key, Function<String, V> parser, V fallback) {
+		return this.accessor(key, parser, Objects::toString, fallback);
 	}
 
-	protected String getString(String string, String string2) {
-		return this.get(string, Function.identity(), Function.identity(), string2);
-	}
-
-	@Nullable
-	protected String getDeprecatedString(String string) {
-		return this.getDeprecated(string, Function.identity());
-	}
-
-	protected int getInt(String string, int i) {
-		return this.getString(string, wrapNumberParsingFunction(Integer::parseInt), i);
-	}
-
-	protected AbstractPropertiesHandler<T>.PropertyAccessor<Integer> intAccessor(String string, int i) {
-		return this.accessor(string, wrapNumberParsingFunction(Integer::parseInt), i);
-	}
-
-	protected int parseIntWithOperation(String string, UnaryOperator<Integer> unaryOperator, int i) {
-		return this.getWithOperation(string, wrapNumberParsingFunction(Integer::parseInt), unaryOperator, Objects::toString, i);
-	}
-
-	protected long parseLong(String string, long l) {
-		return this.getString(string, wrapNumberParsingFunction(Long::parseLong), l);
-	}
-
-	protected boolean parseBoolean(String string, boolean bl) {
-		return this.getString(string, Boolean::valueOf, bl);
-	}
-
-	protected AbstractPropertiesHandler<T>.PropertyAccessor<Boolean> booleanAccessor(String string, boolean bl) {
-		return this.accessor(string, Boolean::valueOf, bl);
+	protected String getString(String key, String fallback) {
+		return this.get(key, Function.identity(), Function.identity(), fallback);
 	}
 
 	@Nullable
-	protected Boolean getDeprecatedBoolean(String string) {
-		return this.getDeprecated(string, Boolean::valueOf);
+	protected String getDeprecatedString(String key) {
+		return this.getDeprecated(key, Function.identity());
 	}
 
-	protected Properties getProperties() {
+	protected int getInt(String key, int fallback) {
+		return this.get(key, wrapNumberParser(Integer::parseInt), fallback);
+	}
+
+	protected AbstractPropertiesHandler<T>.PropertyAccessor<Integer> intAccessor(String key, int fallback) {
+		return this.accessor(key, wrapNumberParser(Integer::parseInt), fallback);
+	}
+
+	protected int transformedParseInt(String key, UnaryOperator<Integer> transformer, int fallback) {
+		return this.get(key, wrapNumberParser(Integer::parseInt), transformer, Objects::toString, fallback);
+	}
+
+	protected long parseLong(String key, long fallback) {
+		return this.get(key, wrapNumberParser(Long::parseLong), fallback);
+	}
+
+	protected boolean parseBoolean(String key, boolean fallback) {
+		return this.get(key, Boolean::valueOf, fallback);
+	}
+
+	protected AbstractPropertiesHandler<T>.PropertyAccessor<Boolean> booleanAccessor(String key, boolean fallback) {
+		return this.accessor(key, Boolean::valueOf, fallback);
+	}
+
+	@Nullable
+	protected Boolean getDeprecatedBoolean(String key) {
+		return this.getDeprecated(key, Boolean::valueOf);
+	}
+
+	protected Properties copyProperties() {
 		Properties properties = new Properties();
 		properties.putAll(this.properties);
 		return properties;
 	}
 
+	/**
+	 * Creates another property handler with the same type as this one from the
+	 * passed new map of properties.
+	 */
 	protected abstract T create(Properties properties);
 
 	public class PropertyAccessor<V> implements Supplier<V> {
 		private final String key;
 		private final V value;
-		private final Function<V, String> stringify;
+		private final Function<V, String> stringifier;
 
-		private PropertyAccessor(String string, V object, Function<V, String> function) {
-			this.key = string;
-			this.value = object;
-			this.stringify = function;
+		private PropertyAccessor(String key, V value, Function<V, String> stringifier) {
+			this.key = key;
+			this.value = value;
+			this.stringifier = stringifier;
 		}
 
 		public V get() {
 			return this.value;
 		}
 
-		public T set(V object) {
-			Properties properties = AbstractPropertiesHandler.this.getProperties();
-			properties.put(this.key, this.stringify.apply(object));
+		/**
+		 * Returns a new property handler with another map of property in which
+		 * the property handled by this accessor is updated.
+		 * 
+		 * <p>This method does not mutate the original property where this accessor
+		 * is from.
+		 */
+		public T set(V value) {
+			Properties properties = AbstractPropertiesHandler.this.copyProperties();
+			properties.put(this.key, this.stringifier.apply(value));
 			return AbstractPropertiesHandler.this.create(properties);
 		}
 	}

@@ -23,8 +23,8 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.util.Int2ObjectBiMap;
-import net.minecraft.util.PackedIntegerArray;
+import net.minecraft.util.collection.Int2ObjectBiMap;
+import net.minecraft.util.collection.PackedIntegerArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

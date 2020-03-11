@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
-	public static final Identifier SKIN = new Identifier("textures/entity/armorstand/wood.png");
+	public static final Identifier TEXTURE = new Identifier("textures/entity/armorstand/wood.png");
 
 	public ArmorStandEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ArmorStandEntityModel(), 0.0F);
@@ -29,7 +29,7 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 	}
 
 	public Identifier getTexture(ArmorStandEntity armorStandEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 
 	protected void setupTransforms(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
@@ -41,7 +41,7 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 	}
 
 	protected boolean hasLabel(ArmorStandEntity armorStandEntity) {
-		double d = this.renderManager.getSquaredDistanceToCamera(armorStandEntity);
+		double d = this.dispatcher.getSquaredDistanceToCamera(armorStandEntity);
 		float f = armorStandEntity.isInSneakingPose() ? 32.0F : 64.0F;
 		return d >= (double)(f * f) ? false : armorStandEntity.isCustomNameVisible();
 	}

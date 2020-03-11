@@ -107,7 +107,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(0.4F, 0.4F, 0.4F);
-			DrawableHelper.blit((int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
+			DrawableHelper.drawTexture((int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
 			RenderSystem.popMatrix();
 			n += 14;
 		}
@@ -115,7 +115,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 		if (i != 0) {
 			this.client.getTextureManager().bindTexture(field_22698);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			DrawableHelper.blit(l - n, m - 6, 0.0F, 0.0F, 15, 25, 31, 25);
+			DrawableHelper.drawTexture(l - n, m - 6, 0.0F, 0.0F, 15, 25, 31, 25);
 			n += 16;
 		}
 
@@ -127,7 +127,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 				o = 8;
 			}
 
-			DrawableHelper.blit(l + 4 - n, m + 4, 0.0F, (float)o, 8, 8, 8, 16);
+			DrawableHelper.drawTexture(l + 4 - n, m + 4, 0.0F, (float)o, 8, 8, 8, 16);
 		}
 	}
 

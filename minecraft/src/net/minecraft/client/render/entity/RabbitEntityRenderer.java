@@ -9,14 +9,14 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, RabbitEntityModel<RabbitEntity>> {
-	private static final Identifier BROWN_SKIN = new Identifier("textures/entity/rabbit/brown.png");
-	private static final Identifier WHITE_SKIN = new Identifier("textures/entity/rabbit/white.png");
-	private static final Identifier BLACK_SKIN = new Identifier("textures/entity/rabbit/black.png");
-	private static final Identifier GOLD_SKIN = new Identifier("textures/entity/rabbit/gold.png");
-	private static final Identifier SALT_SKIN = new Identifier("textures/entity/rabbit/salt.png");
-	private static final Identifier WHITE_SPOTTED_SKIN = new Identifier("textures/entity/rabbit/white_splotched.png");
-	private static final Identifier TOAST_SKIN = new Identifier("textures/entity/rabbit/toast.png");
-	private static final Identifier CAERBANNOG_SKIN = new Identifier("textures/entity/rabbit/caerbannog.png");
+	private static final Identifier BROWN_TEXTURE = new Identifier("textures/entity/rabbit/brown.png");
+	private static final Identifier WHITE_TEXTURE = new Identifier("textures/entity/rabbit/white.png");
+	private static final Identifier BLACK_TEXTURE = new Identifier("textures/entity/rabbit/black.png");
+	private static final Identifier GOLD_TEXTURE = new Identifier("textures/entity/rabbit/gold.png");
+	private static final Identifier SALT_TEXTURE = new Identifier("textures/entity/rabbit/salt.png");
+	private static final Identifier WHITE_SPOTTED_TEXTURE = new Identifier("textures/entity/rabbit/white_splotched.png");
+	private static final Identifier TOAST_TEXTURE = new Identifier("textures/entity/rabbit/toast.png");
+	private static final Identifier CAERBANNOG_TEXTURE = new Identifier("textures/entity/rabbit/caerbannog.png");
 
 	public RabbitEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new RabbitEntityModel<>(), 0.3F);
@@ -25,24 +25,24 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 	public Identifier getTexture(RabbitEntity rabbitEntity) {
 		String string = Formatting.strip(rabbitEntity.getName().getString());
 		if (string != null && "Toast".equals(string)) {
-			return TOAST_SKIN;
+			return TOAST_TEXTURE;
 		} else {
 			switch (rabbitEntity.getRabbitType()) {
 				case 0:
 				default:
-					return BROWN_SKIN;
+					return BROWN_TEXTURE;
 				case 1:
-					return WHITE_SKIN;
+					return WHITE_TEXTURE;
 				case 2:
-					return BLACK_SKIN;
+					return BLACK_TEXTURE;
 				case 3:
-					return WHITE_SPOTTED_SKIN;
+					return WHITE_SPOTTED_TEXTURE;
 				case 4:
-					return GOLD_SKIN;
+					return GOLD_TEXTURE;
 				case 5:
-					return SALT_SKIN;
+					return SALT_TEXTURE;
 				case 99:
-					return CAERBANNOG_SKIN;
+					return CAERBANNOG_TEXTURE;
 			}
 		}
 	}

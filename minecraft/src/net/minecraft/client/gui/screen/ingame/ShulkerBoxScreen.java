@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class ShulkerBoxScreen extends ScreenWithHandler<ShulkerBoxScreenHandler> {
+public class ShulkerBoxScreen extends HandledScreen<ShulkerBoxScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/shulker_box.png");
 
 	public ShulkerBoxScreen(ShulkerBoxScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -36,6 +36,6 @@ public class ShulkerBoxScreen extends ScreenWithHandler<ShulkerBoxScreenHandler>
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 	}
 }

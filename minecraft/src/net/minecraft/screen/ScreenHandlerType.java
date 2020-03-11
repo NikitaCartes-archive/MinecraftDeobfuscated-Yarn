@@ -17,8 +17,8 @@ public class ScreenHandlerType<T extends ScreenHandler> {
 	public static final ScreenHandlerType<BeaconScreenHandler> BEACON = register("beacon", BeaconScreenHandler::new);
 	public static final ScreenHandlerType<BlastFurnaceScreenHandler> BLAST_FURNACE = register("blast_furnace", BlastFurnaceScreenHandler::new);
 	public static final ScreenHandlerType<BrewingStandScreenHandler> BREWING_STAND = register("brewing_stand", BrewingStandScreenHandler::new);
-	public static final ScreenHandlerType<CraftingTableScreenHandler> CRAFTING = register("crafting", CraftingTableScreenHandler::new);
-	public static final ScreenHandlerType<EnchantingTableScreenHandler> ENCHANTMENT = register("enchantment", EnchantingTableScreenHandler::new);
+	public static final ScreenHandlerType<CraftingScreenHandler> CRAFTING = register("crafting", CraftingScreenHandler::new);
+	public static final ScreenHandlerType<EnchantmentScreenHandler> ENCHANTMENT = register("enchantment", EnchantmentScreenHandler::new);
 	public static final ScreenHandlerType<FurnaceScreenHandler> FURNACE = register("furnace", FurnaceScreenHandler::new);
 	public static final ScreenHandlerType<GrindstoneScreenHandler> GRINDSTONE = register("grindstone", GrindstoneScreenHandler::new);
 	public static final ScreenHandlerType<HopperScreenHandler> HOPPER = register("hopper", HopperScreenHandler::new);

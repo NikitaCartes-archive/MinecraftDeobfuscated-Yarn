@@ -15,9 +15,12 @@ import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.DynamicSerializableUuid;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
@@ -95,14 +98,20 @@ public class LookTargetUtil {
 			.orElse(center);
 	}
 
-	public static boolean isAttackTargetClose(LivingEntity entity, double radius) {
-		Brain<?> brain = entity.getBrain();
-		if (!brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET)) {
-			return false;
+	public static boolean method_25940(MobEntity mobEntity, LivingEntity livingEntity, int i) {
+		Item item = mobEntity.getMainHandStack().getItem();
+		if (item instanceof RangedWeaponItem && mobEntity.method_25938((RangedWeaponItem)item)) {
+			int j = ((RangedWeaponItem)item).getRange() - i;
+			return mobEntity.isInRange(livingEntity, (double)j);
 		} else {
-			LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
-			return !isVisibleInMemory(entity, livingEntity) ? false : livingEntity.isInRange(entity, radius);
+			return method_25941(mobEntity, livingEntity);
 		}
+	}
+
+	public static boolean method_25941(LivingEntity livingEntity, LivingEntity livingEntity2) {
+		double d = livingEntity.squaredDistanceTo(livingEntity2.getX(), livingEntity2.getY(), livingEntity2.getZ());
+		double e = (double)(livingEntity.getWidth() * 2.0F * livingEntity.getWidth() * 2.0F + livingEntity2.getWidth());
+		return d <= e;
 	}
 
 	/**

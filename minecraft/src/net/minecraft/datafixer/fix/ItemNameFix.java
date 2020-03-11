@@ -28,13 +28,13 @@ public abstract class ItemNameFix extends DataFix {
 		}
 	}
 
-	protected abstract String rename(String string);
+	protected abstract String rename(String input);
 
 	public static DataFix create(Schema outputSchema, String name, Function<String, String> rename) {
 		return new ItemNameFix(outputSchema, name) {
 			@Override
-			protected String rename(String string) {
-				return (String)rename.apply(string);
+			protected String rename(String input) {
+				return (String)rename.apply(input);
 			}
 		};
 	}

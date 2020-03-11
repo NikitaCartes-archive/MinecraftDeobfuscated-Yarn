@@ -456,6 +456,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.JIGSAW,
 				Blocks.MOVING_PISTON,
 				Blocks.OBSIDIAN,
+				Blocks.CRYING_OBSIDIAN,
 				Blocks.END_STONE,
 				Blocks.IRON_BARS
 			);
@@ -505,15 +506,18 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.WART_BLOCKS).add(Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.BEACON_BASE_BLOCKS)
 			.add(Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK, Blocks.DIAMOND_BLOCK, Blocks.GOLD_BLOCK, Blocks.IRON_BLOCK);
+		this.getOrCreateTagBuilder(BlockTags.SOUL_SPEED_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.WALL_POST_OVERRIDE)
 			.add(Blocks.LANTERN, Blocks.SOUL_FIRE_LANTERN, Blocks.TORCH, Blocks.SOUL_FIRE_TORCH, Blocks.REDSTONE_TORCH, Blocks.TRIPWIRE);
-		this.getOrCreateTagBuilder(BlockTags.CLIMBABLE).add(Blocks.LADDER, Blocks.VINE, Blocks.SCAFFOLDING, Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT);
+		this.getOrCreateTagBuilder(BlockTags.CLIMBABLE)
+			.add(Blocks.LADDER, Blocks.VINE, Blocks.SCAFFOLDING, Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT, Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT);
 		this.getOrCreateTagBuilder(BlockTags.PIGLIN_REPELLENTS)
 			.add(Blocks.SOUL_FIRE)
 			.add(Blocks.SOUL_FIRE_TORCH)
 			.add(Blocks.SOUL_FIRE_LANTERN)
 			.add(Blocks.SOUL_FIRE_WALL_TORCH);
-		this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS);
+		this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS).add(Blocks.POTTED_WARPED_FUNGUS);
+		this.getOrCreateTagBuilder(BlockTags.GOLD_ORES).add(Blocks.GOLD_ORE, Blocks.NETHER_GOLD_ORE);
 	}
 
 	@Override

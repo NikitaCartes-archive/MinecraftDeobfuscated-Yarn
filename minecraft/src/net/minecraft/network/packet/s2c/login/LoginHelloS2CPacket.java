@@ -6,8 +6,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientLoginPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	private String serverId;

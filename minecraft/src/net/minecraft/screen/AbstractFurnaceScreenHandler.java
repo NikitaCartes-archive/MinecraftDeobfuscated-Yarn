@@ -20,30 +20,30 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
-public abstract class AbstractFurnaceScreenHandler extends CraftingScreenHandler<Inventory> {
+public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenHandler<Inventory> {
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
 	protected final World world;
 	private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
 	protected AbstractFurnaceScreenHandler(
-		ScreenHandlerType<?> screenHandlerType, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory
+		ScreenHandlerType<?> type, RecipeType<? extends AbstractCookingRecipe> recipeType, int syncId, PlayerInventory playerInventory
 	) {
-		this(screenHandlerType, recipeType, syncId, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
+		this(type, recipeType, syncId, playerInventory, new BasicInventory(3), new ArrayPropertyDelegate(4));
 	}
 
 	protected AbstractFurnaceScreenHandler(
-		ScreenHandlerType<?> screenHandlerType,
+		ScreenHandlerType<?> type,
 		RecipeType<? extends AbstractCookingRecipe> recipeType,
 		int syncId,
 		PlayerInventory playerInventory,
 		Inventory inventory,
 		PropertyDelegate propertyDelegate
 	) {
-		super(screenHandlerType, syncId);
+		super(type, syncId);
 		this.recipeType = recipeType;
-		checkContainerSize(inventory, 3);
-		checkContainerDataCount(propertyDelegate, 4);
+		checkSize(inventory, 3);
+		checkDataCount(propertyDelegate, 4);
 		this.inventory = inventory;
 		this.propertyDelegate = propertyDelegate;
 		this.world = playerInventory.player.world;
@@ -65,9 +65,9 @@ public abstract class AbstractFurnaceScreenHandler extends CraftingScreenHandler
 	}
 
 	@Override
-	public void populateRecipeFinder(RecipeFinder recipeFinder) {
+	public void populateRecipeFinder(RecipeFinder finder) {
 		if (this.inventory instanceof RecipeInputProvider) {
-			((RecipeInputProvider)this.inventory).provideRecipeInputs(recipeFinder);
+			((RecipeInputProvider)this.inventory).provideRecipeInputs(finder);
 		}
 	}
 
@@ -77,8 +77,8 @@ public abstract class AbstractFurnaceScreenHandler extends CraftingScreenHandler
 	}
 
 	@Override
-	public void fillInputSlots(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
-		new FurnaceInputSlotFiller<>(this).fillInputSlots(serverPlayerEntity, (Recipe<Inventory>)recipe, bl);
+	public void fillInputSlots(boolean craftAll, Recipe<?> recipe, ServerPlayerEntity player) {
+		new FurnaceInputSlotFiller<>(this).fillInputSlots(player, (Recipe<Inventory>)recipe, craftAll);
 	}
 
 	@Override
@@ -113,19 +113,19 @@ public abstract class AbstractFurnaceScreenHandler extends CraftingScreenHandler
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot == 2) {
+			if (index == 2) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (invSlot != 1 && invSlot != 0) {
+			} else if (index != 1 && index != 0) {
 				if (this.isSmeltable(itemStack2)) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
 						return ItemStack.EMPTY;
@@ -134,11 +134,11 @@ public abstract class AbstractFurnaceScreenHandler extends CraftingScreenHandler
 					if (!this.insertItem(itemStack2, 1, 2, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 3 && invSlot < 30) {
+				} else if (index >= 3 && index < 30) {
 					if (!this.insertItem(itemStack2, 30, 39, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
+				} else if (index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.insertItem(itemStack2, 3, 39, false)) {

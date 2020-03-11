@@ -3,8 +3,8 @@ package net.minecraft.tag;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Map.Entry;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class RegistryTagContainer<T> extends TagContainer<T> {

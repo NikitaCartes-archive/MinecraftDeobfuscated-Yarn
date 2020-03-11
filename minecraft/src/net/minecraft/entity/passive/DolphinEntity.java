@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -33,6 +32,7 @@ import net.minecraft.entity.ai.goal.MoveIntoWaterGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -514,8 +514,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 				if (vec3d2 != null) {
 					BlockPos blockPos = new BlockPos(vec3d2);
-					if (!world.getFluidState(blockPos).matches(FluidTags.WATER)
-						|| !world.getBlockState(blockPos).canPlaceAtSide(world, blockPos, BlockPlacementEnvironment.WATER)) {
+					if (!world.getFluidState(blockPos).matches(FluidTags.WATER) || !world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER)) {
 						vec3d2 = TargetFinder.findTargetTowards(this.dolphin, 8, 5, vec3d);
 					}
 				}

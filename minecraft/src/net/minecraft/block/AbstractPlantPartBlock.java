@@ -1,16 +1,21 @@
 package net.minecraft.block;
 
+import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldView;
 
 public abstract class AbstractPlantPartBlock extends Block {
 	protected final Direction growthDirection;
 	protected final boolean tickWater;
+	protected final VoxelShape outlineShape;
 
-	protected AbstractPlantPartBlock(Block.Settings settings, Direction growthDirection, boolean tickWater) {
+	protected AbstractPlantPartBlock(Block.Settings settings, Direction growthDirection, VoxelShape outlineShape, boolean tickWater) {
 		super(settings);
 		this.growthDirection = growthDirection;
+		this.outlineShape = outlineShape;
 		this.tickWater = tickWater;
 	}
 
@@ -26,6 +31,11 @@ public abstract class AbstractPlantPartBlock extends Block {
 
 	protected boolean canAttachTo(Block block) {
 		return true;
+	}
+
+	@Override
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+		return this.outlineShape;
 	}
 
 	protected abstract AbstractPlantStemBlock getStem();

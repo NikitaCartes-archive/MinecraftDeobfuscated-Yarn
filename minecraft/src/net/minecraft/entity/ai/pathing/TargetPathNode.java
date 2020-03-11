@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.pathing;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class TargetPathNode extends PathNode {
 	private float nearestNodeDistance = Float.MAX_VALUE;

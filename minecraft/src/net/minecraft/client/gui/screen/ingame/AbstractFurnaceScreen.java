@@ -15,7 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandler> extends ScreenWithHandler<T> implements RecipeBookProvider {
+public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandler> extends HandledScreen<T> implements RecipeBookProvider {
 	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	public final AbstractFurnaceRecipeBookScreen recipeBook;
 	private boolean narrow;
@@ -76,14 +76,14 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		this.client.getTextureManager().bindTexture(this.background);
 		int i = this.x;
 		int j = this.y;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		if (this.handler.isBurning()) {
 			int k = this.handler.getFuelProgress();
-			this.blit(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
+			this.drawTexture(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
 		}
 
 		int k = this.handler.getCookProgress();
-		this.blit(i + 79, j + 34, 176, 14, k + 1, 16);
+		this.drawTexture(i + 79, j + 34, 176, 14, k + 1, 16);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -37,7 +38,7 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		switch (env) {
 			case LAND:
 				return (Integer)state.get(LAYERS) < 5;
@@ -58,6 +59,11 @@ public class SnowBlock extends Block {
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
 		return LAYERS_TO_SHAPE[state.get(LAYERS) - 1];
+	}
+
+	@Override
+	public VoxelShape method_25959(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return LAYERS_TO_SHAPE[blockState.get(LAYERS)];
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class PowerEnchantment extends Enchantment {
-	public PowerEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	public PowerEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.BOW, slotTypes);
 	}
 

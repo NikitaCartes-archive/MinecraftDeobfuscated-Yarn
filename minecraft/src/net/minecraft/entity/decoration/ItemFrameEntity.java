@@ -320,7 +320,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			}
 
 			ItemStack itemStack2 = this.getHeldItemStack();
-			if (!itemStack2.isEmpty() && !ItemStack.areEqualIgnoreDamage(itemStack, itemStack2)) {
+			if (!itemStack2.isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
 				this.removeFromFrame(itemStack2);
 			}
 

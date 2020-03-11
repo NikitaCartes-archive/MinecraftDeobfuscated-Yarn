@@ -2,7 +2,7 @@ package net.minecraft.world;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.WeightedPicker;
+import net.minecraft.util.collection.WeightedPicker;
 
 public class MobSpawnerEntry extends WeightedPicker.Entry {
 	private final CompoundTag entityTag;

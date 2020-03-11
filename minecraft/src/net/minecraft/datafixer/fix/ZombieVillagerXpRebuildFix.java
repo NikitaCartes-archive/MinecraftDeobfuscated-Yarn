@@ -12,8 +12,8 @@ public class ZombieVillagerXpRebuildFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), dynamic -> {
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), dynamic -> {
 			Optional<Number> optional = dynamic.get("Xp").asNumber();
 			if (!optional.isPresent()) {
 				int i = ((Number)dynamic.get("VillagerData").get("level").asNumber().orElse(1)).intValue();

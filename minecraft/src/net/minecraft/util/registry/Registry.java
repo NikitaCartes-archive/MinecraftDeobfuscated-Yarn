@@ -3,7 +3,6 @@ package net.minecraft.util.registry;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -47,7 +46,7 @@ import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.IndexedIterable;
+import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 import net.minecraft.world.biome.Biome;
@@ -150,9 +149,6 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public abstract Optional<T> getOrEmpty(@Nullable Identifier id);
 
 	public abstract Set<Identifier> getIds();
-
-	@Nullable
-	public abstract T getRandom(Random random);
 
 	public Stream<T> stream() {
 		return StreamSupport.stream(this.spliterator(), false);

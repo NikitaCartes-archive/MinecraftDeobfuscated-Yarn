@@ -21,9 +21,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.util.PacketByteBuf;
 
 public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 	private RootCommandNode<CommandSource> commandTree;

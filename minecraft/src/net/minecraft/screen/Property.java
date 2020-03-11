@@ -1,12 +1,12 @@
 package net.minecraft.screen;
 
 /**
- * An integer property that is stored in a {@link Container}.
+ * An integer property that is stored in a {@link ScreenHandler}.
  * 
  * <p>{@code Property} instances are used for tracking integer properties in property delegates
  * and other sources of integer properties, and sending needed content updates to listeners.
  * 
- * @see Container#addProperty
+ * @see ScreenHandler#addProperty
  */
 public abstract class Property {
 	private int oldValue;

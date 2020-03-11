@@ -16,8 +16,8 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends ScreenWithHandler<T> {
-	protected boolean offsetGuiForEffects;
+public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends HandledScreen<T> {
+	protected boolean drawStatusEffects;
 
 	public AbstractInventoryScreen(T screenHandler, PlayerInventory playerInventory, Text text) {
 		super(screenHandler, playerInventory, text);
@@ -32,17 +32,17 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends S
 	protected void applyStatusEffectOffset() {
 		if (this.client.player.getStatusEffects().isEmpty()) {
 			this.x = (this.width - this.backgroundWidth) / 2;
-			this.offsetGuiForEffects = false;
+			this.drawStatusEffects = false;
 		} else {
 			this.x = 160 + (this.width - this.backgroundWidth - 200) / 2;
-			this.offsetGuiForEffects = true;
+			this.drawStatusEffects = true;
 		}
 	}
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		super.render(mouseX, mouseY, delta);
-		if (this.offsetGuiForEffects) {
+		if (this.drawStatusEffects) {
 			this.drawStatusEffects();
 		}
 	}
@@ -70,7 +70,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends S
 
 		for (StatusEffectInstance statusEffectInstance : effects) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.blit(x, i, 0, 166, 140, 32);
+			this.drawTexture(x, i, 0, 166, 140, 32);
 			i += yIncrement;
 		}
 	}
@@ -83,7 +83,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends S
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
 			Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
 			this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-			blit(x + 6, i + 7, this.getZOffset(), 18, 18, sprite);
+			drawSprite(x + 6, i + 7, this.getZOffset(), 18, 18, sprite);
 			i += yIncrement;
 		}
 	}

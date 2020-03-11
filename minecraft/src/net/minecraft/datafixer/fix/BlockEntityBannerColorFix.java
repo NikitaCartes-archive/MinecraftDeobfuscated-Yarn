@@ -24,7 +24,7 @@ public class BlockEntityBannerColorFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::fixBannerColor);
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), this::fixBannerColor);
 	}
 }

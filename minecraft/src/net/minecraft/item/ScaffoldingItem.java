@@ -37,7 +37,7 @@ public class ScaffoldingItem extends BlockItem {
 			}
 
 			int i = 0;
-			BlockPos.Mutable mutable = blockPos.mutableCopy().setOffset(direction);
+			BlockPos.Mutable mutable = blockPos.mutableCopy().move(direction);
 
 			while (i < 7) {
 				if (!world.isClient && !World.method_24794(mutable)) {
@@ -60,7 +60,7 @@ public class ScaffoldingItem extends BlockItem {
 					break;
 				}
 
-				mutable.setOffset(direction);
+				mutable.move(direction);
 				if (direction.getAxis().isHorizontal()) {
 					i++;
 				}

@@ -30,7 +30,7 @@ public class FrostedIceBlock extends IceBlock {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (Direction direction : Direction.values()) {
-				mutable.move(pos, direction);
+				mutable.set(pos, direction);
 				BlockState blockState = world.getBlockState(mutable);
 				if (blockState.getBlock() == this && !this.increaseAge(blockState, world, mutable)) {
 					world.getBlockTickScheduler().schedule(mutable, this, MathHelper.nextInt(random, 20, 40));
@@ -66,7 +66,7 @@ public class FrostedIceBlock extends IceBlock {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : Direction.values()) {
-			mutable.move(pos, direction);
+			mutable.set(pos, direction);
 			if (world.getBlockState(mutable).getBlock() == this) {
 				if (++i >= maxNeighbors) {
 					return false;

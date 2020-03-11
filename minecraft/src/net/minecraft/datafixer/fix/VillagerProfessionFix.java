@@ -9,14 +9,14 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class VillagerProfessionFix extends ChoiceFix {
-	public VillagerProfessionFix(Schema outputSchema, String string) {
-		super(outputSchema, false, "Villager profession data fix (" + string + ")", TypeReferences.ENTITY, string);
+	public VillagerProfessionFix(Schema outputSchema, String entity) {
+		super(outputSchema, false, "Villager profession data fix (" + entity + ")", TypeReferences.ENTITY, entity);
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
-		return typed.set(
+	protected Typed<?> transform(Typed<?> inputType) {
+		Dynamic<?> dynamic = inputType.get(DSL.remainderFinder());
+		return inputType.set(
 			DSL.remainderFinder(),
 			dynamic.remove("Profession")
 				.remove("Career")

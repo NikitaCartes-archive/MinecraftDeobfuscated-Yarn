@@ -114,7 +114,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 
 			this.drawIcon();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			DrawableHelper.blit(x, y, 0.0F, 0.0F, 32, 32, 32, 32);
+			DrawableHelper.drawTexture(x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			String string = this.getDisplayName();
 			String string2 = this.getDescription();
 			if (this.isMoveable() && (this.client.options.touchscreen || hovering)) {
@@ -130,32 +130,32 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidg
 
 				if (this.isSelectable()) {
 					if (i < 32) {
-						DrawableHelper.blit(x, y, 0.0F, 32.0F, 32, 32, 256, 256);
+						DrawableHelper.drawTexture(x, y, 0.0F, 32.0F, 32, 32, 256, 256);
 					} else {
-						DrawableHelper.blit(x, y, 0.0F, 0.0F, 32, 32, 256, 256);
+						DrawableHelper.drawTexture(x, y, 0.0F, 0.0F, 32, 32, 256, 256);
 					}
 				} else {
 					if (this.isRemovable()) {
 						if (i < 16) {
-							DrawableHelper.blit(x, y, 32.0F, 32.0F, 32, 32, 256, 256);
+							DrawableHelper.drawTexture(x, y, 32.0F, 32.0F, 32, 32, 256, 256);
 						} else {
-							DrawableHelper.blit(x, y, 32.0F, 0.0F, 32, 32, 256, 256);
+							DrawableHelper.drawTexture(x, y, 32.0F, 0.0F, 32, 32, 256, 256);
 						}
 					}
 
 					if (this.canMoveUp()) {
 						if (i < 32 && i > 16 && j < 16) {
-							DrawableHelper.blit(x, y, 96.0F, 32.0F, 32, 32, 256, 256);
+							DrawableHelper.drawTexture(x, y, 96.0F, 32.0F, 32, 32, 256, 256);
 						} else {
-							DrawableHelper.blit(x, y, 96.0F, 0.0F, 32, 32, 256, 256);
+							DrawableHelper.drawTexture(x, y, 96.0F, 0.0F, 32, 32, 256, 256);
 						}
 					}
 
 					if (this.canMoveDown()) {
 						if (i < 32 && i > 16 && j > 16) {
-							DrawableHelper.blit(x, y, 64.0F, 32.0F, 32, 32, 256, 256);
+							DrawableHelper.drawTexture(x, y, 64.0F, 32.0F, 32, 32, 256, 256);
 						} else {
-							DrawableHelper.blit(x, y, 64.0F, 0.0F, 32, 32, 256, 256);
+							DrawableHelper.drawTexture(x, y, 64.0F, 0.0F, 32, 32, 256, 256);
 						}
 					}
 				}

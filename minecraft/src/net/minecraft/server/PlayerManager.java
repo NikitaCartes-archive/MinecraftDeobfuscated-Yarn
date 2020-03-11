@@ -25,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -58,7 +59,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -218,7 +218,7 @@ public abstract class PlayerManager {
 			}
 		}
 
-		player.method_14235();
+		player.onSpawn();
 	}
 
 	protected void sendScoreboard(ServerScoreboard scoreboard, ServerPlayerEntity player) {
@@ -460,7 +460,7 @@ public abstract class PlayerManager {
 		serverWorld.onPlayerRespawned(serverPlayerEntity);
 		this.players.add(serverPlayerEntity);
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
-		serverPlayerEntity.method_14235();
+		serverPlayerEntity.onSpawn();
 		serverPlayerEntity.setHealth(serverPlayerEntity.getHealth());
 		return serverPlayerEntity;
 	}
@@ -493,27 +493,27 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public void sendToTeam(PlayerEntity source, Text text) {
+	public void sendToTeam(PlayerEntity source, Text message) {
 		AbstractTeam abstractTeam = source.getScoreboardTeam();
 		if (abstractTeam != null) {
 			for (String string : abstractTeam.getPlayerList()) {
 				ServerPlayerEntity serverPlayerEntity = this.getPlayer(string);
 				if (serverPlayerEntity != null && serverPlayerEntity != source) {
-					serverPlayerEntity.sendMessage(text);
+					serverPlayerEntity.sendMessage(message);
 				}
 			}
 		}
 	}
 
-	public void sendToOtherTeams(PlayerEntity source, Text text) {
+	public void sendToOtherTeams(PlayerEntity source, Text message) {
 		AbstractTeam abstractTeam = source.getScoreboardTeam();
 		if (abstractTeam == null) {
-			this.sendToAll(text);
+			this.sendToAll(message);
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
 				if (serverPlayerEntity.getScoreboardTeam() != abstractTeam) {
-					serverPlayerEntity.sendMessage(text);
+					serverPlayerEntity.sendMessage(message);
 				}
 			}
 		}
@@ -537,17 +537,17 @@ public abstract class PlayerManager {
 		return this.bannedIps;
 	}
 
-	public void addToOperators(GameProfile gameProfile) {
-		this.ops.add(new OperatorEntry(gameProfile, this.server.getOpPermissionLevel(), this.ops.isOp(gameProfile)));
-		ServerPlayerEntity serverPlayerEntity = this.getPlayer(gameProfile.getId());
+	public void addToOperators(GameProfile profile) {
+		this.ops.add(new OperatorEntry(profile, this.server.getOpPermissionLevel(), this.ops.isOp(profile)));
+		ServerPlayerEntity serverPlayerEntity = this.getPlayer(profile.getId());
 		if (serverPlayerEntity != null) {
 			this.sendCommandTree(serverPlayerEntity);
 		}
 	}
 
-	public void removeFromOperators(GameProfile gameProfile) {
-		this.ops.remove(gameProfile);
-		ServerPlayerEntity serverPlayerEntity = this.getPlayer(gameProfile.getId());
+	public void removeFromOperators(GameProfile profile) {
+		this.ops.remove(profile);
+		ServerPlayerEntity serverPlayerEntity = this.getPlayer(profile.getId());
 		if (serverPlayerEntity != null) {
 			this.sendCommandTree(serverPlayerEntity);
 		}
@@ -570,20 +570,20 @@ public abstract class PlayerManager {
 		this.server.getCommandManager().sendCommandTree(player);
 	}
 
-	public boolean isWhitelisted(GameProfile gameProfile) {
-		return !this.whitelistEnabled || this.ops.contains(gameProfile) || this.whitelist.contains(gameProfile);
+	public boolean isWhitelisted(GameProfile profile) {
+		return !this.whitelistEnabled || this.ops.contains(profile) || this.whitelist.contains(profile);
 	}
 
-	public boolean isOperator(GameProfile gameProfile) {
-		return this.ops.contains(gameProfile)
-			|| this.server.isOwner(gameProfile) && this.server.getWorld(DimensionType.OVERWORLD).getLevelProperties().areCommandsAllowed()
+	public boolean isOperator(GameProfile profile) {
+		return this.ops.contains(profile)
+			|| this.server.isOwner(profile) && this.server.getWorld(DimensionType.OVERWORLD).getLevelProperties().areCommandsAllowed()
 			|| this.cheatsAllowed;
 	}
 
 	@Nullable
-	public ServerPlayerEntity getPlayer(String string) {
+	public ServerPlayerEntity getPlayer(String name) {
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			if (serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string)) {
+			if (serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(name)) {
 				return serverPlayerEntity;
 			}
 		}
@@ -644,7 +644,7 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public void method_14594(ServerPlayerEntity player) {
+	public void sendPlayerStatus(ServerPlayerEntity player) {
 		player.openHandledScreen(player.playerScreenHandler);
 		player.markHealthDirty();
 		player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(player.inventory.selectedSlot));
@@ -666,11 +666,11 @@ public abstract class PlayerManager {
 		this.whitelistEnabled = whitelistEnabled;
 	}
 
-	public List<ServerPlayerEntity> getPlayersByIp(String string) {
+	public List<ServerPlayerEntity> getPlayersByIp(String ip) {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			if (serverPlayerEntity.getServerBrand().equals(string)) {
+			if (serverPlayerEntity.getIp().equals(ip)) {
 				list.add(serverPlayerEntity);
 			}
 		}
@@ -716,14 +716,14 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public void broadcastChatMessage(Text text, boolean system) {
-		this.server.sendMessage(text);
+	public void broadcastChatMessage(Text message, boolean system) {
+		this.server.sendMessage(message);
 		MessageType messageType = system ? MessageType.SYSTEM : MessageType.CHAT;
-		this.sendToAll(new GameMessageS2CPacket(text, messageType));
+		this.sendToAll(new GameMessageS2CPacket(message, messageType));
 	}
 
-	public void sendToAll(Text text) {
-		this.broadcastChatMessage(text, true);
+	public void sendToAll(Text message) {
+		this.broadcastChatMessage(message, true);
 	}
 
 	public ServerStatHandler createStatHandler(PlayerEntity player) {
@@ -780,7 +780,7 @@ public abstract class PlayerManager {
 		return (ServerPlayerEntity)this.playerMap.get(uuid);
 	}
 
-	public boolean canBypassPlayerLimit(GameProfile gameProfile) {
+	public boolean canBypassPlayerLimit(GameProfile profile) {
 		return false;
 	}
 

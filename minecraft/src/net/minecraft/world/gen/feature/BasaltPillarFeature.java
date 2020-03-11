@@ -29,18 +29,18 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 
 			while (iWorld.isAir(mutable)) {
 				iWorld.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
-				bl = bl && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.NORTH));
-				bl2 = bl2 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.SOUTH));
-				bl3 = bl3 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.WEST));
-				bl4 = bl4 && this.stopOrPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.EAST));
-				mutable.setOffset(Direction.DOWN);
+				bl = bl && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.NORTH));
+				bl2 = bl2 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.SOUTH));
+				bl3 = bl3 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.WEST));
+				bl4 = bl4 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.EAST));
+				mutable.move(Direction.DOWN);
 			}
 
-			mutable.setOffset(Direction.UP);
-			this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.NORTH));
-			this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.SOUTH));
-			this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.WEST));
-			this.tryPlaceBasalt(iWorld, random, mutable2.move(mutable, Direction.EAST));
+			mutable.move(Direction.UP);
+			this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.NORTH));
+			this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.SOUTH));
+			this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.WEST));
+			this.tryPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.EAST));
 			BlockPos.Mutable mutable3 = new BlockPos.Mutable();
 
 			for (int i = -3; i < 4; i++) {
@@ -50,14 +50,14 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 						mutable3.set(mutable.add(i, 0, j));
 						int l = 3;
 
-						while (iWorld.isAir(mutable2.move(mutable3, Direction.DOWN))) {
-							mutable3.setOffset(Direction.DOWN);
+						while (iWorld.isAir(mutable2.set(mutable3, Direction.DOWN))) {
+							mutable3.move(Direction.DOWN);
 							if (--l <= 0) {
 								break;
 							}
 						}
 
-						if (!iWorld.isAir(mutable2.move(mutable3, Direction.DOWN))) {
+						if (!iWorld.isAir(mutable2.set(mutable3, Direction.DOWN))) {
 							iWorld.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), 2);
 						}
 					}

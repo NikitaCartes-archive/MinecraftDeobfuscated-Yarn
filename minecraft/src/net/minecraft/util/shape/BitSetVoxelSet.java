@@ -1,7 +1,7 @@
 package net.minecraft.util.shape;
 
 import java.util.BitSet;
-import net.minecraft.util.BooleanBiFunction;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.Direction;
 
 public final class BitSetVoxelSet extends VoxelSet {

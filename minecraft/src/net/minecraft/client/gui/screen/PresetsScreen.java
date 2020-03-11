@@ -113,7 +113,7 @@ public class PresetsScreen extends Screen {
 	}
 
 	private static void addPreset(String name, ItemConvertible icon, Biome biome, List<String> structures, FlatChunkGeneratorLayer... layers) {
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createSettings();
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
 
 		for (int i = layers.length - 1; i >= 0; i--) {
 			flatChunkGeneratorConfig.getLayers().add(layers[i]);
@@ -311,8 +311,8 @@ public class PresetsScreen extends Screen {
 
 			private void method_2198(int i, int j) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatPresetsListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
-				DrawableHelper.blit(i, j, PresetsScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+				SuperflatPresetsListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_TEXTURE);
+				DrawableHelper.drawTexture(i, j, PresetsScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

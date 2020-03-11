@@ -6,12 +6,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.InfoEnchantment;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.Text;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -42,17 +42,17 @@ public class EnchantedBookItem extends Item {
 		ItemStack.appendEnchantments(tooltip, getEnchantmentTag(stack));
 	}
 
-	public static void addEnchantment(ItemStack stack, InfoEnchantment enchantmentInfo) {
+	public static void addEnchantment(ItemStack stack, EnchantmentLevelEntry entry) {
 		ListTag listTag = getEnchantmentTag(stack);
 		boolean bl = true;
-		Identifier identifier = Registry.ENCHANTMENT.getId(enchantmentInfo.enchantment);
+		Identifier identifier = Registry.ENCHANTMENT.getId(entry.enchantment);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompound(i);
 			Identifier identifier2 = Identifier.tryParse(compoundTag.getString("id"));
 			if (identifier2 != null && identifier2.equals(identifier)) {
-				if (compoundTag.getInt("lvl") < enchantmentInfo.level) {
-					compoundTag.putShort("lvl", (short)enchantmentInfo.level);
+				if (compoundTag.getInt("lvl") < entry.level) {
+					compoundTag.putShort("lvl", (short)entry.level);
 				}
 
 				bl = false;
@@ -63,14 +63,14 @@ public class EnchantedBookItem extends Item {
 		if (bl) {
 			CompoundTag compoundTag2 = new CompoundTag();
 			compoundTag2.putString("id", String.valueOf(identifier));
-			compoundTag2.putShort("lvl", (short)enchantmentInfo.level);
+			compoundTag2.putShort("lvl", (short)entry.level);
 			listTag.add(compoundTag2);
 		}
 
 		stack.getOrCreateTag().put("StoredEnchantments", listTag);
 	}
 
-	public static ItemStack forEnchantment(InfoEnchantment info) {
+	public static ItemStack forEnchantment(EnchantmentLevelEntry info) {
 		ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
 		addEnchantment(itemStack, info);
 		return itemStack;
@@ -82,14 +82,14 @@ public class EnchantedBookItem extends Item {
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
 				if (enchantment.type != null) {
 					for (int i = enchantment.getMinimumLevel(); i <= enchantment.getMaximumLevel(); i++) {
-						stacks.add(forEnchantment(new InfoEnchantment(enchantment, i)));
+						stacks.add(forEnchantment(new EnchantmentLevelEntry(enchantment, i)));
 					}
 				}
 			}
 		} else if (group.getEnchantments().length != 0) {
 			for (Enchantment enchantmentx : Registry.ENCHANTMENT) {
 				if (group.containsEnchantments(enchantmentx.type)) {
-					stacks.add(forEnchantment(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
+					stacks.add(forEnchantment(new EnchantmentLevelEntry(enchantmentx, enchantmentx.getMaximumLevel())));
 				}
 			}
 		}

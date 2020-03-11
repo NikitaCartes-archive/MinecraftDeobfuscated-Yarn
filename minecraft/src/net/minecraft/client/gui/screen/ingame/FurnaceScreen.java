@@ -10,9 +10,9 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class FurnaceScreen extends AbstractFurnaceScreen<FurnaceScreenHandler> {
-	private static final Identifier BG_TEX = new Identifier("textures/gui/container/furnace.png");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/container/furnace.png");
 
 	public FurnaceScreen(FurnaceScreenHandler container, PlayerInventory inventory, Text title) {
-		super(container, new FurnaceRecipeBookScreen(), inventory, title, BG_TEX);
+		super(container, new FurnaceRecipeBookScreen(), inventory, title, TEXTURE);
 	}
 }

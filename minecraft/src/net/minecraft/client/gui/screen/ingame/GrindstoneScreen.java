@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class GrindstoneScreen extends ScreenWithHandler<GrindstoneScreenHandler> {
+public class GrindstoneScreen extends HandledScreen<GrindstoneScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/grindstone.png");
 
 	public GrindstoneScreen(GrindstoneScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -36,9 +36,9 @@ public class GrindstoneScreen extends ScreenWithHandler<GrindstoneScreenHandler>
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(2).hasStack()) {
-			this.blit(i + 92, j + 31, this.backgroundWidth, 0, 28, 21);
+			this.drawTexture(i + 92, j + 31, this.backgroundWidth, 0, 28, 21);
 		}
 	}
 }

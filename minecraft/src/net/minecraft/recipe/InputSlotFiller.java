@@ -10,8 +10,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.CraftingScreenHandler;
-import net.minecraft.screen.CraftingTableScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -22,10 +22,10 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 	protected static final Logger LOGGER = LogManager.getLogger();
 	protected final RecipeFinder recipeFinder = new RecipeFinder();
 	protected PlayerInventory inventory;
-	protected CraftingScreenHandler<C> craftingScreenHandler;
+	protected AbstractRecipeScreenHandler<C> craftingScreenHandler;
 
-	public InputSlotFiller(CraftingScreenHandler<C> craftingScreenHandler) {
-		this.craftingScreenHandler = craftingScreenHandler;
+	public InputSlotFiller(AbstractRecipeScreenHandler<C> abstractRecipeScreenHandler) {
+		this.craftingScreenHandler = abstractRecipeScreenHandler;
 	}
 
 	public void fillInputSlots(ServerPlayerEntity entity, @Nullable Recipe<C> recipe, boolean craftAll) {
@@ -50,7 +50,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 	protected void returnInputs() {
 		for (int i = 0; i < this.craftingScreenHandler.getCraftingWidth() * this.craftingScreenHandler.getCraftingHeight() + 1; i++) {
 			if (i != this.craftingScreenHandler.getCraftingResultSlotIndex()
-				|| !(this.craftingScreenHandler instanceof CraftingTableScreenHandler) && !(this.craftingScreenHandler instanceof PlayerScreenHandler)) {
+				|| !(this.craftingScreenHandler instanceof CraftingScreenHandler) && !(this.craftingScreenHandler instanceof PlayerScreenHandler)) {
 				this.returnSlot(i);
 			}
 		}

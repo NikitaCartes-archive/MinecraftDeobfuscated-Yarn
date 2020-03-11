@@ -31,7 +31,7 @@ public class RecipeToast implements Toast {
 		} else {
 			manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-			manager.blit(0, 0, 0, 32, 160, 32);
+			manager.drawTexture(0, 0, 0, 32, 160, 32);
 			manager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
 			manager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
 			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(currentTime / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));

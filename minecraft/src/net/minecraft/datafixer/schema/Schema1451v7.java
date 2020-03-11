@@ -13,8 +13,8 @@ public class Schema1451v7 extends IdentifierNormalizingSchema {
 	}
 
 	@Override
-	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
-		super.registerTypes(schema, map, map2);
+	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
+		super.registerTypes(schema, entityTypes, blockEntityTypes);
 		schema.registerType(
 			false,
 			TypeReferences.STRUCTURE_FEATURE,

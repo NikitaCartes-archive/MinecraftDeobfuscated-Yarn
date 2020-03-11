@@ -2,10 +2,11 @@ package net.minecraft.block;
 
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.BlockContext;
 import net.minecraft.screen.GrindstoneScreenHandler;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -88,7 +89,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape field_16360 = VoxelShapes.union(field_16398, field_16353);
 	public static final VoxelShape field_16389 = VoxelShapes.union(field_16395, field_16360);
 	public static final VoxelShape EAST_WEST_HANGING_SHAPE = VoxelShapes.union(field_16389, Block.createCuboidShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
-	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.grindstone_title");
+	private static final TranslatableText TITLE = new TranslatableText("container.grindstone_title");
 
 	protected GrindstoneBlock(Block.Settings settings) {
 		super(settings);
@@ -152,16 +153,16 @@ public class GrindstoneBlock extends WallMountedBlock {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openHandledScreen(state.createContainerFactory(world, pos));
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_GRINDSTONE);
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(i, playerInventory, playerEntity) -> new GrindstoneScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new GrindstoneScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 
@@ -181,7 +182,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 }

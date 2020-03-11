@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
@@ -33,14 +34,18 @@ public class DamageTracker {
 		Optional<BlockPos> optional = this.entity.method_24832();
 		if (optional.isPresent()) {
 			Block block = this.entity.world.getBlockState((BlockPos)optional.get()).getBlock();
-			if (block == Blocks.LADDER) {
+			if (block == Blocks.LADDER || block.isIn(BlockTags.TRAPDOORS)) {
 				this.fallDeathSuffix = "ladder";
 			} else if (block == Blocks.VINE) {
 				this.fallDeathSuffix = "vines";
-			} else if (block != Blocks.WEEPING_VINES_PLANT && block != Blocks.WEEPING_VINES) {
-				this.fallDeathSuffix = "other_climbable";
-			} else {
+			} else if (block == Blocks.WEEPING_VINES || block == Blocks.WEEPING_VINES_PLANT) {
 				this.fallDeathSuffix = "weeping_vines";
+			} else if (block == Blocks.TWISTING_VINES || block == Blocks.TWISTING_VINES_PLANT) {
+				this.fallDeathSuffix = "twisting_vines";
+			} else if (block == Blocks.SCAFFOLDING) {
+				this.fallDeathSuffix = "scaffolding";
+			} else {
+				this.fallDeathSuffix = "other_climbable";
 			}
 		} else if (this.entity.isTouchingWater()) {
 			this.fallDeathSuffix = "water";

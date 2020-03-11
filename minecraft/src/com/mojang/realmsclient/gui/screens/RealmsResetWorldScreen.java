@@ -201,7 +201,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
-		DrawableHelper.blit(i + 2, y + 14, 0.0F, 0.0F, 56, 56, 56, 56);
+		DrawableHelper.drawTexture(i + 2, y + 14, 0.0F, 0.0F, 56, 56, 56, 56);
 		this.client.getTextureManager().bindTexture(field_22713);
 		if (bl) {
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
@@ -209,7 +209,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
-		DrawableHelper.blit(i, y + 12, 0.0F, 0.0F, 60, 60, 60, 60);
+		DrawableHelper.drawTexture(i, y + 12, 0.0F, 0.0F, 60, 60, 60, 60);
 		int j = bl ? 10526880 : 16777215;
 		this.drawCenteredString(this.textRenderer, text, i + 30, y, j);
 	}

@@ -442,9 +442,9 @@ public class HeldItemRenderer {
 		} else {
 			float f = clientPlayerEntity.getAttackCooldownProgress(1.0F);
 			this.equipProgressMainHand = this.equipProgressMainHand
-				+ MathHelper.clamp((ItemStack.areEqualIgnoreDamage(this.mainHand, itemStack) ? f * f * f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
+				+ MathHelper.clamp((ItemStack.areEqual(this.mainHand, itemStack) ? f * f * f : 0.0F) - this.equipProgressMainHand, -0.4F, 0.4F);
 			this.equipProgressOffHand = this.equipProgressOffHand
-				+ MathHelper.clamp((float)(ItemStack.areEqualIgnoreDamage(this.offHand, itemStack2) ? 1 : 0) - this.equipProgressOffHand, -0.4F, 0.4F);
+				+ MathHelper.clamp((float)(ItemStack.areEqual(this.offHand, itemStack2) ? 1 : 0) - this.equipProgressOffHand, -0.4F, 0.4F);
 		}
 
 		if (this.equipProgressMainHand < 0.1F) {

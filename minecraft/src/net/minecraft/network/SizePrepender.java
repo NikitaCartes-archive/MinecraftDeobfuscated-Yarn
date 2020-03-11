@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.codec.MessageToByteEncoder;
-import net.minecraft.util.PacketByteBuf;
 
 @Sharable
 public class SizePrepender extends MessageToByteEncoder<ByteBuf> {

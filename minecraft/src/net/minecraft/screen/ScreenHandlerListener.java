@@ -1,12 +1,12 @@
 package net.minecraft.screen;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 public interface ScreenHandlerListener {
-	void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> defaultedList);
+	void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks);
 
-	void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack);
+	void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack);
 
-	void onPropertyUpdate(ScreenHandler handler, int propertyId, int i);
+	void onPropertyUpdate(ScreenHandler handler, int propertyId, int value);
 }

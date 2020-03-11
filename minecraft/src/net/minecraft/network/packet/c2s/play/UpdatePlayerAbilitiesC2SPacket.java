@@ -3,8 +3,8 @@ package net.minecraft.network.packet.c2s.play;
 import java.io.IOException;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketListener> {
 	private boolean invulnerable;

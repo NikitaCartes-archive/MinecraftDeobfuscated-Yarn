@@ -3,7 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class FlameEnchantment extends Enchantment {
-	public FlameEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	public FlameEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.BOW, slotTypes);
 	}
 

@@ -16,23 +16,23 @@ public class EntityHorseSaddleFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
+	protected Typed<?> transform(Typed<?> inputType) {
 		OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString()));
 		Type<?> type = this.getInputSchema().getTypeRaw(TypeReferences.ITEM_STACK);
 		OpticFinder<?> opticFinder2 = DSL.fieldFinder("SaddleItem", type);
-		Optional<? extends Typed<?>> optional = typed.getOptionalTyped(opticFinder2);
-		Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
+		Optional<? extends Typed<?>> optional = inputType.getOptionalTyped(opticFinder2);
+		Dynamic<?> dynamic = inputType.get(DSL.remainderFinder());
 		if (!optional.isPresent() && dynamic.get("Saddle").asBoolean(false)) {
-			Typed<?> typed2 = (Typed<?>)type.pointTyped(typed.getOps()).orElseThrow(IllegalStateException::new);
-			typed2 = typed2.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), "minecraft:saddle"));
+			Typed<?> typed = (Typed<?>)type.pointTyped(inputType.getOps()).orElseThrow(IllegalStateException::new);
+			typed = typed.set(opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), "minecraft:saddle"));
 			Dynamic<?> dynamic2 = dynamic.emptyMap();
 			dynamic2 = dynamic2.set("Count", dynamic2.createByte((byte)1));
 			dynamic2 = dynamic2.set("Damage", dynamic2.createShort((short)0));
-			typed2 = typed2.set(DSL.remainderFinder(), dynamic2);
+			typed = typed.set(DSL.remainderFinder(), dynamic2);
 			dynamic.remove("Saddle");
-			return typed.set(opticFinder2, typed2).set(DSL.remainderFinder(), dynamic);
+			return inputType.set(opticFinder2, typed).set(DSL.remainderFinder(), dynamic);
 		} else {
-			return typed;
+			return inputType;
 		}
 	}
 }

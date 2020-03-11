@@ -34,6 +34,7 @@ public class LocateCommand {
 				.then(CommandManager.literal("Buried_Treasure").executes(commandContext -> execute(commandContext.getSource(), "Buried_Treasure")))
 				.then(CommandManager.literal("Shipwreck").executes(commandContext -> execute(commandContext.getSource(), "Shipwreck")))
 				.then(CommandManager.literal("Village").executes(commandContext -> execute(commandContext.getSource(), "Village")))
+				.then(CommandManager.literal("Nether_Fossil").executes(commandContext -> execute(commandContext.getSource(), "Nether_Fossil")))
 		);
 	}
 

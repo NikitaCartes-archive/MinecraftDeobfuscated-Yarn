@@ -47,7 +47,7 @@ public class PillagerSpawner {
 						} else {
 							int j = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
 							int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-							BlockPos.Mutable mutable = playerEntity.getSenseCenterPos().mutableCopy().setOffset(j, 0, k);
+							BlockPos.Mutable mutable = playerEntity.getSenseCenterPos().mutableCopy().move(j, 0, k);
 							if (!serverWorld.isRegionLoaded(
 								mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10
 							)) {

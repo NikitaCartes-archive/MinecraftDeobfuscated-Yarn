@@ -73,15 +73,15 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
-import net.minecraft.util.ReusableStream;
+import net.minecraft.util.collection.ReusableStream;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -124,9 +124,6 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public double prevX;
 	public double prevY;
 	public double prevZ;
-	private double x;
-	private double y;
-	private double z;
 	private Vec3d field_22467;
 	private BlockPos field_22468;
 	private Vec3d velocity = Vec3d.ZERO;
@@ -202,6 +199,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.type = type;
 		this.world = world;
 		this.dimensions = type.getDimensions();
+		this.field_22467 = Vec3d.ZERO;
+		this.field_22468 = BlockPos.ORIGIN;
 		this.updatePosition(0.0, 0.0, 0.0);
 		if (world != null) {
 			this.dimension = world.dimension.getType();
@@ -315,9 +314,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public boolean isInRange(Entity other, double radius) {
-		double d = other.x - this.x;
-		double e = other.y - this.y;
-		double f = other.z - this.z;
+		double d = other.field_22467.x - this.field_22467.x;
+		double e = other.field_22467.y - this.field_22467.y;
+		double f = other.field_22467.z - this.field_22467.z;
 		return d * d + e * e + f * f < radius * radius;
 	}
 
@@ -334,7 +333,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected void refreshPosition() {
-		this.updatePosition(this.x, this.y, this.z);
+		this.updatePosition(this.field_22467.x, this.field_22467.y, this.field_22467.z);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -464,11 +463,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.world.doesNotCollide(this, box) && !this.world.containsFluid(box);
 	}
 
-	public void method_24830(boolean bl) {
-		this.onGround = bl;
+	public void setOnGround(boolean onGround) {
+		this.onGround = onGround;
 	}
 
-	public boolean method_24828() {
+	public boolean isOnGround() {
 		return this.onGround;
 	}
 
@@ -529,7 +528,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				double d = vec3d.x;
 				double e = vec3d.y;
 				double f = vec3d.z;
-				if (block != Blocks.LADDER && block != Blocks.SCAFFOLDING) {
+				if (!block.isIn(BlockTags.CLIMBABLE)) {
 					e = 0.0;
 				}
 
@@ -580,9 +579,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected BlockPos getLandingPos() {
-		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.y - 0.2F);
-		int k = MathHelper.floor(this.z);
+		int i = MathHelper.floor(this.field_22467.x);
+		int j = MathHelper.floor(this.field_22467.y - 0.2F);
+		int k = MathHelper.floor(this.field_22467.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
 		if (this.world.getBlockState(blockPos).isAir()) {
 			BlockPos blockPos2 = blockPos.down();
@@ -613,7 +612,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected BlockPos getVelocityAffectingPos() {
-		return new BlockPos(this.x, this.getBoundingBox().y1 - 0.5000001, this.z);
+		return new BlockPos(this.field_22467.x, this.getBoundingBox().y1 - 0.5000001, this.field_22467.z);
 	}
 
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
@@ -1023,6 +1022,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 			float k = (this.random.nextFloat() * 2.0F - 1.0F) * this.dimensions.width;
 			this.world.addParticle(ParticleTypes.SPLASH, this.getX() + (double)j, (double)(h + 1.0F), this.getZ() + (double)k, vec3d.x, vec3d.y, vec3d.z);
 		}
+	}
+
+	protected BlockState method_25936() {
+		return this.world.getBlockState(this.getLandingPos());
 	}
 
 	public void attemptSprintingParticles() {
@@ -1971,7 +1974,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		double d = Double.MAX_VALUE;
 
 		for (Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
-			mutable.move(blockPos, direction2);
+			mutable.set(blockPos, direction2);
 			if (!this.world.getBlockState(mutable).isFullCube(this.world, mutable)) {
 				double e = vec3d.getComponentAlongAxis(direction2.getAxis());
 				double f = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - e : e;
@@ -2777,11 +2780,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public final double getX() {
-		return this.x;
+		return this.field_22467.x;
 	}
 
 	public double offsetX(double widthScale) {
-		return this.x + (double)this.getWidth() * widthScale;
+		return this.field_22467.x + (double)this.getWidth() * widthScale;
 	}
 
 	public double getParticleX(double widthScale) {
@@ -2789,11 +2792,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public final double getY() {
-		return this.y;
+		return this.field_22467.y;
 	}
 
 	public double getBodyY(double heightScale) {
-		return this.y + (double)this.getHeight() * heightScale;
+		return this.field_22467.y + (double)this.getHeight() * heightScale;
 	}
 
 	public double getRandomBodyY() {
@@ -2801,15 +2804,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public double getEyeY() {
-		return this.y + (double)this.standingEyeHeight;
+		return this.field_22467.y + (double)this.standingEyeHeight;
 	}
 
 	public final double getZ() {
-		return this.z;
+		return this.field_22467.z;
 	}
 
 	public double offsetZ(double widthScale) {
-		return this.z + (double)this.getWidth() * widthScale;
+		return this.field_22467.z + (double)this.getWidth() * widthScale;
 	}
 
 	public double getParticleZ(double widthScale) {
@@ -2817,11 +2820,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void setPos(double x, double y, double z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.field_22467 = new Vec3d(x, y, z);
-		this.field_22468 = new BlockPos(x, y, z);
+		if (this.field_22467.x != x || this.field_22467.y != y || this.field_22467.z != z) {
+			this.field_22467 = new Vec3d(x, y, z);
+			int i = MathHelper.floor(x);
+			int j = MathHelper.floor(y);
+			int k = MathHelper.floor(z);
+			if (i != this.field_22468.getX() || j != this.field_22468.getY() || k != this.field_22468.getZ()) {
+				this.field_22468 = new BlockPos(i, j, k);
+			}
+		}
 	}
 
 	public void checkDespawn() {

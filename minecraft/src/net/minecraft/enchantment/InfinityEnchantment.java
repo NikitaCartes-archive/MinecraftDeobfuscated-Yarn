@@ -3,7 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class InfinityEnchantment extends Enchantment {
-	public InfinityEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	public InfinityEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.BOW, slotTypes);
 	}
 
@@ -23,7 +23,7 @@ public class InfinityEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
-		return other instanceof MendingEnchantment ? false : super.differs(other);
+	public boolean canAccept(Enchantment other) {
+		return other instanceof MendingEnchantment ? false : super.canAccept(other);
 	}
 }

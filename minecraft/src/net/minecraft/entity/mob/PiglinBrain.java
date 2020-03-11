@@ -65,9 +65,10 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.DynamicSerializableBoolean;
-import net.minecraft.util.DynamicSerializableUuid;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
+import net.minecraft.util.dynamic.DynamicSerializableBoolean;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.Vec3d;
@@ -158,7 +159,7 @@ public class PiglinBrain {
 				new ForgetAttackTargetTask<>(livingEntity -> !isPreferredAttackTarget(piglin, livingEntity)),
 				new ConditionalTask(PiglinBrain::isHoldingCrossbow, new AttackTask<>(5, 0.75F)),
 				new RangedApproachTask(f * 1.2F),
-				new MeleeAttackTask(1.5, 20),
+				new MeleeAttackTask(20),
 				new CrossbowAttackTask(),
 				new HuntFinishTask()
 			),
@@ -343,6 +344,13 @@ public class PiglinBrain {
 		}
 	}
 
+	protected static void method_25948(PiglinEntity piglinEntity) {
+		if (isAdmiringItem(piglinEntity) && !piglinEntity.getOffHandStack().isEmpty()) {
+			piglinEntity.dropStack(piglinEntity.getOffHandStack());
+			piglinEntity.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
+		}
+	}
+
 	private static void method_24849(PiglinEntity piglin, ItemStack stack) {
 		ItemStack itemStack = piglin.addItem(stack);
 		dropBarteredItem(piglin, itemStack);
@@ -387,6 +395,8 @@ public class PiglinBrain {
 		Item item = stack.getItem();
 		if (item == Items.GOLD_NUGGET) {
 			return true;
+		} else if (item.isIn(ItemTags.PIGLIN_REPELLENTS)) {
+			return false;
 		} else if (hasBeenHitByPlayer(piglin) && piglin.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET)) {
 			return false;
 		} else if (isFood(item)) {

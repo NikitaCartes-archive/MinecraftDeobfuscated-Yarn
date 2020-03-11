@@ -12,6 +12,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -230,30 +231,32 @@ public class PistonBlock extends FacingBlock {
 
 	public static boolean isMovable(BlockState state, World world, BlockPos pos, Direction motionDir, boolean canBreak, Direction pistonDir) {
 		Block block = state.getBlock();
-		if (block == Blocks.OBSIDIAN) {
-			return false;
-		} else if (!world.getWorldBorder().contains(pos)) {
-			return false;
-		} else if (pos.getY() >= 0 && (motionDir != Direction.DOWN || pos.getY() != 0)) {
-			if (pos.getY() <= world.getHeight() - 1 && (motionDir != Direction.UP || pos.getY() != world.getHeight() - 1)) {
-				if (block != Blocks.PISTON && block != Blocks.STICKY_PISTON) {
-					if (state.getHardness(world, pos) == -1.0F) {
+		if (block != Blocks.OBSIDIAN && block != Blocks.CRYING_OBSIDIAN) {
+			if (!world.getWorldBorder().contains(pos)) {
+				return false;
+			} else if (pos.getY() >= 0 && (motionDir != Direction.DOWN || pos.getY() != 0)) {
+				if (pos.getY() <= world.getHeight() - 1 && (motionDir != Direction.UP || pos.getY() != world.getHeight() - 1)) {
+					if (block != Blocks.PISTON && block != Blocks.STICKY_PISTON) {
+						if (state.getHardness(world, pos) == -1.0F) {
+							return false;
+						}
+
+						switch (state.getPistonBehavior()) {
+							case BLOCK:
+								return false;
+							case DESTROY:
+								return canBreak;
+							case PUSH_ONLY:
+								return motionDir == pistonDir;
+						}
+					} else if ((Boolean)state.get(EXTENDED)) {
 						return false;
 					}
 
-					switch (state.getPistonBehavior()) {
-						case BLOCK:
-							return false;
-						case DESTROY:
-							return canBreak;
-						case PUSH_ONLY:
-							return motionDir == pistonDir;
-					}
-				} else if ((Boolean)state.get(EXTENDED)) {
+					return !block.hasBlockEntity();
+				} else {
 					return false;
 				}
-
-				return !block.hasBlockEntity();
 			} else {
 				return false;
 			}
@@ -375,7 +378,7 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 }

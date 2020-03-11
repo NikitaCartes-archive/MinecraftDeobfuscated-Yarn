@@ -2,8 +2,8 @@ package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
 import java.util.function.Function;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 public class SpecialRecipeSerializer<T extends Recipe<?>> implements RecipeSerializer<T> {
 	private final Function<Identifier, T> id;

@@ -30,7 +30,7 @@ public class TutorialToast implements Toast {
 	public Toast.Visibility draw(ToastManager manager, long currentTime) {
 		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-		manager.blit(0, 0, 0, 96, 160, 32);
+		manager.drawTexture(0, 0, 0, 96, 160, 32);
 		this.type.drawIcon(manager, 6, 6);
 		if (this.description == null) {
 			manager.getGame().textRenderer.draw(this.title, 30.0F, 12.0F, -11534256);
@@ -83,7 +83,7 @@ public class TutorialToast implements Toast {
 
 		public void drawIcon(DrawableHelper drawableHelper, int x, int y) {
 			RenderSystem.enableBlend();
-			drawableHelper.blit(x, y, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
+			drawableHelper.drawTexture(x, y, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
 			RenderSystem.enableBlend();
 		}
 	}

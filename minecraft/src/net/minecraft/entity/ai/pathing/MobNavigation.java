@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.pathing;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -18,20 +17,20 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected PathNodeNavigator createPathNodeNavigator(int i) {
+	protected PathNodeNavigator createPathNodeNavigator(int range) {
 		this.nodeMaker = new LandPathNodeMaker();
 		this.nodeMaker.setCanEnterOpenDoors(true);
-		return new PathNodeNavigator(this.nodeMaker, i);
+		return new PathNodeNavigator(this.nodeMaker, range);
 	}
 
 	@Override
 	protected boolean isAtValidPosition() {
-		return this.entity.method_24828() || this.isInLiquid() || this.entity.hasVehicle();
+		return this.entity.isOnGround() || this.isInLiquid() || this.entity.hasVehicle();
 	}
 
 	@Override
 	protected Vec3d getPos() {
-		return new Vec3d(this.entity.getX(), (double)this.method_6362(), this.entity.getZ());
+		return new Vec3d(this.entity.getX(), (double)this.getPathfindingY(), this.entity.getZ());
 	}
 
 	@Override
@@ -72,7 +71,10 @@ public class MobNavigation extends EntityNavigation {
 		return this.findPathTo(entity.getSenseCenterPos(), distance);
 	}
 
-	private int method_6362() {
+	/**
+	 * The y-position to act as if the entity is at for pathfinding purposes
+	 */
+	private int getPathfindingY() {
 		if (this.entity.isTouchingWater() && this.canSwim()) {
 			int i = MathHelper.floor(this.entity.getY());
 			Block block = this.world.getBlockState(new BlockPos(this.entity.getX(), (double)i, this.entity.getZ())).getBlock();
@@ -92,8 +94,8 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected void method_6359() {
-		super.method_6359();
+	protected void adjustPath() {
+		super.adjustPath();
 		if (this.avoidSunlight) {
 			if (this.world.isSkyVisible(new BlockPos(this.entity.getX(), this.entity.getY() + 0.5, this.entity.getZ()))) {
 				return;
@@ -124,7 +126,7 @@ public class MobNavigation extends EntityNavigation {
 			e *= g;
 			sizeX += 2;
 			sizeZ += 2;
-			if (!this.method_6364(i, MathHelper.floor(origin.y), j, sizeX, sizeY, sizeZ, origin, d, e)) {
+			if (!this.allVisibleAreSafe(i, MathHelper.floor(origin.y), j, sizeX, sizeY, sizeZ, origin, d, e)) {
 				return false;
 			} else {
 				sizeX -= 2;
@@ -161,7 +163,7 @@ public class MobNavigation extends EntityNavigation {
 						s = q - j;
 					}
 
-					if (!this.method_6364(i, MathHelper.floor(origin.y), j, sizeX, sizeY, sizeZ, origin, d, e)) {
+					if (!this.allVisibleAreSafe(i, MathHelper.floor(origin.y), j, sizeX, sizeY, sizeZ, origin, d, e)) {
 						return false;
 					}
 				}
@@ -171,18 +173,18 @@ public class MobNavigation extends EntityNavigation {
 		}
 	}
 
-	private boolean method_6364(int i, int j, int k, int l, int m, int n, Vec3d vec3d, double d, double e) {
-		int o = i - l / 2;
-		int p = k - n / 2;
-		if (!this.method_6367(o, j, p, l, m, n, vec3d, d, e)) {
+	private boolean allVisibleAreSafe(int centerX, int centerY, int centerZ, int xSize, int ySize, int zSize, Vec3d entityPos, double lookVecX, double lookVecZ) {
+		int i = centerX - xSize / 2;
+		int j = centerZ - zSize / 2;
+		if (!this.allVisibleArePassable(i, centerY, j, xSize, ySize, zSize, entityPos, lookVecX, lookVecZ)) {
 			return false;
 		} else {
-			for (int q = o; q < o + l; q++) {
-				for (int r = p; r < p + n; r++) {
-					double f = (double)q + 0.5 - vec3d.x;
-					double g = (double)r + 0.5 - vec3d.z;
-					if (!(f * d + g * e < 0.0)) {
-						PathNodeType pathNodeType = this.nodeMaker.getNodeType(this.world, q, j - 1, r, this.entity, l, m, n, true, true);
+			for (int k = i; k < i + xSize; k++) {
+				for (int l = j; l < j + zSize; l++) {
+					double d = (double)k + 0.5 - entityPos.x;
+					double e = (double)l + 0.5 - entityPos.z;
+					if (!(d * lookVecX + e * lookVecZ < 0.0)) {
+						PathNodeType pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY - 1, l, this.entity, xSize, ySize, zSize, true, true);
 						if (pathNodeType == PathNodeType.WATER) {
 							return false;
 						}
@@ -195,9 +197,9 @@ public class MobNavigation extends EntityNavigation {
 							return false;
 						}
 
-						pathNodeType = this.nodeMaker.getNodeType(this.world, q, j, r, this.entity, l, m, n, true, true);
-						float h = this.entity.getPathfindingPenalty(pathNodeType);
-						if (h < 0.0F || h >= 8.0F) {
+						pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY, l, this.entity, xSize, ySize, zSize, true, true);
+						float f = this.entity.getPathfindingPenalty(pathNodeType);
+						if (f < 0.0F || f >= 8.0F) {
 							return false;
 						}
 
@@ -212,11 +214,14 @@ public class MobNavigation extends EntityNavigation {
 		}
 	}
 
-	private boolean method_6367(int i, int j, int k, int l, int m, int n, Vec3d vec3d, double d, double e) {
-		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(i, j, k), new BlockPos(i + l - 1, j + m - 1, k + n - 1))) {
-			double f = (double)blockPos.getX() + 0.5 - vec3d.x;
-			double g = (double)blockPos.getZ() + 0.5 - vec3d.z;
-			if (!(f * d + g * e < 0.0) && !this.world.getBlockState(blockPos).canPlaceAtSide(this.world, blockPos, BlockPlacementEnvironment.LAND)) {
+	/**
+	 * Checks whether all blocks in the box which are visible (in front of) the mob can be pathed through
+	 */
+	private boolean allVisibleArePassable(int x, int y, int z, int xSize, int ySize, int zSize, Vec3d entityPos, double lookVecX, double lookVecZ) {
+		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(x, y, z), new BlockPos(x + xSize - 1, y + ySize - 1, z + zSize - 1))) {
+			double d = (double)blockPos.getX() + 0.5 - entityPos.x;
+			double e = (double)blockPos.getZ() + 0.5 - entityPos.z;
+			if (!(d * lookVecX + e * lookVecZ < 0.0) && !this.world.getBlockState(blockPos).canPathfindThrough(this.world, blockPos, NavigationType.LAND)) {
 				return false;
 			}
 		}
@@ -224,8 +229,8 @@ public class MobNavigation extends EntityNavigation {
 		return true;
 	}
 
-	public void setCanPathThroughDoors(boolean bl) {
-		this.nodeMaker.setCanOpenDoors(bl);
+	public void setCanPathThroughDoors(boolean canPathThroughDoors) {
+		this.nodeMaker.setCanOpenDoors(canPathThroughDoors);
 	}
 
 	public boolean canEnterOpenDoors() {

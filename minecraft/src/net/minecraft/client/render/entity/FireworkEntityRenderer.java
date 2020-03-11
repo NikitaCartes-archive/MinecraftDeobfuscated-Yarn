@@ -16,14 +16,14 @@ import net.minecraft.util.Identifier;
 public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 	private final ItemRenderer itemRenderer;
 
-	public FireworkEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
-		super(entityRenderDispatcher);
+	public FireworkEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer itemRenderer) {
+		super(dispatcher);
 		this.itemRenderer = itemRenderer;
 	}
 
 	public void render(FireworkEntity fireworkEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		matrixStack.multiply(this.renderManager.getRotation());
+		matrixStack.multiply(this.dispatcher.getRotation());
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 		if (fireworkEntity.wasShotAtAngle()) {
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));

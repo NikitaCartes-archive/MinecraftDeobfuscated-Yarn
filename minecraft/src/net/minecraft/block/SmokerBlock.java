@@ -7,7 +7,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SmokerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -29,7 +29,7 @@ public class SmokerBlock extends AbstractFurnaceBlock {
 	protected void openScreen(World world, BlockPos pos, PlayerEntity player) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof SmokerBlockEntity) {
-			player.openHandledScreen((NameableScreenHandlerFactory)blockEntity);
+			player.openHandledScreen((NamedScreenHandlerFactory)blockEntity);
 			player.incrementStat(Stats.INTERACT_WITH_SMOKER);
 		}
 	}

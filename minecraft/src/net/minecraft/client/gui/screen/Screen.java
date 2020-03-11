@@ -362,7 +362,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public void renderDirtBackground(int alpha) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		this.client.getTextureManager().bindTexture(BACKGROUND_LOCATION);
+		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);

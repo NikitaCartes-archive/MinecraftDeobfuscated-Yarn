@@ -4,7 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 
-public final class SimpleNamedScreenHandlerFactory implements NameableScreenHandlerFactory {
+public final class SimpleNamedScreenHandlerFactory implements NamedScreenHandlerFactory {
 	private final Text name;
 	private final ScreenHandlerFactory baseFactory;
 

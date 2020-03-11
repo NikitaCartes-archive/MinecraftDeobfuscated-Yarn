@@ -31,7 +31,6 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 		int j = (this.height - this.backgroundHeight) / 2;
 		this.nameField = new TextFieldWidget(this.textRenderer, i + 62, j + 24, 103, 12, I18n.translate("container.repair"));
 		this.nameField.setFocusUnlocked(false);
-		this.nameField.changeFocus(true);
 		this.nameField.setEditableColor(-1);
 		this.nameField.setUneditableColor(-1);
 		this.nameField.setHasBorder(false);
@@ -109,10 +108,11 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	}
 
 	@Override
-	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack) {
+	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
 		if (slotId == 0) {
-			this.nameField.setText(itemStack.isEmpty() ? "" : itemStack.getName().getString());
-			this.nameField.setEditable(!itemStack.isEmpty());
+			this.nameField.setText(stack.isEmpty() ? "" : stack.getName().getString());
+			this.nameField.setEditable(!stack.isEmpty());
+			this.setFocused(this.nameField);
 		}
 	}
 }

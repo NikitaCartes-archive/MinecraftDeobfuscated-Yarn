@@ -35,7 +35,7 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < randomPatchFeatureConfig.tries; j++) {
-			mutable.setOffset(
+			mutable.set(
 				blockPos2,
 				random.nextInt(randomPatchFeatureConfig.spreadX + 1) - random.nextInt(randomPatchFeatureConfig.spreadX + 1),
 				random.nextInt(randomPatchFeatureConfig.spreadY + 1) - random.nextInt(randomPatchFeatureConfig.spreadY + 1),

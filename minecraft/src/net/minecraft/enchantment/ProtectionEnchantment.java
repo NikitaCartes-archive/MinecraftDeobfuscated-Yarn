@@ -8,7 +8,7 @@ import net.minecraft.util.math.MathHelper;
 public class ProtectionEnchantment extends Enchantment {
 	public final ProtectionEnchantment.Type protectionType;
 
-	public ProtectionEnchantment(Enchantment.Weight weight, ProtectionEnchantment.Type type, EquipmentSlot... slotTypes) {
+	public ProtectionEnchantment(Enchantment.Rarity weight, ProtectionEnchantment.Type type, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.ARMOR, slotTypes);
 		this.protectionType = type;
 		if (type == ProtectionEnchantment.Type.FALL) {
@@ -49,14 +49,14 @@ public class ProtectionEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
+	public boolean canAccept(Enchantment other) {
 		if (other instanceof ProtectionEnchantment) {
 			ProtectionEnchantment protectionEnchantment = (ProtectionEnchantment)other;
 			return this.protectionType == protectionEnchantment.protectionType
 				? false
 				: this.protectionType == ProtectionEnchantment.Type.FALL || protectionEnchantment.protectionType == ProtectionEnchantment.Type.FALL;
 		} else {
-			return super.differs(other);
+			return super.canAccept(other);
 		}
 	}
 

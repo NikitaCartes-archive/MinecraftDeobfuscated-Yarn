@@ -169,6 +169,12 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 	}
 
+	@Override
+	protected float getVelocityMultiplier() {
+		BlockState blockState = this.world.getBlockState(this.getSenseCenterPos());
+		return blockState.matches(BlockTags.RAILS) ? 1.0F : super.getVelocityMultiplier();
+	}
+
 	public void dropItems(DamageSource damageSource) {
 		this.remove();
 		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {

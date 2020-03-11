@@ -14,11 +14,11 @@ public class BlockEntityJukeboxFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
+	protected Typed<?> transform(Typed<?> inputType) {
 		Type<?> type = this.getInputSchema().getChoiceType(TypeReferences.BLOCK_ENTITY, "minecraft:jukebox");
 		Type<?> type2 = type.findFieldType("RecordItem");
 		OpticFinder<?> opticFinder = DSL.fieldFinder("RecordItem", type2);
-		Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
+		Dynamic<?> dynamic = inputType.get(DSL.remainderFinder());
 		int i = dynamic.get("Record").asInt(0);
 		if (i > 0) {
 			dynamic.remove("Record");
@@ -27,13 +27,13 @@ public class BlockEntityJukeboxFix extends ChoiceFix {
 				Dynamic<?> dynamic2 = dynamic.emptyMap();
 				dynamic2 = dynamic2.set("id", dynamic2.createString(string));
 				dynamic2 = dynamic2.set("Count", dynamic2.createByte((byte)1));
-				return typed.set(
+				return inputType.set(
 						opticFinder, (Typed)type2.readTyped(dynamic2).getSecond().orElseThrow(() -> new IllegalStateException("Could not create record item stack."))
 					)
 					.set(DSL.remainderFinder(), dynamic);
 			}
 		}
 
-		return typed;
+		return inputType;
 	}
 }

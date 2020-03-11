@@ -65,8 +65,8 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	}
 
 	@Nullable
-	public Advancement get(Identifier identifier) {
-		return this.manager.get(identifier);
+	public Advancement get(Identifier id) {
+		return this.manager.get(id);
 	}
 
 	public Collection<Advancement> getAdvancements() {

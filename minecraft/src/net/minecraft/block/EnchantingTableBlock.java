@@ -8,12 +8,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.screen.BlockContext;
-import net.minecraft.screen.EnchantingTableScreenHandler;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.EnchantmentScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -92,19 +93,19 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openHandledScreen(state.createContainerFactory(world, pos));
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Nullable
 	@Override
-	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof EnchantingTableBlockEntity) {
 			Text text = ((Nameable)blockEntity).getDisplayName();
 			return new SimpleNamedScreenHandlerFactory(
-				(i, playerInventory, playerEntity) -> new EnchantingTableScreenHandler(i, playerInventory, BlockContext.create(world, pos)), text
+				(i, playerInventory, playerEntity) -> new EnchantmentScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), text
 			);
 		} else {
 			return null;
@@ -122,7 +123,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 }

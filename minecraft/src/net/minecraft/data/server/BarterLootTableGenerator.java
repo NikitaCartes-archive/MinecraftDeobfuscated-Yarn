@@ -2,6 +2,7 @@ package net.minecraft.data.server;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Items;
 import net.minecraft.loot.ConstantLootTableRange;
 import net.minecraft.loot.LootPool;
@@ -9,6 +10,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.UniformLootTableRange;
 import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.nbt.CompoundTag;
@@ -24,6 +26,8 @@ public class BarterLootTableGenerator implements Consumer<BiConsumer<Identifier,
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.NETHERITE_HOE).setWeight(1))
+						.withEntry(ItemEntry.builder(Items.ENCHANTED_BOOK).setWeight(1).withFunction(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
+						.withEntry(ItemEntry.builder(Items.IRON_BOOTS).setWeight(5).withFunction(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
 						.withEntry(
 							ItemEntry.builder(Items.POTION)
 								.setWeight(10)

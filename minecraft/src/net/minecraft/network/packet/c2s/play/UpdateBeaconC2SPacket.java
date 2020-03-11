@@ -4,8 +4,8 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class UpdateBeaconC2SPacket implements Packet<ServerPlayPacketListener> {
 	private int primaryEffectId;

@@ -30,16 +30,16 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	private final ThreadedAnvilChunkStorage chunkStorage;
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor;
 	private volatile int taskBatchSize = 5;
-	private final AtomicBoolean field_18812 = new AtomicBoolean();
+	private final AtomicBoolean ticking = new AtomicBoolean();
 
 	public ServerLightingProvider(
 		ChunkProvider chunkProvider,
 		ThreadedAnvilChunkStorage chunkStorage,
-		boolean bl,
+		boolean hasBlockLight,
 		TaskExecutor<Runnable> processor,
 		MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor
 	) {
-		super(chunkProvider, true, bl);
+		super(chunkProvider, true, hasBlockLight);
 		this.chunkStorage = chunkStorage;
 		this.executor = executor;
 		this.processor = processor;
@@ -107,13 +107,13 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, @Nullable ChunkNibbleArray chunkNibbleArray) {
+	public void queueData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles) {
 		this.enqueue(
-			chunkSectionPos.getSectionX(),
-			chunkSectionPos.getSectionZ(),
+			pos.getSectionX(),
+			pos.getSectionZ(),
 			() -> 0,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
+			Util.debugRunnable(() -> super.queueData(lightType, pos, nibbles), () -> "queueData " + pos)
 		);
 	}
 
@@ -137,7 +137,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		);
 	}
 
-	public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
+	public CompletableFuture<Chunk> light(Chunk chunk, boolean excludeBlocks) {
 		ChunkPos chunkPos = chunk.getPos();
 		chunk.setLightOn(false);
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable(() -> {
@@ -151,12 +151,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			}
 
 			super.setLightEnabled(chunkPos, true);
-			if (!bl) {
+			if (!excludeBlocks) {
 				chunk.getLightSourcesStream().forEach(blockPos -> super.addLightSource(blockPos, chunk.getLuminance(blockPos)));
 			}
 
 			this.chunkStorage.releaseLightTicket(chunkPos);
-		}, () -> "lightChunk " + chunkPos + " " + bl));
+		}, () -> "lightChunk " + chunkPos + " " + excludeBlocks));
 		return CompletableFuture.supplyAsync(() -> {
 			chunk.setLightOn(true);
 			super.setRetainData(chunkPos, false);
@@ -165,10 +165,10 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	public void tick() {
-		if ((!this.pendingTasks.isEmpty() || super.hasUpdates()) && this.field_18812.compareAndSet(false, true)) {
+		if ((!this.pendingTasks.isEmpty() || super.hasUpdates()) && this.ticking.compareAndSet(false, true)) {
 			this.processor.send(() -> {
 				this.runTasks();
-				this.field_18812.set(false);
+				this.ticking.set(false);
 			});
 		}
 	}

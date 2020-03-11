@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.tag.BlockTags;
 
 public class PickaxeItem extends MiningToolItem {
 	private static final Set<Block> EFFECTIVE_BLOCKS = ImmutableSet.of(
@@ -18,6 +19,7 @@ public class PickaxeItem extends MiningToolItem {
 		Blocks.POWERED_RAIL,
 		Blocks.GOLD_BLOCK,
 		Blocks.GOLD_ORE,
+		Blocks.NETHER_GOLD_ORE,
 		Blocks.ICE,
 		Blocks.IRON_BLOCK,
 		Blocks.IRON_ORE,
@@ -102,14 +104,14 @@ public class PickaxeItem extends MiningToolItem {
 	public boolean isEffectiveOn(BlockState state) {
 		Block block = state.getBlock();
 		int i = this.getMaterial().getMiningLevel();
-		if (block == Blocks.OBSIDIAN || block == Blocks.NETHERITE_BLOCK || block == Blocks.ANCIENT_DEBRIS) {
+		if (block == Blocks.OBSIDIAN || block == Blocks.CRYING_OBSIDIAN || block == Blocks.NETHERITE_BLOCK || block == Blocks.ANCIENT_DEBRIS) {
 			return i >= 3;
 		} else if (block == Blocks.DIAMOND_BLOCK
 			|| block == Blocks.DIAMOND_ORE
 			|| block == Blocks.EMERALD_ORE
 			|| block == Blocks.EMERALD_BLOCK
 			|| block == Blocks.GOLD_BLOCK
-			|| block == Blocks.GOLD_ORE
+			|| block.isIn(BlockTags.GOLD_ORES)
 			|| block == Blocks.REDSTONE_ORE) {
 			return i >= 2;
 		} else if (block != Blocks.IRON_BLOCK && block != Blocks.IRON_ORE && block != Blocks.LAPIS_BLOCK && block != Blocks.LAPIS_ORE) {

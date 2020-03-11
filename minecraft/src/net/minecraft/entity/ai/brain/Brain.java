@@ -26,8 +26,8 @@ import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableInt;
 

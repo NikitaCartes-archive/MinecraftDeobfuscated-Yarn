@@ -2711,8 +2711,8 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.SAND), Blocks.GLASS.asItem(), 0.1F, 200)
 			.criterion("has_sand", conditionsFromTag(ItemTags.SAND))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.GOLD_ORE.asItem()), Items.GOLD_INGOT, 1.0F, 200)
-			.criterion("has_gold_ore", conditionsFromItem(Blocks.GOLD_ORE))
+		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.GOLD_ORES), Items.GOLD_INGOT, 1.0F, 200)
+			.criterion("has_gold_ore", conditionsFromTag(ItemTags.GOLD_ORES))
 			.offerTo(consumer);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.SEA_PICKLE.asItem()), Items.LIME_DYE, 0.1F, 200)
 			.criterion("has_sea_pickle", conditionsFromItem(Blocks.SEA_PICKLE))
@@ -2874,8 +2874,8 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.IRON_ORE.asItem()), Items.IRON_INGOT, 0.7F, 100)
 			.criterion("has_iron_ore", conditionsFromItem(Blocks.IRON_ORE.asItem()))
 			.offerTo(consumer, "iron_ingot_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.GOLD_ORE.asItem()), Items.GOLD_INGOT, 1.0F, 100)
-			.criterion("has_gold_ore", conditionsFromItem(Blocks.GOLD_ORE))
+		CookingRecipeJsonFactory.createBlasting(Ingredient.fromTag(ItemTags.GOLD_ORES), Items.GOLD_INGOT, 1.0F, 100)
+			.criterion("has_gold_ore", conditionsFromTag(ItemTags.GOLD_ORES))
 			.offerTo(consumer, "gold_ingot_from_blasting");
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.DIAMOND_ORE.asItem()), Items.DIAMOND, 1.0F, 100)
 			.criterion("has_diamond_ore", conditionsFromItem(Blocks.DIAMOND_ORE))

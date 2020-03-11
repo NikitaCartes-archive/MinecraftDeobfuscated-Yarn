@@ -19,7 +19,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -47,7 +47,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -161,7 +161,7 @@ public class InGameHud extends DrawableHelper {
 
 		if (!this.client.options.hudHidden) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+			this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
 			RenderSystem.enableBlend();
 			RenderSystem.enableAlphaTest();
 			this.renderCrosshair();
@@ -170,7 +170,7 @@ public class InGameHud extends DrawableHelper {
 			this.bossBarHud.render();
 			this.client.getProfiler().pop();
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+			this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
 			if (this.client.interactionManager.hasStatusBars()) {
 				this.renderStatusBars();
 			}
@@ -354,7 +354,7 @@ public class InGameHud extends DrawableHelper {
 						GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 					);
 					int i = 15;
-					this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
+					this.drawTexture((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
 					if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
 						float f = this.client.player.getAttackCooldownProgress(0.0F);
 						boolean bl = false;
@@ -366,11 +366,11 @@ public class InGameHud extends DrawableHelper {
 						int j = this.scaledHeight / 2 - 7 + 16;
 						int k = this.scaledWidth / 2 - 8;
 						if (bl) {
-							this.blit(k, j, 68, 94, 16, 16);
+							this.drawTexture(k, j, 68, 94, 16, 16);
 						} else if (f < 1.0F) {
 							int l = (int)(f * 17.0F);
-							this.blit(k, j, 36, 94, 16, 4);
-							this.blit(k, j, 52, 94, l, 4);
+							this.drawTexture(k, j, 36, 94, 16, 4);
+							this.drawTexture(k, j, 52, 94, l, 4);
 						}
 					}
 				}
@@ -382,11 +382,11 @@ public class InGameHud extends DrawableHelper {
 		if (hitResult == null) {
 			return false;
 		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
-			return ((EntityHitResult)hitResult).getEntity() instanceof NameableScreenHandlerFactory;
+			return ((EntityHitResult)hitResult).getEntity() instanceof NamedScreenHandlerFactory;
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			World world = this.client.world;
-			return world.getBlockState(blockPos).createContainerFactory(world, blockPos) != null;
+			return world.getBlockState(blockPos).createScreenHandlerFactory(world, blockPos) != null;
 		} else {
 			return false;
 		}
@@ -400,7 +400,7 @@ public class InGameHud extends DrawableHelper {
 			int j = 0;
 			StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
 			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
-			this.client.getTextureManager().bindTexture(ScreenWithHandler.BACKGROUND_TEXTURE);
+			this.client.getTextureManager().bindTexture(HandledScreen.BACKGROUND_TEXTURE);
 
 			for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
@@ -423,9 +423,9 @@ public class InGameHud extends DrawableHelper {
 					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 					float f = 1.0F;
 					if (statusEffectInstance.isAmbient()) {
-						this.blit(k, l, 165, 166, 24, 24);
+						this.drawTexture(k, l, 165, 166, 24, 24);
 					} else {
-						this.blit(k, l, 141, 166, 24, 24);
+						this.drawTexture(k, l, 141, 166, 24, 24);
 						if (statusEffectInstance.getDuration() <= 200) {
 							int m = 10 - statusEffectInstance.getDuration() / 20;
 							f = MathHelper.clamp((float)statusEffectInstance.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F)
@@ -440,7 +440,7 @@ public class InGameHud extends DrawableHelper {
 					list.add((Runnable)() -> {
 						this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
 						RenderSystem.color4f(1.0F, 1.0F, 1.0F, g);
-						blit(n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
+						drawSprite(n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
 					});
 				}
 			}
@@ -461,13 +461,13 @@ public class InGameHud extends DrawableHelper {
 			int k = 182;
 			int l = 91;
 			this.setZOffset(-90);
-			this.blit(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
-			this.blit(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
+			this.drawTexture(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
+			this.drawTexture(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
 			if (!itemStack.isEmpty()) {
 				if (arm == Arm.LEFT) {
-					this.blit(i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
+					this.drawTexture(i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
 				} else {
-					this.blit(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
+					this.drawTexture(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
 				}
 			}
 
@@ -500,11 +500,11 @@ public class InGameHud extends DrawableHelper {
 						o = i - 91 - 22;
 					}
 
-					this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+					this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
 					int p = (int)(g * 19.0F);
 					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-					this.blit(o, n, 0, 94, 18, 18);
-					this.blit(o, n + 18 - p, 18, 112 - p, 18, p);
+					this.drawTexture(o, n, 0, 94, 18, 18);
+					this.drawTexture(o, n + 18 - p, 18, 112 - p, 18, p);
 				}
 			}
 
@@ -515,14 +515,14 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderMountJumpBar(int i) {
 		this.client.getProfiler().push("jumpBar");
-		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
 		float f = this.client.player.method_3151();
 		int j = 182;
 		int k = (int)(f * 183.0F);
 		int l = this.scaledHeight - 32 + 3;
-		this.blit(i, l, 0, 84, 182, 5);
+		this.drawTexture(i, l, 0, 84, 182, 5);
 		if (k > 0) {
-			this.blit(i, l, 0, 89, k, 5);
+			this.drawTexture(i, l, 0, 89, k, 5);
 		}
 
 		this.client.getProfiler().pop();
@@ -530,15 +530,15 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderExperienceBar(int i) {
 		this.client.getProfiler().push("expBar");
-		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
 		int j = this.client.player.getNextLevelExperience();
 		if (j > 0) {
 			int k = 182;
 			int l = (int)(this.client.player.experienceProgress * 183.0F);
 			int m = this.scaledHeight - 32 + 3;
-			this.blit(i, m, 0, 64, 182, 5);
+			this.drawTexture(i, m, 0, 64, 182, 5);
 			if (l > 0) {
-				this.blit(i, m, 0, 69, l, 5);
+				this.drawTexture(i, m, 0, 69, l, 5);
 			}
 		}
 
@@ -742,15 +742,15 @@ public class InGameHud extends DrawableHelper {
 				if (v > 0) {
 					int y = m + x * 8;
 					if (x * 2 + 1 < v) {
-						this.blit(y, s, 34, 9, 9, 9);
+						this.drawTexture(y, s, 34, 9, 9, 9);
 					}
 
 					if (x * 2 + 1 == v) {
-						this.blit(y, s, 25, 9, 9, 9);
+						this.drawTexture(y, s, 25, 9, 9, 9);
 					}
 
 					if (x * 2 + 1 > v) {
-						this.blit(y, s, 16, 9, 9, 9);
+						this.drawTexture(y, s, 16, 9, 9, 9);
 					}
 				}
 			}
@@ -786,32 +786,32 @@ public class InGameHud extends DrawableHelper {
 					ad = 5;
 				}
 
-				this.blit(ab, ac, 16 + z * 9, 9 * ad, 9, 9);
+				this.drawTexture(ab, ac, 16 + z * 9, 9 * ad, 9, 9);
 				if (bl) {
 					if (xx * 2 + 1 < j) {
-						this.blit(ab, ac, yx + 54, 9 * ad, 9, 9);
+						this.drawTexture(ab, ac, yx + 54, 9 * ad, 9, 9);
 					}
 
 					if (xx * 2 + 1 == j) {
-						this.blit(ab, ac, yx + 63, 9 * ad, 9, 9);
+						this.drawTexture(ab, ac, yx + 63, 9 * ad, 9, 9);
 					}
 				}
 
 				if (u > 0) {
 					if (u == p && p % 2 == 1) {
-						this.blit(ab, ac, yx + 153, 9 * ad, 9, 9);
+						this.drawTexture(ab, ac, yx + 153, 9 * ad, 9, 9);
 						u--;
 					} else {
-						this.blit(ab, ac, yx + 144, 9 * ad, 9, 9);
+						this.drawTexture(ab, ac, yx + 144, 9 * ad, 9, 9);
 						u -= 2;
 					}
 				} else {
 					if (xx * 2 + 1 < i) {
-						this.blit(ab, ac, yx + 36, 9 * ad, 9, 9);
+						this.drawTexture(ab, ac, yx + 36, 9 * ad, 9, 9);
 					}
 
 					if (xx * 2 + 1 == i) {
-						this.blit(ab, ac, yx + 45, 9 * ad, 9, 9);
+						this.drawTexture(ab, ac, yx + 45, 9 * ad, 9, 9);
 					}
 				}
 			}
@@ -835,13 +835,13 @@ public class InGameHud extends DrawableHelper {
 					}
 
 					int adx = n - zx * 8 - 9;
-					this.blit(adx, aax, 16 + acx * 9, 27, 9, 9);
+					this.drawTexture(adx, aax, 16 + acx * 9, 27, 9, 9);
 					if (zx * 2 + 1 < k) {
-						this.blit(adx, aax, abx + 36, 27, 9, 9);
+						this.drawTexture(adx, aax, abx + 36, 27, 9, 9);
 					}
 
 					if (zx * 2 + 1 == k) {
-						this.blit(adx, aax, abx + 45, 27, 9, 9);
+						this.drawTexture(adx, aax, abx + 45, 27, 9, 9);
 					}
 				}
 
@@ -859,9 +859,9 @@ public class InGameHud extends DrawableHelper {
 
 				for (int ae = 0; ae < acxx + adxx; ae++) {
 					if (ae < acxx) {
-						this.blit(n - ae * 8 - 9, t, 16, 18, 9, 9);
+						this.drawTexture(n - ae * 8 - 9, t, 16, 18, 9, 9);
 					} else {
-						this.blit(n - ae * 8 - 9, t, 25, 18, 9, 9);
+						this.drawTexture(n - ae * 8 - 9, t, 25, 18, 9, 9);
 					}
 				}
 			}
@@ -890,13 +890,13 @@ public class InGameHud extends DrawableHelper {
 						int q = 52;
 						int r = 0;
 						int s = l - p * 8 - 9;
-						this.blit(s, m, 52 + r * 9, 9, 9, 9);
+						this.drawTexture(s, m, 52 + r * 9, 9, 9, 9);
 						if (p * 2 + 1 + n < j) {
-							this.blit(s, m, 88, 9, 9, 9);
+							this.drawTexture(s, m, 88, 9, 9, 9);
 						}
 
 						if (p * 2 + 1 + n == j) {
-							this.blit(s, m, 97, 9, 9, 9);
+							this.drawTexture(s, m, 97, 9, 9, 9);
 						}
 					}
 

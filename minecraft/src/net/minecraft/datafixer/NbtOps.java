@@ -36,6 +36,9 @@ import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
+/**
+ * Used to represent a Minecraft NBT as a {@link com.mojang.datafixers.Dynamic} for DataFixerUpper.
+ */
 public class NbtOps implements DynamicOps<Tag> {
 	public static final NbtOps INSTANCE = new NbtOps();
 

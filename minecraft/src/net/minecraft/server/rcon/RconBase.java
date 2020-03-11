@@ -7,7 +7,7 @@ import java.net.ServerSocket;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.util.UncaughtExceptionHandler;
+import net.minecraft.util.logging.UncaughtExceptionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -28,10 +28,10 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 		.build();
 
 	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory) {
-		this(syncId, playerInventory, BlockContext.EMPTY);
+		this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
 	}
 
-	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory, BlockContext context) {
+	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(ScreenHandlerType.SMITHING, syncId, playerInventory, context);
 	}
 

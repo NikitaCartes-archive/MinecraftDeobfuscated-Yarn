@@ -13,8 +13,8 @@ public class GenericContainerScreenHandler extends ScreenHandler {
 	private final Inventory inventory;
 	private final int rows;
 
-	private GenericContainerScreenHandler(ScreenHandlerType<?> screenHandlerType, int i, PlayerInventory playerInventory, int j) {
-		this(screenHandlerType, i, playerInventory, new BasicInventory(9 * j), j);
+	private GenericContainerScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, int rows) {
+		this(type, syncId, playerInventory, new BasicInventory(9 * rows), rows);
 	}
 
 	public static GenericContainerScreenHandler createGeneric9x1(int syncId, PlayerInventory playerInventory) {
@@ -49,9 +49,9 @@ public class GenericContainerScreenHandler extends ScreenHandler {
 		return new GenericContainerScreenHandler(ScreenHandlerType.GENERIC_9X6, syncId, playerInventory, inventory, 6);
 	}
 
-	public GenericContainerScreenHandler(ScreenHandlerType<?> screenHandlerType, int syncId, PlayerInventory playerInventory, Inventory inventory, int rows) {
-		super(screenHandlerType, syncId);
-		checkContainerSize(inventory, rows * 9);
+	public GenericContainerScreenHandler(ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, Inventory inventory, int rows) {
+		super(type, syncId);
+		checkSize(inventory, rows * 9);
 		this.inventory = inventory;
 		this.rows = rows;
 		inventory.onInvOpen(playerInventory.player);
@@ -80,13 +80,13 @@ public class GenericContainerScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot < this.rows * 9) {
+			if (index < this.rows * 9) {
 				if (!this.insertItem(itemStack2, this.rows * 9, this.slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}

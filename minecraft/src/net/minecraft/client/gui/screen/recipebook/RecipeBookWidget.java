@@ -29,7 +29,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
@@ -43,7 +43,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	private final List<RecipeGroupButtonWidget> tabButtons = Lists.<RecipeGroupButtonWidget>newArrayList();
 	private RecipeGroupButtonWidget currentTab;
 	protected ToggleButtonWidget toggleCraftableButton;
-	protected CraftingScreenHandler<?> craftingScreenHandler;
+	protected AbstractRecipeScreenHandler<?> craftingScreenHandler;
 	protected MinecraftClient client;
 	private TextFieldWidget searchField;
 	private String searchText = "";
@@ -53,7 +53,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	private int cachedInvChangeCount;
 	private boolean searching;
 
-	public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean isNarrow, CraftingScreenHandler<?> craftingScreenHandler) {
+	public void initialize(int parentWidth, int parentHeight, MinecraftClient client, boolean isNarrow, AbstractRecipeScreenHandler<?> craftingScreenHandler) {
 		this.client = client;
 		this.parentWidth = parentWidth;
 		this.parentHeight = parentHeight;
@@ -229,7 +229,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int i = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int j = (this.parentHeight - 166) / 2;
-			this.blit(i, j, 1, 1, 147, 166);
+			this.drawTexture(i, j, 1, 1, 147, 166);
 			this.searchField.render(mouseX, mouseY, delta);
 
 			for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
@@ -438,7 +438,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
 		ItemStack itemStack = recipe.getOutput();
 		this.ghostSlots.setRecipe(recipe);
-		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(0)).xPosition, ((Slot)slots.get(0)).yPosition);
+		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(0)).x, ((Slot)slots.get(0)).y);
 		this.alignRecipeToGrid(
 			this.craftingScreenHandler.getCraftingWidth(),
 			this.craftingScreenHandler.getCraftingHeight(),
@@ -454,7 +454,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		Ingredient ingredient = (Ingredient)inputs.next();
 		if (!ingredient.isEmpty()) {
 			Slot slot2 = (Slot)this.craftingScreenHandler.slots.get(slot);
-			this.ghostSlots.addSlot(ingredient, slot2.xPosition, slot2.yPosition);
+			this.ghostSlots.addSlot(ingredient, slot2.x, slot2.y);
 		}
 	}
 

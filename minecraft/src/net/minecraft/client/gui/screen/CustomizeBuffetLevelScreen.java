@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen;
 
+import com.mojang.datafixers.Dynamic;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -20,6 +22,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.source.BiomeSourceType;
+import net.minecraft.world.level.LevelGeneratorOptions;
+import net.minecraft.world.level.LevelGeneratorType;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen extends Screen {
@@ -34,10 +38,14 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private int biomeListLength;
 	private ButtonWidget confirmButton;
 
-	public CustomizeBuffetLevelScreen(CreateWorldScreen parent, CompoundTag generatorOptionsTag) {
+	public CustomizeBuffetLevelScreen(CreateWorldScreen parent, LevelGeneratorOptions levelGeneratorOptions) {
 		super(new TranslatableText("createWorld.customize.buffet.title"));
 		this.parent = parent;
-		this.generatorOptionsTag = generatorOptionsTag;
+		if (levelGeneratorOptions.getType() == LevelGeneratorType.BUFFET) {
+			this.generatorOptionsTag = (CompoundTag)levelGeneratorOptions.getDynamic().convert(NbtOps.INSTANCE).getValue();
+		} else {
+			this.generatorOptionsTag = new CompoundTag();
+		}
 	}
 
 	@Override
@@ -69,7 +77,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
 		this.children.add(this.biomeSelectionList);
 		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.parent.generatorOptionsTag = this.getGeneratorTag();
+			this.parent.generatorOptions = LevelGeneratorType.BUFFET.loadOptions(new Dynamic<>(NbtOps.INSTANCE, this.getGeneratorTag()));
 			this.client.openScreen(this.parent);
 		}));
 		this.addButton(

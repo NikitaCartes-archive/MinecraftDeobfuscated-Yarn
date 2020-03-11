@@ -30,8 +30,8 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final ItemRenderer itemRenderer;
 
-	public ItemFrameEntityRenderer(EntityRenderDispatcher renderManager, ItemRenderer itemRenderer) {
-		super(renderManager);
+	public ItemFrameEntityRenderer(EntityRenderDispatcher dispatcher, ItemRenderer itemRenderer) {
+		super(dispatcher);
 		this.itemRenderer = itemRenderer;
 	}
 
@@ -113,8 +113,8 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasCustomName()
-			&& this.renderManager.targetedEntity == itemFrameEntity) {
-			double d = this.renderManager.getSquaredDistanceToCamera(itemFrameEntity);
+			&& this.dispatcher.targetedEntity == itemFrameEntity) {
+			double d = this.dispatcher.getSquaredDistanceToCamera(itemFrameEntity);
 			float f = itemFrameEntity.isSneaky() ? 32.0F : 64.0F;
 			return d < (double)(f * f);
 		} else {

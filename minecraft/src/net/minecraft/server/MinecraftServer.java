@@ -3,7 +3,6 @@ package net.minecraft.server;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -98,14 +97,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TickDurationMonitor;
-import net.minecraft.util.TickTimeTracker;
-import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -114,6 +112,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.TickTimeTracker;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
@@ -127,6 +126,7 @@ import net.minecraft.world.SessionLockException;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -140,7 +140,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
-	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo((long)"North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT)
+	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
+			(long)"North Carolina".hashCode(), GameMode.SURVIVAL, true, false, LevelGeneratorType.DEFAULT.getDefaultOptions()
+		)
 		.setBonusChest();
 	private final LevelStorage levelStorage;
 	private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
@@ -185,7 +187,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private String resourcePackUrl = "";
 	private String resourcePackHash = "";
 	private volatile boolean loading;
-	private long field_4557;
+	private long lastTimeReference;
 	@Nullable
 	private Text loadingStage;
 	private boolean profilerStartQueued;
@@ -201,7 +203,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	);
 	private long timeReference = Util.getMeasuringTimeMs();
 	private long field_19248;
-	private boolean field_19249;
+	private boolean waitingForNextTick;
 	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
 	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA, this.serverThread);
@@ -342,7 +344,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.loadingStage = loadingStage;
 	}
 
-	protected void loadWorld(String name, String serverName, long seed, LevelGeneratorType generatorType, JsonElement generatorSettings) {
+	protected void loadWorld(String name, String serverName, long seed, LevelGeneratorOptions levelGeneratorOptions) {
 		this.upgradeWorld(name);
 		this.setLoadingStage(new TranslatableText("menu.loadingLevel"));
 		WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(name, this);
@@ -353,8 +355,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			if (this.isDemo()) {
 				levelInfo = DEMO_LEVEL_INFO;
 			} else {
-				levelInfo = new LevelInfo(seed, this.getDefaultGameMode(), this.shouldGenerateStructures(), this.isHardcore(), generatorType);
-				levelInfo.setGeneratorOptions(generatorSettings);
+				levelInfo = new LevelInfo(seed, this.getDefaultGameMode(), this.shouldGenerateStructures(), this.isHardcore(), levelGeneratorOptions);
 				if (this.bonusChest) {
 					levelInfo.setBonusChest();
 				}
@@ -366,7 +367,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			levelInfo = new LevelInfo(levelProperties);
 		}
 
-		levelProperties.method_24285(this.getServerModName(), this.method_24307().isPresent());
+		levelProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
 		this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldSaveHandler, levelProperties, levelInfo, worldGenerationProgressListener);
@@ -622,11 +623,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 				while (this.running) {
 					long l = Util.getMeasuringTimeMs() - this.timeReference;
-					if (l > 2000L && this.timeReference - this.field_4557 >= 15000L) {
+					if (l > 2000L && this.timeReference - this.lastTimeReference >= 15000L) {
 						long m = l / 50L;
 						LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", l, m);
 						this.timeReference += m * 50L;
-						this.field_4557 = this.timeReference;
+						this.lastTimeReference = this.timeReference;
 					}
 
 					this.timeReference += 50L;
@@ -636,7 +637,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					this.profiler.push("tick");
 					this.tick(this::shouldKeepTicking);
 					this.profiler.swap("nextTickWait");
-					this.field_19249 = true;
+					this.waitingForNextTick = true;
 					this.field_19248 = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
 					this.method_16208();
 					this.profiler.pop();
@@ -679,7 +680,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private boolean shouldKeepTicking() {
-		return this.hasRunningTasks() || Util.getMeasuringTimeMs() < (this.field_19249 ? this.field_19248 : this.timeReference);
+		return this.hasRunningTasks() || Util.getMeasuringTimeMs() < (this.waitingForNextTick ? this.field_19248 : this.timeReference);
 	}
 
 	protected void method_16208() {
@@ -698,7 +699,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Override
 	public boolean runTask() {
 		boolean bl = this.method_20415();
-		this.field_19249 = bl;
+		this.waitingForNextTick = bl;
 		return bl;
 	}
 
@@ -1066,7 +1067,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return crashReport;
 	}
 
-	public abstract Optional<String> method_24307();
+	public abstract Optional<String> getModdedStatusMessage();
 
 	public boolean hasGameDir() {
 		return this.gameDir != null;

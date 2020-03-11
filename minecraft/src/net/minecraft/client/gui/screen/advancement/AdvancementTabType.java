@@ -42,7 +42,7 @@ enum AdvancementTabType {
 		}
 
 		int j = selected ? this.v + this.height : this.v;
-		drawable.blit(x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
+		drawable.drawTexture(x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
 	}
 
 	public void drawIcon(int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {

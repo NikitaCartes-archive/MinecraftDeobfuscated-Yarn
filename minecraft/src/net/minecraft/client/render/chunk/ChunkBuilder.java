@@ -259,7 +259,7 @@ public class ChunkBuilder {
 				this.boundingBox = new Box((double)x, (double)y, (double)z, (double)(x + 16), (double)(y + 16), (double)(z + 16));
 
 				for (Direction direction : Direction.values()) {
-					this.neighborPositions[direction.ordinal()].set(this.origin).setOffset(direction, 16);
+					this.neighborPositions[direction.ordinal()].set(this.origin).move(direction, 16);
 				}
 			}
 		}

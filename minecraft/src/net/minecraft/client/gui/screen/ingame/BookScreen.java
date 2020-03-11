@@ -155,7 +155,7 @@ public class BookScreen extends Screen {
 		this.client.getTextureManager().bindTexture(BOOK_TEXTURE);
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.blit(i, 2, 0, 0, 192, 192);
+		this.drawTexture(i, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
 			Text text = this.contents.getPage(this.pageIndex);

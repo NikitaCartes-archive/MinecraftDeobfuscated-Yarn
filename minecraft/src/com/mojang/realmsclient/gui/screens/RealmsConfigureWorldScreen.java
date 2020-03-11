@@ -402,7 +402,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	private void drawExpired(int x, int y, int xm, int ym) {
 		this.client.getTextureManager().bindTexture(field_22690);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.blit(x, y, 0.0F, 0.0F, 10, 28, 10, 28);
+		DrawableHelper.drawTexture(x, y, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27) {
 			this.toolTip = I18n.translate("mco.selectServer.expired");
 		}
@@ -412,9 +412,9 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 		this.client.getTextureManager().bindTexture(field_22691);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.animTick % 20 < 10) {
-			DrawableHelper.blit(x, y, 0.0F, 0.0F, 10, 28, 20, 28);
+			DrawableHelper.drawTexture(x, y, 0.0F, 0.0F, 10, 28, 20, 28);
 		} else {
-			DrawableHelper.blit(x, y, 10.0F, 0.0F, 10, 28, 20, 28);
+			DrawableHelper.drawTexture(x, y, 10.0F, 0.0F, 10, 28, 20, 28);
 		}
 
 		if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27) {
@@ -431,7 +431,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	private void drawOpen(int x, int y, int xm, int ym) {
 		this.client.getTextureManager().bindTexture(field_22688);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.blit(x, y, 0.0F, 0.0F, 10, 28, 10, 28);
+		DrawableHelper.drawTexture(x, y, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27) {
 			this.toolTip = I18n.translate("mco.selectServer.open");
 		}
@@ -440,7 +440,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreenWithCallback {
 	private void method_25143(int i, int j, int k, int l) {
 		this.client.getTextureManager().bindTexture(field_22689);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		DrawableHelper.blit(i, j, 0.0F, 0.0F, 10, 28, 10, 28);
+		DrawableHelper.drawTexture(i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
 			this.toolTip = I18n.translate("mco.selectServer.closed");
 		}

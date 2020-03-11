@@ -11,16 +11,16 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BipedEntityRenderer<T extends MobEntity, M extends BipedEntityModel<T>> extends MobEntityRenderer<T, M> {
-	private static final Identifier SKIN = new Identifier("textures/entity/steve.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/steve.png");
 
-	public BipedEntityRenderer(EntityRenderDispatcher renderManager, M model, float f) {
-		super(renderManager, model, f);
+	public BipedEntityRenderer(EntityRenderDispatcher dispatcher, M model, float f) {
+		super(dispatcher, model, f);
 		this.addFeature(new HeadFeatureRenderer<>(this));
 		this.addFeature(new ElytraFeatureRenderer<>(this));
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
 	}
 
 	public Identifier getTexture(T mobEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 }

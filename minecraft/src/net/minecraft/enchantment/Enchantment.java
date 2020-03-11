@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 
 public abstract class Enchantment {
 	private final EquipmentSlot[] slotTypes;
-	private final Enchantment.Weight weight;
+	private final Enchantment.Rarity rarity;
 	@Nullable
 	public EnchantmentTarget type;
 	@Nullable
@@ -31,17 +31,17 @@ public abstract class Enchantment {
 		return Registry.ENCHANTMENT.get(id);
 	}
 
-	protected Enchantment(Enchantment.Weight weight, EnchantmentTarget type, EquipmentSlot[] slotTypes) {
-		this.weight = weight;
+	protected Enchantment(Enchantment.Rarity weight, EnchantmentTarget type, EquipmentSlot[] slotTypes) {
+		this.rarity = weight;
 		this.type = type;
 		this.slotTypes = slotTypes;
 	}
 
-	public Map<EquipmentSlot, ItemStack> getEquipment(LivingEntity livingEntity) {
+	public Map<EquipmentSlot, ItemStack> getEquipment(LivingEntity entity) {
 		Map<EquipmentSlot, ItemStack> map = Maps.newEnumMap(EquipmentSlot.class);
 
 		for (EquipmentSlot equipmentSlot : this.slotTypes) {
-			ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
+			ItemStack itemStack = entity.getEquippedStack(equipmentSlot);
 			if (!itemStack.isEmpty()) {
 				map.put(equipmentSlot, itemStack);
 			}
@@ -50,8 +50,8 @@ public abstract class Enchantment {
 		return map;
 	}
 
-	public Enchantment.Weight getWeight() {
-		return this.weight;
+	public Enchantment.Rarity getRarity() {
+		return this.rarity;
 	}
 
 	public int getMinimumLevel() {
@@ -78,11 +78,20 @@ public abstract class Enchantment {
 		return 0.0F;
 	}
 
-	public final boolean isDifferent(Enchantment other) {
-		return this.differs(other) && other.differs(this);
+	/**
+	 * Returns whether this enchantment can exist on an item stack with the
+	 * {@code other} enchantment and the {@code other} enchantment can exist
+	 * with this enchantment.
+	 */
+	public final boolean canCombine(Enchantment other) {
+		return this.canAccept(other) && other.canAccept(this);
 	}
 
-	protected boolean differs(Enchantment other) {
+	/**
+	 * Returns whether this enchantment can exist on an item stack with the
+	 * {@code other} enchantment.
+	 */
+	protected boolean canAccept(Enchantment other) {
 		return this != other;
 	}
 
@@ -131,7 +140,29 @@ public abstract class Enchantment {
 		return false;
 	}
 
-	public static enum Weight {
+	/**
+	 * Returns whether this enchantment will appear in the enchanted book trade
+	 * offers of librarian villagers.
+	 */
+	public boolean isAvailableForEnchantedBookOffer() {
+		return true;
+	}
+
+	/**
+	 * Returns whether this enchantment will appear in the enchanting table or
+	 * loots with random enchant function.
+	 */
+	public boolean isAvailableForRandomSelection() {
+		return true;
+	}
+
+	/**
+	 * The rarity is an attribute of an enchantment.
+	 * 
+	 * <p>It affects the chance of getting an enchantment from enchanting or
+	 * loots as well as the combination cost in anvil.
+	 */
+	public static enum Rarity {
 		COMMON(10),
 		UNCOMMON(5),
 		RARE(2),
@@ -139,10 +170,13 @@ public abstract class Enchantment {
 
 		private final int weight;
 
-		private Weight(int weight) {
+		private Rarity(int weight) {
 			this.weight = weight;
 		}
 
+		/**
+		 * Returns the weight of an enchantment in weighted pickers.
+		 */
 		public int getWeight() {
 			return this.weight;
 		}

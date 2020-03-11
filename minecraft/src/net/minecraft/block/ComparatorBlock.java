@@ -74,9 +74,13 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			blockPos = blockPos.offset(direction);
 			blockState = world.getBlockState(blockPos);
 			ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos);
-			int j = itemFrameEntity == null ? 0 : itemFrameEntity.getComparatorPower();
-			int k = blockState.hasComparatorOutput() ? blockState.getComparatorOutput(world, blockPos) : 0;
-			i = Math.max(Math.max(j, k), i);
+			int j = Math.max(
+				itemFrameEntity == null ? Integer.MIN_VALUE : itemFrameEntity.getComparatorPower(),
+				blockState.hasComparatorOutput() ? blockState.getComparatorOutput(world, blockPos) : Integer.MIN_VALUE
+			);
+			if (j != Integer.MIN_VALUE) {
+				i = j;
+			}
 		}
 
 		return i;

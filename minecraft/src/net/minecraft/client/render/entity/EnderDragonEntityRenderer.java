@@ -22,10 +22,10 @@ import net.minecraft.util.math.MathHelper;
 public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity> {
 	public static final Identifier CRYSTAL_BEAM_TEXTURE = new Identifier("textures/entity/end_crystal/end_crystal_beam.png");
 	private static final Identifier EXPLOSION_TEXTURE = new Identifier("textures/entity/enderdragon/dragon_exploding.png");
-	private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/enderdragon/dragon.png");
 	private static final Identifier EYE_TEXTURE = new Identifier("textures/entity/enderdragon/dragon_eyes.png");
-	private static final RenderLayer DRAGON_CUTOUT = RenderLayer.getEntityCutoutNoCull(SKIN);
-	private static final RenderLayer DRAGON_DECAL = RenderLayer.getEntityDecal(SKIN);
+	private static final RenderLayer DRAGON_CUTOUT = RenderLayer.getEntityCutoutNoCull(TEXTURE);
+	private static final RenderLayer DRAGON_DECAL = RenderLayer.getEntityDecal(TEXTURE);
 	private static final RenderLayer DRAGON_EYES = RenderLayer.getEyes(EYE_TEXTURE);
 	private static final RenderLayer CRYSTAL_BEAM_LAYER = RenderLayer.getEntitySmoothCutout(CRYSTAL_BEAM_TEXTURE);
 	private static final float HALF_SQRT_3 = (float)(Math.sqrt(3.0) / 2.0);
@@ -190,7 +190,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 	}
 
 	public Identifier getTexture(EnderDragonEntity enderDragonEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 
 	@Environment(EnvType.CLIENT)

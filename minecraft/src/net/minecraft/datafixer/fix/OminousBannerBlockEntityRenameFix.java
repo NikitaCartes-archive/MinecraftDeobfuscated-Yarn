@@ -13,8 +13,8 @@ public class OminousBannerBlockEntityRenameFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::fixBannerName);
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), this::fixBannerName);
 	}
 
 	private Dynamic<?> fixBannerName(Dynamic<?> dynamic) {

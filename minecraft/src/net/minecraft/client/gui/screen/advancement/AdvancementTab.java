@@ -97,7 +97,7 @@ public class AdvancementTab extends DrawableHelper {
 
 		for (int m = -1; m <= 15; m++) {
 			for (int n = -1; n <= 8; n++) {
-				blit(k + 16 * m, l + 16 * n, 0.0F, 0.0F, 16, 16, 16, 16);
+				drawTexture(k + 16 * m, l + 16 * n, 0.0F, 0.0F, 16, 16, 16, 16);
 			}
 		}
 

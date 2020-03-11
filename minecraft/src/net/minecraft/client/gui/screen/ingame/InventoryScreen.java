@@ -74,7 +74,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		this.renderBackground();
-		this.offsetGuiForEffects = !this.recipeBook.isOpen();
+		this.drawStatusEffects = !this.recipeBook.isOpen();
 		if (this.recipeBook.isOpen() && this.isNarrow) {
 			this.drawBackground(delta, mouseX, mouseY);
 			this.recipeBook.render(mouseX, mouseY, delta);
@@ -97,7 +97,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 		int i = this.x;
 		int j = this.y;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.client.player);
 	}
 

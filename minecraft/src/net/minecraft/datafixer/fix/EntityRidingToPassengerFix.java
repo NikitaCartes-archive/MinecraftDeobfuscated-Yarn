@@ -29,35 +29,35 @@ public class EntityRidingToPassengerFix extends DataFix {
 		Type<?> type = schema.getTypeRaw(TypeReferences.ENTITY_TREE);
 		Type<?> type2 = schema2.getTypeRaw(TypeReferences.ENTITY_TREE);
 		Type<?> type3 = schema.getTypeRaw(TypeReferences.ENTITY);
-		return this.method_4978(schema, schema2, type, type2, type3);
+		return this.fixEntityTree(schema, schema2, type, type2, type3);
 	}
 
-	private <OldEntityTree, NewEntityTree, Entity> TypeRewriteRule method_4978(
-		Schema schema, Schema schema2, Type<OldEntityTree> type, Type<NewEntityTree> type2, Type<Entity> type3
+	private <OldEntityTree, NewEntityTree, Entity> TypeRewriteRule fixEntityTree(
+		Schema inputSchema, Schema outputSchema, Type<OldEntityTree> inputEntityTreeType, Type<NewEntityTree> outputEntityTreeType, Type<Entity> inputEntityType
 	) {
-		Type<Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>>> type4 = DSL.named(
-			TypeReferences.ENTITY_TREE.typeName(), DSL.and(DSL.optional(DSL.field("Riding", type)), type3)
+		Type<Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>>> type = DSL.named(
+			TypeReferences.ENTITY_TREE.typeName(), DSL.and(DSL.optional(DSL.field("Riding", inputEntityTreeType)), inputEntityType)
 		);
-		Type<Pair<String, Pair<Either<List<NewEntityTree>, Unit>, Entity>>> type5 = DSL.named(
-			TypeReferences.ENTITY_TREE.typeName(), DSL.and(DSL.optional(DSL.field("Passengers", DSL.list(type2))), type3)
+		Type<Pair<String, Pair<Either<List<NewEntityTree>, Unit>, Entity>>> type2 = DSL.named(
+			TypeReferences.ENTITY_TREE.typeName(), DSL.and(DSL.optional(DSL.field("Passengers", DSL.list(outputEntityTreeType))), inputEntityType)
 		);
-		Type<?> type6 = schema.getType(TypeReferences.ENTITY_TREE);
-		Type<?> type7 = schema2.getType(TypeReferences.ENTITY_TREE);
-		if (!Objects.equals(type6, type4)) {
+		Type<?> type3 = inputSchema.getType(TypeReferences.ENTITY_TREE);
+		Type<?> type4 = outputSchema.getType(TypeReferences.ENTITY_TREE);
+		if (!Objects.equals(type3, type)) {
 			throw new IllegalStateException("Old entity type is not what was expected.");
-		} else if (!type7.equals(type5, true, true)) {
+		} else if (!type4.equals(type2, true, true)) {
 			throw new IllegalStateException("New entity type is not what was expected.");
 		} else {
-			OpticFinder<Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>>> opticFinder = DSL.typeFinder(type4);
-			OpticFinder<Pair<String, Pair<Either<List<NewEntityTree>, Unit>, Entity>>> opticFinder2 = DSL.typeFinder(type5);
-			OpticFinder<NewEntityTree> opticFinder3 = DSL.typeFinder(type2);
-			Type<?> type8 = schema.getType(TypeReferences.PLAYER);
-			Type<?> type9 = schema2.getType(TypeReferences.PLAYER);
+			OpticFinder<Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>>> opticFinder = DSL.typeFinder(type);
+			OpticFinder<Pair<String, Pair<Either<List<NewEntityTree>, Unit>, Entity>>> opticFinder2 = DSL.typeFinder(type2);
+			OpticFinder<NewEntityTree> opticFinder3 = DSL.typeFinder(outputEntityTreeType);
+			Type<?> type5 = inputSchema.getType(TypeReferences.PLAYER);
+			Type<?> type6 = outputSchema.getType(TypeReferences.PLAYER);
 			return TypeRewriteRule.seq(
 				this.fixTypeEverywhere(
 					"EntityRidingToPassengerFix",
-					type4,
-					type5,
+					type,
+					type2,
 					dynamicOps -> pair -> {
 							Optional<Pair<String, Pair<Either<List<NewEntityTree>, Unit>, Entity>>> optional = Optional.empty();
 							Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>> pair2 = pair;
@@ -66,7 +66,7 @@ public class EntityRidingToPassengerFix extends DataFix {
 								Either<List<NewEntityTree>, Unit> either = DataFixUtils.orElse(
 									optional.map(
 										pairx -> {
-											Typed<NewEntityTree> typed = (Typed<NewEntityTree>)type2.pointTyped(dynamicOps)
+											Typed<NewEntityTree> typed = (Typed<NewEntityTree>)outputEntityTreeType.pointTyped(dynamicOps)
 												.orElseThrow(() -> new IllegalStateException("Could not create new entity tree"));
 											NewEntityTree object = (NewEntityTree)typed.set(opticFinder2, pairx)
 												.getOptional(opticFinder3)
@@ -82,13 +82,13 @@ public class EntityRidingToPassengerFix extends DataFix {
 									return (Pair)optional.orElseThrow(() -> new IllegalStateException("Should always have an entity tree here"));
 								}
 
-								pair2 = (Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>>)new Typed<>(type, dynamicOps, (OldEntityTree)optional2.get())
+								pair2 = (Pair<String, Pair<Either<OldEntityTree, Unit>, Entity>>)new Typed<>(inputEntityTreeType, dynamicOps, (OldEntityTree)optional2.get())
 									.getOptional(opticFinder)
 									.orElseThrow(() -> new IllegalStateException("Should always have an entity here"));
 							}
 						}
 				),
-				this.writeAndRead("player RootVehicle injecter", type8, type9)
+				this.writeAndRead("player RootVehicle injecter", type5, type6)
 			);
 		}
 	}

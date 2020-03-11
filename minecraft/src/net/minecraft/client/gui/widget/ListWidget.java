@@ -112,7 +112,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 			this.capYPosition();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
-			this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+			this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_TEXTURE);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			float f = 32.0F;
 			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -363,7 +363,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	protected void renderHoleBackground(int top, int bottom, int topAlpha, int bottomAlpha) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);

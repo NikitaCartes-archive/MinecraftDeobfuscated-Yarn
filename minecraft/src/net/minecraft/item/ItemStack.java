@@ -317,15 +317,15 @@ public final class ItemStack {
 		}
 	}
 
-	public static boolean areEqualIgnoreDamage(ItemStack left, ItemStack right) {
+	public static boolean areEqual(ItemStack left, ItemStack right) {
 		if (left.isEmpty() && right.isEmpty()) {
 			return true;
 		} else {
-			return !left.isEmpty() && !right.isEmpty() ? left.isEqualIgnoreDamage(right) : false;
+			return !left.isEmpty() && !right.isEmpty() ? left.isEqual(right) : false;
 		}
 	}
 
-	private boolean isEqualIgnoreDamage(ItemStack stack) {
+	private boolean isEqual(ItemStack stack) {
 		if (this.count != stack.count) {
 			return false;
 		} else if (this.getItem() != stack.getItem()) {

@@ -99,7 +99,7 @@ public class EntityRenderDispatcher {
 		this.register(EntityType.ENDERMITE, new EndermiteEntityRenderer(this));
 		this.register(EntityType.ENDER_PEARL, new FlyingItemEntityRenderer<>(this, itemRenderer));
 		this.register(EntityType.EVOKER_FANGS, new EvokerFangsEntityRenderer(this));
-		this.register(EntityType.EVOKER, new EvokerIllagerEntityRenderer<>(this));
+		this.register(EntityType.EVOKER, new EvokerEntityRenderer<>(this));
 		this.register(EntityType.EXPERIENCE_BOTTLE, new FlyingItemEntityRenderer<>(this, itemRenderer));
 		this.register(EntityType.EXPERIENCE_ORB, new ExperienceOrbEntityRenderer(this));
 		this.register(EntityType.EYE_OF_ENDER, new FlyingItemEntityRenderer<>(this, itemRenderer, 1.0F, true));

@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class Generic3x3ContainerScreen extends ScreenWithHandler<Generic3x3ContainerScreenHandler> {
+public class Generic3x3ContainerScreen extends HandledScreen<Generic3x3ContainerScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/dispenser.png");
 
 	public Generic3x3ContainerScreen(Generic3x3ContainerScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -36,6 +36,6 @@ public class Generic3x3ContainerScreen extends ScreenWithHandler<Generic3x3Conta
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 	}
 }

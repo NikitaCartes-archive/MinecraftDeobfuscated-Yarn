@@ -15,8 +15,8 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
-	public static final Identifier SKIN = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
-	public static final Identifier[] SKIN_COLOR = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES
+	public static final Identifier TEXTURE = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
+	public static final Identifier[] COLORED_TEXTURES = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES
 		.stream()
 		.map(spriteIdentifier -> new Identifier("textures/" + spriteIdentifier.getTextureId().getPath() + ".png"))
 		.toArray(Identifier[]::new);
@@ -59,7 +59,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	public Identifier getTexture(ShulkerEntity shulkerEntity) {
-		return shulkerEntity.getColor() == null ? SKIN : SKIN_COLOR[shulkerEntity.getColor().getId()];
+		return shulkerEntity.getColor() == null ? TEXTURE : COLORED_TEXTURES[shulkerEntity.getColor().getId()];
 	}
 
 	protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {

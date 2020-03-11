@@ -90,8 +90,8 @@ public class HoglinBrain {
 				new PacifyTask(MemoryModuleType.NEAREST_REPELLENT, 200),
 				new BreedTask(EntityType.HOGLIN),
 				new RangedApproachTask(f * 1.8F),
-				new ConditionalTask<>(HoglinEntity::isAdult, new MeleeAttackTask(1.5, 40)),
-				new ConditionalTask<>(PassiveEntity::isBaby, new MeleeAttackTask(1.5, 15)),
+				new ConditionalTask<>(HoglinEntity::isAdult, new MeleeAttackTask(40)),
+				new ConditionalTask<>(PassiveEntity::isBaby, new MeleeAttackTask(15)),
 				new ForgetAttackTargetTask()
 			),
 			MemoryModuleType.ATTACK_TARGET
@@ -107,7 +107,7 @@ public class HoglinBrain {
 				GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, f, 15, false),
 				makeRandomWalkTask(hoglin.method_24915()),
 				new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0F), IntRange.between(30, 60)),
-				new ForgetTask(HoglinBrain::hasMoreHoglinsAround, MemoryModuleType.AVOID_TARGET)
+				new ForgetTask(HoglinBrain::method_25947, MemoryModuleType.AVOID_TARGET)
 			),
 			MemoryModuleType.AVOID_TARGET
 		);
@@ -131,7 +131,7 @@ public class HoglinBrain {
 
 	protected static void onAttacking(HoglinEntity hoglin, LivingEntity target) {
 		if (!hoglin.isBaby()) {
-			if (target.getType() == EntityType.PIGLIN && !hasMoreHoglinsAround(hoglin)) {
+			if (target.getType() == EntityType.PIGLIN && hasMoreHoglinsAround(hoglin)) {
 				avoid(hoglin, target);
 				askAdultsToAvoid(hoglin, target);
 			} else {
@@ -167,13 +167,17 @@ public class HoglinBrain {
 		return optional.isPresent() && ((BlockPos)optional.get()).isWithinDistance(pos, 8.0);
 	}
 
+	private static boolean method_25947(HoglinEntity hoglinEntity) {
+		return hoglinEntity.isAdult() && !hasMoreHoglinsAround(hoglinEntity);
+	}
+
 	private static boolean hasMoreHoglinsAround(HoglinEntity hoglin) {
 		if (hoglin.isBaby()) {
 			return false;
 		} else {
 			int i = (Integer)hoglin.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT).orElse(0);
 			int j = (Integer)hoglin.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT).orElse(0) + 1;
-			return j > i;
+			return i > j;
 		}
 	}
 

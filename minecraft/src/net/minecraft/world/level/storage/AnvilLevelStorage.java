@@ -53,35 +53,31 @@ public class AnvilLevelStorage {
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
 		LevelProperties levelProperties = LevelStorage.getLevelProperties(path, dataFixer, string);
+		long l = levelProperties != null ? levelProperties.getSeed() : 0L;
 		BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
 		BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
 		BiomeSource biomeSource;
 		if (levelProperties != null && levelProperties.getGeneratorType() == LevelGeneratorType.FLAT) {
-			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.PLAINS));
+			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties.getSeed()).setBiome(Biomes.PLAINS));
 		} else {
-			biomeSource = biomeSourceType2.applyConfig(biomeSourceType2.getConfig(levelProperties));
+			biomeSource = biomeSourceType2.applyConfig(biomeSourceType2.getConfig(l));
 		}
 
 		convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
 		convertRegions(
-			new File(file2, "region"),
-			list2,
-			biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.NETHER_WASTES)),
-			list.size(),
-			i,
-			progressListener
+			new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig(l).setBiome(Biomes.NETHER_WASTES)), list.size(), i, progressListener
 		);
 		convertRegions(
 			new File(file3, "region"),
 			list3,
-			biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties).setBiome(Biomes.THE_END)),
+			biomeSourceType.applyConfig(biomeSourceType.getConfig(l).setBiome(Biomes.THE_END)),
 			list.size() + list2.size(),
 			i,
 			progressListener
 		);
 		levelProperties.setVersion(19133);
 		if (levelProperties.getGeneratorType() == LevelGeneratorType.DEFAULT_1_1) {
-			levelProperties.setGeneratorType(LevelGeneratorType.DEFAULT);
+			levelProperties.setGeneratorOptions(LevelGeneratorType.DEFAULT.getDefaultOptions());
 		}
 
 		makeMcrLevelDatBackup(path, string);

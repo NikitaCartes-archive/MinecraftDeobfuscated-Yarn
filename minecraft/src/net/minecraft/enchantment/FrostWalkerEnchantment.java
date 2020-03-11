@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class FrostWalkerEnchantment extends Enchantment {
-	public FrostWalkerEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	public FrostWalkerEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.ARMOR_FEET, slotTypes);
 	}
 
@@ -37,7 +37,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 	}
 
 	public static void freezeWater(LivingEntity entity, World world, BlockPos blockPos, int level) {
-		if (entity.method_24828()) {
+		if (entity.isOnGround()) {
 			BlockState blockState = Blocks.FROSTED_ICE.getDefaultState();
 			float f = (float)Math.min(16, 2 + level);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -62,7 +62,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
-		return super.differs(other) && other != Enchantments.DEPTH_STRIDER;
+	public boolean canAccept(Enchantment other) {
+		return super.canAccept(other) && other != Enchantments.DEPTH_STRIDER;
 	}
 }

@@ -8,6 +8,8 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.JsonOps;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -37,14 +39,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.UncaughtExceptionHandler;
-import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.logging.UncaughtExceptionHandler;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
@@ -53,6 +55,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -172,9 +175,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 		try {
 			this.getNetworkIo().bind(inetAddress, this.getServerPort());
-		} catch (IOException var17) {
+		} catch (IOException var18) {
 			LOGGER.warn("**** FAILED TO BIND TO PORT!");
-			LOGGER.warn("The exception was: {}", var17.toString());
+			LOGGER.warn("The exception was: {}", var18.toString());
 			LOGGER.warn("Perhaps a server is already running on that port?");
 			return false;
 		}
@@ -206,7 +209,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 					if (n != 0L) {
 						m = n;
 					}
-				} catch (NumberFormatException var16) {
+				} catch (NumberFormatException var17) {
 					m = (long)string.hashCode();
 				}
 			}
@@ -217,14 +220,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			SkullBlockEntity.setSessionService(this.getSessionService());
 			UserCache.setUseRemote(this.isOnlineMode());
 			LOGGER.info("Preparing level \"{}\"", this.getLevelName());
-			JsonObject jsonObject = new JsonObject();
-			if (levelGeneratorType == LevelGeneratorType.FLAT) {
-				jsonObject.addProperty("flat_world_options", string2);
-			} else if (!string2.isEmpty()) {
-				jsonObject = JsonHelper.deserialize(string2);
-			}
-
-			this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
+			JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();
+			LevelGeneratorOptions levelGeneratorOptions = levelGeneratorType.loadOptions(new Dynamic<>(JsonOps.INSTANCE, jsonObject));
+			this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorOptions);
 			long o = Util.getMeasuringTimeNano() - l;
 			String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
 			LOGGER.info("Done ({})! For help, type \"help\"", string3);
@@ -317,13 +315,13 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		crashReport = super.populateCrashReport(crashReport);
-		crashReport.getSystemDetailsSection().add("Is Modded", (CrashCallable<String>)(() -> (String)this.method_24307().orElse("Unknown (can't tell)")));
+		crashReport.getSystemDetailsSection().add("Is Modded", (CrashCallable<String>)(() -> (String)this.getModdedStatusMessage().orElse("Unknown (can't tell)")));
 		crashReport.getSystemDetailsSection().add("Type", (CrashCallable<String>)(() -> "Dedicated Server (map_server.txt)"));
 		return crashReport;
 	}
 
 	@Override
-	public Optional<String> method_24307() {
+	public Optional<String> getModdedStatusMessage() {
 		String string = this.getServerModName();
 		return !"vanilla".equals(string) ? Optional.of("Definitely; Server brand changed to '" + string + "'") : Optional.empty();
 	}

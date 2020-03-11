@@ -190,7 +190,7 @@ public class ZombieEntity extends HostileEntity {
 
 	@Override
 	public void tick() {
-		if (!this.world.isClient && this.isAlive()) {
+		if (!this.world.isClient && this.isAlive() && !this.isAiDisabled()) {
 			if (this.isConvertingInWater()) {
 				this.ticksUntilWaterConversion--;
 				if (this.ticksUntilWaterConversion < 0) {

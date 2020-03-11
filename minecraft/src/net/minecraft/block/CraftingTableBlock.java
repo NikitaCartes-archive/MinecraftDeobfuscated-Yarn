@@ -1,9 +1,9 @@
 package net.minecraft.block;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.BlockContext;
-import net.minecraft.screen.CraftingTableScreenHandler;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CraftingTableBlock extends Block {
-	private static final Text CONTAINER_NAME = new TranslatableText("container.crafting");
+	private static final Text TITLE = new TranslatableText("container.crafting");
 
 	protected CraftingTableBlock(Block.Settings settings) {
 		super(settings);
@@ -26,16 +26,16 @@ public class CraftingTableBlock extends Block {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openHandledScreen(state.createContainerFactory(world, pos));
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	@Override
-	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(i, playerInventory, playerEntity) -> new CraftingTableScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new CraftingScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 }

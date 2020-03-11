@@ -15,6 +15,7 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +27,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
@@ -74,10 +75,10 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			return Optional.empty();
 		}
 	};
-	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableScreenHandlerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NameableScreenHandlerFactory>>() {
-		public Optional<NameableScreenHandlerFactory> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
+	private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NamedScreenHandlerFactory>> NAME_RETRIEVER = new DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Optional<NamedScreenHandlerFactory>>() {
+		public Optional<NamedScreenHandlerFactory> getFromBoth(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
 			final Inventory inventory = new DoubleInventory(chestBlockEntity, chestBlockEntity2);
-			return Optional.of(new NameableScreenHandlerFactory() {
+			return Optional.of(new NamedScreenHandlerFactory() {
 				@Nullable
 				@Override
 				public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
@@ -101,11 +102,11 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			});
 		}
 
-		public Optional<NameableScreenHandlerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
+		public Optional<NamedScreenHandlerFactory> getFrom(ChestBlockEntity chestBlockEntity) {
 			return Optional.of(chestBlockEntity);
 		}
 
-		public Optional<NameableScreenHandlerFactory> getFallback() {
+		public Optional<NamedScreenHandlerFactory> getFallback() {
 			return Optional.empty();
 		}
 	};
@@ -241,9 +242,9 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			NameableScreenHandlerFactory nameableScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
-			if (nameableScreenHandlerFactory != null) {
-				player.openHandledScreen(nameableScreenHandlerFactory);
+			NamedScreenHandlerFactory namedScreenHandlerFactory = this.createScreenHandlerFactory(state, world, pos);
+			if (namedScreenHandlerFactory != null) {
+				player.openHandledScreen(namedScreenHandlerFactory);
 				player.incrementStat(this.getOpenStat());
 				PiglinBrain.onGoldBlockBroken(player);
 			}
@@ -286,8 +287,8 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	@Nullable
 	@Override
-	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-		return (NameableScreenHandlerFactory)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+		return (NamedScreenHandlerFactory)this.getBlockEntitySource(state, world, pos, false).apply(NAME_RETRIEVER).orElse(null);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -365,7 +366,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 

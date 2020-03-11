@@ -151,11 +151,11 @@ public class PlayerListHud extends DrawableHelper {
 					this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
 					int y = 8 + (bl2 ? 8 : 0);
 					int z = 8 * (bl2 ? -1 : 1);
-					DrawableHelper.blit(w, x, 8, 8, 8.0F, (float)y, 8, z, 64, 64);
+					DrawableHelper.drawTexture(w, x, 8, 8, 8.0F, (float)y, 8, z, 64, 64);
 					if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
 						int aa = 8 + (bl2 ? 8 : 0);
 						int ab = 8 * (bl2 ? -1 : 1);
-						DrawableHelper.blit(w, x, 8, 8, 40.0F, (float)aa, 8, ab, 64, 64);
+						DrawableHelper.drawTexture(w, x, 8, 8, 40.0F, (float)aa, 8, ab, 64, 64);
 					}
 
 					w += 9;
@@ -194,7 +194,7 @@ public class PlayerListHud extends DrawableHelper {
 
 	protected void renderLatencyIcon(int i, int j, int y, PlayerListEntry playerEntry) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+		this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
 		int k = 0;
 		int l;
 		if (playerEntry.getLatency() < 0) {
@@ -212,14 +212,14 @@ public class PlayerListHud extends DrawableHelper {
 		}
 
 		this.setZOffset(this.getZOffset() + 100);
-		this.blit(j + i - 11, y, 0, 176 + l * 8, 10, 8);
+		this.drawTexture(j + i - 11, y, 0, 176 + l * 8, 10, 8);
 		this.setZOffset(this.getZOffset() - 100);
 	}
 
 	private void renderScoreboardObjective(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry) {
 		int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
 		if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
-			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
+			this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
 			long m = Util.getMeasuringTimeMs();
 			if (this.showTime == playerListEntry.method_2976()) {
 				if (l < playerListEntry.method_2973()) {
@@ -247,27 +247,27 @@ public class PlayerListHud extends DrawableHelper {
 				int p = MathHelper.floor(Math.min((float)(k - j - 4) / (float)o, 9.0F));
 				if (p > 3) {
 					for (int q = n; q < o; q++) {
-						this.blit(j + q * p, i, bl ? 25 : 16, 0, 9, 9);
+						this.drawTexture(j + q * p, i, bl ? 25 : 16, 0, 9, 9);
 					}
 
 					for (int q = 0; q < n; q++) {
-						this.blit(j + q * p, i, bl ? 25 : 16, 0, 9, 9);
+						this.drawTexture(j + q * p, i, bl ? 25 : 16, 0, 9, 9);
 						if (bl) {
 							if (q * 2 + 1 < playerListEntry.method_2960()) {
-								this.blit(j + q * p, i, 70, 0, 9, 9);
+								this.drawTexture(j + q * p, i, 70, 0, 9, 9);
 							}
 
 							if (q * 2 + 1 == playerListEntry.method_2960()) {
-								this.blit(j + q * p, i, 79, 0, 9, 9);
+								this.drawTexture(j + q * p, i, 79, 0, 9, 9);
 							}
 						}
 
 						if (q * 2 + 1 < l) {
-							this.blit(j + q * p, i, q >= 10 ? 160 : 52, 0, 9, 9);
+							this.drawTexture(j + q * p, i, q >= 10 ? 160 : 52, 0, 9, 9);
 						}
 
 						if (q * 2 + 1 == l) {
-							this.blit(j + q * p, i, q >= 10 ? 169 : 61, 0, 9, 9);
+							this.drawTexture(j + q * p, i, q >= 10 ? 169 : 61, 0, 9, 9);
 						}
 					}
 				} else {

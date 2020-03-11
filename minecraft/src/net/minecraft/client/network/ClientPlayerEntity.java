@@ -15,9 +15,9 @@ import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.JigsawBlockScreen;
 import net.minecraft.client.gui.screen.ingame.MinecartCommandBlockScreen;
-import net.minecraft.client.gui.screen.ingame.ScreenWithHandler;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.client.gui.screen.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
@@ -91,6 +91,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private float lastYaw;
 	private float lastPitch;
 	private boolean lastOnGround;
+	private boolean field_23093;
 	private boolean lastIsHoldingSneakKey;
 	private boolean lastSprinting;
 	private int ticksSinceLastPositionPacketSent;
@@ -596,9 +597,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public boolean isInSneakingPose() {
-		return !this.abilities.flying && !this.isSwimming() && this.wouldPoseNotCollide(EntityPose.CROUCHING)
-			? this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING)
-			: false;
+		return this.field_23093;
 	}
 
 	public boolean isHoldingSneakKey() {
@@ -634,6 +633,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl = this.input.jumping;
 		boolean bl2 = this.input.sneaking;
 		boolean bl3 = this.isWalking();
+		this.field_23093 = !this.abilities.flying
+			&& !this.isSwimming()
+			&& this.wouldPoseNotCollide(EntityPose.CROUCHING)
+			&& (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
 		this.input.tick(this.isHoldingSneakKey());
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
@@ -788,7 +791,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.lastNauseaStrength = this.nextNauseaStrength;
 		if (this.inNetherPortal) {
 			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
-				if (this.client.currentScreen instanceof ScreenWithHandler) {
+				if (this.client.currentScreen instanceof HandledScreen) {
 					this.closeHandledScreen();
 				}
 

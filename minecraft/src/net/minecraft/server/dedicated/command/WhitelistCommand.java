@@ -99,7 +99,7 @@ public class WhitelistCommand {
 		for (GameProfile gameProfile : targets) {
 			if (whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
-				whitelist.removeEntry(whitelistEntry);
+				whitelist.remove(whitelistEntry);
 				source.sendFeedback(new TranslatableText("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
 				i++;
 			}

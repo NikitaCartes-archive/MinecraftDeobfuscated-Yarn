@@ -28,11 +28,11 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 	private final Property levelCost = Property.create();
 
 	public AnvilScreenHandler(int syncId, PlayerInventory inventory) {
-		this(syncId, inventory, BlockContext.EMPTY);
+		this(syncId, inventory, ScreenHandlerContext.EMPTY);
 	}
 
-	public AnvilScreenHandler(int syncId, PlayerInventory inventory, BlockContext blockContext) {
-		super(ScreenHandlerType.ANVIL, syncId, inventory, blockContext);
+	public AnvilScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context) {
+		super(ScreenHandlerType.ANVIL, syncId, inventory, context);
 		this.addProperty(this.levelCost);
 	}
 
@@ -97,7 +97,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		} else {
 			ItemStack itemStack2 = itemStack.copy();
 			ItemStack itemStack3 = this.input.getInvStack(1);
-			Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack2);
+			Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack2);
 			j += itemStack.getRepairCost() + (itemStack3.isEmpty() ? 0 : itemStack3.getRepairCost());
 			this.repairItemUsage = 0;
 			if (!itemStack3.isEmpty()) {
@@ -142,7 +142,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 						}
 					}
 
-					Map<Enchantment, Integer> map2 = EnchantmentHelper.getEnchantments(itemStack3);
+					Map<Enchantment, Integer> map2 = EnchantmentHelper.get(itemStack3);
 					boolean bl2 = false;
 					boolean bl3 = false;
 
@@ -157,7 +157,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 							}
 
 							for (Enchantment enchantment2 : map.keySet()) {
-								if (enchantment2 != enchantment && !enchantment.isDifferent(enchantment2)) {
+								if (enchantment2 != enchantment && !enchantment.canCombine(enchantment2)) {
 									bl4 = false;
 									i++;
 								}
@@ -173,7 +173,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 								map.put(enchantment, r);
 								int s = 0;
-								switch (enchantment.getWeight()) {
+								switch (enchantment.getRarity()) {
 									case COMMON:
 										s = 1;
 										break;

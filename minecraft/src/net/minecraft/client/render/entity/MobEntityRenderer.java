@@ -24,7 +24,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 	}
 
 	protected boolean hasLabel(T mobEntity) {
-		return super.hasLabel(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.renderManager.targetedEntity);
+		return super.hasLabel(mobEntity) && (mobEntity.shouldRenderName() || mobEntity.hasCustomName() && mobEntity == this.dispatcher.targetedEntity);
 	}
 
 	public boolean shouldRender(T mobEntity, Frustum frustum, double d, double e, double f) {
@@ -80,7 +80,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float w = t * v;
 		float x = r * v;
 		int y = this.getBlockLight(mobEntity, f);
-		int z = this.renderManager.getRenderer(entity).getBlockLight(entity, f);
+		int z = this.dispatcher.getRenderer(entity).getBlockLight(entity, f);
 		int aa = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(mobEntity.getCameraPosVec(f)));
 		int ab = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(f)));
 		method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025F, 0.025F, w, x);

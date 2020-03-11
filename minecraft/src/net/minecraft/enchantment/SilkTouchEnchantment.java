@@ -3,7 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class SilkTouchEnchantment extends Enchantment {
-	protected SilkTouchEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	protected SilkTouchEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.DIGGER, slotTypes);
 	}
 
@@ -23,7 +23,7 @@ public class SilkTouchEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
-		return super.differs(other) && other != Enchantments.FORTUNE;
+	public boolean canAccept(Enchantment other) {
+		return super.canAccept(other) && other != Enchantments.FORTUNE;
 	}
 }

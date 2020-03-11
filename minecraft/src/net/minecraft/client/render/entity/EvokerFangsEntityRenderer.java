@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/illager/evoker_fangs.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/illager/evoker_fangs.png");
 	private final EvokerFangsEntityModel<EvokerFangsEntity> model = new EvokerFangsEntityModel<>();
 
 	public EvokerFangsEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -35,7 +35,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 			matrixStack.translate(0.0, -0.626F, 0.0);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			this.model.setAngles(evokerFangsEntity, h, 0.0F, 0.0F, evokerFangsEntity.yaw, evokerFangsEntity.pitch);
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(SKIN));
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));
 			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
 			super.render(evokerFangsEntity, f, g, matrixStack, vertexConsumerProvider, i);
@@ -43,6 +43,6 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 	}
 
 	public Identifier getTexture(EvokerFangsEntity evokerFangsEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 }

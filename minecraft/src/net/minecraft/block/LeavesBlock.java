@@ -14,6 +14,8 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -25,6 +27,11 @@ public class LeavesBlock extends Block {
 	public LeavesBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(PERSISTENT, Boolean.valueOf(false)));
+	}
+
+	@Override
+	public VoxelShape method_25959(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return VoxelShapes.empty();
 	}
 
 	@Override
@@ -65,7 +72,7 @@ public class LeavesBlock extends Block {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : Direction.values()) {
-			mutable.move(pos, direction);
+			mutable.set(pos, direction);
 			i = Math.min(i, getDistanceFromLog(world.getBlockState(mutable)) + 1);
 			if (i == 1) {
 				break;

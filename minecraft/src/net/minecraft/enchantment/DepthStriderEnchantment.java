@@ -3,7 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class DepthStriderEnchantment extends Enchantment {
-	public DepthStriderEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	public DepthStriderEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.ARMOR_FEET, slotTypes);
 	}
 
@@ -23,7 +23,7 @@ public class DepthStriderEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
-		return super.differs(other) && other != Enchantments.FROST_WALKER;
+	public boolean canAccept(Enchantment other) {
+		return super.canAccept(other) && other != Enchantments.FROST_WALKER;
 	}
 }

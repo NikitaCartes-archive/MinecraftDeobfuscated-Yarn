@@ -690,7 +690,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 		@Override
 		public boolean shouldContinue() {
-			return BeeEntity.this.navigation.method_23966();
+			return BeeEntity.this.navigation.isFollowingPath();
 		}
 
 		@Override
@@ -899,7 +899,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 				this.ticks++;
 				if (this.ticks > 600) {
 					BeeEntity.this.flowerPos = null;
-				} else if (!BeeEntity.this.navigation.method_23966()) {
+				} else if (!BeeEntity.this.navigation.isFollowingPath()) {
 					if (BeeEntity.this.isTooFar(BeeEntity.this.flowerPos)) {
 						BeeEntity.this.flowerPos = null;
 					} else {
@@ -957,7 +957,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 				this.ticks++;
 				if (this.ticks > 600) {
 					this.makeChosenHivePossibleHive();
-				} else if (!BeeEntity.this.navigation.method_23966()) {
+				} else if (!BeeEntity.this.navigation.isFollowingPath()) {
 					if (!BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 16)) {
 						if (BeeEntity.this.isTooFar(BeeEntity.this.hivePos)) {
 							this.reset();
@@ -1201,7 +1201,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 				for (int j = 0; (double)j < searchDistance; j++) {
 					for (int k = 0; k <= j; k = k > 0 ? -k : 1 - k) {
 						for (int l = k < j && k > -j ? j : 0; l <= j; l = l > 0 ? -l : 1 - l) {
-							mutable.setOffset(blockPos, k, i - 1, l);
+							mutable.set(blockPos, k, i - 1, l);
 							if (blockPos.isWithinDistance(mutable, searchDistance) && predicate.test(BeeEntity.this.world.getBlockState(mutable))) {
 								return Optional.of(mutable);
 							}

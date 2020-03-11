@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.source.BiomeSource;
 
 public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkGenerator<C>> implements ChunkGeneratorFactory<C, T> {
@@ -25,27 +25,27 @@ public class ChunkGeneratorType<C extends ChunkGeneratorConfig, T extends ChunkG
 	);
 	private final ChunkGeneratorFactory<C, T> factory;
 	private final boolean buffetScreenOption;
-	private final Supplier<C> settingsSupplier;
+	private final Supplier<C> configSupplier;
 
 	private static <C extends ChunkGeneratorConfig, T extends ChunkGenerator<C>> ChunkGeneratorType<C, T> register(
-		String string, ChunkGeneratorFactory<C, T> chunkGeneratorFactory, Supplier<C> supplier, boolean bl
+		String id, ChunkGeneratorFactory<C, T> factory, Supplier<C> configSupplier, boolean buffetScreenOption
 	) {
-		return Registry.register(Registry.CHUNK_GENERATOR_TYPE, string, new ChunkGeneratorType<>(chunkGeneratorFactory, bl, supplier));
+		return Registry.register(Registry.CHUNK_GENERATOR_TYPE, id, new ChunkGeneratorType<>(factory, buffetScreenOption, configSupplier));
 	}
 
-	public ChunkGeneratorType(ChunkGeneratorFactory<C, T> factory, boolean buffetScreenOption, Supplier<C> settingsSupplier) {
+	public ChunkGeneratorType(ChunkGeneratorFactory<C, T> factory, boolean buffetScreenOption, Supplier<C> configSupplier) {
 		this.factory = factory;
 		this.buffetScreenOption = buffetScreenOption;
-		this.settingsSupplier = settingsSupplier;
+		this.configSupplier = configSupplier;
 	}
 
 	@Override
-	public T create(World world, BiomeSource biomeSource, C chunkGeneratorConfig) {
-		return this.factory.create(world, biomeSource, chunkGeneratorConfig);
+	public T create(IWorld iWorld, BiomeSource biomeSource, C chunkGeneratorConfig) {
+		return this.factory.create(iWorld, biomeSource, chunkGeneratorConfig);
 	}
 
-	public C createSettings() {
-		return (C)this.settingsSupplier.get();
+	public C createConfig() {
+		return (C)this.configSupplier.get();
 	}
 
 	@Environment(EnvType.CLIENT)

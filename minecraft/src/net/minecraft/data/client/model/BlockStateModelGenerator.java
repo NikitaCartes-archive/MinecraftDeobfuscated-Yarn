@@ -3209,6 +3209,7 @@ public class BlockStateModelGenerator {
 		this.method_25622(Blocks.EMERALD_ORE, TexturedModel.CUBE_ALL);
 		this.method_25622(Blocks.EMERALD_BLOCK, TexturedModel.CUBE_ALL);
 		this.method_25622(Blocks.GOLD_ORE, TexturedModel.CUBE_ALL);
+		this.method_25622(Blocks.NETHER_GOLD_ORE, TexturedModel.CUBE_ALL);
 		this.method_25622(Blocks.GOLD_BLOCK, TexturedModel.CUBE_ALL);
 		this.method_25622(Blocks.IRON_ORE, TexturedModel.CUBE_ALL);
 		this.method_25622(Blocks.IRON_BLOCK, TexturedModel.CUBE_ALL);
@@ -3569,8 +3570,11 @@ public class BlockStateModelGenerator {
 		this.method_25537(Items.KELP);
 		this.method_25540(Blocks.KELP_PLANT);
 		this.method_25602(Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT, BlockStateModelGenerator.class_4913.field_22840);
+		this.method_25602(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, BlockStateModelGenerator.class_4913.field_22840);
 		this.method_25556(Blocks.WEEPING_VINES, "_plant");
 		this.method_25540(Blocks.WEEPING_VINES_PLANT);
+		this.method_25556(Blocks.TWISTING_VINES, "_plant");
+		this.method_25540(Blocks.TWISTING_VINES_PLANT);
 		this.method_25549(Blocks.BAMBOO_SAPLING, BlockStateModelGenerator.class_4913.field_22839, Texture.cross(Texture.getSubModelId(Blocks.BAMBOO, "_stage0")));
 		this.method_25670();
 		this.method_25548(Blocks.COBWEB, BlockStateModelGenerator.class_4913.field_22840);

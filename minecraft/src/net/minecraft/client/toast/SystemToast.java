@@ -29,7 +29,7 @@ public class SystemToast implements Toast {
 
 		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-		manager.blit(0, 0, 0, 64, 160, 32);
+		manager.drawTexture(0, 0, 0, 64, 160, 32);
 		if (this.description == null) {
 			manager.getGame().textRenderer.draw(this.title, 18.0F, 12.0F, -256);
 		} else {

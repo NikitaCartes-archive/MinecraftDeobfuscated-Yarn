@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.BlockSenses;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.HoglinEntity;
@@ -98,6 +97,6 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 	}
 
 	private static Optional<BlockPos> findSoulFire(ServerWorld world, LivingEntity entity) {
-		return BlockSenses.findBlock(entity.getSenseCenterPos(), 8, 4, blockPos -> world.getBlockState(blockPos).matches(BlockTags.PIGLIN_REPELLENTS));
+		return BlockPos.findClosest(entity.getSenseCenterPos(), 8, 4, blockPos -> world.getBlockState(blockPos).matches(BlockTags.PIGLIN_REPELLENTS));
 	}
 }

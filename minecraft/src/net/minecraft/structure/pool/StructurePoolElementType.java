@@ -1,6 +1,6 @@
 package net.minecraft.structure.pool;
 
-import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 
 public interface StructurePoolElementType extends DynamicDeserializer<StructurePoolElement> {

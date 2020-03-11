@@ -58,7 +58,7 @@ public abstract class DoorInteractGoal extends Goal {
 					PathNode pathNode = path.getNode(i);
 					this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
 					if (!(this.mob.squaredDistanceTo((double)this.doorPos.getX(), this.mob.getY(), (double)this.doorPos.getZ()) > 2.25)) {
-						this.doorValid = DoorBlock.method_24795(this.mob.world, this.doorPos);
+						this.doorValid = DoorBlock.isWoodenDoor(this.mob.world, this.doorPos);
 						if (this.doorValid) {
 							return true;
 						}
@@ -66,7 +66,7 @@ public abstract class DoorInteractGoal extends Goal {
 				}
 
 				this.doorPos = this.mob.getSenseCenterPos().up();
-				this.doorValid = DoorBlock.method_24795(this.mob.world, this.doorPos);
+				this.doorValid = DoorBlock.isWoodenDoor(this.mob.world, this.doorPos);
 				return this.doorValid;
 			} else {
 				return false;

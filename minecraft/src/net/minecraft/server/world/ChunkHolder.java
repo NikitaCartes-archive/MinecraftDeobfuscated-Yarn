@@ -84,8 +84,8 @@ public class ChunkHolder {
 		return completableFuture == null ? UNLOADED_CHUNK_FUTURE : completableFuture;
 	}
 
-	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> method_21737(ChunkStatus chunkStatus) {
-		return getTargetGenerationStatus(this.level).isAtLeast(chunkStatus) ? this.getFuture(chunkStatus) : UNLOADED_CHUNK_FUTURE;
+	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getNowFuture(ChunkStatus leastStatus) {
+		return getTargetGenerationStatus(this.level).isAtLeast(leastStatus) ? this.getFuture(leastStatus) : UNLOADED_CHUNK_FUTURE;
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> getTickingFuture() {

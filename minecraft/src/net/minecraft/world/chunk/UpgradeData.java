@@ -99,7 +99,7 @@ public class UpgradeData {
 				BlockState blockState2 = blockState;
 
 				for (Direction direction : directions) {
-					mutable.move(blockPos, direction);
+					mutable.set(blockPos, direction);
 					blockState2 = applyAdjacentBlock(blockState2, direction, world, blockPos, mutable);
 				}
 
@@ -136,7 +136,7 @@ public class UpgradeData {
 					BlockState blockState2 = blockState;
 
 					for (Direction direction : directions) {
-						mutable2.move(mutable, direction);
+						mutable2.set(mutable, direction);
 						if (mutable.getX() >> 4 == chunkPos.x && mutable.getZ() >> 4 == chunkPos.z) {
 							blockState2 = applyAdjacentBlock(blockState2, direction, iWorld, mutable, mutable2);
 						}
@@ -305,7 +305,7 @@ public class UpgradeData {
 							world.setBlockState(blockPos, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(j)), 18);
 							if (i != 7) {
 								for (Direction direction : DIRECTIONS) {
-									mutable.move(blockPos, direction);
+									mutable.set(blockPos, direction);
 									BlockState blockState2 = world.getBlockState(mutable);
 									if (blockState2.contains(Properties.DISTANCE_1_7) && (Integer)blockState.get(Properties.DISTANCE_1_7) > i) {
 										objectSet2.add(mutable.toImmutable());

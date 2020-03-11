@@ -63,7 +63,7 @@ public class SoulSandValleySurfaceBuilder extends SurfaceBuilder<TernarySurfaceC
 			BlockState blockState6 = chunk.getBlockState(mutable);
 			if (blockState5.getBlock() == blockState.getBlock() && (blockState6.isAir() || blockState6 == blockState2)) {
 				for (int u = 0; u < q; u++) {
-					mutable.setOffset(Direction.UP);
+					mutable.move(Direction.UP);
 					if (chunk.getBlockState(mutable).getBlock() != blockState.getBlock()) {
 						break;
 					}
@@ -82,7 +82,7 @@ public class SoulSandValleySurfaceBuilder extends SurfaceBuilder<TernarySurfaceC
 						chunk.setBlockState(mutable, blockState4, false);
 					}
 
-					mutable.setOffset(Direction.DOWN);
+					mutable.move(Direction.DOWN);
 				}
 			}
 

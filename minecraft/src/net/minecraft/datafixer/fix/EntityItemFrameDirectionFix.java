@@ -16,8 +16,8 @@ public class EntityItemFrameDirectionFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::fixDirection);
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), this::fixDirection);
 	}
 
 	private static byte updateDirection(byte b) {

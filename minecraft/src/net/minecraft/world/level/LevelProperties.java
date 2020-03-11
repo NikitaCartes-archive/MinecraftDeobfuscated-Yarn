@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.JsonOps;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -16,6 +15,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.NbtOps;
+import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtHelper;
@@ -39,8 +39,7 @@ public class LevelProperties {
 	private boolean versionSnapshot;
 	public static final Difficulty DEFAULT_DIFFICULTY = Difficulty.NORMAL;
 	private long randomSeed;
-	private LevelGeneratorType generatorType = LevelGeneratorType.DEFAULT;
-	private CompoundTag generatorOptions = new CompoundTag();
+	private LevelGeneratorOptions generatorOptions = LevelGeneratorType.DEFAULT.getDefaultOptions();
 	@Nullable
 	private String legacyCustomOptions;
 	private int spawnX;
@@ -52,7 +51,7 @@ public class LevelProperties {
 	private long sizeOnDisk;
 	@Nullable
 	private final DataFixer dataFixer;
-	private final int playerWorldId;
+	private final int dataVersion;
 	private boolean playerDataLoaded;
 	private CompoundTag playerData;
 	private String levelName;
@@ -85,197 +84,205 @@ public class LevelProperties {
 	private int wanderingTraderSpawnDelay;
 	private int wanderingTraderSpawnChance;
 	private UUID wanderingTraderId;
-	private Set<String> field_21837 = Sets.<String>newLinkedHashSet();
-	private boolean field_21838;
+	private Set<String> serverBrands = Sets.<String>newLinkedHashSet();
+	private boolean modded;
 	private final GameRules gameRules = new GameRules();
 	private final Timer<MinecraftServer> scheduledEvents = new Timer<>(TimerCallbackSerializer.INSTANCE);
 
 	protected LevelProperties() {
 		this.dataFixer = null;
-		this.playerWorldId = SharedConstants.getGameVersion().getWorldVersion();
-		this.setGeneratorOptions(new CompoundTag());
+		this.dataVersion = SharedConstants.getGameVersion().getWorldVersion();
 	}
 
-	public LevelProperties(CompoundTag compoundTag, DataFixer dataFixer, int i, @Nullable CompoundTag compoundTag2) {
+	public LevelProperties(CompoundTag tag, DataFixer dataFixer, int dataVersion, @Nullable CompoundTag playerData) {
 		this.dataFixer = dataFixer;
-		ListTag listTag = compoundTag.getList("ServerBrands", 8);
+		ListTag listTag = tag.getList("ServerBrands", 8);
 
-		for (int j = 0; j < listTag.size(); j++) {
-			this.field_21837.add(listTag.getString(j));
+		for (int i = 0; i < listTag.size(); i++) {
+			this.serverBrands.add(listTag.getString(i));
 		}
 
-		this.field_21838 = compoundTag.getBoolean("WasModded");
-		if (compoundTag.contains("Version", 10)) {
-			CompoundTag compoundTag3 = compoundTag.getCompound("Version");
-			this.versionName = compoundTag3.getString("Name");
-			this.versionId = compoundTag3.getInt("Id");
-			this.versionSnapshot = compoundTag3.getBoolean("Snapshot");
+		this.modded = tag.getBoolean("WasModded");
+		if (tag.contains("Version", 10)) {
+			CompoundTag compoundTag = tag.getCompound("Version");
+			this.versionName = compoundTag.getString("Name");
+			this.versionId = compoundTag.getInt("Id");
+			this.versionSnapshot = compoundTag.getBoolean("Snapshot");
 		}
 
-		this.randomSeed = compoundTag.getLong("RandomSeed");
-		if (compoundTag.contains("generatorName", 8)) {
-			String string = compoundTag.getString("generatorName");
-			this.generatorType = LevelGeneratorType.getTypeFromName(string);
-			if (this.generatorType == null) {
-				this.generatorType = LevelGeneratorType.DEFAULT;
-			} else if (this.generatorType == LevelGeneratorType.CUSTOMIZED) {
-				this.legacyCustomOptions = compoundTag.getString("generatorOptions");
-			} else if (this.generatorType.isVersioned()) {
-				int k = 0;
-				if (compoundTag.contains("generatorVersion", 99)) {
-					k = compoundTag.getInt("generatorVersion");
+		this.randomSeed = tag.getLong("RandomSeed");
+		if (tag.contains("generatorName", 8)) {
+			String string = tag.getString("generatorName");
+			LevelGeneratorType levelGeneratorType = LevelGeneratorType.getTypeFromName(string);
+			if (levelGeneratorType == null) {
+				levelGeneratorType = LevelGeneratorType.DEFAULT;
+			} else if (levelGeneratorType == LevelGeneratorType.CUSTOMIZED) {
+				this.legacyCustomOptions = tag.getString("generatorOptions");
+			} else if (levelGeneratorType.isVersioned()) {
+				int j = 0;
+				if (tag.contains("generatorVersion", 99)) {
+					j = tag.getInt("generatorVersion");
 				}
 
-				this.generatorType = this.generatorType.getTypeForVersion(k);
+				levelGeneratorType = levelGeneratorType.getTypeForVersion(j);
 			}
 
-			this.setGeneratorOptions(compoundTag.getCompound("generatorOptions"));
+			CompoundTag compoundTag2 = tag.getCompound("generatorOptions");
+			Dynamic<?> dynamic = new Dynamic<>(NbtOps.INSTANCE, compoundTag2);
+			Dynamic<?> dynamic2 = updateGeneratorOptionsData(levelGeneratorType, dynamic, dataVersion, dataFixer);
+			this.generatorOptions = levelGeneratorType.loadOptions(dynamic2);
 		}
 
-		this.gameMode = GameMode.byId(compoundTag.getInt("GameType"));
-		if (compoundTag.contains("legacy_custom_options", 8)) {
-			this.legacyCustomOptions = compoundTag.getString("legacy_custom_options");
+		this.gameMode = GameMode.byId(tag.getInt("GameType"));
+		if (tag.contains("legacy_custom_options", 8)) {
+			this.legacyCustomOptions = tag.getString("legacy_custom_options");
 		}
 
-		if (compoundTag.contains("MapFeatures", 99)) {
-			this.structures = compoundTag.getBoolean("MapFeatures");
+		if (tag.contains("MapFeatures", 99)) {
+			this.structures = tag.getBoolean("MapFeatures");
 		} else {
 			this.structures = true;
 		}
 
-		this.spawnX = compoundTag.getInt("SpawnX");
-		this.spawnY = compoundTag.getInt("SpawnY");
-		this.spawnZ = compoundTag.getInt("SpawnZ");
-		this.time = compoundTag.getLong("Time");
-		if (compoundTag.contains("DayTime", 99)) {
-			this.timeOfDay = compoundTag.getLong("DayTime");
+		this.spawnX = tag.getInt("SpawnX");
+		this.spawnY = tag.getInt("SpawnY");
+		this.spawnZ = tag.getInt("SpawnZ");
+		this.time = tag.getLong("Time");
+		if (tag.contains("DayTime", 99)) {
+			this.timeOfDay = tag.getLong("DayTime");
 		} else {
 			this.timeOfDay = this.time;
 		}
 
-		this.lastPlayed = compoundTag.getLong("LastPlayed");
-		this.sizeOnDisk = compoundTag.getLong("SizeOnDisk");
-		this.levelName = compoundTag.getString("LevelName");
-		this.version = compoundTag.getInt("version");
-		this.clearWeatherTime = compoundTag.getInt("clearWeatherTime");
-		this.rainTime = compoundTag.getInt("rainTime");
-		this.raining = compoundTag.getBoolean("raining");
-		this.thunderTime = compoundTag.getInt("thunderTime");
-		this.thundering = compoundTag.getBoolean("thundering");
-		this.hardcore = compoundTag.getBoolean("hardcore");
-		if (compoundTag.contains("initialized", 99)) {
-			this.initialized = compoundTag.getBoolean("initialized");
+		this.lastPlayed = tag.getLong("LastPlayed");
+		this.sizeOnDisk = tag.getLong("SizeOnDisk");
+		this.levelName = tag.getString("LevelName");
+		this.version = tag.getInt("version");
+		this.clearWeatherTime = tag.getInt("clearWeatherTime");
+		this.rainTime = tag.getInt("rainTime");
+		this.raining = tag.getBoolean("raining");
+		this.thunderTime = tag.getInt("thunderTime");
+		this.thundering = tag.getBoolean("thundering");
+		this.hardcore = tag.getBoolean("hardcore");
+		if (tag.contains("initialized", 99)) {
+			this.initialized = tag.getBoolean("initialized");
 		} else {
 			this.initialized = true;
 		}
 
-		if (compoundTag.contains("allowCommands", 99)) {
-			this.commandsAllowed = compoundTag.getBoolean("allowCommands");
+		if (tag.contains("allowCommands", 99)) {
+			this.commandsAllowed = tag.getBoolean("allowCommands");
 		} else {
 			this.commandsAllowed = this.gameMode == GameMode.CREATIVE;
 		}
 
-		this.playerWorldId = i;
-		if (compoundTag2 != null) {
-			this.playerData = compoundTag2;
+		this.dataVersion = dataVersion;
+		if (playerData != null) {
+			this.playerData = playerData;
 		}
 
-		if (compoundTag.contains("GameRules", 10)) {
-			this.gameRules.load(compoundTag.getCompound("GameRules"));
+		if (tag.contains("GameRules", 10)) {
+			this.gameRules.load(tag.getCompound("GameRules"));
 		}
 
-		if (compoundTag.contains("Difficulty", 99)) {
-			this.difficulty = Difficulty.byOrdinal(compoundTag.getByte("Difficulty"));
+		if (tag.contains("Difficulty", 99)) {
+			this.difficulty = Difficulty.byOrdinal(tag.getByte("Difficulty"));
 		}
 
-		if (compoundTag.contains("DifficultyLocked", 1)) {
-			this.difficultyLocked = compoundTag.getBoolean("DifficultyLocked");
+		if (tag.contains("DifficultyLocked", 1)) {
+			this.difficultyLocked = tag.getBoolean("DifficultyLocked");
 		}
 
-		if (compoundTag.contains("BorderCenterX", 99)) {
-			this.borderCenterX = compoundTag.getDouble("BorderCenterX");
+		if (tag.contains("BorderCenterX", 99)) {
+			this.borderCenterX = tag.getDouble("BorderCenterX");
 		}
 
-		if (compoundTag.contains("BorderCenterZ", 99)) {
-			this.borderCenterZ = compoundTag.getDouble("BorderCenterZ");
+		if (tag.contains("BorderCenterZ", 99)) {
+			this.borderCenterZ = tag.getDouble("BorderCenterZ");
 		}
 
-		if (compoundTag.contains("BorderSize", 99)) {
-			this.borderSize = compoundTag.getDouble("BorderSize");
+		if (tag.contains("BorderSize", 99)) {
+			this.borderSize = tag.getDouble("BorderSize");
 		}
 
-		if (compoundTag.contains("BorderSizeLerpTime", 99)) {
-			this.borderSizeLerpTime = compoundTag.getLong("BorderSizeLerpTime");
+		if (tag.contains("BorderSizeLerpTime", 99)) {
+			this.borderSizeLerpTime = tag.getLong("BorderSizeLerpTime");
 		}
 
-		if (compoundTag.contains("BorderSizeLerpTarget", 99)) {
-			this.borderSizeLerpTarget = compoundTag.getDouble("BorderSizeLerpTarget");
+		if (tag.contains("BorderSizeLerpTarget", 99)) {
+			this.borderSizeLerpTarget = tag.getDouble("BorderSizeLerpTarget");
 		}
 
-		if (compoundTag.contains("BorderSafeZone", 99)) {
-			this.borderSafeZone = compoundTag.getDouble("BorderSafeZone");
+		if (tag.contains("BorderSafeZone", 99)) {
+			this.borderSafeZone = tag.getDouble("BorderSafeZone");
 		}
 
-		if (compoundTag.contains("BorderDamagePerBlock", 99)) {
-			this.borderDamagePerBlock = compoundTag.getDouble("BorderDamagePerBlock");
+		if (tag.contains("BorderDamagePerBlock", 99)) {
+			this.borderDamagePerBlock = tag.getDouble("BorderDamagePerBlock");
 		}
 
-		if (compoundTag.contains("BorderWarningBlocks", 99)) {
-			this.borderWarningBlocks = compoundTag.getInt("BorderWarningBlocks");
+		if (tag.contains("BorderWarningBlocks", 99)) {
+			this.borderWarningBlocks = tag.getInt("BorderWarningBlocks");
 		}
 
-		if (compoundTag.contains("BorderWarningTime", 99)) {
-			this.borderWarningTime = compoundTag.getInt("BorderWarningTime");
+		if (tag.contains("BorderWarningTime", 99)) {
+			this.borderWarningTime = tag.getInt("BorderWarningTime");
 		}
 
-		if (compoundTag.contains("DimensionData", 10)) {
-			CompoundTag compoundTag3 = compoundTag.getCompound("DimensionData");
+		if (tag.contains("DimensionData", 10)) {
+			CompoundTag compoundTag = tag.getCompound("DimensionData");
 
-			for (String string2 : compoundTag3.getKeys()) {
-				this.worldData.put(DimensionType.byRawId(Integer.parseInt(string2)), compoundTag3.getCompound(string2));
+			for (String string2 : compoundTag.getKeys()) {
+				this.worldData.put(DimensionType.byRawId(Integer.parseInt(string2)), compoundTag.getCompound(string2));
 			}
 		}
 
-		if (compoundTag.contains("DataPacks", 10)) {
-			CompoundTag compoundTag3 = compoundTag.getCompound("DataPacks");
-			ListTag listTag2 = compoundTag3.getList("Disabled", 8);
+		if (tag.contains("DataPacks", 10)) {
+			CompoundTag compoundTag = tag.getCompound("DataPacks");
+			ListTag listTag2 = compoundTag.getList("Disabled", 8);
 
-			for (int l = 0; l < listTag2.size(); l++) {
-				this.disabledDataPacks.add(listTag2.getString(l));
+			for (int j = 0; j < listTag2.size(); j++) {
+				this.disabledDataPacks.add(listTag2.getString(j));
 			}
 
-			ListTag listTag3 = compoundTag3.getList("Enabled", 8);
+			ListTag listTag3 = compoundTag.getList("Enabled", 8);
 
-			for (int m = 0; m < listTag3.size(); m++) {
-				this.enabledDataPacks.add(listTag3.getString(m));
+			for (int k = 0; k < listTag3.size(); k++) {
+				this.enabledDataPacks.add(listTag3.getString(k));
 			}
 		}
 
-		if (compoundTag.contains("CustomBossEvents", 10)) {
-			this.customBossEvents = compoundTag.getCompound("CustomBossEvents");
+		if (tag.contains("CustomBossEvents", 10)) {
+			this.customBossEvents = tag.getCompound("CustomBossEvents");
 		}
 
-		if (compoundTag.contains("ScheduledEvents", 9)) {
-			this.scheduledEvents.fromTag(compoundTag.getList("ScheduledEvents", 10));
+		if (tag.contains("ScheduledEvents", 9)) {
+			this.scheduledEvents.fromTag(tag.getList("ScheduledEvents", 10));
 		}
 
-		if (compoundTag.contains("WanderingTraderSpawnDelay", 99)) {
-			this.wanderingTraderSpawnDelay = compoundTag.getInt("WanderingTraderSpawnDelay");
+		if (tag.contains("WanderingTraderSpawnDelay", 99)) {
+			this.wanderingTraderSpawnDelay = tag.getInt("WanderingTraderSpawnDelay");
 		}
 
-		if (compoundTag.contains("WanderingTraderSpawnChance", 99)) {
-			this.wanderingTraderSpawnChance = compoundTag.getInt("WanderingTraderSpawnChance");
+		if (tag.contains("WanderingTraderSpawnChance", 99)) {
+			this.wanderingTraderSpawnChance = tag.getInt("WanderingTraderSpawnChance");
 		}
 
-		if (compoundTag.contains("WanderingTraderId", 8)) {
-			this.wanderingTraderId = UUID.fromString(compoundTag.getString("WanderingTraderId"));
+		if (tag.contains("WanderingTraderId", 8)) {
+			this.wanderingTraderId = UUID.fromString(tag.getString("WanderingTraderId"));
 		}
 	}
 
-	public LevelProperties(LevelInfo levelInfo, String levelName) {
+	private static <T> Dynamic<T> updateGeneratorOptionsData(LevelGeneratorType type, Dynamic<T> dynamic, int dataVersion, DataFixer dataFixer) {
+		int i = Math.max(dataVersion, 2501);
+		Dynamic<T> dynamic2 = dynamic.merge(dynamic.createString("levelType"), dynamic.createString(type.getStoredName()));
+		return dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic2, i, SharedConstants.getGameVersion().getWorldVersion()).remove("levelType");
+	}
+
+	public LevelProperties(LevelInfo info, String levelName) {
 		this.dataFixer = null;
-		this.playerWorldId = SharedConstants.getGameVersion().getWorldVersion();
-		this.loadLevelInfo(levelInfo);
+		this.dataVersion = SharedConstants.getGameVersion().getWorldVersion();
+		this.loadLevelInfo(info);
 		this.levelName = levelName;
 		this.difficulty = DEFAULT_DIFFICULTY;
 		this.initialized = false;
@@ -286,8 +293,7 @@ public class LevelProperties {
 		this.gameMode = levelInfo.getGameMode();
 		this.structures = levelInfo.hasStructures();
 		this.hardcore = levelInfo.isHardcore();
-		this.generatorType = levelInfo.getGeneratorType();
-		this.setGeneratorOptions((CompoundTag)Dynamic.convert(JsonOps.INSTANCE, NbtOps.INSTANCE, levelInfo.getGeneratorOptions()));
+		this.generatorOptions = levelInfo.getGeneratorOptions();
 		this.commandsAllowed = levelInfo.allowCommands();
 	}
 
@@ -304,9 +310,9 @@ public class LevelProperties {
 
 	private void updateProperties(CompoundTag levelTag, CompoundTag playerTag) {
 		ListTag listTag = new ListTag();
-		this.field_21837.stream().map(StringTag::of).forEach(listTag::add);
+		this.serverBrands.stream().map(StringTag::of).forEach(listTag::add);
 		levelTag.put("ServerBrands", listTag);
-		levelTag.putBoolean("WasModded", this.field_21838);
+		levelTag.putBoolean("WasModded", this.modded);
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", SharedConstants.getGameVersion().getName());
 		compoundTag.putInt("Id", SharedConstants.getGameVersion().getWorldVersion());
@@ -314,10 +320,11 @@ public class LevelProperties {
 		levelTag.put("Version", compoundTag);
 		levelTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		levelTag.putLong("RandomSeed", this.randomSeed);
-		levelTag.putString("generatorName", this.generatorType.getStoredName());
-		levelTag.putInt("generatorVersion", this.generatorType.getVersion());
-		if (!this.generatorOptions.isEmpty()) {
-			levelTag.put("generatorOptions", this.generatorOptions);
+		levelTag.putString("generatorName", this.generatorOptions.getType().getStoredName());
+		levelTag.putInt("generatorVersion", this.generatorOptions.getType().getVersion());
+		CompoundTag compoundTag2 = (CompoundTag)this.generatorOptions.getDynamic().convert(NbtOps.INSTANCE).getValue();
+		if (!compoundTag2.isEmpty()) {
+			levelTag.put("generatorOptions", compoundTag2);
 		}
 
 		if (this.legacyCustomOptions != null) {
@@ -358,33 +365,33 @@ public class LevelProperties {
 
 		levelTag.putBoolean("DifficultyLocked", this.difficultyLocked);
 		levelTag.put("GameRules", this.gameRules.toNbt());
-		CompoundTag compoundTag2 = new CompoundTag();
+		CompoundTag compoundTag3 = new CompoundTag();
 
 		for (Entry<DimensionType, CompoundTag> entry : this.worldData.entrySet()) {
-			compoundTag2.put(String.valueOf(((DimensionType)entry.getKey()).getRawId()), (Tag)entry.getValue());
+			compoundTag3.put(String.valueOf(((DimensionType)entry.getKey()).getRawId()), (Tag)entry.getValue());
 		}
 
-		levelTag.put("DimensionData", compoundTag2);
+		levelTag.put("DimensionData", compoundTag3);
 		if (playerTag != null) {
 			levelTag.put("Player", playerTag);
 		}
 
-		CompoundTag compoundTag3 = new CompoundTag();
+		CompoundTag compoundTag4 = new CompoundTag();
 		ListTag listTag2 = new ListTag();
 
 		for (String string : this.enabledDataPacks) {
 			listTag2.add(StringTag.of(string));
 		}
 
-		compoundTag3.put("Enabled", listTag2);
+		compoundTag4.put("Enabled", listTag2);
 		ListTag listTag3 = new ListTag();
 
 		for (String string2 : this.disabledDataPacks) {
 			listTag3.add(StringTag.of(string2));
 		}
 
-		compoundTag3.put("Disabled", listTag3);
-		levelTag.put("DataPacks", compoundTag3);
+		compoundTag4.put("Disabled", listTag3);
+		levelTag.put("DataPacks", compoundTag4);
 		if (this.customBossEvents != null) {
 			levelTag.put("CustomBossEvents", this.customBossEvents);
 		}
@@ -427,12 +434,12 @@ public class LevelProperties {
 
 	private void loadPlayerData() {
 		if (!this.playerDataLoaded && this.playerData != null) {
-			if (this.playerWorldId < SharedConstants.getGameVersion().getWorldVersion()) {
+			if (this.dataVersion < SharedConstants.getGameVersion().getWorldVersion()) {
 				if (this.dataFixer == null) {
 					throw (NullPointerException)Util.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
 				}
 
-				this.playerData = NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.playerWorldId);
+				this.playerData = NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.dataVersion);
 			}
 
 			this.playerDataLoaded = true;
@@ -467,10 +474,10 @@ public class LevelProperties {
 		this.timeOfDay = timeOfDay;
 	}
 
-	public void setSpawnPos(BlockPos blockPos) {
-		this.spawnX = blockPos.getX();
-		this.spawnY = blockPos.getY();
-		this.spawnZ = blockPos.getZ();
+	public void setSpawnPos(BlockPos pos) {
+		this.spawnX = pos.getX();
+		this.spawnY = pos.getY();
+		this.spawnZ = pos.getZ();
 	}
 
 	public String getLevelName() {
@@ -559,19 +566,15 @@ public class LevelProperties {
 	}
 
 	public LevelGeneratorType getGeneratorType() {
-		return this.generatorType;
+		return this.generatorOptions.getType();
 	}
 
-	public void setGeneratorType(LevelGeneratorType levelGeneratorType) {
-		this.generatorType = levelGeneratorType;
-	}
-
-	public CompoundTag getGeneratorOptions() {
+	public LevelGeneratorOptions getGeneratorOptions() {
 		return this.generatorOptions;
 	}
 
-	public void setGeneratorOptions(CompoundTag compoundTag) {
-		this.generatorOptions = compoundTag;
+	public void setGeneratorOptions(LevelGeneratorOptions options) {
+		this.generatorOptions = options;
 	}
 
 	public boolean areCommandsAllowed() {
@@ -686,21 +689,25 @@ public class LevelProperties {
 		return this.scheduledEvents;
 	}
 
-	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Level name", (CrashCallable<String>)(() -> this.levelName));
-		crashReportSection.add("Level seed", (CrashCallable<String>)(() -> String.valueOf(this.randomSeed)));
-		crashReportSection.add(
+	public void populateCrashReport(CrashReportSection section) {
+		section.add("Level name", (CrashCallable<String>)(() -> this.levelName));
+		section.add("Level seed", (CrashCallable<String>)(() -> String.valueOf(this.randomSeed)));
+		section.add(
 			"Level generator",
 			(CrashCallable<String>)(() -> String.format(
-					"ID %02d - %s, ver %d. Features enabled: %b", this.generatorType.getId(), this.generatorType.getName(), this.generatorType.getVersion(), this.structures
+					"ID %02d - %s, ver %d. Features enabled: %b",
+					this.generatorOptions.getType().getId(),
+					this.generatorOptions.getType().getName(),
+					this.generatorOptions.getType().getVersion(),
+					this.structures
 				))
 		);
-		crashReportSection.add("Level generator options", (CrashCallable<String>)(() -> this.generatorOptions.toString()));
-		crashReportSection.add("Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.spawnX, this.spawnY, this.spawnZ)));
-		crashReportSection.add("Level time", (CrashCallable<String>)(() -> String.format("%d game time, %d day time", this.time, this.timeOfDay)));
-		crashReportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.field_21837)));
-		crashReportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.field_21838)));
-		crashReportSection.add("Level storage version", (CrashCallable<String>)(() -> {
+		section.add("Level generator options", (CrashCallable<String>)(() -> this.generatorOptions.getDynamic().toString()));
+		section.add("Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.spawnX, this.spawnY, this.spawnZ)));
+		section.add("Level time", (CrashCallable<String>)(() -> String.format("%d game time, %d day time", this.time, this.timeOfDay)));
+		section.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.serverBrands)));
+		section.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.modded)));
+		section.add("Level storage version", (CrashCallable<String>)(() -> {
 			String string = "Unknown?";
 
 			try {
@@ -716,13 +723,13 @@ public class LevelProperties {
 
 			return String.format("0x%05X - %s", this.version, string);
 		}));
-		crashReportSection.add(
+		section.add(
 			"Level weather",
 			(CrashCallable<String>)(() -> String.format(
 					"Rain time: %d (now: %b), thunder time: %d (now: %b)", this.rainTime, this.raining, this.thunderTime, this.thundering
 				))
 		);
-		crashReportSection.add(
+		section.add(
 			"Level game mode",
 			(CrashCallable<String>)(() -> String.format(
 					"Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.gameMode.getName(), this.gameMode.getId(), this.hardcore, this.commandsAllowed
@@ -730,13 +737,13 @@ public class LevelProperties {
 		);
 	}
 
-	public CompoundTag getWorldData(DimensionType dimensionType) {
-		CompoundTag compoundTag = (CompoundTag)this.worldData.get(dimensionType);
+	public CompoundTag getWorldData(DimensionType type) {
+		CompoundTag compoundTag = (CompoundTag)this.worldData.get(type);
 		return compoundTag == null ? new CompoundTag() : compoundTag;
 	}
 
-	public void setWorldData(DimensionType type, CompoundTag compoundTag) {
-		this.worldData.put(type, compoundTag);
+	public void setWorldData(DimensionType type, CompoundTag tag) {
+		this.worldData.put(type, tag);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -791,8 +798,8 @@ public class LevelProperties {
 		this.wanderingTraderId = wanderingTraderId;
 	}
 
-	public void method_24285(String string, boolean bl) {
-		this.field_21837.add(string);
-		this.field_21838 |= bl;
+	public void addServerBrand(String brand, boolean moddedMessagePresent) {
+		this.serverBrands.add(brand);
+		this.modded |= moddedMessagePresent;
 	}
 }

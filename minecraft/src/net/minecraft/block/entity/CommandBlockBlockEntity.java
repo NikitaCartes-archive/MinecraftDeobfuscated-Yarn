@@ -24,8 +24,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	private boolean needsUpdatePacket;
 	private final CommandBlockExecutor commandExecutor = new CommandBlockExecutor() {
 		@Override
-		public void setCommand(String string) {
-			super.setCommand(string);
+		public void setCommand(String command) {
+			super.setCommand(command);
 			CommandBlockBlockEntity.this.markDirty();
 		}
 

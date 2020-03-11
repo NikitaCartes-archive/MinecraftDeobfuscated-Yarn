@@ -45,7 +45,8 @@ public class BlockTags {
 	public static final Tag<Block> FENCES = register("fences");
 	public static final Tag<Block> TALL_FLOWERS = register("tall_flowers");
 	public static final Tag<Block> FLOWERS = register("flowers");
-	public static final Tag<Block> SHULKER_BOXES = register("shulker_boxes");
+	public static final Tag<Block> PIGLIN_REPELLENTS = register("piglin_repellents");
+	public static final Tag<Block> GOLD_ORES = register("gold_ores");
 	public static final Tag<Block> FLOWER_POTS = register("flower_pots");
 	public static final Tag<Block> ENDERMAN_HOLDABLE = register("enderman_holdable");
 	public static final Tag<Block> ICE = register("ice");
@@ -71,9 +72,10 @@ public class BlockTags {
 	public static final Tag<Block> NYLIUM = register("nylium");
 	public static final Tag<Block> WART_BLOCKS = register("wart_blocks");
 	public static final Tag<Block> BEACON_BASE_BLOCKS = register("beacon_base_blocks");
+	public static final Tag<Block> SOUL_SPEED_BLOCKS = register("soul_speed_blocks");
 	public static final Tag<Block> WALL_POST_OVERRIDE = register("wall_post_override");
 	public static final Tag<Block> CLIMBABLE = register("climbable");
-	public static final Tag<Block> PIGLIN_REPELLENTS = register("piglin_repellents");
+	public static final Tag<Block> SHULKER_BOXES = register("shulker_boxes");
 	public static final Tag<Block> HOGLIN_REPELLENTS = register("hoglin_repellents");
 
 	public static void setContainer(TagContainer<Block> container) {

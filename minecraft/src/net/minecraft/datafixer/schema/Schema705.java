@@ -16,7 +16,7 @@ public class Schema705 extends IdentifierNormalizingSchema {
 	protected static final HookFunction field_5746 = new HookFunction() {
 		@Override
 		public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-			return Schema99.method_5359(new Dynamic<>(dynamicOps, object), Schema704.field_5744, "minecraft:armor_stand");
+			return Schema99.method_5359(new Dynamic<>(dynamicOps, object), Schema704.BLOCK_RENAMES, "minecraft:armor_stand");
 		}
 	};
 
@@ -221,9 +221,9 @@ public class Schema705 extends IdentifierNormalizingSchema {
 	}
 
 	@Override
-	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
-		super.registerTypes(schema, map, map2);
-		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), map));
+	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
+		super.registerTypes(schema, entityTypes, blockEntityTypes);
+		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.namespacedString(), entityTypes));
 		schema.registerType(
 			true,
 			TypeReferences.ITEM_STACK,

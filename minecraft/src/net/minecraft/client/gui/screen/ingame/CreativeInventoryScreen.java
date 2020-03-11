@@ -41,9 +41,9 @@ import net.minecraft.tag.TagContainer;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 
@@ -583,7 +583,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		if (this.deleteItemSlot != null
 			&& selectedTab == ItemGroup.INVENTORY.getIndex()
-			&& this.isPointWithinBounds(this.deleteItemSlot.xPosition, this.deleteItemSlot.yPosition, 16, 16, (double)mouseX, (double)mouseY)) {
+			&& this.isPointWithinBounds(this.deleteItemSlot.x, this.deleteItemSlot.y, 16, 16, (double)mouseX, (double)mouseY)) {
 			this.renderTooltip(I18n.translate("inventory.binSlot"), mouseX, mouseY);
 		}
 
@@ -606,7 +606,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			Item item = stack.getItem();
 			ItemGroup itemGroup = item.getGroup();
 			if (itemGroup == null && item == Items.ENCHANTED_BOOK) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack);
+				Map<Enchantment, Integer> map = EnchantmentHelper.get(stack);
 				if (map.size() == 1) {
 					Enchantment enchantment = (Enchantment)map.keySet().iterator().next();
 
@@ -655,7 +655,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		this.client.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
-		this.blit(this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		this.searchBox.render(mouseX, mouseY, delta);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = this.x + 175;
@@ -663,7 +663,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		int k = j + 112;
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		if (itemGroup.hasScrollbar()) {
-			this.blit(i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
+			this.drawTexture(i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
 		}
 
 		this.renderTabIcon(itemGroup);
@@ -741,7 +741,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			m += this.backgroundHeight - 4;
 		}
 
-		this.blit(l, m, j, k, 28, 32);
+		this.drawTexture(l, m, j, k, 28, 32);
 		this.setZOffset(100);
 		this.itemRenderer.zOffset = 100.0F;
 		l += 6;
@@ -832,9 +832,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		@Override
-		public ItemStack transferSlot(PlayerEntity player, int invSlot) {
-			if (invSlot >= this.slots.size() - 9 && invSlot < this.slots.size()) {
-				Slot slot = (Slot)this.slots.get(invSlot);
+		public ItemStack transferSlot(PlayerEntity player, int index) {
+			if (index >= this.slots.size() - 9 && index < this.slots.size()) {
+				Slot slot = (Slot)this.slots.get(index);
 				if (slot != null && slot.hasStack()) {
 					slot.setStack(ItemStack.EMPTY);
 				}
@@ -884,8 +884,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		@Override
-		public void setStack(ItemStack itemStack) {
-			this.slot.setStack(itemStack);
+		public void setStack(ItemStack stack) {
+			this.slot.setStack(stack);
 		}
 
 		@Override
@@ -899,8 +899,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		@Override
-		public int getMaxStackAmount(ItemStack itemStack) {
-			return this.slot.getMaxStackAmount(itemStack);
+		public int getMaxStackAmount(ItemStack stack) {
+			return this.slot.getMaxStackAmount(stack);
 		}
 
 		@Nullable

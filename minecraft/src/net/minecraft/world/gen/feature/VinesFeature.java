@@ -25,7 +25,7 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int i = blockPos.getY(); i < 256; i++) {
 			mutable.set(blockPos);
-			mutable.setOffset(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
+			mutable.move(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
 			mutable.setY(i);
 			if (iWorld.isAir(mutable)) {
 				for (Direction direction : DIRECTIONS) {

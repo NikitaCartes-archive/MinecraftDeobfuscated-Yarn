@@ -99,9 +99,9 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
-import net.minecraft.screen.CraftingScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -113,11 +113,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ChatUtil;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -760,7 +760,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								this.player.fallDistance = 0.0F;
 							}
 
-							if (this.player.method_24828() && !packet.isOnGround() && n > 0.0) {
+							if (this.player.isOnGround() && !packet.isOnGround() && n > 0.0) {
 								this.player.jump();
 							}
 
@@ -802,7 +802,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
 							this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 							this.player.handleFall(this.player.getY() - g, packet.isOnGround());
-							this.player.method_24830(packet.isOnGround());
+							this.player.setOnGround(packet.isOnGround());
 							this.updatedX = this.player.getX();
 							this.updatedY = this.player.getY();
 							this.updatedZ = this.player.getZ();
@@ -1175,7 +1175,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				this.player.onHandlerRegistered(this.player.currentScreenHandler, defaultedList);
 			} else {
 				ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
-				if (ItemStack.areEqualIgnoreDamage(packet.getStack(), itemStack)) {
+				if (ItemStack.areEqual(packet.getStack(), itemStack)) {
 					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getTransactionId(), true));
 					this.player.field_13991 = true;
 					this.player.currentScreenHandler.sendContentUpdates();
@@ -1205,11 +1205,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		if (!this.player.isSpectator()
 			&& this.player.currentScreenHandler.syncId == packet.getSyncId()
 			&& this.player.currentScreenHandler.isNotRestricted(this.player)
-			&& this.player.currentScreenHandler instanceof CraftingScreenHandler) {
+			&& this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler) {
 			this.server
 				.getRecipeManager()
 				.get(packet.getRecipe())
-				.ifPresent(recipe -> ((CraftingScreenHandler)this.player.currentScreenHandler).fillInputSlots(packet.shouldCraftAll(), recipe, this.player));
+				.ifPresent(recipe -> ((AbstractRecipeScreenHandler)this.player.currentScreenHandler).fillInputSlots(packet.shouldCraftAll(), recipe, this.player));
 		}
 	}
 

@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class Schema702 extends Schema {
-	public Schema702(int i, Schema schema) {
-		super(i, schema);
+	public Schema702(int versionKey, Schema parent) {
+		super(versionKey, parent);
 	}
 
 	protected static void method_5292(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {

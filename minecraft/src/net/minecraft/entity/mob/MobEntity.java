@@ -46,6 +46,7 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.loot.context.LootContext;
@@ -59,9 +60,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Arm;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
@@ -187,6 +188,10 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public boolean canTarget(EntityType<?> type) {
 		return type != EntityType.GHAST;
+	}
+
+	public boolean method_25938(RangedWeaponItem rangedWeaponItem) {
+		return false;
 	}
 
 	public void onEatingGrass() {
@@ -512,17 +517,20 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	protected void equipLootStack(EquipmentSlot slot, ItemStack stack) {
-		this.equipStack(slot, stack);
-		switch (slot.getType()) {
+	protected void equipLootStack(EquipmentSlot equipmentSlot, ItemStack stack) {
+		this.equipStack(equipmentSlot, stack);
+		this.method_25939(equipmentSlot);
+		this.persistent = true;
+	}
+
+	public void method_25939(EquipmentSlot equipmentSlot) {
+		switch (equipmentSlot.getType()) {
 			case HAND:
-				this.handDropChances[slot.getEntitySlotId()] = 2.0F;
+				this.handDropChances[equipmentSlot.getEntitySlotId()] = 2.0F;
 				break;
 			case ARMOR:
-				this.armorDropChances[slot.getEntitySlotId()] = 2.0F;
+				this.armorDropChances[equipmentSlot.getEntitySlotId()] = 2.0F;
 		}
-
-		this.persistent = true;
 	}
 
 	protected boolean isBetterItemFor(ItemStack current, ItemStack previous, EquipmentSlot slot) {

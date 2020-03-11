@@ -14,8 +14,8 @@ public class RecipeRenameFix extends DataFix {
 	private final String name;
 	private final Function<String, String> renamer;
 
-	public RecipeRenameFix(Schema schema, boolean bl, String name, Function<String, String> renamer) {
-		super(schema, bl);
+	public RecipeRenameFix(Schema outputSchema, boolean changesType, String name, Function<String, String> renamer) {
+		super(outputSchema, changesType);
 		this.name = name;
 		this.renamer = renamer;
 	}

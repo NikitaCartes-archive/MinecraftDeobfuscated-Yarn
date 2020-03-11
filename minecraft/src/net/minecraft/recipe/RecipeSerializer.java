@@ -1,8 +1,8 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public interface RecipeSerializer<T extends Recipe<?>> {

@@ -1,6 +1,6 @@
 package net.minecraft.structure.processor;
 
-import net.minecraft.util.DynamicDeserializer;
+import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 
 public interface StructureProcessorType extends DynamicDeserializer<StructureProcessor> {

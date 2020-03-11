@@ -89,7 +89,7 @@ public class ItemPredicate {
 			return false;
 		} else {
 			if (this.enchantments.length > 0) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack.getEnchantments());
+				Map<Enchantment, Integer> map = EnchantmentHelper.fromTag(stack.getEnchantments());
 
 				for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
 					if (!enchantmentPredicate.test(map)) {
@@ -99,7 +99,7 @@ public class ItemPredicate {
 			}
 
 			if (this.storedEnchantments.length > 0) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(EnchantedBookItem.getEnchantmentTag(stack));
+				Map<Enchantment, Integer> map = EnchantmentHelper.fromTag(EnchantedBookItem.getEnchantmentTag(stack));
 
 				for (EnchantmentPredicate enchantmentPredicatex : this.storedEnchantments) {
 					if (!enchantmentPredicatex.test(map)) {

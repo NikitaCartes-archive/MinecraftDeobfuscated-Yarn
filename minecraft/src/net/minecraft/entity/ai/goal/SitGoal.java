@@ -23,7 +23,7 @@ public class SitGoal extends Goal {
 			return false;
 		} else if (this.tameable.isInsideWaterOrBubbleColumn()) {
 			return false;
-		} else if (!this.tameable.method_24828()) {
+		} else if (!this.tameable.isOnGround()) {
 			return false;
 		} else {
 			LivingEntity livingEntity = this.tameable.getOwner();

@@ -10,17 +10,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public class Slot {
-	private final int invSlot;
+	private final int index;
 	public final Inventory inventory;
 	public int id;
-	public final int xPosition;
-	public final int yPosition;
+	public final int x;
+	public final int y;
 
-	public Slot(Inventory inventory, int invSlot, int xPosition, int yPosition) {
+	public Slot(Inventory inventory, int index, int x, int y) {
 		this.inventory = inventory;
-		this.invSlot = invSlot;
-		this.xPosition = xPosition;
-		this.yPosition = yPosition;
+		this.index = index;
+		this.x = x;
+		this.y = y;
 	}
 
 	public void onStackChanged(ItemStack originalItem, ItemStack itemStack) {
@@ -49,15 +49,15 @@ public class Slot {
 	}
 
 	public ItemStack getStack() {
-		return this.inventory.getInvStack(this.invSlot);
+		return this.inventory.getInvStack(this.index);
 	}
 
 	public boolean hasStack() {
 		return !this.getStack().isEmpty();
 	}
 
-	public void setStack(ItemStack itemStack) {
-		this.inventory.setInvStack(this.invSlot, itemStack);
+	public void setStack(ItemStack stack) {
+		this.inventory.setInvStack(this.index, stack);
 		this.markDirty();
 	}
 
@@ -69,7 +69,7 @@ public class Slot {
 		return this.inventory.getInvMaxStackAmount();
 	}
 
-	public int getMaxStackAmount(ItemStack itemStack) {
+	public int getMaxStackAmount(ItemStack stack) {
 		return this.getMaxStackAmount();
 	}
 
@@ -80,7 +80,7 @@ public class Slot {
 	}
 
 	public ItemStack takeStack(int amount) {
-		return this.inventory.takeInvStack(this.invSlot, amount);
+		return this.inventory.takeInvStack(this.index, amount);
 	}
 
 	public boolean canTakeItems(PlayerEntity playerEntity) {

@@ -8,14 +8,17 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 
-public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock {
+public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock implements Fertilizable {
 	public static final IntProperty AGE = Properties.AGE_25;
 	private final double growthChance;
 
-	protected AbstractPlantStemBlock(Block.Settings settings, Direction growthDirection, boolean tickWater, double growthChance) {
-		super(settings, growthDirection, tickWater);
+	protected AbstractPlantStemBlock(Block.Settings settings, Direction growthDirection, VoxelShape outlineShape, boolean tickWater, double growthChance) {
+		super(settings, growthDirection, outlineShape, tickWater);
 		this.growthChance = growthChance;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
@@ -58,6 +61,28 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(AGE);
+	}
+
+	@Override
+	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+		return this.chooseStemState(world.getBlockState(pos.offset(this.growthDirection)));
+	}
+
+	@Override
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+		return true;
+	}
+
+	@Override
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+		BlockPos blockPos = pos.offset(this.growthDirection);
+		int i = Math.min((Integer)state.get(AGE) + 1, 25);
+
+		for (double d = 1.0; this.chooseStemState(world.getBlockState(blockPos)) && random.nextDouble() < d; d *= 0.94) {
+			world.setBlockState(blockPos, state.with(AGE, Integer.valueOf(i)));
+			blockPos = blockPos.offset(this.growthDirection);
+			i = Math.min(i + 1, 25);
+		}
 	}
 
 	protected abstract boolean chooseStemState(BlockState state);

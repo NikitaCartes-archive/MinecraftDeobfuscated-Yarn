@@ -11,14 +11,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/fish/cod.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/fish/cod.png");
 
 	public CodEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new CodEntityModel<>(), 0.3F);
 	}
 
 	public Identifier getTexture(CodEntity codEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 
 	protected void setupTransforms(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {

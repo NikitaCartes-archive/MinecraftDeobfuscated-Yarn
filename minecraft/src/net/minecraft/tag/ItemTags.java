@@ -45,6 +45,8 @@ public class ItemTags {
 	public static final Tag<Item> FENCES = register("fences");
 	public static final Tag<Item> TALL_FLOWERS = register("tall_flowers");
 	public static final Tag<Item> FLOWERS = register("flowers");
+	public static final Tag<Item> PIGLIN_REPELLENTS = register("piglin_repellents");
+	public static final Tag<Item> GOLD_ORES = register("gold_ores");
 	public static final Tag<Item> BOATS = register("boats");
 	public static final Tag<Item> FISHES = register("fishes");
 	public static final Tag<Item> SIGNS = register("signs");

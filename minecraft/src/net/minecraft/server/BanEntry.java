@@ -14,36 +14,36 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	protected final Date expiryDate;
 	protected final String reason;
 
-	public BanEntry(T object, @Nullable Date creationDate, @Nullable String source, @Nullable Date expiryDate, @Nullable String reason) {
-		super(object);
+	public BanEntry(T key, @Nullable Date creationDate, @Nullable String source, @Nullable Date expiryDate, @Nullable String reason) {
+		super(key);
 		this.creationDate = creationDate == null ? new Date() : creationDate;
 		this.source = source == null ? "(Unknown)" : source;
 		this.expiryDate = expiryDate;
 		this.reason = reason == null ? "Banned by an operator." : reason;
 	}
 
-	protected BanEntry(T object, JsonObject jsonObject) {
-		super(object);
+	protected BanEntry(T key, JsonObject json) {
+		super(key);
 
 		Date date;
 		try {
-			date = jsonObject.has("created") ? DATE_FORMAT.parse(jsonObject.get("created").getAsString()) : new Date();
+			date = json.has("created") ? DATE_FORMAT.parse(json.get("created").getAsString()) : new Date();
 		} catch (ParseException var7) {
 			date = new Date();
 		}
 
 		this.creationDate = date;
-		this.source = jsonObject.has("source") ? jsonObject.get("source").getAsString() : "(Unknown)";
+		this.source = json.has("source") ? json.get("source").getAsString() : "(Unknown)";
 
 		Date date2;
 		try {
-			date2 = jsonObject.has("expires") ? DATE_FORMAT.parse(jsonObject.get("expires").getAsString()) : null;
+			date2 = json.has("expires") ? DATE_FORMAT.parse(json.get("expires").getAsString()) : null;
 		} catch (ParseException var6) {
 			date2 = null;
 		}
 
 		this.expiryDate = date2;
-		this.reason = jsonObject.has("reason") ? jsonObject.get("reason").getAsString() : "Banned by an operator.";
+		this.reason = json.has("reason") ? json.get("reason").getAsString() : "Banned by an operator.";
 	}
 
 	public String getSource() {
@@ -66,10 +66,10 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	}
 
 	@Override
-	protected void method_24896(JsonObject jsonObject) {
-		jsonObject.addProperty("created", DATE_FORMAT.format(this.creationDate));
-		jsonObject.addProperty("source", this.source);
-		jsonObject.addProperty("expires", this.expiryDate == null ? "forever" : DATE_FORMAT.format(this.expiryDate));
-		jsonObject.addProperty("reason", this.reason);
+	protected void fromJson(JsonObject json) {
+		json.addProperty("created", DATE_FORMAT.format(this.creationDate));
+		json.addProperty("source", this.source);
+		json.addProperty("expires", this.expiryDate == null ? "forever" : DATE_FORMAT.format(this.expiryDate));
+		json.addProperty("reason", this.reason);
 	}
 }

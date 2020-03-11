@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Schema99 extends Schema {
-	private static final Logger field_5749 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<String, String> field_5748 = DataFixUtils.make(Maps.<String, String>newHashMap(), hashMap -> {
 		hashMap.put("minecraft:furnace", "Furnace");
 		hashMap.put("minecraft:lit_furnace", "Furnace");
@@ -61,16 +61,16 @@ public class Schema99 extends Schema {
 		}
 	};
 
-	public Schema99(int i, Schema schema) {
-		super(i, schema);
+	public Schema99(int versionKey, Schema parent) {
+		super(versionKey, parent);
 	}
 
-	protected static TypeTemplate method_5353(Schema schema) {
+	protected static TypeTemplate targetEquipment(Schema schema) {
 		return DSL.optionalFields("Equipment", DSL.list(TypeReferences.ITEM_STACK.in(schema)));
 	}
 
 	protected static void method_5339(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> method_5353(schema)));
+		schema.register(map, string, (Supplier<TypeTemplate>)(() -> targetEquipment(schema)));
 	}
 
 	protected static void method_5368(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
@@ -161,7 +161,7 @@ public class Schema99 extends Schema {
 		method_5339(schema, map, "Ghast");
 		method_5339(schema, map, "PigZombie");
 		schema.register(
-			map, "Enderman", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), method_5353(schema)))
+			map, "Enderman", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), targetEquipment(schema)))
 		);
 		method_5339(schema, map, "CaveSpider");
 		method_5339(schema, map, "Silverfish");
@@ -193,7 +193,7 @@ public class Schema99 extends Schema {
 					TypeReferences.ITEM_STACK.in(schema),
 					"SaddleItem",
 					TypeReferences.ITEM_STACK.in(schema),
-					method_5353(schema)
+					targetEquipment(schema)
 				))
 		);
 		method_5339(schema, map, "Rabbit");
@@ -212,7 +212,7 @@ public class Schema99 extends Schema {
 							)
 						)
 					),
-					method_5353(schema)
+					targetEquipment(schema)
 				))
 		);
 		schema.registerSimple(map, "EnderCrystal");
@@ -256,7 +256,7 @@ public class Schema99 extends Schema {
 	}
 
 	@Override
-	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
+	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
 		schema.registerType(false, TypeReferences.LEVEL, DSL::remainder);
 		schema.registerType(
 			false,
@@ -278,12 +278,12 @@ public class Schema99 extends Schema {
 					)
 				)
 		);
-		schema.registerType(true, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), map2));
+		schema.registerType(true, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), blockEntityTypes));
 		schema.registerType(
 			true, TypeReferences.ENTITY_TREE, () -> DSL.optionalFields("Riding", TypeReferences.ENTITY_TREE.in(schema), TypeReferences.ENTITY.in(schema))
 		);
 		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(DSL.namespacedString()));
-		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), map));
+		schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", DSL.string(), entityTypes));
 		schema.registerType(
 			true,
 			TypeReferences.ITEM_STACK,
@@ -340,7 +340,7 @@ public class Schema99 extends Schema {
 							String stringxx = dynamic.get("id").asString("");
 							String string2 = (String)map.get(IdentifierNormalizingSchema.normalize(stringxx));
 							if (string2 == null) {
-								field_5749.warn("Unable to resolve BlockEntity for ItemStack: {}", stringxx);
+								LOGGER.warn("Unable to resolve BlockEntity for ItemStack: {}", stringxx);
 								return dynamic2x;
 							} else {
 								return dynamic2x.set("id", dynamic.createString(string2));

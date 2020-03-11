@@ -10,8 +10,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int entityId;

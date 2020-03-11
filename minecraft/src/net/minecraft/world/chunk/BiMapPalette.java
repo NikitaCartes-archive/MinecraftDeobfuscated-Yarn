@@ -6,9 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.IdList;
-import net.minecraft.util.Int2ObjectBiMap;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.collection.IdList;
+import net.minecraft.util.collection.Int2ObjectBiMap;
 
 public class BiMapPalette<T> implements Palette<T> {
 	private final IdList<T> idList;

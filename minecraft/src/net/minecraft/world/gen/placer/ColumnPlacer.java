@@ -31,7 +31,7 @@ public class ColumnPlacer extends BlockPlacer {
 
 		for (int j = 0; j < i; j++) {
 			iWorld.setBlockState(mutable, blockState, 2);
-			mutable.setOffset(Direction.UP);
+			mutable.move(Direction.UP);
 		}
 	}
 

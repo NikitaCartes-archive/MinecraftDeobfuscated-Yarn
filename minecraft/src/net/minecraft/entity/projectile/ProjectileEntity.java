@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -49,7 +47,6 @@ import net.minecraft.world.World;
 
 public abstract class ProjectileEntity extends Projectile {
 	private static final TrackedData<Byte> PROJECTILE_FLAGS = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
-	protected static final TrackedData<Optional<UUID>> OPTIONAL_UUID = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	private static final TrackedData<Byte> PIERCE_LEVEL = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BYTE);
 	@Nullable
 	private BlockState inBlockState;
@@ -101,7 +98,6 @@ public abstract class ProjectileEntity extends Projectile {
 	@Override
 	protected void initDataTracker() {
 		this.dataTracker.startTracking(PROJECTILE_FLAGS, (byte)0);
-		this.dataTracker.startTracking(OPTIONAL_UUID, Optional.empty());
 		this.dataTracker.startTracking(PIERCE_LEVEL, (byte)0);
 	}
 

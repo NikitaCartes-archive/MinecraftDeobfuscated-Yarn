@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 public class CraftingInventory implements Inventory, RecipeInputProvider {
 	private final DefaultedList<ItemStack> stacks;

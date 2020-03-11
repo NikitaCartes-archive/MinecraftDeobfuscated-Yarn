@@ -1008,7 +1008,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				}
 			}
 
-			mutable.setOffset(Direction.UP);
+			mutable.move(Direction.UP);
 		} while ((double)mutable.getY() < g);
 
 		return new Vec3d(this.getX(), this.getY(), this.getZ());

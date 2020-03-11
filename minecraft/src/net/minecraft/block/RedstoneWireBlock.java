@@ -138,8 +138,8 @@ public class RedstoneWireBlock extends Block {
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			WireConnection wireConnection = state.get((Property<WireConnection>)DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
-			if (wireConnection != WireConnection.NONE && world.getBlockState(mutable.move(pos, direction)).getBlock() != this) {
-				mutable.setOffset(Direction.DOWN);
+			if (wireConnection != WireConnection.NONE && world.getBlockState(mutable.set(pos, direction)).getBlock() != this) {
+				mutable.move(Direction.DOWN);
 				BlockState blockState = world.getBlockState(mutable);
 				if (blockState.getBlock() != Blocks.OBSERVER) {
 					BlockPos blockPos = mutable.offset(direction.getOpposite());
@@ -147,7 +147,7 @@ public class RedstoneWireBlock extends Block {
 					replaceBlock(blockState, blockState2, world, mutable, flags);
 				}
 
-				mutable.move(pos, direction).setOffset(Direction.UP);
+				mutable.set(pos, direction).move(Direction.UP);
 				BlockState blockState3 = world.getBlockState(mutable);
 				if (blockState3.getBlock() != Blocks.OBSERVER) {
 					BlockPos blockPos2 = mutable.offset(direction.getOpposite());

@@ -20,7 +20,7 @@ import net.minecraft.datafixer.fix.BiomeRenameFix;
 import net.minecraft.datafixer.fix.BiomesFix;
 import net.minecraft.datafixer.fix.BlockEntityBannerColorFix;
 import net.minecraft.datafixer.fix.BlockEntityBlockStateFix;
-import net.minecraft.datafixer.fix.BlockEntityCustomNameToComponentFix;
+import net.minecraft.datafixer.fix.BlockEntityCustomNameToTextFix;
 import net.minecraft.datafixer.fix.BlockEntityIdFix;
 import net.minecraft.datafixer.fix.BlockEntityJukeboxFix;
 import net.minecraft.datafixer.fix.BlockEntityKeepPacked;
@@ -43,7 +43,7 @@ import net.minecraft.datafixer.fix.EntityArmorStandSilentFix;
 import net.minecraft.datafixer.fix.EntityBlockStateFix;
 import net.minecraft.datafixer.fix.EntityCatSplitFix;
 import net.minecraft.datafixer.fix.EntityCodSalmonFix;
-import net.minecraft.datafixer.fix.EntityCustomNameToComponentFix;
+import net.minecraft.datafixer.fix.EntityCustomNameToTextFix;
 import net.minecraft.datafixer.fix.EntityElderGuardianSplitFix;
 import net.minecraft.datafixer.fix.EntityEquipmentToArmorAndHandFix;
 import net.minecraft.datafixer.fix.EntityHealthFix;
@@ -77,7 +77,7 @@ import net.minecraft.datafixer.fix.ItemIdFix;
 import net.minecraft.datafixer.fix.ItemInstanceMapIdFix;
 import net.minecraft.datafixer.fix.ItemInstanceSpawnEggFix;
 import net.minecraft.datafixer.fix.ItemInstanceTheFlatteningFix;
-import net.minecraft.datafixer.fix.ItemLoreToComponentFix;
+import net.minecraft.datafixer.fix.ItemLoreToTextFix;
 import net.minecraft.datafixer.fix.ItemNameFix;
 import net.minecraft.datafixer.fix.ItemPotionFix;
 import net.minecraft.datafixer.fix.ItemShulkerBoxColorFix;
@@ -298,9 +298,9 @@ public class Schemas {
 		Schema schema47 = builder.addSchema(1456, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new EntityItemFrameDirectionFix(schema47, false));
 		Schema schema48 = builder.addSchema(1458, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new EntityCustomNameToComponentFix(schema48, false));
+		builder.addFixer(new EntityCustomNameToTextFix(schema48, false));
 		builder.addFixer(new ItemCustomNameToComponentFix(schema48, false));
-		builder.addFixer(new BlockEntityCustomNameToComponentFix(schema48, false));
+		builder.addFixer(new BlockEntityCustomNameToTextFix(schema48, false));
 		Schema schema49 = builder.addSchema(1460, Schema1460::new);
 		builder.addFixer(new EntityPaintingMotiveFix(schema49, false));
 		Schema schema50 = builder.addSchema(1466, Schema1466::new);
@@ -392,14 +392,14 @@ public class Schemas {
 		builder.addFixer(ItemNameFix.create(schema60, "Rename kelptop", string -> Objects.equals(string, "minecraft:kelp_top") ? "minecraft:kelp" : string));
 		builder.addFixer(new ChoiceFix(schema60, false, "Command block block entity custom name fix", TypeReferences.BLOCK_ENTITY, "minecraft:command_block") {
 			@Override
-			protected Typed<?> transform(Typed<?> typed) {
-				return typed.update(DSL.remainderFinder(), EntityCustomNameToComponentFix::fixCustomName);
+			protected Typed<?> transform(Typed<?> inputType) {
+				return inputType.update(DSL.remainderFinder(), EntityCustomNameToTextFix::fixCustomName);
 			}
 		});
 		builder.addFixer(new ChoiceFix(schema60, false, "Command block minecart custom name fix", TypeReferences.ENTITY, "minecraft:commandblock_minecart") {
 			@Override
-			protected Typed<?> transform(Typed<?> typed) {
-				return typed.update(DSL.remainderFinder(), EntityCustomNameToComponentFix::fixCustomName);
+			protected Typed<?> transform(Typed<?> inputType) {
+				return inputType.update(DSL.remainderFinder(), EntityCustomNameToTextFix::fixCustomName);
 			}
 		});
 		builder.addFixer(new IglooMetadataRemovalFix(schema60, false));
@@ -469,7 +469,7 @@ public class Schemas {
 			)
 		);
 		Schema schema77 = builder.addSchema(1803, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new ItemLoreToComponentFix(schema77, false));
+		builder.addFixer(new ItemLoreToTextFix(schema77, false));
 		Schema schema78 = builder.addSchema(1904, Schema1904::new);
 		builder.addFixer(new ChoiceTypesFix(schema78, "Added Cats", TypeReferences.ENTITY));
 		builder.addFixer(new EntityCatSplitFix(schema78, false));
@@ -543,7 +543,7 @@ public class Schemas {
 		builder.addFixer(new FurnaceRecipesFix(schema101, true));
 		Schema schema102 = builder.addSchema(2502, Schema2502::new);
 		builder.addFixer(new ChoiceTypesFix(schema102, "Added Hoglin", TypeReferences.ENTITY));
-		builder.addFixer(new BiomeRenameFix(schema102, false, ImmutableMap.of("minecraft:nether", "minecraft:nether_wastes")));
+		builder.addFixer(new BiomeRenameFix(schema102, false, "Nether biome rename", ImmutableMap.of("minecraft:nether", "minecraft:nether_wastes")));
 		Schema schema103 = builder.addSchema(2503, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new WallPropertyFix(schema103, false));
 		Schema schema104 = builder.addSchema(2505, Schema2505::new);

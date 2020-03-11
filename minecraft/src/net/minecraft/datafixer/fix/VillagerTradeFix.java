@@ -17,8 +17,8 @@ public class VillagerTradeFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		OpticFinder<?> opticFinder = typed.getType().findField("Offers");
+	protected Typed<?> transform(Typed<?> inputType) {
+		OpticFinder<?> opticFinder = inputType.getType().findField("Offers");
 		OpticFinder<?> opticFinder2 = opticFinder.type().findField("Recipes");
 		Type<?> type = opticFinder2.type();
 		if (!(type instanceof ListType)) {
@@ -31,13 +31,13 @@ public class VillagerTradeFix extends ChoiceFix {
 			OpticFinder<?> opticFinder5 = type2.findField("buyB");
 			OpticFinder<?> opticFinder6 = type2.findField("sell");
 			OpticFinder<Pair<String, String>> opticFinder7 = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString()));
-			Function<Typed<?>, Typed<?>> function = typedx -> this.fixPumpkinTrade(opticFinder7, typedx);
-			return typed.updateTyped(
+			Function<Typed<?>, Typed<?>> function = typed -> this.fixPumpkinTrade(opticFinder7, typed);
+			return inputType.updateTyped(
 				opticFinder,
-				typedx -> typedx.updateTyped(
+				typed -> typed.updateTyped(
 						opticFinder2,
-						typedxx -> typedxx.updateTyped(
-								opticFinder3, typedxxx -> typedxxx.updateTyped(opticFinder4, function).updateTyped(opticFinder5, function).updateTyped(opticFinder6, function)
+						typedx -> typedx.updateTyped(
+								opticFinder3, typedxx -> typedxx.updateTyped(opticFinder4, function).updateTyped(opticFinder5, function).updateTyped(opticFinder6, function)
 							)
 					)
 			);

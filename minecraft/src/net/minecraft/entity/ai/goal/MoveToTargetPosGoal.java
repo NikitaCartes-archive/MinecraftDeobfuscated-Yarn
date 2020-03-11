@@ -101,7 +101,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 			for (int l = 0; l < i; l++) {
 				for (int m = 0; m <= l; m = m > 0 ? -m : 1 - m) {
 					for (int n = m < l && m > -l ? l : 0; n <= l; n = n > 0 ? -n : 1 - n) {
-						mutable.setOffset(blockPos, m, k - 1, n);
+						mutable.set(blockPos, m, k - 1, n);
 						if (this.mob.isInWalkTargetRange(mutable) && this.isTargetPos(this.mob.world, mutable)) {
 							this.targetPos = mutable;
 							return true;

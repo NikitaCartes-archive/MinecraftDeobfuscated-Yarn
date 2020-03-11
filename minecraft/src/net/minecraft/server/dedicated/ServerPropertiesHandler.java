@@ -21,10 +21,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
 	public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
 	public final boolean generateStructures = this.parseBoolean("generate-structures", true);
-	public final Difficulty difficulty = this.get(
-		"difficulty", wrapIntParsingFunction(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.EASY
-	);
-	public final GameMode gameMode = this.get("gamemode", wrapIntParsingFunction(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
+	public final Difficulty difficulty = this.get("difficulty", combineParser(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.EASY);
+	public final GameMode gameMode = this.get("gamemode", combineParser(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
 	public final String levelName = this.getString("level-name", "world");
 	public final String levelSeed = this.getString("level-seed", "");
 	public final LevelGeneratorType levelType = this.get(
@@ -32,7 +30,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	);
 	public final String generatorSettings = this.getString("generator-settings", "");
 	public final int serverPort = this.getInt("server-port", 25565);
-	public final int maxBuildHeight = this.parseIntWithOperation("max-build-height", integer -> MathHelper.clamp((integer + 8) / 16 * 16, 64, 256), 256);
+	public final int maxBuildHeight = this.transformedParseInt("max-build-height", integer -> MathHelper.clamp((integer + 8) / 16 * 16, 64, 256), 256);
 	public final Boolean announcePlayerAchievements = this.getDeprecatedBoolean("announce-player-achievements");
 	public final boolean enableQuery = this.parseBoolean("enable-query", false);
 	public final int queryPort = this.getInt("query.port", 25565);
@@ -77,13 +75,13 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.networkCompressionThreshold = this.getInt("network-compression-threshold", 256);
 		this.broadcastRconToOps = this.parseBoolean("broadcast-rcon-to-ops", true);
 		this.broadcastConsoleToOps = this.parseBoolean("broadcast-console-to-ops", true);
-		this.maxWorldSize = this.parseIntWithOperation("max-world-size", integer -> MathHelper.clamp(integer, 1, 29999984), 29999984);
+		this.maxWorldSize = this.transformedParseInt("max-world-size", integer -> MathHelper.clamp(integer, 1, 29999984), 29999984);
 		this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 		this.whiteList = this.booleanAccessor("white-list", false);
 	}
 
 	public static ServerPropertiesHandler load(Path path) {
-		return new ServerPropertiesHandler(load(path));
+		return new ServerPropertiesHandler(loadProperties(path));
 	}
 
 	protected ServerPropertiesHandler create(Properties properties) {

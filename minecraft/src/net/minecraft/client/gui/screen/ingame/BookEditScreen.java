@@ -470,7 +470,7 @@ public class BookEditScreen extends Screen {
 		this.client.getTextureManager().bindTexture(BookScreen.BOOK_TEXTURE);
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.blit(i, 2, 0, 0, 192, 192);
+		this.drawTexture(i, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			String string = this.title;
 			if (this.tickCounter / 6 % 2 == 0) {

@@ -111,7 +111,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 				for (int l = 0; l < j; l++) {
 					int m = (i - 1) / -2;
 					int n = (j - 1) / -2;
-					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.UP, l + n);
+					mutable.set(blockPos).move(direction, k + m).move(Direction.UP, l + n);
 					BlockState blockState = this.world.getBlockState(mutable);
 					if (!blockState.getMaterial().isSolid() && !AbstractRedstoneGateBlock.isRedstoneGate(blockState)) {
 						return false;

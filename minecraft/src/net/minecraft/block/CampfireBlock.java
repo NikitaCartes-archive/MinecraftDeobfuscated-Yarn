@@ -11,11 +11,10 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.entity.projectile.Projectile;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -33,9 +32,9 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -215,15 +214,12 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
-		if (!world.isClient) {
-			boolean bl = projectile instanceof AbstractFireballEntity || projectile instanceof ProjectileEntity && projectile.isOnFire();
-			if (bl) {
-				Entity entity = projectile.getOwner();
-				boolean bl2 = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
-				if (bl2 && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
-					BlockPos blockPos = hitResult.getBlockPos();
-					world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), 11);
-				}
+		if (!world.isClient && projectile.isOnFire()) {
+			Entity entity = projectile.getOwner();
+			boolean bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.MOB_GRIEFING);
+			if (bl && !(Boolean)state.get(LIT) && !(Boolean)state.get(WATERLOGGED)) {
+				BlockPos blockPos = hitResult.getBlockPos();
+				world.setBlockState(blockPos, state.with(Properties.LIT, Boolean.valueOf(true)), 11);
 			}
 		}
 	}
@@ -302,7 +298,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 }

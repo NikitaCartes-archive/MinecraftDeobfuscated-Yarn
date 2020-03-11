@@ -25,27 +25,27 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		this(syncId, playerInventory, new BasicInventory(5), new ArrayPropertyDelegate(2));
 	}
 
-	public BrewingStandScreenHandler(int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
-		super(ScreenHandlerType.BREWING_STAND, i);
-		checkContainerSize(inventory, 5);
-		checkContainerDataCount(propertyDelegate, 2);
+	public BrewingStandScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
+		super(ScreenHandlerType.BREWING_STAND, syncId);
+		checkSize(inventory, 5);
+		checkDataCount(propertyDelegate, 2);
 		this.inventory = inventory;
 		this.propertyDelegate = propertyDelegate;
-		this.addSlot(new BrewingStandScreenHandler.SlotPotion(inventory, 0, 56, 51));
-		this.addSlot(new BrewingStandScreenHandler.SlotPotion(inventory, 1, 79, 58));
-		this.addSlot(new BrewingStandScreenHandler.SlotPotion(inventory, 2, 102, 51));
-		this.ingredientSlot = this.addSlot(new BrewingStandScreenHandler.SlotIngredient(inventory, 3, 79, 17));
-		this.addSlot(new BrewingStandScreenHandler.SlotFuel(inventory, 4, 17, 17));
+		this.addSlot(new BrewingStandScreenHandler.PotionSlot(inventory, 0, 56, 51));
+		this.addSlot(new BrewingStandScreenHandler.PotionSlot(inventory, 1, 79, 58));
+		this.addSlot(new BrewingStandScreenHandler.PotionSlot(inventory, 2, 102, 51));
+		this.ingredientSlot = this.addSlot(new BrewingStandScreenHandler.IngredientSlot(inventory, 3, 79, 17));
+		this.addSlot(new BrewingStandScreenHandler.FuelSlot(inventory, 4, 17, 17));
 		this.addProperties(propertyDelegate);
 
-		for (int j = 0; j < 3; j++) {
-			for (int k = 0; k < 9; k++) {
-				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 9; j++) {
+				this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
 			}
 		}
 
-		for (int j = 0; j < 9; j++) {
-			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+		for (int i = 0; i < 9; i++) {
+			this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
 		}
 	}
 
@@ -55,14 +55,14 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if ((invSlot < 0 || invSlot > 2) && invSlot != 3 && invSlot != 4) {
-				if (BrewingStandScreenHandler.SlotFuel.matches(itemStack)) {
+			if ((index < 0 || index > 2) && index != 3 && index != 4) {
+				if (BrewingStandScreenHandler.FuelSlot.matches(itemStack)) {
 					if (this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false)) {
 						return ItemStack.EMPTY;
 					}
@@ -70,15 +70,15 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 					if (!this.insertItem(itemStack2, 3, 4, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (BrewingStandScreenHandler.SlotPotion.matches(itemStack) && itemStack.getCount() == 1) {
+				} else if (BrewingStandScreenHandler.PotionSlot.matches(itemStack) && itemStack.getCount() == 1) {
 					if (!this.insertItem(itemStack2, 0, 3, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 5 && invSlot < 32) {
+				} else if (index >= 5 && index < 32) {
 					if (!this.insertItem(itemStack2, 32, 41, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 32 && invSlot < 41) {
+				} else if (index >= 32 && index < 41) {
 					if (!this.insertItem(itemStack2, 5, 32, false)) {
 						return ItemStack.EMPTY;
 					}
@@ -119,8 +119,8 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		return this.propertyDelegate.get(0);
 	}
 
-	static class SlotFuel extends Slot {
-		public SlotFuel(Inventory inventory, int i, int j, int k) {
+	static class FuelSlot extends Slot {
+		public FuelSlot(Inventory inventory, int i, int j, int k) {
 			super(inventory, i, j, k);
 		}
 
@@ -129,8 +129,8 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 			return matches(stack);
 		}
 
-		public static boolean matches(ItemStack itemStack) {
-			return itemStack.getItem() == Items.BLAZE_POWDER;
+		public static boolean matches(ItemStack stack) {
+			return stack.getItem() == Items.BLAZE_POWDER;
 		}
 
 		@Override
@@ -139,8 +139,8 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 	}
 
-	static class SlotIngredient extends Slot {
-		public SlotIngredient(Inventory inventory, int i, int j, int k) {
+	static class IngredientSlot extends Slot {
+		public IngredientSlot(Inventory inventory, int i, int j, int k) {
 			super(inventory, i, j, k);
 		}
 
@@ -155,8 +155,8 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 	}
 
-	static class SlotPotion extends Slot {
-		public SlotPotion(Inventory inventory, int i, int j, int k) {
+	static class PotionSlot extends Slot {
+		public PotionSlot(Inventory inventory, int i, int j, int k) {
 			super(inventory, i, j, k);
 		}
 
@@ -181,8 +181,8 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 			return stack;
 		}
 
-		public static boolean matches(ItemStack itemStack) {
-			Item item = itemStack.getItem();
+		public static boolean matches(ItemStack stack) {
+			Item item = stack.getItem();
 			return item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION || item == Items.GLASS_BOTTLE;
 		}
 	}

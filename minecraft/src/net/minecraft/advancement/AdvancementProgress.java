@@ -20,8 +20,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.CriterionProgress;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.PacketByteBuf;
 
 public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	private final Map<String, CriterionProgress> criteriaProgresses = Maps.<String, CriterionProgress>newHashMap();

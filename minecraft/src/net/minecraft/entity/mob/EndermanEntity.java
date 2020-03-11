@@ -247,7 +247,7 @@ public class EndermanEntity extends HostileEntity {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
 
 		while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
-			mutable.setOffset(Direction.DOWN);
+			mutable.move(Direction.DOWN);
 		}
 
 		BlockState blockState = this.world.getBlockState(mutable);

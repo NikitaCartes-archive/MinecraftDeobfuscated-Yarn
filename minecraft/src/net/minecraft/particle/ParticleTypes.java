@@ -31,6 +31,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType FISHING = register("fishing", false);
 	public static final DefaultParticleType FLAME = register("flame", false);
 	public static final DefaultParticleType SOUL_FIRE_FLAME = register("soul_fire_flame", false);
+	public static final DefaultParticleType SOUL = register("soul", false);
 	public static final DefaultParticleType FLASH = register("flash", false);
 	public static final DefaultParticleType HAPPY_VILLAGER = register("happy_villager", false);
 	public static final DefaultParticleType COMPOSTER = register("composter", false);

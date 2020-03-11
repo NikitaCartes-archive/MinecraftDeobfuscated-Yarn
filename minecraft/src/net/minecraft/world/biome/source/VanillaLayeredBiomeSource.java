@@ -79,7 +79,7 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 
 	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig config) {
 		super(BIOMES);
-		this.biomeSampler = BiomeLayers.build(config.getSeed(), config.getGeneratorType(), config.getGeneratorSettings());
+		this.biomeSampler = BiomeLayers.build(config.getSeed(), config.getGeneratorType(), config.getGeneratorConfig());
 	}
 
 	@Override

@@ -174,7 +174,7 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableRealm
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		blit(x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
+		drawTexture(x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
 		textureManager.bindTexture(field_22681);
 		boolean bl2 = bl && action != RealmsWorldSlotButton.Action.NOTHING;
 		if (bl2) {
@@ -185,7 +185,7 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableRealm
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		blit(x, y, 0.0F, 0.0F, 80, 80, 80, 80);
+		drawTexture(x, y, 0.0F, 0.0F, 80, 80, 80, 80);
 		this.drawCenteredString(minecraftClient.textRenderer, text, x + 40, y + 66, 16777215);
 	}
 

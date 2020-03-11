@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/witch.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/witch.png");
 
 	public WitchEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WitchEntityModel<>(0.0F), 0.5F);
@@ -24,7 +24,7 @@ public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEnt
 	}
 
 	public Identifier getTexture(WitchEntity witchEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 
 	protected void scale(WitchEntity witchEntity, MatrixStack matrixStack, float f) {

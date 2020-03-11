@@ -1,7 +1,5 @@
 package net.minecraft.client.gui.screen.world;
 
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.JsonOps;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -12,11 +10,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.datafixer.NbtOps;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -51,7 +48,7 @@ public class CreateWorldScreen extends Screen {
 	private String seed;
 	private String levelName;
 	private int generatorType;
-	public CompoundTag generatorOptionsTag = new CompoundTag();
+	public LevelGeneratorOptions generatorOptions = LevelGeneratorType.DEFAULT.getDefaultOptions();
 
 	public CreateWorldScreen(Screen parent) {
 		super(new TranslatableText("selectWorld.create"));
@@ -147,18 +144,18 @@ public class CreateWorldScreen extends Screen {
 					}
 				}
 
-				this.generatorOptionsTag = new CompoundTag();
+				this.generatorOptions = this.getLevelGeneratorType().getDefaultOptions();
 				this.setMoreOptionsOpen(this.moreOptionsOpen);
 				buttonWidget.queueNarration(250);
 			}) {
 				@Override
 				public String getMessage() {
-					return I18n.translate("selectWorld.mapType") + ' ' + I18n.translate(LevelGeneratorType.TYPES[CreateWorldScreen.this.generatorType].getTranslationKey());
+					return I18n.translate("selectWorld.mapType") + ' ' + I18n.translate(CreateWorldScreen.this.getLevelGeneratorType().getTranslationKey());
 				}
 
 				@Override
 				protected String getNarrationMessage() {
-					LevelGeneratorType levelGeneratorType = LevelGeneratorType.TYPES[CreateWorldScreen.this.generatorType];
+					LevelGeneratorType levelGeneratorType = CreateWorldScreen.this.getLevelGeneratorType();
 					return levelGeneratorType.hasInfo()
 						? super.getNarrationMessage() + ". " + I18n.translate(levelGeneratorType.getInfoTranslationKey())
 						: super.getNarrationMessage();
@@ -167,12 +164,12 @@ public class CreateWorldScreen extends Screen {
 		);
 		this.mapTypeSwitchButton.visible = false;
 		this.customizeTypeButton = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType"), buttonWidget -> {
-			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.FLAT) {
-				this.client.openScreen(new CustomizeFlatLevelScreen(this, this.generatorOptionsTag));
+			if (this.getLevelGeneratorType() == LevelGeneratorType.FLAT) {
+				this.client.openScreen(new CustomizeFlatLevelScreen(this, this.generatorOptions));
 			}
 
-			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.BUFFET) {
-				this.client.openScreen(new CustomizeBuffetLevelScreen(this, this.generatorOptionsTag));
+			if (this.getLevelGeneratorType() == LevelGeneratorType.BUFFET) {
+				this.client.openScreen(new CustomizeBuffetLevelScreen(this, this.generatorOptions));
 			}
 		}));
 		this.customizeTypeButton.visible = false;
@@ -226,6 +223,10 @@ public class CreateWorldScreen extends Screen {
 		this.updateSaveFolderName();
 	}
 
+	private LevelGeneratorType getLevelGeneratorType() {
+		return LevelGeneratorType.TYPES[this.generatorType];
+	}
+
 	private void updateSettingsLabels() {
 		this.firstGameModeDescriptionLine = I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line1");
 		this.secondGameModeDescriptionLine = I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line2");
@@ -272,8 +273,7 @@ public class CreateWorldScreen extends Screen {
 				}
 			}
 
-			LevelInfo levelInfo = new LevelInfo(l, this.currentMode.defaultGameMode, this.structures, this.hardcore, LevelGeneratorType.TYPES[this.generatorType]);
-			levelInfo.setGeneratorOptions(Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, this.generatorOptionsTag));
+			LevelInfo levelInfo = new LevelInfo(l, this.currentMode.defaultGameMode, this.structures, this.hardcore, this.generatorOptions);
 			if (this.bonusChest && !this.hardcore) {
 				levelInfo.setBonusChest();
 			}
@@ -287,7 +287,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private boolean isGeneratorTypeValid() {
-		LevelGeneratorType levelGeneratorType = LevelGeneratorType.TYPES[this.generatorType];
+		LevelGeneratorType levelGeneratorType = this.getLevelGeneratorType();
 		if (levelGeneratorType == null || !levelGeneratorType.isVisible()) {
 			return false;
 		} else {
@@ -322,7 +322,7 @@ public class CreateWorldScreen extends Screen {
 		this.moreOptionsOpen = moreOptionsOpen;
 		this.gameModeSwitchButton.visible = !this.moreOptionsOpen;
 		this.mapTypeSwitchButton.visible = this.moreOptionsOpen;
-		if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+		if (this.getLevelGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			this.gameModeSwitchButton.active = false;
 			if (this.lastMode == null) {
 				this.lastMode = this.currentMode;
@@ -339,10 +339,10 @@ public class CreateWorldScreen extends Screen {
 				this.tweakDefaultsTo(this.lastMode);
 			}
 
-			this.generateStructuresButton.visible = this.moreOptionsOpen && LevelGeneratorType.TYPES[this.generatorType] != LevelGeneratorType.CUSTOMIZED;
+			this.generateStructuresButton.visible = this.moreOptionsOpen && this.getLevelGeneratorType() != LevelGeneratorType.CUSTOMIZED;
 			this.generateBonusChestButton.visible = this.moreOptionsOpen;
 			this.enableCheatsButton.visible = this.moreOptionsOpen;
-			this.customizeTypeButton.visible = this.moreOptionsOpen && LevelGeneratorType.TYPES[this.generatorType].isCustomizable();
+			this.customizeTypeButton.visible = this.moreOptionsOpen && this.getLevelGeneratorType().isCustomizable();
 		}
 
 		this.seedField.setVisible(this.moreOptionsOpen);
@@ -391,10 +391,10 @@ public class CreateWorldScreen extends Screen {
 			}
 
 			this.seedField.render(mouseX, mouseY, delta);
-			if (LevelGeneratorType.TYPES[this.generatorType].hasInfo()) {
+			if (this.getLevelGeneratorType().hasInfo()) {
 				this.textRenderer
 					.drawTrimmed(
-						I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getInfoTranslationKey()),
+						I18n.translate(this.getLevelGeneratorType().getInfoTranslationKey()),
 						this.mapTypeSwitchButton.x + 2,
 						this.mapTypeSwitchButton.y + 22,
 						this.mapTypeSwitchButton.getWidth(),
@@ -415,11 +415,11 @@ public class CreateWorldScreen extends Screen {
 	public void recreateLevel(LevelProperties levelProperties) {
 		this.levelName = levelProperties.getLevelName();
 		this.seed = Long.toString(levelProperties.getSeed());
-		LevelGeneratorType levelGeneratorType = levelProperties.getGeneratorType() == LevelGeneratorType.CUSTOMIZED
+		this.generatorOptions = levelProperties.getGeneratorOptions();
+		LevelGeneratorType levelGeneratorType = this.generatorOptions.getType() == LevelGeneratorType.CUSTOMIZED
 			? LevelGeneratorType.DEFAULT
 			: levelProperties.getGeneratorType();
 		this.generatorType = levelGeneratorType.getId();
-		this.generatorOptionsTag = levelProperties.getGeneratorOptions();
 		this.structures = levelProperties.hasStructures();
 		this.cheatsEnabled = levelProperties.areCommandsAllowed();
 		if (levelProperties.isHardcore()) {
