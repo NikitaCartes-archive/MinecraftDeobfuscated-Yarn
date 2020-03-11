@@ -165,7 +165,7 @@ public abstract class Carver<C extends CarverConfig> {
 			carvingMask.set(i);
 			mutable.set(x, y, z);
 			BlockState blockState = chunk.getBlockState(mutable);
-			BlockState blockState2 = chunk.getBlockState(mutable2.move(mutable, Direction.UP));
+			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable, Direction.UP));
 			if (blockState.getBlock() == Blocks.GRASS_BLOCK || blockState.getBlock() == Blocks.MYCELIUM) {
 				foundSurface.set(true);
 			}
@@ -178,7 +178,7 @@ public abstract class Carver<C extends CarverConfig> {
 				} else {
 					chunk.setBlockState(mutable, CAVE_AIR, false);
 					if (foundSurface.get()) {
-						mutable3.move(mutable, Direction.DOWN);
+						mutable3.set(mutable, Direction.DOWN);
 						if (chunk.getBlockState(mutable3).getBlock() == Blocks.DIRT) {
 							chunk.setBlockState(mutable3, ((Biome)posToBiome.apply(mutable)).getSurfaceConfig().getTopMaterial(), false);
 						}

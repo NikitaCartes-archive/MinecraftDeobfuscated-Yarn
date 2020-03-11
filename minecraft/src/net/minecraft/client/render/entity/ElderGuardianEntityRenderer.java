@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ElderGuardianEntityRenderer extends GuardianEntityRenderer {
-	public static final Identifier SKIN = new Identifier("textures/entity/guardian_elder.png");
+	public static final Identifier TEXTURE = new Identifier("textures/entity/guardian_elder.png");
 
 	public ElderGuardianEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, 1.2F);
@@ -21,6 +21,6 @@ public class ElderGuardianEntityRenderer extends GuardianEntityRenderer {
 
 	@Override
 	public Identifier getTexture(GuardianEntity guardianEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 }

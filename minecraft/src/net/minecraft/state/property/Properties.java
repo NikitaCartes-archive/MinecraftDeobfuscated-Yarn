@@ -50,6 +50,7 @@ public class Properties {
 	public static final BooleanProperty TRIGGERED = BooleanProperty.of("triggered");
 	public static final BooleanProperty UNSTABLE = BooleanProperty.of("unstable");
 	public static final BooleanProperty WATERLOGGED = BooleanProperty.of("waterlogged");
+	public static final BooleanProperty field_23084 = BooleanProperty.of("vine_end");
 	public static final EnumProperty<Direction.Axis> HORIZONTAL_AXIS = EnumProperty.of("axis", Direction.Axis.class, Direction.Axis.X, Direction.Axis.Z);
 	public static final EnumProperty<Direction.Axis> AXIS = EnumProperty.of("axis", Direction.Axis.class);
 	public static final BooleanProperty UP = BooleanProperty.of("up");

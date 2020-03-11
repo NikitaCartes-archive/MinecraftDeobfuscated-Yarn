@@ -7,8 +7,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int id;

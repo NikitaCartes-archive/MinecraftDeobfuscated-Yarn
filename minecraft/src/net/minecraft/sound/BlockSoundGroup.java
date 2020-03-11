@@ -163,6 +163,15 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup STEM = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.ITEM_CROP_PLANT, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL
 	);
+	public static final BlockSoundGroup field_23083 = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GRASS_BREAK,
+		SoundEvents.BLOCK_VINE_STEP,
+		SoundEvents.BLOCK_GRASS_PLACE,
+		SoundEvents.BLOCK_GRASS_HIT,
+		SoundEvents.BLOCK_GRASS_FALL
+	);
 	public static final BlockSoundGroup NETHER_WART = new BlockSoundGroup(
 		1.0F,
 		1.0F,
@@ -223,6 +232,15 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup WEEPING_VINES = new BlockSoundGroup(
 		1.0F,
 		1.0F,
+		SoundEvents.BLOCK_WEEPING_VINES_BREAK,
+		SoundEvents.BLOCK_WEEPING_VINES_STEP,
+		SoundEvents.BLOCK_WEEPING_VINES_PLACE,
+		SoundEvents.BLOCK_WEEPING_VINES_HIT,
+		SoundEvents.BLOCK_WEEPING_VINES_FALL
+	);
+	public static final BlockSoundGroup field_23082 = new BlockSoundGroup(
+		1.0F,
+		0.5F,
 		SoundEvents.BLOCK_WEEPING_VINES_BREAK,
 		SoundEvents.BLOCK_WEEPING_VINES_STEP,
 		SoundEvents.BLOCK_WEEPING_VINES_PLACE,

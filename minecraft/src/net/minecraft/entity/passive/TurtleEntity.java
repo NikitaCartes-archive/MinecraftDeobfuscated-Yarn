@@ -695,9 +695,9 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected PathNodeNavigator createPathNodeNavigator(int i) {
+		protected PathNodeNavigator createPathNodeNavigator(int range) {
 			this.nodeMaker = new AmphibiousPathNodeMaker();
-			return new PathNodeNavigator(this.nodeMaker, i);
+			return new PathNodeNavigator(this.nodeMaker, range);
 		}
 
 		@Override

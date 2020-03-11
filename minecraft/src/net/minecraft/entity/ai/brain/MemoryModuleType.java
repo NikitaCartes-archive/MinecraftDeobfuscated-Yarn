@@ -16,12 +16,12 @@ import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DynamicSerializable;
-import net.minecraft.util.DynamicSerializableBoolean;
-import net.minecraft.util.DynamicSerializableUuid;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Timestamp;
+import net.minecraft.util.dynamic.DynamicSerializable;
+import net.minecraft.util.dynamic.DynamicSerializableBoolean;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.dynamic.Timestamp;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 

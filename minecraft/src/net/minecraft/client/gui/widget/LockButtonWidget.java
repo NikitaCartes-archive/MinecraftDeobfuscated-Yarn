@@ -42,7 +42,7 @@ public class LockButtonWidget extends ButtonWidget {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED : LockButtonWidget.IconLocation.UNLOCKED;
 		}
 
-		this.blit(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
+		this.drawTexture(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
 	}
 
 	@Environment(EnvType.CLIENT)

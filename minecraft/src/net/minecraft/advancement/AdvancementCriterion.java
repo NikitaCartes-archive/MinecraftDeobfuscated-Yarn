@@ -11,9 +11,9 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.PacketByteBuf;
 
 public class AdvancementCriterion {
 	private final CriterionConditions conditions;

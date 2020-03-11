@@ -1,7 +1,5 @@
 package net.minecraft.world.level;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.GameMode;
@@ -11,23 +9,20 @@ public final class LevelInfo {
 	private final GameMode gameMode;
 	private final boolean structures;
 	private final boolean hardcore;
-	private final LevelGeneratorType generatorType;
+	private final LevelGeneratorOptions generatorOptions;
 	private boolean commands;
 	private boolean bonusChest;
-	private JsonElement generatorOptions = new JsonObject();
 
-	public LevelInfo(long seed, GameMode gameMode, boolean structures, boolean hardcore, LevelGeneratorType generatorType) {
+	public LevelInfo(long seed, GameMode gameMode, boolean structures, boolean hardcore, LevelGeneratorOptions generatorOptions) {
 		this.seed = seed;
 		this.gameMode = gameMode;
 		this.structures = structures;
 		this.hardcore = hardcore;
-		this.generatorType = generatorType;
+		this.generatorOptions = generatorOptions;
 	}
 
-	public LevelInfo(LevelProperties levelProperties) {
-		this(
-			levelProperties.getSeed(), levelProperties.getGameMode(), levelProperties.hasStructures(), levelProperties.isHardcore(), levelProperties.getGeneratorType()
-		);
+	public LevelInfo(LevelProperties properties) {
+		this(properties.getSeed(), properties.getGameMode(), properties.hasStructures(), properties.isHardcore(), properties.getGeneratorOptions());
 	}
 
 	public LevelInfo setBonusChest() {
@@ -38,11 +33,6 @@ public final class LevelInfo {
 	@Environment(EnvType.CLIENT)
 	public LevelInfo enableCommands() {
 		this.commands = true;
-		return this;
-	}
-
-	public LevelInfo setGeneratorOptions(JsonElement generatorOptions) {
-		this.generatorOptions = generatorOptions;
 		return this;
 	}
 
@@ -66,15 +56,11 @@ public final class LevelInfo {
 		return this.structures;
 	}
 
-	public LevelGeneratorType getGeneratorType() {
-		return this.generatorType;
+	public LevelGeneratorOptions getGeneratorOptions() {
+		return this.generatorOptions;
 	}
 
 	public boolean allowCommands() {
 		return this.commands;
-	}
-
-	public JsonElement getGeneratorOptions() {
-		return this.generatorOptions;
 	}
 }

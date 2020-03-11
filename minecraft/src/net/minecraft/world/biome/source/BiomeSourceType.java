@@ -1,8 +1,8 @@
 package net.minecraft.world.biome.source;
 
 import java.util.function.Function;
+import java.util.function.LongFunction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.level.LevelProperties;
 
 public class BiomeSourceType<C extends BiomeSourceConfig, T extends BiomeSource> {
 	public static final BiomeSourceType<CheckerboardBiomeSourceConfig, CheckerboardBiomeSource> CHECKERBOARD = register(
@@ -16,27 +16,27 @@ public class BiomeSourceType<C extends BiomeSourceConfig, T extends BiomeSource>
 		"the_end", TheEndBiomeSource::new, TheEndBiomeSourceConfig::new
 	);
 	public static final BiomeSourceType<MultiNoiseBiomeSourceConfig, MultiNoiseBiomeSource> MULTI_NOISE = register(
-		"multi_noise", MultiNoiseBiomeSource::new, levelProperties -> new MultiNoiseBiomeSourceConfig(levelProperties.getSeed())
+		"multi_noise", MultiNoiseBiomeSource::new, MultiNoiseBiomeSourceConfig::new
 	);
 	private final Function<C, T> biomeSource;
-	private final Function<LevelProperties, C> config;
+	private final LongFunction<C> configFactory;
 
 	private static <C extends BiomeSourceConfig, T extends BiomeSource> BiomeSourceType<C, T> register(
-		String id, Function<C, T> biomeSource, Function<LevelProperties, C> function
+		String id, Function<C, T> biomeSource, LongFunction<C> longFunction
 	) {
-		return Registry.register(Registry.BIOME_SOURCE_TYPE, id, new BiomeSourceType<>(biomeSource, function));
+		return Registry.register(Registry.BIOME_SOURCE_TYPE, id, new BiomeSourceType<>(biomeSource, longFunction));
 	}
 
-	private BiomeSourceType(Function<C, T> biomeSource, Function<LevelProperties, C> function) {
+	private BiomeSourceType(Function<C, T> biomeSource, LongFunction<C> configFactory) {
 		this.biomeSource = biomeSource;
-		this.config = function;
+		this.configFactory = configFactory;
 	}
 
 	public T applyConfig(C config) {
 		return (T)this.biomeSource.apply(config);
 	}
 
-	public C getConfig(LevelProperties levelProperties) {
-		return (C)this.config.apply(levelProperties);
+	public C getConfig(long seed) {
+		return (C)this.configFactory.apply(seed);
 	}
 }

@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.source;
 
 import javax.annotation.Nullable;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;

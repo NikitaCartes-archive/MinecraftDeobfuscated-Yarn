@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/spider/cave_spider.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/spider/cave_spider.png");
 
 	public CaveSpiderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -20,6 +20,6 @@ public class CaveSpiderEntityRenderer extends SpiderEntityRenderer<CaveSpiderEnt
 	}
 
 	public Identifier getTexture(CaveSpiderEntity caveSpiderEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 }

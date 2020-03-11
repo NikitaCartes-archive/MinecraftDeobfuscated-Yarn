@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class StonecutterScreen extends ScreenWithHandler<StonecutterScreenHandler> {
+public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
 	private float scrollAmount;
 	private boolean mouseClicked;
@@ -46,9 +46,9 @@ public class StonecutterScreen extends ScreenWithHandler<StonecutterScreenHandle
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = this.x;
 		int j = this.y;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		int k = (int)(41.0F * this.scrollAmount);
-		this.blit(i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
+		this.drawTexture(i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
 		int l = this.x + 52;
 		int m = this.y + 14;
 		int n = this.scrollOffset + 12;
@@ -89,7 +89,7 @@ public class StonecutterScreen extends ScreenWithHandler<StonecutterScreenHandle
 				n += 36;
 			}
 
-			this.blit(k, m - 1, 0, n, 16, 18);
+			this.drawTexture(k, m - 1, 0, n, 16, 18);
 		}
 	}
 

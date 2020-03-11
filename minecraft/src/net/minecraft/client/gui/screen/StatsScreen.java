@@ -148,8 +148,8 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	private void renderIcon(int x, int y, int u, int v) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(STATS_ICON_LOCATION);
-		blit(x, y, this.getZOffset(), (float)u, (float)v, 18, 18, 128, 128);
+		this.client.getTextureManager().bindTexture(STATS_ICON_TEXTURE);
+		drawTexture(x, y, this.getZOffset(), (float)u, (float)v, 18, 18, 128, 128);
 	}
 
 	@Environment(EnvType.CLIENT)

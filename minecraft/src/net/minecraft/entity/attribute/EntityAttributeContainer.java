@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.util.LowercaseMap;
+import net.minecraft.util.collection.LowercaseMap;
 
 public class EntityAttributeContainer extends AbstractEntityAttributeContainer {
 	private final Set<EntityAttributeInstance> trackedAttributes = Sets.<EntityAttributeInstance>newHashSet();

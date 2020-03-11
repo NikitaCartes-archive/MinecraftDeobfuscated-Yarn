@@ -58,14 +58,19 @@ public class PiglinEntityModel<T extends MobEntity> extends BipedEntityModel<T> 
 			PiglinEntity piglinEntity = (PiglinEntity)mobEntity;
 			PiglinEntity.Activity activity = piglinEntity.getActivity();
 			if (activity == PiglinEntity.Activity.CROSSBOW_HOLD) {
-				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
+				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, !mobEntity.isLeftHanded());
 			} else if (activity == PiglinEntity.Activity.CROSSBOW_CHARGE) {
-				CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, true);
+				CrossbowPosing.charge(this.rightArm, this.leftArm, mobEntity, !mobEntity.isLeftHanded());
 			} else if (activity == PiglinEntity.Activity.ADMIRING_ITEM) {
-				this.leftArm.yaw = 0.5F;
-				this.leftArm.pitch = -0.9F;
 				this.head.pitch = 0.5F;
 				this.head.yaw = 0.0F;
+				if (mobEntity.isLeftHanded()) {
+					this.rightArm.yaw = -0.5F;
+					this.rightArm.pitch = -0.9F;
+				} else {
+					this.leftArm.yaw = 0.5F;
+					this.leftArm.pitch = -0.9F;
+				}
 			}
 		}
 	}

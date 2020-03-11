@@ -160,7 +160,7 @@ public class ExperienceOrbEntity extends Entity {
 			if (this.pickupDelay == 0 && player.experiencePickUpDelay == 0) {
 				player.experiencePickUpDelay = 2;
 				player.sendPickup(this, 1);
-				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getMatchingEnchantedEquipment(Enchantments.MENDING, player, ItemStack::isDamaged);
+				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.MENDING, player, ItemStack::isDamaged);
 				if (entry != null) {
 					ItemStack itemStack = (ItemStack)entry.getValue();
 					if (!itemStack.isEmpty() && itemStack.isDamaged()) {

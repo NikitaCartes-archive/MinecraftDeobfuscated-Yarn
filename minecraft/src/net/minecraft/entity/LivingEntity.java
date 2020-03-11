@@ -89,10 +89,10 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Arm;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -378,10 +378,50 @@ public abstract class LivingEntity extends Entity {
 		this.world.getProfiler().pop();
 	}
 
+	@Override
+	public void attemptSprintingParticles() {
+		super.attemptSprintingParticles();
+		if (EnchantmentHelper.hasSoulSpeed(this)
+			&& this.method_25936().matches(BlockTags.SOUL_SPEED_BLOCKS)
+			&& this.getVelocity().x != 0.0
+			&& this.getVelocity().z != 0.0
+			&& this.age % 5 == 0) {
+			this.method_25937();
+		}
+	}
+
+	protected void method_25937() {
+		Vec3d vec3d = this.getVelocity();
+		this.world
+			.addParticle(
+				ParticleTypes.SOUL,
+				this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
+				this.getY() + 0.1,
+				this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
+				vec3d.x * -0.2,
+				0.1,
+				vec3d.z * -0.2
+			);
+		float f = this.random.nextFloat() * 0.4F + (this.random.nextFloat() > 0.9F ? 0.6F : 0.0F);
+		this.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, f, 0.6F + this.random.nextFloat() * 0.4F);
+	}
+
+	@Override
+	protected float getVelocityMultiplier() {
+		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this);
+		return this.method_25936().matches(BlockTags.SOUL_SPEED_BLOCKS) && i > 0 ? 0.9F + (float)i * 0.125F : super.getVelocityMultiplier();
+	}
+
 	protected void applyFrostWalker(BlockPos pos) {
 		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.FROST_WALKER, this);
 		if (i > 0) {
 			FrostWalkerEnchantment.freezeWater(this, this.world, pos, i);
+		}
+
+		if (this.method_25936().matches(BlockTags.SOUL_SPEED_BLOCKS) && EnchantmentHelper.hasSoulSpeed(this) && this.getRandom().nextFloat() < 0.04F) {
+			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
+			ServerPlayerEntity serverPlayerEntity = this instanceof ServerPlayerEntity ? (ServerPlayerEntity)this : null;
+			itemStack.damage(1, this.getRandom(), serverPlayerEntity);
 		}
 	}
 
@@ -1225,9 +1265,9 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void method_24830(boolean bl) {
-		super.method_24830(bl);
-		if (bl) {
+	public void setOnGround(boolean onGround) {
+		super.setOnGround(onGround);
+		if (onGround) {
 			this.field_22418 = Optional.empty();
 		}
 	}
@@ -2007,7 +2047,7 @@ public abstract class LivingEntity extends Entity {
 				}
 
 				ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-				if (!ItemStack.areEqualIgnoreDamage(itemStack2, itemStack)) {
+				if (!ItemStack.areEqual(itemStack2, itemStack)) {
 					((ServerWorld)this.world)
 						.getChunkManager()
 						.sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), equipmentSlot, itemStack2));

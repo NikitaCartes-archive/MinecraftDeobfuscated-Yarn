@@ -189,7 +189,7 @@ public class CommandBlock extends BlockWithEntity {
 		int i;
 		BlockState blockState;
 		for(i = gameRules.getInt(GameRules.MAX_COMMAND_CHAIN_LENGTH); i-- > 0; facing = blockState.get(FACING)) {
-			mutable.setOffset(facing);
+			mutable.move(facing);
 			blockState = world.getBlockState(mutable);
 			Block block = blockState.getBlock();
 			if (block != Blocks.CHAIN_COMMAND_BLOCK) {

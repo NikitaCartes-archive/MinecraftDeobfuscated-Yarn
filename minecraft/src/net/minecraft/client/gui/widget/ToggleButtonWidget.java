@@ -56,7 +56,7 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 			j += this.hoverVOffset;
 		}
 
-		this.blit(this.x, this.y, i, j, this.width, this.height);
+		this.drawTexture(this.x, this.y, i, j, this.width, this.height);
 		RenderSystem.enableDepthTest();
 	}
 }

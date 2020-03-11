@@ -5,14 +5,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Iterator;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
 public class FurnaceInputSlotFiller<C extends Inventory> extends InputSlotFiller<C> {
 	private boolean slotMatchesRecipe;
 
-	public FurnaceInputSlotFiller(CraftingScreenHandler<C> craftingScreenHandler) {
-		super(craftingScreenHandler);
+	public FurnaceInputSlotFiller(AbstractRecipeScreenHandler<C> abstractRecipeScreenHandler) {
+		super(abstractRecipeScreenHandler);
 	}
 
 	@Override

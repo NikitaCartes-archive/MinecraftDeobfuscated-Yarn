@@ -29,14 +29,12 @@ public class TheEndDimension extends Dimension {
 
 	@Override
 	public ChunkGenerator<?> createChunkGenerator() {
-		FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = ChunkGeneratorType.FLOATING_ISLANDS.createSettings();
+		FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = ChunkGeneratorType.FLOATING_ISLANDS.createConfig();
 		floatingIslandsChunkGeneratorConfig.setDefaultBlock(Blocks.END_STONE.getDefaultState());
 		floatingIslandsChunkGeneratorConfig.setDefaultFluid(Blocks.AIR.getDefaultState());
 		floatingIslandsChunkGeneratorConfig.withCenter(this.getForcedSpawnPoint());
 		return ChunkGeneratorType.FLOATING_ISLANDS
-			.create(
-				this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig(this.world.getLevelProperties())), floatingIslandsChunkGeneratorConfig
-			);
+			.create(this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig(this.world.getSeed())), floatingIslandsChunkGeneratorConfig);
 	}
 
 	@Override

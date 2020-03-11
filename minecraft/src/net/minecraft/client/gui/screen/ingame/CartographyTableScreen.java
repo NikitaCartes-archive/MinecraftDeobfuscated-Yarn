@@ -18,7 +18,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class CartographyTableScreen extends ScreenWithHandler<CartographyTableScreenHandler> {
+public class CartographyTableScreen extends HandledScreen<CartographyTableScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
 	public CartographyTableScreen(CartographyTableScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -44,7 +44,7 @@ public class CartographyTableScreen extends ScreenWithHandler<CartographyTableSc
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = this.x;
 		int j = this.y;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		Item item = this.handler.getSlot(1).getStack().getItem();
 		boolean bl = item == Items.MAP;
 		boolean bl2 = item == Items.PAPER;
@@ -58,13 +58,13 @@ public class CartographyTableScreen extends ScreenWithHandler<CartographyTableSc
 				if (mapState.locked) {
 					bl4 = true;
 					if (bl2 || bl3) {
-						this.blit(i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+						this.drawTexture(i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
 					}
 				}
 
 				if (bl2 && mapState.scale >= 4) {
 					bl4 = true;
-					this.blit(i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+					this.drawTexture(i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
 				}
 			}
 		} else {
@@ -78,27 +78,27 @@ public class CartographyTableScreen extends ScreenWithHandler<CartographyTableSc
 		int i = this.x;
 		int j = this.y;
 		if (isPaper && !bl) {
-			this.blit(i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
+			this.drawTexture(i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
 			this.drawMap(mapState, i + 85, j + 31, 0.226F);
 		} else if (isMap) {
-			this.blit(i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
+			this.drawTexture(i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
 			this.drawMap(mapState, i + 86, j + 16, 0.34F);
 			this.client.getTextureManager().bindTexture(TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 1.0F);
-			this.blit(i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
+			this.drawTexture(i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
 			this.drawMap(mapState, i + 70, j + 32, 0.34F);
 			RenderSystem.popMatrix();
 		} else if (isGlassPane) {
-			this.blit(i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+			this.drawTexture(i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
 			this.drawMap(mapState, i + 71, j + 17, 0.45F);
 			this.client.getTextureManager().bindTexture(TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 1.0F);
-			this.blit(i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
+			this.drawTexture(i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
 			RenderSystem.popMatrix();
 		} else {
-			this.blit(i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+			this.drawTexture(i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
 			this.drawMap(mapState, i + 71, j + 17, 0.45F);
 		}
 	}

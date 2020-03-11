@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.util.PackedIntegerArray;
+import net.minecraft.util.collection.PackedIntegerArray;
 
 public class LeavesFix extends DataFix {
 	private static final int[][] field_5687 = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
@@ -66,8 +66,8 @@ public class LeavesFix extends DataFix {
 		"minecraft:stripped_spruce_log"
 	);
 
-	public LeavesFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public LeavesFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

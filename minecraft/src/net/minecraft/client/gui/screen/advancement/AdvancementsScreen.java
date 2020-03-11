@@ -127,7 +127,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		this.client.getTextureManager().bindTexture(WINDOW_TEXTURE);
-		this.blit(x, y, 0, 0, 252, 140);
+		this.drawTexture(x, y, 0, 0, 252, 140);
 		if (this.tabs.size() > 1) {
 			this.client.getTextureManager().bindTexture(TABS_TEXTURE);
 

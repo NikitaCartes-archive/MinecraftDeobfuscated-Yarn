@@ -38,7 +38,7 @@ public class DemoScreen extends Screen {
 		this.client.getTextureManager().bindTexture(DEMO_BG);
 		int i = (this.width - 248) / 2;
 		int j = (this.height - 166) / 2;
-		this.blit(i, j, 0, 0, 248, 166);
+		this.drawTexture(i, j, 0, 0, 248, 166);
 	}
 
 	@Override

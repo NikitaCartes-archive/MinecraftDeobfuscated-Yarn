@@ -10,7 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.WeightedList;
+import net.minecraft.util.collection.WeightedList;
 
 public class CompositeTask<E extends LivingEntity> extends Task<E> {
 	private final Set<MemoryModuleType<?>> memoriesToForgetWhenStopped;

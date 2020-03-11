@@ -10,10 +10,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.GameMode;
 
 public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {

@@ -22,8 +22,8 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/fishing_hook.png");
-	private static final RenderLayer field_21742 = RenderLayer.getEntityCutout(SKIN);
+	private static final Identifier TEXTURE = new Identifier("textures/entity/fishing_hook.png");
+	private static final RenderLayer LAYER = RenderLayer.getEntityCutout(TEXTURE);
 
 	public FishingBobberEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -35,12 +35,12 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			matrixStack.push();
 			matrixStack.push();
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
-			matrixStack.multiply(this.renderManager.getRotation());
+			matrixStack.multiply(this.dispatcher.getRotation());
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 			MatrixStack.Entry entry = matrixStack.peek();
 			Matrix4f matrix4f = entry.getModel();
 			Matrix3f matrix3f = entry.getNormal();
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(field_21742);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 0.0F, 0, 0, 1);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 0, 1, 1);
 			method_23840(vertexConsumer, matrix4f, matrix3f, i, 1.0F, 1, 1, 0);
@@ -63,8 +63,8 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			double p;
 			double q;
 			float r;
-			if ((this.renderManager.gameOptions == null || this.renderManager.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
-				double s = this.renderManager.gameOptions.fov;
+			if ((this.dispatcher.gameOptions == null || this.dispatcher.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
+				double s = this.dispatcher.gameOptions.fov;
 				s /= 100.0;
 				Vec3d vec3d = new Vec3d((double)j * -0.36 * s, -0.045 * s, 0.4);
 				vec3d = vec3d.rotateX(-MathHelper.lerp(g, playerEntity.prevPitch, playerEntity.pitch) * (float) (Math.PI / 180.0));
@@ -121,6 +121,6 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 	}
 
 	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 }

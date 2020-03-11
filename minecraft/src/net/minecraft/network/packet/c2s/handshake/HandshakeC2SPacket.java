@@ -6,8 +6,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class HandshakeC2SPacket implements Packet<ServerHandshakePacketListener> {
 	private int protocolVersion;

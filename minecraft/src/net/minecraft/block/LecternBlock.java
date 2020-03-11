@@ -6,10 +6,11 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -261,7 +262,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return !state.get(HAS_BOOK) ? null : super.createScreenHandlerFactory(state, world, pos);
 	}
 
@@ -274,7 +275,7 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 }

@@ -47,9 +47,9 @@ public class ShulkerHeadFeatureRenderer extends FeatureRenderer<ShulkerEntity, S
 		DyeColor dyeColor = shulkerEntity.getColor();
 		Identifier identifier;
 		if (dyeColor == null) {
-			identifier = ShulkerEntityRenderer.SKIN;
+			identifier = ShulkerEntityRenderer.TEXTURE;
 		} else {
-			identifier = ShulkerEntityRenderer.SKIN_COLOR[dyeColor.getId()];
+			identifier = ShulkerEntityRenderer.COLORED_TEXTURES[dyeColor.getId()];
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(identifier));

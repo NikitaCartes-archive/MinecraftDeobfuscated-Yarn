@@ -59,7 +59,7 @@ public class HoneyBlock extends TransparentBlock {
 	}
 
 	private boolean isSliding(BlockPos pos, Entity entity) {
-		if (entity.method_24828()) {
+		if (entity.isOnGround()) {
 			return false;
 		} else if (entity.getY() > (double)pos.getY() + 0.9375 - 1.0E-7) {
 			return false;

@@ -88,8 +88,8 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), dynamic -> {
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), dynamic -> {
 			dynamic = this.fix(dynamic, "Text1");
 			dynamic = this.fix(dynamic, "Text2");
 			dynamic = this.fix(dynamic, "Text3");

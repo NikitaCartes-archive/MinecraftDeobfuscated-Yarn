@@ -7,13 +7,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SpectralArrowEntityRenderer extends ProjectileEntityRenderer<SpectralArrowEntity> {
-	public static final Identifier SKIN = new Identifier("textures/entity/projectiles/spectral_arrow.png");
+	public static final Identifier TEXTURE = new Identifier("textures/entity/projectiles/spectral_arrow.png");
 
 	public SpectralArrowEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
 	public Identifier getTexture(SpectralArrowEntity spectralArrowEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 }

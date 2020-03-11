@@ -73,7 +73,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 			i += this.hoveredVOffset;
 		}
 
-		blit(this.x, this.y, (float)this.u, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
+		drawTexture(this.x, this.y, (float)this.u, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
 		RenderSystem.enableDepthTest();
 	}
 }

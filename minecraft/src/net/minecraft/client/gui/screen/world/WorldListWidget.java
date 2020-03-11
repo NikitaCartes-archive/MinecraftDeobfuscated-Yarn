@@ -215,7 +215,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			this.client.getTextureManager().bindTexture(this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION);
 			RenderSystem.enableBlend();
-			DrawableHelper.blit(x, y, 0.0F, 0.0F, 32, 32, 32, 32);
+			DrawableHelper.drawTexture(x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
 			if (this.client.options.touchscreen || hovering) {
 				this.client.getTextureManager().bindTexture(WorldListWidget.WORLD_SELECTION_LOCATION);
@@ -224,15 +224,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				int i = mouseX - x;
 				int j = i < 32 ? 32 : 0;
 				if (this.level.isDifferentVersion()) {
-					DrawableHelper.blit(x, y, 32.0F, (float)j, 32, 32, 256, 256);
+					DrawableHelper.drawTexture(x, y, 32.0F, (float)j, 32, 32, 256, 256);
 					if (this.level.isLegacyCustomizedWorld()) {
-						DrawableHelper.blit(x, y, 96.0F, (float)j, 32, 32, 256, 256);
+						DrawableHelper.drawTexture(x, y, 96.0F, (float)j, 32, 32, 256, 256);
 						if (i < 32) {
 							Text text = new TranslatableText("selectWorld.tooltip.unsupported", this.level.getVersion()).formatted(Formatting.RED);
 							this.screen.setTooltip(this.client.textRenderer.wrapStringToWidth(text.asFormattedString(), 175));
 						}
 					} else if (this.level.isFutureLevel()) {
-						DrawableHelper.blit(x, y, 96.0F, (float)j, 32, 32, 256, 256);
+						DrawableHelper.drawTexture(x, y, 96.0F, (float)j, 32, 32, 256, 256);
 						if (i < 32) {
 							this.screen
 								.setTooltip(
@@ -244,7 +244,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								);
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
-						DrawableHelper.blit(x, y, 64.0F, (float)j, 32, 32, 256, 256);
+						DrawableHelper.drawTexture(x, y, 64.0F, (float)j, 32, 32, 256, 256);
 						if (i < 32) {
 							this.screen
 								.setTooltip(
@@ -253,7 +253,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						}
 					}
 				} else {
-					DrawableHelper.blit(x, y, 0.0F, (float)j, 32, 32, 256, 256);
+					DrawableHelper.drawTexture(x, y, 0.0F, (float)j, 32, 32, 256, 256);
 				}
 			}
 		}

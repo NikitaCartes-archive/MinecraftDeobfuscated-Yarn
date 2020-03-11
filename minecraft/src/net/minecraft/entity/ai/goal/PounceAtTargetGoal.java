@@ -28,7 +28,7 @@ public class PounceAtTargetGoal extends Goal {
 				double d = this.mob.squaredDistanceTo(this.target);
 				if (d < 4.0 || d > 16.0) {
 					return false;
-				} else if (!this.mob.method_24828()) {
+				} else if (!this.mob.isOnGround()) {
 					return false;
 				} else {
 					return this.mob.getRandom().nextInt(5) == 0;
@@ -39,7 +39,7 @@ public class PounceAtTargetGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.mob.method_24828();
+		return !this.mob.isOnGround();
 	}
 
 	@Override

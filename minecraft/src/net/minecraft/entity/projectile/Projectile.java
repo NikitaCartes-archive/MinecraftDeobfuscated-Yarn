@@ -69,7 +69,7 @@ public abstract class Projectile extends Entity {
 		float h = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
 		this.setVelocity((double)f, (double)g, (double)h, modifierZ, modifierXYZ);
 		Vec3d vec3d = user.getVelocity();
-		this.setVelocity(this.getVelocity().add(vec3d.x, user.method_24828() ? 0.0 : vec3d.y, vec3d.z));
+		this.setVelocity(this.getVelocity().add(vec3d.x, user.isOnGround() ? 0.0 : vec3d.y, vec3d.z));
 	}
 
 	protected void onCollision(HitResult hitResult) {

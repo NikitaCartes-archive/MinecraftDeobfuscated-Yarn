@@ -62,6 +62,6 @@ public class BiomesFix extends BiomeRenameFix {
 		.build();
 
 	public BiomesFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, RENAMED_BIOMES);
+		super(outputSchema, changesType, "Biomes fix", RENAMED_BIOMES);
 	}
 }

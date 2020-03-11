@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Objects;
-import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 

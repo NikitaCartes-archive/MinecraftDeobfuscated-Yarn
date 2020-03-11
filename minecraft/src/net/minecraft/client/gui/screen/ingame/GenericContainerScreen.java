@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class GenericContainerScreen extends ScreenWithHandler<GenericContainerScreenHandler> implements ScreenHandlerProvider<GenericContainerScreenHandler> {
+public class GenericContainerScreen extends HandledScreen<GenericContainerScreenHandler> implements ScreenHandlerProvider<GenericContainerScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/generic_54.png");
 	private final int rows;
 
@@ -41,7 +41,7 @@ public class GenericContainerScreen extends ScreenWithHandler<GenericContainerSc
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.rows * 18 + 17);
-		this.blit(i, j + this.rows * 18 + 17, 0, 126, this.backgroundWidth, 96);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.rows * 18 + 17);
+		this.drawTexture(i, j + this.rows * 18 + 17, 0, 126, this.backgroundWidth, 96);
 	}
 }

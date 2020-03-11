@@ -5,8 +5,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacketListener> {
 	private int slot;

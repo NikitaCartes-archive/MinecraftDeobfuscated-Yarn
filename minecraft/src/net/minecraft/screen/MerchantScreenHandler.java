@@ -111,25 +111,25 @@ public class MerchantScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot == 2) {
+			if (index == 2) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
 				this.playYesSound();
-			} else if (invSlot != 0 && invSlot != 1) {
-				if (invSlot >= 3 && invSlot < 30) {
+			} else if (index != 0 && index != 1) {
+				if (index >= 3 && index < 30) {
 					if (!this.insertItem(itemStack2, 30, 39, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 30 && invSlot < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
+				} else if (index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.insertItem(itemStack2, 3, 39, false)) {
@@ -236,8 +236,8 @@ public class MerchantScreenHandler extends ScreenHandler {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void setOffers(TraderOfferList traderOfferList) {
-		this.trader.setOffersFromServer(traderOfferList);
+	public void setOffers(TraderOfferList offers) {
+		this.trader.setOffersFromServer(offers);
 	}
 
 	public TraderOfferList getRecipes() {

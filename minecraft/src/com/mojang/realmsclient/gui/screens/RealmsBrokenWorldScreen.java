@@ -287,7 +287,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			RenderSystem.color4f(f, f, f, 1.0F);
 		}
 
-		DrawableHelper.blit(x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
+		DrawableHelper.drawTexture(x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
 		this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22681);
 		if (active) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -295,7 +295,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		DrawableHelper.blit(x, y, 0.0F, 0.0F, 80, 80, 80, 80);
+		DrawableHelper.drawTexture(x, y, 0.0F, 0.0F, 80, 80, 80, 80);
 		this.drawCenteredString(this.textRenderer, string, x + 40, y + 66, 16777215);
 	}
 }

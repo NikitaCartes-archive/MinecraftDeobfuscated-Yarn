@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
 
 public class AttackTask<E extends MobEntity> extends Task<E> {
 	private final int distance;
@@ -35,8 +36,9 @@ public class AttackTask<E extends MobEntity> extends Task<E> {
 	}
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-		mobEntity.getMoveControl().strafeTo(-this.forwardMovement, 0.0F);
 		mobEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(this.getAttackTarget(mobEntity)));
+		mobEntity.getMoveControl().strafeTo(-this.forwardMovement, 0.0F);
+		mobEntity.yaw = MathHelper.capRotation(mobEntity.yaw, mobEntity.headYaw, 0.0F);
 	}
 
 	private boolean isAttackTargetVisible(E entity) {

@@ -20,44 +20,44 @@ public class IllagerEntityModel<T extends IllagerEntity> extends CompositeEntity
 	private final ModelPart rightAttackingArm;
 	private final ModelPart leftAttackingArm;
 
-	public IllagerEntityModel(float f, float g, int i, int j) {
-		this.head = new ModelPart(this).setTextureSize(i, j);
-		this.head.setPivot(0.0F, 0.0F + g, 0.0F);
-		this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, f);
-		this.hat = new ModelPart(this, 32, 0).setTextureSize(i, j);
-		this.hat.addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 12.0F, 8.0F, f + 0.45F);
+	public IllagerEntityModel(float scale, float pivotY, int textureWidth, int textureHeight) {
+		this.head = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
+		this.head.setPivot(0.0F, 0.0F + pivotY, 0.0F);
+		this.head.setTextureOffset(0, 0).addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 10.0F, 8.0F, scale);
+		this.hat = new ModelPart(this, 32, 0).setTextureSize(textureWidth, textureHeight);
+		this.hat.addCuboid(-4.0F, -10.0F, -4.0F, 8.0F, 12.0F, 8.0F, scale + 0.45F);
 		this.head.addChild(this.hat);
 		this.hat.visible = false;
-		ModelPart modelPart = new ModelPart(this).setTextureSize(i, j);
-		modelPart.setPivot(0.0F, g - 2.0F, 0.0F);
-		modelPart.setTextureOffset(24, 0).addCuboid(-1.0F, -1.0F, -6.0F, 2.0F, 4.0F, 2.0F, f);
+		ModelPart modelPart = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
+		modelPart.setPivot(0.0F, pivotY - 2.0F, 0.0F);
+		modelPart.setTextureOffset(24, 0).addCuboid(-1.0F, -1.0F, -6.0F, 2.0F, 4.0F, 2.0F, scale);
 		this.head.addChild(modelPart);
-		this.torso = new ModelPart(this).setTextureSize(i, j);
-		this.torso.setPivot(0.0F, 0.0F + g, 0.0F);
-		this.torso.setTextureOffset(16, 20).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F, f);
-		this.torso.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, f + 0.5F);
-		this.arms = new ModelPart(this).setTextureSize(i, j);
-		this.arms.setPivot(0.0F, 0.0F + g + 2.0F, 0.0F);
-		this.arms.setTextureOffset(44, 22).addCuboid(-8.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, f);
-		ModelPart modelPart2 = new ModelPart(this, 44, 22).setTextureSize(i, j);
+		this.torso = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
+		this.torso.setPivot(0.0F, 0.0F + pivotY, 0.0F);
+		this.torso.setTextureOffset(16, 20).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F, scale);
+		this.torso.setTextureOffset(0, 38).addCuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, scale + 0.5F);
+		this.arms = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
+		this.arms.setPivot(0.0F, 0.0F + pivotY + 2.0F, 0.0F);
+		this.arms.setTextureOffset(44, 22).addCuboid(-8.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, scale);
+		ModelPart modelPart2 = new ModelPart(this, 44, 22).setTextureSize(textureWidth, textureHeight);
 		modelPart2.mirror = true;
-		modelPart2.addCuboid(4.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, f);
+		modelPart2.addCuboid(4.0F, -2.0F, -2.0F, 4.0F, 8.0F, 4.0F, scale);
 		this.arms.addChild(modelPart2);
-		this.arms.setTextureOffset(40, 38).addCuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F, f);
-		this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
-		this.rightLeg.setPivot(-2.0F, 12.0F + g, 0.0F);
-		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(i, j);
+		this.arms.setTextureOffset(40, 38).addCuboid(-4.0F, 2.0F, -2.0F, 8.0F, 4.0F, 4.0F, scale);
+		this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(textureWidth, textureHeight);
+		this.rightLeg.setPivot(-2.0F, 12.0F + pivotY, 0.0F);
+		this.rightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(textureWidth, textureHeight);
 		this.leftLeg.mirror = true;
-		this.leftLeg.setPivot(2.0F, 12.0F + g, 0.0F);
-		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.rightAttackingArm = new ModelPart(this, 40, 46).setTextureSize(i, j);
-		this.rightAttackingArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.rightAttackingArm.setPivot(-5.0F, 2.0F + g, 0.0F);
-		this.leftAttackingArm = new ModelPart(this, 40, 46).setTextureSize(i, j);
+		this.leftLeg.setPivot(2.0F, 12.0F + pivotY, 0.0F);
+		this.leftLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.rightAttackingArm = new ModelPart(this, 40, 46).setTextureSize(textureWidth, textureHeight);
+		this.rightAttackingArm.addCuboid(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.rightAttackingArm.setPivot(-5.0F, 2.0F + pivotY, 0.0F);
+		this.leftAttackingArm = new ModelPart(this, 40, 46).setTextureSize(textureWidth, textureHeight);
 		this.leftAttackingArm.mirror = true;
-		this.leftAttackingArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, f);
-		this.leftAttackingArm.setPivot(5.0F, 2.0F + g, 0.0F);
+		this.leftAttackingArm.addCuboid(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, scale);
+		this.leftAttackingArm.setPivot(5.0F, 2.0F + pivotY, 0.0F);
 	}
 
 	@Override

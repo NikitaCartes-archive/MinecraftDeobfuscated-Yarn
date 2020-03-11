@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class ElderGuardianAppearanceParticle extends Particle {
 	private final Model field_21793 = new GuardianEntityModel();
-	private final RenderLayer field_21792 = RenderLayer.getEntityTranslucent(ElderGuardianEntityRenderer.SKIN);
+	private final RenderLayer field_21792 = RenderLayer.getEntityTranslucent(ElderGuardianEntityRenderer.TEXTURE);
 
 	private ElderGuardianAppearanceParticle(World world, double x, double y, double z) {
 		super(world, x, y, z);

@@ -17,6 +17,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.fluid.Fluid;
@@ -24,7 +25,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.AbstractState;
@@ -201,6 +202,10 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().getCollisionShape(this, world, pos, context);
 	}
 
+	public VoxelShape method_25962(BlockView blockView, BlockPos blockPos) {
+		return this.getBlock().method_25959(this, blockView, blockPos);
+	}
+
 	public VoxelShape getCullingShape(BlockView world, BlockPos pos) {
 		return this.getBlock().getCullingShape(this, world, pos);
 	}
@@ -286,8 +291,8 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 		return this.getBlock().getStateForNeighborUpdate(this, facing, neighborState, world, pos, neighborPos);
 	}
 
-	public boolean canPlaceAtSide(BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
-		return this.getBlock().canPlaceAtSide(this, world, pos, env);
+	public boolean canPathfindThrough(BlockView world, BlockPos pos, NavigationType env) {
+		return this.getBlock().canPathfindThrough(this, world, pos, env);
 	}
 
 	public boolean canReplace(ItemPlacementContext ctx) {
@@ -307,7 +312,7 @@ public class BlockState extends AbstractState<Block, BlockState> implements Stat
 	}
 
 	@Nullable
-	public NameableScreenHandlerFactory createContainerFactory(World world, BlockPos pos) {
+	public NamedScreenHandlerFactory createScreenHandlerFactory(World world, BlockPos pos) {
 		return this.getBlock().createScreenHandlerFactory(this, world, pos);
 	}
 

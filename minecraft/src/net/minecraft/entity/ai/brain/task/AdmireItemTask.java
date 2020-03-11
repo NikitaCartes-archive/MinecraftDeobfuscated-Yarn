@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.DynamicSerializableBoolean;
+import net.minecraft.util.dynamic.DynamicSerializableBoolean;
 
 public class AdmireItemTask<E extends PiglinEntity> extends Task<E> {
 	private final int duration;

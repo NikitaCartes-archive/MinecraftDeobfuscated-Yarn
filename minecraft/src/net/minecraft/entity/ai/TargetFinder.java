@@ -173,7 +173,7 @@ public class TargetFinder {
 					}
 
 					if (notInWater || !mob.world.getFluidState(blockPos3).matches(FluidTags.WATER)) {
-						PathNodeType pathNodeType = LandPathNodeMaker.getPathNodeType(mob.world, blockPos3.getX(), blockPos3.getY(), blockPos3.getZ());
+						PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(mob.world, blockPos3.getX(), blockPos3.getY(), blockPos3.getZ());
 						if (mob.getPathfindingPenalty(pathNodeType) == 0.0F) {
 							double e = favorProvider.applyAsDouble(blockPos3);
 							if (e > d) {

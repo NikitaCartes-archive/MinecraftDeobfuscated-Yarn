@@ -7,9 +7,9 @@ import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.Projectile;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -69,11 +69,9 @@ public class BellBlock extends BlockWithEntity {
 
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
-		if (projectile instanceof ProjectileEntity) {
-			Entity entity = projectile.getOwner();
-			PlayerEntity playerEntity = entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
-			this.ring(world, state, hitResult, playerEntity, true);
-		}
+		Entity entity = projectile.getOwner();
+		PlayerEntity playerEntity = entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
+		this.ring(world, state, hitResult, playerEntity, true);
 	}
 
 	@Override
@@ -257,7 +255,7 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 }

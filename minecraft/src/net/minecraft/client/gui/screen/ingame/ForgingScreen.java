@@ -9,16 +9,16 @@ import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
-import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
-public class ForgingScreen<T extends ForgingScreenHandler> extends ScreenWithHandler<T> implements ScreenHandlerListener {
+public class ForgingScreen<T extends ForgingScreenHandler> extends HandledScreen<T> implements ScreenHandlerListener {
 	private Identifier texture;
 
-	public ForgingScreen(T forgingScreenHandler, PlayerInventory playerInventory, Text text, Identifier identifier) {
-		super(forgingScreenHandler, playerInventory, text);
-		this.texture = identifier;
+	public ForgingScreen(T handler, PlayerInventory playerInventory, Text title, Identifier texture) {
+		super(handler, playerInventory, title);
+		this.texture = texture;
 	}
 
 	protected void setup() {
@@ -55,23 +55,23 @@ public class ForgingScreen<T extends ForgingScreenHandler> extends ScreenWithHan
 		this.client.getTextureManager().bindTexture(this.texture);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.blit(i + 59, j + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i + 59, j + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
 		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(2).hasStack()) {
-			this.blit(i + 99, j + 45, this.backgroundWidth, 0, 28, 21);
+			this.drawTexture(i + 99, j + 45, this.backgroundWidth, 0, 28, 21);
 		}
 	}
 
 	@Override
-	public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> defaultedList) {
+	public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
 		this.onSlotUpdate(handler, 0, handler.getSlot(0).getStack());
 	}
 
 	@Override
-	public void onPropertyUpdate(ScreenHandler handler, int propertyId, int i) {
+	public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
 	}
 
 	@Override
-	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack) {
+	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
 	}
 }

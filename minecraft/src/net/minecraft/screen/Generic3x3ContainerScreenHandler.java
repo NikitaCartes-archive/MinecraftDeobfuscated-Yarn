@@ -16,7 +16,7 @@ public class Generic3x3ContainerScreenHandler extends ScreenHandler {
 
 	public Generic3x3ContainerScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
 		super(ScreenHandlerType.GENERIC_3X3, syncId);
-		checkContainerSize(inventory, 9);
+		checkSize(inventory, 9);
 		this.inventory = inventory;
 		inventory.onInvOpen(playerInventory.player);
 
@@ -43,13 +43,13 @@ public class Generic3x3ContainerScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot < 9) {
+			if (index < 9) {
 				if (!this.insertItem(itemStack2, 9, 45, true)) {
 					return ItemStack.EMPTY;
 				}

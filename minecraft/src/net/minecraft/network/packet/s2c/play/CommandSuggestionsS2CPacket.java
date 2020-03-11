@@ -9,10 +9,10 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.PacketByteBuf;
 
 public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int completionId;

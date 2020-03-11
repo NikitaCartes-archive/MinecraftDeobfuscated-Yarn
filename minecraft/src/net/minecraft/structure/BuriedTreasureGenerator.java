@@ -61,7 +61,7 @@ public class BuriedTreasureGenerator {
 					return this.addChest(world, box, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
 				}
 
-				mutable.setOffset(0, -1, 0);
+				mutable.move(0, -1, 0);
 			}
 
 			return false;

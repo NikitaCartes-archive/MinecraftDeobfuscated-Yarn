@@ -8,13 +8,13 @@ import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 
 public class Schema106 extends Schema {
-	public Schema106(int i, Schema schema) {
-		super(i, schema);
+	public Schema106(int versionKey, Schema parent) {
+		super(versionKey, parent);
 	}
 
 	@Override
-	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
-		super.registerTypes(schema, map, map2);
+	public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, Map<String, Supplier<TypeTemplate>> blockEntityTypes) {
+		super.registerTypes(schema, entityTypes, blockEntityTypes);
 		schema.registerType(
 			true,
 			TypeReferences.UNTAGGED_SPAWNER,

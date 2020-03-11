@@ -9,8 +9,8 @@ public class FurnaceOutputSlot extends Slot {
 	private final PlayerEntity player;
 	private int amount;
 
-	public FurnaceOutputSlot(PlayerEntity player, Inventory inventory, int invSlot, int xPosition, int yPosition) {
-		super(inventory, invSlot, xPosition, yPosition);
+	public FurnaceOutputSlot(PlayerEntity player, Inventory inventory, int index, int x, int y) {
+		super(inventory, index, x, y);
 		this.player = player;
 	}
 

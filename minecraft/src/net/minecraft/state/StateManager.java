@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.MapUtil;
+import net.minecraft.util.collection.MapUtil;
 
 public class StateManager<O, S extends State<S>> {
 	private static final Pattern VALID_NAME_PATTERN = Pattern.compile("^[a-z0-9_]+$");

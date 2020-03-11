@@ -5,20 +5,20 @@ import javax.annotation.Nullable;
 
 public abstract class ServerConfigEntry<T> {
 	@Nullable
-	private final T object;
+	private final T key;
 
-	public ServerConfigEntry(@Nullable T object) {
-		this.object = object;
+	public ServerConfigEntry(@Nullable T key) {
+		this.key = key;
 	}
 
 	@Nullable
 	T getKey() {
-		return this.object;
+		return this.key;
 	}
 
 	boolean isInvalid() {
 		return false;
 	}
 
-	protected abstract void method_24896(JsonObject jsonObject);
+	protected abstract void fromJson(JsonObject json);
 }

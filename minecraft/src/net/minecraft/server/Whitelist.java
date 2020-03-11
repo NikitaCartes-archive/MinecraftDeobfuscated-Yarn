@@ -10,8 +10,8 @@ public class Whitelist extends ServerConfigList<GameProfile, WhitelistEntry> {
 	}
 
 	@Override
-	protected ServerConfigEntry<GameProfile> fromJson(JsonObject jsonObject) {
-		return new WhitelistEntry(jsonObject);
+	protected ServerConfigEntry<GameProfile> fromJson(JsonObject json) {
+		return new WhitelistEntry(json);
 	}
 
 	public boolean isAllowed(GameProfile profile) {

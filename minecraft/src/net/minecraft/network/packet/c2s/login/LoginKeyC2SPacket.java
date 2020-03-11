@@ -8,8 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerLoginPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 	private byte[] encryptedSecretKey = new byte[0];

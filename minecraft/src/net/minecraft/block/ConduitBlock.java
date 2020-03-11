@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -82,7 +83,7 @@ public class ConduitBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 }

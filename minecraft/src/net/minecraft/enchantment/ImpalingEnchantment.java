@@ -4,7 +4,7 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 
 public class ImpalingEnchantment extends Enchantment {
-	public ImpalingEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	public ImpalingEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.TRIDENT, slotTypes);
 	}
 

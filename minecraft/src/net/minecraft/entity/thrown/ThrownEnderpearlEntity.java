@@ -88,7 +88,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 				);
 		}
 
-		if (!this.world.isClient) {
+		if (!this.world.isClient && !this.removed) {
 			if (entity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {

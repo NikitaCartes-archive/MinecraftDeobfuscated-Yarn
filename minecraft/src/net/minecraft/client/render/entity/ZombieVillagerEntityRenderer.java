@@ -11,16 +11,16 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
 
-	public ZombieVillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager reloadableResourceManager) {
-		super(entityRenderDispatcher, new ZombieVillagerEntityModel<>(0.0F, false), 0.5F);
+	public ZombieVillagerEntityRenderer(EntityRenderDispatcher dispatcher, ReloadableResourceManager reloadableResourceManager) {
+		super(dispatcher, new ZombieVillagerEntityModel<>(0.0F, false), 0.5F);
 		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new ZombieVillagerEntityModel(0.5F, true), new ZombieVillagerEntityModel(1.0F, true)));
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
 	}
 
 	public Identifier getTexture(ZombieVillagerEntity zombieVillagerEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 
 	protected boolean isShaking(ZombieVillagerEntity zombieVillagerEntity) {

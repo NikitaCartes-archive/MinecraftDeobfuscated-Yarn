@@ -71,8 +71,8 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 				ItemStack itemStack4 = new ItemStack(itemStack3.getItem());
 				itemStack4.setDamage(m);
 				Map<Enchantment, Integer> map = Maps.newHashMap();
-				Map<Enchantment, Integer> map2 = EnchantmentHelper.getEnchantments(itemStack3);
-				Map<Enchantment, Integer> map3 = EnchantmentHelper.getEnchantments(itemStack);
+				Map<Enchantment, Integer> map2 = EnchantmentHelper.get(itemStack3);
+				Map<Enchantment, Integer> map3 = EnchantmentHelper.get(itemStack);
 				Registry.ENCHANTMENT.stream().filter(Enchantment::isCursed).forEach(enchantment -> {
 					int i = Math.max(map2.getOrDefault(enchantment, 0), map3.getOrDefault(enchantment, 0));
 					if (i > 0) {

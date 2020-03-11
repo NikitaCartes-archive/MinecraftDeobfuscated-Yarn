@@ -2,11 +2,12 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.screen.BlockContext;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.stat.Stats;
@@ -25,7 +26,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class StonecutterBlock extends Block {
-	private static final TranslatableText CONTAINER_NAME = new TranslatableText("container.stonecutter");
+	private static final TranslatableText TITLE = new TranslatableText("container.stonecutter");
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
@@ -44,7 +45,7 @@ public class StonecutterBlock extends Block {
 		if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
-			player.openHandledScreen(state.createContainerFactory(world, pos));
+			player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
 			player.incrementStat(Stats.INTERACT_WITH_STONECUTTER);
 			return ActionResult.SUCCESS;
 		}
@@ -52,9 +53,9 @@ public class StonecutterBlock extends Block {
 
 	@Nullable
 	@Override
-	public NameableScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
+	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(i, playerInventory, playerEntity) -> new StonecutterScreenHandler(i, playerInventory, BlockContext.create(world, pos)), CONTAINER_NAME
+			(i, playerInventory, playerEntity) -> new StonecutterScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), TITLE
 		);
 	}
 
@@ -89,7 +90,7 @@ public class StonecutterBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
 		return false;
 	}
 }

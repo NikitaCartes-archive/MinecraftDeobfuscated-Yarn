@@ -5,12 +5,13 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public class KelpPlantBlock extends AbstractPlantBlock implements FluidFillable {
 	protected KelpPlantBlock(Block.Settings settings) {
-		super(settings, Direction.UP, true);
+		super(settings, Direction.UP, VoxelShapes.fullCube(), true);
 	}
 
 	@Override

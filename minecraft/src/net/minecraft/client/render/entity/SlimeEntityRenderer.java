@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/slime/slime.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/slime/slime.png");
 
 	public SlimeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SlimeEntityModel<>(16), 0.25F);
@@ -35,6 +35,6 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 	}
 
 	public Identifier getTexture(SlimeEntity slimeEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 }

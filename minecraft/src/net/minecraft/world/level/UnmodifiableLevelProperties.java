@@ -125,7 +125,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setSpawnPos(BlockPos blockPos) {
+	public void setSpawnPos(BlockPos pos) {
 	}
 
 	@Override
@@ -168,7 +168,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setGeneratorType(LevelGeneratorType levelGeneratorType) {
+	public void setGeneratorOptions(LevelGeneratorOptions options) {
 	}
 
 	@Override
@@ -218,18 +218,18 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setWorldData(DimensionType type, CompoundTag compoundTag) {
-		this.properties.setWorldData(type, compoundTag);
+	public void setWorldData(DimensionType type, CompoundTag tag) {
+		this.properties.setWorldData(type, tag);
 	}
 
 	@Override
-	public CompoundTag getWorldData(DimensionType dimensionType) {
-		return this.properties.getWorldData(dimensionType);
+	public CompoundTag getWorldData(DimensionType type) {
+		return this.properties.getWorldData(type);
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Derived", true);
-		this.properties.populateCrashReport(crashReportSection);
+	public void populateCrashReport(CrashReportSection section) {
+		section.add("Derived", true);
+		this.properties.populateCrashReport(section);
 	}
 }

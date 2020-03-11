@@ -4,7 +4,7 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 public class Inventories {
 	public static ItemStack splitStack(List<ItemStack> stacks, int slot, int amount) {

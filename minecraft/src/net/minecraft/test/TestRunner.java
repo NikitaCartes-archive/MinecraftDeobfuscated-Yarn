@@ -92,9 +92,9 @@ public class TestRunner {
 			int j = blockPos2 == null ? 1 : blockPos2.getX();
 			int k = blockPos2 == null ? 1 : blockPos2.getZ();
 			this.sizeZ = Math.max(this.sizeZ, k);
-			this.reusablePos.setOffset(j + 4, 0, 0);
+			this.reusablePos.move(j + 4, 0, 0);
 			if (i++ % 8 == 0) {
-				this.reusablePos.setOffset(0, 0, this.sizeZ + 5);
+				this.reusablePos.move(0, 0, this.sizeZ + 5);
 				this.reusablePos.setX(this.pos.getX());
 				this.sizeZ = 0;
 			}

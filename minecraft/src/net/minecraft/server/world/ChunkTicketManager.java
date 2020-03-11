@@ -23,7 +23,7 @@ import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ChunkPosDistanceLevelPropagator;
-import net.minecraft.util.SortedArraySet;
+import net.minecraft.util.collection.SortedArraySet;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.thread.MessageListener;

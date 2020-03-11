@@ -3,7 +3,7 @@ package net.minecraft.command.arguments.serialize;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType.StringType;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class StringArgumentSerializer implements ArgumentSerializer<StringArgumentType> {
 	public void toPacket(StringArgumentType stringArgumentType, PacketByteBuf packetByteBuf) {

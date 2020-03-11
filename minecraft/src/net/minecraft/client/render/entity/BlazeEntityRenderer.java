@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, BlazeEntityModel<BlazeEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/blaze.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/blaze.png");
 
 	public BlazeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new BlazeEntityModel<>(), 0.5F);
@@ -19,6 +19,6 @@ public class BlazeEntityRenderer extends MobEntityRenderer<BlazeEntity, BlazeEnt
 	}
 
 	public Identifier getTexture(BlazeEntity blazeEntity) {
-		return SKIN;
+		return TEXTURE;
 	}
 }

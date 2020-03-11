@@ -7,8 +7,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 

@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -38,12 +39,12 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
-import net.minecraft.util.MaterialPredicate;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.function.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -139,8 +140,16 @@ public abstract class World implements IWorld, AutoCloseable {
 		return !isHeightInvalid(blockPos) && isValid(blockPos);
 	}
 
-	public static boolean isValid(BlockPos pos) {
+	public static boolean method_25953(BlockPos blockPos) {
+		return !method_25952(blockPos.getY()) && isValid(blockPos);
+	}
+
+	private static boolean isValid(BlockPos pos) {
 		return pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000;
+	}
+
+	private static boolean method_25952(int i) {
+		return i < -20000000 || i >= 20000000;
 	}
 
 	public static boolean isHeightInvalid(BlockPos pos) {
@@ -244,7 +253,10 @@ public abstract class World implements IWorld, AutoCloseable {
 			return false;
 		} else {
 			FluidState fluidState = this.getFluidState(pos);
-			this.playLevelEvent(2001, pos, Block.getRawIdFromState(blockState));
+			if (!(blockState.getBlock() instanceof AbstractFireBlock)) {
+				this.playLevelEvent(2001, pos, Block.getRawIdFromState(blockState));
+			}
+
 			if (drop) {
 				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(pos) : null;
 				Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);

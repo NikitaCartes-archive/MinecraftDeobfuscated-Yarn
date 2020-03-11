@@ -9,8 +9,8 @@ import net.minecraft.entity.mob.IllagerEntity;
 
 @Environment(EnvType.CLIENT)
 public abstract class IllagerEntityRenderer<T extends IllagerEntity> extends MobEntityRenderer<T, IllagerEntityModel<T>> {
-	protected IllagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, IllagerEntityModel<T> illagerEntityModel, float f) {
-		super(entityRenderDispatcher, illagerEntityModel, f);
+	protected IllagerEntityRenderer(EntityRenderDispatcher dispatcher, IllagerEntityModel<T> model, float f) {
+		super(dispatcher, model, f);
 		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 

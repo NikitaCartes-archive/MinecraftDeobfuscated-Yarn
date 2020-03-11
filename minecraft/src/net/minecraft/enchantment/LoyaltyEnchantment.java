@@ -3,7 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class LoyaltyEnchantment extends Enchantment {
-	public LoyaltyEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	public LoyaltyEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.TRIDENT, slotTypes);
 	}
 
@@ -23,7 +23,7 @@ public class LoyaltyEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
-		return super.differs(other);
+	public boolean canAccept(Enchantment other) {
+		return super.canAccept(other);
 	}
 }

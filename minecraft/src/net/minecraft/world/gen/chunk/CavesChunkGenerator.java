@@ -4,7 +4,7 @@ import java.util.List;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.feature.Feature;
@@ -12,8 +12,8 @@ import net.minecraft.world.gen.feature.Feature;
 public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGeneratorConfig> {
 	private final double[] noiseFalloff = this.buildNoiseFalloff();
 
-	public CavesChunkGenerator(World world, BiomeSource biomeSource, CavesChunkGeneratorConfig config) {
-		super(world, biomeSource, 4, 8, 128, config, false);
+	public CavesChunkGenerator(IWorld iWorld, BiomeSource biomeSource, CavesChunkGeneratorConfig config) {
+		super(iWorld, biomeSource, 4, 8, 128, config, false);
 	}
 
 	@Override

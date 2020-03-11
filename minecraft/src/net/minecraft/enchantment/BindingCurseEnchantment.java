@@ -3,7 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class BindingCurseEnchantment extends Enchantment {
-	public BindingCurseEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	public BindingCurseEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.WEARABLE, slotTypes);
 	}
 

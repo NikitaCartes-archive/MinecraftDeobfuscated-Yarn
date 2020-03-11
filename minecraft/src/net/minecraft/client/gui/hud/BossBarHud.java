@@ -46,16 +46,16 @@ public class BossBarHud extends DrawableHelper {
 	}
 
 	private void renderBossBar(int x, int y, BossBar bossBar) {
-		this.blit(x, y, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
+		this.drawTexture(x, y, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
 		if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
-			this.blit(x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
+			this.drawTexture(x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
 		}
 
 		int i = (int)(bossBar.getPercent() * 183.0F);
 		if (i > 0) {
-			this.blit(x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, i, 5);
+			this.drawTexture(x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, i, 5);
 			if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
-				this.blit(x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
+				this.drawTexture(x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
 			}
 		}
 	}

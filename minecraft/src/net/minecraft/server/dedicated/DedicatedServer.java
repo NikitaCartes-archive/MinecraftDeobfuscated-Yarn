@@ -25,11 +25,11 @@ public interface DedicatedServer {
 
 	boolean isDebuggingEnabled();
 
-	void info(String string);
+	void info(String message);
 
-	void warn(String string);
+	void warn(String message);
 
-	void logError(String string);
+	void logError(String message);
 
-	void log(String string);
+	void log(String message);
 }

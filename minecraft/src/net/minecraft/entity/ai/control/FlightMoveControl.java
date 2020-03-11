@@ -32,7 +32,7 @@ public class FlightMoveControl extends MoveControl {
 			float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 			this.entity.yaw = this.changeAngle(this.entity.yaw, h, 90.0F);
 			float i;
-			if (this.entity.method_24828()) {
+			if (this.entity.isOnGround()) {
 				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 			} else {
 				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.FLYING_SPEED).getValue());

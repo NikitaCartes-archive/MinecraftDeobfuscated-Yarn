@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
 public class EfficiencyEnchantment extends Enchantment {
-	protected EfficiencyEnchantment(Enchantment.Weight weight, EquipmentSlot... slotTypes) {
+	protected EfficiencyEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
 		super(weight, EnchantmentTarget.DIGGER, slotTypes);
 	}
 

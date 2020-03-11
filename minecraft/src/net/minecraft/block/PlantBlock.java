@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
@@ -33,7 +34,7 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState state, BlockView world, BlockPos pos, BlockPlacementEnvironment env) {
-		return env == BlockPlacementEnvironment.AIR && !this.collidable ? true : super.canPlaceAtSide(state, world, pos, env);
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+		return env == NavigationType.AIR && !this.collidable ? true : super.canPathfindThrough(state, world, pos, env);
 	}
 }

@@ -26,7 +26,7 @@ public class AdvancementToast implements Toast {
 		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
 		AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
-		manager.blit(0, 0, 0, 0, 160, 32);
+		manager.drawTexture(0, 0, 0, 0, 160, 32);
 		if (advancementDisplay != null) {
 			List<String> list = manager.getGame().textRenderer.wrapStringToWidthAsList(advancementDisplay.getTitle().asFormattedString(), 125);
 			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;

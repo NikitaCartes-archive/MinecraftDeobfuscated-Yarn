@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class HopperScreen extends ScreenWithHandler<HopperScreenHandler> {
+public class HopperScreen extends HandledScreen<HopperScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/hopper.png");
 
 	public HopperScreen(HopperScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -37,6 +37,6 @@ public class HopperScreen extends ScreenWithHandler<HopperScreenHandler> {
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 	}
 }

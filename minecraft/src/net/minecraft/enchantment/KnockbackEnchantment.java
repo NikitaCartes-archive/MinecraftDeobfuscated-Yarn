@@ -3,7 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class KnockbackEnchantment extends Enchantment {
-	protected KnockbackEnchantment(Enchantment.Weight weight, EquipmentSlot... slot) {
+	protected KnockbackEnchantment(Enchantment.Rarity weight, EquipmentSlot... slot) {
 		super(weight, EnchantmentTarget.WEAPON, slot);
 	}
 

@@ -7,7 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 
 public abstract class ItemGroup {

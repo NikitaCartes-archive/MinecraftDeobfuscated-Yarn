@@ -34,28 +34,21 @@ public abstract class ExplosiveProjectileEntity extends Projectile {
 	) {
 		this(type, world);
 		this.refreshPositionAndAngles(x, y, z, this.yaw, this.pitch);
-		this.updatePosition(x, y, z);
+		this.refreshPosition();
 		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
-		this.posX = directionX / d * 0.1;
-		this.posY = directionY / d * 0.1;
-		this.posZ = directionZ / d * 0.1;
+		if (d != 0.0) {
+			this.posX = directionX / d * 0.1;
+			this.posY = directionY / d * 0.1;
+			this.posZ = directionZ / d * 0.1;
+		}
 	}
 
 	public ExplosiveProjectileEntity(
 		EntityType<? extends ExplosiveProjectileEntity> type, LivingEntity owner, double directionX, double directionY, double directionZ, World world
 	) {
-		this(type, world);
+		this(type, owner.getX(), owner.getY(), owner.getZ(), directionX, directionY, directionZ, world);
 		this.setOwner(owner);
-		this.refreshPositionAndAngles(owner.getX(), owner.getY(), owner.getZ(), owner.yaw, owner.pitch);
-		this.refreshPosition();
-		this.setVelocity(Vec3d.ZERO);
-		directionX += this.random.nextGaussian() * 0.4;
-		directionY += this.random.nextGaussian() * 0.4;
-		directionZ += this.random.nextGaussian() * 0.4;
-		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
-		this.posX = directionX / d * 0.1;
-		this.posY = directionY / d * 0.1;
-		this.posZ = directionZ / d * 0.1;
+		this.setRotation(owner.yaw, owner.pitch);
 	}
 
 	@Override

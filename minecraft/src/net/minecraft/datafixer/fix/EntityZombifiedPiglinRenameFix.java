@@ -10,8 +10,8 @@ public class EntityZombifiedPiglinRenameFix extends EntityRenameFix {
 		.put("minecraft:zombie_pigman_spawn_egg", "minecraft:zombified_piglin_spawn_egg")
 		.build();
 
-	public EntityZombifiedPiglinRenameFix(Schema schema) {
-		super("EntityZombifiedPiglinRenameFix", schema, true);
+	public EntityZombifiedPiglinRenameFix(Schema outputSchema) {
+		super("EntityZombifiedPiglinRenameFix", outputSchema, true);
 	}
 
 	@Override

@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 
 public abstract class PointOfInterestRenameFix extends DataFix {
-	public PointOfInterestRenameFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public PointOfInterestRenameFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -51,5 +51,5 @@ public abstract class PointOfInterestRenameFix extends DataFix {
 			);
 	}
 
-	protected abstract String rename(String string);
+	protected abstract String rename(String input);
 }

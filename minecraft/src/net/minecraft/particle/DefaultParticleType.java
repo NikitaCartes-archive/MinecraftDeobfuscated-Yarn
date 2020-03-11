@@ -2,7 +2,7 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleEffect {

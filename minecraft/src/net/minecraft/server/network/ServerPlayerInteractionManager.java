@@ -13,7 +13,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -290,9 +290,9 @@ public class ServerPlayerInteractionManager {
 		BlockPos blockPos = hitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (this.gameMode == GameMode.SPECTATOR) {
-			NameableScreenHandlerFactory nameableScreenHandlerFactory = blockState.createContainerFactory(world, blockPos);
-			if (nameableScreenHandlerFactory != null) {
-				player.openHandledScreen(nameableScreenHandlerFactory);
+			NamedScreenHandlerFactory namedScreenHandlerFactory = blockState.createScreenHandlerFactory(world, blockPos);
+			if (namedScreenHandlerFactory != null) {
+				player.openHandledScreen(namedScreenHandlerFactory);
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.PASS;

@@ -4,9 +4,9 @@ import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 public class LoginQueryRequestS2CPacket implements Packet<ClientLoginPacketListener> {
 	private int queryId;

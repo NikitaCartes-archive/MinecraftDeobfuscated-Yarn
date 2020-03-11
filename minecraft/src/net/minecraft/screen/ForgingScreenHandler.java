@@ -22,7 +22,7 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 			ForgingScreenHandler.this.onContentChanged(this);
 		}
 	};
-	protected final BlockContext context;
+	protected final ScreenHandlerContext context;
 	protected final PlayerEntity player;
 
 	protected abstract boolean canTakeOutput(PlayerEntity player, boolean present);
@@ -31,7 +31,7 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 
 	protected abstract boolean canUse(BlockState state);
 
-	public ForgingScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, BlockContext context) {
+	public ForgingScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(type, syncId);
 		this.context = context;
 		this.player = playerInventory.player;
@@ -93,20 +93,20 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot == 2) {
+			if (index == 2) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (invSlot != 0 && invSlot != 1) {
-				if (invSlot >= 3 && invSlot < 39 && !this.insertItem(itemStack2, 0, 2, false)) {
+			} else if (index != 0 && index != 1) {
+				if (index >= 3 && index < 39 && !this.insertItem(itemStack2, 0, 2, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.insertItem(itemStack2, 3, 39, false)) {

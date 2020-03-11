@@ -182,7 +182,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 			}
 
 			for(Direction direction : Direction.values()) {
-				mutable.move(blockPos, direction);
+				mutable.set(blockPos, direction);
 				if (!logs.contains(mutable)) {
 					BlockState blockState = world.getBlockState(mutable);
 					if (blockState.contains(Properties.DISTANCE_1_7)) {
@@ -206,7 +206,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 				}
 
 				for(Direction direction2 : Direction.values()) {
-					mutable.move(blockPos2, direction2);
+					mutable.set(blockPos2, direction2);
 					if (!set.contains(mutable) && !set2.contains(mutable)) {
 						BlockState blockState2 = world.getBlockState(mutable);
 						if (blockState2.contains(Properties.DISTANCE_1_7)) {

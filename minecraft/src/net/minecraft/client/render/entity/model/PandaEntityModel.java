@@ -13,8 +13,8 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 	private float lieOnBackAnimationProgress;
 	private float playAnimationProgress;
 
-	public PandaEntityModel(int i, float f) {
-		super(i, f, true, 23.0F, 4.8F, 2.7F, 3.0F, 49);
+	public PandaEntityModel(int legHeight, float scale) {
+		super(legHeight, scale, true, 23.0F, 4.8F, 2.7F, 3.0F, 49);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
 		this.head = new ModelPart(this, 0, 6);
@@ -26,8 +26,8 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		this.torso = new ModelPart(this, 0, 25);
 		this.torso.addCuboid(-9.5F, -13.0F, -6.5F, 19.0F, 26.0F, 13.0F);
 		this.torso.setPivot(0.0F, 10.0F, 0.0F);
-		int j = 9;
-		int k = 6;
+		int i = 9;
+		int j = 6;
 		this.backRightLeg = new ModelPart(this, 40, 0);
 		this.backRightLeg.addCuboid(-3.0F, 0.0F, -3.0F, 6.0F, 9.0F, 6.0F);
 		this.backRightLeg.setPivot(-5.5F, 15.0F, 9.0F);

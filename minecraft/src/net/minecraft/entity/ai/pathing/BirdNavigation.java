@@ -14,10 +14,10 @@ public class BirdNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected PathNodeNavigator createPathNodeNavigator(int i) {
+	protected PathNodeNavigator createPathNodeNavigator(int range) {
 		this.nodeMaker = new BirdPathNodeMaker();
 		this.nodeMaker.setCanEnterOpenDoors(true);
-		return new PathNodeNavigator(this.nodeMaker, i);
+		return new PathNodeNavigator(this.nodeMaker, range);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class BirdNavigation extends EntityNavigation {
 
 		if (!this.isIdle()) {
 			if (this.isAtValidPosition()) {
-				this.method_6339();
+				this.continueFollowingPath();
 			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
 				if (MathHelper.floor(this.entity.getX()) == MathHelper.floor(vec3d.x)

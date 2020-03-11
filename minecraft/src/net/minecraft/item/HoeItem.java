@@ -17,7 +17,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class HoeItem extends MiningToolItem {
-	private static final Set<Block> EFFECTIVE_BLOCKS = ImmutableSet.of(Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK, Blocks.HAY_BLOCK);
+	private static final Set<Block> EFFECTIVE_BLOCKS = ImmutableSet.of(
+		Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK, Blocks.HAY_BLOCK, Blocks.DRIED_KELP_BLOCK, Blocks.TARGET, Blocks.SHROOMLIGHT
+	);
 	protected static final Map<Block, BlockState> TILLED_BLOCKS = Maps.<Block, BlockState>newHashMap(
 		ImmutableMap.of(
 			Blocks.GRASS_BLOCK,

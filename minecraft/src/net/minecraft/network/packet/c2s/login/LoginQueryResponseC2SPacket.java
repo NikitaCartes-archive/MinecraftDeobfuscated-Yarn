@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerLoginPacketListener;
-import net.minecraft.util.PacketByteBuf;
 
 public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketListener> {
 	private int queryId;

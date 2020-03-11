@@ -106,8 +106,8 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-		this.blit(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-		this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+		this.drawTexture(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+		this.drawTexture(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderBg(minecraftClient, mouseX, mouseY);
 		int j = this.active ? 16777215 : 10526880;
 		this.drawCenteredString(

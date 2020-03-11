@@ -239,25 +239,25 @@ public class TitleScreen extends Screen {
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
-		blit(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
+		drawTexture(0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
 		int l = MathHelper.ceil(g * 255.0F) << 24;
 		if ((l & -67108864) != 0) {
 			this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, g);
 			if (this.isMinceraft) {
-				this.blit(j + 0, 30, 0, 0, 99, 44);
-				this.blit(j + 99, 30, 129, 0, 27, 44);
-				this.blit(j + 99 + 26, 30, 126, 0, 3, 44);
-				this.blit(j + 99 + 26 + 3, 30, 99, 0, 26, 44);
-				this.blit(j + 155, 30, 0, 45, 155, 44);
+				this.drawTexture(j + 0, 30, 0, 0, 99, 44);
+				this.drawTexture(j + 99, 30, 129, 0, 27, 44);
+				this.drawTexture(j + 99 + 26, 30, 126, 0, 3, 44);
+				this.drawTexture(j + 99 + 26 + 3, 30, 99, 0, 26, 44);
+				this.drawTexture(j + 155, 30, 0, 45, 155, 44);
 			} else {
-				this.blit(j + 0, 30, 0, 0, 155, 44);
-				this.blit(j + 155, 30, 0, 45, 155, 44);
+				this.drawTexture(j + 0, 30, 0, 0, 155, 44);
+				this.drawTexture(j + 155, 30, 0, 45, 155, 44);
 			}
 
 			this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
-			blit(j + 88, 67, 0.0F, 0.0F, 98, 14, 128, 16);
+			drawTexture(j + 88, 67, 0.0F, 0.0F, 98, 14, 128, 16);
 			if (this.splashText != null) {
 				RenderSystem.pushMatrix();
 				RenderSystem.translatef((float)(this.width / 2 + 90), 70.0F, 0.0F);

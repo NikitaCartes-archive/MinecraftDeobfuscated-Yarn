@@ -16,7 +16,7 @@ import net.minecraft.util.math.Quaternion;
 
 @Environment(EnvType.CLIENT)
 public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
-	private static final Identifier[] SKIN = new Identifier[]{
+	private static final Identifier[] TEXTURES = new Identifier[]{
 		new Identifier("textures/entity/boat/oak.png"),
 		new Identifier("textures/entity/boat/spruce.png"),
 		new Identifier("textures/entity/boat/birch.png"),
@@ -62,6 +62,6 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 	}
 
 	public Identifier getTexture(BoatEntity boatEntity) {
-		return SKIN[boatEntity.getBoatType().ordinal()];
+		return TEXTURES[boatEntity.getBoatType().ordinal()];
 	}
 }

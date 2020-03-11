@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.util.DefaultedList;
+import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class CreativeInventoryListener implements ScreenHandlerListener {
@@ -17,15 +17,15 @@ public class CreativeInventoryListener implements ScreenHandlerListener {
 	}
 
 	@Override
-	public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> defaultedList) {
+	public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
 	}
 
 	@Override
-	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack itemStack) {
-		this.client.interactionManager.clickCreativeStack(itemStack, slotId);
+	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+		this.client.interactionManager.clickCreativeStack(stack, slotId);
 	}
 
 	@Override
-	public void onPropertyUpdate(ScreenHandler handler, int propertyId, int i) {
+	public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
 	}
 }

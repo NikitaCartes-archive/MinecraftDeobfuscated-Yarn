@@ -23,10 +23,10 @@ import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.BeaconScreenHandler;
-import net.minecraft.screen.BlockContext;
-import net.minecraft.screen.NameableScreenHandlerFactory;
+import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -39,7 +39,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 
-public class BeaconBlockEntity extends BlockEntity implements NameableScreenHandlerFactory, Tickable {
+public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, Tickable {
 	public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{
 		{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}
 	};
@@ -309,7 +309,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableScreenHand
 	@Override
 	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
-			? new BeaconScreenHandler(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
+			? new BeaconScreenHandler(i, playerInventory, this.propertyDelegate, ScreenHandlerContext.create(this.world, this.getPos()))
 			: null;
 	}
 

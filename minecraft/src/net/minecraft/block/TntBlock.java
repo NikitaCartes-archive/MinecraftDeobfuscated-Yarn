@@ -6,7 +6,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.Projectile;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -103,7 +102,7 @@ public class TntBlock extends Block {
 
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
-		if (!world.isClient && projectile instanceof ProjectileEntity) {
+		if (!world.isClient) {
 			Entity entity = projectile.getOwner();
 			if (projectile.isOnFire()) {
 				BlockPos blockPos = hitResult.getBlockPos();

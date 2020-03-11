@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.LowercaseMap;
+import net.minecraft.util.collection.LowercaseMap;
 
 public abstract class AbstractEntityAttributeContainer {
 	protected final Map<EntityAttribute, EntityAttributeInstance> instancesByKey = Maps.<EntityAttribute, EntityAttributeInstance>newHashMap();

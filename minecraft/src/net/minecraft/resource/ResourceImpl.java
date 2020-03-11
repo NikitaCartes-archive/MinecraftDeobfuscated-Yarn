@@ -15,7 +15,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.UncaughtExceptionLogger;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

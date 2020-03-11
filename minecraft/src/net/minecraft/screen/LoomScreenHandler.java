@@ -23,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class LoomScreenHandler extends ScreenHandler {
-	private final BlockContext context;
+	private final ScreenHandlerContext context;
 	private final Property selectedPattern = Property.create();
 	private Runnable inventoryChangeListener = () -> {
 	};
@@ -32,7 +32,7 @@ public class LoomScreenHandler extends ScreenHandler {
 	private final Slot patternSlot;
 	private final Slot outputSlot;
 	private long lastTakeResultTime;
-	private final Inventory inputInventory = new BasicInventory(3) {
+	private final Inventory input = new BasicInventory(3) {
 		@Override
 		public void markDirty() {
 			super.markDirty();
@@ -40,7 +40,7 @@ public class LoomScreenHandler extends ScreenHandler {
 			LoomScreenHandler.this.inventoryChangeListener.run();
 		}
 	};
-	private final Inventory outputInventory = new BasicInventory(1) {
+	private final Inventory output = new BasicInventory(1) {
 		@Override
 		public void markDirty() {
 			super.markDirty();
@@ -49,31 +49,31 @@ public class LoomScreenHandler extends ScreenHandler {
 	};
 
 	public LoomScreenHandler(int syncId, PlayerInventory playerInventory) {
-		this(syncId, playerInventory, BlockContext.EMPTY);
+		this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
 	}
 
-	public LoomScreenHandler(int syncId, PlayerInventory playerInventory, BlockContext blockContext) {
+	public LoomScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(ScreenHandlerType.LOOM, syncId);
-		this.context = blockContext;
-		this.bannerSlot = this.addSlot(new Slot(this.inputInventory, 0, 13, 26) {
+		this.context = context;
+		this.bannerSlot = this.addSlot(new Slot(this.input, 0, 13, 26) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return stack.getItem() instanceof BannerItem;
 			}
 		});
-		this.dyeSlot = this.addSlot(new Slot(this.inputInventory, 1, 33, 26) {
+		this.dyeSlot = this.addSlot(new Slot(this.input, 1, 33, 26) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return stack.getItem() instanceof DyeItem;
 			}
 		});
-		this.patternSlot = this.addSlot(new Slot(this.inputInventory, 2, 23, 45) {
+		this.patternSlot = this.addSlot(new Slot(this.input, 2, 23, 45) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return stack.getItem() instanceof BannerPatternItem;
 			}
 		});
-		this.outputSlot = this.addSlot(new Slot(this.outputInventory, 0, 143, 58) {
+		this.outputSlot = this.addSlot(new Slot(this.output, 0, 143, 58) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return false;
@@ -87,7 +87,7 @@ public class LoomScreenHandler extends ScreenHandler {
 					LoomScreenHandler.this.selectedPattern.set(0);
 				}
 
-				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
 					if (LoomScreenHandler.this.lastTakeResultTime != l) {
 						world.playSound(null, blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -167,19 +167,19 @@ public class LoomScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int invSlot) {
+	public ItemStack transferSlot(PlayerEntity player, int index) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = (Slot)this.slots.get(invSlot);
+		Slot slot = (Slot)this.slots.get(index);
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (invSlot == this.outputSlot.id) {
+			if (index == this.outputSlot.id) {
 				if (!this.insertItem(itemStack2, 4, 40, true)) {
 					return ItemStack.EMPTY;
 				}
 
 				slot.onStackChanged(itemStack2, itemStack);
-			} else if (invSlot != this.dyeSlot.id && invSlot != this.bannerSlot.id && invSlot != this.patternSlot.id) {
+			} else if (index != this.dyeSlot.id && index != this.bannerSlot.id && index != this.patternSlot.id) {
 				if (itemStack2.getItem() instanceof BannerItem) {
 					if (!this.insertItem(itemStack2, this.bannerSlot.id, this.bannerSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
@@ -192,11 +192,11 @@ public class LoomScreenHandler extends ScreenHandler {
 					if (!this.insertItem(itemStack2, this.patternSlot.id, this.patternSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 4 && invSlot < 31) {
+				} else if (index >= 4 && index < 31) {
 					if (!this.insertItem(itemStack2, 31, 40, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (invSlot >= 31 && invSlot < 40 && !this.insertItem(itemStack2, 4, 31, false)) {
+				} else if (index >= 31 && index < 40 && !this.insertItem(itemStack2, 4, 31, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.insertItem(itemStack2, 4, 40, false)) {
@@ -222,7 +222,7 @@ public class LoomScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.inputInventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.input)));
 	}
 
 	private void updateOutputSlot() {
@@ -250,7 +250,7 @@ public class LoomScreenHandler extends ScreenHandler {
 				listTag.add(compoundTag2);
 			}
 
-			if (!ItemStack.areEqualIgnoreDamage(itemStack3, this.outputSlot.getStack())) {
+			if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
 				this.outputSlot.setStack(itemStack3);
 			}
 		}

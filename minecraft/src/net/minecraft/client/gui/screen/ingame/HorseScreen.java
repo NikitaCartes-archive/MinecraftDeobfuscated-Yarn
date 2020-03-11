@@ -11,7 +11,7 @@ import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class HorseScreen extends ScreenWithHandler<HorseScreenHandler> {
+public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/horse.png");
 	private final HorseBaseEntity entity;
 	private float mouseX;
@@ -35,23 +35,23 @@ public class HorseScreen extends ScreenWithHandler<HorseScreenHandler> {
 		this.client.getTextureManager().bindTexture(TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.blit(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		if (this.entity instanceof AbstractDonkeyEntity) {
 			AbstractDonkeyEntity abstractDonkeyEntity = (AbstractDonkeyEntity)this.entity;
 			if (abstractDonkeyEntity.hasChest()) {
-				this.blit(i + 79, j + 17, 0, this.backgroundHeight, abstractDonkeyEntity.method_6702() * 18, 54);
+				this.drawTexture(i + 79, j + 17, 0, this.backgroundHeight, abstractDonkeyEntity.method_6702() * 18, 54);
 			}
 		}
 
 		if (this.entity.canBeSaddled()) {
-			this.blit(i + 7, j + 35 - 18, 18, this.backgroundHeight + 54, 18, 18);
+			this.drawTexture(i + 7, j + 35 - 18, 18, this.backgroundHeight + 54, 18, 18);
 		}
 
 		if (this.entity.canEquip()) {
 			if (this.entity instanceof LlamaEntity) {
-				this.blit(i + 7, j + 35, 36, this.backgroundHeight + 54, 18, 18);
+				this.drawTexture(i + 7, j + 35, 36, this.backgroundHeight + 54, 18, 18);
 			} else {
-				this.blit(i + 7, j + 35, 0, this.backgroundHeight + 54, 18, 18);
+				this.drawTexture(i + 7, j + 35, 0, this.backgroundHeight + 54, 18, 18);
 			}
 		}
 

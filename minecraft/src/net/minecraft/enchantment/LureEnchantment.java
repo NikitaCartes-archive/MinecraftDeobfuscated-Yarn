@@ -3,8 +3,8 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class LureEnchantment extends Enchantment {
-	protected LureEnchantment(Enchantment.Weight weight, EnchantmentTarget enchantmentTarget, EquipmentSlot... equipmentSlots) {
-		super(weight, enchantmentTarget, equipmentSlots);
+	protected LureEnchantment(Enchantment.Rarity rarity, EnchantmentTarget enchantmentTarget, EquipmentSlot... equipmentSlots) {
+		super(rarity, enchantmentTarget, equipmentSlots);
 	}
 
 	@Override

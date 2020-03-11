@@ -11,12 +11,12 @@ public class EntityShulkerColorFix extends ChoiceFix {
 		super(outputSchema, changesType, "EntityShulkerColorFix", TypeReferences.ENTITY, "minecraft:shulker");
 	}
 
-	public Dynamic<?> method_4985(Dynamic<?> dynamic) {
+	public Dynamic<?> fixShulkerColor(Dynamic<?> dynamic) {
 		return !dynamic.get("Color").map(Dynamic::asNumber).isPresent() ? dynamic.set("Color", dynamic.createByte((byte)10)) : dynamic;
 	}
 
 	@Override
-	protected Typed<?> transform(Typed<?> typed) {
-		return typed.update(DSL.remainderFinder(), this::method_4985);
+	protected Typed<?> transform(Typed<?> inputType) {
+		return inputType.update(DSL.remainderFinder(), this::fixShulkerColor);
 	}
 }

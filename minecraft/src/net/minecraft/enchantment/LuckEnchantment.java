@@ -3,8 +3,8 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 
 public class LuckEnchantment extends Enchantment {
-	protected LuckEnchantment(Enchantment.Weight weight, EnchantmentTarget enchantmentTarget, EquipmentSlot... equipmentSlots) {
-		super(weight, enchantmentTarget, equipmentSlots);
+	protected LuckEnchantment(Enchantment.Rarity rarity, EnchantmentTarget enchantmentTarget, EquipmentSlot... equipmentSlots) {
+		super(rarity, enchantmentTarget, equipmentSlots);
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class LuckEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean differs(Enchantment other) {
-		return super.differs(other) && other != Enchantments.SILK_TOUCH;
+	public boolean canAccept(Enchantment other) {
+		return super.canAccept(other) && other != Enchantments.SILK_TOUCH;
 	}
 }

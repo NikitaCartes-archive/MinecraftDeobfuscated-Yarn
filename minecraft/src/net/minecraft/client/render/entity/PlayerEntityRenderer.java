@@ -41,8 +41,8 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this(entityRenderDispatcher, false);
 	}
 
-	public PlayerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, boolean bl) {
-		super(entityRenderDispatcher, new PlayerEntityModel<>(0.0F, bl), 0.5F);
+	public PlayerEntityRenderer(EntityRenderDispatcher dispatcher, boolean bl) {
+		super(dispatcher, new PlayerEntityModel<>(0.0F, bl), 0.5F);
 		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
 		this.addFeature(new StuckArrowsFeatureRenderer<>(this));
@@ -141,7 +141,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	protected void renderLabelIfPresent(
 		AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
-		double d = this.renderManager.getSquaredDistanceToCamera(abstractClientPlayerEntity);
+		double d = this.dispatcher.getSquaredDistanceToCamera(abstractClientPlayerEntity);
 		matrixStack.push();
 		if (d < 100.0) {
 			Scoreboard scoreboard = abstractClientPlayerEntity.getScoreboard();

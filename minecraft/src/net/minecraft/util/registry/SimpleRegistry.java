@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Int2ObjectBiMap;
+import net.minecraft.util.collection.Int2ObjectBiMap;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,7 +90,6 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Nullable
-	@Override
 	public T getRandom(Random random) {
 		if (this.randomEntries == null) {
 			Collection<?> collection = this.entries.values();

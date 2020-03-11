@@ -347,9 +347,9 @@ public class RavagerEntity extends RaiderEntity {
 		}
 
 		@Override
-		protected PathNodeNavigator createPathNodeNavigator(int i) {
+		protected PathNodeNavigator createPathNodeNavigator(int range) {
 			this.nodeMaker = new RavagerEntity.PathNodeMaker();
-			return new PathNodeNavigator(this.nodeMaker, i);
+			return new PathNodeNavigator(this.nodeMaker, range);
 		}
 	}
 

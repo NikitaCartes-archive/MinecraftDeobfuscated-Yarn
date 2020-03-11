@@ -7,7 +7,6 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.DecoderException;
 import java.util.List;
 import java.util.zip.Inflater;
-import net.minecraft.util.PacketByteBuf;
 
 public class PacketInflater extends ByteToMessageDecoder {
 	private final Inflater inflater;

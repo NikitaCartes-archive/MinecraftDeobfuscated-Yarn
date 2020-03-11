@@ -6,7 +6,7 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.WeightedList;
+import net.minecraft.util.collection.WeightedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
