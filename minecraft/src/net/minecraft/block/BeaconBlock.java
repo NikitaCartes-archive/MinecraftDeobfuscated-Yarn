@@ -15,7 +15,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BeaconBlock extends BlockWithEntity implements Stainable {
-	public BeaconBlock(Block.Settings settings) {
+	public BeaconBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -42,11 +42,6 @@ public class BeaconBlock extends BlockWithEntity implements Stainable {
 
 			return ActionResult.SUCCESS;
 		}
-	}
-
-	@Override
-	public boolean isSimpleFullBlock(BlockState state, BlockView world, BlockPos pos) {
-		return false;
 	}
 
 	@Override

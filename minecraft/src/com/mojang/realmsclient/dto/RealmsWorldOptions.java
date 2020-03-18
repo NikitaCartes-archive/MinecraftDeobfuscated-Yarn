@@ -23,7 +23,7 @@ public class RealmsWorldOptions extends ValueObject {
 	public String templateImage;
 	public boolean adventureMap;
 	public boolean empty;
-	private static final String templateImageDefault = null;
+	private static final String DEFAULT_WORLD_TEMPLATE_IMAGE = null;
 
 	public RealmsWorldOptions(
 		Boolean pvp,
@@ -63,35 +63,35 @@ public class RealmsWorldOptions extends ValueObject {
 		this.empty = empty;
 	}
 
-	public static RealmsWorldOptions parse(JsonObject jsonObject) {
+	public static RealmsWorldOptions parse(JsonObject json) {
 		RealmsWorldOptions realmsWorldOptions = new RealmsWorldOptions(
-			JsonUtils.getBooleanOr("pvp", jsonObject, true),
-			JsonUtils.getBooleanOr("spawnAnimals", jsonObject, true),
-			JsonUtils.getBooleanOr("spawnMonsters", jsonObject, true),
-			JsonUtils.getBooleanOr("spawnNPCs", jsonObject, true),
-			JsonUtils.getIntOr("spawnProtection", jsonObject, 0),
-			JsonUtils.getBooleanOr("commandBlocks", jsonObject, false),
-			JsonUtils.getIntOr("difficulty", jsonObject, 2),
-			JsonUtils.getIntOr("gameMode", jsonObject, 0),
-			JsonUtils.getBooleanOr("forceGameMode", jsonObject, false),
-			JsonUtils.getStringOr("slotName", jsonObject, "")
+			JsonUtils.getBooleanOr("pvp", json, true),
+			JsonUtils.getBooleanOr("spawnAnimals", json, true),
+			JsonUtils.getBooleanOr("spawnMonsters", json, true),
+			JsonUtils.getBooleanOr("spawnNPCs", json, true),
+			JsonUtils.getIntOr("spawnProtection", json, 0),
+			JsonUtils.getBooleanOr("commandBlocks", json, false),
+			JsonUtils.getIntOr("difficulty", json, 2),
+			JsonUtils.getIntOr("gameMode", json, 0),
+			JsonUtils.getBooleanOr("forceGameMode", json, false),
+			JsonUtils.getStringOr("slotName", json, "")
 		);
-		realmsWorldOptions.templateId = JsonUtils.getLongOr("worldTemplateId", jsonObject, -1L);
-		realmsWorldOptions.templateImage = JsonUtils.getStringOr("worldTemplateImage", jsonObject, templateImageDefault);
-		realmsWorldOptions.adventureMap = JsonUtils.getBooleanOr("adventureMap", jsonObject, false);
+		realmsWorldOptions.templateId = JsonUtils.getLongOr("worldTemplateId", json, -1L);
+		realmsWorldOptions.templateImage = JsonUtils.getStringOr("worldTemplateImage", json, DEFAULT_WORLD_TEMPLATE_IMAGE);
+		realmsWorldOptions.adventureMap = JsonUtils.getBooleanOr("adventureMap", json, false);
 		return realmsWorldOptions;
 	}
 
-	public String getSlotName(int i) {
+	public String getSlotName(int index) {
 		if (this.slotName != null && !this.slotName.isEmpty()) {
 			return this.slotName;
 		} else {
-			return this.empty ? I18n.translate("mco.configure.world.slot.empty") : this.getDefaultSlotName(i);
+			return this.empty ? I18n.translate("mco.configure.world.slot.empty") : this.getDefaultSlotName(index);
 		}
 	}
 
-	public String getDefaultSlotName(int i) {
-		return I18n.translate("mco.configure.world.slot", i);
+	public String getDefaultSlotName(int index) {
+		return I18n.translate("mco.configure.world.slot", index);
 	}
 
 	public String toJson() {

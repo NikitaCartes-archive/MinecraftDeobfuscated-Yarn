@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.SlabType;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -27,7 +26,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	protected static final VoxelShape BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	protected static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 8.0, 0.0, 16.0, 16.0, 16.0);
 
-	public SlabBlock(Block.Settings settings) {
+	public SlabBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(TYPE, SlabType.BOTTOM).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
@@ -43,7 +42,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		SlabType slabType = state.get(TYPE);
 		switch (slabType) {
 			case DOUBLE:
@@ -73,14 +72,14 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-		ItemStack itemStack = ctx.getStack();
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+		ItemStack itemStack = context.getStack();
 		SlabType slabType = state.get(TYPE);
 		if (slabType == SlabType.DOUBLE || itemStack.getItem() != this.asItem()) {
 			return false;
-		} else if (ctx.canReplaceExisting()) {
-			boolean bl = ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5;
-			Direction direction = ctx.getSide();
+		} else if (context.canReplaceExisting()) {
+			boolean bl = context.getHitPos().y - (double)context.getBlockPos().getY() > 0.5;
+			Direction direction = context.getSide();
 			return slabType == SlabType.BOTTOM
 				? direction == Direction.UP || bl && direction.getAxis().isHorizontal()
 				: direction == Direction.DOWN || !bl && direction.getAxis().isHorizontal();
@@ -105,17 +104,17 @@ public class SlabBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
-		switch (env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		switch (type) {
 			case LAND:
 				return false;
 			case WATER:

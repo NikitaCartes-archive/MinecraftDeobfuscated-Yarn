@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
@@ -40,35 +41,37 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		Random random = context.getRandom();
-		Enchantment enchantment2;
+		Enchantment enchantment;
 		if (this.enchantments.isEmpty()) {
-			List<Enchantment> list = Lists.<Enchantment>newArrayList();
-
-			for (Enchantment enchantment : Registry.ENCHANTMENT) {
-				if (stack.getItem() == Items.BOOK || enchantment.isAcceptableItem(stack)) {
-					list.add(enchantment);
-				}
-			}
-
+			boolean bl = stack.getItem() == Items.BOOK;
+			List<Enchantment> list = (List<Enchantment>)Registry.ENCHANTMENT
+				.stream()
+				.filter(Enchantment::isAvailableForRandomSelection)
+				.filter(enchantmentx -> bl || enchantmentx.isAcceptableItem(stack))
+				.collect(Collectors.toList());
 			if (list.isEmpty()) {
 				LOGGER.warn("Couldn't find a compatible enchantment for {}", stack);
 				return stack;
 			}
 
-			enchantment2 = (Enchantment)list.get(random.nextInt(list.size()));
+			enchantment = (Enchantment)list.get(random.nextInt(list.size()));
 		} else {
-			enchantment2 = (Enchantment)this.enchantments.get(random.nextInt(this.enchantments.size()));
+			enchantment = (Enchantment)this.enchantments.get(random.nextInt(this.enchantments.size()));
 		}
 
-		int i = MathHelper.nextInt(random, enchantment2.getMinimumLevel(), enchantment2.getMaximumLevel());
-		if (stack.getItem() == Items.BOOK) {
-			stack = new ItemStack(Items.ENCHANTED_BOOK);
-			EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment2, i));
+		return method_26266(stack, enchantment, random);
+	}
+
+	private static ItemStack method_26266(ItemStack itemStack, Enchantment enchantment, Random random) {
+		int i = MathHelper.nextInt(random, enchantment.getMinimumLevel(), enchantment.getMaximumLevel());
+		if (itemStack.getItem() == Items.BOOK) {
+			itemStack = new ItemStack(Items.ENCHANTED_BOOK);
+			EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry(enchantment, i));
 		} else {
-			stack.addEnchantment(enchantment2, i);
+			itemStack.addEnchantment(enchantment, i);
 		}
 
-		return stack;
+		return itemStack;
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder() {

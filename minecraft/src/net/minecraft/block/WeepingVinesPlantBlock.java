@@ -3,7 +3,7 @@ package net.minecraft.block;
 import net.minecraft.util.math.Direction;
 
 public class WeepingVinesPlantBlock extends AbstractPlantBlock {
-	public WeepingVinesPlantBlock(Block.Settings settings) {
+	public WeepingVinesPlantBlock(AbstractBlock.Settings settings) {
 		super(settings, Direction.DOWN, VineLogic.STEM_OUTLINE_SHAPE, false);
 	}
 

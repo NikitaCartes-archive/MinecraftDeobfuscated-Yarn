@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.google.common.base.MoreObjects;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -33,7 +32,7 @@ public class TripwireHookBlock extends Block {
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
 	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 5.0, 6.0, 10.0, 11.0);
 
-	public TripwireHookBlock(Block.Settings settings) {
+	public TripwireHookBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false))
@@ -41,7 +40,7 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction)state.get(FACING)) {
 			case EAST:
 			default:
@@ -64,10 +63,10 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Nullable
@@ -128,7 +127,7 @@ public class TripwireHookBlock extends Block {
 				bl5 |= bl6 && bl7;
 				blockStates[k] = blockState2;
 				if (k == i) {
-					world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+					world.getBlockTickScheduler().schedule(pos, this, 10);
 					bl4 &= bl6;
 				}
 			}
@@ -189,8 +188,8 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!moved && state.getBlock() != newState.getBlock()) {
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+		if (!notify && state.getBlock() != newState.getBlock()) {
 			boolean bl = (Boolean)state.get(ATTACHED);
 			boolean bl2 = (Boolean)state.get(POWERED);
 			if (bl || bl2) {
@@ -202,21 +201,21 @@ public class TripwireHookBlock extends Block {
 				world.updateNeighborsAlways(pos.offset(((Direction)state.get(FACING)).getOpposite()), this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onBlockRemoved(state, world, pos, newState, notify);
 		}
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		if (!(Boolean)state.get(POWERED)) {
 			return 0;
 		} else {
-			return state.get(FACING) == facing ? 15 : 0;
+			return state.get(FACING) == direction ? 15 : 0;
 		}
 	}
 

@@ -31,14 +31,14 @@ public class MinecartItem extends Item {
 				? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty())
 				: RailShape.NORTH_SOUTH;
 			double g;
-			if (blockState.matches(BlockTags.RAILS)) {
+			if (blockState.isIn(BlockTags.RAILS)) {
 				if (railShape.isAscending()) {
 					g = 0.6;
 				} else {
 					g = 0.1;
 				}
 			} else {
-				if (!blockState.isAir() || !world.getBlockState(blockPos.down()).matches(BlockTags.RAILS)) {
+				if (!blockState.isAir() || !world.getBlockState(blockPos.down()).isIn(BlockTags.RAILS)) {
 					return this.defaultBehavior.dispense(pointer, stack);
 				}
 
@@ -81,7 +81,7 @@ public class MinecartItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (!blockState.matches(BlockTags.RAILS)) {
+		if (!blockState.isIn(BlockTags.RAILS)) {
 			return ActionResult.FAIL;
 		} else {
 			ItemStack itemStack = context.getStack();

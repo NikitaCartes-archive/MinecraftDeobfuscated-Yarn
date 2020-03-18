@@ -215,12 +215,12 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 	}
 
 	@Override
-	protected void callback(@Nullable WorldTemplate worldTemplate) {
-		if (worldTemplate != null) {
+	protected void callback(@Nullable WorldTemplate template) {
+		if (template != null) {
 			if (this.slot == -1) {
-				this.resetWorldWithTemplate(worldTemplate);
+				this.resetWorldWithTemplate(template);
 			} else {
-				switch (worldTemplate.type) {
+				switch (template.type) {
 					case WORLD_TEMPLATE:
 						this.typeToReset = RealmsResetWorldScreen.ResetType.SURVIVAL_SPAWN;
 						break;
@@ -234,7 +234,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 						this.typeToReset = RealmsResetWorldScreen.ResetType.INSPIRATION;
 				}
 
-				this.field_20500 = worldTemplate;
+				this.field_20500 = template;
 				this.switchSlot();
 			}
 		}
@@ -259,8 +259,8 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 		});
 	}
 
-	public void switchSlot(Runnable runnable) {
-		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new SwitchSlotTask(this.serverData.id, this.slot, runnable)));
+	public void switchSlot(Runnable callback) {
+		this.client.openScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new SwitchSlotTask(this.serverData.id, this.slot, callback)));
 	}
 
 	public void resetWorldWithTemplate(WorldTemplate template) {

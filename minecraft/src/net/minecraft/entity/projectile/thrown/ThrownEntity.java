@@ -1,4 +1,4 @@
-package net.minecraft.entity.thrown;
+package net.minecraft.entity.projectile.thrown;
 
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
@@ -7,8 +7,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
-public abstract class ThrownEntity extends Projectile {
+public abstract class ThrownEntity extends ProjectileEntity {
 	private int blockX = -1;
 	private int blockY = -1;
 	private int blockZ = -1;

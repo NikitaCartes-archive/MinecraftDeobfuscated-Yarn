@@ -54,7 +54,7 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void run(DataCache cache) throws IOException {
 		Path path = this.root.getOutput();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		generate(
@@ -63,14 +63,14 @@ public class RecipesProvider implements DataProvider {
 					throw new IllegalStateException("Duplicate recipe " + recipeJsonProvider.getRecipeId());
 				} else {
 					saveRecipe(
-						dataCache,
+						cache,
 						recipeJsonProvider.toJson(),
 						path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/recipes/" + recipeJsonProvider.getRecipeId().getPath() + ".json")
 					);
 					JsonObject jsonObject = recipeJsonProvider.toAdvancementJson();
 					if (jsonObject != null) {
 						saveRecipeAdvancement(
-							dataCache,
+							cache,
 							jsonObject,
 							path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/advancements/" + recipeJsonProvider.getAdvancementId().getPath() + ".json")
 						);
@@ -79,7 +79,7 @@ public class RecipesProvider implements DataProvider {
 			}
 		);
 		saveRecipeAdvancement(
-			dataCache,
+			cache,
 			Advancement.Task.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
 			path.resolve("data/minecraft/advancements/recipes/root.json")
 		);
@@ -2645,7 +2645,16 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.NETHERITE_INGOT)
 			.input(Items.NETHERITE_SCRAP, 4)
 			.input(Items.GOLD_INGOT, 4)
+			.group("netherite_ingot")
 			.criterion("has_netherite_scrap", conditionsFromItem(Items.NETHERITE_SCRAP))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.RESPAWN_ANCHOR)
+			.input('O', Blocks.CRYING_OBSIDIAN)
+			.input('G', Blocks.GLOWSTONE)
+			.pattern("OOO")
+			.pattern("GGG")
+			.pattern("OOO")
+			.criterion("has_obsidian", conditionsFromItem(Blocks.CRYING_OBSIDIAN))
 			.offerTo(consumer);
 		ComplexRecipeJsonFactory.create(RecipeSerializer.ARMOR_DYE).offerTo(consumer, "armor_dye");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(consumer, "banner_duplicate");
@@ -2870,6 +2879,9 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.ANCIENT_DEBRIS), Items.NETHERITE_SCRAP, 2.0F, 200)
 			.criterion("has_ancient_debris", conditionsFromItem(Blocks.ANCIENT_DEBRIS))
+			.offerTo(consumer);
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.BASALT), Blocks.POLISHED_BASALT.asItem(), 0.1F, 200)
+			.criterion("has_basalt", conditionsFromItem(Blocks.BASALT))
 			.offerTo(consumer);
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.IRON_ORE.asItem()), Items.IRON_INGOT, 0.7F, 100)
 			.criterion("has_iron_ore", conditionsFromItem(Blocks.IRON_ORE.asItem()))
@@ -3362,6 +3374,7 @@ public class RecipesProvider implements DataProvider {
 	private static void method_24883(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
 		String string = Registry.ITEM.getId(itemConvertible2.asItem()).getPath();
 		ShapedRecipeJsonFactory.create(itemConvertible, 3)
+			.group("sign")
 			.input('#', itemConvertible2)
 			.input('X', Items.STICK)
 			.pattern("###")

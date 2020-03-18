@@ -2,11 +2,16 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
 import java.util.function.Function;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.structure.NetherFossilGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -52,11 +57,26 @@ public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureCon
 
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-			int i = x * 16;
-			int j = z * 16;
-			int k = chunkGenerator.getSeaLevel() + this.random.nextInt(126 - chunkGenerator.getSeaLevel());
-			NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(i + this.random.nextInt(16), k, j + this.random.nextInt(16)));
-			this.setBoundingBoxFromChildren();
+			ChunkPos chunkPos = new ChunkPos(x, z);
+			int i = chunkPos.getStartX() + this.random.nextInt(16);
+			int j = chunkPos.getStartZ() + this.random.nextInt(16);
+			int k = chunkGenerator.getSeaLevel();
+			int l = k + this.random.nextInt(chunkGenerator.getMaxY() - 2 - k);
+			BlockView blockView = chunkGenerator.getColumnSample(i, j);
+
+			for (BlockPos.Mutable mutable = new BlockPos.Mutable(i, l, j); l > k; l--) {
+				BlockState blockState = blockView.getBlockState(mutable);
+				mutable.move(Direction.DOWN);
+				BlockState blockState2 = blockView.getBlockState(mutable);
+				if (blockState.isAir() && (blockState2.getBlock() == Blocks.SOUL_SAND || blockState2.isSideSolidFullSquare(blockView, mutable, Direction.UP))) {
+					break;
+				}
+			}
+
+			if (l > k) {
+				NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(i, l, j));
+				this.setBoundingBoxFromChildren();
+			}
 		}
 	}
 }

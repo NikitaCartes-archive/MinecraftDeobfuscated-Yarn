@@ -16,7 +16,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class SmokerBlock extends AbstractFurnaceBlock {
-	protected SmokerBlock(Block.Settings settings) {
+	protected SmokerBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

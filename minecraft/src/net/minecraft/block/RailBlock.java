@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 public class RailBlock extends AbstractRailBlock {
 	public static final EnumProperty<RailShape> SHAPE = Properties.RAIL_SHAPE;
 
-	protected RailBlock(Block.Settings settings) {
+	protected RailBlock(AbstractBlock.Settings settings) {
 		super(false, settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(SHAPE, RailShape.NORTH_SOUTH));
 	}

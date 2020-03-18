@@ -163,7 +163,7 @@ public class DebugHud extends DrawableHelper {
 			string = String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), f, g);
 		}
 
-		BlockPos blockPos = this.client.getCameraEntity().getSenseCenterPos();
+		BlockPos blockPos = this.client.getCameraEntity().getBlockPos();
 		if (this.client.hasReducedDebugInfo()) {
 			return Lists.<String>newArrayList(
 				"Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")",
@@ -342,7 +342,7 @@ public class DebugHud extends DrawableHelper {
 				list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
 			}
 
-			list.add(this.client.getSoundManager().getDebugString());
+			list.add(this.client.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.client.player.getMoodPercentage() * 100.0F)));
 			return list;
 		}
 	}

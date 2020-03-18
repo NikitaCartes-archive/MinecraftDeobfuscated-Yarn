@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -30,7 +31,7 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 	}
 
 	@Override
-	public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
+	public void buildSurface(ChunkRegion region, Chunk chunk) {
 	}
 
 	@Override
@@ -66,8 +67,13 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 	}
 
 	@Override
-	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
+	public int getHeight(int x, int z, Heightmap.Type heightmapType) {
 		return 0;
+	}
+
+	@Override
+	public BlockView getColumnSample(int x, int z) {
+		return new VerticalBlockSample(new BlockState[0]);
 	}
 
 	public static BlockState getBlockState(int x, int z) {

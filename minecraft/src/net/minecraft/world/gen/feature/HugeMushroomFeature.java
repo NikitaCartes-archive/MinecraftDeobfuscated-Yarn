@@ -20,7 +20,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 	protected void generateStem(IWorld world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutable) {
 		for (int i = 0; i < height; i++) {
 			mutable.set(pos).move(Direction.UP, i);
-			if (!world.getBlockState(mutable).isFullOpaque(world, mutable)) {
+			if (!world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) {
 				this.setBlockState(world, mutable, config.stemProvider.getBlockState(random, pos));
 			}
 		}
@@ -48,7 +48,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 					for (int l = -k; l <= k; l++) {
 						for (int m = -k; m <= k; m++) {
 							BlockState blockState = world.getBlockState(mutable.set(pos, l, j, m));
-							if (!blockState.isAir() && !blockState.matches(BlockTags.LEAVES)) {
+							if (!blockState.isAir() && !blockState.isIn(BlockTags.LEAVES)) {
 								return false;
 							}
 						}

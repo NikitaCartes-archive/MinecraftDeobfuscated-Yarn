@@ -19,8 +19,8 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ElderGuardianAppearanceParticle extends Particle {
-	private final Model field_21793 = new GuardianEntityModel();
-	private final RenderLayer field_21792 = RenderLayer.getEntityTranslucent(ElderGuardianEntityRenderer.TEXTURE);
+	private final Model model = new GuardianEntityModel();
+	private final RenderLayer LAYER = RenderLayer.getEntityTranslucent(ElderGuardianEntityRenderer.TEXTURE);
 
 	private ElderGuardianAppearanceParticle(World world, double x, double y, double z) {
 		super(world, x, y, z);
@@ -43,8 +43,8 @@ public class ElderGuardianAppearanceParticle extends Particle {
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		matrixStack.translate(0.0, -1.101F, 1.5);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		VertexConsumer vertexConsumer2 = immediate.getBuffer(this.field_21792);
-		this.field_21793.render(matrixStack, vertexConsumer2, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, g);
+		VertexConsumer vertexConsumer2 = immediate.getBuffer(this.LAYER);
+		this.model.render(matrixStack, vertexConsumer2, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, g);
 		immediate.draw();
 	}
 

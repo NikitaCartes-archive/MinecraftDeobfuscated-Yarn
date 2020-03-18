@@ -43,10 +43,8 @@ public abstract class TameableEntity extends AnimalEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		if (this.getOwnerUuid() == null) {
-			tag.putString("OwnerUUID", "");
-		} else {
-			tag.putString("OwnerUUID", this.getOwnerUuid().toString());
+		if (this.getOwnerUuid() != null) {
+			tag.putUuidNew("Owner", this.getOwnerUuid());
 		}
 
 		tag.putBoolean("Sitting", this.sitting);
@@ -55,17 +53,17 @@ public abstract class TameableEntity extends AnimalEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		String string;
-		if (tag.contains("OwnerUUID", 8)) {
-			string = tag.getString("OwnerUUID");
+		UUID uUID;
+		if (tag.containsUuidNew("Owner")) {
+			uUID = tag.getUuidNew("Owner");
 		} else {
-			String string2 = tag.getString("Owner");
-			string = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string2);
+			String string = tag.getString("Owner");
+			uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
 		}
 
-		if (!string.isEmpty()) {
+		if (uUID != null) {
 			try {
-				this.setOwnerUuid(UUID.fromString(string));
+				this.setOwnerUuid(uUID);
 				this.setTamed(true);
 			} catch (Throwable var4) {
 				this.setTamed(false);

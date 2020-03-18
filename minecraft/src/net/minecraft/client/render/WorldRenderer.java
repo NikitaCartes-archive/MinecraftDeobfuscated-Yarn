@@ -34,6 +34,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ComposterBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -60,7 +61,6 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -740,7 +740,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				if (bl2 && !spectator) {
 					this.visibleChunks.add(chunkInfo);
 				} else {
-					if (spectator && this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos)) {
+					if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
 						bl = false;
 					}
 
@@ -824,7 +824,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		WorldChunk worldChunk = this.world.getWorldChunk(blockPos);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(15, 15, 15))) {
-			if (worldChunk.getBlockState(blockPos2).isFullOpaque(this.world, blockPos2)) {
+			if (worldChunk.getBlockState(blockPos2).isOpaqueFullCube(this.world, blockPos2)) {
 				chunkOcclusionDataBuilder.markClosed(blockPos2);
 			}
 		}
@@ -2009,7 +2009,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		drawShapeOutline(
 			matrixStack,
 			vertexConsumer,
-			blockState.getOutlineShape(this.world, blockPos, EntityContext.of(entity)),
+			blockState.getOutlineShape(this.world, blockPos, ShapeContext.of(entity)),
 			(double)blockPos.getX() - d,
 			(double)blockPos.getY() - e,
 			(double)blockPos.getZ() - f,
@@ -2632,13 +2632,15 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 					}
 				}
 
-				this.world.playSound(pos, SoundEvents.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.HOSTILE, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				if (data == 1) {
+					this.world.playSound(pos, SoundEvents.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.HOSTILE, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				}
 				break;
 			case 2008:
 				this.world.addParticle(ParticleTypes.EXPLOSION, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				break;
 			case 2009:
-				for (int i = 0; i < 8; i++) {
+				for (int ix = 0; ix < 8; ix++) {
 					this.world
 						.addParticle(ParticleTypes.CLOUD, (double)pos.getX() + Math.random(), (double)pos.getY() + 1.2, (double)pos.getZ() + Math.random(), 0.0, 0.0, 0.0);
 				}
@@ -2707,7 +2709,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public static int getLightmapCoordinates(BlockRenderView world, BlockState state, BlockPos pos) {
-		if (state.hasEmissiveLighting()) {
+		if (state.hasInWallOverlay(world, pos)) {
 			return 15728880;
 		} else {
 			int i = world.getLightLevel(LightType.SKY, pos);

@@ -51,7 +51,7 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 			}
 		};
 		Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
-			this.poiType.getCompletionCondition(), predicate, mobEntityWithAi.getSenseCenterPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE
+			this.poiType.getCompletionCondition(), predicate, mobEntityWithAi.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE
 		);
 		Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, this.poiType.getSearchDistance());
 		if (path != null && path.reachesTarget()) {

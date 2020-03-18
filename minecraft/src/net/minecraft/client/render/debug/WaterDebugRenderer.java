@@ -22,7 +22,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-		BlockPos blockPos = this.client.player.getSenseCenterPos();
+		BlockPos blockPos = this.client.player.getBlockPos();
 		WorldView worldView = this.client.player.world;
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();

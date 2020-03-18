@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import net.minecraft.block.enums.WallMountLocation;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.GrindstoneScreenHandler;
@@ -91,7 +90,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape EAST_WEST_HANGING_SHAPE = VoxelShapes.union(field_16389, Block.createCuboidShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
 	private static final TranslatableText TITLE = new TranslatableText("container.grindstone_title");
 
-	protected GrindstoneBlock(Block.Settings settings) {
+	protected GrindstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.WALL));
 	}
@@ -134,12 +133,12 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.getShape(state);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.getShape(state);
 	}
 
@@ -182,7 +181,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

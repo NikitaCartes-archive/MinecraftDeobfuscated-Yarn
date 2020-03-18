@@ -9,11 +9,13 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public class PaneBlock extends HorizontalConnectingBlock {
-	protected PaneBlock(Block.Settings settings) {
+	protected PaneBlock(AbstractBlock.Settings settings) {
 		super(1.0F, 1.0F, 16.0F, 16.0F, 16.0F, settings);
 		this.setDefaultState(
 			this.stateManager
@@ -48,33 +50,38 @@ public class PaneBlock extends HorizontalConnectingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return facing.getAxis().isHorizontal()
+		return direction.getAxis().isHorizontal()
 			? state.with(
-				(Property)FACING_PROPERTIES.get(facing),
-				Boolean.valueOf(this.connectsTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, facing.getOpposite())))
+				(Property)FACING_PROPERTIES.get(direction),
+				Boolean.valueOf(this.connectsTo(newState, newState.isSideSolidFullSquare(world, posFrom, direction.getOpposite())))
 			)
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+	}
+
+	@Override
+	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		return VoxelShapes.empty();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean isSideInvisible(BlockState state, BlockState neighbor, Direction facing) {
-		if (neighbor.getBlock() == this) {
-			if (!facing.getAxis().isHorizontal()) {
+	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+		if (stateFrom.getBlock() == this) {
+			if (!direction.getAxis().isHorizontal()) {
 				return true;
 			}
 
-			if ((Boolean)state.get((Property)FACING_PROPERTIES.get(facing)) && (Boolean)neighbor.get((Property)FACING_PROPERTIES.get(facing.getOpposite()))) {
+			if ((Boolean)state.get((Property)FACING_PROPERTIES.get(direction)) && (Boolean)stateFrom.get((Property)FACING_PROPERTIES.get(direction.getOpposite()))) {
 				return true;
 			}
 		}
 
-		return super.isSideInvisible(state, neighbor, facing);
+		return super.isSideInvisible(state, stateFrom, direction);
 	}
 
 	public final boolean connectsTo(BlockState state, boolean bl) {

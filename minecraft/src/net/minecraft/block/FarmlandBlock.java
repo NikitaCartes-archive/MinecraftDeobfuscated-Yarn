@@ -1,10 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,18 +24,18 @@ public class FarmlandBlock extends Block {
 	public static final IntProperty MOISTURE = Properties.MOISTURE;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
 
-	protected FarmlandBlock(Block.Settings settings) {
+	protected FarmlandBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(MOISTURE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing == Direction.UP && !state.canPlaceAt(world, pos)) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (direction == Direction.UP && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -58,7 +55,7 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
@@ -66,17 +63,20 @@ public class FarmlandBlock extends Block {
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!state.canPlaceAt(world, pos)) {
 			setToDirt(state, world, pos);
-		} else {
-			int i = (Integer)state.get(MOISTURE);
-			if (!isWaterNearby(world, pos) && !world.hasRain(pos.up())) {
-				if (i > 0) {
-					world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(i - 1)), 2);
-				} else if (!hasCrop(world, pos)) {
-					setToDirt(state, world, pos);
-				}
-			} else if (i < 7) {
-				world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(7)), 2);
+		}
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		int i = (Integer)state.get(MOISTURE);
+		if (!isWaterNearby(world, pos) && !world.hasRain(pos.up())) {
+			if (i > 0) {
+				world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(i - 1)), 2);
+			} else if (!hasCrop(world, pos)) {
+				setToDirt(state, world, pos);
 			}
+		} else if (i < 7) {
+			world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(7)), 2);
 		}
 	}
 
@@ -118,13 +118,7 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasInWallOverlay(BlockState state, BlockView world, BlockPos pos) {
-		return true;
 	}
 }

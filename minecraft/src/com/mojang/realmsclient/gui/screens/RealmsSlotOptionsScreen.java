@@ -14,10 +14,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSlotOptionsScreen extends RealmsScreen {
-	public static final String[] field_22723 = new String[]{
+	public static final String[] DIFFICULTIES = new String[]{
 		"options.difficulty.peaceful", "options.difficulty.easy", "options.difficulty.normal", "options.difficulty.hard"
 	};
-	public static final String[] field_22724 = new String[]{"selectWorld.gameMode.survival", "selectWorld.gameMode.creative", "selectWorld.gameMode.adventure"};
+	public static final String[] GAME_MODES = new String[]{"selectWorld.gameMode.survival", "selectWorld.gameMode.creative", "selectWorld.gameMode.adventure"};
 	private TextFieldWidget nameEdit;
 	protected final RealmsConfigureWorldScreen parent;
 	private int column1_x;
@@ -41,14 +41,12 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	private ButtonWidget spawnNPCsButton;
 	private RealmsSlotOptionsScreen.SettingsSlider spawnProtectionButton;
 	private ButtonWidget commandBlocksButton;
-	private ButtonWidget field_22722;
+	private ButtonWidget gameModeButton;
 	private RealmsLabel titleLabel;
-	private RealmsLabel field_20502;
+	private RealmsLabel toastMessage;
 
-	public RealmsSlotOptionsScreen(
-		RealmsConfigureWorldScreen realmsConfigureWorldScreen, RealmsWorldOptions options, RealmsServer.WorldType worldType, int activeSlot
-	) {
-		this.parent = realmsConfigureWorldScreen;
+	public RealmsSlotOptionsScreen(RealmsConfigureWorldScreen parent, RealmsWorldOptions options, RealmsServer.WorldType worldType, int activeSlot) {
+		this.parent = parent;
 		this.options = options;
 		this.worldType = worldType;
 		this.activeSlot = activeSlot;
@@ -99,7 +97,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 				string = I18n.translate("mco.configure.world.edit.subscreen.experience");
 			}
 
-			this.field_20502 = new RealmsLabel(string, this.width / 2, 26, 16711680);
+			this.toastMessage = new RealmsLabel(string, this.width / 2, 26, 16711680);
 			this.pvp = true;
 			this.spawnProtection = 0;
 			this.forceGameMode = false;
@@ -120,7 +118,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			buttonWidget.setMessage(this.pvpTitle());
 		}));
 		this.addButton(new ButtonWidget(this.column1_x, row(3), this.column_width, 20, this.gameModeTitle(), buttonWidget -> {
-			this.gameModeIndex = (this.gameModeIndex + 1) % field_22724.length;
+			this.gameModeIndex = (this.gameModeIndex + 1) % GAME_MODES.length;
 			buttonWidget.setMessage(this.gameModeTitle());
 		}));
 		this.spawnAnimalsButton = this.addButton(new ButtonWidget(this.column2_x, row(3), this.column_width, 20, this.spawnAnimalsTitle(), buttonWidget -> {
@@ -128,7 +126,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			buttonWidget.setMessage(this.spawnAnimalsTitle());
 		}));
 		this.addButton(new ButtonWidget(this.column1_x, row(5), this.column_width, 20, this.difficultyTitle(), buttonWidget -> {
-			this.difficultyIndex = (this.difficultyIndex + 1) % field_22723.length;
+			this.difficultyIndex = (this.difficultyIndex + 1) % DIFFICULTIES.length;
 			buttonWidget.setMessage(this.difficultyTitle());
 			if (this.worldType == RealmsServer.WorldType.NORMAL) {
 				this.spawnMonstersButton.active = this.difficultyIndex != 0;
@@ -146,7 +144,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			this.spawnNPCs = !this.spawnNPCs;
 			buttonWidget.setMessage(this.spawnNPCsTitle());
 		}));
-		this.field_22722 = this.addButton(new ButtonWidget(this.column1_x, row(9), this.column_width, 20, this.forceGameModeTitle(), buttonWidget -> {
+		this.gameModeButton = this.addButton(new ButtonWidget(this.column1_x, row(9), this.column_width, 20, this.forceGameModeTitle(), buttonWidget -> {
 			this.forceGameMode = !this.forceGameMode;
 			buttonWidget.setMessage(this.forceGameModeTitle());
 		}));
@@ -161,7 +159,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			this.spawnMonstersButton.active = false;
 			this.spawnProtectionButton.active = false;
 			this.commandBlocksButton.active = false;
-			this.field_22722.active = false;
+			this.gameModeButton.active = false;
 		}
 
 		if (this.difficultyIndex == 0) {
@@ -176,49 +174,49 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		);
 		this.addChild(this.nameEdit);
 		this.titleLabel = this.addChild(new RealmsLabel(I18n.translate("mco.configure.world.buttons.options"), this.width / 2, 17, 16777215));
-		if (this.field_20502 != null) {
-			this.addChild(this.field_20502);
+		if (this.toastMessage != null) {
+			this.addChild(this.toastMessage);
 		}
 
 		this.narrateLabels();
 	}
 
 	private String difficultyTitle() {
-		return I18n.translate("options.difficulty") + ": " + I18n.translate(field_22723[this.difficultyIndex]);
+		return I18n.translate("options.difficulty") + ": " + I18n.translate(DIFFICULTIES[this.difficultyIndex]);
 	}
 
 	private String gameModeTitle() {
-		return I18n.translate("selectWorld.gameMode") + ": " + I18n.translate(field_22724[this.gameModeIndex]);
+		return I18n.translate("selectWorld.gameMode") + ": " + I18n.translate(GAME_MODES[this.gameModeIndex]);
 	}
 
 	private String pvpTitle() {
-		return I18n.translate("mco.configure.world.pvp") + ": " + method_25258(this.pvp);
+		return I18n.translate("mco.configure.world.pvp") + ": " + getWorldConfigureMessage(this.pvp);
 	}
 
 	private String spawnAnimalsTitle() {
-		return I18n.translate("mco.configure.world.spawnAnimals") + ": " + method_25258(this.spawnAnimals);
+		return I18n.translate("mco.configure.world.spawnAnimals") + ": " + getWorldConfigureMessage(this.spawnAnimals);
 	}
 
 	private String spawnMonstersTitle() {
 		return this.difficultyIndex == 0
 			? I18n.translate("mco.configure.world.spawnMonsters") + ": " + I18n.translate("mco.configure.world.off")
-			: I18n.translate("mco.configure.world.spawnMonsters") + ": " + method_25258(this.spawnMonsters);
+			: I18n.translate("mco.configure.world.spawnMonsters") + ": " + getWorldConfigureMessage(this.spawnMonsters);
 	}
 
 	private String spawnNPCsTitle() {
-		return I18n.translate("mco.configure.world.spawnNPCs") + ": " + method_25258(this.spawnNPCs);
+		return I18n.translate("mco.configure.world.spawnNPCs") + ": " + getWorldConfigureMessage(this.spawnNPCs);
 	}
 
 	private String commandBlocksTitle() {
-		return I18n.translate("mco.configure.world.commandBlocks") + ": " + method_25258(this.commandBlocks);
+		return I18n.translate("mco.configure.world.commandBlocks") + ": " + getWorldConfigureMessage(this.commandBlocks);
 	}
 
 	private String forceGameModeTitle() {
-		return I18n.translate("mco.configure.world.forceGameMode") + ": " + method_25258(this.forceGameMode);
+		return I18n.translate("mco.configure.world.forceGameMode") + ": " + getWorldConfigureMessage(this.forceGameMode);
 	}
 
-	private static String method_25258(boolean bl) {
-		return I18n.translate(bl ? "mco.configure.world.on" : "mco.configure.world.off");
+	private static String getWorldConfigureMessage(boolean enabled) {
+		return I18n.translate(enabled ? "mco.configure.world.on" : "mco.configure.world.off");
 	}
 
 	@Override
@@ -227,8 +225,8 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		String string = I18n.translate("mco.configure.world.edit.slot.name");
 		this.textRenderer.draw(string, (float)(this.column1_x + this.column_width / 2 - this.textRenderer.getStringWidth(string) / 2), (float)(row(0) - 5), 16777215);
 		this.titleLabel.render(this);
-		if (this.field_20502 != null) {
-			this.field_20502.render(this);
+		if (this.toastMessage != null) {
+			this.toastMessage.render(this);
 		}
 
 		this.nameEdit.render(mouseX, mouseY, delta);
@@ -279,21 +277,21 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class SettingsSlider extends SliderWidget {
-		private final double field_22725;
-		private final double field_22726;
+		private final double min;
+		private final double max;
 
-		public SettingsSlider(int id, int x, int y, int width, float f, float g) {
+		public SettingsSlider(int id, int x, int y, int width, float min, float max) {
 			super(id, x, y, 20, "", 0.0);
-			this.field_22725 = (double)f;
-			this.field_22726 = (double)g;
-			this.value = (double)((MathHelper.clamp((float)width, f, g) - f) / (g - f));
+			this.min = (double)min;
+			this.max = (double)max;
+			this.value = (double)((MathHelper.clamp((float)width, min, max) - min) / (max - min));
 			this.updateMessage();
 		}
 
 		@Override
 		public void applyValue() {
 			if (RealmsSlotOptionsScreen.this.spawnProtectionButton.active) {
-				RealmsSlotOptionsScreen.this.spawnProtection = (int)MathHelper.lerp(MathHelper.clamp(this.value, 0.0, 1.0), this.field_22725, this.field_22726);
+				RealmsSlotOptionsScreen.this.spawnProtection = (int)MathHelper.lerp(MathHelper.clamp(this.value, 0.0, 1.0), this.min, this.max);
 			}
 		}
 

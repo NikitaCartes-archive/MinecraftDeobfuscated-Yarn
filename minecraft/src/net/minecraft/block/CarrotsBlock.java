@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +20,7 @@ public class CarrotsBlock extends CropBlock {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0)
 	};
 
-	public CarrotsBlock(Block.Settings settings) {
+	public CarrotsBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -32,7 +31,7 @@ public class CarrotsBlock extends CropBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return AGE_TO_SHAPE[state.get(this.getAgeProperty())];
 	}
 }

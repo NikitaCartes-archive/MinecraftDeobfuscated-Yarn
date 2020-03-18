@@ -48,32 +48,32 @@ public class CampfireSmokeParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class CosySmokeFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_18290;
+		private final SpriteProvider spriteProvider;
 
 		public CosySmokeFactory(SpriteProvider spriteProvider) {
-			this.field_18290 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(world, d, e, f, g, h, i, false);
 			campfireSmokeParticle.setColorAlpha(0.9F);
-			campfireSmokeParticle.setSprite(this.field_18290);
+			campfireSmokeParticle.setSprite(this.spriteProvider);
 			return campfireSmokeParticle;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class SignalSmokeFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17789;
+		private final SpriteProvider spriteProvider;
 
 		public SignalSmokeFactory(SpriteProvider spriteProvider) {
-			this.field_17789 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(world, d, e, f, g, h, i, true);
 			campfireSmokeParticle.setColorAlpha(0.95F);
-			campfireSmokeParticle.setSprite(this.field_17789);
+			campfireSmokeParticle.setSprite(this.spriteProvider);
 			return campfireSmokeParticle;
 		}
 	}

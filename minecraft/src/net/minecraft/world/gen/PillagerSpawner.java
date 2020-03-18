@@ -42,12 +42,12 @@ public class PillagerSpawner {
 						PlayerEntity playerEntity = (PlayerEntity)serverWorld.getPlayers().get(random.nextInt(i));
 						if (playerEntity.isSpectator()) {
 							return 0;
-						} else if (serverWorld.isNearOccupiedPointOfInterest(playerEntity.getSenseCenterPos(), 2)) {
+						} else if (serverWorld.isNearOccupiedPointOfInterest(playerEntity.getBlockPos(), 2)) {
 							return 0;
 						} else {
 							int j = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
 							int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-							BlockPos.Mutable mutable = playerEntity.getSenseCenterPos().mutableCopy().move(j, 0, k);
+							BlockPos.Mutable mutable = playerEntity.getBlockPos().mutableCopy().move(j, 0, k);
 							if (!serverWorld.isRegionLoaded(
 								mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10
 							)) {

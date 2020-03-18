@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Items;
@@ -35,7 +34,7 @@ public class TripwireBlock extends Block {
 	protected static final VoxelShape DETACHED_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	private final TripwireHookBlock hookBlock;
 
-	public TripwireBlock(TripwireHookBlock hookBlock, Block.Settings settings) {
+	public TripwireBlock(TripwireHookBlock hookBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -52,7 +51,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return state.get(ATTACHED) ? ATTACHED_SHAPE : DETACHED_SHAPE;
 	}
 
@@ -68,22 +67,22 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing.getAxis().isHorizontal()
-			? state.with((Property)FACING_PROPERTIES.get(facing), Boolean.valueOf(this.shouldConnectTo(neighborState, facing)))
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return direction.getAxis().isHorizontal()
+			? state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(this.shouldConnectTo(newState, direction)))
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (oldState.getBlock() != state.getBlock()) {
 			this.update(world, pos, state);
 		}
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!moved && state.getBlock() != newState.getBlock()) {
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+		if (!notify && state.getBlock() != newState.getBlock()) {
 			this.update(world, pos, state.with(POWERED, Boolean.valueOf(true)));
 		}
 	}
@@ -153,7 +152,7 @@ public class TripwireBlock extends Block {
 		}
 
 		if (bl2) {
-			world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getTickRate(world));
+			world.getBlockTickScheduler().schedule(new BlockPos(pos), this, 10);
 		}
 	}
 

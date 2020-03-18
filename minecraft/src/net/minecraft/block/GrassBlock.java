@@ -11,7 +11,7 @@ import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.FlowerFeature;
 
 public class GrassBlock extends SpreadableBlock implements Fertilizable {
-	public GrassBlock(Block.Settings settings) {
+	public GrassBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

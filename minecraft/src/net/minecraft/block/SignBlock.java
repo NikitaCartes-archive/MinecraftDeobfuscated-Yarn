@@ -18,7 +18,7 @@ import net.minecraft.world.WorldView;
 public class SignBlock extends AbstractSignBlock {
 	public static final IntProperty ROTATION = Properties.ROTATION;
 
-	public SignBlock(Block.Settings settings, SignType signType) {
+	public SignBlock(AbstractBlock.Settings settings, SignType signType) {
 		super(settings, signType);
 		this.setDefaultState(this.stateManager.getDefaultState().with(ROTATION, Integer.valueOf(0)).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
@@ -37,10 +37,10 @@ public class SignBlock extends AbstractSignBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing == Direction.DOWN && !this.canPlaceAt(state, world, pos)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

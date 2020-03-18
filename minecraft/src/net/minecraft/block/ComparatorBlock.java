@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockEntityProvider {
 	public static final EnumProperty<ComparatorMode> MODE = Properties.COMPARATOR_MODE;
 
-	public ComparatorBlock(Block.Settings settings) {
+	public ComparatorBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(MODE, ComparatorMode.COMPARE)
@@ -70,7 +70,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.hasComparatorOutput()) {
 			i = blockState.getComparatorOutput(world, blockPos);
-		} else if (i < 15 && blockState.isSimpleFullBlock(world, blockPos)) {
+		} else if (i < 15 && blockState.isSolidBlock(world, blockPos)) {
 			blockPos = blockPos.offset(direction);
 			blockState = world.getBlockState(blockPos);
 			ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos);
@@ -152,10 +152,10 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
-		super.onBlockAction(state, world, pos, type, data);
+	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
+		super.onBlockAction(state, world, pos, channel, value);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		return blockEntity != null && blockEntity.onBlockAction(type, data);
+		return blockEntity != null && blockEntity.onBlockAction(channel, value);
 	}
 
 	@Override

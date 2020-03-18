@@ -1,16 +1,17 @@
-package net.minecraft.entity;
+package net.minecraft.block;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 
-public interface EntityContext {
-	static EntityContext absent() {
-		return EntityContextImpl.ABSENT;
+public interface ShapeContext {
+	static ShapeContext absent() {
+		return EntityShapeContext.ABSENT;
 	}
 
-	static EntityContext of(Entity entity) {
-		return new EntityContextImpl(entity);
+	static ShapeContext of(Entity entity) {
+		return new EntityShapeContext(entity);
 	}
 
 	boolean isDescending();

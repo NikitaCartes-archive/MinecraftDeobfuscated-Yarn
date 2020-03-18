@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
@@ -31,7 +30,7 @@ public class ConnectingBlock extends Block {
 	});
 	protected final VoxelShape[] CONNECTIONS_TO_SHAPE;
 
-	protected ConnectingBlock(float radius, Block.Settings settings) {
+	protected ConnectingBlock(float radius, AbstractBlock.Settings settings) {
 		super(settings);
 		this.CONNECTIONS_TO_SHAPE = this.generateFacingsToShapeMap(radius);
 	}
@@ -79,7 +78,7 @@ public class ConnectingBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.CONNECTIONS_TO_SHAPE[this.getConnectionMask(state)];
 	}
 

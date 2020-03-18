@@ -55,7 +55,7 @@ public class EndCrystalEntity extends Entity {
 	public void tick() {
 		this.endCrystalAge++;
 		if (!this.world.isClient) {
-			BlockPos blockPos = this.getSenseCenterPos();
+			BlockPos blockPos = this.getBlockPos();
 			if (this.world.dimension instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
 				this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
 			}

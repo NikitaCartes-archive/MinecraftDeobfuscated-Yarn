@@ -124,7 +124,7 @@ public class TargetFinder {
 
 		boolean bl2 = false;
 		double d = Double.NEGATIVE_INFINITY;
-		BlockPos blockPos = mob.getSenseCenterPos();
+		BlockPos blockPos = mob.getBlockPos();
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = getRandomOffset(random, maxHorizontalDistance, maxVerticalDistance, preferredYDifference, preferredAngle, maxAngleDifference);

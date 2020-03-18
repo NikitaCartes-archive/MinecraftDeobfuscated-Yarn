@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MyceliumBlock extends SpreadableBlock {
-	public MyceliumBlock(Block.Settings settings) {
+	public MyceliumBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

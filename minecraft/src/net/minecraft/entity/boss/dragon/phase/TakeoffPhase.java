@@ -5,6 +5,7 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
@@ -60,15 +61,15 @@ public class TakeoffPhase extends AbstractPhase {
 		if (this.field_7054 != null) {
 			this.field_7054.next();
 			if (!this.field_7054.isFinished()) {
-				Vec3d vec3d = this.field_7054.getCurrentPosition();
+				Vec3i vec3i = this.field_7054.getCurrentPosition();
 				this.field_7054.next();
 
 				double d;
 				do {
-					d = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
-				} while (d < vec3d.y);
+					d = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0F);
+				} while (d < (double)vec3i.getY());
 
-				this.field_7055 = new Vec3d(vec3d.x, d, vec3d.z);
+				this.field_7055 = new Vec3d((double)vec3i.getX(), d, (double)vec3i.getZ());
 			}
 		}
 	}

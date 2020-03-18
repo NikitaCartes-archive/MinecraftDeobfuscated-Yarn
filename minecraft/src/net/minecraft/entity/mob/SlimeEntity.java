@@ -222,14 +222,14 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Override
 	public void pushAwayFrom(Entity entity) {
 		super.pushAwayFrom(entity);
-		if (entity instanceof IronGolemEntity && this.isBig()) {
+		if (entity instanceof IronGolemEntity && this.canAttack()) {
 			this.damage((LivingEntity)entity);
 		}
 	}
 
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
-		if (this.isBig()) {
+		if (this.canAttack()) {
 			this.damage(player);
 		}
 	}
@@ -251,7 +251,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		return 0.625F * dimensions.height;
 	}
 
-	protected boolean isBig() {
+	protected boolean canAttack() {
 		return !this.isSmall() && this.canMoveVoluntarily();
 	}
 
@@ -396,7 +396,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		@Override
 		public void tick() {
 			this.slime.lookAtEntity(this.slime.getTarget(), 10.0F, 10.0F);
-			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).look(this.slime.yaw, this.slime.isBig());
+			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).look(this.slime.yaw, this.slime.canAttack());
 		}
 	}
 

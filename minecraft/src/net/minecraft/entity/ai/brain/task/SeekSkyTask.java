@@ -31,13 +31,13 @@ public class SeekSkyTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return !world.isSkyVisible(entity.getSenseCenterPos());
+		return !world.isSkyVisible(entity.getBlockPos());
 	}
 
 	@Nullable
 	private Vec3d findNearbySky(ServerWorld world, LivingEntity entity) {
 		Random random = entity.getRandom();
-		BlockPos blockPos = entity.getSenseCenterPos();
+		BlockPos blockPos = entity.getBlockPos();
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);

@@ -133,7 +133,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 
 		public boolean test(CachedBlockPosition cachedBlockPosition) {
 			BlockState blockState = cachedBlockPosition.getBlockState();
-			if (!blockState.matches(this.tag)) {
+			if (!blockState.isIn(this.tag)) {
 				return false;
 			} else {
 				for (Entry<String, String> entry : this.properties.entrySet()) {

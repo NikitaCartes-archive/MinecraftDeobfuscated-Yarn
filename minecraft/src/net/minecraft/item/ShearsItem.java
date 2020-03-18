@@ -16,12 +16,12 @@ public class ShearsItem extends Item {
 
 	@Override
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-		if (!world.isClient) {
+		if (!world.isClient && !state.getBlock().isIn(BlockTags.FIRE)) {
 			stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 		}
 
 		Block block = state.getBlock();
-		return !state.matches(BlockTags.LEAVES)
+		return !state.isIn(BlockTags.LEAVES)
 				&& block != Blocks.COBWEB
 				&& block != Blocks.GRASS
 				&& block != Blocks.FERN
@@ -42,7 +42,7 @@ public class ShearsItem extends Item {
 	@Override
 	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		Block block = state.getBlock();
-		if (block == Blocks.COBWEB || state.matches(BlockTags.LEAVES)) {
+		if (block == Blocks.COBWEB || state.isIn(BlockTags.LEAVES)) {
 			return 15.0F;
 		} else {
 			return block.isIn(BlockTags.WOOL) ? 5.0F : super.getMiningSpeedMultiplier(stack, state);

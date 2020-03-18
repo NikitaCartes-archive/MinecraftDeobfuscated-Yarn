@@ -27,15 +27,29 @@ public class VariantsBlockStateSupplier implements BlockStateSupplier {
 		this.variants = variants;
 	}
 
-	public VariantsBlockStateSupplier method_25775(BlockStateVariantMap blockStateVariantMap) {
-		blockStateVariantMap.getProperties().forEach(property -> {
+	/**
+	 * Appends a block state variant map to this block state information.
+	 * 
+	 * <p>A block state variant map defines some of the variant settings based
+	 * on a defined set of properties in the block state, such as the model
+	 * of the block state is determined by a coordinated map of power and
+	 * machine type property, and the y rotation determined by a facing
+	 * property, etc.
+	 * 
+	 * @return this block state file
+	 * 
+	 * @param map the variant map to contribute property to variant settings
+	 * mappings to the block state file
+	 */
+	public VariantsBlockStateSupplier coordinate(BlockStateVariantMap map) {
+		map.getProperties().forEach(property -> {
 			if (this.block.getStateManager().getProperty(property.getName()) != property) {
 				throw new IllegalStateException("Property " + property + " is not defined for block " + this.block);
 			} else if (!this.definedProperties.add(property)) {
 				throw new IllegalStateException("Values of property " + property + " already defined for block " + this.block);
 			}
 		});
-		this.variantMaps.add(blockStateVariantMap);
+		this.variantMaps.add(map);
 		return this;
 	}
 

@@ -13,6 +13,7 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -25,10 +26,11 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -102,8 +104,10 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TraderOfferList;
@@ -147,15 +151,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Nullable
 	private Vec3d enteredNetherPos;
 	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
+	private DimensionType spawnPointDimension = DimensionType.OVERWORLD;
+	private BlockPos spawnPointPosition;
+	private boolean spawnPointSet;
 	private int screenHandlerSyncId;
 	public boolean field_13991;
 	public int pingMilliseconds;
 	public boolean notInAnyWorld;
 
-	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, ServerPlayerInteractionManager interactionManager) {
+	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, ServerPlayerInteractionManager serverPlayerInteractionManager) {
 		super(world, profile);
-		interactionManager.player = this;
-		this.interactionManager = interactionManager;
+		serverPlayerInteractionManager.player = this;
+		this.interactionManager = serverPlayerInteractionManager;
 		this.server = server;
 		this.recipeBook = new ServerRecipeBook(server.getRecipeManager());
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
@@ -232,6 +239,15 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		if (this.isSleeping()) {
 			this.wakeUp();
 		}
+
+		if (tag.contains("SpawnX", 99) && tag.contains("SpawnY", 99) && tag.contains("SpawnZ", 99)) {
+			this.spawnPointPosition = new BlockPos(tag.getInt("SpawnX"), tag.getInt("SpawnY"), tag.getInt("SpawnZ"));
+			this.spawnPointSet = tag.getBoolean("SpawnForced");
+			if (tag.contains("SpawnDimension", 8)) {
+				Identifier identifier = Identifier.tryParse(tag.getString("SpawnDimension"));
+				this.spawnPointDimension = identifier != null ? DimensionType.byId(identifier) : DimensionType.OVERWORLD;
+			}
+		}
 	}
 
 	@Override
@@ -253,12 +269,19 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			CompoundTag compoundTag2 = new CompoundTag();
 			CompoundTag compoundTag3 = new CompoundTag();
 			entity.saveToTag(compoundTag3);
-			compoundTag2.putUuidOld("Attach", entity2.getUuid());
+			compoundTag2.putUuidNew("Attach", entity2.getUuid());
 			compoundTag2.put("Entity", compoundTag3);
 			tag.put("RootVehicle", compoundTag2);
 		}
 
 		tag.put("recipeBook", this.recipeBook.toTag());
+		if (this.spawnPointPosition != null) {
+			tag.putInt("SpawnX", this.spawnPointPosition.getX());
+			tag.putInt("SpawnY", this.spawnPointPosition.getY());
+			tag.putInt("SpawnZ", this.spawnPointPosition.getZ());
+			tag.putBoolean("SpawnForced", this.spawnPointSet);
+			tag.putString("SpawnDimension", DimensionType.getId(this.spawnPointDimension).toString());
+		}
 	}
 
 	public void setExperiencePoints(int i) {
@@ -362,7 +385,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	public void playerTick() {
 		try {
-			if (!this.isSpectator() || this.world.isChunkLoaded(this.getSenseCenterPos())) {
+			if (!this.isSpectator() || this.world.isChunkLoaded(this.getBlockPos())) {
 				super.tick();
 			}
 
@@ -534,9 +557,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 						return false;
 					}
 
-					if (entity instanceof ProjectileEntity) {
-						ProjectileEntity projectileEntity = (ProjectileEntity)entity;
-						Entity entity2 = projectileEntity.getOwner();
+					if (entity instanceof PersistentProjectileEntity) {
+						PersistentProjectileEntity persistentProjectileEntity = (PersistentProjectileEntity)entity;
+						Entity entity2 = persistentProjectileEntity.getOwner();
 						if (entity2 instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity2)) {
 							return false;
 						}
@@ -709,10 +732,63 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos pos) {
-		return super.trySleep(pos).ifRight(unit -> {
-			this.incrementStat(Stats.SLEEP_IN_BED);
-			Criterions.SLEPT_IN_BED.trigger(this);
-		});
+		Direction direction = this.world.getBlockState(pos).get(HorizontalFacingBlock.FACING);
+		if (this.isSleeping() || !this.isAlive()) {
+			return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
+		} else if (!this.world.dimension.hasVisibleSky()) {
+			return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
+		} else if (!this.method_26285(pos, direction)) {
+			return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
+		} else if (this.method_26286(pos, direction)) {
+			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
+		} else {
+			this.setSpawnPoint(this.world.getDimension().getType(), pos, false, true);
+			if (this.world.isDay()) {
+				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
+			} else {
+				if (!this.isCreative()) {
+					double d = 8.0;
+					double e = 5.0;
+					Vec3d vec3d = Vec3d.method_24955(pos);
+					List<HostileEntity> list = this.world
+						.getEntities(
+							HostileEntity.class,
+							new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0),
+							hostileEntity -> hostileEntity.isAngryAt(this)
+						);
+					if (!list.isEmpty()) {
+						return Either.left(PlayerEntity.SleepFailureReason.NOT_SAFE);
+					}
+				}
+
+				Either<PlayerEntity.SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> {
+					this.incrementStat(Stats.SLEEP_IN_BED);
+					Criterions.SLEPT_IN_BED.trigger(this);
+				});
+				((ServerWorld)this.world).updateSleepingPlayers();
+				return either;
+			}
+		}
+	}
+
+	@Override
+	public void sleep(BlockPos pos) {
+		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
+		super.sleep(pos);
+	}
+
+	private boolean method_26285(BlockPos blockPos, Direction direction) {
+		return this.method_26287(blockPos) || this.method_26287(blockPos.offset(direction.getOpposite()));
+	}
+
+	private boolean method_26287(BlockPos blockPos) {
+		Vec3d vec3d = Vec3d.method_24955(blockPos);
+		return Math.abs(this.getX() - vec3d.getX()) <= 3.0 && Math.abs(this.getY() - vec3d.getY()) <= 2.0 && Math.abs(this.getZ() - vec3d.getZ()) <= 3.0;
+	}
+
+	private boolean method_26286(BlockPos blockPos, Direction direction) {
+		BlockPos blockPos2 = blockPos.up();
+		return !this.doesNotSuffocate(blockPos2) || !this.doesNotSuffocate(blockPos2.offset(direction.getOpposite()));
 	}
 
 	@Override
@@ -1274,6 +1350,35 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.interactionManager.setWorld(targetWorld);
 			this.server.getPlayerManager().sendWorldInfo(this, targetWorld);
 			this.server.getPlayerManager().sendPlayerStatus(this);
+		}
+	}
+
+	public BlockPos getSpawnPointPosition() {
+		return this.spawnPointPosition;
+	}
+
+	public DimensionType getSpawnPointDimension() {
+		return this.spawnPointDimension;
+	}
+
+	public boolean isSpawnPointSet() {
+		return this.spawnPointSet;
+	}
+
+	public void setSpawnPoint(DimensionType dimension, BlockPos pos, boolean bl, boolean bl2) {
+		if (pos != null) {
+			boolean bl3 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
+			if (bl2 && !bl3) {
+				this.sendMessage(new TranslatableText("block.minecraft.set_spawn"));
+			}
+
+			this.spawnPointPosition = pos;
+			this.spawnPointDimension = dimension;
+			this.spawnPointSet = bl;
+		} else {
+			this.spawnPointPosition = null;
+			this.spawnPointDimension = DimensionType.OVERWORLD;
+			this.spawnPointSet = false;
 		}
 	}
 

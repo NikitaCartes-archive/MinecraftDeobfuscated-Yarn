@@ -13,7 +13,7 @@ import net.minecraft.world.WorldView;
 public class WallMountedBlock extends HorizontalFacingBlock {
 	public static final EnumProperty<WallMountLocation> FACE = Properties.WALL_MOUNT_LOCATION;
 
-	protected WallMountedBlock(Block.Settings settings) {
+	protected WallMountedBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -49,10 +49,10 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return getDirection(state).getOpposite() == facing && !state.canPlaceAt(world, pos)
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return getDirection(state).getOpposite() == direction && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	protected static Direction getDirection(BlockState state) {

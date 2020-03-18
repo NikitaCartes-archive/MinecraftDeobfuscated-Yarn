@@ -146,7 +146,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	}
 
 	@VisibleForTesting
-	public String method_21680() {
+	public String getDebugString() {
 		return (String)this.queues
 				.entrySet()
 				.stream()

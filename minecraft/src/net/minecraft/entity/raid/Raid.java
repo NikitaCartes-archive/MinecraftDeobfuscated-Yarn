@@ -33,6 +33,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -108,12 +109,10 @@ public class Raid {
 		this.status = Raid.Status.fromName(tag.getString("Status"));
 		this.heroesOfTheVillage.clear();
 		if (tag.contains("HeroesOfTheVillage", 9)) {
-			ListTag listTag = tag.getList("HeroesOfTheVillage", 10);
+			ListTag listTag = tag.getList("HeroesOfTheVillage", 11);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag = listTag.getCompound(i);
-				UUID uUID = compoundTag.getUuidOld("UUID");
-				this.heroesOfTheVillage.add(uUID);
+				this.heroesOfTheVillage.add(NbtHelper.toUuidNew(listTag.get(i)));
 			}
 		}
 	}
@@ -156,7 +155,7 @@ public class Raid {
 
 	private Predicate<ServerPlayerEntity> isInRaidDistance() {
 		return serverPlayerEntity -> {
-			BlockPos blockPos = serverPlayerEntity.getSenseCenterPos();
+			BlockPos blockPos = serverPlayerEntity.getBlockPos();
 			return serverPlayerEntity.isAlive() && this.world.getRaidAt(blockPos) == this;
 		};
 	}
@@ -400,7 +399,7 @@ public class Raid {
 			Set<RaiderEntity> set2 = (Set<RaiderEntity>)iterator.next();
 
 			for (RaiderEntity raiderEntity : set2) {
-				BlockPos blockPos = raiderEntity.getSenseCenterPos();
+				BlockPos blockPos = raiderEntity.getBlockPos();
 				if (raiderEntity.removed || raiderEntity.dimension != this.world.getDimension().getType() || this.center.getSquaredDistance(blockPos) >= 12544.0) {
 					set.add(raiderEntity);
 				} else if (raiderEntity.age > 600) {
@@ -712,9 +711,7 @@ public class Raid {
 		ListTag listTag = new ListTag();
 
 		for (UUID uUID : this.heroesOfTheVillage) {
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putUuidOld("UUID", uUID);
-			listTag.add(compoundTag);
+			listTag.add(NbtHelper.fromUuidNew(uUID));
 		}
 
 		tag.put("HeroesOfTheVillage", listTag);

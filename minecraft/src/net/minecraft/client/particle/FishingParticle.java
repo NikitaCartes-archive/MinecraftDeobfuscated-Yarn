@@ -51,14 +51,14 @@ public class FishingParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17889;
+		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
-			this.field_17889 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new FishingParticle(world, d, e, f, g, h, i, this.field_17889);
+			return new FishingParticle(world, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 }

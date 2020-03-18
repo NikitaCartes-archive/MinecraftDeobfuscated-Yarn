@@ -90,18 +90,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
-import net.minecraft.entity.thrown.SnowballEntity;
-import net.minecraft.entity.thrown.ThrownEggEntity;
-import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
-import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
+import net.minecraft.entity.projectile.thrown.EggEntity;
+import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
+import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
@@ -201,14 +200,14 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<ExperienceOrbEntity> EXPERIENCE_ORB = register(
 		"experience_orb", EntityType.Builder.<ExperienceOrbEntity>create(ExperienceOrbEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
 	);
-	public static final EntityType<EnderEyeEntity> EYE_OF_ENDER = register(
-		"eye_of_ender", EntityType.Builder.<EnderEyeEntity>create(EnderEyeEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<EyeOfEnderEntity> EYE_OF_ENDER = register(
+		"eye_of_ender", EntityType.Builder.<EyeOfEnderEntity>create(EyeOfEnderEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
 	);
 	public static final EntityType<FallingBlockEntity> FALLING_BLOCK = register(
 		"falling_block", EntityType.Builder.<FallingBlockEntity>create(FallingBlockEntity::new, EntityCategory.MISC).setDimensions(0.98F, 0.98F)
 	);
-	public static final EntityType<FireworkEntity> FIREWORK_ROCKET = register(
-		"firework_rocket", EntityType.Builder.<FireworkEntity>create(FireworkEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<FireworkRocketEntity> FIREWORK_ROCKET = register(
+		"firework_rocket", EntityType.Builder.<FireworkRocketEntity>create(FireworkRocketEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
 	);
 	public static final EntityType<FoxEntity> FOX = register("fox", EntityType.Builder.create(FoxEntity::new, EntityCategory.CREATURE).setDimensions(0.6F, 0.7F));
 	public static final EntityType<GhastEntity> GHAST = register(
@@ -360,18 +359,17 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<TurtleEntity> TURTLE = register(
 		"turtle", EntityType.Builder.create(TurtleEntity::new, EntityCategory.CREATURE).setDimensions(1.2F, 0.4F)
 	);
-	public static final EntityType<ThrownEggEntity> EGG = register(
-		"egg", EntityType.Builder.<ThrownEggEntity>create(ThrownEggEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<EggEntity> EGG = register(
+		"egg", EntityType.Builder.<EggEntity>create(EggEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
 	);
-	public static final EntityType<ThrownEnderpearlEntity> ENDER_PEARL = register(
-		"ender_pearl", EntityType.Builder.<ThrownEnderpearlEntity>create(ThrownEnderpearlEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<EnderPearlEntity> ENDER_PEARL = register(
+		"ender_pearl", EntityType.Builder.<EnderPearlEntity>create(EnderPearlEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
 	);
-	public static final EntityType<ThrownExperienceBottleEntity> EXPERIENCE_BOTTLE = register(
-		"experience_bottle",
-		EntityType.Builder.<ThrownExperienceBottleEntity>create(ThrownExperienceBottleEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<ExperienceBottleEntity> EXPERIENCE_BOTTLE = register(
+		"experience_bottle", EntityType.Builder.<ExperienceBottleEntity>create(ExperienceBottleEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
 	);
-	public static final EntityType<ThrownPotionEntity> POTION = register(
-		"potion", EntityType.Builder.<ThrownPotionEntity>create(ThrownPotionEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
+	public static final EntityType<PotionEntity> POTION = register(
+		"potion", EntityType.Builder.<PotionEntity>create(PotionEntity::new, EntityCategory.MISC).setDimensions(0.25F, 0.25F)
 	);
 	public static final EntityType<TridentEntity> TRIDENT = register(
 		"trident", EntityType.Builder.<TridentEntity>create(TridentEntity::new, EntityCategory.MISC).setDimensions(0.5F, 0.5F)
@@ -551,7 +549,7 @@ public class EntityType<T extends Entity> {
 				MobEntity mobEntity = (MobEntity)entity;
 				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.bodyYaw = mobEntity.yaw;
-				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getSenseCenterPos()), spawnType, null, itemTag);
+				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnType, null, itemTag);
 				mobEntity.playAmbientSound();
 			}
 

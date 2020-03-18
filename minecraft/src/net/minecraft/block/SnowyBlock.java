@@ -11,17 +11,17 @@ import net.minecraft.world.IWorld;
 public class SnowyBlock extends Block {
 	public static final BooleanProperty SNOWY = Properties.SNOWY;
 
-	protected SnowyBlock(Block.Settings settings) {
+	protected SnowyBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(SNOWY, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing != Direction.UP) {
-			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (direction != Direction.UP) {
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
-			Block block = neighborState.getBlock();
+			Block block = newState.getBlock();
 			return state.with(SNOWY, Boolean.valueOf(block == Blocks.SNOW_BLOCK || block == Blocks.SNOW));
 		}
 	}

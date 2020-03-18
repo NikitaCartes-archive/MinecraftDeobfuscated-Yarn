@@ -34,7 +34,7 @@ public abstract class SaplingGenerator {
 
 	private boolean method_24282(IWorld iWorld, BlockPos blockPos) {
 		for (BlockPos blockPos2 : BlockPos.Mutable.iterate(blockPos.down().north(2).west(2), blockPos.up().south(2).east(2))) {
-			if (iWorld.getBlockState(blockPos2).matches(BlockTags.FLOWERS)) {
+			if (iWorld.getBlockState(blockPos2).isIn(BlockTags.FLOWERS)) {
 				return true;
 			}
 		}

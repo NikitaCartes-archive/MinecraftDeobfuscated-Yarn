@@ -3,7 +3,7 @@ package net.minecraft.block;
 import net.minecraft.util.math.Direction;
 
 public class TwistingVinesPlantBlock extends AbstractPlantBlock {
-	public TwistingVinesPlantBlock(Block.Settings settings) {
+	public TwistingVinesPlantBlock(AbstractBlock.Settings settings) {
 		super(settings, Direction.UP, VineLogic.STEM_OUTLINE_SHAPE, false);
 	}
 

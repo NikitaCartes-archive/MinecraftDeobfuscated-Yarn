@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.world.ServerWorld;
@@ -23,7 +22,7 @@ public class CactusBlock extends Block {
 	protected static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
 	protected static final VoxelShape OUTLINE_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 
-	protected CactusBlock(Block.Settings settings) {
+	protected CactusBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
@@ -32,47 +31,50 @@ public class CactusBlock extends Block {
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
-		} else {
-			BlockPos blockPos = pos.up();
-			if (world.isAir(blockPos)) {
-				int i = 1;
+		}
+	}
 
-				while (world.getBlockState(pos.down(i)).getBlock() == this) {
-					i++;
-				}
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		BlockPos blockPos = pos.up();
+		if (world.isAir(blockPos)) {
+			int i = 1;
 
-				if (i < 3) {
-					int j = (Integer)state.get(AGE);
-					if (j == 15) {
-						world.setBlockState(blockPos, this.getDefaultState());
-						BlockState blockState = state.with(AGE, Integer.valueOf(0));
-						world.setBlockState(pos, blockState, 4);
-						blockState.neighborUpdate(world, blockPos, this, pos, false);
-					} else {
-						world.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), 4);
-					}
+			while (world.getBlockState(pos.down(i)).getBlock() == this) {
+				i++;
+			}
+
+			if (i < 3) {
+				int j = (Integer)state.get(AGE);
+				if (j == 15) {
+					world.setBlockState(blockPos, this.getDefaultState());
+					BlockState blockState = state.with(AGE, Integer.valueOf(0));
+					world.setBlockState(pos, blockState, 4);
+					blockState.neighborUpdate(world, blockPos, this, pos, false);
+				} else {
+					world.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), 4);
 				}
 			}
 		}
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return COLLISION_SHAPE;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return OUTLINE_SHAPE;
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -100,7 +102,7 @@ public class CactusBlock extends Block {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

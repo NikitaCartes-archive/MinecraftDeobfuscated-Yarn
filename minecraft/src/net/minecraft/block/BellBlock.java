@@ -6,10 +6,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -48,7 +47,7 @@ public class BellBlock extends BlockWithEntity {
 	private static final VoxelShape SOUTH_WALL_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 3.0, 9.0, 15.0, 16.0));
 	private static final VoxelShape HANGING_SHAPE = VoxelShapes.union(BELL_SHAPE, Block.createCuboidShape(7.0, 13.0, 7.0, 9.0, 16.0, 9.0));
 
-	public BellBlock(Block.Settings settings) {
+	public BellBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(ATTACHMENT, Attachment.FLOOR).with(field_20648, Boolean.valueOf(false))
@@ -56,7 +55,7 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(field_20648)) {
 			if (bl) {
@@ -68,10 +67,10 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		Entity entity = projectile.getOwner();
 		PlayerEntity playerEntity = entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
-		this.ring(world, state, hitResult, playerEntity, true);
+		this.ring(world, state, hit, playerEntity, true);
 	}
 
 	@Override
@@ -149,12 +148,12 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.getShape(state);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return this.getShape(state);
 	}
 
@@ -200,25 +199,23 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		Attachment attachment = state.get(ATTACHMENT);
-		Direction direction = getPlacementSide(state).getOpposite();
-		if (direction == facing && !state.canPlaceAt(world, pos) && attachment != Attachment.DOUBLE_WALL) {
+		Direction direction2 = getPlacementSide(state).getOpposite();
+		if (direction2 == direction && !state.canPlaceAt(world, pos) && attachment != Attachment.DOUBLE_WALL) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			if (facing.getAxis() == ((Direction)state.get(FACING)).getAxis()) {
-				if (attachment == Attachment.DOUBLE_WALL && !neighborState.isSideSolidFullSquare(world, neighborPos, facing)) {
-					return state.with(ATTACHMENT, Attachment.SINGLE_WALL).with(FACING, facing.getOpposite());
+			if (direction.getAxis() == ((Direction)state.get(FACING)).getAxis()) {
+				if (attachment == Attachment.DOUBLE_WALL && !newState.isSideSolidFullSquare(world, posFrom, direction)) {
+					return state.with(ATTACHMENT, Attachment.SINGLE_WALL).with(FACING, direction.getOpposite());
 				}
 
-				if (attachment == Attachment.SINGLE_WALL && direction.getOpposite() == facing && neighborState.isSideSolidFullSquare(world, neighborPos, state.get(FACING))
-					)
-				 {
+				if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && newState.isSideSolidFullSquare(world, posFrom, state.get(FACING))) {
 					return state.with(ATTACHMENT, Attachment.DOUBLE_WALL);
 				}
 			}
 
-			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		}
 	}
 
@@ -255,7 +252,7 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

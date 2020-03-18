@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
@@ -23,10 +22,10 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	public static boolean isRail(BlockState state) {
-		return state.matches(BlockTags.RAILS);
+		return state.isIn(BlockTags.RAILS);
 	}
 
-	protected AbstractRailBlock(boolean allowCurves, Block.Settings settings) {
+	protected AbstractRailBlock(boolean allowCurves, AbstractBlock.Settings settings) {
 		super(settings);
 		this.allowCurves = allowCurves;
 	}
@@ -36,7 +35,7 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		RailShape railShape = state.getBlock() == this ? state.get(this.getShapeProperty()) : null;
 		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : STRAIGHT_SHAPE;
 	}
@@ -47,9 +46,9 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (oldState.getBlock() != state.getBlock()) {
-			this.method_24417(state, world, pos, moved);
+			this.method_24417(state, world, pos, notify);
 		}
 	}
 
@@ -63,7 +62,7 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (!world.isClient) {
 			RailShape railShape = state.get(this.getShapeProperty());
 			boolean bl = false;
@@ -93,11 +92,11 @@ public abstract class AbstractRailBlock extends Block {
 			}
 
 			if (bl && !world.isAir(pos)) {
-				if (!moved) {
+				if (!notify) {
 					dropStacks(state, world, pos);
 				}
 
-				world.removeBlock(pos, moved);
+				world.removeBlock(pos, notify);
 			} else {
 				this.updateBlockState(state, world, pos, block);
 			}
@@ -122,9 +121,9 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!moved) {
-			super.onBlockRemoved(state, world, pos, newState, moved);
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+		if (!notify) {
+			super.onBlockRemoved(state, world, pos, newState, notify);
 			if (((RailShape)state.get(this.getShapeProperty())).isAscending()) {
 				world.updateNeighborsAlways(pos.up(), this);
 			}

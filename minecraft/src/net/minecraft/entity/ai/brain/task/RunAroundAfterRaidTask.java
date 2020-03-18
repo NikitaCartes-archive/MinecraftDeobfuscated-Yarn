@@ -10,7 +10,7 @@ public class RunAroundAfterRaidTask extends FindWalkTargetTask {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-		Raid raid = serverWorld.getRaidAt(mobEntityWithAi.getSenseCenterPos());
+		Raid raid = serverWorld.getRaidAt(mobEntityWithAi.getBlockPos());
 		return raid != null && raid.hasWon() && super.shouldRun(serverWorld, mobEntityWithAi);
 	}
 }

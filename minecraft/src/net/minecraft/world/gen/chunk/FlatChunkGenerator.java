@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -106,7 +107,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
+	public void buildSurface(ChunkRegion region, Chunk chunk) {
 	}
 
 	@Override
@@ -142,7 +143,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
+	public int getHeight(int x, int z, Heightmap.Type heightmapType) {
 		BlockState[] blockStates = this.config.getLayerBlocks();
 
 		for (int i = blockStates.length - 1; i >= 0; i--) {
@@ -156,14 +157,19 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
+	public BlockView getColumnSample(int x, int z) {
+		return new VerticalBlockSample(this.config.getLayerBlocks());
+	}
+
+	@Override
 	public void spawnEntities(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
 		this.phantomSpawner.spawn(world, spawnMonsters, spawnAnimals);
 		this.catSpawner.spawn(world, spawnMonsters, spawnAnimals);
 	}
 
 	@Override
-	public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> structureFeature) {
-		return this.biome.hasStructureFeature(structureFeature);
+	public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> feature) {
+		return this.biome.hasStructureFeature(feature);
 	}
 
 	@Nullable

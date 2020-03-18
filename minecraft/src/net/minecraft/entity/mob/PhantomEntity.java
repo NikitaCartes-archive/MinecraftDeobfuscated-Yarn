@@ -153,7 +153,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	@Override
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.field_7312 = this.getSenseCenterPos().up(5);
+		this.field_7312 = this.getBlockPos().up(5);
 		this.setPhantomSize(0);
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
@@ -271,12 +271,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				this.method_7103();
 			}
 
-			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.getY() && !PhantomEntity.this.world.isAir(PhantomEntity.this.getSenseCenterPos().down(1))) {
+			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.getY() && !PhantomEntity.this.world.isAir(PhantomEntity.this.getBlockPos().down(1))) {
 				this.field_7326 = Math.max(1.0F, this.field_7326);
 				this.method_7103();
 			}
 
-			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.getY() && !PhantomEntity.this.world.isAir(PhantomEntity.this.getSenseCenterPos().up(1))) {
+			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.getY() && !PhantomEntity.this.world.isAir(PhantomEntity.this.getBlockPos().up(1))) {
 				this.field_7326 = Math.min(-1.0F, this.field_7326);
 				this.method_7103();
 			}
@@ -284,7 +284,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		private void method_7103() {
 			if (BlockPos.ORIGIN.equals(PhantomEntity.this.field_7312)) {
-				PhantomEntity.this.field_7312 = PhantomEntity.this.getSenseCenterPos();
+				PhantomEntity.this.field_7312 = PhantomEntity.this.getBlockPos();
 			}
 
 			this.field_7328 = this.field_7328 + this.field_7324 * 15.0F * (float) (Math.PI / 180.0);
@@ -458,7 +458,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		}
 
 		private void method_7102() {
-			PhantomEntity.this.field_7312 = PhantomEntity.this.getTarget().getSenseCenterPos().up(20 + PhantomEntity.this.random.nextInt(20));
+			PhantomEntity.this.field_7312 = PhantomEntity.this.getTarget().getBlockPos().up(20 + PhantomEntity.this.random.nextInt(20));
 			if (PhantomEntity.this.field_7312.getY() < PhantomEntity.this.world.getSeaLevel()) {
 				PhantomEntity.this.field_7312 = new BlockPos(
 					PhantomEntity.this.field_7312.getX(), PhantomEntity.this.world.getSeaLevel() + 1, PhantomEntity.this.field_7312.getZ()
@@ -523,7 +523,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
 				PhantomEntity.this.tryAttack(livingEntity);
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
-				PhantomEntity.this.world.playLevelEvent(1039, PhantomEntity.this.getSenseCenterPos(), 0);
+				if (!PhantomEntity.this.isSilent()) {
+					PhantomEntity.this.world.playLevelEvent(1039, PhantomEntity.this.getBlockPos(), 0);
+				}
 			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 			}

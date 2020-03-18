@@ -518,6 +518,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.add(Blocks.SOUL_FIRE_WALL_TORCH);
 		this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS).add(Blocks.POTTED_WARPED_FUNGUS);
 		this.getOrCreateTagBuilder(BlockTags.GOLD_ORES).add(Blocks.GOLD_ORE, Blocks.NETHER_GOLD_ORE);
+		this.getOrCreateTagBuilder(BlockTags.SOUL_FIRE_BASE_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 	}
 
 	@Override

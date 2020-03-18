@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -9,7 +10,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 
 public abstract class SpreadableBlock extends SnowyBlock {
-	protected SpreadableBlock(Block.Settings settings) {
+	protected SpreadableBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -18,6 +19,8 @@ public abstract class SpreadableBlock extends SnowyBlock {
 		BlockState blockState = worldView.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.SNOW && (Integer)blockState.get(SnowBlock.LAYERS) == 1) {
 			return true;
+		} else if (blockState.getFluidState().getFluid() != Fluids.EMPTY) {
+			return false;
 		} else {
 			int i = ChunkLightProvider.getRealisticOpacity(worldView, state, pos, blockState, blockPos, Direction.UP, blockState.getOpacity(worldView, blockPos));
 			return i < worldView.getMaxLightLevel();
@@ -30,7 +33,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!canSurvive(state, world, pos)) {
 			world.setBlockState(pos, Blocks.DIRT.getDefaultState());
 		} else {

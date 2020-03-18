@@ -24,7 +24,7 @@ public class Ping {
 			list.add(new RegionPingResult(region2.name, ping(region2.endpoint)));
 		}
 
-		list.sort(Comparator.comparingInt(RegionPingResult::ping));
+		list.sort(Comparator.comparingInt(RegionPingResult::getPing));
 		return list;
 	}
 

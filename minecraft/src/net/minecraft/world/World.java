@@ -51,6 +51,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
@@ -121,11 +122,6 @@ public abstract class World implements IWorld, AutoCloseable {
 		return null;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public void setDefaultSpawnClient() {
-		this.setSpawnPos(new BlockPos(8, 64, 8));
-	}
-
 	public BlockState getTopNonAirState(BlockPos blockPos) {
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), this.getSeaLevel(), blockPos.getZ());
 
@@ -158,6 +154,36 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public static boolean isHeightInvalid(int y) {
 		return y < 0 || y >= 256;
+	}
+
+	public double method_26097(BlockPos blockPos) {
+		VoxelShape voxelShape = this.getBlockState(blockPos).getCollisionShape(this, blockPos);
+		if (voxelShape.isEmpty()) {
+			BlockPos blockPos2 = blockPos.down();
+			VoxelShape voxelShape2 = this.getBlockState(blockPos2).getCollisionShape(this, blockPos2);
+			double d = voxelShape2.getMaximum(Direction.Axis.Y);
+			return d >= 1.0 ? d - 1.0 : Double.NEGATIVE_INFINITY;
+		} else {
+			return voxelShape.getMaximum(Direction.Axis.Y);
+		}
+	}
+
+	public double method_26096(BlockPos blockPos, double d) {
+		BlockPos.Mutable mutable = blockPos.mutableCopy();
+		int i = MathHelper.ceil(d);
+		int j = 0;
+
+		while (j < i) {
+			VoxelShape voxelShape = this.getBlockState(mutable).getCollisionShape(this, mutable);
+			if (!voxelShape.isEmpty()) {
+				return (double)j + voxelShape.getMinimum(Direction.Axis.Y);
+			}
+
+			j++;
+			mutable.move(Direction.UP);
+		}
+
+		return Double.POSITIVE_INFINITY;
 	}
 
 	public WorldChunk getWorldChunk(BlockPos blockPos) {
@@ -224,9 +250,9 @@ public abstract class World implements IWorld, AutoCloseable {
 
 					if ((flags & 16) == 0) {
 						int i = flags & -2;
-						blockState.method_11637(this, pos, i);
-						state.updateNeighborStates(this, pos, i);
-						state.method_11637(this, pos, i);
+						blockState.prepare(this, pos, i);
+						state.updateNeighbors(this, pos, i);
+						state.prepare(this, pos, i);
 					}
 
 					this.onBlockChanged(pos, blockState, blockState2);
@@ -564,7 +590,7 @@ public abstract class World implements IWorld, AutoCloseable {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
 						BlockState blockState = this.getBlockState(mutable.set(o, p, q));
-						if (blockState.matches(BlockTags.FIRE) || blockState.getBlock() == Blocks.LAVA) {
+						if (blockState.isIn(BlockTags.FIRE) || blockState.getBlock() == Blocks.LAVA) {
 							return true;
 						}
 					}
@@ -734,7 +760,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			return false;
 		} else {
 			Chunk chunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
-			return chunk == null ? false : chunk.getBlockState(blockPos).isSideOpaque(this, blockPos, entity, direction);
+			return chunk == null ? false : chunk.getBlockState(blockPos).hasSolidTopSurface(this, blockPos, entity, direction);
 		}
 	}
 
@@ -917,7 +943,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public int getEmittedRedstonePower(BlockPos pos, Direction direction) {
 		BlockState blockState = this.getBlockState(pos);
-		return blockState.isSimpleFullBlock(this, pos) ? this.getReceivedStrongRedstonePower(pos) : blockState.getWeakRedstonePower(this, pos, direction);
+		return blockState.isSolidBlock(this, pos) ? this.getReceivedStrongRedstonePower(pos) : blockState.getWeakRedstonePower(this, pos, direction);
 	}
 
 	public boolean isReceivingRedstonePower(BlockPos blockPos) {
@@ -1108,7 +1134,7 @@ public abstract class World implements IWorld, AutoCloseable {
 				BlockState blockState = this.getBlockState(blockPos);
 				if (blockState.getBlock() == Blocks.COMPARATOR) {
 					blockState.neighborUpdate(this, blockPos, block, pos, false);
-				} else if (blockState.isSimpleFullBlock(this, blockPos)) {
+				} else if (blockState.isSolidBlock(this, blockPos)) {
 					blockPos = blockPos.offset(direction);
 					blockState = this.getBlockState(blockPos);
 					if (blockState.getBlock() == Blocks.COMPARATOR) {

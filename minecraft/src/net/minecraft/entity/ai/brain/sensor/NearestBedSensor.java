@@ -46,7 +46,7 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 				}
 			};
 			Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
-				PointOfInterestType.HOME.getCompletionCondition(), predicate, mobEntity.getSenseCenterPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestType.HOME.getCompletionCondition(), predicate, mobEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			Path path = mobEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
 			if (path != null && path.reachesTarget()) {

@@ -6,7 +6,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -133,7 +132,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		ITEM_TO_LEVEL_INCREASE_CHANCE.put(item.asItem(), levelIncreaseChance);
 	}
 
-	public ComposterBlock(Block.Settings settings) {
+	public ComposterBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, Integer.valueOf(0)));
 	}
@@ -173,7 +172,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return LEVEL_TO_COLLISION_SHAPE[state.get(LEVEL)];
 	}
 
@@ -183,12 +182,12 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return LEVEL_TO_COLLISION_SHAPE[0];
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if ((Integer)state.get(LEVEL) == 7) {
 			world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
 		}
@@ -253,8 +252,6 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			world.setBlockState(pos, state.cycle(LEVEL), 3);
 			world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
-
-		super.scheduledTick(state, world, pos, random);
 	}
 
 	@Override
@@ -273,7 +270,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 

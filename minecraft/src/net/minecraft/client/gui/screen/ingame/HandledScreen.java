@@ -460,13 +460,13 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 					this.touchDragSlotStart = null;
 				}
 			} else if (this.isCursorDragging && !this.cursorDragSlots.isEmpty()) {
-				this.onMouseClick(null, -999, ScreenHandler.packClickData(0, this.heldButtonType), SlotActionType.QUICK_CRAFT);
+				this.onMouseClick(null, -999, ScreenHandler.packQuickCraftData(0, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 
 				for (Slot slot2x : this.cursorDragSlots) {
-					this.onMouseClick(slot2x, slot2x.id, ScreenHandler.packClickData(1, this.heldButtonType), SlotActionType.QUICK_CRAFT);
+					this.onMouseClick(slot2x, slot2x.id, ScreenHandler.packQuickCraftData(1, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 				}
 
-				this.onMouseClick(null, -999, ScreenHandler.packClickData(2, this.heldButtonType), SlotActionType.QUICK_CRAFT);
+				this.onMouseClick(null, -999, ScreenHandler.packQuickCraftData(2, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 			} else if (!this.client.player.inventory.getCursorStack().isEmpty()) {
 				if (this.client.options.keyPickItem.matchesMouse(button)) {
 					this.onMouseClick(slot, k, button, SlotActionType.CLONE);
@@ -508,12 +508,15 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			&& pointY < (double)(yPosition + height + 1);
 	}
 
-	protected void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType) {
+	/**
+	 * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int)
+	 */
+	protected void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
 		if (slot != null) {
 			invSlot = slot.id;
 		}
 
-		this.client.interactionManager.clickSlot(this.handler.syncId, invSlot, button, slotActionType, this.client.player);
+		this.client.interactionManager.clickSlot(this.handler.syncId, invSlot, clickData, actionType, this.client.player);
 	}
 
 	@Override

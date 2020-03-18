@@ -24,7 +24,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,7 +32,7 @@ public class CommandBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty CONDITIONAL = Properties.CONDITIONAL;
 
-	public CommandBlock(Block.Settings settings) {
+	public CommandBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CONDITIONAL, Boolean.valueOf(false)));
 	}
@@ -46,7 +45,7 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (!world.isClient) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
@@ -57,7 +56,7 @@ public class CommandBlock extends BlockWithEntity {
 				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 					if (bl) {
 						commandBlockBlockEntity.updateConditionMet();
-						world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+						world.getBlockTickScheduler().schedule(pos, this, 1);
 					}
 				}
 			}
@@ -82,7 +81,7 @@ public class CommandBlock extends BlockWithEntity {
 				}
 
 				if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-					world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+					world.getBlockTickScheduler().schedule(pos, this, 1);
 				}
 			} else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
 				if (bl2) {
@@ -104,11 +103,6 @@ public class CommandBlock extends BlockWithEntity {
 		}
 
 		executeCommandChain(world, pos, state.get(FACING));
-	}
-
-	@Override
-	public int getTickRate(WorldView world) {
-		return 1;
 	}
 
 	@Override

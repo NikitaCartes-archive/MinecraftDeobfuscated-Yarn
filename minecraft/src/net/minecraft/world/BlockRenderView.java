@@ -9,7 +9,7 @@ import net.minecraft.world.level.ColorResolver;
 
 public interface BlockRenderView extends BlockView {
 	@Environment(EnvType.CLIENT)
-	float method_24852(Direction direction, boolean bl);
+	float getBrightness(Direction direction, boolean shaded);
 
 	LightingProvider getLightingProvider();
 

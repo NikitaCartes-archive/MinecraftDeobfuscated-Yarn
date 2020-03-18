@@ -31,7 +31,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -1114,7 +1114,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 						this.player.swingHand(hand, true);
 					}
 				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
-					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof ProjectileEntity || entity == this.player) {
+					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof PersistentProjectileEntity || entity == this.player) {
 						this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
 						this.server.warn("Player " + this.player.getName().getString() + " tried to attack an invalid entity");
 						return;
@@ -1135,14 +1135,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			case PERFORM_RESPAWN:
 				if (this.player.notInAnyWorld) {
 					this.player.notInAnyWorld = false;
-					this.player = this.server.getPlayerManager().respawnPlayer(this.player, DimensionType.OVERWORLD, true);
+					this.player = this.server.getPlayerManager().respawnPlayer(this.player, true);
 					Criterions.CHANGED_DIMENSION.trigger(this.player, DimensionType.THE_END, DimensionType.OVERWORLD);
 				} else {
 					if (this.player.getHealth() > 0.0F) {
 						return;
 					}
 
-					this.player = this.server.getPlayerManager().respawnPlayer(this.player, DimensionType.OVERWORLD, false);
+					this.player = this.server.getPlayerManager().respawnPlayer(this.player, false);
 					if (this.server.isHardcore()) {
 						this.player.setGameMode(GameMode.SPECTATOR);
 						this.player.getServerWorld().getGameRules().get(GameRules.SPECTATORS_GENERATE_CHUNKS).set(false, this.server);
@@ -1174,16 +1174,16 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 				this.player.onHandlerRegistered(this.player.currentScreenHandler, defaultedList);
 			} else {
-				ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
+				ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getClickData(), packet.getActionType(), this.player);
 				if (ItemStack.areEqual(packet.getStack(), itemStack)) {
-					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getTransactionId(), true));
+					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getActionId(), true));
 					this.player.field_13991 = true;
 					this.player.currentScreenHandler.sendContentUpdates();
 					this.player.method_14241();
 					this.player.field_13991 = false;
 				} else {
-					this.transactions.put(this.player.currentScreenHandler.syncId, packet.getTransactionId());
-					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getTransactionId(), false));
+					this.transactions.put(this.player.currentScreenHandler.syncId, packet.getActionId());
+					this.player.networkHandler.sendPacket(new ConfirmGuiActionS2CPacket(packet.getSyncId(), packet.getActionId(), false));
 					this.player.currentScreenHandler.setPlayerRestriction(this.player, false);
 					DefaultedList<ItemStack> defaultedList2 = DefaultedList.of();
 

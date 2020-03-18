@@ -142,7 +142,10 @@ public class PufferfishEntity extends FishEntity {
 	public void onPlayerCollision(PlayerEntity player) {
 		int i = this.getPuffState();
 		if (player instanceof ServerPlayerEntity && i > 0 && player.damage(DamageSource.mob(this), (float)(1 + i))) {
-			((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0F));
+			if (!this.isSilent()) {
+				((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(9, 0.0F));
+			}
+
 			player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0));
 		}
 	}

@@ -10,7 +10,7 @@ import net.minecraft.util.math.Direction;
 public class PillarBlock extends Block {
 	public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;
 
-	public PillarBlock(Block.Settings settings) {
+	public PillarBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(AXIS, Direction.Axis.Y));
 	}

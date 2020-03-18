@@ -23,7 +23,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	public static final BooleanProperty LOCKED = Properties.LOCKED;
 	public static final IntProperty DELAY = Properties.DELAY;
 
-	protected RepeaterBlock(Block.Settings settings) {
+	protected RepeaterBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -57,10 +57,10 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return !world.isClient() && facing.getAxis() != ((Direction)state.get(FACING)).getAxis()
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return !world.isClient() && direction.getAxis() != ((Direction)state.get(FACING)).getAxis()
 			? state.with(LOCKED, Boolean.valueOf(this.isLocked(world, pos, state)))
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

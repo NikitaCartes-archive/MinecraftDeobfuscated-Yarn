@@ -19,6 +19,10 @@ public class NetherForestVegetationFeature extends Feature<BlockPileFeatureConfi
 	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig
 	) {
+		return method_26264(iWorld, random, blockPos, blockPileFeatureConfig, 8, 4);
+	}
+
+	public static boolean method_26264(IWorld iWorld, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig, int i, int j) {
 		for (Block block = iWorld.getBlockState(blockPos.down()).getBlock();
 			!block.isIn(BlockTags.NYLIUM) && blockPos.getY() > 0;
 			block = iWorld.getBlockState(blockPos).getBlock()
@@ -26,20 +30,20 @@ public class NetherForestVegetationFeature extends Feature<BlockPileFeatureConfi
 			blockPos = blockPos.down();
 		}
 
-		int i = blockPos.getY();
-		if (i >= 1 && i + 1 < 256) {
-			int j = 0;
+		int k = blockPos.getY();
+		if (k >= 1 && k + 1 < 256) {
+			int l = 0;
 
-			for (int k = 0; k < 64; k++) {
-				BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
+			for (int m = 0; m < i * i; m++) {
+				BlockPos blockPos2 = blockPos.add(random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
 				BlockState blockState = blockPileFeatureConfig.stateProvider.getBlockState(random, blockPos2);
 				if (iWorld.isAir(blockPos2) && blockPos2.getY() > 0 && blockState.canPlaceAt(iWorld, blockPos2)) {
 					iWorld.setBlockState(blockPos2, blockState, 2);
-					j++;
+					l++;
 				}
 			}
 
-			return j > 0;
+			return l > 0;
 		} else {
 			return false;
 		}

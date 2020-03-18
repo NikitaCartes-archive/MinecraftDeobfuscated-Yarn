@@ -4,7 +4,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -30,7 +29,7 @@ public class TurtleEggBlock extends Block {
 	public static final IntProperty HATCH = Properties.HATCH;
 	public static final IntProperty EGGS = Properties.EGGS;
 
-	public TurtleEggBlock(Block.Settings settings) {
+	public TurtleEggBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(HATCH, Integer.valueOf(0)).with(EGGS, Integer.valueOf(1)));
 	}
@@ -72,7 +71,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (this.shouldHatchProgress(world) && this.isSand(world, pos)) {
 			int i = (Integer)state.get(HATCH);
 			if (i < 2) {
@@ -99,7 +98,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (this.isSand(world, pos) && !world.isClient) {
 			world.playLevelEvent(2005, pos, 0);
 		}
@@ -117,8 +116,8 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-		return ctx.getStack().getItem() == this.asItem() && state.get(EGGS) < 4 ? true : super.canReplace(state, ctx);
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+		return context.getStack().getItem() == this.asItem() && state.get(EGGS) < 4 ? true : super.canReplace(state, context);
 	}
 
 	@Nullable
@@ -129,7 +128,7 @@ public class TurtleEggBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return state.get(EGGS) > 1 ? LARGE_SHAPE : SMALL_SHAPE;
 	}
 

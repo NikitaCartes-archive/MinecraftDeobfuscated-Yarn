@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -32,14 +31,14 @@ public class SnowBlock extends Block {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 16.0)
 	};
 
-	protected SnowBlock(Block.Settings settings) {
+	protected SnowBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(LAYERS, Integer.valueOf(1)));
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
-		switch (env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		switch (type) {
 			case LAND:
 				return (Integer)state.get(LAYERS) < 5;
 			case WATER:
@@ -52,18 +51,23 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return LAYERS_TO_SHAPE[state.get(LAYERS)];
 	}
 
 	@Override
-	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return LAYERS_TO_SHAPE[state.get(LAYERS) - 1];
 	}
 
 	@Override
-	public VoxelShape method_25959(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return LAYERS_TO_SHAPE[blockState.get(LAYERS)];
+	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+		return LAYERS_TO_SHAPE[state.get(LAYERS)];
+	}
+
+	@Override
+	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		return LAYERS_TO_SHAPE[state.get(LAYERS)];
 	}
 
 	@Override
@@ -85,12 +89,12 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getLightLevel(LightType.BLOCK, pos) > 11) {
 			dropStacks(state, world, pos);
 			world.removeBlock(pos, false);
@@ -98,12 +102,12 @@ public class SnowBlock extends Block {
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
 		int i = (Integer)state.get(LAYERS);
-		if (ctx.getStack().getItem() != this.asItem() || i >= 8) {
+		if (context.getStack().getItem() != this.asItem() || i >= 8) {
 			return i == 1;
 		} else {
-			return ctx.canReplaceExisting() ? ctx.getSide() == Direction.UP : true;
+			return context.canReplaceExisting() ? context.getSide() == Direction.UP : true;
 		}
 	}
 

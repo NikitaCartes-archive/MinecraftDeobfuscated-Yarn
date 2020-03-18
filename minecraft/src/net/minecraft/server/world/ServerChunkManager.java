@@ -424,7 +424,7 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@VisibleForTesting
-	public int method_21694() {
+	public int getPendingTasks() {
 		return this.mainThreadExecutor.getTaskCount();
 	}
 

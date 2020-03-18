@@ -7,6 +7,7 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
@@ -80,7 +81,7 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 		return new RandomPatchFeatureConfig(
 			blockStateProviderType.deserialize(dynamic.get("state_provider").orElseEmptyMap()),
 			blockPlacerType.deserialize(dynamic.get("block_placer").orElseEmptyMap()),
-			(Set<Block>)dynamic.get("whitelist").asList(BlockState::deserialize).stream().map(BlockState::getBlock).collect(Collectors.toSet()),
+			(Set<Block>)dynamic.get("whitelist").asList(BlockState::deserialize).stream().map(AbstractBlock.AbstractBlockState::getBlock).collect(Collectors.toSet()),
 			Sets.<BlockState>newHashSet(dynamic.get("blacklist").asList(BlockState::deserialize)),
 			dynamic.get("tries").asInt(128),
 			dynamic.get("xspread").asInt(7),

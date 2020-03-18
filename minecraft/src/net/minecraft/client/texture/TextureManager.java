@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class TextureManager implements TextureTickListener, AutoCloseable, ResourceReloadListener {
+public class TextureManager implements ResourceReloadListener, TextureTickListener, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Identifier MISSING_IDENTIFIER = new Identifier("");
 	private final Map<Identifier, AbstractTexture> textures = Maps.<Identifier, AbstractTexture>newHashMap();

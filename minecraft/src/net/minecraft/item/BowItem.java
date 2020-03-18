@@ -5,7 +5,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -47,32 +47,32 @@ public class BowItem extends RangedWeaponItem {
 					boolean bl2 = bl && itemStack.getItem() == Items.ARROW;
 					if (!world.isClient) {
 						ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
-						ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
-						projectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
+						PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
+						persistentProjectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
 						if (f == 1.0F) {
-							projectileEntity.setCritical(true);
+							persistentProjectileEntity.setCritical(true);
 						}
 
 						int j = EnchantmentHelper.getLevel(Enchantments.POWER, stack);
 						if (j > 0) {
-							projectileEntity.setDamage(projectileEntity.getDamage() + (double)j * 0.5 + 0.5);
+							persistentProjectileEntity.setDamage(persistentProjectileEntity.getDamage() + (double)j * 0.5 + 0.5);
 						}
 
 						int k = EnchantmentHelper.getLevel(Enchantments.PUNCH, stack);
 						if (k > 0) {
-							projectileEntity.setPunch(k);
+							persistentProjectileEntity.setPunch(k);
 						}
 
 						if (EnchantmentHelper.getLevel(Enchantments.FLAME, stack) > 0) {
-							projectileEntity.setOnFireFor(100);
+							persistentProjectileEntity.setOnFireFor(100);
 						}
 
 						stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
 						if (bl2 || playerEntity.abilities.creativeMode && (itemStack.getItem() == Items.SPECTRAL_ARROW || itemStack.getItem() == Items.TIPPED_ARROW)) {
-							projectileEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
+							persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
 						}
 
-						world.spawnEntity(projectileEntity);
+						world.spawnEntity(persistentProjectileEntity);
 					}
 
 					world.playSound(

@@ -13,7 +13,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.AxisCycleDirection;
@@ -210,12 +210,12 @@ public final class VoxelShapes {
 		return maxDist;
 	}
 
-	public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView world, double initial, EntityContext context, Stream<VoxelShape> shapes) {
+	public static double calculatePushVelocity(Direction.Axis axis, Box box, WorldView world, double initial, ShapeContext context, Stream<VoxelShape> shapes) {
 		return calculatePushVelocity(box, world, initial, context, AxisCycleDirection.between(axis, Direction.Axis.Z), shapes);
 	}
 
 	private static double calculatePushVelocity(
-		Box box, WorldView world, double initial, EntityContext context, AxisCycleDirection direction, Stream<VoxelShape> shapes
+		Box box, WorldView world, double initial, ShapeContext context, AxisCycleDirection direction, Stream<VoxelShape> shapes
 	) {
 		if (box.getXLength() < 1.0E-6 || box.getYLength() < 1.0E-6 || box.getZLength() < 1.0E-6) {
 			return initial;

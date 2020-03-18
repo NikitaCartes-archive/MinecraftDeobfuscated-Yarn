@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class TridentEntity extends ProjectileEntity {
+public class TridentEntity extends PersistentProjectileEntity {
 	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Boolean> field_21514 = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
@@ -36,11 +36,11 @@ public class TridentEntity extends ProjectileEntity {
 		super(entityType, world);
 	}
 
-	public TridentEntity(World world, LivingEntity owner, ItemStack item) {
+	public TridentEntity(World world, LivingEntity owner, ItemStack stack) {
 		super(EntityType.TRIDENT, owner, world);
-		this.tridentStack = item.copy();
-		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(item));
-		this.dataTracker.set(field_21514, item.hasEnchantmentGlint());
+		this.tridentStack = stack.copy();
+		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
+		this.dataTracker.set(field_21514, stack.hasEnchantmentGlint());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -65,7 +65,7 @@ public class TridentEntity extends ProjectileEntity {
 		if ((this.dealtDamage || this.isNoClip()) && entity != null) {
 			int i = this.dataTracker.get(LOYALTY);
 			if (i > 0 && !this.isOwnerAlive()) {
-				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupPermission.ALLOWED) {
+				if (!this.world.isClient && this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
@@ -144,7 +144,7 @@ public class TridentEntity extends ProjectileEntity {
 		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
 		float g = 1.0F;
 		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
-			BlockPos blockPos = entity.getSenseCenterPos();
+			BlockPos blockPos = entity.getBlockPos();
 			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = new LightningEntity(
 					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
@@ -193,7 +193,7 @@ public class TridentEntity extends ProjectileEntity {
 	@Override
 	public void age() {
 		int i = this.dataTracker.get(LOYALTY);
-		if (this.pickupType != ProjectileEntity.PickupPermission.ALLOWED || i <= 0) {
+		if (this.pickupType != PersistentProjectileEntity.PickupPermission.ALLOWED || i <= 0) {
 			super.age();
 		}
 	}

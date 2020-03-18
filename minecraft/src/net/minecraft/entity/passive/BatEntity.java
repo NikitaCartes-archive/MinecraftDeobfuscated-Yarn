@@ -114,21 +114,26 @@ public class BatEntity extends AmbientEntity {
 	@Override
 	protected void mobTick() {
 		super.mobTick();
-		BlockPos blockPos = this.getSenseCenterPos();
+		BlockPos blockPos = this.getBlockPos();
 		BlockPos blockPos2 = blockPos.up();
 		if (this.isRoosting()) {
-			if (this.world.getBlockState(blockPos2).isSimpleFullBlock(this.world, blockPos)) {
+			boolean bl = this.isSilent();
+			if (this.world.getBlockState(blockPos2).isSolidBlock(this.world, blockPos)) {
 				if (this.random.nextInt(200) == 0) {
 					this.headYaw = (float)this.random.nextInt(360);
 				}
 
 				if (this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
 					this.setRoosting(false);
-					this.world.playLevelEvent(null, 1025, blockPos, 0);
+					if (!bl) {
+						this.world.playLevelEvent(null, 1025, blockPos, 0);
+					}
 				}
 			} else {
 				this.setRoosting(false);
-				this.world.playLevelEvent(null, 1025, blockPos, 0);
+				if (!bl) {
+					this.world.playLevelEvent(null, 1025, blockPos, 0);
+				}
 			}
 		} else {
 			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() < 1)) {
@@ -153,7 +158,7 @@ public class BatEntity extends AmbientEntity {
 			float h = MathHelper.wrapDegrees(g - this.yaw);
 			this.forwardSpeed = 0.5F;
 			this.yaw += h;
-			if (this.random.nextInt(100) == 0 && this.world.getBlockState(blockPos2).isSimpleFullBlock(this.world, blockPos2)) {
+			if (this.random.nextInt(100) == 0 && this.world.getBlockState(blockPos2).isSolidBlock(this.world, blockPos2)) {
 				this.setRoosting(true);
 			}
 		}

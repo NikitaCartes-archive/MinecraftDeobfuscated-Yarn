@@ -127,9 +127,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity {
 		super.writeCustomDataToTag(tag);
 		tag.putShort("Anger", (short)this.anger);
 		if (this.angerTarget != null) {
-			tag.putString("HurtBy", this.angerTarget.toString());
-		} else {
-			tag.putString("HurtBy", "");
+			tag.putUuidNew("HurtBy", this.angerTarget);
 		}
 	}
 
@@ -137,9 +135,8 @@ public class ZombifiedPiglinEntity extends ZombieEntity {
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		this.anger = tag.getShort("Anger");
-		String string = tag.getString("HurtBy");
-		if (!string.isEmpty()) {
-			this.angerTarget = UUID.fromString(string);
+		if (tag.containsUuidNew("HurtBy")) {
+			this.angerTarget = tag.getUuidNew("HurtBy");
 			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
 			if (playerEntity != null) {

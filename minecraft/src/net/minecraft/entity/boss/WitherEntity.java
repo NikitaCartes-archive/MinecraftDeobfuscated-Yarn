@@ -35,7 +35,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -244,7 +244,9 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					? Explosion.DestructionType.DESTROY
 					: Explosion.DestructionType.NONE;
 				this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, destructionType);
-				this.world.playGlobalEvent(1023, this.getSenseCenterPos(), 0);
+				if (!this.isSilent()) {
+					this.world.playGlobalEvent(1023, this.getBlockPos(), 0);
+				}
 			}
 
 			this.setInvulTimer(i);
@@ -331,7 +333,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					}
 
 					if (bl) {
-						this.world.playLevelEvent(null, 1022, this.getSenseCenterPos(), 0);
+						this.world.playLevelEvent(null, 1022, this.getBlockPos(), 0);
 					}
 				}
 			}
@@ -417,7 +419,10 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	private void method_6877(int headIndex, double d, double e, double f, boolean bl) {
-		this.world.playLevelEvent(null, 1024, this.getSenseCenterPos(), 0);
+		if (!this.isSilent()) {
+			this.world.playLevelEvent(null, 1024, this.getBlockPos(), 0);
+		}
+
 		double g = this.getHeadX(headIndex);
 		double h = this.getHeadY(headIndex);
 		double i = this.getHeadZ(headIndex);
@@ -449,7 +454,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		} else {
 			if (this.shouldRenderOverlay()) {
 				Entity entity = source.getSource();
-				if (entity instanceof ProjectileEntity) {
+				if (entity instanceof PersistentProjectileEntity) {
 					return false;
 				}
 			}

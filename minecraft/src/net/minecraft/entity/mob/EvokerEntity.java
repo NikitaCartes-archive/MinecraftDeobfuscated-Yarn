@@ -273,7 +273,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		@Override
 		protected void castSpell() {
 			for (int i = 0; i < 3; i++) {
-				BlockPos blockPos = EvokerEntity.this.getSenseCenterPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
+				BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
 				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
 				vexEntity.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
 				vexEntity.initialize(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.MOB_SUMMONED, null, null);

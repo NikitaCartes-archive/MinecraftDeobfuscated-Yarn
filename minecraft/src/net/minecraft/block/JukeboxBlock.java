@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public class JukeboxBlock extends BlockWithEntity {
 	public static final BooleanProperty HAS_RECORD = Properties.HAS_RECORD;
 
-	protected JukeboxBlock(Block.Settings settings) {
+	protected JukeboxBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(HAS_RECORD, Boolean.valueOf(false)));
 	}
@@ -69,10 +69,10 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (state.getBlock() != newState.getBlock()) {
 			this.removeRecord(world, pos);
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onBlockRemoved(state, world, pos, newState, notify);
 		}
 	}
 

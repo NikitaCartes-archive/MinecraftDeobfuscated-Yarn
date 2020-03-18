@@ -89,7 +89,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	private String gameDifficultyMetadata(String value) {
 		try {
-			return I18n.translate(RealmsSlotOptionsScreen.field_22723[Integer.parseInt(value)]);
+			return I18n.translate(RealmsSlotOptionsScreen.DIFFICULTIES[Integer.parseInt(value)]);
 		} catch (Exception var3) {
 			return "UNKNOWN";
 		}
@@ -97,7 +97,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	private String gameModeMetadata(String value) {
 		try {
-			return I18n.translate(RealmsSlotOptionsScreen.field_22724[Integer.parseInt(value)]);
+			return I18n.translate(RealmsSlotOptionsScreen.GAME_MODES[Integer.parseInt(value)]);
 		} catch (Exception var3) {
 			return "UNKNOWN";
 		}

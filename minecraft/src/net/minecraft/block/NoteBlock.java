@@ -24,7 +24,7 @@ public class NoteBlock extends Block {
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final IntProperty NOTE = Properties.NOTE;
 
-	public NoteBlock(Block.Settings settings) {
+	public NoteBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(INSTRUMENT, Instrument.HARP).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
@@ -37,14 +37,14 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return facing == Direction.DOWN
-			? state.with(INSTRUMENT, Instrument.fromBlockState(neighborState))
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return direction == Direction.DOWN
+			? state.with(INSTRUMENT, Instrument.fromBlockState(newState))
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(POWERED)) {
 			if (bl) {
@@ -83,7 +83,7 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
+	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
 		int i = (Integer)state.get(NOTE);
 		float f = (float)Math.pow(2.0, (double)(i - 12) / 12.0);
 		world.playSound(null, pos, ((Instrument)state.get(INSTRUMENT)).getSound(), SoundCategory.RECORDS, 3.0F, f);

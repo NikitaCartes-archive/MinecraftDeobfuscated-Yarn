@@ -49,7 +49,7 @@ public class BlockModelRenderer {
 		int overlay
 	) {
 		boolean bl = MinecraftClient.isAmbientOcclusionEnabled() && state.getLuminance() == 0 && model.useAmbientOcclusion();
-		Vec3d vec3d = state.getOffsetPos(world, pos);
+		Vec3d vec3d = state.getModelOffset(world, pos);
 		matrix.translate(vec3d.x, vec3d.y, vec3d.z);
 
 		try {
@@ -150,7 +150,7 @@ public class BlockModelRenderer {
 	) {
 		for (BakedQuad bakedQuad : quads) {
 			this.getQuadDimensions(world, state, pos, bakedQuad.getVertexData(), bakedQuad.getFace(), box, flags);
-			ambientOcclusionCalculator.apply(world, state, pos, bakedQuad.getFace(), box, flags, bakedQuad.method_24874());
+			ambientOcclusionCalculator.apply(world, state, pos, bakedQuad.getFace(), box, flags, bakedQuad.hasShade());
 			this.renderQuad(
 				world,
 				state,
@@ -273,26 +273,26 @@ public class BlockModelRenderer {
 	}
 
 	private void renderQuadsFlat(
-		BlockRenderView blockRenderView,
-		BlockState blockState,
-		BlockPos blockPos,
+		BlockRenderView world,
+		BlockState state,
+		BlockPos pos,
 		int light,
 		int overlay,
 		boolean useWorldLight,
-		MatrixStack matrixStack,
+		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		List<BakedQuad> quads,
 		BitSet flags
 	) {
 		for (BakedQuad bakedQuad : quads) {
 			if (useWorldLight) {
-				this.getQuadDimensions(blockRenderView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, flags);
-				BlockPos blockPos2 = flags.get(0) ? blockPos.offset(bakedQuad.getFace()) : blockPos;
-				light = WorldRenderer.getLightmapCoordinates(blockRenderView, blockState, blockPos2);
+				this.getQuadDimensions(world, state, pos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, flags);
+				BlockPos blockPos = flags.get(0) ? pos.offset(bakedQuad.getFace()) : pos;
+				light = WorldRenderer.getLightmapCoordinates(world, state, blockPos);
 			}
 
-			float f = blockRenderView.method_24852(bakedQuad.getFace(), bakedQuad.method_24874());
-			this.renderQuad(blockRenderView, blockState, blockPos, vertexConsumer, matrixStack.peek(), bakedQuad, f, f, f, f, light, light, light, light, overlay);
+			float f = world.getBrightness(bakedQuad.getFace(), bakedQuad.hasShade());
+			this.renderQuad(world, state, pos, vertexConsumer, matrices.peek(), bakedQuad, f, f, f, f, light, light, light, light, overlay);
 		}
 	}
 
@@ -426,7 +426,7 @@ public class BlockModelRenderer {
 			int v = brightnessCache.getInt(state, world, pos);
 			mutable.set(pos, direction);
 			BlockState blockState6 = world.getBlockState(mutable);
-			if (flags.get(0) || !blockState6.isFullOpaque(world, mutable)) {
+			if (flags.get(0) || !blockState6.isOpaqueFullCube(world, mutable)) {
 				v = brightnessCache.getInt(blockState6, world, mutable);
 			}
 
@@ -482,7 +482,7 @@ public class BlockModelRenderer {
 				this.brightness[translation.fourthCorner] = aa;
 			}
 
-			float x = world.method_24852(direction, bl);
+			float x = world.getBrightness(direction, bl);
 
 			for (int av = 0; av < this.brightness.length; av++) {
 				this.brightness[av] = this.brightness[av] * x;

@@ -51,7 +51,7 @@ public class Items {
 	public static final Item GOLD_ORE = register(Blocks.GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item IRON_ORE = register(Blocks.IRON_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item COAL_ORE = register(Blocks.COAL_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_23069 = register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_23140 = register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_LOG = register(Blocks.OAK_LOG, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_LOG = register(Blocks.SPRUCE_LOG, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BIRCH_LOG = register(Blocks.BIRCH_LOG, ItemGroup.BUILDING_BLOCKS);
@@ -74,16 +74,16 @@ public class Items {
 	public static final Item STRIPPED_JUNGLE_WOOD = register(Blocks.STRIPPED_JUNGLE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item STRIPPED_ACACIA_WOOD = register(Blocks.STRIPPED_ACACIA_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item STRIPPED_DARK_OAK_WOOD = register(Blocks.STRIPPED_DARK_OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_22487 = register(Blocks.STRIPPED_WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_22488 = register(Blocks.STRIPPED_CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_22487 = register(Blocks.STRIPPED_CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_22488 = register(Blocks.STRIPPED_WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_WOOD = register(Blocks.OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_WOOD = register(Blocks.SPRUCE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BIRCH_WOOD = register(Blocks.BIRCH_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item JUNGLE_WOOD = register(Blocks.JUNGLE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item ACACIA_WOOD = register(Blocks.ACACIA_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DARK_OAK_WOOD = register(Blocks.DARK_OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_22489 = register(Blocks.WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_22490 = register(Blocks.CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_22489 = register(Blocks.CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_22490 = register(Blocks.WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_LEAVES = register(Blocks.OAK_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item SPRUCE_LEAVES = register(Blocks.SPRUCE_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item BIRCH_LEAVES = register(Blocks.BIRCH_LEAVES, ItemGroup.DECORATIONS);
@@ -236,6 +236,7 @@ public class Items {
 	public static final Item SOUL_SAND = register(Blocks.SOUL_SAND, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SOUL_SOIL = register(Blocks.SOUL_SOIL, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BASALT = register(Blocks.BASALT, ItemGroup.BUILDING_BLOCKS);
+	public static final Item field_23069 = register(Blocks.POLISHED_BASALT, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SOUL_FIRE_TORCH = register(
 		new WallStandingBlockItem(Blocks.SOUL_FIRE_TORCH, Blocks.SOUL_FIRE_WALL_TORCH, new Item.Settings().group(ItemGroup.DECORATIONS))
 	);
@@ -1351,6 +1352,7 @@ public class Items {
 	public static final Item NETHERITE_SCRAP = register("netherite_scrap", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
 	public static final Item TARGET = register(Blocks.TARGET, ItemGroup.REDSTONE);
 	public static final Item CRYING_OBSIDIAN = register(Blocks.CRYING_OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
+	public static final Item RESPAWN_ANCHOR = register(Blocks.RESPAWN_ANCHOR, ItemGroup.DECORATIONS);
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

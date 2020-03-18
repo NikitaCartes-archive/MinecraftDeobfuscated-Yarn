@@ -52,7 +52,7 @@ public class BeehiveBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final IntProperty HONEY_LEVEL = Properties.HONEY_LEVEL;
 
-	public BeehiveBlock(Block.Settings settings) {
+	public BeehiveBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(HONEY_LEVEL, Integer.valueOf(0)).with(FACING, Direction.NORTH));
 	}
@@ -183,7 +183,7 @@ public class BeehiveBlock extends BlockWithEntity {
 		if (state.getFluidState().isEmpty() && !(world.random.nextFloat() < 0.3F)) {
 			VoxelShape voxelShape = state.getCollisionShape(world, pos);
 			double d = voxelShape.getMaximum(Direction.Axis.Y);
-			if (d >= 1.0 && !state.matches(BlockTags.IMPERMEABLE)) {
+			if (d >= 1.0 && !state.isIn(BlockTags.IMPERMEABLE)) {
 				double e = voxelShape.getMinimum(Direction.Axis.Y);
 				if (e > 0.0) {
 					this.addHoneyParticle(world, pos, voxelShape, (double)pos.getY() + e - 0.05);
@@ -296,8 +296,8 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (world.getBlockState(neighborPos).getBlock() instanceof FireBlock) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (world.getBlockState(posFrom).getBlock() instanceof FireBlock) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeehiveBlockEntity) {
 				BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
@@ -305,6 +305,6 @@ public class BeehiveBlock extends BlockWithEntity {
 			}
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 }

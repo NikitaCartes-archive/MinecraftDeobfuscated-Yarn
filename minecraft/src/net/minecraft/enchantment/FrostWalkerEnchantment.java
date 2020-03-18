@@ -4,7 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.Material;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
@@ -51,7 +51,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 						if (blockState3.getMaterial() == Material.WATER
 							&& (Integer)blockState3.get(FluidBlock.LEVEL) == 0
 							&& blockState.canPlaceAt(world, blockPos2)
-							&& world.canPlace(blockState, blockPos2, EntityContext.absent())) {
+							&& world.canPlace(blockState, blockPos2, ShapeContext.absent())) {
 							world.setBlockState(blockPos2, blockState);
 							world.getBlockTickScheduler().schedule(blockPos2, Blocks.FROSTED_ICE, MathHelper.nextInt(entity.getRandom(), 60, 120));
 						}

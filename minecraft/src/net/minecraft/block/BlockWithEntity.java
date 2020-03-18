@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public abstract class BlockWithEntity extends Block implements BlockEntityProvider {
-	protected BlockWithEntity(Block.Settings settings) {
+	protected BlockWithEntity(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -17,10 +17,10 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 	}
 
 	@Override
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
-		super.onBlockAction(state, world, pos, type, data);
+	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
+		super.onBlockAction(state, world, pos, channel, value);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		return blockEntity == null ? false : blockEntity.onBlockAction(type, data);
+		return blockEntity == null ? false : blockEntity.onBlockAction(channel, value);
 	}
 
 	@Nullable

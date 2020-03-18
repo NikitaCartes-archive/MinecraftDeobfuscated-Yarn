@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 public class CartographyTableBlock extends Block {
 	private static final TranslatableText TITLE = new TranslatableText("container.cartography_table");
 
-	protected CartographyTableBlock(Block.Settings settings) {
+	protected CartographyTableBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

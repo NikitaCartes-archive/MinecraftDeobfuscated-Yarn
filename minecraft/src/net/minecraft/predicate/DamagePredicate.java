@@ -71,7 +71,7 @@ public class DamagePredicate {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("dealt", this.dealt.toJson());
 			jsonObject.add("taken", this.taken.toJson());
-			jsonObject.add("source_entity", this.sourceEntity.serialize());
+			jsonObject.add("source_entity", this.sourceEntity.toJson());
 			jsonObject.add("type", this.type.serialize());
 			if (this.blocked != null) {
 				jsonObject.addProperty("blocked", this.blocked);

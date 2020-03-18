@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.ChatUtil;
@@ -236,11 +237,12 @@ public class ServerConfigHandler {
 		}
 	}
 
-	public static String getPlayerUuidByName(MinecraftServer server, String name) {
+	@Nullable
+	public static UUID getPlayerUuidByName(MinecraftServer server, String name) {
 		if (!ChatUtil.isEmpty(name) && name.length() <= 16) {
 			GameProfile gameProfile = server.getUserCache().findByName(name);
 			if (gameProfile != null && gameProfile.getId() != null) {
-				return gameProfile.getId().toString();
+				return gameProfile.getId();
 			} else if (!server.isSinglePlayer() && server.isOnlineMode()) {
 				final List<GameProfile> list = Lists.<GameProfile>newArrayList();
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
@@ -256,12 +258,16 @@ public class ServerConfigHandler {
 					}
 				};
 				lookupProfile(server, Lists.<String>newArrayList(name), profileLookupCallback);
-				return !list.isEmpty() && ((GameProfile)list.get(0)).getId() != null ? ((GameProfile)list.get(0)).getId().toString() : "";
+				return !list.isEmpty() && ((GameProfile)list.get(0)).getId() != null ? ((GameProfile)list.get(0)).getId() : null;
 			} else {
-				return PlayerEntity.getUuidFromProfile(new GameProfile(null, name)).toString();
+				return PlayerEntity.getUuidFromProfile(new GameProfile(null, name));
 			}
 		} else {
-			return name;
+			try {
+				return UUID.fromString(name);
+			} catch (IllegalArgumentException var5) {
+				return null;
+			}
 		}
 	}
 

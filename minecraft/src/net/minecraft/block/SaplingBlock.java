@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.sapling.SaplingGenerator;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -17,20 +16,19 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
 	private final SaplingGenerator generator;
 
-	protected SaplingBlock(SaplingGenerator generator, Block.Settings settings) {
+	protected SaplingBlock(SaplingGenerator generator, AbstractBlock.Settings settings) {
 		super(settings);
 		this.generator = generator;
 		this.setDefaultState(this.stateManager.getDefaultState().with(STAGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		super.scheduledTick(state, world, pos, random);
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getLightLevel(pos.up()) >= 9 && random.nextInt(7) == 0) {
 			this.generate(world, pos, state, random);
 		}

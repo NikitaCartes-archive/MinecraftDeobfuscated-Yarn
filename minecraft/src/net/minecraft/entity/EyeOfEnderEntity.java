@@ -24,19 +24,19 @@ import net.minecraft.world.World;
 		value = EnvType.CLIENT,
 		itf = FlyingItemEntity.class
 	)})
-public class EnderEyeEntity extends Entity implements FlyingItemEntity {
-	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(EnderEyeEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
+	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(EyeOfEnderEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private double velocityX;
 	private double velocityY;
 	private double velocityZ;
 	private int useCount;
 	private boolean dropsItem;
 
-	public EnderEyeEntity(EntityType<? extends EnderEyeEntity> entityType, World world) {
+	public EyeOfEnderEntity(EntityType<? extends EyeOfEnderEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public EnderEyeEntity(World world, double x, double y, double z) {
+	public EyeOfEnderEntity(World world, double x, double y, double z) {
 		this(EntityType.EYE_OF_ENDER, world);
 		this.useCount = 0;
 		this.updatePosition(x, y, z);
@@ -182,7 +182,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 				if (this.dropsItem) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
 				} else {
-					this.world.playLevelEvent(2003, this.getSenseCenterPos(), 0);
+					this.world.playLevelEvent(2003, this.getBlockPos(), 0);
 				}
 			}
 		} else {

@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -27,12 +28,11 @@ import net.minecraft.client.sound.AmbientSoundPlayer;
 import net.minecraft.client.sound.BiomeEffectSoundPlayer;
 import net.minecraft.client.sound.BubbleColumnSoundPlayer;
 import net.minecraft.client.sound.ElytraSoundInstance;
-import net.minecraft.client.sound.MinecartSoundInstance;
+import net.minecraft.client.sound.MinecartInsideSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
@@ -152,7 +152,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			return false;
 		} else {
 			if (entity instanceof AbstractMinecartEntity) {
-				this.client.getSoundManager().play(new MinecartSoundInstance(this, (AbstractMinecartEntity)entity));
+				this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity));
 			}
 
 			if (entity instanceof BoatEntity) {
@@ -200,6 +200,20 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				clientPlayerTickable.tick();
 			}
 		}
+	}
+
+	/**
+	 * Returns the percentage for the biome mood sound for the debug HUD to
+	 * display.
+	 */
+	public float getMoodPercentage() {
+		for (ClientPlayerTickable clientPlayerTickable : this.tickables) {
+			if (clientPlayerTickable instanceof BiomeEffectSoundPlayer) {
+				return ((BiomeEffectSoundPlayer)clientPlayerTickable).getMoodPercentage();
+			}
+		}
+
+		return 0.0F;
 	}
 
 	private void sendMovementPackets() {
@@ -889,13 +903,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			Vec3d vec3d5 = this.getRotationVecClient();
 			float j = (float)(vec3d5.x * vec3d4.x + vec3d5.z * vec3d4.z);
 			if (!(j < -0.15F)) {
-				EntityContext entityContext = EntityContext.of(this);
+				ShapeContext shapeContext = ShapeContext.of(this);
 				BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().y2, this.getZ());
 				BlockState blockState = this.world.getBlockState(blockPos);
-				if (blockState.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
+				if (blockState.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
 					blockPos = blockPos.up();
 					BlockState blockState2 = this.world.getBlockState(blockPos);
-					if (blockState2.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
+					if (blockState2.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
 						float m = 7.0F;
 						float n = 1.2F;
 						if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
@@ -932,7 +946,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 									BlockPos blockPos3 = blockPos2.up(s);
 									BlockState blockState3 = this.world.getBlockState(blockPos3);
 									VoxelShape voxelShape;
-									if (!(voxelShape = blockState3.getCollisionShape(this.world, blockPos3, entityContext)).isEmpty()) {
+									if (!(voxelShape = blockState3.getCollisionShape(this.world, blockPos3, shapeContext)).isEmpty()) {
 										r = (float)voxelShape.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY();
 										if ((double)r - this.getY() > (double)n) {
 											return;
@@ -942,7 +956,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 									if (s > 1) {
 										blockPos = blockPos.up();
 										BlockState blockState4 = this.world.getBlockState(blockPos);
-										if (!blockState4.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
+										if (!blockState4.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
 											return;
 										}
 									}

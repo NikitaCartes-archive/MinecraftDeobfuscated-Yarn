@@ -55,7 +55,7 @@ public interface FluidState extends State<FluidState> {
 			for (int j = -1; j <= 1; j++) {
 				BlockPos blockPos = pos.add(i, 0, j);
 				FluidState fluidState = world.getFluidState(blockPos);
-				if (!fluidState.getFluid().matchesType(this.getFluid()) && !world.getBlockState(blockPos).isFullOpaque(world, blockPos)) {
+				if (!fluidState.getFluid().matchesType(this.getFluid()) && !world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
 					return true;
 				}
 			}

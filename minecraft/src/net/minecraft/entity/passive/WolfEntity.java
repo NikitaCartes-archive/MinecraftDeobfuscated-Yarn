@@ -36,7 +36,7 @@ import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -297,7 +297,7 @@ public class WolfEntity extends TameableEntity {
 		} else {
 			Entity entity = source.getAttacker();
 			this.method_24346(false);
-			if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof ProjectileEntity)) {
+			if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof PersistentProjectileEntity)) {
 				amount = (amount + 1.0F) / 2.0F;
 			}
 

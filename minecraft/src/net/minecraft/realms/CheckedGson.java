@@ -10,13 +10,13 @@ import net.fabricmc.api.Environment;
  */
 @Environment(EnvType.CLIENT)
 public class CheckedGson {
-	private final Gson gson = new Gson();
+	private final Gson GSON = new Gson();
 
 	public String toJson(RealmsSerializable serializable) {
-		return this.gson.toJson(serializable);
+		return this.GSON.toJson(serializable);
 	}
 
 	public <T extends RealmsSerializable> T fromJson(String json, Class<T> type) {
-		return this.gson.fromJson(json, type);
+		return this.GSON.fromJson(json, type);
 	}
 }

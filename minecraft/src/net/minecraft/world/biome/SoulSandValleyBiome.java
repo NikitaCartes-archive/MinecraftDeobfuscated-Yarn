@@ -5,6 +5,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.BiomeAdditionsSound;
+import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
@@ -37,8 +39,8 @@ public class SoulSandValleyBiome extends Biome {
 						.fogColor(1787717)
 						.particleConfig(new BiomeParticleConfig(ParticleTypes.ASH, 0.00625F, random -> 0.0, random -> 0.0, random -> 0.0))
 						.loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP)
-						.moodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD)
-						.additionsSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS)
+						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD, 6000, 8, 2.0))
+						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS, 0.0111))
 						.build()
 				)
 				.parent(null)

@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.WireConnection;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.state.StateManager;
@@ -64,7 +63,7 @@ public class RedstoneWireBlock extends Block {
 	private boolean wiresGivePower = true;
 	private final Set<BlockPos> affectedNeighbors = Sets.<BlockPos>newHashSet();
 
-	public RedstoneWireBlock(Block.Settings settings) {
+	public RedstoneWireBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -78,7 +77,7 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return WIRE_CONNECTIONS_TO_SHAPE[getWireConnectionMask(state)];
 	}
 
@@ -119,21 +118,21 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing == Direction.DOWN) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (direction == Direction.DOWN) {
 			return state;
 		} else {
-			return facing == Direction.UP
+			return direction == Direction.UP
 				? state.with(WIRE_CONNECTION_WEST, this.getRenderConnectionType(world, pos, Direction.WEST))
 					.with(WIRE_CONNECTION_EAST, this.getRenderConnectionType(world, pos, Direction.EAST))
 					.with(WIRE_CONNECTION_NORTH, this.getRenderConnectionType(world, pos, Direction.NORTH))
 					.with(WIRE_CONNECTION_SOUTH, this.getRenderConnectionType(world, pos, Direction.SOUTH))
-				: state.with((Property)DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(facing), this.getRenderConnectionType(world, pos, facing));
+				: state.with((Property)DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction), this.getRenderConnectionType(world, pos, direction));
 		}
 	}
 
 	@Override
-	public void method_9517(BlockState state, IWorld world, BlockPos pos, int flags) {
+	public void prepare(BlockState state, IWorld world, BlockPos pos, int flags) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -163,7 +162,7 @@ public class RedstoneWireBlock extends Block {
 		BlockState blockState = world.getBlockState(blockPos);
 		BlockPos blockPos2 = pos.up();
 		BlockState blockState2 = world.getBlockState(blockPos2);
-		if (!blockState2.isSimpleFullBlock(world, blockPos2)) {
+		if (!blockState2.isSolidBlock(world, blockPos2)) {
 			boolean bl = blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) || blockState.getBlock() == Blocks.HOPPER;
 			if (bl && connectsTo(world.getBlockState(blockPos.up()))) {
 				if (blockState.isFullCube(world, blockPos)) {
@@ -174,7 +173,7 @@ public class RedstoneWireBlock extends Block {
 			}
 		}
 
-		return !connectsTo(blockState, dir) && (blockState.isSimpleFullBlock(world, blockPos) || !connectsTo(world.getBlockState(blockPos.down())))
+		return !connectsTo(blockState, dir) && (blockState.isSolidBlock(world, blockPos) || !connectsTo(world.getBlockState(blockPos.down())))
 			? WireConnection.NONE
 			: WireConnection.SIDE;
 	}
@@ -211,9 +210,9 @@ public class RedstoneWireBlock extends Block {
 				BlockState blockState2 = world.getBlockState(blockPos);
 				k = this.increasePower(k, blockState2);
 				BlockPos blockPos2 = pos.up();
-				if (blockState2.isSimpleFullBlock(world, blockPos) && !world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2)) {
+				if (blockState2.isSolidBlock(world, blockPos) && !world.getBlockState(blockPos2).isSolidBlock(world, blockPos2)) {
 					k = this.increasePower(k, world.getBlockState(blockPos.up()));
-				} else if (!blockState2.isSimpleFullBlock(world, blockPos)) {
+				} else if (!blockState2.isSolidBlock(world, blockPos)) {
 					k = this.increasePower(k, world.getBlockState(blockPos.down()));
 				}
 			}
@@ -251,7 +250,7 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (oldState.getBlock() != state.getBlock() && !world.isClient) {
 			this.update(world, pos, state);
 
@@ -265,7 +264,7 @@ public class RedstoneWireBlock extends Block {
 
 			for (Direction direction : Direction.Type.HORIZONTAL) {
 				BlockPos blockPos = pos.offset(direction);
-				if (world.getBlockState(blockPos).isSimpleFullBlock(world, blockPos)) {
+				if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
 					this.updateNeighbors(world, blockPos.up());
 				} else {
 					this.updateNeighbors(world, blockPos.down());
@@ -275,9 +274,9 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		if (!moved && state.getBlock() != newState.getBlock()) {
-			super.onBlockRemoved(state, world, pos, newState, moved);
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+		if (!notify && state.getBlock() != newState.getBlock()) {
+			super.onBlockRemoved(state, world, pos, newState, notify);
 			if (!world.isClient) {
 				for (Direction direction : Direction.values()) {
 					world.updateNeighborsAlways(pos.offset(direction), this);
@@ -291,7 +290,7 @@ public class RedstoneWireBlock extends Block {
 
 				for (Direction direction2 : Direction.Type.HORIZONTAL) {
 					BlockPos blockPos = pos.offset(direction2);
-					if (world.getBlockState(blockPos).isSimpleFullBlock(world, blockPos)) {
+					if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
 						this.updateNeighbors(world, blockPos.up());
 					} else {
 						this.updateNeighbors(world, blockPos.down());
@@ -311,7 +310,7 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (!world.isClient) {
 			if (state.canPlaceAt(world, pos)) {
 				this.update(world, pos, state);
@@ -323,33 +322,33 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
-		return !this.wiresGivePower ? 0 : state.getWeakRedstonePower(world, pos, facing);
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+		return !this.wiresGivePower ? 0 : state.getWeakRedstonePower(world, pos, direction);
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		if (!this.wiresGivePower) {
 			return 0;
 		} else {
 			int i = (Integer)state.get(POWER);
 			if (i == 0) {
 				return 0;
-			} else if (facing == Direction.UP) {
+			} else if (direction == Direction.UP) {
 				return i;
 			} else {
 				EnumSet<Direction> enumSet = EnumSet.noneOf(Direction.class);
 
-				for (Direction direction : Direction.Type.HORIZONTAL) {
-					if (this.couldConnectTo(world, pos, direction)) {
-						enumSet.add(direction);
+				for (Direction direction2 : Direction.Type.HORIZONTAL) {
+					if (this.couldConnectTo(world, pos, direction2)) {
+						enumSet.add(direction2);
 					}
 				}
 
-				if (facing.getAxis().isHorizontal() && enumSet.isEmpty()) {
+				if (direction.getAxis().isHorizontal() && enumSet.isEmpty()) {
 					return i;
 				} else {
-					return enumSet.contains(facing) && !enumSet.contains(facing.rotateYCounterclockwise()) && !enumSet.contains(facing.rotateYClockwise()) ? i : 0;
+					return enumSet.contains(direction) && !enumSet.contains(direction.rotateYCounterclockwise()) && !enumSet.contains(direction.rotateYClockwise()) ? i : 0;
 				}
 			}
 		}
@@ -358,9 +357,9 @@ public class RedstoneWireBlock extends Block {
 	private boolean couldConnectTo(BlockView world, BlockPos pos, Direction dir) {
 		BlockPos blockPos = pos.offset(dir);
 		BlockState blockState = world.getBlockState(blockPos);
-		boolean bl = blockState.isSimpleFullBlock(world, blockPos);
+		boolean bl = blockState.isSolidBlock(world, blockPos);
 		BlockPos blockPos2 = pos.up();
-		boolean bl2 = world.getBlockState(blockPos2).isSimpleFullBlock(world, blockPos2);
+		boolean bl2 = world.getBlockState(blockPos2).isSolidBlock(world, blockPos2);
 		if (!bl2 && bl && connectsTo(world, blockPos.up())) {
 			return true;
 		} else if (connectsTo(blockState, dir)) {

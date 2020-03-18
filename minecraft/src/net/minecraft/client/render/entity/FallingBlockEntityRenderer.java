@@ -28,7 +28,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 		BlockState blockState = fallingBlockEntity.getBlockState();
 		if (blockState.getRenderType() == BlockRenderType.MODEL) {
 			World world = fallingBlockEntity.getWorldClient();
-			if (blockState != world.getBlockState(fallingBlockEntity.getSenseCenterPos()) && blockState.getRenderType() != BlockRenderType.INVISIBLE) {
+			if (blockState != world.getBlockState(fallingBlockEntity.getBlockPos()) && blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 				matrixStack.push();
 				BlockPos blockPos = new BlockPos(fallingBlockEntity.getX(), fallingBlockEntity.getBoundingBox().y2, fallingBlockEntity.getZ());
 				matrixStack.translate(-0.5, 0.0, -0.5);

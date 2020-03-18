@@ -90,7 +90,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	public void tick() {
 		super.tick();
 		if (!this.world.isClient && this.isAlive() && this.isEnabled()) {
-			BlockPos blockPos = this.getSenseCenterPos();
+			BlockPos blockPos = this.getBlockPos();
 			if (blockPos.equals(this.currentBlockPos)) {
 				this.transferCooldown--;
 			} else {

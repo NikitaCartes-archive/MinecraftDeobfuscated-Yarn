@@ -8,7 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final String[] REASON_MESSAGES = new String[]{"block.minecraft.bed.not_valid"};
+	public static final String[] REASON_MESSAGES = new String[]{"block.minecraft.spawn.not_valid"};
 	private int reason;
 	private float value;
 

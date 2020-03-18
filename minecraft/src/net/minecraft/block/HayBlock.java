@@ -6,7 +6,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class HayBlock extends PillarBlock {
-	public HayBlock(Block.Settings settings) {
+	public HayBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.Y));
 	}

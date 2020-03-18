@@ -21,7 +21,7 @@ public class MushroomBlock extends Block {
 	public static final BooleanProperty DOWN = ConnectingBlock.DOWN;
 	private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES;
 
-	public MushroomBlock(Block.Settings settings) {
+	public MushroomBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -49,10 +49,10 @@ public class MushroomBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return neighborState.getBlock() == this
-			? state.with((Property)FACING_PROPERTIES.get(facing), Boolean.valueOf(false))
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return newState.getBlock() == this
+			? state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(false))
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

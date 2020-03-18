@@ -11,7 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -523,7 +522,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.world.getBlockState(this.getSenseCenterPos().down()).getBlock() == Blocks.GRASS_BLOCK) {
+					&& this.world.getBlockState(this.getBlockPos().down()).getBlock() == Blocks.GRASS_BLOCK) {
 					this.setEatingGrass(true);
 				}
 
@@ -752,7 +751,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		tag.putInt("Temper", this.getTemper());
 		tag.putBoolean("Tame", this.isTame());
 		if (this.getOwnerUuid() != null) {
-			tag.putString("OwnerUUID", this.getOwnerUuid().toString());
+			tag.putUuidNew("Owner", this.getOwnerUuid());
 		}
 
 		if (!this.items.getInvStack(0).isEmpty()) {
@@ -767,16 +766,16 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		this.setBred(tag.getBoolean("Bred"));
 		this.setTemper(tag.getInt("Temper"));
 		this.setTame(tag.getBoolean("Tame"));
-		String string;
-		if (tag.contains("OwnerUUID", 8)) {
-			string = tag.getString("OwnerUUID");
+		UUID uUID;
+		if (tag.containsUuidNew("Owner")) {
+			uUID = tag.getUuidNew("Owner");
 		} else {
-			String string2 = tag.getString("Owner");
-			string = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string2);
+			String string = tag.getString("Owner");
+			uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
 		}
 
-		if (!string.isEmpty()) {
-			this.setOwnerUuid(UUID.fromString(string));
+		if (uUID != null) {
+			this.setOwnerUuid(uUID);
 		}
 
 		EntityAttributeInstance entityAttributeInstance = this.getAttributes().get("Speed");
@@ -990,13 +989,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		double d = this.getX() + vec3d.x;
 		double e = this.getBoundingBox().y1;
 		double f = this.getZ() + vec3d.z;
-		EntityContext entityContext = EntityContext.of(livingEntity);
-		Box box = livingEntity.method_24833(EntityPose.SWIMMING).offset(d, e, f);
+		Box box = livingEntity.method_24833(livingEntity.method_26081()).offset(d, e, f);
 		BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
 		double g = this.getBoundingBox().y2 + 0.75;
 
 		do {
-			double h = method_24827(this.world, mutable, entityContext);
+			double h = this.world.method_26097(mutable);
 			if ((double)mutable.getY() + h > g) {
 				break;
 			}

@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -24,13 +23,13 @@ public class LeavesBlock extends Block {
 	public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
 	public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
 
-	public LeavesBlock(Block.Settings settings) {
+	public LeavesBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(PERSISTENT, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public VoxelShape method_25959(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
 		return VoxelShapes.empty();
 	}
 
@@ -58,8 +57,8 @@ public class LeavesBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		int i = getDistanceFromLog(neighborState) + 1;
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		int i = getDistanceFromLog(newState) + 1;
 		if (i != 1 || (Integer)state.get(DISTANCE) != i) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
@@ -105,16 +104,6 @@ public class LeavesBlock extends Block {
 				}
 			}
 		}
-	}
-
-	@Override
-	public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
-		return false;
-	}
-
-	@Override
-	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
-		return type == EntityType.OCELOT || type == EntityType.PARROT;
 	}
 
 	@Override

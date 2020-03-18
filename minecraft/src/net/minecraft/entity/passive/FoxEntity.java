@@ -288,7 +288,7 @@ public class FoxEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		Biome biome = world.getBiome(this.getSenseCenterPos());
+		Biome biome = world.getBiome(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
@@ -367,11 +367,11 @@ public class FoxEntity extends AnimalEntity {
 
 		for (UUID uUID : list) {
 			if (uUID != null) {
-				listTag.add(NbtHelper.fromUuidOld(uUID));
+				listTag.add(NbtHelper.fromUuidNew(uUID));
 			}
 		}
 
-		tag.put("TrustedUUIDs", listTag);
+		tag.put("Trusted", listTag);
 		tag.putBoolean("Sleeping", this.isSleeping());
 		tag.putString("Type", this.getFoxType().getKey());
 		tag.putBoolean("Sitting", this.isSitting());
@@ -381,10 +381,10 @@ public class FoxEntity extends AnimalEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		ListTag listTag = tag.getList("TrustedUUIDs", 10);
+		ListTag listTag = tag.getList("Trusted", 11);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			this.addTrustedUuid(NbtHelper.toUuidOld(listTag.getCompound(i)));
+			this.addTrustedUuid(NbtHelper.toUuidNew(listTag.get(i)));
 		}
 
 		this.setSleeping(tag.getBoolean("Sleeping"));
@@ -501,7 +501,7 @@ public class FoxEntity extends AnimalEntity {
 			}
 
 			if (this.isWalking() && this.world.random.nextFloat() < 0.2F) {
-				BlockPos blockPos = this.getSenseCenterPos();
+				BlockPos blockPos = this.getBlockPos();
 				BlockState blockState = this.world.getBlockState(blockPos);
 				this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 			}
@@ -724,7 +724,7 @@ public class FoxEntity extends AnimalEntity {
 				return false;
 			} else {
 				this.timer = 100;
-				BlockPos blockPos = this.mob.getSenseCenterPos();
+				BlockPos blockPos = this.mob.getBlockPos();
 				return FoxEntity.this.world.isDay()
 					&& FoxEntity.this.world.isSkyVisible(blockPos)
 					&& !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos)
@@ -1137,7 +1137,7 @@ public class FoxEntity extends AnimalEntity {
 			} else if (FoxEntity.this.pitch > 0.0F
 				&& FoxEntity.this.onGround
 				&& (float)FoxEntity.this.getVelocity().y != 0.0F
-				&& FoxEntity.this.world.getBlockState(FoxEntity.this.getSenseCenterPos()).getBlock() == Blocks.SNOW) {
+				&& FoxEntity.this.world.getBlockState(FoxEntity.this.getBlockPos()).getBlock() == Blocks.SNOW) {
 				FoxEntity.this.pitch = 60.0F;
 				FoxEntity.this.setTarget(null);
 				FoxEntity.this.setWalking(true);

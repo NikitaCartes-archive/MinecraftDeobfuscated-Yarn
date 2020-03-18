@@ -21,7 +21,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -35,6 +35,7 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -49,13 +50,11 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.EnderChestInventory;
@@ -107,7 +106,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public abstract class PlayerEntity extends LivingEntity {
 	public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6F, 1.8F);
@@ -144,8 +142,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	public double capeZ;
 	private int sleepTimer;
 	protected boolean isSubmergedInWater;
-	private BlockPos spawnPosition;
-	private boolean spawnForced;
 	public final PlayerAbilities abilities = new PlayerAbilities();
 	public int experienceLevel;
 	public int totalExperience;
@@ -558,10 +554,28 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	private void updateShoulderEntity(@Nullable CompoundTag entityTag) {
-		if (entityTag != null && !entityTag.contains("Silent") || !entityTag.getBoolean("Silent")) {
-			String string = entityTag.getString("id");
-			EntityType.get(string).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> ParrotEntity.playMobSound(this.world, this));
+	private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
+		if (compoundTag != null && (!compoundTag.contains("Silent") || !compoundTag.getBoolean("Silent")) && this.world.random.nextInt(200) == 0) {
+			String string = compoundTag.getString("id");
+			EntityType.get(string)
+				.filter(entityType -> entityType == EntityType.PARROT)
+				.ifPresent(
+					entityType -> {
+						if (!ParrotEntity.imitateNearbyMob(this.world, this)) {
+							this.world
+								.playSound(
+									null,
+									this.getX(),
+									this.getY(),
+									this.getZ(),
+									ParrotEntity.getRandomSound(this.world, this.world.random),
+									this.getSoundCategory(),
+									1.0F,
+									ParrotEntity.getSoundPitch(this.world.random)
+								);
+						}
+					}
+				);
 		}
 	}
 
@@ -766,11 +780,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.setScore(tag.getInt("Score"));
-		if (tag.contains("SpawnX", 99) && tag.contains("SpawnY", 99) && tag.contains("SpawnZ", 99)) {
-			this.spawnPosition = new BlockPos(tag.getInt("SpawnX"), tag.getInt("SpawnY"), tag.getInt("SpawnZ"));
-			this.spawnForced = tag.getBoolean("SpawnForced");
-		}
-
 		this.hungerManager.deserialize(tag);
 		this.abilities.deserialize(tag);
 		if (tag.contains("EnderItems", 9)) {
@@ -798,13 +807,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		tag.putInt("XpTotal", this.totalExperience);
 		tag.putInt("XpSeed", this.enchantmentTableSeed);
 		tag.putInt("Score", this.getScore());
-		if (this.spawnPosition != null) {
-			tag.putInt("SpawnX", this.spawnPosition.getX());
-			tag.putInt("SpawnY", this.spawnPosition.getY());
-			tag.putInt("SpawnZ", this.spawnPosition.getZ());
-			tag.putBoolean("SpawnForced", this.spawnForced);
-		}
-
 		this.hungerManager.serialize(tag);
 		this.abilities.serialize(tag);
 		tag.put("EnderItems", this.enderChestInventory.getTags());
@@ -1280,73 +1282,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos pos) {
-		Direction direction = this.world.getBlockState(pos).get(HorizontalFacingBlock.FACING);
-		if (!this.world.isClient) {
-			if (this.isSleeping() || !this.isAlive()) {
-				return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
-			}
-
-			if (!this.world.dimension.hasVisibleSky()) {
-				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
-			}
-
-			if (!this.isWithinSleepingRange(pos, direction)) {
-				return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
-			}
-
-			if (this.isBedObstructed(pos, direction)) {
-				return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
-			}
-
-			this.setPlayerSpawn(pos, false, true);
-			if (this.world.isDay()) {
-				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
-			}
-
-			if (!this.isCreative()) {
-				double d = 8.0;
-				double e = 5.0;
-				Vec3d vec3d = Vec3d.method_24955(pos);
-				List<HostileEntity> list = this.world
-					.getEntities(
-						HostileEntity.class,
-						new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0),
-						hostileEntity -> hostileEntity.isAngryAt(this)
-					);
-				if (!list.isEmpty()) {
-					return Either.left(PlayerEntity.SleepFailureReason.NOT_SAFE);
-				}
-			}
-		}
-
 		this.sleep(pos);
 		this.sleepTimer = 0;
-		if (this.world instanceof ServerWorld) {
-			((ServerWorld)this.world).updateSleepingPlayers();
-		}
-
 		return Either.right(Unit.INSTANCE);
-	}
-
-	@Override
-	public void sleep(BlockPos pos) {
-		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
-		this.setPlayerSpawn(pos, false, true);
-		super.sleep(pos);
-	}
-
-	private boolean isWithinSleepingRange(BlockPos sleepPos, Direction direction) {
-		return this.method_24278(sleepPos) || this.method_24278(sleepPos.offset(direction.getOpposite()));
-	}
-
-	private boolean method_24278(BlockPos blockPos) {
-		Vec3d vec3d = Vec3d.method_24955(blockPos);
-		return Math.abs(this.getX() - vec3d.getX()) <= 3.0 && Math.abs(this.getY() - vec3d.getY()) <= 2.0 && Math.abs(this.getZ() - vec3d.getZ()) <= 3.0;
-	}
-
-	private boolean isBedObstructed(BlockPos pos, Direction direction) {
-		BlockPos blockPos = pos.up();
-		return !this.doesNotSuffocate(blockPos) || !this.doesNotSuffocate(blockPos.offset(direction.getOpposite()));
 	}
 
 	public void wakeUp(boolean bl, boolean updateSleepingPlayers) {
@@ -1363,18 +1301,20 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.wakeUp(true, true);
 	}
 
-	public static Optional<Vec3d> findRespawnPosition(WorldView world, BlockPos spawnPos, boolean allowNonBed) {
-		Block block = world.getBlockState(spawnPos).getBlock();
-		if (!(block instanceof BedBlock)) {
-			if (!allowNonBed) {
-				return Optional.empty();
-			} else {
-				boolean bl = block.canMobSpawnInside();
-				boolean bl2 = world.getBlockState(spawnPos.up()).getBlock().canMobSpawnInside();
-				return bl && bl2 ? Optional.of(new Vec3d((double)spawnPos.getX() + 0.5, (double)spawnPos.getY() + 0.1, (double)spawnPos.getZ() + 0.5)) : Optional.empty();
-			}
+	public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, boolean bl) {
+		BlockState blockState = world.getBlockState(pos);
+		Block block = blockState.getBlock();
+		if (block instanceof RespawnAnchorBlock && (Integer)blockState.get(RespawnAnchorBlock.CHARGES) > 0) {
+			world.setBlockState(pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), 3);
+			return RespawnAnchorBlock.findRespawnPosition(world, pos);
+		} else if (block instanceof BedBlock) {
+			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, 0);
+		} else if (!bl) {
+			return Optional.empty();
 		} else {
-			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, spawnPos, 0);
+			boolean bl2 = block.canMobSpawnInside();
+			boolean bl3 = world.getBlockState(pos.up()).getBlock().canMobSpawnInside();
+			return bl2 && bl3 ? Optional.of(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 0.1, (double)pos.getZ() + 0.5)) : Optional.empty();
 		}
 	}
 
@@ -1387,28 +1327,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public void addMessage(Text message, boolean actionBar) {
-	}
-
-	public BlockPos getSpawnPosition() {
-		return this.spawnPosition;
-	}
-
-	public boolean isSpawnForced() {
-		return this.spawnForced;
-	}
-
-	public void setPlayerSpawn(BlockPos pos, boolean forced, boolean announceChange) {
-		if (pos != null) {
-			if (announceChange && !pos.equals(this.spawnPosition)) {
-				this.sendMessage(new TranslatableText("block.minecraft.bed.set_spawn"));
-			}
-
-			this.spawnPosition = pos;
-			this.spawnForced = forced;
-		} else {
-			this.spawnPosition = null;
-			this.spawnForced = false;
-		}
 	}
 
 	public void incrementStat(Identifier stat) {
@@ -1492,7 +1410,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	protected boolean doesNotSuffocate(BlockPos pos) {
-		return !this.world.getBlockState(pos).canSuffocate(this.world, pos);
+		return !this.world.getBlockState(pos).shouldSuffocate(this.world, pos);
 	}
 
 	@Override

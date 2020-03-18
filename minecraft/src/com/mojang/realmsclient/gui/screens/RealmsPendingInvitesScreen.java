@@ -215,19 +215,19 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void setSelected(int i) {
-			this.setSelectedItem(i);
-			if (i != -1) {
+		public void setSelected(int index) {
+			this.setSelectedItem(index);
+			if (index != -1) {
 				List<RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry> list = RealmsPendingInvitesScreen.this.pendingInvitationSelectionList.children();
-				PendingInvite pendingInvite = ((RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry)list.get(i)).mPendingInvite;
-				String string = I18n.translate("narrator.select.list.position", i + 1, list.size());
+				PendingInvite pendingInvite = ((RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry)list.get(index)).mPendingInvite;
+				String string = I18n.translate("narrator.select.list.position", index + 1, list.size());
 				String string2 = Realms.joinNarrations(
 					Arrays.asList(pendingInvite.worldName, pendingInvite.worldOwnerName, RealmsUtil.method_25282(pendingInvite.date), string)
 				);
 				Realms.narrateNow(I18n.translate("narrator.select", string2));
 			}
 
-			this.selectInviteListItem(i);
+			this.selectInviteListItem(index);
 		}
 
 		public void selectInviteListItem(int item) {

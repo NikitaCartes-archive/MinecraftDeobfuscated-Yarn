@@ -17,6 +17,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.PlayerAdvancementTracker;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -36,6 +38,7 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
@@ -54,6 +57,8 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
@@ -195,7 +200,13 @@ public abstract class PlayerManager {
 				compoundTag2.getCompound("Entity"), serverWorld, entityx -> !serverWorld.tryLoadEntity(entityx) ? null : entityx
 			);
 			if (entity != null) {
-				UUID uUID = compoundTag2.getUuidOld("Attach");
+				UUID uUID;
+				if (compoundTag2.containsUuidNew("Attach")) {
+					uUID = compoundTag2.getUuidNew("Attach");
+				} else {
+					uUID = null;
+				}
+
 				if (entity.getUuid().equals(uUID)) {
 					player.startRiding(entity, true);
 				} else {
@@ -316,9 +327,11 @@ public abstract class PlayerManager {
 				LOGGER.debug("Removing player mount");
 				player.stopRiding();
 				serverWorld.removeEntity(entity);
+				entity.removed = true;
 
 				for (Entity entity2 : entity.getPassengersDeep()) {
 					serverWorld.removeEntity(entity2);
+					entity2.removed = true;
 				}
 
 				serverWorld.getChunk(player.chunkX, player.chunkZ).markDirty();
@@ -396,12 +409,12 @@ public abstract class PlayerManager {
 		return new ServerPlayerEntity(this.server, this.server.getWorld(DimensionType.OVERWORLD), profile, serverPlayerInteractionManager);
 	}
 
-	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, DimensionType dimension, boolean alive) {
+	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean bl) {
 		this.players.remove(player);
 		player.getServerWorld().removePlayer(player);
-		BlockPos blockPos = player.getSpawnPosition();
-		boolean bl = player.isSpawnForced();
-		player.dimension = dimension;
+		BlockPos blockPos = player.getSpawnPointPosition();
+		boolean bl2 = player.isSpawnPointSet();
+		player.dimension = player.getSpawnPointDimension();
 		ServerPlayerInteractionManager serverPlayerInteractionManager;
 		if (this.server.isDemo()) {
 			serverPlayerInteractionManager = new DemoServerPlayerInteractionManager(this.server.getWorld(player.dimension));
@@ -413,7 +426,7 @@ public abstract class PlayerManager {
 			this.server, this.server.getWorld(player.dimension), player.getGameProfile(), serverPlayerInteractionManager
 		);
 		serverPlayerEntity.networkHandler = player.networkHandler;
-		serverPlayerEntity.copyFrom(player, alive);
+		serverPlayerEntity.copyFrom(player, bl);
 		serverPlayerEntity.setEntityId(player.getEntityId());
 		serverPlayerEntity.setMainArm(player.getMainArm());
 
@@ -424,13 +437,25 @@ public abstract class PlayerManager {
 		ServerWorld serverWorld = this.server.getWorld(player.dimension);
 		this.setGameMode(serverPlayerEntity, player, serverWorld);
 		if (blockPos != null) {
-			Optional<Vec3d> optional = PlayerEntity.findRespawnPosition(this.server.getWorld(player.dimension), blockPos, bl);
+			Optional<Vec3d> optional = PlayerEntity.findRespawnPosition(this.server.getWorld(player.dimension), blockPos, bl2);
 			if (optional.isPresent()) {
 				Vec3d vec3d = (Vec3d)optional.get();
 				serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0F, 0.0F);
-				serverPlayerEntity.setPlayerSpawn(blockPos, bl, false);
+				serverPlayerEntity.setSpawnPoint(player.dimension, blockPos, bl2, false);
+				BlockState blockState = serverWorld.getBlockState(blockPos);
+				if (blockState.getBlock() instanceof RespawnAnchorBlock) {
+					serverPlayerEntity.networkHandler
+						.sendPacket(
+							new PlaySoundS2CPacket(
+								SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.BLOCKS, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0F, 1.0F
+							)
+						);
+				}
 			} else {
 				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0F));
+				serverPlayerEntity.dimension = DimensionType.OVERWORLD;
+				serverWorld = this.server.getWorld(DimensionType.OVERWORLD);
+				serverPlayerEntity.world = serverWorld;
 			}
 		}
 
@@ -448,10 +473,9 @@ public abstract class PlayerManager {
 					serverPlayerEntity.interactionManager.getGameMode()
 				)
 			);
-		BlockPos blockPos2 = serverWorld.getSpawnPos();
 		serverPlayerEntity.networkHandler
 			.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch);
-		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos2));
+		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld.getSpawnPos()));
 		serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
 		serverPlayerEntity.networkHandler
 			.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity.experienceProgress, serverPlayerEntity.totalExperience, serverPlayerEntity.experienceLevel));
@@ -635,8 +659,7 @@ public abstract class PlayerManager {
 		player.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
 		player.networkHandler
 			.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
-		BlockPos blockPos = world.getSpawnPos();
-		player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(blockPos));
+		player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos()));
 		if (world.isRaining()) {
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(1, 0.0F));
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(7, world.getRainGradient(1.0F)));

@@ -36,7 +36,6 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class DispenserBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = FacingBlock.FACING;
@@ -49,14 +48,9 @@ public class DispenserBlock extends BlockWithEntity {
 		BEHAVIORS.put(provider.asItem(), behavior);
 	}
 
-	protected DispenserBlock(Block.Settings settings) {
+	protected DispenserBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(TRIGGERED, Boolean.valueOf(false)));
-	}
-
-	@Override
-	public int getTickRate(WorldView world) {
-		return 4;
 	}
 
 	@Override
@@ -98,11 +92,11 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		if (bl && !bl2) {
-			world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+			world.getBlockTickScheduler().schedule(pos, this, 4);
 			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(true)), 4);
 		} else if (!bl && bl2) {
 			world.setBlockState(pos, state.with(TRIGGERED, Boolean.valueOf(false)), 4);
@@ -135,7 +129,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (state.getBlock() != newState.getBlock()) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof DispenserBlockEntity) {
@@ -143,7 +137,7 @@ public class DispenserBlock extends BlockWithEntity {
 				world.updateComparators(pos, this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onBlockRemoved(state, world, pos, newState, notify);
 		}
 	}
 

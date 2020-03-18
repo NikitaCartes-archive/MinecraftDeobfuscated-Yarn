@@ -60,8 +60,8 @@ public class RealmsServer extends ValueObject {
 		this.name = name;
 	}
 
-	public void setDescription(String motd) {
-		this.motd = motd;
+	public void setDescription(String description) {
+		this.motd = description;
 	}
 
 	public void updateServerPing(RealmsServerPlayerList serverPlayerList) {
@@ -161,10 +161,10 @@ public class RealmsServer extends ValueObject {
 		return list;
 	}
 
-	private static Map<Integer, RealmsWorldOptions> parseSlots(JsonArray jsonArray) {
+	private static Map<Integer, RealmsWorldOptions> parseSlots(JsonArray json) {
 		Map<Integer, RealmsWorldOptions> map = Maps.<Integer, RealmsWorldOptions>newHashMap();
 
-		for (JsonElement jsonElement : jsonArray) {
+		for (JsonElement jsonElement : json) {
 			try {
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				JsonParser jsonParser = new JsonParser();

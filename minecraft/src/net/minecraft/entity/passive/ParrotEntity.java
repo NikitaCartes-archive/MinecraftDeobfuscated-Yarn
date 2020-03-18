@@ -14,7 +14,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LogBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -57,6 +56,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -130,6 +130,11 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	@Override
+	public boolean isBaby() {
+		return false;
+	}
+
+	@Override
 	protected void initGoals() {
 		this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(0, new SwimGoal(this));
@@ -166,12 +171,15 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	@Override
 	public void tickMovement() {
-		imitateNearbyMob(this.world, this);
 		if (this.songSource == null
 			|| !this.songSource.isWithinDistance(this.getPos(), 3.46)
 			|| this.world.getBlockState(this.songSource).getBlock() != Blocks.JUKEBOX) {
 			this.songPlaying = false;
 			this.songSource = null;
+		}
+
+		if (this.world.random.nextInt(400) == 0) {
+			imitateNearbyMob(this.world, this);
 		}
 
 		super.tickMovement();
@@ -208,8 +216,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		this.field_6818 = this.field_6818 + this.field_6824 * 2.0F;
 	}
 
-	private static boolean imitateNearbyMob(World world, Entity parrot) {
-		if (parrot.isAlive() && !parrot.isSilent() && world.random.nextInt(50) == 0) {
+	public static boolean imitateNearbyMob(World world, Entity parrot) {
+		if (parrot.isAlive() && !parrot.isSilent() && world.random.nextInt(2) == 0) {
 			List<MobEntity> list = world.getEntities(MobEntity.class, parrot.getBoundingBox().expand(20.0), CAN_IMITATE);
 			if (!list.isEmpty()) {
 				MobEntity mobEntity = (MobEntity)list.get(world.random.nextInt(list.size()));
@@ -289,7 +297,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	public static boolean canSpawn(EntityType<ParrotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
 		Block block = world.getBlockState(pos.down()).getBlock();
-		return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR)
+		return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block.isIn(BlockTags.LOGS) || block == Blocks.AIR)
 			&& world.getBaseLightLevel(pos, 0) > 8;
 	}
 
@@ -313,14 +321,6 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		return null;
 	}
 
-	public static void playMobSound(World world, Entity parrot) {
-		if (!parrot.isSilent() && !imitateNearbyMob(world, parrot) && world.random.nextInt(200) == 0) {
-			world.playSound(
-				null, parrot.getX(), parrot.getY(), parrot.getZ(), getRandomSound(world.random), parrot.getSoundCategory(), 1.0F, getSoundPitch(world.random)
-			);
-		}
-	}
-
 	@Override
 	public boolean tryAttack(Entity target) {
 		return target.damage(DamageSource.mob(this), 3.0F);
@@ -329,11 +329,11 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	@Nullable
 	@Override
 	public SoundEvent getAmbientSound() {
-		return getRandomSound(this.random);
+		return getRandomSound(this.world, this.world.random);
 	}
 
-	private static SoundEvent getRandomSound(Random random) {
-		if (random.nextInt(1000) == 0) {
+	public static SoundEvent getRandomSound(World world, Random random) {
+		if (world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(1000) == 0) {
 			List<EntityType<?>> list = Lists.<EntityType<?>>newArrayList(MOB_SOUNDS.keySet());
 			return getSound((EntityType<?>)list.get(random.nextInt(list.size())));
 		} else {
@@ -376,7 +376,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		return getSoundPitch(this.random);
 	}
 
-	private static float getSoundPitch(Random random) {
+	public static float getSoundPitch(Random random) {
 		return (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F;
 	}
 

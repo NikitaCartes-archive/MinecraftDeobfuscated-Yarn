@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public abstract class AbstractBannerBlock extends BlockWithEntity {
 	private final DyeColor color;
 
-	protected AbstractBannerBlock(DyeColor color, Block.Settings settings) {
+	protected AbstractBannerBlock(DyeColor color, AbstractBlock.Settings settings) {
 		super(settings);
 		this.color = color;
 	}

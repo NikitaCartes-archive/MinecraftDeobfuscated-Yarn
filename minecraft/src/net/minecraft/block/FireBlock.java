@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import java.util.Random;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -38,7 +37,7 @@ public class FireBlock extends AbstractFireBlock {
 	private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<>();
 	private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<>();
 
-	public FireBlock(Block.Settings settings) {
+	public FireBlock(AbstractBlock.Settings settings) {
 		super(settings, 1.0F);
 		this.setDefaultState(
 			this.stateManager
@@ -53,12 +52,12 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		return this.canPlaceAt(state, world, pos) ? this.method_24855(world, pos, (Integer)state.get(AGE)) : Blocks.AIR.getDefaultState();
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		VoxelShape voxelShape = VoxelShapes.empty();
 		if ((Boolean)state.get(UP)) {
 			voxelShape = field_22497;
@@ -114,11 +113,6 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	@Override
-	public int getTickRate(WorldView world) {
-		return 30;
-	}
-
-	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			if (!state.canPlaceAt(world, pos)) {
@@ -138,7 +132,7 @@ public class FireBlock extends AbstractFireBlock {
 				}
 
 				if (!bl) {
-					world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + random.nextInt(10));
+					world.getBlockTickScheduler().schedule(pos, this, method_26155(world.random));
 					if (!this.areBlocksAroundFlammable(world, pos)) {
 						BlockPos blockPos = pos.down();
 						if (!world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || i > 3) {
@@ -260,9 +254,13 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-		super.onBlockAdded(state, world, pos, oldState, moved);
-		world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + world.random.nextInt(10));
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+		super.onBlockAdded(state, world, pos, oldState, notify);
+		world.getBlockTickScheduler().schedule(pos, this, method_26155(world.random));
+	}
+
+	private static int method_26155(Random random) {
+		return 30 + random.nextInt(10);
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -422,8 +422,8 @@ public class ArmorStandEntity extends LivingEntity {
 			this.updateHealth(source, 4.0F);
 			return false;
 		} else {
-			boolean bl = source.getSource() instanceof ProjectileEntity;
-			boolean bl2 = bl && ((ProjectileEntity)source.getSource()).getPierceLevel() > 0;
+			boolean bl = source.getSource() instanceof PersistentProjectileEntity;
+			boolean bl2 = bl && ((PersistentProjectileEntity)source.getSource()).getPierceLevel() > 0;
 			boolean bl3 = "player".equals(source.getName());
 			if (!bl3 && !bl) {
 				return false;
@@ -504,7 +504,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void breakAndDropItem(DamageSource damageSource) {
-		Block.dropStack(this.world, this.getSenseCenterPos(), new ItemStack(Items.ARMOR_STAND));
+		Block.dropStack(this.world, this.getBlockPos(), new ItemStack(Items.ARMOR_STAND));
 		this.onBreak(damageSource);
 	}
 
@@ -515,7 +515,7 @@ public class ArmorStandEntity extends LivingEntity {
 		for (int i = 0; i < this.heldItems.size(); i++) {
 			ItemStack itemStack = this.heldItems.get(i);
 			if (!itemStack.isEmpty()) {
-				Block.dropStack(this.world, this.getSenseCenterPos().up(), itemStack);
+				Block.dropStack(this.world, this.getBlockPos().up(), itemStack);
 				this.heldItems.set(i, ItemStack.EMPTY);
 			}
 		}
@@ -523,7 +523,7 @@ public class ArmorStandEntity extends LivingEntity {
 		for (int ix = 0; ix < this.armorItems.size(); ix++) {
 			ItemStack itemStack = this.armorItems.get(ix);
 			if (!itemStack.isEmpty()) {
-				Block.dropStack(this.world, this.getSenseCenterPos().up(), itemStack);
+				Block.dropStack(this.world, this.getBlockPos().up(), itemStack);
 				this.armorItems.set(ix, ItemStack.EMPTY);
 			}
 		}
@@ -741,7 +741,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public boolean handleAttack(Entity attacker) {
-		return attacker instanceof PlayerEntity && !this.world.canPlayerModifyAt((PlayerEntity)attacker, this.getSenseCenterPos());
+		return attacker instanceof PlayerEntity && !this.world.canPlayerModifyAt((PlayerEntity)attacker, this.getBlockPos());
 	}
 
 	@Override

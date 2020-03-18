@@ -159,7 +159,7 @@ public class SilverfishEntity extends HostileEntity {
 			if (this.delay <= 0) {
 				World world = this.silverfish.world;
 				Random random = this.silverfish.getRandom();
-				BlockPos blockPos = this.silverfish.getSenseCenterPos();
+				BlockPos blockPos = this.silverfish.getBlockPos();
 
 				for (int i = 0; i <= 5 && i >= -5; i = (i <= 0 ? 1 : 0) - i) {
 					for (int j = 0; j <= 10 && j >= -10; j = (j <= 0 ? 1 : 0) - j) {

@@ -4,7 +4,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -33,14 +32,14 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	};
 	private final GourdBlock gourdBlock;
 
-	protected StemBlock(GourdBlock gourdBlock, Block.Settings settings) {
+	protected StemBlock(GourdBlock gourdBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.gourdBlock = gourdBlock;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return AGE_TO_SHAPE[state.get(AGE)];
 	}
 
@@ -50,8 +49,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		super.scheduledTick(state, world, pos, random);
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getBaseLightLevel(pos, 0) >= 9) {
 			float f = CropBlock.getAvailableMoisture(this, world, pos);
 			if (random.nextInt((int)(25.0F / f) + 1) == 0) {
@@ -106,7 +104,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 		BlockState blockState = state.with(AGE, Integer.valueOf(i));
 		world.setBlockState(pos, blockState, 2);
 		if (i == 7) {
-			blockState.scheduledTick(world, pos, world.random);
+			blockState.randomTick(world, pos, world.random);
 		}
 	}
 

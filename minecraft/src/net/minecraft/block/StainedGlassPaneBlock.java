@@ -5,7 +5,7 @@ import net.minecraft.util.DyeColor;
 public class StainedGlassPaneBlock extends PaneBlock implements Stainable {
 	private final DyeColor color;
 
-	public StainedGlassPaneBlock(DyeColor color, Block.Settings settings) {
+	public StainedGlassPaneBlock(DyeColor color, AbstractBlock.Settings settings) {
 		super(settings);
 		this.color = color;
 		this.setDefaultState(

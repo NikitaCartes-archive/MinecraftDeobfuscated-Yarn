@@ -40,7 +40,7 @@ public class RealmsClient {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final String sessionId;
 	private final String username;
-	private static final CheckedGson field_22568 = new CheckedGson();
+	private static final CheckedGson JSON = new CheckedGson();
 
 	public static RealmsClient createRealmsClient() {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
@@ -110,7 +110,7 @@ public class RealmsClient {
 	public void initializeWorld(long worldId, String name, String motd) throws RealmsServiceException {
 		RealmsDescriptionDto realmsDescriptionDto = new RealmsDescriptionDto(name, motd);
 		String string = this.url("worlds" + "/$WORLD_ID/initialize".replace("$WORLD_ID", String.valueOf(worldId)));
-		String string2 = field_22568.toJson(realmsDescriptionDto);
+		String string2 = JSON.toJson(realmsDescriptionDto);
 		this.execute(Request.post(string, string2, 5000, 10000));
 	}
 
@@ -151,7 +151,7 @@ public class RealmsClient {
 		PlayerInfo playerInfo = new PlayerInfo();
 		playerInfo.setName(profileName);
 		String string = this.url("invites" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(worldId)));
-		String string2 = this.execute(Request.post(string, field_22568.toJson(playerInfo)));
+		String string2 = this.execute(Request.post(string, JSON.toJson(playerInfo)));
 		return RealmsServer.parse(string2);
 	}
 
@@ -164,7 +164,7 @@ public class RealmsClient {
 	public void update(long worldId, String name, String motd) throws RealmsServiceException {
 		RealmsDescriptionDto realmsDescriptionDto = new RealmsDescriptionDto(name, motd);
 		String string = this.url("worlds" + "/$WORLD_ID".replace("$WORLD_ID", String.valueOf(worldId)));
-		this.execute(Request.post(string, field_22568.toJson(realmsDescriptionDto)));
+		this.execute(Request.post(string, JSON.toJson(realmsDescriptionDto)));
 	}
 
 	public void updateSlot(long worldId, int slot, RealmsWorldOptions options) throws RealmsServiceException {
@@ -223,14 +223,14 @@ public class RealmsClient {
 	public Boolean resetWorldWithSeed(long worldId, String seed, Integer levelType, boolean generateStructures) throws RealmsServiceException {
 		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(seed, -1L, levelType, generateStructures);
 		String string = this.url("worlds" + "/$WORLD_ID/reset".replace("$WORLD_ID", String.valueOf(worldId)));
-		String string2 = this.execute(Request.post(string, field_22568.toJson(realmsWorldResetDto), 30000, 80000));
+		String string2 = this.execute(Request.post(string, JSON.toJson(realmsWorldResetDto), 30000, 80000));
 		return Boolean.valueOf(string2);
 	}
 
 	public Boolean resetWorldWithTemplate(long worldId, String worldTemplateId) throws RealmsServiceException {
 		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(null, Long.valueOf(worldTemplateId), -1, false);
 		String string = this.url("worlds" + "/$WORLD_ID/reset".replace("$WORLD_ID", String.valueOf(worldId)));
-		String string2 = this.execute(Request.post(string, field_22568.toJson(realmsWorldResetDto), 30000, 80000));
+		String string2 = this.execute(Request.post(string, JSON.toJson(realmsWorldResetDto), 30000, 80000));
 		return Boolean.valueOf(string2);
 	}
 
@@ -297,7 +297,7 @@ public class RealmsClient {
 
 	public void sendPingResults(PingResult pingResult) throws RealmsServiceException {
 		String string = this.url("regions/ping/stat");
-		this.execute(Request.post(string, field_22568.toJson(pingResult)));
+		this.execute(Request.post(string, JSON.toJson(pingResult)));
 	}
 
 	public Boolean trialAvailable() throws RealmsServiceException {

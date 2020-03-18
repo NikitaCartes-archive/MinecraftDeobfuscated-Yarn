@@ -17,7 +17,7 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private final PressurePlateBlock.ActivationRule type;
 
-	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, Block.Settings settings) {
+	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)));
 		this.type = type;

@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -31,7 +30,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 
 public class StairsBlock extends Block implements Waterloggable {
@@ -84,7 +82,7 @@ public class StairsBlock extends Block implements Waterloggable {
 		return voxelShape;
 	}
 
-	protected StairsBlock(BlockState baseBlockState, Block.Settings settings) {
+	protected StairsBlock(BlockState baseBlockState, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -104,7 +102,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return (state.get(HALF) == BlockHalf.TOP ? TOP_SHAPES : BOTTOM_SHAPES)[SHAPE_INDICES[this.getShapeIndexIndex(state)]];
 	}
 
@@ -134,12 +132,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public int getTickRate(WorldView world) {
-		return this.baseBlock.getTickRate(world);
-	}
-
-	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (state.getBlock() != state.getBlock()) {
 			this.baseBlockState.neighborUpdate(world, pos, Blocks.AIR, pos, false);
 			this.baseBlock.onBlockAdded(this.baseBlockState, world, pos, oldState, false);
@@ -147,15 +140,25 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (state.getBlock() != newState.getBlock()) {
-			this.baseBlockState.onBlockRemoved(world, pos, newState, moved);
+			this.baseBlockState.onBlockRemoved(world, pos, newState, notify);
 		}
 	}
 
 	@Override
 	public void onSteppedOn(World world, BlockPos pos, Entity entity) {
 		this.baseBlock.onSteppedOn(world, pos, entity);
+	}
+
+	@Override
+	public boolean hasRandomTicks(BlockState state) {
+		return this.baseBlock.hasRandomTicks(state);
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		this.baseBlock.randomTick(state, world, pos, random);
 	}
 
 	@Override
@@ -188,14 +191,14 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return facing.getAxis().isHorizontal()
+		return direction.getAxis().isHorizontal()
 			? state.with(SHAPE, method_10675(state, world, pos))
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	private static StairShape method_10675(BlockState state, BlockView world, BlockPos pos) {
@@ -293,7 +296,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

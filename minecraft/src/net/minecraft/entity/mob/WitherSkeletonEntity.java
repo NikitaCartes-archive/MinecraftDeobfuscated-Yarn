@@ -15,7 +15,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -107,10 +107,10 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected ProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
-		ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, damageModifier);
-		projectileEntity.setOnFireFor(100);
-		return projectileEntity;
+	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
+		PersistentProjectileEntity persistentProjectileEntity = super.createArrowProjectile(arrow, damageModifier);
+		persistentProjectileEntity.setOnFireFor(100);
+		return persistentProjectileEntity;
 	}
 
 	@Override

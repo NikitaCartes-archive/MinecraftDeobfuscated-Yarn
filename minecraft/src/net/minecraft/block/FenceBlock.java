@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 public class FenceBlock extends HorizontalConnectingBlock {
 	private final VoxelShape[] cullingShapes;
 
-	public FenceBlock(Block.Settings settings) {
+	public FenceBlock(AbstractBlock.Settings settings) {
 		super(2.0F, 2.0F, 16.0F, 16.0F, 24.0F, settings);
 		this.setDefaultState(
 			this.stateManager
@@ -44,7 +44,12 @@ public class FenceBlock extends HorizontalConnectingBlock {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		return this.getOutlineShape(state, world, pos, context);
+	}
+
+	@Override
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 
@@ -87,17 +92,17 @@ public class FenceBlock extends HorizontalConnectingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return facing.getAxis().getType() == Direction.Type.HORIZONTAL
+		return direction.getAxis().getType() == Direction.Type.HORIZONTAL
 			? state.with(
-				(Property)FACING_PROPERTIES.get(facing),
-				Boolean.valueOf(this.canConnect(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, facing.getOpposite()), facing.getOpposite()))
+				(Property)FACING_PROPERTIES.get(direction),
+				Boolean.valueOf(this.canConnect(newState, newState.isSideSolidFullSquare(world, posFrom, direction.getOpposite()), direction.getOpposite()))
 			)
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class FlyOntoTreeGoal extends WanderAroundFarGoal {
 
 	@Nullable
 	private Vec3d getTreeTarget() {
-		BlockPos blockPos = this.mob.getSenseCenterPos();
+		BlockPos blockPos = this.mob.getBlockPos();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 

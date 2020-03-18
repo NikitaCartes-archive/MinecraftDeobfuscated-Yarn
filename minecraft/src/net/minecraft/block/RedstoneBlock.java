@@ -5,7 +5,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 
 public class RedstoneBlock extends Block {
-	public RedstoneBlock(Block.Settings settings) {
+	public RedstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -15,7 +15,7 @@ public class RedstoneBlock extends Block {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return 15;
 	}
 }

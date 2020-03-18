@@ -16,8 +16,8 @@ import net.minecraft.world.World;
 public class BlockDustParticle extends SpriteBillboardParticle {
 	private final BlockState blockState;
 	private BlockPos blockPos;
-	private final float field_17884;
-	private final float field_17885;
+	private final float sampleU;
+	private final float sampleV;
 
 	public BlockDustParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState blockState) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
@@ -28,8 +28,8 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 		this.colorGreen = 0.6F;
 		this.colorBlue = 0.6F;
 		this.scale /= 2.0F;
-		this.field_17884 = this.random.nextFloat() * 3.0F;
-		this.field_17885 = this.random.nextFloat() * 3.0F;
+		this.sampleU = this.random.nextFloat() * 3.0F;
+		this.sampleV = this.random.nextFloat() * 3.0F;
 	}
 
 	@Override
@@ -67,22 +67,22 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 
 	@Override
 	protected float getMinU() {
-		return this.sprite.getFrameU((double)((this.field_17884 + 1.0F) / 4.0F * 16.0F));
+		return this.sprite.getFrameU((double)((this.sampleU + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMaxU() {
-		return this.sprite.getFrameU((double)(this.field_17884 / 4.0F * 16.0F));
+		return this.sprite.getFrameU((double)(this.sampleU / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMinV() {
-		return this.sprite.getFrameV((double)(this.field_17885 / 4.0F * 16.0F));
+		return this.sprite.getFrameV((double)(this.sampleV / 4.0F * 16.0F));
 	}
 
 	@Override
 	protected float getMaxV() {
-		return this.sprite.getFrameV((double)((this.field_17885 + 1.0F) / 4.0F * 16.0F));
+		return this.sprite.getFrameV((double)((this.sampleV + 1.0F) / 4.0F * 16.0F));
 	}
 
 	@Override

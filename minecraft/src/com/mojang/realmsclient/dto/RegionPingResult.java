@@ -18,7 +18,7 @@ public class RegionPingResult extends ValueObject implements RealmsSerializable 
 		this.ping = ping;
 	}
 
-	public int ping() {
+	public int getPing() {
 		return this.ping;
 	}
 

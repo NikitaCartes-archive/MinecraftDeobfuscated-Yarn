@@ -548,8 +548,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				this.awardExperience(MathHelper.floor((float)i * 0.08F));
 			}
 
-			if (this.ticksSinceDeath == 1) {
-				this.world.playGlobalEvent(1028, this.getSenseCenterPos(), 0);
+			if (this.ticksSinceDeath == 1 && !this.isSilent()) {
+				this.world.playGlobalEvent(1028, this.getBlockPos(), 0);
 			}
 		}
 

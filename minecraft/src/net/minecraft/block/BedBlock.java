@@ -10,7 +10,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -57,15 +56,10 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	protected static final VoxelShape EAST_SHAPE = VoxelShapes.union(TOP_SHAPE, LEG_3_SHAPE, LEG_4_SHAPE);
 	private final DyeColor color;
 
-	public BedBlock(DyeColor color, Block.Settings settings) {
+	public BedBlock(DyeColor color, AbstractBlock.Settings settings) {
 		super(settings);
 		this.color = color;
 		this.setDefaultState(this.stateManager.getDefaultState().with(PART, BedPart.FOOT).with(OCCUPIED, Boolean.valueOf(false)));
-	}
-
-	@Override
-	public MaterialColor getMapColor(BlockState state, BlockView world, BlockPos pos) {
-		return state.get(PART) == BedPart.FOOT ? this.color.getMaterialColor() : MaterialColor.WEB;
 	}
 
 	@Nullable
@@ -156,13 +150,11 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing == getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
-			return neighborState.getBlock() == this && neighborState.get(PART) != state.get(PART)
-				? state.with(OCCUPIED, neighborState.get(OCCUPIED))
-				: Blocks.AIR.getDefaultState();
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (direction == getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
+			return newState.getBlock() == this && newState.get(PART) != state.get(PART) ? state.with(OCCUPIED, newState.get(OCCUPIED)) : Blocks.AIR.getDefaultState();
 		} else {
-			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		}
 	}
 
@@ -205,7 +197,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = getOppositePartDirection(state).getOpposite();
 		switch (direction) {
 			case NORTH:
@@ -318,7 +310,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 			BlockPos blockPos = pos.offset(state.get(FACING));
 			world.setBlockState(blockPos, state.with(PART, BedPart.HEAD), 3);
 			world.updateNeighbors(pos, Blocks.AIR);
-			state.updateNeighborStates(world, pos, 3);
+			state.updateNeighbors(world, pos, 3);
 		}
 	}
 
@@ -335,7 +327,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

@@ -34,7 +34,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
-		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity);
+		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5F);
 		serverWorld.sendEntityStatus(passiveEntity, (byte)18);
 		serverWorld.sendEntityStatus(villagerEntity, (byte)18);
 		int i = 275 + villagerEntity.getRandom().nextInt(50);
@@ -44,7 +44,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
-			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
+			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F);
 			if (l >= this.breedEndTime) {
 				villagerEntity.eatForBreeding();
 				villagerEntity2.eatForBreeding();
@@ -89,7 +89,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	private Optional<BlockPos> getReachableHome(ServerWorld world, VillagerEntity villager) {
 		return world.getPointOfInterestStorage()
-			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, blockPos), villager.getSenseCenterPos(), 48);
+			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, blockPos), villager.getBlockPos(), 48);
 	}
 
 	private boolean canReachHome(VillagerEntity villager, BlockPos pos) {

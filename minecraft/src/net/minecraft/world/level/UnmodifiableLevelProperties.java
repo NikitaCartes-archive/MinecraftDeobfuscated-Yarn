@@ -101,21 +101,6 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 		return this.properties.getGameMode();
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void setSpawnX(int spawnX) {
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void setSpawnY(int spawnY) {
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void setSpawnZ(int spawnZ) {
-	}
-
 	@Override
 	public void setTime(long time) {
 	}

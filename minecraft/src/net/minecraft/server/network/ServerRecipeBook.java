@@ -78,6 +78,10 @@ public class ServerRecipeBook extends RecipeBook {
 		compoundTag.putBoolean("isFilteringCraftable", this.filteringCraftable);
 		compoundTag.putBoolean("isFurnaceGuiOpen", this.furnaceGuiOpen);
 		compoundTag.putBoolean("isFurnaceFilteringCraftable", this.furnaceFilteringCraftable);
+		compoundTag.putBoolean("isBlastingFurnaceGuiOpen", this.blastFurnaceGuiOpen);
+		compoundTag.putBoolean("isBlastingFurnaceFilteringCraftable", this.blastFurnaceFilteringCraftable);
+		compoundTag.putBoolean("isSmokerGuiOpen", this.smokerGuiOpen);
+		compoundTag.putBoolean("isSmokerFilteringCraftable", this.smokerFilteringCraftable);
 		ListTag listTag = new ListTag();
 
 		for (Identifier identifier : this.recipes) {
@@ -100,6 +104,10 @@ public class ServerRecipeBook extends RecipeBook {
 		this.filteringCraftable = tag.getBoolean("isFilteringCraftable");
 		this.furnaceGuiOpen = tag.getBoolean("isFurnaceGuiOpen");
 		this.furnaceFilteringCraftable = tag.getBoolean("isFurnaceFilteringCraftable");
+		this.blastFurnaceGuiOpen = tag.getBoolean("isBlastingFurnaceGuiOpen");
+		this.blastFurnaceFilteringCraftable = tag.getBoolean("isBlastingFurnaceFilteringCraftable");
+		this.smokerGuiOpen = tag.getBoolean("isSmokerGuiOpen");
+		this.smokerFilteringCraftable = tag.getBoolean("isSmokerFilteringCraftable");
 		ListTag listTag = tag.getList("recipes", 8);
 		this.handleList(listTag, this::add);
 		ListTag listTag2 = tag.getList("toBeDisplayed", 8);

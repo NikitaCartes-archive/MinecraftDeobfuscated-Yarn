@@ -196,7 +196,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 
 			for (int k = x - i; k <= x + i && bl; k++) {
 				for (int l = z - i; l <= z + i; l++) {
-					if (!this.world.getBlockState(new BlockPos(k, j, l)).matches(BlockTags.BEACON_BASE_BLOCKS)) {
+					if (!this.world.getBlockState(new BlockPos(k, j, l)).isIn(BlockTags.BEACON_BASE_BLOCKS)) {
 						bl = false;
 						break;
 					}

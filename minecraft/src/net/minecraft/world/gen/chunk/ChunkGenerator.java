@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -109,7 +110,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 		}
 	}
 
-	public abstract void buildSurface(ChunkRegion chunkRegion, Chunk chunk);
+	public abstract void buildSurface(ChunkRegion region, Chunk chunk);
 
 	public void populateEntities(ChunkRegion region) {
 	}
@@ -123,8 +124,8 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 	public void spawnEntities(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
 	}
 
-	public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> structureFeature) {
-		return biome.hasStructureFeature(structureFeature);
+	public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> feature) {
+		return biome.hasStructureFeature(feature);
 	}
 
 	@Nullable
@@ -197,13 +198,15 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 		return 63;
 	}
 
-	public abstract int getHeightOnGround(int x, int z, Heightmap.Type heightmapType);
+	public abstract int getHeight(int x, int z, Heightmap.Type heightmapType);
 
-	public int method_20402(int i, int j, Heightmap.Type type) {
-		return this.getHeightOnGround(i, j, type);
+	public abstract BlockView getColumnSample(int x, int z);
+
+	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
+		return this.getHeight(x, z, heightmapType);
 	}
 
-	public int getHeightInGround(int i, int j, Heightmap.Type type) {
-		return this.getHeightOnGround(i, j, type) - 1;
+	public int getHeightInGround(int x, int z, Heightmap.Type heightmapType) {
+		return this.getHeight(x, z, heightmapType) - 1;
 	}
 }

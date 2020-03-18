@@ -17,31 +17,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class AxeItem extends MiningToolItem {
+	private static final Set<Material> field_23139 = Sets.<Material>newHashSet(
+		Material.WOOD, Material.NETHER_WOOD, Material.PLANT, Material.REPLACEABLE_PLANT, Material.BAMBOO, Material.PUMPKIN
+	);
 	private static final Set<Block> EFFECTIVE_BLOCKS = Sets.<Block>newHashSet(
-		Blocks.OAK_PLANKS,
-		Blocks.SPRUCE_PLANKS,
-		Blocks.BIRCH_PLANKS,
-		Blocks.JUNGLE_PLANKS,
-		Blocks.ACACIA_PLANKS,
-		Blocks.DARK_OAK_PLANKS,
-		Blocks.BOOKSHELF,
-		Blocks.OAK_WOOD,
-		Blocks.SPRUCE_WOOD,
-		Blocks.BIRCH_WOOD,
-		Blocks.JUNGLE_WOOD,
-		Blocks.ACACIA_WOOD,
-		Blocks.DARK_OAK_WOOD,
-		Blocks.OAK_LOG,
-		Blocks.SPRUCE_LOG,
-		Blocks.BIRCH_LOG,
-		Blocks.JUNGLE_LOG,
-		Blocks.ACACIA_LOG,
-		Blocks.DARK_OAK_LOG,
-		Blocks.CHEST,
-		Blocks.PUMPKIN,
-		Blocks.CARVED_PUMPKIN,
-		Blocks.JACK_O_LANTERN,
-		Blocks.MELON,
 		Blocks.LADDER,
 		Blocks.SCAFFOLDING,
 		Blocks.OAK_BUTTON,
@@ -50,36 +29,8 @@ public class AxeItem extends MiningToolItem {
 		Blocks.JUNGLE_BUTTON,
 		Blocks.DARK_OAK_BUTTON,
 		Blocks.ACACIA_BUTTON,
-		Blocks.OAK_PRESSURE_PLATE,
-		Blocks.SPRUCE_PRESSURE_PLATE,
-		Blocks.BIRCH_PRESSURE_PLATE,
-		Blocks.JUNGLE_PRESSURE_PLATE,
-		Blocks.DARK_OAK_PRESSURE_PLATE,
-		Blocks.ACACIA_PRESSURE_PLATE,
-		Blocks.CRIMSON_PLANKS,
-		Blocks.CRIMSON_STEM,
-		Blocks.CRIMSON_HYPHAE,
 		Blocks.CRIMSON_BUTTON,
-		Blocks.CRIMSON_PRESSURE_PLATE,
-		Blocks.CRIMSON_FENCE,
-		Blocks.CRIMSON_FENCE_GATE,
-		Blocks.CRIMSON_STAIRS,
-		Blocks.CRIMSON_DOOR,
-		Blocks.CRIMSON_TRAPDOOR,
-		Blocks.CRIMSON_SIGN,
-		Blocks.CRIMSON_SLAB,
-		Blocks.WARPED_PLANKS,
-		Blocks.WARPED_STEM,
-		Blocks.WARPED_HYPHAE,
-		Blocks.WARPED_BUTTON,
-		Blocks.WARPED_PRESSURE_PLATE,
-		Blocks.WARPED_FENCE,
-		Blocks.WARPED_FENCE_GATE,
-		Blocks.WARPED_STAIRS,
-		Blocks.WARPED_DOOR,
-		Blocks.WARPED_TRAPDOOR,
-		Blocks.WARPED_SIGN,
-		Blocks.WARPED_SLAB
+		Blocks.WARPED_BUTTON
 	);
 	protected static final Map<Block, Block> STRIPPED_BLOCKS = new Builder<Block, Block>()
 		.put(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD)
@@ -107,9 +58,7 @@ public class AxeItem extends MiningToolItem {
 	@Override
 	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		Material material = state.getMaterial();
-		return material != Material.WOOD && material != Material.PLANT && material != Material.REPLACEABLE_PLANT && material != Material.BAMBOO
-			? super.getMiningSpeedMultiplier(stack, state)
-			: this.miningSpeed;
+		return field_23139.contains(material) ? this.miningSpeed : super.getMiningSpeedMultiplier(stack, state);
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public class StructureBlock extends BlockWithEntity {
 	public static final EnumProperty<StructureBlockMode> MODE = Properties.STRUCTURE_BLOCK_MODE;
 
-	protected StructureBlock(Block.Settings settings) {
+	protected StructureBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -68,7 +68,7 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (!world.isClient) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {

@@ -9,8 +9,10 @@ import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.UniformLootTableRange;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LocationCheckLootCondition;
 import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LootTableEntry;
 import net.minecraft.loot.function.EnchantWithLevelsLootFunction;
@@ -18,6 +20,8 @@ import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
 import net.minecraft.loot.function.SetNbtLootFunction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.FishingHookPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -52,7 +56,14 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(LootTableEntry.builder(LootTables.FISHING_JUNK_GAMEPLAY).setWeight(10).setQuality(-2))
-						.withEntry(LootTableEntry.builder(LootTables.FISHING_TREASURE_GAMEPLAY).setWeight(5).setQuality(2))
+						.withEntry(
+							LootTableEntry.builder(LootTables.FISHING_TREASURE_GAMEPLAY)
+								.setWeight(5)
+								.setQuality(2)
+								.withCondition(
+									EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().fishHook(FishingHookPredicate.of(true)))
+								)
+						)
 						.withEntry(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY).setWeight(85).setQuality(-1))
 				)
 		);

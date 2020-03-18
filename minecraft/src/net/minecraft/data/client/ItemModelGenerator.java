@@ -23,7 +23,7 @@ public class ItemModelGenerator {
 	}
 
 	private void register(Item item, String suffix, Model model) {
-		model.upload(ModelIds.getItemSubModelId(item, suffix), Texture.layer0(Texture.getSubModelId(item, suffix)), this.writer);
+		model.upload(ModelIds.getItemSubModelId(item, suffix), Texture.layer0(Texture.getSubId(item, suffix)), this.writer);
 	}
 
 	private void register(Item item, Item texture, Model model) {

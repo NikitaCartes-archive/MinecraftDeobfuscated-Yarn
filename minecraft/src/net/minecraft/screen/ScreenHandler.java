@@ -165,18 +165,27 @@ public abstract class ScreenHandler {
 		return slot != null ? slot.getStack() : ItemStack.EMPTY;
 	}
 
+	/**
+	 * Performs a slot click. This can behave in many different ways depending mainly on the action type.
+	 * @return The stack that was clicked on before anything changed, used mostly for verifying that the client and server are in sync
+	 * 
+	 * @param slotId The ID of the slot clicked on. -999 is a special value used for the cursor stack
+	 * @param clickData Metadata for the click. Usually equal to the button ID, but can have different meanings depending on the action type. Check the docs for each SlotActionType value
+	 * @param actionType The type of slot click. Check the docs for each SlotActionType value for details
+	 * @param player The player
+	 */
 	public ItemStack onSlotClick(int slotId, int clickData, SlotActionType actionType, PlayerEntity player) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		PlayerInventory playerInventory = player.inventory;
 		if (actionType == SlotActionType.QUICK_CRAFT) {
 			int i = this.quickCraftButton;
-			this.quickCraftButton = unpackButtonId(clickData);
+			this.quickCraftButton = unpackQuickCraftStage(clickData);
 			if ((i != 1 || this.quickCraftButton != 2) && i != this.quickCraftButton) {
 				this.endQuickCraft();
 			} else if (playerInventory.getCursorStack().isEmpty()) {
 				this.endQuickCraft();
 			} else if (this.quickCraftButton == 0) {
-				this.quickCraftStage = unpackQuickCraftStage(clickData);
+				this.quickCraftStage = unpackQuickCraftButton(clickData);
 				if (shouldQuickCraftContinue(this.quickCraftStage, player)) {
 					this.quickCraftButton = 1;
 					this.quickCraftSlots.clear();
@@ -544,17 +553,17 @@ public abstract class ScreenHandler {
 		return bl;
 	}
 
-	public static int unpackQuickCraftStage(int clickData) {
-		return clickData >> 2 & 3;
+	public static int unpackQuickCraftButton(int quickCraftData) {
+		return quickCraftData >> 2 & 3;
 	}
 
-	public static int unpackButtonId(int clickData) {
-		return clickData & 3;
+	public static int unpackQuickCraftStage(int quickCraftData) {
+		return quickCraftData & 3;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static int packClickData(int buttonId, int quickCraftStage) {
-		return buttonId & 3 | (quickCraftStage & 3) << 2;
+	public static int packQuickCraftData(int quickCraftStage, int buttonId) {
+		return quickCraftStage & 3 | (buttonId & 3) << 2;
 	}
 
 	public static boolean shouldQuickCraftContinue(int stage, PlayerEntity player) {

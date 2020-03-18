@@ -15,11 +15,11 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ItemPickupParticle extends Particle {
-	private final BufferBuilderStorage field_20944;
-	private final Entity field_3823;
-	private final Entity field_3821;
-	private int field_3826;
-	private final EntityRenderDispatcher field_3824;
+	private final BufferBuilderStorage bufferBuilderStorage;
+	private final Entity item;
+	private final Entity picker;
+	private int existingTicks;
+	private final EntityRenderDispatcher entityRenderDispatcher;
 
 	public ItemPickupParticle(EntityRenderDispatcher entityRenderDispatcher, BufferBuilderStorage bufferBuilderStorage, World world, Entity entity, Entity entity2) {
 		this(entityRenderDispatcher, bufferBuilderStorage, world, entity, entity2, entity.getVelocity());
@@ -29,10 +29,10 @@ public class ItemPickupParticle extends Particle {
 		EntityRenderDispatcher entityRenderDispatcher, BufferBuilderStorage bufferBuilderStorage, World world, Entity entity, Entity entity2, Vec3d vec3d
 	) {
 		super(world, entity.getX(), entity.getY(), entity.getZ(), vec3d.x, vec3d.y, vec3d.z);
-		this.field_20944 = bufferBuilderStorage;
-		this.field_3823 = entity;
-		this.field_3821 = entity2;
-		this.field_3824 = entityRenderDispatcher;
+		this.bufferBuilderStorage = bufferBuilderStorage;
+		this.item = entity;
+		this.picker = entity2;
+		this.entityRenderDispatcher = entityRenderDispatcher;
 	}
 
 	@Override
@@ -42,35 +42,35 @@ public class ItemPickupParticle extends Particle {
 
 	@Override
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-		float f = ((float)this.field_3826 + tickDelta) / 3.0F;
+		float f = ((float)this.existingTicks + tickDelta) / 3.0F;
 		f *= f;
-		double d = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderX, this.field_3821.getX());
-		double e = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderY, this.field_3821.getY()) + 0.5;
-		double g = MathHelper.lerp((double)tickDelta, this.field_3821.lastRenderZ, this.field_3821.getZ());
-		double h = MathHelper.lerp((double)f, this.field_3823.getX(), d);
-		double i = MathHelper.lerp((double)f, this.field_3823.getY(), e);
-		double j = MathHelper.lerp((double)f, this.field_3823.getZ(), g);
-		VertexConsumerProvider.Immediate immediate = this.field_20944.getEntityVertexConsumers();
+		double d = MathHelper.lerp((double)tickDelta, this.picker.lastRenderX, this.picker.getX());
+		double e = MathHelper.lerp((double)tickDelta, this.picker.lastRenderY, this.picker.getY()) + 0.5;
+		double g = MathHelper.lerp((double)tickDelta, this.picker.lastRenderZ, this.picker.getZ());
+		double h = MathHelper.lerp((double)f, this.item.getX(), d);
+		double i = MathHelper.lerp((double)f, this.item.getY(), e);
+		double j = MathHelper.lerp((double)f, this.item.getZ(), g);
+		VertexConsumerProvider.Immediate immediate = this.bufferBuilderStorage.getEntityVertexConsumers();
 		Vec3d vec3d = camera.getPos();
-		this.field_3824
+		this.entityRenderDispatcher
 			.render(
-				this.field_3823,
+				this.item,
 				h - vec3d.getX(),
 				i - vec3d.getY(),
 				j - vec3d.getZ(),
-				this.field_3823.yaw,
+				this.item.yaw,
 				tickDelta,
 				new MatrixStack(),
 				immediate,
-				this.field_3824.getLight(this.field_3823, tickDelta)
+				this.entityRenderDispatcher.getLight(this.item, tickDelta)
 			);
 		immediate.draw();
 	}
 
 	@Override
 	public void tick() {
-		this.field_3826++;
-		if (this.field_3826 == 3) {
+		this.existingTicks++;
+		if (this.existingTicks == 3) {
 			this.markDead();
 		}
 	}

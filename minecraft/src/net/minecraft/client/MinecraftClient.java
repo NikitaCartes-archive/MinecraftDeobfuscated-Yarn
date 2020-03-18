@@ -227,7 +227,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final Snooper snooper = new Snooper("client", this, Util.getMeasuringTimeMs());
 	private final BufferBuilderStorage bufferBuilders;
 	public final WorldRenderer worldRenderer;
-	private final EntityRenderDispatcher entityRenderManager;
+	private final EntityRenderDispatcher entityRenderDispatcher;
 	private final ItemRenderer itemRenderer;
 	private final HeldItemRenderer heldItemRenderer;
 	public final ParticleManager particleManager;
@@ -431,7 +431,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColorMap, this.options.mipmapLevels);
 			this.resourceManager.registerListener(this.bakedModelManager);
 			this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColorMap);
-			this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
+			this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
 			this.heldItemRenderer = new HeldItemRenderer(this);
 			this.resourceManager.registerListener(this.itemRenderer);
 			this.bufferBuilders = new BufferBuilderStorage();
@@ -2047,7 +2047,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} else if (this.player.world.dimension instanceof TheEndDimension) {
 			return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicTracker.MusicType.END_BOSS : MusicTracker.MusicType.END;
 		} else {
-			Biome.Category category = this.player.world.getBiome(this.player.getSenseCenterPos()).getCategory();
+			Biome.Category category = this.player.world.getBiome(this.player.getBlockPos()).getCategory();
 			if (!this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER)
 				&& (
 					!this.player.isSubmergedInWater()
@@ -2099,7 +2099,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public EntityRenderDispatcher getEntityRenderManager() {
-		return this.entityRenderManager;
+		return this.entityRenderDispatcher;
 	}
 
 	public ItemRenderer getItemRenderer() {

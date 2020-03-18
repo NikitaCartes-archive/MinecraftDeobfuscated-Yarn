@@ -3,7 +3,6 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,7 +39,7 @@ public class AnvilBlock extends FallingBlock {
 	private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, Z_STEP_SHAPE, Z_STEM_SHAPE, Z_FACE_SHAPE);
 	private static final TranslatableText TITLE = new TranslatableText("container.repair");
 
-	public AnvilBlock(Block.Settings settings) {
+	public AnvilBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
@@ -70,7 +69,7 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
 		return direction.getAxis() == Direction.Axis.X ? X_AXIS_SHAPE : Z_AXIS_SHAPE;
 	}
@@ -81,13 +80,17 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
-		world.playLevelEvent(1031, pos, 0);
+	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
+		if (!fallingBlockEntity.isSilent()) {
+			world.playLevelEvent(1031, pos, 0);
+		}
 	}
 
 	@Override
-	public void onDestroyedOnLanding(World world, BlockPos pos) {
-		world.playLevelEvent(1029, pos, 0);
+	public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
+		if (!fallingBlockEntity.isSilent()) {
+			world.playLevelEvent(1029, pos, 0);
+		}
 	}
 
 	@Nullable
@@ -111,13 +114,13 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getColor(BlockState state) {
-		return this.materialColor.color;
+	public int getColor(BlockState state, BlockView blockView, BlockPos blockPos) {
+		return state.getTopMaterialColor(blockView, blockPos).color;
 	}
 }

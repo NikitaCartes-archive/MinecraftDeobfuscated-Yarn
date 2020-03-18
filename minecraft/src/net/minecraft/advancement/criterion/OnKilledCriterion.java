@@ -65,7 +65,7 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("entity", this.entity.serialize());
+			jsonObject.add("entity", this.entity.toJson());
 			jsonObject.add("killing_blow", this.killingBlow.serialize());
 			return jsonObject;
 		}

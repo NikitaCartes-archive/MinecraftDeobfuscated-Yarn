@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Screen lastScreen;
+	private final Screen parent;
 	private volatile String title = "";
 	private volatile boolean error;
 	private volatile String errorMessage;
@@ -49,8 +49,8 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 		"▄ ▅ ▆ ▇ █ ▇ ▆ ▅ ▄ ▃ _"
 	};
 
-	public RealmsLongRunningMcoTaskScreen(Screen screen, LongRunningTask task) {
-		this.lastScreen = screen;
+	public RealmsLongRunningMcoTaskScreen(Screen parent, LongRunningTask task) {
+		this.parent = parent;
 		this.task = task;
 		task.setScreen(this);
 		Thread thread = new Thread(task, "Realms-long-running-task");
@@ -85,7 +85,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 	private void cancelOrBackButtonClicked() {
 		this.aborted = true;
 		this.task.abortTask();
-		this.client.openScreen(this.lastScreen);
+		this.client.openScreen(this.parent);
 	}
 
 	@Override
@@ -103,17 +103,17 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen {
 		super.render(mouseX, mouseY, delta);
 	}
 
-	public void method_21290(String string) {
+	public void setError(String error) {
 		this.error = true;
-		this.errorMessage = string;
-		Realms.narrateNow(string);
-		this.method_25166();
+		this.errorMessage = error;
+		Realms.narrateNow(error);
+		this.onError();
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.back"), buttonWidget -> this.cancelOrBackButtonClicked())
 		);
 	}
 
-	public void method_25166() {
+	public void onError() {
 		Set<Element> set = Sets.<Element>newHashSet(this.buttons);
 		this.children.removeIf(set::contains);
 		this.buttons.clear();

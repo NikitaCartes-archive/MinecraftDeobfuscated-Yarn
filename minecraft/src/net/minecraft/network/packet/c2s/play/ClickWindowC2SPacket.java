@@ -12,8 +12,8 @@ import net.minecraft.screen.slot.SlotActionType;
 public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	private int syncId;
 	private int slot;
-	private int button;
-	private short transactionId;
+	private int clickData;
+	private short actionId;
 	private ItemStack stack = ItemStack.EMPTY;
 	private SlotActionType actionType;
 
@@ -21,13 +21,13 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ClickWindowC2SPacket(int i, int j, int k, SlotActionType slotActionType, ItemStack stack, short s) {
-		this.syncId = i;
-		this.slot = j;
-		this.button = k;
+	public ClickWindowC2SPacket(int syncId, int slot, int clickData, SlotActionType actionType, ItemStack stack, short actionId) {
+		this.syncId = syncId;
+		this.slot = slot;
+		this.clickData = clickData;
 		this.stack = stack.copy();
-		this.transactionId = s;
-		this.actionType = slotActionType;
+		this.actionId = actionId;
+		this.actionType = actionType;
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -38,8 +38,8 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	public void read(PacketByteBuf buf) throws IOException {
 		this.syncId = buf.readByte();
 		this.slot = buf.readShort();
-		this.button = buf.readByte();
-		this.transactionId = buf.readShort();
+		this.clickData = buf.readByte();
+		this.actionId = buf.readShort();
 		this.actionType = buf.readEnumConstant(SlotActionType.class);
 		this.stack = buf.readItemStack();
 	}
@@ -48,8 +48,8 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	public void write(PacketByteBuf buf) throws IOException {
 		buf.writeByte(this.syncId);
 		buf.writeShort(this.slot);
-		buf.writeByte(this.button);
-		buf.writeShort(this.transactionId);
+		buf.writeByte(this.clickData);
+		buf.writeShort(this.actionId);
 		buf.writeEnumConstant(this.actionType);
 		buf.writeItemStack(this.stack);
 	}
@@ -62,12 +62,12 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 		return this.slot;
 	}
 
-	public int getButton() {
-		return this.button;
+	public int getClickData() {
+		return this.clickData;
 	}
 
-	public short getTransactionId() {
-		return this.transactionId;
+	public short getActionId() {
+		return this.actionId;
 	}
 
 	public ItemStack getStack() {

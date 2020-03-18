@@ -165,7 +165,7 @@ public class ChunkRegion implements IWorld {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float method_24852(Direction direction, boolean bl) {
+	public float getBrightness(Direction direction, boolean shaded) {
 		return 1.0F;
 	}
 

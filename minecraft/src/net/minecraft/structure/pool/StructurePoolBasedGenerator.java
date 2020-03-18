@@ -108,7 +108,7 @@ public class StructurePoolBasedGenerator {
 			BlockBox blockBox = poolStructurePiece.getBoundingBox();
 			int i = (blockBox.maxX + blockBox.minX) / 2;
 			int j = (blockBox.maxZ + blockBox.minZ) / 2;
-			int k = chunkGenerator.method_20402(i, j, Heightmap.Type.WORLD_SURFACE_WG);
+			int k = chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG);
 			poolStructurePiece.translate(0, k - (blockBox.minY + poolStructurePiece.getGroundLevelDelta()), 0);
 			children.add(poolStructurePiece);
 			if (maxSize > 0) {
@@ -218,7 +218,7 @@ public class StructurePoolBasedGenerator {
 										q = i + p;
 									} else {
 										if (k == -1) {
-											k = this.chunkGenerator.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
+											k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
 										}
 
 										q = k - o;
@@ -253,7 +253,7 @@ public class StructurePoolBasedGenerator {
 											u = q + o;
 										} else {
 											if (k == -1) {
-												k = this.chunkGenerator.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
+												k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
 											}
 
 											u = k + p / 2;

@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.block.LogBlock;
+import net.minecraft.block.PillarBlock;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -87,7 +87,7 @@ public class LargeOakTreeFeature extends AbstractTreeFeature<BranchedTreeFeature
 				BlockPos blockPos2 = start.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * g), (double)(0.5F + (float)j * h));
 				if (make) {
 					this.setBlockState(
-						world, blockPos2, config.trunkProvider.getBlockState(random, blockPos2).with(LogBlock.AXIS, this.getLogAxis(start, blockPos2)), blockBox
+						world, blockPos2, config.trunkProvider.getBlockState(random, blockPos2).with(PillarBlock.AXIS, this.getLogAxis(start, blockPos2)), blockBox
 					);
 					logs.add(blockPos2);
 				} else if (!canTreeReplace(world, blockPos2)) {

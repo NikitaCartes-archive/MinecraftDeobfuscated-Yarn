@@ -334,10 +334,13 @@ public class ClientPlayerInteractionManager {
 		return this.gameMode == GameMode.SPECTATOR ? ActionResult.PASS : entity.interactAt(player, vec3d, hand);
 	}
 
-	public ItemStack clickSlot(int syncId, int slotId, int mouseButton, SlotActionType actionType, PlayerEntity player) {
+	/**
+	 * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int)
+	 */
+	public ItemStack clickSlot(int syncId, int slotId, int clickData, SlotActionType actionType, PlayerEntity player) {
 		short s = player.currentScreenHandler.getNextActionId(player.inventory);
-		ItemStack itemStack = player.currentScreenHandler.onSlotClick(slotId, mouseButton, actionType, player);
-		this.networkHandler.sendPacket(new ClickWindowC2SPacket(syncId, slotId, mouseButton, actionType, itemStack, s));
+		ItemStack itemStack = player.currentScreenHandler.onSlotClick(slotId, clickData, actionType, player);
+		this.networkHandler.sendPacket(new ClickWindowC2SPacket(syncId, slotId, clickData, actionType, itemStack, s));
 		return itemStack;
 	}
 

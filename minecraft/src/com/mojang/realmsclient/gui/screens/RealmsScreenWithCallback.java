@@ -8,5 +8,5 @@ import net.minecraft.realms.RealmsScreen;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsScreenWithCallback extends RealmsScreen {
-	protected abstract void callback(@Nullable WorldTemplate worldTemplate);
+	protected abstract void callback(@Nullable WorldTemplate template);
 }

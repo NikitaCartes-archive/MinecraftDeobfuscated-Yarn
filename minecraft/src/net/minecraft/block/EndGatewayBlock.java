@@ -13,7 +13,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class EndGatewayBlock extends BlockWithEntity {
-	protected EndGatewayBlock(Block.Settings settings) {
+	protected EndGatewayBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

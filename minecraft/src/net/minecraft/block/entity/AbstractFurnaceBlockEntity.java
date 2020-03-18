@@ -443,21 +443,16 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	private static void dropExperience(PlayerEntity player, int totalExperience, float experienceFraction) {
-		if (experienceFraction == 0.0F) {
-			totalExperience = 0;
-		} else if (experienceFraction < 1.0F) {
-			int i = MathHelper.floor((float)totalExperience * experienceFraction);
-			if (i < MathHelper.ceil((float)totalExperience * experienceFraction) && Math.random() < (double)((float)totalExperience * experienceFraction - (float)i)) {
-				i++;
-			}
-
-			totalExperience = i;
+		int i = MathHelper.floor((float)totalExperience * experienceFraction);
+		float f = MathHelper.fractionalPart((float)totalExperience * experienceFraction);
+		if (f != 0.0F && Math.random() < (double)f) {
+			i++;
 		}
 
-		while (totalExperience > 0) {
-			int i = ExperienceOrbEntity.roundToOrbSize(totalExperience);
-			totalExperience -= i;
-			player.world.spawnEntity(new ExperienceOrbEntity(player.world, player.getX(), player.getY() + 0.5, player.getZ() + 0.5, i));
+		while (i > 0) {
+			int j = ExperienceOrbEntity.roundToOrbSize(i);
+			i -= j;
+			player.world.spawnEntity(new ExperienceOrbEntity(player.world, player.getX(), player.getY() + 0.5, player.getZ() + 0.5, j));
 		}
 	}
 

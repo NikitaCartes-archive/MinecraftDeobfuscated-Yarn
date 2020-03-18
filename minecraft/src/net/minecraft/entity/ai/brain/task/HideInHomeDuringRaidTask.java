@@ -11,7 +11,7 @@ public class HideInHomeDuringRaidTask extends HideInHomeTask {
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		Raid raid = world.getRaidAt(entity.getSenseCenterPos());
+		Raid raid = world.getRaidAt(entity.getBlockPos());
 		return super.shouldRun(world, entity) && raid != null && raid.isActive() && !raid.hasWon() && !raid.hasLost();
 	}
 }

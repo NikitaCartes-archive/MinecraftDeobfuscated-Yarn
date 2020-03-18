@@ -58,9 +58,9 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("parent", this.parent.serialize());
-			jsonObject.add("partner", this.partner.serialize());
-			jsonObject.add("child", this.child.serialize());
+			jsonObject.add("parent", this.parent.toJson());
+			jsonObject.add("partner", this.partner.toJson());
+			jsonObject.add("child", this.child.toJson());
 			return jsonObject;
 		}
 	}

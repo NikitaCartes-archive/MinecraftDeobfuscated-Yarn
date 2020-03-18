@@ -62,7 +62,7 @@ public class FallingBlockEntity extends Entity {
 		this.prevX = x;
 		this.prevY = y;
 		this.prevZ = z;
-		this.setFallingBlockPos(this.getSenseCenterPos());
+		this.setFallingBlockPos(this.getBlockPos());
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class FallingBlockEntity extends Entity {
 		} else {
 			Block block = this.block.getBlock();
 			if (this.timeFalling++ == 0) {
-				BlockPos blockPos = this.getSenseCenterPos();
+				BlockPos blockPos = this.getBlockPos();
 				if (this.world.getBlockState(blockPos).getBlock() == block) {
 					this.world.removeBlock(blockPos, false);
 				} else if (!this.world.isClient) {
@@ -116,7 +116,7 @@ public class FallingBlockEntity extends Entity {
 
 			this.move(MovementType.SELF, this.getVelocity());
 			if (!this.world.isClient) {
-				BlockPos blockPos = this.getSenseCenterPos();
+				BlockPos blockPos = this.getBlockPos();
 				boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
 				boolean bl2 = bl && this.world.getFluidState(blockPos).matches(FluidTags.WATER);
 				double d = this.getVelocity().lengthSquared();
@@ -149,7 +149,7 @@ public class FallingBlockEntity extends Entity {
 
 								if (this.world.setBlockState(blockPos, this.block, 3)) {
 									if (block instanceof FallingBlock) {
-										((FallingBlock)block).onLanding(this.world, blockPos, this.block, blockState);
+										((FallingBlock)block).onLanding(this.world, blockPos, this.block, blockState, this);
 									}
 
 									if (this.blockEntityData != null && block instanceof BlockEntityProvider) {
@@ -175,7 +175,7 @@ public class FallingBlockEntity extends Entity {
 								this.dropItem(block);
 							}
 						} else if (block instanceof FallingBlock) {
-							((FallingBlock)block).onDestroyedOnLanding(this.world, blockPos);
+							((FallingBlock)block).onDestroyedOnLanding(this.world, blockPos, this);
 						}
 					}
 				} else if (!this.world.isClient && (this.timeFalling > 100 && (blockPos.getY() < 1 || blockPos.getY() > 256) || this.timeFalling > 600)) {
@@ -197,7 +197,7 @@ public class FallingBlockEntity extends Entity {
 			int i = MathHelper.ceil(fallDistance - 1.0F);
 			if (i > 0) {
 				List<Entity> list = Lists.<Entity>newArrayList(this.world.getEntities(this, this.getBoundingBox()));
-				boolean bl = this.block.matches(BlockTags.ANVIL);
+				boolean bl = this.block.isIn(BlockTags.ANVIL);
 				DamageSource damageSource = bl ? DamageSource.ANVIL : DamageSource.FALLING_BLOCK;
 
 				for (Entity entity : list) {
@@ -239,7 +239,7 @@ public class FallingBlockEntity extends Entity {
 			this.hurtEntities = tag.getBoolean("HurtEntities");
 			this.fallHurtAmount = tag.getFloat("FallHurtAmount");
 			this.fallHurtMax = tag.getInt("FallHurtMax");
-		} else if (this.block.matches(BlockTags.ANVIL)) {
+		} else if (this.block.isIn(BlockTags.ANVIL)) {
 			this.hurtEntities = true;
 		}
 

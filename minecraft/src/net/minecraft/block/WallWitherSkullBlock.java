@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WallWitherSkullBlock extends WallSkullBlock {
-	protected WallWitherSkullBlock(Block.Settings settings) {
+	protected WallWitherSkullBlock(AbstractBlock.Settings settings) {
 		super(SkullBlock.Type.WITHER_SKELETON, settings);
 	}
 

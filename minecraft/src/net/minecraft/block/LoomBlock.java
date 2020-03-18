@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 public class LoomBlock extends HorizontalFacingBlock {
 	private static final TranslatableText TITLE = new TranslatableText("container.loom");
 
-	protected LoomBlock(Block.Settings settings) {
+	protected LoomBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

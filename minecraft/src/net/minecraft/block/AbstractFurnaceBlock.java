@@ -25,14 +25,9 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty LIT = Properties.LIT;
 
-	protected AbstractFurnaceBlock(Block.Settings settings) {
+	protected AbstractFurnaceBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT, Boolean.valueOf(false)));
-	}
-
-	@Override
-	public int getLuminance(BlockState state) {
-		return state.get(LIT) ? super.getLuminance(state) : 0;
 	}
 
 	@Override
@@ -63,7 +58,7 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (state.getBlock() != newState.getBlock()) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof AbstractFurnaceBlockEntity) {
@@ -71,7 +66,7 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 				world.updateComparators(pos, this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onBlockRemoved(state, world, pos, newState, notify);
 		}
 	}
 

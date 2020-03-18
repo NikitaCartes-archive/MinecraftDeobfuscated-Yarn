@@ -92,7 +92,8 @@ public class PiglinBrain {
 		Items.LIGHT_WEIGHTED_PRESSURE_PLATE,
 		Items.BELL,
 		Items.GLISTERING_MELON_SLICE,
-		Items.CLOCK
+		Items.CLOCK,
+		Items.field_23140
 	);
 
 	protected static Brain<?> create(PiglinEntity piglin, Dynamic<?> data) {
@@ -132,7 +133,6 @@ public class PiglinBrain {
 	}
 
 	private static void addIdleActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
-		float f = piglin.getWalkSpeed();
 		brain.setTaskList(
 			Activity.IDLE,
 			10,
@@ -140,25 +140,24 @@ public class PiglinBrain {
 				new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 14.0F),
 				new UpdateAttackTargetTask<>(PiglinEntity::isAdult, PiglinBrain::getPreferredTarget),
 				new HuntHoglinTask(),
-				(UpdateAttackTargetTask<? super PiglinEntity>)makeGoToZombifiedPiglinTask(f),
-				makeGoToSoulFireTask(f),
+				(UpdateAttackTargetTask<? super PiglinEntity>)makeGoToZombifiedPiglinTask(),
+				makeGoToSoulFireTask(),
 				makeRememberRideableHoglinTask(),
 				makeRandomFollowTask(),
-				makeRandomWanderTask(f),
+				makeRandomWanderTask(),
 				new FindInteractionTargetTask(EntityType.PLAYER, 4)
 			)
 		);
 	}
 
 	private static void addFightActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
-		float f = piglin.getWalkSpeed();
 		brain.setTaskList(
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
 				new ForgetAttackTargetTask<>(livingEntity -> !isPreferredAttackTarget(piglin, livingEntity)),
 				new ConditionalTask(PiglinBrain::isHoldingCrossbow, new AttackTask<>(5, 0.75F)),
-				new RangedApproachTask(f * 1.2F),
+				new RangedApproachTask(1.0F),
 				new MeleeAttackTask(20),
 				new CrossbowAttackTask(),
 				new HuntFinishTask()
@@ -168,18 +167,17 @@ public class PiglinBrain {
 	}
 
 	private static void addCelebrateActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
-		float f = piglin.getWalkSpeed();
 		brain.setTaskList(
 			Activity.CELEBRATE,
 			10,
 			ImmutableList.of(
-				makeGoToZombifiedPiglinTask(f),
-				makeGoToSoulFireTask(f),
+				makeGoToZombifiedPiglinTask(),
+				makeGoToSoulFireTask(),
 				new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 14.0F),
 				new UpdateAttackTargetTask(PiglinEntity::isAdult, PiglinBrain::getPreferredTarget),
-				new GoToCelebrateTask(2),
+				new GoToCelebrateTask(2, 1.0F),
 				new RandomTask(
-					ImmutableList.of(Pair.of(new FollowMobTask(EntityType.PIGLIN, 8.0F), 1), Pair.of(new StrollTask(f, 2, 1), 1), Pair.of(new WaitTask(10, 20), 1))
+					ImmutableList.of(Pair.of(new FollowMobTask(EntityType.PIGLIN, 8.0F), 1), Pair.of(new StrollTask(0.6F, 2, 1), 1), Pair.of(new WaitTask(10, 20), 1))
 				)
 			),
 			MemoryModuleType.CELEBRATE_LOCATION
@@ -187,13 +185,12 @@ public class PiglinBrain {
 	}
 
 	private static void addAdmireItemActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
-		float f = piglin.getWalkSpeed();
 		brain.setTaskList(
 			Activity.ADMIRE_ITEM,
 			10,
 			ImmutableList.of(
-				new WalkToNearestVisibleWantedItemTask<>(PiglinBrain::doesNotHaveGoldInOffHand, 9, true),
-				new ConditionalTask(PiglinBrain::hasItemInOffHand, method_24916(f)),
+				new WalkToNearestVisibleWantedItemTask<>(PiglinBrain::doesNotHaveGoldInOffHand, 1.0F, true, 9),
+				new ConditionalTask(PiglinBrain::hasItemInOffHand, method_24916()),
 				new WantNewItemTask(9)
 			),
 			MemoryModuleType.ADMIRING_ITEM
@@ -201,14 +198,13 @@ public class PiglinBrain {
 	}
 
 	private static void addAvoidActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
-		float f = piglin.getWalkSpeed() * 1.3F;
 		brain.setTaskList(
 			Activity.AVOID,
 			10,
 			ImmutableList.of(
-				GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, f, 6, false),
+				GoToRememberedPositionTask.toEntity(MemoryModuleType.AVOID_TARGET, 1.1F, 6, false),
 				makeRandomFollowTask(),
-				makeRandomWanderTask(piglin.getWalkSpeed()),
+				makeRandomWanderTask(),
 				new ForgetTask(PiglinBrain::shouldRunAwayFromHoglins, MemoryModuleType.AVOID_TARGET)
 			),
 			MemoryModuleType.AVOID_TARGET
@@ -220,7 +216,7 @@ public class PiglinBrain {
 			Activity.RIDE,
 			10,
 			ImmutableList.of(
-				new StartRidingTask<>(),
+				new StartRidingTask<>(0.8F),
 				new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 8.0F),
 				new ConditionalTask(Entity::hasVehicle, makeRandomFollowTask()),
 				new RidingTask(8, PiglinBrain::canRide)
@@ -240,27 +236,27 @@ public class PiglinBrain {
 		);
 	}
 
-	private static RandomTask<PiglinEntity> makeRandomWanderTask(float speed) {
+	private static RandomTask<PiglinEntity> makeRandomWanderTask() {
 		return new RandomTask<>(
 			ImmutableList.of(
-				Pair.of(new StrollTask(speed), 2),
-				Pair.of(FindEntityTask.create(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, speed, 2), 2),
-				Pair.of(new ConditionalTask<>(PiglinBrain::canWander, new GoTowardsLookTarget(speed, 3)), 2),
+				Pair.of(new StrollTask(0.6F), 2),
+				Pair.of(FindEntityTask.create(EntityType.PIGLIN, 8, MemoryModuleType.INTERACTION_TARGET, 0.6F, 2), 2),
+				Pair.of(new ConditionalTask<>(PiglinBrain::canWander, new GoTowardsLookTarget(0.6F, 3)), 2),
 				Pair.of(new WaitTask(30, 60), 1)
 			)
 		);
 	}
 
-	private static Task<PiglinEntity> method_24916(float f) {
-		return new TimeLimitedTask<>(new StrollTask(f * 0.5F, 1, 0), field_22477);
+	private static Task<PiglinEntity> method_24916() {
+		return new TimeLimitedTask<>(new StrollTask(0.3F, 1, 0), field_22477);
 	}
 
-	private static GoToRememberedPositionTask<BlockPos> makeGoToSoulFireTask(float speed) {
-		return GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, speed * 1.5F, 8, false);
+	private static GoToRememberedPositionTask<BlockPos> makeGoToSoulFireTask() {
+		return GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, 1.1F, 8, false);
 	}
 
-	private static GoToRememberedPositionTask<?> makeGoToZombifiedPiglinTask(float speed) {
-		return GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN, speed * 1.5F, 10, false);
+	private static GoToRememberedPositionTask<?> makeGoToZombifiedPiglinTask() {
+		return GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN, 1.1F, 10, false);
 	}
 
 	protected static void tickActivities(PiglinEntity piglin) {

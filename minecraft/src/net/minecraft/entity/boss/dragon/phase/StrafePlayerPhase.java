@@ -8,6 +8,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -65,7 +66,10 @@ public class StrafePlayerPhase extends AbstractPhase {
 						double o = this.field_7062.getX() - l;
 						double p = this.field_7062.getBodyY(0.5) - m;
 						double q = this.field_7062.getZ() - n;
-						this.dragon.world.playLevelEvent(null, 1017, this.dragon.getSenseCenterPos(), 0);
+						if (!this.dragon.isSilent()) {
+							this.dragon.world.playLevelEvent(null, 1017, this.dragon.getBlockPos(), 0);
+						}
+
 						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.world, this.dragon, o, p, q);
 						dragonFireballEntity.refreshPositionAndAngles(l, m, n, 0.0F, 0.0F);
 						this.dragon.world.spawnEntity(dragonFireballEntity);
@@ -124,15 +128,15 @@ public class StrafePlayerPhase extends AbstractPhase {
 
 	private void method_6861() {
 		if (this.field_7059 != null && !this.field_7059.isFinished()) {
-			Vec3d vec3d = this.field_7059.getCurrentPosition();
+			Vec3i vec3i = this.field_7059.getCurrentPosition();
 			this.field_7059.next();
-			double d = vec3d.x;
-			double e = vec3d.z;
+			double d = (double)vec3i.getX();
+			double e = (double)vec3i.getZ();
 
 			double f;
 			do {
-				f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0F);
-			} while (f < vec3d.y);
+				f = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0F);
+			} while (f < (double)vec3i.getY());
 
 			this.field_7057 = new Vec3d(d, f, e);
 		}

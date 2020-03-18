@@ -11,13 +11,13 @@ import net.minecraft.world.World;
 public class CoralWallFanBlock extends DeadCoralWallFanBlock {
 	private final Block deadCoralBlock;
 
-	protected CoralWallFanBlock(Block deadCoralBlock, Block.Settings settings) {
+	protected CoralWallFanBlock(Block deadCoralBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.deadCoralBlock = deadCoralBlock;
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		this.checkLivingConditions(state, world, pos);
 	}
 
@@ -29,8 +29,8 @@ public class CoralWallFanBlock extends DeadCoralWallFanBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)state.get(WATERLOGGED)) {
@@ -38,7 +38,7 @@ public class CoralWallFanBlock extends DeadCoralWallFanBlock {
 			}
 
 			this.checkLivingConditions(state, world, pos);
-			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		}
 	}
 }

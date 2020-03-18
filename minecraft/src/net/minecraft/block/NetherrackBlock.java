@@ -8,7 +8,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class NetherrackBlock extends Block implements Fertilizable {
-	public NetherrackBlock(Block.Settings settings) {
+	public NetherrackBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -18,7 +18,7 @@ public class NetherrackBlock extends Block implements Fertilizable {
 			return false;
 		} else {
 			for (BlockPos blockPos : BlockPos.iterate(pos.add(-1, -1, -1), pos.add(1, 1, 1))) {
-				if (world.getBlockState(blockPos).matches(BlockTags.NYLIUM)) {
+				if (world.getBlockState(blockPos).isIn(BlockTags.NYLIUM)) {
 					return true;
 				}
 			}

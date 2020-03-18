@@ -17,7 +17,6 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.function.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
@@ -34,13 +33,13 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	private static final Predicate<BlockState> IS_PUMPKIN_PREDICATE = blockState -> blockState != null
 			&& (blockState.getBlock() == Blocks.CARVED_PUMPKIN || blockState.getBlock() == Blocks.JACK_O_LANTERN);
 
-	protected CarvedPumpkinBlock(Block.Settings settings) {
+	protected CarvedPumpkinBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (oldState.getBlock() != state.getBlock()) {
 			this.trySpawnEntity(world, pos);
 		}
@@ -159,10 +158,5 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 		}
 
 		return this.ironGolemPattern;
-	}
-
-	@Override
-	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
-		return true;
 	}
 }

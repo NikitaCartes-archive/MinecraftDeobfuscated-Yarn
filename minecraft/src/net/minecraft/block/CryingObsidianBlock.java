@@ -9,7 +9,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class CryingObsidianBlock extends Block {
-	public CryingObsidianBlock(Block.Settings settings) {
+	public CryingObsidianBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

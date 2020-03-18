@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.item.ItemStack;
@@ -34,13 +33,13 @@ public class NetherPortalBlock extends Block {
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
 
-	public NetherPortalBlock(Block.Settings settings) {
+	public NetherPortalBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.X));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		switch ((Direction.Axis)state.get(AXIS)) {
 			case Z:
 				return Z_SHAPE;
@@ -51,7 +50,7 @@ public class NetherPortalBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
 			while (world.getBlockState(pos).getBlock() == this) {
 				pos = pos.down();
@@ -88,13 +87,13 @@ public class NetherPortalBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		Direction.Axis axis = facing.getAxis();
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		Direction.Axis axis = direction.getAxis();
 		Direction.Axis axis2 = state.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
-		return !bl && neighborState.getBlock() != this && !new NetherPortalBlock.AreaHelper(world, pos, axis2).wasAlreadyValid()
+		return !bl && newState.getBlock() != this && !new NetherPortalBlock.AreaHelper(world, pos, axis2).wasAlreadyValid()
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -338,7 +337,7 @@ public class NetherPortalBlock extends Block {
 
 		protected boolean validStateInsidePortal(BlockState state) {
 			Block block = state.getBlock();
-			return state.isAir() || state.matches(BlockTags.FIRE) || block == Blocks.NETHER_PORTAL;
+			return state.isAir() || state.isIn(BlockTags.FIRE) || block == Blocks.NETHER_PORTAL;
 		}
 
 		public boolean isValid() {

@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -36,7 +35,7 @@ public class VineBlock extends Block {
 	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
 	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
 
-	public VineBlock(Block.Settings settings) {
+	public VineBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -50,7 +49,7 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		VoxelShape voxelShape = VoxelShapes.empty();
 		if ((Boolean)state.get(UP)) {
 			voxelShape = VoxelShapes.union(voxelShape, UP_SHAPE);
@@ -146,9 +145,9 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing == Direction.DOWN) {
-			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (direction == Direction.DOWN) {
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
 			BlockState blockState = this.getPlacementShape(state, world, pos);
 			return !this.hasAdjacentBlocks(blockState) ? Blocks.AIR.getDefaultState() : blockState;
@@ -156,23 +155,15 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		BlockState blockState = this.getPlacementShape(state, world, pos);
-		if (blockState != state) {
-			if (this.hasAdjacentBlocks(blockState)) {
-				world.setBlockState(pos, blockState, 2);
-			} else {
-				dropStacks(state, world, pos);
-				world.removeBlock(pos, false);
-			}
-		} else if (world.random.nextInt(4) == 0) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (world.random.nextInt(4) == 0) {
 			Direction direction = Direction.random(random);
 			BlockPos blockPos = pos.up();
 			if (direction.getAxis().isHorizontal() && !(Boolean)state.get(getFacingProperty(direction))) {
 				if (this.canGrowAt(world, pos)) {
 					BlockPos blockPos2 = pos.offset(direction);
-					BlockState blockState2 = world.getBlockState(blockPos2);
-					if (blockState2.isAir()) {
+					BlockState blockState = world.getBlockState(blockPos2);
+					if (blockState.isAir()) {
 						Direction direction2 = direction.rotateYClockwise();
 						Direction direction3 = direction.rotateYCounterclockwise();
 						boolean bl = (Boolean)state.get(getFacingProperty(direction2));
@@ -209,16 +200,16 @@ public class VineBlock extends Block {
 							return;
 						}
 
-						BlockState blockState3 = state;
+						BlockState blockState2 = state;
 
 						for (Direction direction2 : Direction.Type.HORIZONTAL) {
 							if (random.nextBoolean() || !shouldConnectTo(world, blockPos.offset(direction2), Direction.UP)) {
-								blockState3 = blockState3.with(getFacingProperty(direction2), Boolean.valueOf(false));
+								blockState2 = blockState2.with(getFacingProperty(direction2), Boolean.valueOf(false));
 							}
 						}
 
-						if (this.hasHorizontalSide(blockState3)) {
-							world.setBlockState(blockPos, blockState3, 2);
+						if (this.hasHorizontalSide(blockState2)) {
+							world.setBlockState(blockPos, blockState2, 2);
 						}
 
 						return;
@@ -227,12 +218,12 @@ public class VineBlock extends Block {
 
 				if (pos.getY() > 0) {
 					BlockPos blockPos2 = pos.down();
-					BlockState blockState2 = world.getBlockState(blockPos2);
-					if (blockState2.isAir() || blockState2.getBlock() == this) {
-						BlockState blockState4 = blockState2.isAir() ? this.getDefaultState() : blockState2;
-						BlockState blockState5 = this.getGrownState(state, blockState4, random);
-						if (blockState4 != blockState5 && this.hasHorizontalSide(blockState5)) {
-							world.setBlockState(blockPos2, blockState5, 2);
+					BlockState blockState = world.getBlockState(blockPos2);
+					if (blockState.isAir() || blockState.getBlock() == this) {
+						BlockState blockState3 = blockState.isAir() ? this.getDefaultState() : blockState;
+						BlockState blockState4 = this.getGrownState(state, blockState3, random);
+						if (blockState3 != blockState4 && this.hasHorizontalSide(blockState4)) {
+							world.setBlockState(blockPos2, blockState4, 2);
 						}
 					}
 				}
@@ -274,9 +265,9 @@ public class VineBlock extends Block {
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-		return blockState.getBlock() == this ? this.getAdjacentBlockCount(blockState) < FACING_PROPERTIES.size() : super.canReplace(state, ctx);
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+		BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
+		return blockState.getBlock() == this ? this.getAdjacentBlockCount(blockState) < FACING_PROPERTIES.size() : super.canReplace(state, context);
 	}
 
 	@Nullable

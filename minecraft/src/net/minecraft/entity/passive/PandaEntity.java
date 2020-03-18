@@ -927,7 +927,7 @@ public class PandaEntity extends AnimalEntity {
 		}
 
 		private boolean isBambooClose() {
-			BlockPos blockPos = this.panda.getSenseCenterPos();
+			BlockPos blockPos = this.panda.getBlockPos();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int i = 0; i < 3; i++) {
@@ -1077,7 +1077,7 @@ public class PandaEntity extends AnimalEntity {
 						j = (int)((float)j + h / Math.abs(h));
 					}
 
-					if (this.panda.world.getBlockState(this.panda.getSenseCenterPos().add(i, -1, j)).isAir()) {
+					if (this.panda.world.getBlockState(this.panda.getBlockPos().add(i, -1, j)).isAir()) {
 						return true;
 					} else {
 						return this.panda.isPlayful() && this.panda.random.nextInt(60) == 1 ? true : this.panda.random.nextInt(500) == 1;

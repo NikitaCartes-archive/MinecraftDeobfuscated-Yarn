@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.item.ItemStack;
@@ -26,7 +26,7 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		BlockPos blockPos = villagerEntity.getSenseCenterPos();
+		BlockPos blockPos = villagerEntity.getBlockPos();
 		this.raid = serverWorld.getRaidAt(blockPos);
 		return this.raid != null && this.raid.hasWon() && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity, blockPos);
 	}
@@ -46,14 +46,14 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 			villagerEntity.playCelebrateSound();
 		}
 
-		if (random.nextInt(200) == 0 && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity, villagerEntity.getSenseCenterPos())) {
+		if (random.nextInt(200) == 0 && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity, villagerEntity.getBlockPos())) {
 			DyeColor dyeColor = DyeColor.values()[random.nextInt(DyeColor.values().length)];
 			int i = random.nextInt(3);
 			ItemStack itemStack = this.createFirework(dyeColor, i);
-			FireworkEntity fireworkEntity = new FireworkEntity(
+			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
 				villagerEntity.world, villagerEntity, villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ(), itemStack
 			);
-			villagerEntity.world.spawnEntity(fireworkEntity);
+			villagerEntity.world.spawnEntity(fireworkRocketEntity);
 		}
 	}
 

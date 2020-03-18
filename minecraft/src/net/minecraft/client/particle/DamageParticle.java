@@ -60,33 +60,33 @@ public class DamageParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17790;
+		private final SpriteProvider spriteProvider;
 
 		public DefaultFactory(SpriteProvider spriteProvider) {
-			this.field_17790 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h + 1.0, i);
 			damageParticle.setMaxAge(20);
-			damageParticle.setSprite(this.field_17790);
+			damageParticle.setSprite(this.spriteProvider);
 			return damageParticle;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class EnchantedHitFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17791;
+		private final SpriteProvider spriteProvider;
 
 		public EnchantedHitFactory(SpriteProvider spriteProvider) {
-			this.field_17791 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h, i);
 			damageParticle.colorRed *= 0.3F;
 			damageParticle.colorGreen *= 0.8F;
-			damageParticle.setSprite(this.field_17791);
+			damageParticle.setSprite(this.spriteProvider);
 			return damageParticle;
 		}
 	}

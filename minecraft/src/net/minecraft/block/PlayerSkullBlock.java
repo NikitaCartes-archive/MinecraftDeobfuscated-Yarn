@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
 
 public class PlayerSkullBlock extends SkullBlock {
-	protected PlayerSkullBlock(Block.Settings settings) {
+	protected PlayerSkullBlock(AbstractBlock.Settings settings) {
 		super(SkullBlock.Type.PLAYER, settings);
 	}
 

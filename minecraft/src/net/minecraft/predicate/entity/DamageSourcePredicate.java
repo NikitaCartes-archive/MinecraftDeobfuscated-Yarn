@@ -112,8 +112,8 @@ public class DamageSourcePredicate {
 			this.addProperty(jsonObject, "is_fire", this.isFire);
 			this.addProperty(jsonObject, "is_magic", this.isMagic);
 			this.addProperty(jsonObject, "is_lightning", this.isLightning);
-			jsonObject.add("direct_entity", this.directEntity.serialize());
-			jsonObject.add("source_entity", this.sourceEntity.serialize());
+			jsonObject.add("direct_entity", this.directEntity.toJson());
+			jsonObject.add("source_entity", this.sourceEntity.toJson());
 			return jsonObject;
 		}
 	}

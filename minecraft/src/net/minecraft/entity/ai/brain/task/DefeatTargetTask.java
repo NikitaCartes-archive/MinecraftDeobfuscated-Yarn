@@ -31,7 +31,7 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		BlockPos blockPos = this.getAttackTarget(entity).getSenseCenterPos();
+		BlockPos blockPos = this.getAttackTarget(entity).getBlockPos();
 		entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
 		entity.getBrain().forget(MemoryModuleType.ANGRY_AT);
 		entity.getBrain().remember(MemoryModuleType.CELEBRATE_LOCATION, blockPos, (long)this.duration);

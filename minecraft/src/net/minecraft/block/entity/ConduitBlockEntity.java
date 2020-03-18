@@ -17,7 +17,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -53,8 +52,8 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	@Override
 	public void fromTag(CompoundTag tag) {
 		super.fromTag(tag);
-		if (tag.contains("target_uuid")) {
-			this.targetUuid = NbtHelper.toUuidOld(tag.getCompound("target_uuid"));
+		if (tag.containsUuidNew("Target")) {
+			this.targetUuid = tag.getUuidNew("Target");
 		} else {
 			this.targetUuid = null;
 		}
@@ -64,7 +63,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	public CompoundTag toTag(CompoundTag tag) {
 		super.toTag(tag);
 		if (this.targetEntity != null) {
-			tag.put("target_uuid", NbtHelper.fromUuidOld(this.targetEntity.getUuid()));
+			tag.putUuidNew("Target", this.targetEntity.getUuid());
 		}
 
 		return tag;
@@ -161,7 +160,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		List<PlayerEntity> list = this.world.getNonSpectatingEntities(PlayerEntity.class, box);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
-				if (this.pos.isWithinDistance(playerEntity.getSenseCenterPos(), (double)j) && playerEntity.isTouchingWaterOrRain()) {
+				if (this.pos.isWithinDistance(playerEntity.getBlockPos(), (double)j) && playerEntity.isTouchingWaterOrRain()) {
 					playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
 				}
 			}
@@ -182,7 +181,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}
-		} else if (!this.targetEntity.isAlive() || !this.pos.isWithinDistance(this.targetEntity.getSenseCenterPos(), 8.0)) {
+		} else if (!this.targetEntity.isAlive() || !this.pos.isWithinDistance(this.targetEntity.getBlockPos(), 8.0)) {
 			this.targetEntity = null;
 		}
 

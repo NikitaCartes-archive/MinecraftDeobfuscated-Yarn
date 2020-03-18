@@ -2,13 +2,19 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public abstract class AbstractGlassBlock extends TransparentBlock {
-	protected AbstractGlassBlock(Block.Settings settings) {
+	protected AbstractGlassBlock(AbstractBlock.Settings settings) {
 		super(settings);
+	}
+
+	@Override
+	public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		return VoxelShapes.empty();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -20,20 +26,5 @@ public abstract class AbstractGlassBlock extends TransparentBlock {
 	@Override
 	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
 		return true;
-	}
-
-	@Override
-	public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
-		return false;
-	}
-
-	@Override
-	public boolean isSimpleFullBlock(BlockState state, BlockView world, BlockPos pos) {
-		return false;
-	}
-
-	@Override
-	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
-		return false;
 	}
 }

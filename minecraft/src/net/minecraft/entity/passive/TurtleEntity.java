@@ -164,7 +164,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.setHomePos(this.getSenseCenterPos());
+		this.setHomePos(this.getBlockPos());
 		this.setTravelPos(BlockPos.ORIGIN);
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
 	}
@@ -291,7 +291,7 @@ public class TurtleEntity extends AnimalEntity {
 	public void tickMovement() {
 		super.tickMovement();
 		if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0) {
-			BlockPos blockPos = this.getSenseCenterPos();
+			BlockPos blockPos = this.getBlockPos();
 			if (this.world.getBlockState(blockPos.down()).getBlock() == Blocks.SAND) {
 				this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
 			}
@@ -474,7 +474,7 @@ public class TurtleEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			super.tick();
-			BlockPos blockPos = this.turtle.getSenseCenterPos();
+			BlockPos blockPos = this.turtle.getBlockPos();
 			if (!this.turtle.isTouchingWater() && this.hasReached()) {
 				if (this.turtle.sandDiggingCounter < 1) {
 					this.turtle.setDiggingSand(true);

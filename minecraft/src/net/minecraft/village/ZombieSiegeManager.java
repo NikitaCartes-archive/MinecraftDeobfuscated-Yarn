@@ -65,7 +65,7 @@ public class ZombieSiegeManager {
 	private boolean spawn(ServerWorld world) {
 		for (PlayerEntity playerEntity : world.getPlayers()) {
 			if (!playerEntity.isSpectator()) {
-				BlockPos blockPos = playerEntity.getSenseCenterPos();
+				BlockPos blockPos = playerEntity.getBlockPos();
 				if (world.isNearOccupiedPointOfInterest(blockPos) && world.getBiome(blockPos).getCategory() != Biome.Category.MUSHROOM) {
 					for (int i = 0; i < 10; i++) {
 						float f = world.random.nextFloat() * (float) (Math.PI * 2);
@@ -93,7 +93,7 @@ public class ZombieSiegeManager {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(world);
-				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getSenseCenterPos()), SpawnType.EVENT, null, null);
+				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnType.EVENT, null, null);
 			} catch (Exception var5) {
 				var5.printStackTrace();
 				return;

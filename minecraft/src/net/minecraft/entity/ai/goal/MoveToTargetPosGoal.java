@@ -94,7 +94,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	protected boolean findTargetPos() {
 		int i = this.range;
 		int j = this.maxYDifference;
-		BlockPos blockPos = this.mob.getSenseCenterPos();
+		BlockPos blockPos = this.mob.getBlockPos();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int k = this.lowestY; k <= j; k = k > 0 ? -k : 1 - k) {

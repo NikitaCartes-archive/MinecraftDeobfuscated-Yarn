@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 public class DropperBlock extends DispenserBlock {
 	private static final DispenserBehavior BEHAVIOR = new ItemDispenserBehavior();
 
-	public DropperBlock(Block.Settings settings) {
+	public DropperBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

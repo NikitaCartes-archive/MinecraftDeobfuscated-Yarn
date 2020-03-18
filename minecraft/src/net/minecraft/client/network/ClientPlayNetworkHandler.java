@@ -75,23 +75,24 @@ import net.minecraft.client.search.SearchableContainer;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.GuardianAttackSoundInstance;
+import net.minecraft.client.sound.MovingMinecartSoundInstance;
 import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.RidingMinecartSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.FireworkEntity;
+import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ShulkerBulletEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
@@ -117,19 +118,18 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
-import net.minecraft.entity.thrown.SnowballEntity;
-import net.minecraft.entity.thrown.ThrownEggEntity;
-import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
-import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
+import net.minecraft.entity.projectile.thrown.EggEntity;
+import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
+import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
@@ -412,19 +412,19 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity = new ArrowEntity(this.world, d, e, f);
 			Entity entity2 = this.world.getEntityById(packet.getEntityData());
 			if (entity2 != null) {
-				((ProjectileEntity)entity).setOwner(entity2);
+				((PersistentProjectileEntity)entity).setOwner(entity2);
 			}
 		} else if (entityType == EntityType.SPECTRAL_ARROW) {
 			entity = new SpectralArrowEntity(this.world, d, e, f);
 			Entity entity2 = this.world.getEntityById(packet.getEntityData());
 			if (entity2 != null) {
-				((ProjectileEntity)entity).setOwner(entity2);
+				((PersistentProjectileEntity)entity).setOwner(entity2);
 			}
 		} else if (entityType == EntityType.TRIDENT) {
 			entity = new TridentEntity(this.world, d, e, f);
 			Entity entity2 = this.world.getEntityById(packet.getEntityData());
 			if (entity2 != null) {
-				((ProjectileEntity)entity).setOwner(entity2);
+				((PersistentProjectileEntity)entity).setOwner(entity2);
 			}
 		} else if (entityType == EntityType.SNOWBALL) {
 			entity = new SnowballEntity(this.world, d, e, f);
@@ -435,11 +435,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (entityType == EntityType.LEASH_KNOT) {
 			entity = new LeashKnotEntity(this.world, new BlockPos(d, e, f));
 		} else if (entityType == EntityType.ENDER_PEARL) {
-			entity = new ThrownEnderpearlEntity(this.world, d, e, f);
+			entity = new EnderPearlEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.EYE_OF_ENDER) {
-			entity = new EnderEyeEntity(this.world, d, e, f);
+			entity = new EyeOfEnderEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.FIREWORK_ROCKET) {
-			entity = new FireworkEntity(this.world, d, e, f, ItemStack.EMPTY);
+			entity = new FireworkRocketEntity(this.world, d, e, f, ItemStack.EMPTY);
 		} else if (entityType == EntityType.FIREBALL) {
 			entity = new FireballEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
 		} else if (entityType == EntityType.DRAGON_FIREBALL) {
@@ -451,13 +451,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		} else if (entityType == EntityType.SHULKER_BULLET) {
 			entity = new ShulkerBulletEntity(this.world, d, e, f, packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityz());
 		} else if (entityType == EntityType.EGG) {
-			entity = new ThrownEggEntity(this.world, d, e, f);
+			entity = new EggEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.EVOKER_FANGS) {
 			entity = new EvokerFangsEntity(this.world, d, e, f, 0.0F, 0, null);
 		} else if (entityType == EntityType.POTION) {
-			entity = new ThrownPotionEntity(this.world, d, e, f);
+			entity = new PotionEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.EXPERIENCE_BOTTLE) {
-			entity = new ThrownExperienceBottleEntity(this.world, d, e, f);
+			entity = new ExperienceBottleEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.BOAT) {
 			entity = new BoatEntity(this.world, d, e, f);
 		} else if (entityType == EntityType.TNT) {
@@ -485,7 +485,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity.setUuid(packet.getUuid());
 			this.world.addEntity(i, entity);
 			if (entity instanceof AbstractMinecartEntity) {
-				this.client.getSoundManager().play(new RidingMinecartSoundInstance((AbstractMinecartEntity)entity));
+				this.client.getSoundManager().play(new MovingMinecartSoundInstance((AbstractMinecartEntity)entity));
 			}
 		}
 	}
@@ -908,7 +908,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					abstractBeeSoundInstance = new PassiveBeeSoundInstance((BeeEntity)livingEntity);
 				}
 
-				this.client.getSoundManager().play(abstractBeeSoundInstance);
+				this.client.getSoundManager().playNextTick(abstractBeeSoundInstance);
 			}
 		} else {
 			LOGGER.warn("Skipping Entity with id {}", packet.getEntityTypeId());
@@ -925,7 +925,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.player.setPlayerSpawn(packet.getPos(), true, false);
 		this.client.world.getLevelProperties().setSpawnPos(packet.getPos());
 	}
 
@@ -1029,7 +1028,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.openScreen(new DownloadingTerrainScreen());
 		}
 
-		this.world.setDefaultSpawnClient();
 		this.world.finishRemovingEntities();
 		String string = clientPlayerEntity.getServerBrand();
 		this.client.cameraEntity = null;
@@ -1297,10 +1295,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				);
 		} else if (i == 10) {
 			this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 0.0, 0.0, 0.0);
-			this.world
-				.playSound(
-					playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0F, 1.0F
-				);
+			if (j == 1) {
+				this.world
+					.playSound(
+						playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0F, 1.0F
+					);
+			}
 		} else if (i == 11) {
 			this.client.player.setShowsDeathScreen(f == 0.0F);
 		}
@@ -1469,7 +1469,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon()
 				);
 				statusEffectInstance.setPermanent(packet.isPermanent());
-				((LivingEntity)entity).addStatusEffect(statusEffectInstance);
+				((LivingEntity)entity).method_26082(statusEffectInstance);
 			}
 		}
 	}

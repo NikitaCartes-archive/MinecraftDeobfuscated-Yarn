@@ -7,13 +7,13 @@ import net.minecraft.state.property.EnumProperty;
 public class ReplaceableTallPlantBlock extends TallPlantBlock {
 	public static final EnumProperty<DoubleBlockHalf> HALF = TallPlantBlock.HALF;
 
-	public ReplaceableTallPlantBlock(Block.Settings settings) {
+	public ReplaceableTallPlantBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-		boolean bl = super.canReplace(state, ctx);
-		return bl && ctx.getStack().getItem() == this.asItem() ? false : bl;
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+		boolean bl = super.canReplace(state, context);
+		return bl && context.getStack().getItem() == this.asItem() ? false : bl;
 	}
 }

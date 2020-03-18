@@ -81,7 +81,7 @@ public class Camera {
 				this.pos.z - (double)this.horizontalPlane.getZ() * desiredCameraDistance + (double)h
 			);
 			HitResult hitResult = this.area
-				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this.focusedEntity));
+				.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.VISUAL, RayTraceContext.FluidHandling.NONE, this.focusedEntity));
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				double d = hitResult.getPos().distanceTo(this.pos);
 				if (d < desiredCameraDistance) {

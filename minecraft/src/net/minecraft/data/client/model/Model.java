@@ -25,21 +25,21 @@ public class Model {
 		this.requiredTextures = ImmutableSet.copyOf(requiredTextures);
 	}
 
-	public Identifier upload(Block block, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer) {
-		return this.upload(ModelIds.getBlockSubModelId(block, (String)this.variant.orElse("")), texture, biConsumer);
+	public Identifier upload(Block block, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+		return this.upload(ModelIds.getBlockSubModelId(block, (String)this.variant.orElse("")), texture, modelCollector);
 	}
 
-	public Identifier upload(Block block, String suffix, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer) {
-		return this.upload(ModelIds.getBlockSubModelId(block, suffix + (String)this.variant.orElse("")), texture, biConsumer);
+	public Identifier upload(Block block, String suffix, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+		return this.upload(ModelIds.getBlockSubModelId(block, suffix + (String)this.variant.orElse("")), texture, modelCollector);
 	}
 
-	public Identifier uploadWithoutVariant(Block block, String suffix, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer) {
-		return this.upload(ModelIds.getBlockSubModelId(block, suffix), texture, biConsumer);
+	public Identifier uploadWithoutVariant(Block block, String suffix, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+		return this.upload(ModelIds.getBlockSubModelId(block, suffix), texture, modelCollector);
 	}
 
-	public Identifier upload(Identifier id, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> writer) {
+	public Identifier upload(Identifier id, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
 		Map<TextureKey, Identifier> map = this.createTextureMap(texture);
-		writer.accept(id, (Supplier)() -> {
+		modelCollector.accept(id, (Supplier)() -> {
 			JsonObject jsonObject = new JsonObject();
 			this.parent.ifPresent(identifier -> jsonObject.addProperty("parent", identifier.toString()));
 			if (!map.isEmpty()) {

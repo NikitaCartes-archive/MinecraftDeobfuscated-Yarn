@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -18,17 +17,17 @@ import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
 
-	public MushroomPlantBlock(Block.Settings settings) {
+	public MushroomPlantBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (random.nextInt(25) == 0) {
 			int i = 5;
 			int j = 4;
@@ -59,7 +58,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isFullOpaque(world, pos);
+		return floor.isOpaqueFullCube(world, pos);
 	}
 
 	@Override
@@ -105,10 +104,5 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		this.trySpawningBigMushroom(world, pos, state, random);
-	}
-
-	@Override
-	public boolean shouldPostProcess(BlockState state, BlockView world, BlockPos pos) {
-		return true;
 	}
 }

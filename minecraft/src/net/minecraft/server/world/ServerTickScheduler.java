@@ -211,7 +211,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		}
 	}
 
-	public int method_20825() {
+	public int getTicks() {
 		return this.scheduledTickActions.size();
 	}
 }

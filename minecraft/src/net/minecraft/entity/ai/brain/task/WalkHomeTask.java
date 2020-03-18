@@ -37,9 +37,9 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)entity;
 			PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(
-				PointOfInterestType.HOME.getCompletionCondition(), entity.getSenseCenterPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestType.HOME.getCompletionCondition(), entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
-			return optional.isPresent() && !(((BlockPos)optional.get()).getSquaredDistance(mobEntityWithAi.getSenseCenterPos()) <= 4.0);
+			return optional.isPresent() && !(((BlockPos)optional.get()).getSquaredDistance(mobEntityWithAi.getBlockPos()) <= 4.0);
 		}
 	}
 
@@ -61,7 +61,7 @@ public class WalkHomeTask extends Task<LivingEntity> {
 			}
 		};
 		Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
-			PointOfInterestType.HOME.getCompletionCondition(), predicate, entity.getSenseCenterPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
+			PointOfInterestType.HOME.getCompletionCondition(), predicate, entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
 		);
 		Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
 		if (path != null && path.reachesTarget()) {

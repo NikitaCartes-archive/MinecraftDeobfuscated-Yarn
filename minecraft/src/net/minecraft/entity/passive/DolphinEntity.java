@@ -475,7 +475,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				ServerWorld serverWorld = (ServerWorld)this.dolphin.world;
 				this.field_6753 = false;
 				this.dolphin.getNavigation().stop();
-				BlockPos blockPos = this.dolphin.getSenseCenterPos();
+				BlockPos blockPos = this.dolphin.getBlockPos();
 				String string = (double)serverWorld.random.nextFloat() >= 0.5 ? "Ocean_Ruin" : "Shipwreck";
 				BlockPos blockPos2 = serverWorld.locateStructure(string, blockPos, 50, false);
 				if (blockPos2 == null) {

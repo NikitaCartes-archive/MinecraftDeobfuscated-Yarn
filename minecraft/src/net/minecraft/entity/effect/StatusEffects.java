@@ -99,7 +99,7 @@ public class StatusEffects {
 					return;
 				}
 
-				if (serverWorld.isNearOccupiedPointOfInterest(entity.getSenseCenterPos())) {
+				if (serverWorld.isNearOccupiedPointOfInterest(entity.getBlockPos())) {
 					serverWorld.getRaidManager().startRaid(serverPlayerEntity);
 				}
 			}

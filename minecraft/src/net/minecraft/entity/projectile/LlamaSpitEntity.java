@@ -6,7 +6,6 @@ import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.network.Packet;
@@ -20,7 +19,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
-public class LlamaSpitEntity extends Projectile {
+public class LlamaSpitEntity extends ProjectileEntity {
 	public LlamaSpitEntity(EntityType<? extends LlamaSpitEntity> entityType, World world) {
 		super(entityType, world);
 	}

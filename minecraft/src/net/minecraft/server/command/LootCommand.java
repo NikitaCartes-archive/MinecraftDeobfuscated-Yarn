@@ -442,7 +442,7 @@ public class LootCommand {
 			.putNullable(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity())
 			.put(LootContextParameters.TOOL, stack);
 		List<ItemStack> list = blockState.getDroppedStacks(builder);
-		return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx, blockState.getBlock().getDropTableId()));
+		return constructor.accept(context, list, listx -> sendDroppedFeedback(serverCommandSource, listx, blockState.getBlock().getDropTableID()));
 	}
 
 	private static int executeKill(CommandContext<ServerCommandSource> context, Entity entity, LootCommand.Target constructor) throws CommandSyntaxException {

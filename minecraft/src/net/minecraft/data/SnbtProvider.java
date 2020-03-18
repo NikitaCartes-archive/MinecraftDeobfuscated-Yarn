@@ -46,7 +46,7 @@ public class SnbtProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void run(DataCache cache) throws IOException {
 		Path path = this.root.getOutput();
 		List<CompletableFuture<SnbtProvider.CompressedData>> list = Lists.<CompletableFuture<SnbtProvider.CompressedData>>newArrayList();
 
@@ -58,7 +58,7 @@ public class SnbtProvider implements DataProvider {
 				);
 		}
 
-		((List)Util.combine(list).join()).stream().filter(Objects::nonNull).forEach(compressedData -> this.write(dataCache, compressedData, path));
+		((List)Util.combine(list).join()).stream().filter(Objects::nonNull).forEach(compressedData -> this.write(cache, compressedData, path));
 	}
 
 	@Override

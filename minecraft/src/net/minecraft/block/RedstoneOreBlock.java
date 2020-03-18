@@ -22,14 +22,9 @@ import net.minecraft.world.World;
 public class RedstoneOreBlock extends Block {
 	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
-	public RedstoneOreBlock(Block.Settings settings) {
+	public RedstoneOreBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.getDefaultState().with(LIT, Boolean.valueOf(false)));
-	}
-
-	@Override
-	public int getLuminance(BlockState state) {
-		return state.get(LIT) ? super.getLuminance(state) : 0;
 	}
 
 	@Override
@@ -63,7 +58,12 @@ public class RedstoneOreBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public boolean hasRandomTicks(BlockState state) {
+		return (Boolean)state.get(LIT);
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(LIT)) {
 			world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), 3);
 		}
@@ -92,7 +92,7 @@ public class RedstoneOreBlock extends Block {
 
 		for (Direction direction : Direction.values()) {
 			BlockPos blockPos = pos.offset(direction);
-			if (!world.getBlockState(blockPos).isFullOpaque(world, blockPos)) {
+			if (!world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
 				Direction.Axis axis = direction.getAxis();
 				double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
 				double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();

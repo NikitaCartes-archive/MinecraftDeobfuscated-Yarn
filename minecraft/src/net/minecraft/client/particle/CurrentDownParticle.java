@@ -10,7 +10,10 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class CurrentDownParticle extends SpriteBillboardParticle {
-	private float field_3897;
+	/**
+	 * The angle, in radians, of the horizontal acceleration of the particle.
+	 */
+	private float accelerationAngle;
 
 	private CurrentDownParticle(World world, double x, double y, double z) {
 		super(world, x, y, z);
@@ -38,8 +41,8 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 			this.markDead();
 		} else {
 			float f = 0.6F;
-			this.velocityX = this.velocityX + (double)(0.6F * MathHelper.cos(this.field_3897));
-			this.velocityZ = this.velocityZ + (double)(0.6F * MathHelper.sin(this.field_3897));
+			this.velocityX = this.velocityX + (double)(0.6F * MathHelper.cos(this.accelerationAngle));
+			this.velocityZ = this.velocityZ + (double)(0.6F * MathHelper.sin(this.accelerationAngle));
 			this.velocityX *= 0.07;
 			this.velocityZ *= 0.07;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
@@ -47,21 +50,21 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 				this.markDead();
 			}
 
-			this.field_3897 = (float)((double)this.field_3897 + 0.08);
+			this.accelerationAngle = (float)((double)this.accelerationAngle + 0.08);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17890;
+		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
-			this.field_17890 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			CurrentDownParticle currentDownParticle = new CurrentDownParticle(world, d, e, f);
-			currentDownParticle.setSprite(this.field_17890);
+			currentDownParticle.setSprite(this.spriteProvider);
 			return currentDownParticle;
 		}
 	}

@@ -8,6 +8,7 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.dimension.DimensionType;
 
 public class SpawnPointCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -39,19 +40,22 @@ public class SpawnPointCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, BlockPos pos) {
+		DimensionType dimensionType = source.getWorld().getDimension().getType();
+
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.setPlayerSpawn(pos, true, false);
+			serverPlayerEntity.setSpawnPoint(dimensionType, pos, true, false);
 		}
 
+		String string = DimensionType.getId(dimensionType).toString();
 		if (targets.size() == 1) {
 			source.sendFeedback(
 				new TranslatableText(
-					"commands.spawnpoint.success.single", pos.getX(), pos.getY(), pos.getZ(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+					"commands.spawnpoint.success.single", pos.getX(), pos.getY(), pos.getZ(), string, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.spawnpoint.success.multiple", pos.getX(), pos.getY(), pos.getZ(), targets.size()), true);
+			source.sendFeedback(new TranslatableText("commands.spawnpoint.success.multiple", pos.getX(), pos.getY(), pos.getZ(), string, targets.size()), true);
 		}
 
 		return targets.size();

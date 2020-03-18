@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ShulkerBulletEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -33,8 +34,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -185,7 +185,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		super.tick();
 		BlockPos blockPos = (BlockPos)this.dataTracker.get(ATTACHED_BLOCK).orElse(null);
 		if (blockPos == null && !this.world.isClient) {
-			blockPos = this.getSenseCenterPos();
+			blockPos = this.getBlockPos();
 			this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
 		}
 
@@ -313,7 +313,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	protected boolean method_7127() {
 		if (!this.isAiDisabled() && this.isAlive()) {
-			BlockPos blockPos = this.getSenseCenterPos();
+			BlockPos blockPos = this.getBlockPos();
 
 			for (int i = 0; i < 5; i++) {
 				BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
@@ -376,7 +376,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.method_7124()) {
 			Entity entity = source.getSource();
-			if (entity instanceof ProjectileEntity) {
+			if (entity instanceof PersistentProjectileEntity) {
 				return false;
 			}
 		}

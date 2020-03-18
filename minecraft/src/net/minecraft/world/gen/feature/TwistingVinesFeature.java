@@ -21,43 +21,47 @@ public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 	public boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (this.isNotSuitable(iWorld, blockPos)) {
+		return method_26265(iWorld, random, blockPos, 8, 4, 8);
+	}
+
+	public static boolean method_26265(IWorld iWorld, Random random, BlockPos blockPos, int i, int j, int k) {
+		if (isNotSuitable(iWorld, blockPos)) {
 			return false;
 		} else {
-			this.generateVinesInArea(iWorld, random, blockPos);
+			generateVinesInArea(iWorld, random, blockPos, i, j, k);
 			return true;
 		}
 	}
 
-	private void generateVinesInArea(IWorld world, Random random, BlockPos pos) {
+	private static void generateVinesInArea(IWorld iWorld, Random random, BlockPos blockPos, int i, int j, int k) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int i = 0; i < 100; i++) {
-			mutable.set(pos).move(MathHelper.nextInt(random, -8, 8), MathHelper.nextInt(random, -2, 7), MathHelper.nextInt(random, -8, 8));
+		for (int l = 0; l < i * i; l++) {
+			mutable.set(blockPos).move(MathHelper.nextInt(random, -i, i), MathHelper.nextInt(random, -j, j), MathHelper.nextInt(random, -i, i));
 
-			while (world.getBlockState(mutable.down()).isAir()) {
+			while (iWorld.getBlockState(mutable.down()).isAir()) {
 				mutable.move(0, -1, 0);
 			}
 
-			if (!this.isNotSuitable(world, mutable)) {
-				int j = MathHelper.nextInt(random, 1, 8);
+			if (!isNotSuitable(iWorld, mutable)) {
+				int m = MathHelper.nextInt(random, 1, k);
 				if (random.nextInt(6) == 0) {
-					j *= 2;
+					m *= 2;
 				}
 
 				if (random.nextInt(5) == 0) {
-					j = 1;
+					m = 1;
 				}
 
-				int k = 17;
-				int l = 25;
-				generateVineColumn(world, random, mutable, j, 17, 25);
+				int n = 17;
+				int o = 25;
+				generateVineColumn(iWorld, random, mutable, m, 17, 25);
 			}
 		}
 	}
 
 	public static void generateVineColumn(IWorld world, Random random, BlockPos.Mutable pos, int maxLength, int minAge, int maxAge) {
-		for (int i = 0; i <= maxLength; i++) {
+		for (int i = 1; i <= maxLength; i++) {
 			if (world.isAir(pos)) {
 				if (i == maxLength || !world.isAir(pos.up())) {
 					world.setBlockState(
@@ -73,11 +77,11 @@ public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 		}
 	}
 
-	private boolean isNotSuitable(IWorld world, BlockPos pos) {
-		if (!world.isAir(pos)) {
+	private static boolean isNotSuitable(IWorld iWorld, BlockPos blockPos) {
+		if (!iWorld.isAir(blockPos)) {
 			return true;
 		} else {
-			Block block = world.getBlockState(pos.down()).getBlock();
+			Block block = iWorld.getBlockState(blockPos.down()).getBlock();
 			return block != Blocks.NETHERRACK && block != Blocks.WARPED_NYLIUM && block != Blocks.WARPED_WART_BLOCK;
 		}
 	}

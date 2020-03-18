@@ -24,20 +24,14 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class DetectorRailBlock extends AbstractRailBlock {
 	public static final EnumProperty<RailShape> SHAPE = Properties.STRAIGHT_RAIL_SHAPE;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 
-	public DetectorRailBlock(Block.Settings settings) {
+	public DetectorRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)).with(SHAPE, RailShape.NORTH_SOUTH));
-	}
-
-	@Override
-	public int getTickRate(WorldView world) {
-		return 20;
 	}
 
 	@Override
@@ -62,16 +56,16 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		if (!(Boolean)state.get(POWERED)) {
 			return 0;
 		} else {
-			return facing == Direction.UP ? 15 : 0;
+			return direction == Direction.UP ? 15 : 0;
 		}
 	}
 
@@ -102,7 +96,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 		}
 
 		if (bl2) {
-			world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+			world.getBlockTickScheduler().schedule(pos, this, 20);
 		}
 
 		world.updateComparators(pos, this);
@@ -118,9 +112,9 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (oldState.getBlock() != state.getBlock()) {
-			this.updatePoweredStatus(world, pos, this.method_24417(state, world, pos, moved));
+			this.updatePoweredStatus(world, pos, this.method_24417(state, world, pos, notify));
 		}
 	}
 

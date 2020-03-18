@@ -292,31 +292,31 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void itemClicked(int i, int j, double d, double e, int k) {
-			int l = this.width - 35;
-			int m = j * this.itemHeight + 36 - (int)this.getScrollAmount();
-			int n = l + 10;
-			int o = m - 3;
-			if (d >= (double)l && d <= (double)(l + 9) && e >= (double)m && e <= (double)(m + 9)) {
-				if (!((Backup)RealmsBackupScreen.this.backups.get(j)).changeList.isEmpty()) {
+		public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
+			int i = this.width - 35;
+			int j = selectionIndex * this.itemHeight + 36 - (int)this.getScrollAmount();
+			int k = i + 10;
+			int l = j - 3;
+			if (mouseX >= (double)i && mouseX <= (double)(i + 9) && mouseY >= (double)j && mouseY <= (double)(j + 9)) {
+				if (!((Backup)RealmsBackupScreen.this.backups.get(selectionIndex)).changeList.isEmpty()) {
 					RealmsBackupScreen.this.selectedBackup = -1;
 					RealmsBackupScreen.lastScrollPosition = (int)this.getScrollAmount();
-					this.client.openScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, (Backup)RealmsBackupScreen.this.backups.get(j)));
+					this.client.openScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, (Backup)RealmsBackupScreen.this.backups.get(selectionIndex)));
 				}
-			} else if (d >= (double)n && d < (double)(n + 13) && e >= (double)o && e < (double)(o + 15)) {
+			} else if (mouseX >= (double)k && mouseX < (double)(k + 13) && mouseY >= (double)l && mouseY < (double)(l + 15)) {
 				RealmsBackupScreen.lastScrollPosition = (int)this.getScrollAmount();
-				RealmsBackupScreen.this.restoreClicked(j);
+				RealmsBackupScreen.this.restoreClicked(selectionIndex);
 			}
 		}
 
 		@Override
-		public void setSelected(int i) {
-			this.setSelectedItem(i);
-			if (i != -1) {
-				Realms.narrateNow(I18n.translate("narrator.select", ((Backup)RealmsBackupScreen.this.backups.get(i)).lastModifiedDate.toString()));
+		public void setSelected(int index) {
+			this.setSelectedItem(index);
+			if (index != -1) {
+				Realms.narrateNow(I18n.translate("narrator.select", ((Backup)RealmsBackupScreen.this.backups.get(index)).lastModifiedDate.toString()));
 			}
 
-			this.selectInviteListItem(i);
+			this.selectInviteListItem(index);
 		}
 
 		public void selectInviteListItem(int item) {

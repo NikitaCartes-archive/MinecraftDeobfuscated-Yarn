@@ -28,7 +28,7 @@ public class HugeRedMushroomFeature extends HugeMushroomFeature {
 					boolean bl6 = bl3 || bl4;
 					if (i >= y || bl5 != bl6) {
 						mutable.set(start, l, i, m);
-						if (!world.getBlockState(mutable).isFullOpaque(world, mutable)) {
+						if (!world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) {
 							this.setBlockState(
 								world,
 								mutable,

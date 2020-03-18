@@ -17,14 +17,14 @@ public class InteractableDoorsSensor extends Sensor<LivingEntity> {
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		DimensionType dimensionType = world.getDimension().getType();
-		BlockPos blockPos = entity.getSenseCenterPos();
+		BlockPos blockPos = entity.getBlockPos();
 		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
 
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				for (int k = -1; k <= 1; k++) {
 					BlockPos blockPos2 = blockPos.add(i, j, k);
-					if (world.getBlockState(blockPos2).matches(BlockTags.WOODEN_DOORS)) {
+					if (world.getBlockState(blockPos2).isIn(BlockTags.WOODEN_DOORS)) {
 						list.add(GlobalPos.create(dimensionType, blockPos2));
 					}
 				}

@@ -4,7 +4,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -27,7 +26,7 @@ import net.minecraft.world.WorldView;
 public class BubbleColumnBlock extends Block implements FluidDrainable {
 	public static final BooleanProperty DRAG = Properties.DRAG;
 
-	public BubbleColumnBlock(Block.Settings settings) {
+	public BubbleColumnBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(DRAG, Boolean.valueOf(true)));
 	}
@@ -71,7 +70,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		update(world, pos.up(), calculateDrag(world, pos.down()));
 	}
 
@@ -100,11 +99,6 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
 		return block == Blocks.BUBBLE_COLUMN ? (Boolean)blockState.get(DRAG) : block != Blocks.SOUL_SAND;
-	}
-
-	@Override
-	public int getTickRate(WorldView world) {
-		return 5;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -141,18 +135,18 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if (!state.canPlaceAt(world, pos)) {
 			return Blocks.WATER.getDefaultState();
 		} else {
-			if (facing == Direction.DOWN) {
-				world.setBlockState(pos, Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(calculateDrag(world, neighborPos))), 2);
-			} else if (facing == Direction.UP && neighborState.getBlock() != Blocks.BUBBLE_COLUMN && isStillWater(world, neighborPos)) {
-				world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+			if (direction == Direction.DOWN) {
+				world.setBlockState(pos, Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(calculateDrag(world, posFrom))), 2);
+			} else if (direction == Direction.UP && newState.getBlock() != Blocks.BUBBLE_COLUMN && isStillWater(world, posFrom)) {
+				world.getBlockTickScheduler().schedule(pos, this, 5);
 			}
 
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
-			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		}
 	}
 
@@ -163,7 +157,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.empty();
 	}
 

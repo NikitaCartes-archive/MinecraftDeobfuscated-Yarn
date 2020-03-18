@@ -7,7 +7,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,7 +41,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
 	public static final TranslatableText CONTAINER_NAME = new TranslatableText("container.enderchest");
 
-	protected EnderChestBlock(Block.Settings settings) {
+	protected EnderChestBlock(AbstractBlock.Settings settings) {
 		super(settings, () -> BlockEntityType.ENDER_CHEST);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
@@ -56,7 +55,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return SHAPE;
 	}
 
@@ -77,7 +76,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (enderChestInventory != null && blockEntity instanceof EnderChestBlockEntity) {
 			BlockPos blockPos = pos.up();
-			if (world.getBlockState(blockPos).isSimpleFullBlock(world, blockPos)) {
+			if (world.getBlockState(blockPos).isSolidBlock(world, blockPos)) {
 				return ActionResult.SUCCESS;
 			} else if (world.isClient) {
 				return ActionResult.SUCCESS;
@@ -140,16 +139,16 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 

@@ -10,7 +10,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public class KelpPlantBlock extends AbstractPlantBlock implements FluidFillable {
-	protected KelpPlantBlock(Block.Settings settings) {
+	protected KelpPlantBlock(AbstractBlock.Settings settings) {
 		super(settings, Direction.UP, VoxelShapes.fullCube(), true);
 	}
 

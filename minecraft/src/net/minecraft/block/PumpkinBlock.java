@@ -14,7 +14,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class PumpkinBlock extends GourdBlock {
-	protected PumpkinBlock(Block.Settings settings) {
+	protected PumpkinBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

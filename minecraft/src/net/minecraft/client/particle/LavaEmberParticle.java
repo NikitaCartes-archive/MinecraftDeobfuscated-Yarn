@@ -64,15 +64,15 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17818;
+		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
-			this.field_17818 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			LavaEmberParticle lavaEmberParticle = new LavaEmberParticle(world, d, e, f);
-			lavaEmberParticle.setSprite(this.field_17818);
+			lavaEmberParticle.setSprite(this.spriteProvider);
 			return lavaEmberParticle;
 		}
 	}

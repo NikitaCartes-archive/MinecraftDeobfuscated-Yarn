@@ -20,6 +20,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -31,44 +32,37 @@ public final class NbtHelper {
 	@Nullable
 	public static GameProfile toGameProfile(CompoundTag tag) {
 		String string = null;
-		String string2 = null;
+		UUID uUID = null;
 		if (tag.contains("Name", 8)) {
 			string = tag.getString("Name");
 		}
 
-		if (tag.contains("Id", 8)) {
-			string2 = tag.getString("Id");
+		if (tag.containsUuidNew("Id")) {
+			uUID = tag.getUuidNew("Id");
 		}
 
 		try {
-			UUID uUID;
-			try {
-				uUID = UUID.fromString(string2);
-			} catch (Throwable var12) {
-				uUID = null;
-			}
-
 			GameProfile gameProfile = new GameProfile(uUID, string);
 			if (tag.contains("Properties", 10)) {
 				CompoundTag compoundTag = tag.getCompound("Properties");
 
-				for (String string3 : compoundTag.getKeys()) {
-					ListTag listTag = compoundTag.getList(string3, 10);
+				for (String string2 : compoundTag.getKeys()) {
+					ListTag listTag = compoundTag.getList(string2, 10);
 
 					for (int i = 0; i < listTag.size(); i++) {
 						CompoundTag compoundTag2 = listTag.getCompound(i);
-						String string4 = compoundTag2.getString("Value");
+						String string3 = compoundTag2.getString("Value");
 						if (compoundTag2.contains("Signature", 8)) {
-							gameProfile.getProperties().put(string3, new com.mojang.authlib.properties.Property(string3, string4, compoundTag2.getString("Signature")));
+							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3, compoundTag2.getString("Signature")));
 						} else {
-							gameProfile.getProperties().put(string3, new com.mojang.authlib.properties.Property(string3, string4));
+							gameProfile.getProperties().put(string2, new com.mojang.authlib.properties.Property(string2, string3));
 						}
 					}
 				}
 			}
 
 			return gameProfile;
-		} catch (Throwable var13) {
+		} catch (Throwable var11) {
 			return null;
 		}
 	}
@@ -79,7 +73,7 @@ public final class NbtHelper {
 		}
 
 		if (profile.getId() != null) {
-			tag.putString("Id", profile.getId().toString());
+			tag.putUuidNew("Id", profile.getId());
 		}
 
 		if (!profile.getProperties().isEmpty()) {
@@ -164,9 +158,7 @@ public final class NbtHelper {
 	 * @since 20w10a
 	 */
 	public static IntArrayTag fromUuidNew(UUID uuid) {
-		long l = uuid.getMostSignificantBits();
-		long m = uuid.getLeastSignificantBits();
-		return new IntArrayTag(new int[]{(int)(l >> 32), (int)l, (int)(m >> 32), (int)m});
+		return new IntArrayTag(DynamicSerializableUuid.method_26275(uuid));
 	}
 
 	/**
@@ -186,29 +178,9 @@ public final class NbtHelper {
 			if (is.length != 4) {
 				throw new IllegalArgumentException("Expected UUID-Array to be of length 4, but found " + is.length + ".");
 			} else {
-				return new UUID((long)is[0] << 32 | (long)is[1] & 4294967295L, (long)is[2] << 32 | (long)is[3] & 4294967295L);
+				return DynamicSerializableUuid.method_26276(is);
 			}
 		}
-	}
-
-	/**
-	 * @deprecated use {@link #fromUuidNew}.
-	 */
-	@Deprecated
-	public static CompoundTag fromUuidOld(UUID uuid) {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putLong("M", uuid.getMostSignificantBits());
-		compoundTag.putLong("L", uuid.getLeastSignificantBits());
-		return compoundTag;
-	}
-
-	/**
-	 * @deprecated use {@link #toUuidNew} for newly added deserialization methods.
-	 * Other places may keep calling this besides {@link #toUuidNew} to ensure a smooth transition for old worlds.
-	 */
-	@Deprecated
-	public static UUID toUuidOld(CompoundTag tag) {
-		return new UUID(tag.getLong("M"), tag.getLong("L"));
 	}
 
 	public static BlockPos toBlockPos(CompoundTag tag) {

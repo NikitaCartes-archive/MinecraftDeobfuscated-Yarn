@@ -385,7 +385,7 @@ public class ClientWorld extends World {
 				if (bl) {
 					this.addParticle((double)pos.getX(), (double)(pos.getX() + 1), (double)pos.getZ(), (double)(pos.getZ() + 1), (double)(pos.getY() + 1) - 0.05, parameters);
 				}
-			} else if (!state.matches(BlockTags.IMPERMEABLE)) {
+			} else if (!state.isIn(BlockTags.IMPERMEABLE)) {
 				double e = voxelShape.getMinimum(Direction.Axis.Y);
 				if (e > 0.0) {
 					this.addParticle(pos, parameters, voxelShape, (double)pos.getY() + e - 0.05);
@@ -723,16 +723,16 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public float method_24852(Direction direction, boolean bl) {
-		boolean bl2 = this.dimension.getType() == DimensionType.THE_NETHER;
-		if (!bl) {
-			return bl2 ? 0.9F : 1.0F;
+	public float getBrightness(Direction direction, boolean shaded) {
+		boolean bl = this.dimension.getType() == DimensionType.THE_NETHER;
+		if (!shaded) {
+			return bl ? 0.9F : 1.0F;
 		} else {
 			switch (direction) {
 				case DOWN:
-					return bl2 ? 0.9F : 0.5F;
+					return bl ? 0.9F : 0.5F;
 				case UP:
-					return bl2 ? 0.9F : 1.0F;
+					return bl ? 0.9F : 1.0F;
 				case NORTH:
 				case SOUTH:
 					return 0.8F;

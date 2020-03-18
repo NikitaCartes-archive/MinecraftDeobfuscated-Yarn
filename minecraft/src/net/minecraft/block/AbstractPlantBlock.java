@@ -16,7 +16,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implements Fertilizable {
-	protected AbstractPlantBlock(Block.Settings settings, Direction direction, VoxelShape voxelShape, boolean bl) {
+	protected AbstractPlantBlock(AbstractBlock.Settings settings, Direction direction, VoxelShape voxelShape, boolean bl) {
 		super(settings, direction, voxelShape, bl);
 	}
 
@@ -25,19 +25,17 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
 		}
-
-		super.scheduledTick(state, world, pos, random);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
 		AbstractPlantStemBlock abstractPlantStemBlock = this.getStem();
-		if (facing == this.growthDirection) {
-			Block block = neighborState.getBlock();
+		if (direction == this.growthDirection) {
+			Block block = newState.getBlock();
 			if (block != this && block != abstractPlantStemBlock) {
 				return abstractPlantStemBlock.getRandomGrowthState(world);
 			}
@@ -47,7 +45,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -89,9 +87,9 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-		boolean bl = super.canReplace(state, ctx);
-		return bl && ctx.getStack().getItem() == this.getStem().asItem() ? false : bl;
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
+		boolean bl = super.canReplace(state, context);
+		return bl && context.getStack().getItem() == this.getStem().asItem() ? false : bl;
 	}
 
 	@Override

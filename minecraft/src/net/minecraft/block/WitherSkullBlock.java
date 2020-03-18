@@ -27,7 +27,7 @@ public class WitherSkullBlock extends SkullBlock {
 	@Nullable
 	private static BlockPattern witherDispenserPattern;
 
-	protected WitherSkullBlock(Block.Settings settings) {
+	protected WitherSkullBlock(AbstractBlock.Settings settings) {
 		super(SkullBlock.Type.WITHER_SKELETON, settings);
 	}
 
@@ -94,7 +94,7 @@ public class WitherSkullBlock extends SkullBlock {
 		if (witherBossPattern == null) {
 			witherBossPattern = BlockPatternBuilder.start()
 				.aisle("^^^", "###", "~#~")
-				.where('#', cachedBlockPosition -> cachedBlockPosition.getBlockState().matches(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
+				.where('#', cachedBlockPosition -> cachedBlockPosition.getBlockState().isIn(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
 				.where(
 					'^',
 					CachedBlockPosition.matchesBlockState(
@@ -112,7 +112,7 @@ public class WitherSkullBlock extends SkullBlock {
 		if (witherDispenserPattern == null) {
 			witherDispenserPattern = BlockPatternBuilder.start()
 				.aisle("   ", "###", "~#~")
-				.where('#', cachedBlockPosition -> cachedBlockPosition.getBlockState().matches(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
+				.where('#', cachedBlockPosition -> cachedBlockPosition.getBlockState().isIn(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
 				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
 				.build();
 		}

@@ -209,7 +209,7 @@ public class GuardianEntity extends HostileEntity {
 						this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(this.getSenseCenterPos().down(), this);
+					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(this.getBlockPos().down(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;
@@ -405,7 +405,9 @@ public class GuardianEntity extends HostileEntity {
 				this.beamTicks++;
 				if (this.beamTicks == 0) {
 					this.guardian.setBeamTarget(this.guardian.getTarget().getEntityId());
-					this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
+					if (!this.guardian.isSilent()) {
+						this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
+					}
 				} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
 					float f = 1.0F;
 					if (this.guardian.world.getDifficulty() == Difficulty.HARD) {

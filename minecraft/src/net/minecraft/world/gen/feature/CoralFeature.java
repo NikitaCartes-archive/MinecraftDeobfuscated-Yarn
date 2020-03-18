@@ -31,7 +31,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 	protected boolean spawnCoralPiece(IWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = world.getBlockState(pos);
-		if ((blockState.getBlock() == Blocks.WATER || blockState.matches(BlockTags.CORALS)) && world.getBlockState(blockPos).getBlock() == Blocks.WATER) {
+		if ((blockState.getBlock() == Blocks.WATER || blockState.isIn(BlockTags.CORALS)) && world.getBlockState(blockPos).getBlock() == Blocks.WATER) {
 			world.setBlockState(pos, state, 3);
 			if (random.nextFloat() < 0.25F) {
 				world.setBlockState(blockPos, BlockTags.CORALS.getRandom(random).getDefaultState(), 2);

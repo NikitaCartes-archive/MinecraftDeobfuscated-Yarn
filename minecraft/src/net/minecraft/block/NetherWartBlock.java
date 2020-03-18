@@ -3,7 +3,6 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -23,13 +22,13 @@ public class NetherWartBlock extends PlantBlock {
 		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 14.0, 16.0)
 	};
 
-	protected NetherWartBlock(Block.Settings settings) {
+	protected NetherWartBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return AGE_TO_SHAPE[state.get(AGE)];
 	}
 
@@ -39,14 +38,17 @@ public class NetherWartBlock extends PlantBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public boolean hasRandomTicks(BlockState state) {
+		return (Integer)state.get(AGE) < 3;
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		int i = (Integer)state.get(AGE);
 		if (i < 3 && random.nextInt(10) == 0) {
 			state = state.with(AGE, Integer.valueOf(i + 1));
 			world.setBlockState(pos, state, 2);
 		}
-
-		super.scheduledTick(state, world, pos, random);
 	}
 
 	@Environment(EnvType.CLIENT)

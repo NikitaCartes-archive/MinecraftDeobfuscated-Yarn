@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -19,7 +19,7 @@ public class ChorusFlowerBlock extends Block {
 	public static final IntProperty AGE = Properties.AGE_5;
 	private final ChorusPlantBlock plantBlock;
 
-	protected ChorusFlowerBlock(ChorusPlantBlock plantBlock, Block.Settings settings) {
+	protected ChorusFlowerBlock(ChorusPlantBlock plantBlock, AbstractBlock.Settings settings) {
 		super(settings);
 		this.plantBlock = plantBlock;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
@@ -29,67 +29,75 @@ public class ChorusFlowerBlock extends Block {
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
-		} else {
-			BlockPos blockPos = pos.up();
-			if (world.isAir(blockPos) && blockPos.getY() < 256) {
-				int i = (Integer)state.get(AGE);
-				if (i < 5) {
-					boolean bl = false;
-					boolean bl2 = false;
-					BlockState blockState = world.getBlockState(pos.down());
-					Block block = blockState.getBlock();
-					if (block == Blocks.END_STONE) {
-						bl = true;
-					} else if (block == this.plantBlock) {
-						int j = 1;
+		}
+	}
 
-						for (int k = 0; k < 4; k++) {
-							Block block2 = world.getBlockState(pos.down(j + 1)).getBlock();
-							if (block2 != this.plantBlock) {
-								if (block2 == Blocks.END_STONE) {
-									bl2 = true;
-								}
-								break;
+	@Override
+	public boolean hasRandomTicks(BlockState state) {
+		return (Integer)state.get(AGE) < 5;
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		BlockPos blockPos = pos.up();
+		if (world.isAir(blockPos) && blockPos.getY() < 256) {
+			int i = (Integer)state.get(AGE);
+			if (i < 5) {
+				boolean bl = false;
+				boolean bl2 = false;
+				BlockState blockState = world.getBlockState(pos.down());
+				Block block = blockState.getBlock();
+				if (block == Blocks.END_STONE) {
+					bl = true;
+				} else if (block == this.plantBlock) {
+					int j = 1;
+
+					for (int k = 0; k < 4; k++) {
+						Block block2 = world.getBlockState(pos.down(j + 1)).getBlock();
+						if (block2 != this.plantBlock) {
+							if (block2 == Blocks.END_STONE) {
+								bl2 = true;
 							}
-
-							j++;
+							break;
 						}
 
-						if (j < 2 || j <= random.nextInt(bl2 ? 5 : 4)) {
-							bl = true;
-						}
-					} else if (blockState.isAir()) {
-						bl = true;
+						j++;
 					}
 
-					if (bl && isSurroundedByAir(world, blockPos, null) && world.isAir(pos.up(2))) {
+					if (j < 2 || j <= random.nextInt(bl2 ? 5 : 4)) {
+						bl = true;
+					}
+				} else if (blockState.isAir()) {
+					bl = true;
+				}
+
+				if (bl && isSurroundedByAir(world, blockPos, null) && world.isAir(pos.up(2))) {
+					world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), 2);
+					this.grow(world, blockPos, i);
+				} else if (i < 4) {
+					int j = random.nextInt(4);
+					if (bl2) {
+						j++;
+					}
+
+					boolean bl3 = false;
+
+					for (int l = 0; l < j; l++) {
+						Direction direction = Direction.Type.HORIZONTAL.random(random);
+						BlockPos blockPos2 = pos.offset(direction);
+						if (world.isAir(blockPos2) && world.isAir(blockPos2.down()) && isSurroundedByAir(world, blockPos2, direction.getOpposite())) {
+							this.grow(world, blockPos2, i + 1);
+							bl3 = true;
+						}
+					}
+
+					if (bl3) {
 						world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), 2);
-						this.grow(world, blockPos, i);
-					} else if (i < 4) {
-						int j = random.nextInt(4);
-						if (bl2) {
-							j++;
-						}
-
-						boolean bl3 = false;
-
-						for (int l = 0; l < j; l++) {
-							Direction direction = Direction.Type.HORIZONTAL.random(random);
-							BlockPos blockPos2 = pos.offset(direction);
-							if (world.isAir(blockPos2) && world.isAir(blockPos2.down()) && isSurroundedByAir(world, blockPos2, direction.getOpposite())) {
-								this.grow(world, blockPos2, i + 1);
-								bl3 = true;
-							}
-						}
-
-						if (bl3) {
-							world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), 2);
-						} else {
-							this.die(world, pos);
-						}
 					} else {
 						this.die(world, pos);
 					}
+				} else {
+					this.die(world, pos);
 				}
 			}
 		}
@@ -116,12 +124,12 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (facing != Direction.UP && !state.canPlaceAt(world, pos)) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (direction != Direction.UP && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -212,9 +220,9 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
+	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 		if (projectile.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES)) {
-			BlockPos blockPos = hitResult.getBlockPos();
+			BlockPos blockPos = hit.getBlockPos();
 			world.breakBlock(blockPos, true, projectile);
 		}
 	}
