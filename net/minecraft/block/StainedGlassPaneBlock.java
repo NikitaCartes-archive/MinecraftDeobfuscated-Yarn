@@ -3,7 +3,7 @@
  */
 package net.minecraft.block;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.block.Stainable;
@@ -14,7 +14,7 @@ extends PaneBlock
 implements Stainable {
     private final DyeColor color;
 
-    public StainedGlassPaneBlock(DyeColor color, Block.Settings settings) {
+    public StainedGlassPaneBlock(DyeColor color, AbstractBlock.Settings settings) {
         super(settings);
         this.color = color;
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));

@@ -5,7 +5,7 @@ package net.minecraft.block.dispenser;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
@@ -19,9 +19,9 @@ extends ItemDispenserBehavior {
         World world = pointer.getWorld();
         Position position = DispenserBlock.getOutputLocation(pointer);
         Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-        Projectile projectile = this.createProjectile(world, position, stack);
-        projectile.setVelocity(direction.getOffsetX(), (float)direction.getOffsetY() + 0.1f, direction.getOffsetZ(), this.getForce(), this.getVariation());
-        world.spawnEntity(projectile);
+        ProjectileEntity projectileEntity = this.createProjectile(world, position, stack);
+        projectileEntity.setVelocity(direction.getOffsetX(), (float)direction.getOffsetY() + 0.1f, direction.getOffsetZ(), this.getForce(), this.getVariation());
+        world.spawnEntity(projectileEntity);
         stack.decrement(1);
         return stack;
     }
@@ -31,7 +31,7 @@ extends ItemDispenserBehavior {
         pointer.getWorld().playLevelEvent(1002, pointer.getBlockPos(), 0);
     }
 
-    protected abstract Projectile createProjectile(World var1, Position var2, ItemStack var3);
+    protected abstract ProjectileEntity createProjectile(World var1, Position var2, ItemStack var3);
 
     protected float getVariation() {
         return 6.0f;

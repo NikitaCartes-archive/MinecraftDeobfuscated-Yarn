@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -12,7 +13,7 @@ import net.minecraft.state.StateManager;
 
 public class GlazedTerracottaBlock
 extends HorizontalFacingBlock {
-    public GlazedTerracottaBlock(Block.Settings settings) {
+    public GlazedTerracottaBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

@@ -178,7 +178,7 @@ Tickable {
     }
 
     private void updateNeighborStates() {
-        this.getCachedState().updateNeighborStates(this.getWorld(), this.getPos(), 3);
+        this.getCachedState().updateNeighbors(this.getWorld(), this.getPos(), 3);
     }
 
     @Override

@@ -366,7 +366,7 @@ extends NetworkSyncedItem {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
-        if (blockState.matches(BlockTags.BANNERS)) {
+        if (blockState.isIn(BlockTags.BANNERS)) {
             if (!context.world.isClient) {
                 MapState mapState = FilledMapItem.getOrCreateMapState(context.getStack(), context.getWorld());
                 mapState.addBanner(context.getWorld(), context.getBlockPos());

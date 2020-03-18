@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.entity.projectile;
+package net.minecraft.entity;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,17 +9,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -57,6 +58,7 @@ extends Entity {
     private int waitCountdown;
     private int fishTravelCountdown;
     private float fishAngle;
+    private boolean inOpenWater = true;
     public Entity hookedEntity;
     private State state = State.FLYING;
     private final int luckOfTheSeaLevel;
@@ -146,7 +148,7 @@ extends Entity {
             }
         }
         float f = 0.0f;
-        BlockPos blockPos = this.getSenseCenterPos();
+        BlockPos blockPos = this.getBlockPos();
         FluidState fluidState = this.world.getFluidState(blockPos);
         if (fluidState.matches(FluidTags.WATER)) {
             f = fluidState.getHeight(this.world, blockPos);
@@ -182,6 +184,7 @@ extends Entity {
                     d += Math.signum(d) * 0.1;
                 }
                 this.setVelocity(vec3d.x * 0.9, vec3d.y - d * (double)this.random.nextFloat() * 0.2, vec3d.z * 0.9);
+                boolean bl = this.inOpenWater = this.inOpenWater && this.isOpenOrWaterAround(blockPos);
                 if (!this.world.isClient && f > 0.0f) {
                     this.tickFishingLogic(blockPos);
                 }
@@ -335,6 +338,23 @@ extends Entity {
         }
     }
 
+    private boolean isOpenOrWaterAround(BlockPos pos) {
+        return BlockPos.stream(pos.add(-2, -1, -2), pos.add(2, 2, 2)).allMatch(this::isOpenOrWater);
+    }
+
+    private boolean isOpenOrWater(BlockPos pos) {
+        BlockState blockState = this.world.getBlockState(pos);
+        if (blockState.isAir()) {
+            return true;
+        }
+        FluidState fluidState = blockState.getFluidState();
+        return fluidState.matches(FluidTags.WATER) && fluidState.isStill() && blockState.getBlock() != Blocks.BUBBLE_COLUMN && blockState.getCollisionShape(this.world, pos).isEmpty();
+    }
+
+    public boolean isInOpenWater() {
+        return this.inOpenWater;
+    }
+
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
     }
@@ -354,7 +374,7 @@ extends Entity {
             this.world.sendEntityStatus(this, (byte)31);
             i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
         } else if (this.hookCountdown > 0) {
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, this.getSenseCenterPos()).put(LootContextParameters.TOOL, usedItem).setRandom(this.random).setLuck((float)this.luckOfTheSeaLevel + this.owner.getLuck());
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, this.getBlockPos()).put(LootContextParameters.TOOL, usedItem).put(LootContextParameters.THIS_ENTITY, this).setRandom(this.random).setLuck((float)this.luckOfTheSeaLevel + this.owner.getLuck());
             LootTable lootTable = this.world.getServer().getLootManager().getTable(LootTables.FISHING_GAMEPLAY);
             List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.FISHING));
             Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, usedItem, this, list);

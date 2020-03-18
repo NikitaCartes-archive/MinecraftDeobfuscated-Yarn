@@ -649,7 +649,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return Iterables.unmodifiableIterable(this.chunkHolders.values());
     }
 
-    void exportChunks(Writer writer) throws IOException {
+    void dump(Writer writer) throws IOException {
         CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("z").addColumn("level").addColumn("in_memory").addColumn("status").addColumn("full_status").addColumn("accessible_ready").addColumn("ticking_ready").addColumn("entity_ticking_ready").addColumn("ticket").addColumn("spawning").addColumn("entity_count").addColumn("block_entity_count").startBody(writer);
         for (Long2ObjectMap.Entry entry : this.chunkHolders.long2ObjectEntrySet()) {
             ChunkPos chunkPos = new ChunkPos(entry.getLongKey());

@@ -39,7 +39,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -217,7 +217,9 @@ RangedAttackMob {
             if (i2 <= 0) {
                 Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
                 this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0f, false, destructionType);
-                this.world.playGlobalEvent(1023, this.getSenseCenterPos(), 0);
+                if (!this.isSilent()) {
+                    this.world.playGlobalEvent(1023, this.getBlockPos(), 0);
+                }
             }
             this.setInvulTimer(i2);
             if (this.age % 10 == 0) {
@@ -299,7 +301,7 @@ RangedAttackMob {
                     }
                 }
                 if (bl) {
-                    this.world.playLevelEvent(null, 1022, this.getSenseCenterPos(), 0);
+                    this.world.playLevelEvent(null, 1022, this.getBlockPos(), 0);
                 }
             }
         }
@@ -375,7 +377,9 @@ RangedAttackMob {
     }
 
     private void method_6877(int headIndex, double d, double e, double f, boolean bl) {
-        this.world.playLevelEvent(null, 1024, this.getSenseCenterPos(), 0);
+        if (!this.isSilent()) {
+            this.world.playLevelEvent(null, 1024, this.getBlockPos(), 0);
+        }
         double g = this.getHeadX(headIndex);
         double h = this.getHeadY(headIndex);
         double i = this.getHeadZ(headIndex);
@@ -407,7 +411,7 @@ RangedAttackMob {
         if (this.getInvulnerableTimer() > 0 && source != DamageSource.OUT_OF_WORLD) {
             return false;
         }
-        if (this.shouldRenderOverlay() && (entity = source.getSource()) instanceof ProjectileEntity) {
+        if (this.shouldRenderOverlay() && (entity = source.getSource()) instanceof PersistentProjectileEntity) {
             return false;
         }
         entity = source.getAttacker();

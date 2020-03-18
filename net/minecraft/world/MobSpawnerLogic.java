@@ -126,7 +126,7 @@ public abstract class MobSpawnerLogic {
                     MobEntity mobEntity = (MobEntity)entity2;
                     if (!mobEntity.canSpawn(world, SpawnType.SPAWNER) || !mobEntity.canSpawn(world)) continue;
                     if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().contains("id", 8)) {
-                        ((MobEntity)entity2).initialize(world, world.getLocalDifficulty(entity2.getSenseCenterPos()), SpawnType.SPAWNER, null, null);
+                        ((MobEntity)entity2).initialize(world, world.getLocalDifficulty(entity2.getBlockPos()), SpawnType.SPAWNER, null, null);
                     }
                 }
                 this.spawnEntity(entity2);
@@ -221,7 +221,7 @@ public abstract class MobSpawnerLogic {
         if (this.renderedEntity == null) {
             this.renderedEntity = EntityType.loadEntityWithPassengers(this.spawnEntry.getEntityTag(), this.getWorld(), Function.identity());
             if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().contains("id", 8) && this.renderedEntity instanceof MobEntity) {
-                ((MobEntity)this.renderedEntity).initialize(this.getWorld(), this.getWorld().getLocalDifficulty(this.renderedEntity.getSenseCenterPos()), SpawnType.SPAWNER, null, null);
+                ((MobEntity)this.renderedEntity).initialize(this.getWorld(), this.getWorld().getLocalDifficulty(this.renderedEntity.getBlockPos()), SpawnType.SPAWNER, null, null);
             }
         }
         return this.renderedEntity;

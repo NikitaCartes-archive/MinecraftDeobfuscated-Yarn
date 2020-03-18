@@ -44,7 +44,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache dataCache) {
+    public void run(DataCache cache) {
         Path path = this.generator.getOutput();
         HashMap map = Maps.newHashMap();
         Consumer<BlockStateSupplier> consumer = blockStateSupplier -> {
@@ -63,7 +63,7 @@ implements DataProvider {
             }
         };
         Consumer<Item> consumer2 = set::add;
-        new BlockStateModelGenerator(consumer, biConsumer, consumer2).method_25534();
+        new BlockStateModelGenerator(consumer, biConsumer, consumer2).register();
         new ItemModelGenerator(biConsumer).register();
         List list = Registry.BLOCK.stream().filter(block -> !map.containsKey(block)).collect(Collectors.toList());
         if (!list.isEmpty()) {
@@ -81,8 +81,8 @@ implements DataProvider {
                 }
             }
         });
-        this.writeJsons(dataCache, path, map, BlockStateDefinitionProvider::getBlockStateJsonPath);
-        this.writeJsons(dataCache, path, map2, BlockStateDefinitionProvider::getModelJsonPath);
+        this.writeJsons(cache, path, map, BlockStateDefinitionProvider::getBlockStateJsonPath);
+        this.writeJsons(cache, path, map2, BlockStateDefinitionProvider::getModelJsonPath);
     }
 
     private <T> void writeJsons(DataCache cache, Path root, Map<T, ? extends Supplier<JsonElement>> jsons, BiFunction<Path, T, Path> locator) {

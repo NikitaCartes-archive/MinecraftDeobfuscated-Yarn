@@ -223,7 +223,7 @@ extends HostileEntity {
             if (this.delay <= 0) {
                 World world = this.silverfish.world;
                 Random random = this.silverfish.getRandom();
-                BlockPos blockPos = this.silverfish.getSenseCenterPos();
+                BlockPos blockPos = this.silverfish.getBlockPos();
                 int i = 0;
                 block0: while (i <= 5 && i >= -5) {
                     int j = 0;

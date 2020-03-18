@@ -368,7 +368,7 @@ implements RangedAttackMob {
         @Nullable
         private Vec3d getWanderTarget() {
             Random random = this.mob.getRandom();
-            BlockPos blockPos = this.mob.getSenseCenterPos();
+            BlockPos blockPos = this.mob.getBlockPos();
             for (int i = 0; i < 10; ++i) {
                 BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
                 if (this.world.getBlockState(blockPos2).getBlock() != Blocks.WATER) continue;

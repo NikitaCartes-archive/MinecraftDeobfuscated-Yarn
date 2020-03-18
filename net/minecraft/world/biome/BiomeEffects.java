@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.sound.BiomeAdditionsSound;
+import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.biome.BiomeParticleConfig;
 
@@ -16,10 +18,10 @@ public class BiomeEffects {
     private final int waterFogColor;
     private final Optional<BiomeParticleConfig> particleConfig;
     private final Optional<SoundEvent> loopSound;
-    private final Optional<SoundEvent> moodSound;
-    private final Optional<SoundEvent> additionsSound;
+    private final Optional<BiomeMoodSound> moodSound;
+    private final Optional<BiomeAdditionsSound> additionsSound;
 
-    private BiomeEffects(int fogColor, int waterColor, int waterFogCOlor, Optional<BiomeParticleConfig> particleConfig, Optional<SoundEvent> loopSound, Optional<SoundEvent> moodSound, Optional<SoundEvent> additionsSound) {
+    private BiomeEffects(int fogColor, int waterColor, int waterFogCOlor, Optional<BiomeParticleConfig> particleConfig, Optional<SoundEvent> loopSound, Optional<BiomeMoodSound> moodSound, Optional<BiomeAdditionsSound> additionsSound) {
         this.fogColor = fogColor;
         this.waterColor = waterColor;
         this.waterFogColor = waterFogCOlor;
@@ -71,7 +73,7 @@ public class BiomeEffects {
      * while three nether biomes in 20w10a have their dedicated mood sounds.
      */
     @Environment(value=EnvType.CLIENT)
-    public Optional<SoundEvent> getMoodSound() {
+    public Optional<BiomeMoodSound> getMoodSound() {
         return this.moodSound;
     }
 
@@ -82,7 +84,7 @@ public class BiomeEffects {
      * sound whenever the player is in the biome with this effect.
      */
     @Environment(value=EnvType.CLIENT)
-    public Optional<SoundEvent> getAdditionsSound() {
+    public Optional<BiomeAdditionsSound> getAdditionsSound() {
         return this.additionsSound;
     }
 
@@ -92,8 +94,8 @@ public class BiomeEffects {
         private OptionalInt waterFogColor = OptionalInt.empty();
         private Optional<BiomeParticleConfig> particleConfig = Optional.empty();
         private Optional<SoundEvent> loopSound = Optional.empty();
-        private Optional<SoundEvent> moodSound = Optional.empty();
-        private Optional<SoundEvent> additionsSound = Optional.empty();
+        private Optional<BiomeMoodSound> moodSound = Optional.empty();
+        private Optional<BiomeAdditionsSound> additionsSound = Optional.empty();
 
         public Builder fogColor(int fogColor) {
             this.fogColor = OptionalInt.of(fogColor);
@@ -120,13 +122,13 @@ public class BiomeEffects {
             return this;
         }
 
-        public Builder moodSound(SoundEvent sound) {
-            this.moodSound = Optional.of(sound);
+        public Builder moodSound(BiomeMoodSound biomeMoodSound) {
+            this.moodSound = Optional.of(biomeMoodSound);
             return this;
         }
 
-        public Builder additionsSound(SoundEvent sound) {
-            this.additionsSound = Optional.of(sound);
+        public Builder additionsSound(BiomeAdditionsSound biomeAdditionsSound) {
+            this.additionsSound = Optional.of(biomeAdditionsSound);
             return this;
         }
 

@@ -10,6 +10,7 @@ import java.util.Map;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -25,6 +26,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.PhantomSpawner;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
+import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -98,7 +100,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
     }
 
     @Override
-    public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
+    public void buildSurface(ChunkRegion region, Chunk chunk) {
     }
 
     @Override
@@ -132,7 +134,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
     }
 
     @Override
-    public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
+    public int getHeight(int x, int z, Heightmap.Type heightmapType) {
         BlockState[] blockStates = ((FlatChunkGeneratorConfig)this.config).getLayerBlocks();
         for (int i = blockStates.length - 1; i >= 0; --i) {
             BlockState blockState = blockStates[i];
@@ -143,14 +145,19 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
     }
 
     @Override
+    public BlockView getColumnSample(int x, int z) {
+        return new VerticalBlockSample(((FlatChunkGeneratorConfig)this.config).getLayerBlocks());
+    }
+
+    @Override
     public void spawnEntities(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
         this.phantomSpawner.spawn(world, spawnMonsters, spawnAnimals);
         this.catSpawner.spawn(world, spawnMonsters, spawnAnimals);
     }
 
     @Override
-    public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> structureFeature) {
-        return this.biome.hasStructureFeature(structureFeature);
+    public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> feature) {
+        return this.biome.hasStructureFeature(feature);
     }
 
     @Override

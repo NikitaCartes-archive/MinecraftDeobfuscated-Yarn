@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.entity.thrown;
+package net.minecraft.entity.projectile.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,7 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.thrown.ThrownItemEntity;
+import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
@@ -28,21 +28,21 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
-public class ThrownEnderpearlEntity
+public class EnderPearlEntity
 extends ThrownItemEntity {
     private LivingEntity owner;
 
-    public ThrownEnderpearlEntity(EntityType<? extends ThrownEnderpearlEntity> entityType, World world) {
+    public EnderPearlEntity(EntityType<? extends EnderPearlEntity> entityType, World world) {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
     }
 
-    public ThrownEnderpearlEntity(World world, LivingEntity owner) {
+    public EnderPearlEntity(World world, LivingEntity owner) {
         super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, owner, world);
         this.owner = owner;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public ThrownEnderpearlEntity(World world, double x, double y, double z) {
+    public EnderPearlEntity(World world, double x, double y, double z) {
         super((EntityType<? extends ThrownItemEntity>)EntityType.ENDER_PEARL, x, y, z, world);
     }
 

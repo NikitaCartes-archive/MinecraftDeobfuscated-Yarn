@@ -76,12 +76,12 @@ extends GuardianEntity {
             int l = 1200;
             for (ServerPlayerEntity serverPlayerEntity2 : list) {
                 if (serverPlayerEntity2.hasStatusEffect(statusEffect) && serverPlayerEntity2.getStatusEffect(statusEffect).getAmplifier() >= 2 && serverPlayerEntity2.getStatusEffect(statusEffect).getDuration() >= 1200) continue;
-                serverPlayerEntity2.networkHandler.sendPacket(new GameStateChangeS2CPacket(10, 0.0f));
+                serverPlayerEntity2.networkHandler.sendPacket(new GameStateChangeS2CPacket(10, this.isSilent() ? 0.0f : 1.0f));
                 serverPlayerEntity2.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2));
             }
         }
         if (!this.hasPositionTarget()) {
-            this.setPositionTarget(this.getSenseCenterPos(), 16);
+            this.setPositionTarget(this.getBlockPos(), 16);
         }
     }
 }

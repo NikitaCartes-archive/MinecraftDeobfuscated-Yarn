@@ -97,7 +97,7 @@ extends Goal {
         if (!targetPredicate.test(this.mob, target)) {
             return false;
         }
-        if (!this.mob.isInWalkTargetRange(target.getSenseCenterPos())) {
+        if (!this.mob.isInWalkTargetRange(target.getBlockPos())) {
             return false;
         }
         if (this.checkCanNavigate) {

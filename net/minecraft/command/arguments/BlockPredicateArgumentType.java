@@ -100,7 +100,7 @@ implements ArgumentType<BlockPredicate> {
         @Override
         public boolean test(CachedBlockPosition cachedBlockPosition) {
             BlockState blockState = cachedBlockPosition.getBlockState();
-            if (!blockState.matches(this.tag)) {
+            if (!blockState.isIn(this.tag)) {
                 return false;
             }
             for (Map.Entry<String, String> entry : this.properties.entrySet()) {

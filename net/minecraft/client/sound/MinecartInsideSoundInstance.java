@@ -14,13 +14,16 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * A sound instance played when a player is riding a minecart.
+ */
 @Environment(value=EnvType.CLIENT)
-public class MinecartSoundInstance
+public class MinecartInsideSoundInstance
 extends MovingSoundInstance {
     private final PlayerEntity player;
     private final AbstractMinecartEntity minecart;
 
-    public MinecartSoundInstance(PlayerEntity player, AbstractMinecartEntity minecart) {
+    public MinecartInsideSoundInstance(PlayerEntity player, AbstractMinecartEntity minecart) {
         super(SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL);
         this.player = player;
         this.minecart = minecart;
@@ -28,6 +31,11 @@ extends MovingSoundInstance {
         this.repeat = true;
         this.repeatDelay = 0;
         this.volume = 0.0f;
+    }
+
+    @Override
+    public boolean canPlay() {
+        return !this.minecart.isSilent();
     }
 
     @Override

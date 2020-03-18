@@ -5,10 +5,11 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -29,26 +30,26 @@ public class TargetBlock
 extends Block {
     private static final IntProperty POWER = Properties.POWER;
 
-    public TargetBlock(Block.Settings settings) {
+    public TargetBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWER, 0));
     }
 
     @Override
-    public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
-        int i = TargetBlock.trigger(world, state, hitResult, projectile);
+    public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+        int i = TargetBlock.trigger(world, state, hit, projectile);
         Entity entity = projectile.getOwner();
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
             serverPlayerEntity.incrementStat(Stats.TARGET_HIT);
-            Criterions.TARGET_HIT.trigger(serverPlayerEntity, projectile, hitResult.getPos(), i);
+            Criterions.TARGET_HIT.trigger(serverPlayerEntity, projectile, hit.getPos(), i);
         }
     }
 
     private static int trigger(IWorld world, BlockState state, BlockHitResult blockHitResult, Entity entity) {
         int j;
         int i = TargetBlock.calculatePower(blockHitResult, blockHitResult.getPos());
-        int n = j = entity instanceof ProjectileEntity ? 20 : 8;
+        int n = j = entity instanceof PersistentProjectileEntity ? 20 : 8;
         if (!world.getBlockTickScheduler().isScheduled(blockHitResult.getBlockPos(), state.getBlock())) {
             TargetBlock.setPower(world, state, i, blockHitResult.getBlockPos(), j);
         }
@@ -78,7 +79,7 @@ extends Block {
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return state.get(POWER);
     }
 
@@ -93,7 +94,7 @@ extends Block {
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (world.isClient() || state.getBlock() == oldState.getBlock()) {
             return;
         }

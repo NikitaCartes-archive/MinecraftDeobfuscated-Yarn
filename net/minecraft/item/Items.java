@@ -137,7 +137,7 @@ public class Items {
     public static final Item GOLD_ORE = Items.register(Blocks.GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item IRON_ORE = Items.register(Blocks.IRON_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item COAL_ORE = Items.register(Blocks.COAL_ORE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_23069 = Items.register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_23140 = Items.register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_LOG = Items.register(Blocks.OAK_LOG, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPRUCE_LOG = Items.register(Blocks.SPRUCE_LOG, ItemGroup.BUILDING_BLOCKS);
     public static final Item BIRCH_LOG = Items.register(Blocks.BIRCH_LOG, ItemGroup.BUILDING_BLOCKS);
@@ -160,16 +160,16 @@ public class Items {
     public static final Item STRIPPED_JUNGLE_WOOD = Items.register(Blocks.STRIPPED_JUNGLE_WOOD, ItemGroup.BUILDING_BLOCKS);
     public static final Item STRIPPED_ACACIA_WOOD = Items.register(Blocks.STRIPPED_ACACIA_WOOD, ItemGroup.BUILDING_BLOCKS);
     public static final Item STRIPPED_DARK_OAK_WOOD = Items.register(Blocks.STRIPPED_DARK_OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_22487 = Items.register(Blocks.STRIPPED_WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_22488 = Items.register(Blocks.STRIPPED_CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_22487 = Items.register(Blocks.STRIPPED_CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_22488 = Items.register(Blocks.STRIPPED_WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_WOOD = Items.register(Blocks.OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPRUCE_WOOD = Items.register(Blocks.SPRUCE_WOOD, ItemGroup.BUILDING_BLOCKS);
     public static final Item BIRCH_WOOD = Items.register(Blocks.BIRCH_WOOD, ItemGroup.BUILDING_BLOCKS);
     public static final Item JUNGLE_WOOD = Items.register(Blocks.JUNGLE_WOOD, ItemGroup.BUILDING_BLOCKS);
     public static final Item ACACIA_WOOD = Items.register(Blocks.ACACIA_WOOD, ItemGroup.BUILDING_BLOCKS);
     public static final Item DARK_OAK_WOOD = Items.register(Blocks.DARK_OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_22489 = Items.register(Blocks.WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item field_22490 = Items.register(Blocks.CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_22489 = Items.register(Blocks.CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_22490 = Items.register(Blocks.WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_LEAVES = Items.register(Blocks.OAK_LEAVES, ItemGroup.DECORATIONS);
     public static final Item SPRUCE_LEAVES = Items.register(Blocks.SPRUCE_LEAVES, ItemGroup.DECORATIONS);
     public static final Item BIRCH_LEAVES = Items.register(Blocks.BIRCH_LEAVES, ItemGroup.DECORATIONS);
@@ -320,6 +320,7 @@ public class Items {
     public static final Item SOUL_SAND = Items.register(Blocks.SOUL_SAND, ItemGroup.BUILDING_BLOCKS);
     public static final Item SOUL_SOIL = Items.register(Blocks.SOUL_SOIL, ItemGroup.BUILDING_BLOCKS);
     public static final Item BASALT = Items.register(Blocks.BASALT, ItemGroup.BUILDING_BLOCKS);
+    public static final Item field_23069 = Items.register(Blocks.POLISHED_BASALT, ItemGroup.BUILDING_BLOCKS);
     public static final Item SOUL_FIRE_TORCH = Items.register(new WallStandingBlockItem(Blocks.SOUL_FIRE_TORCH, Blocks.SOUL_FIRE_WALL_TORCH, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item GLOWSTONE = Items.register(Blocks.GLOWSTONE, ItemGroup.BUILDING_BLOCKS);
     public static final Item JACK_O_LANTERN = Items.register(Blocks.JACK_O_LANTERN, ItemGroup.BUILDING_BLOCKS);
@@ -1046,6 +1047,7 @@ public class Items {
     public static final Item NETHERITE_SCRAP = Items.register("netherite_scrap", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
     public static final Item TARGET = Items.register(Blocks.TARGET, ItemGroup.REDSTONE);
     public static final Item CRYING_OBSIDIAN = Items.register(Blocks.CRYING_OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
+    public static final Item RESPAWN_ANCHOR = Items.register(Blocks.RESPAWN_ANCHOR, ItemGroup.DECORATIONS);
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

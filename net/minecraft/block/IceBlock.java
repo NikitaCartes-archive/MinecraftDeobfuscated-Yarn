@@ -4,7 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -13,19 +13,17 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class IceBlock
 extends TransparentBlock {
-    public IceBlock(Block.Settings settings) {
+    public IceBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
@@ -45,7 +43,7 @@ extends TransparentBlock {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.getLightLevel(LightType.BLOCK, pos) > 11 - state.getOpacity(world, pos)) {
             this.melt(state, world, pos);
         }
@@ -63,11 +61,6 @@ extends TransparentBlock {
     @Override
     public PistonBehavior getPistonBehavior(BlockState state) {
         return PistonBehavior.NORMAL;
-    }
-
-    @Override
-    public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
-        return type == EntityType.POLAR_BEAR;
     }
 }
 

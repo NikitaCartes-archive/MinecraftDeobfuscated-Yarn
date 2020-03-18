@@ -372,7 +372,9 @@ implements RangedAttackMob {
         double f = target.getZ() - this.getZ();
         float g = MathHelper.sqrt(d * d + f * f) * 0.2f;
         llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5f, 10.0f);
-        this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LLAMA_SPIT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
+        if (!this.isSilent()) {
+            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LLAMA_SPIT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
+        }
         this.world.spawnEntity(llamaSpitEntity);
         this.spit = true;
     }

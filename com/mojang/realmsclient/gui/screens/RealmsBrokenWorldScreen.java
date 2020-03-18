@@ -219,15 +219,15 @@ extends RealmsScreen {
 
     private void drawSlotFrame(int x, int y, int xm, int ym, boolean active, String string, int i, long imageId, String image, boolean empty) {
         if (empty) {
-            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22682);
+            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.EMPTY_FRAME);
         } else if (image != null && imageId != -1L) {
             RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
         } else if (i == 1) {
-            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22683);
+            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.PANORAMA_0);
         } else if (i == 2) {
-            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22684);
+            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.PANORAMA_2);
         } else if (i == 3) {
-            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22685);
+            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.PANORAMA_3);
         } else {
             RealmsTextureManager.bindWorldTemplate(String.valueOf(this.field_20492.minigameId), this.field_20492.minigameImage);
         }
@@ -238,7 +238,7 @@ extends RealmsScreen {
             RenderSystem.color4f(f, f, f, 1.0f);
         }
         DrawableHelper.drawTexture(x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
-        this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.field_22681);
+        this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.SLOT_FRAME);
         if (active) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         } else {

@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.Instrument;
@@ -30,7 +31,7 @@ extends Block {
     public static final BooleanProperty POWERED = Properties.POWERED;
     public static final IntProperty NOTE = Properties.NOTE;
 
-    public NoteBlock(Block.Settings settings) {
+    public NoteBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(INSTRUMENT, Instrument.HARP)).with(NOTE, 0)).with(POWERED, false));
     }
@@ -41,15 +42,15 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-        if (facing == Direction.DOWN) {
-            return (BlockState)state.with(INSTRUMENT, Instrument.fromBlockState(neighborState));
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+        if (direction == Direction.DOWN) {
+            return (BlockState)state.with(INSTRUMENT, Instrument.fromBlockState(newState));
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         boolean bl = world.isReceivingRedstonePower(pos);
         if (bl != state.get(POWERED)) {
             if (bl) {
@@ -87,7 +88,7 @@ extends Block {
     }
 
     @Override
-    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
+    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
         int i = state.get(NOTE);
         float f = (float)Math.pow(2.0, (double)(i - 12) / 12.0);
         world.playSound(null, pos, state.get(INSTRUMENT).getSound(), SoundCategory.RECORDS, 3.0f, f);

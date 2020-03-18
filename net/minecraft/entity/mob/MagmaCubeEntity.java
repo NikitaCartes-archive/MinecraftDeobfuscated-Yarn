@@ -106,7 +106,7 @@ extends SlimeEntity {
     }
 
     @Override
-    protected boolean isBig() {
+    protected boolean canAttack() {
         return this.canMoveVoluntarily();
     }
 

@@ -51,9 +51,9 @@ public class FileDownload {
     private volatile boolean finished;
     private volatile boolean error;
     private volatile boolean extracting;
-    private volatile File field_20490;
+    private volatile File backupFile;
     private volatile File resourcePackPath;
-    private volatile HttpGet field_20491;
+    private volatile HttpGet httpRequest;
     private Thread currentThread;
     private final RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(120000).setConnectTimeout(120000).build();
     private static final String[] INVALID_FILE_NAMES = new String[]{"CON", "COM", "PRN", "AUX", "CLOCK$", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"};
@@ -88,25 +88,25 @@ public class FileDownload {
         }
     }
 
-    public void method_22100(WorldDownload worldDownload, String string, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus, LevelStorage levelStorage) {
+    public void downloadWorld(WorldDownload download, String message, RealmsDownloadLatestWorldScreen.DownloadStatus status, LevelStorage storage) {
         if (this.currentThread != null) {
             return;
         }
         this.currentThread = new Thread(() -> {
             Closeable closeableHttpClient = null;
             try {
-                this.field_20490 = File.createTempFile("backup", ".tar.gz");
-                this.field_20491 = new HttpGet(worldDownload.downloadLink);
+                this.backupFile = File.createTempFile("backup", ".tar.gz");
+                this.httpRequest = new HttpGet(worldDownload.downloadLink);
                 closeableHttpClient = HttpClientBuilder.create().setDefaultRequestConfig(this.requestConfig).build();
-                CloseableHttpResponse httpResponse = ((CloseableHttpClient)closeableHttpClient).execute(this.field_20491);
+                CloseableHttpResponse httpResponse = ((CloseableHttpClient)closeableHttpClient).execute(this.httpRequest);
                 downloadStatus.totalBytes = Long.parseLong(httpResponse.getFirstHeader("Content-Length").getValue());
                 if (httpResponse.getStatusLine().getStatusCode() != 200) {
                     this.error = true;
-                    this.field_20491.abort();
+                    this.httpRequest.abort();
                     return;
                 }
-                FileOutputStream outputStream2 = new FileOutputStream(this.field_20490);
-                ProgressListener progressListener = new ProgressListener(string.trim(), this.field_20490, levelStorage, downloadStatus);
+                FileOutputStream outputStream2 = new FileOutputStream(this.backupFile);
+                ProgressListener progressListener = new ProgressListener(message.trim(), this.backupFile, storage, status);
                 DownloadCountingOutputStream downloadCountingOutputStream2 = new DownloadCountingOutputStream(outputStream2);
                 downloadCountingOutputStream2.setListener(progressListener);
                 IOUtils.copy(httpResponse.getEntity().getContent(), (OutputStream)downloadCountingOutputStream2);
@@ -119,36 +119,36 @@ public class FileDownload {
                 block40: {
                     block41: {
                         CloseableHttpResponse httpResponse;
-                        this.field_20491.releaseConnection();
-                        if (this.field_20490 != null) {
-                            this.field_20490.delete();
+                        this.httpRequest.releaseConnection();
+                        if (this.backupFile != null) {
+                            this.backupFile.delete();
                         }
                         if (this.error) break block40;
                         if (worldDownload.resourcePackUrl.isEmpty() || worldDownload.resourcePackHash.isEmpty()) break block41;
                         try {
-                            this.field_20490 = File.createTempFile("resources", ".tar.gz");
-                            this.field_20491 = new HttpGet(worldDownload.resourcePackUrl);
-                            httpResponse = ((CloseableHttpClient)closeableHttpClient).execute(this.field_20491);
+                            this.backupFile = File.createTempFile("resources", ".tar.gz");
+                            this.httpRequest = new HttpGet(worldDownload.resourcePackUrl);
+                            httpResponse = ((CloseableHttpClient)closeableHttpClient).execute(this.httpRequest);
                             downloadStatus.totalBytes = Long.parseLong(httpResponse.getFirstHeader("Content-Length").getValue());
                             if (httpResponse.getStatusLine().getStatusCode() != 200) {
                                 this.error = true;
-                                this.field_20491.abort();
+                                this.httpRequest.abort();
                                 return;
                             }
                         } catch (Exception exception2) {
                             LOGGER.error("Caught exception while downloading: " + exception2.getMessage());
                             this.error = true;
                         }
-                        FileOutputStream outputStream2 = new FileOutputStream(this.field_20490);
-                        ResourcePackProgressListener resourcePackProgressListener2 = new ResourcePackProgressListener(this.field_20490, downloadStatus, worldDownload);
+                        FileOutputStream outputStream2 = new FileOutputStream(this.backupFile);
+                        ResourcePackProgressListener resourcePackProgressListener2 = new ResourcePackProgressListener(this.backupFile, status, download);
                         DownloadCountingOutputStream downloadCountingOutputStream2 = new DownloadCountingOutputStream(outputStream2);
                         downloadCountingOutputStream2.setListener(resourcePackProgressListener2);
                         IOUtils.copy(httpResponse.getEntity().getContent(), (OutputStream)downloadCountingOutputStream2);
                         break block40;
                         finally {
-                            this.field_20491.releaseConnection();
-                            if (this.field_20490 != null) {
-                                this.field_20490.delete();
+                            this.httpRequest.releaseConnection();
+                            if (this.backupFile != null) {
+                                this.backupFile.delete();
                             }
                         }
                     }
@@ -168,11 +168,11 @@ public class FileDownload {
     }
 
     public void cancel() {
-        if (this.field_20491 != null) {
-            this.field_20491.abort();
+        if (this.httpRequest != null) {
+            this.httpRequest.abort();
         }
-        if (this.field_20490 != null) {
-            this.field_20490.delete();
+        if (this.backupFile != null) {
+            this.backupFile.delete();
         }
         this.cancelled = true;
     }
@@ -201,7 +201,7 @@ public class FileDownload {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    private void untarGzipArchive(String name, File file, LevelStorage levelStorage) throws IOException {
+    private void untarGzipArchive(String name, File archive, LevelStorage storage) throws IOException {
         String string;
         Pattern pattern = Pattern.compile(".*-([0-9]+)$");
         int i = 1;
@@ -213,7 +213,7 @@ public class FileDownload {
         }
         name = FileDownload.findAvailableFolderName(name);
         try {
-            Object object = levelStorage.getLevelList().iterator();
+            Object object = storage.getLevelList().iterator();
             while (object.hasNext()) {
                 LevelSummary levelSummary = (LevelSummary)object.next();
                 if (!levelSummary.getName().toLowerCase(Locale.ROOT).startsWith(name.toLowerCase(Locale.ROOT))) continue;
@@ -230,13 +230,13 @@ public class FileDownload {
             this.error = true;
             return;
         }
-        if (!levelStorage.isLevelNameValid(name) || i > 1) {
+        if (!storage.isLevelNameValid(name) || i > 1) {
             string = name + (i == 1 ? "" : "-" + i);
-            if (!levelStorage.isLevelNameValid(string)) {
+            if (!storage.isLevelNameValid(string)) {
                 boolean bl = false;
                 while (!bl) {
                     string = name + (++i == 1 ? "" : "-" + i);
-                    if (!levelStorage.isLevelNameValid(string)) continue;
+                    if (!storage.isLevelNameValid(string)) continue;
                     bl = true;
                 }
             }
@@ -244,18 +244,18 @@ public class FileDownload {
             string = name;
         }
         TarArchiveInputStream tarArchiveInputStream = null;
-        File file2 = new File(MinecraftClient.getInstance().runDirectory.getAbsolutePath(), "saves");
+        File file = new File(MinecraftClient.getInstance().runDirectory.getAbsolutePath(), "saves");
         try {
-            file2.mkdir();
-            tarArchiveInputStream = new TarArchiveInputStream(new GzipCompressorInputStream(new BufferedInputStream(new FileInputStream(file))));
+            file.mkdir();
+            tarArchiveInputStream = new TarArchiveInputStream(new GzipCompressorInputStream(new BufferedInputStream(new FileInputStream(archive))));
             TarArchiveEntry tarArchiveEntry = tarArchiveInputStream.getNextTarEntry();
             while (tarArchiveEntry != null) {
-                File file3 = new File(file2, tarArchiveEntry.getName().replace("world", string));
+                File file2 = new File(file, tarArchiveEntry.getName().replace("world", string));
                 if (tarArchiveEntry.isDirectory()) {
-                    file3.mkdirs();
+                    file2.mkdirs();
                 } else {
-                    file3.createNewFile();
-                    try (FileOutputStream fileOutputStream = new FileOutputStream(file3);){
+                    file2.createNewFile();
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(file2);){
                         IOUtils.copy((InputStream)tarArchiveInputStream, (OutputStream)fileOutputStream);
                     }
                 }
@@ -268,18 +268,18 @@ public class FileDownload {
             if (tarArchiveInputStream != null) {
                 tarArchiveInputStream.close();
             }
-            if (file != null) {
-                file.delete();
+            if (archive != null) {
+                archive.delete();
             }
-            LevelStorage levelStorage2 = levelStorage;
-            levelStorage2.renameLevel(string, string.trim());
-            File file3 = new File(file2, string + File.separator + "level.dat");
-            FileDownload.method_25031(file3);
-            this.resourcePackPath = new File(file2, string + File.separator + "resources.zip");
+            LevelStorage levelStorage = storage;
+            levelStorage.renameLevel(string, string.trim());
+            File file2 = new File(file, string + File.separator + "level.dat");
+            FileDownload.readNbtFile(file2);
+            this.resourcePackPath = new File(file, string + File.separator + "resources.zip");
         }
     }
 
-    private static void method_25031(File file) {
+    private static void readNbtFile(File file) {
         if (file.exists()) {
             try {
                 CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
@@ -357,10 +357,10 @@ public class FileDownload {
         private final LevelStorage levelStorageSource;
         private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 
-        private ProgressListener(String worldName, File tempFile, LevelStorage levelStorage, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus) {
+        private ProgressListener(String worldName, File tempFile, LevelStorage storage, RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus) {
             this.worldName = worldName;
             this.tempFile = tempFile;
-            this.levelStorageSource = levelStorage;
+            this.levelStorageSource = storage;
             this.downloadStatus = downloadStatus;
         }
 

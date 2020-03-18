@@ -45,7 +45,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -304,7 +304,7 @@ extends TameableEntity {
         }
         Entity entity = source.getAttacker();
         this.method_24346(false);
-        if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof ProjectileEntity)) {
+        if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof PersistentProjectileEntity)) {
             amount = (amount + 1.0f) / 2.0f;
         }
         return super.damage(source, amount);

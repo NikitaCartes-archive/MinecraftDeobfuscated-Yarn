@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.entity.thrown;
+package net.minecraft.entity.projectile.thrown;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -22,7 +22,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.BlazeEntity;
 import net.minecraft.entity.mob.EndermanEntity;
-import net.minecraft.entity.thrown.ThrownItemEntity;
+import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -41,21 +41,21 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
-public class ThrownPotionEntity
+public class PotionEntity
 extends ThrownItemEntity
 implements FlyingItemEntity {
-    public static final Predicate<LivingEntity> WATER_HURTS = ThrownPotionEntity::doesWaterHurt;
+    public static final Predicate<LivingEntity> WATER_HURTS = PotionEntity::doesWaterHurt;
 
-    public ThrownPotionEntity(EntityType<? extends ThrownPotionEntity> entityType, World world) {
+    public PotionEntity(EntityType<? extends PotionEntity> entityType, World world) {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
     }
 
-    public ThrownPotionEntity(World world, LivingEntity livingEntity) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.POTION, livingEntity, world);
+    public PotionEntity(World world, LivingEntity owner) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.POTION, owner, world);
     }
 
-    public ThrownPotionEntity(World world, double x, double y, double d) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.POTION, x, y, d, world);
+    public PotionEntity(World world, double x, double y, double z) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.POTION, x, y, z, world);
     }
 
     @Override
@@ -111,7 +111,7 @@ implements FlyingItemEntity {
             }
         }
         int i = potion.hasInstantEffect() ? 2007 : 2002;
-        this.world.playLevelEvent(i, this.getSenseCenterPos(), PotionUtil.getColor(itemStack));
+        this.world.playLevelEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
         this.remove();
     }
 
@@ -121,7 +121,7 @@ implements FlyingItemEntity {
         if (!list.isEmpty()) {
             for (LivingEntity livingEntity : list) {
                 double d = this.squaredDistanceTo(livingEntity);
-                if (!(d < 16.0) || !ThrownPotionEntity.doesWaterHurt(livingEntity)) continue;
+                if (!(d < 16.0) || !PotionEntity.doesWaterHurt(livingEntity)) continue;
                 livingEntity.damage(DamageSource.magic(livingEntity, this.getOwner()), 1.0f);
             }
         }
@@ -180,7 +180,7 @@ implements FlyingItemEntity {
     private void extinguishFire(BlockPos blockPos, Direction direction) {
         BlockState blockState = this.world.getBlockState(blockPos);
         Block block = blockState.getBlock();
-        if (blockState.matches(BlockTags.FIRE)) {
+        if (blockState.isIn(BlockTags.FIRE)) {
             this.world.removeBlock(blockPos, false);
         } else if (block == Blocks.CAMPFIRE && blockState.get(CampfireBlock.LIT).booleanValue()) {
             this.world.playLevelEvent(null, 1009, blockPos, 0);

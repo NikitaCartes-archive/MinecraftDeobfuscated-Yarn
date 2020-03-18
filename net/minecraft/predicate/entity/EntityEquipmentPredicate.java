@@ -74,7 +74,7 @@ public class EntityEquipmentPredicate {
         return new EntityEquipmentPredicate(itemPredicate, itemPredicate2, itemPredicate3, itemPredicate4, itemPredicate5, itemPredicate6);
     }
 
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         if (this == ANY) {
             return JsonNull.INSTANCE;
         }

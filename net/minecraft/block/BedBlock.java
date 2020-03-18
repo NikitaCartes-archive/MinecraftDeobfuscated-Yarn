@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
@@ -14,13 +15,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.block.MaterialColor;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -70,18 +70,10 @@ implements BlockEntityProvider {
     protected static final VoxelShape EAST_SHAPE = VoxelShapes.union(TOP_SHAPE, LEG_3_SHAPE, LEG_4_SHAPE);
     private final DyeColor color;
 
-    public BedBlock(DyeColor color, Block.Settings settings) {
+    public BedBlock(DyeColor color, AbstractBlock.Settings settings) {
         super(settings);
         this.color = color;
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(PART, BedPart.FOOT)).with(OCCUPIED, false));
-    }
-
-    @Override
-    public MaterialColor getMapColor(BlockState state, BlockView world, BlockPos pos) {
-        if (state.get(PART) == BedPart.FOOT) {
-            return this.color.getMaterialColor();
-        }
-        return MaterialColor.WEB;
     }
 
     @Nullable
@@ -154,14 +146,14 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-        if (facing == BedBlock.getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
-            if (neighborState.getBlock() == this && neighborState.get(PART) != state.get(PART)) {
-                return (BlockState)state.with(OCCUPIED, neighborState.get(OCCUPIED));
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+        if (direction == BedBlock.getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
+            if (newState.getBlock() == this && newState.get(PART) != state.get(PART)) {
+                return (BlockState)state.with(OCCUPIED, newState.get(OCCUPIED));
             }
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     private static Direction getDirectionTowardsOtherPart(BedPart part, Direction direction) {
@@ -204,7 +196,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         Direction direction = BedBlock.getOppositePartDirection(state).getOpposite();
         switch (direction) {
             case NORTH: {
@@ -312,7 +304,7 @@ implements BlockEntityProvider {
             BlockPos blockPos = pos.offset(state.get(FACING));
             world.setBlockState(blockPos, (BlockState)state.with(PART, BedPart.HEAD), 3);
             world.updateNeighbors(pos, Blocks.AIR);
-            state.updateNeighborStates(world, pos, 3);
+            state.updateNeighbors(world, pos, 3);
         }
     }
 
@@ -329,7 +321,7 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
 }

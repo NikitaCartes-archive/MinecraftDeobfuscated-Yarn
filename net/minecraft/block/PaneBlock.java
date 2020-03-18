@@ -5,9 +5,11 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalConnectingBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -15,12 +17,15 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class PaneBlock
 extends HorizontalConnectingBlock {
-    protected PaneBlock(Block.Settings settings) {
+    protected PaneBlock(AbstractBlock.Settings settings) {
         super(1.0f, 1.0f, 16.0f, 16.0f, 16.0f, settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(WATERLOGGED, false));
     }
@@ -42,28 +47,33 @@ extends HorizontalConnectingBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        if (facing.getAxis().isHorizontal()) {
-            return (BlockState)state.with((Property)FACING_PROPERTIES.get(facing), this.connectsTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, facing.getOpposite())));
+        if (direction.getAxis().isHorizontal()) {
+            return (BlockState)state.with((Property)FACING_PROPERTIES.get(direction), this.connectsTo(newState, newState.isSideSolidFullSquare(world, posFrom, direction.getOpposite())));
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+    }
+
+    @Override
+    public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return VoxelShapes.empty();
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean isSideInvisible(BlockState state, BlockState neighbor, Direction facing) {
-        if (neighbor.getBlock() == this) {
-            if (!facing.getAxis().isHorizontal()) {
+    public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+        if (stateFrom.getBlock() == this) {
+            if (!direction.getAxis().isHorizontal()) {
                 return true;
             }
-            if (((Boolean)state.get((Property)FACING_PROPERTIES.get(facing))).booleanValue() && ((Boolean)neighbor.get((Property)FACING_PROPERTIES.get(facing.getOpposite()))).booleanValue()) {
+            if (((Boolean)state.get((Property)FACING_PROPERTIES.get(direction))).booleanValue() && ((Boolean)stateFrom.get((Property)FACING_PROPERTIES.get(direction.getOpposite()))).booleanValue()) {
                 return true;
             }
         }
-        return super.isSideInvisible(state, neighbor, facing);
+        return super.isSideInvisible(state, stateFrom, direction);
     }
 
     public final boolean connectsTo(BlockState state, boolean bl) {

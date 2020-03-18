@@ -63,7 +63,7 @@ public class StatusEffects {
                 if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
                     return;
                 }
-                if (serverWorld.isNearOccupiedPointOfInterest(entity.getSenseCenterPos())) {
+                if (serverWorld.isNearOccupiedPointOfInterest(entity.getBlockPos())) {
                     serverWorld.getRaidManager().startRaid(serverPlayerEntity);
                 }
             }

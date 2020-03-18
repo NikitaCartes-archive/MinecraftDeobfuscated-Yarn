@@ -41,7 +41,7 @@ extends Goal {
             return false;
         }
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
-        BlockPos blockPos2 = this.mob.getSenseCenterPos();
+        BlockPos blockPos2 = this.mob.getBlockPos();
         if (!serverWorld.isNearOccupiedPointOfInterest(blockPos2, 6)) {
             return false;
         }
@@ -76,7 +76,7 @@ extends Goal {
 
     private void findOtherWaypoint() {
         Random random = this.mob.getRandom();
-        BlockPos blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.mob.getSenseCenterPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+        BlockPos blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.mob.getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
         this.mob.getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0);
     }
 }

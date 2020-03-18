@@ -14,6 +14,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
@@ -81,7 +82,7 @@ extends EntityNavigation {
             g = (float)((double)g * (vec3d2.length() * 6.0));
         }
         int i = 6;
-        Vec3d vec3d3 = this.currentPath.getCurrentPosition();
+        Vec3d vec3d3 = Vec3d.method_24953(this.currentPath.getCurrentPosition());
         if (Math.abs(this.entity.getX() - (vec3d3.x + 0.5)) < (double)g && Math.abs(this.entity.getZ() - (vec3d3.z + 0.5)) < (double)g && Math.abs(this.entity.getY() - vec3d3.y) < (double)(g * 2.0f)) {
             this.currentPath.next();
         }
@@ -104,16 +105,16 @@ extends EntityNavigation {
             this.pathStartPos = currentPos;
         }
         if (this.currentPath != null && !this.currentPath.isFinished()) {
-            Vec3d vec3d = this.currentPath.getCurrentPosition();
-            if (vec3d.equals(this.lastNodePosition)) {
+            Vec3i vec3i = this.currentPath.getCurrentPosition();
+            if (vec3i.equals(this.lastNodePosition)) {
                 this.currentNodeMs += Util.getMeasuringTimeMs() - this.lastActiveTickMs;
             } else {
-                this.lastNodePosition = vec3d;
-                double d = currentPos.distanceTo(this.lastNodePosition);
+                this.lastNodePosition = vec3i;
+                double d = currentPos.distanceTo(Vec3d.method_24953(this.lastNodePosition));
                 double d2 = this.currentNodeTimeout = this.entity.getMovementSpeed() > 0.0f ? d / (double)this.entity.getMovementSpeed() * 100.0 : 0.0;
             }
             if (this.currentNodeTimeout > 0.0 && (double)this.currentNodeMs > this.currentNodeTimeout * 2.0) {
-                this.lastNodePosition = Vec3d.ZERO;
+                this.lastNodePosition = Vec3i.ZERO;
                 this.currentNodeMs = 0L;
                 this.currentNodeTimeout = 0.0;
                 this.stop();
@@ -130,7 +131,7 @@ extends EntityNavigation {
 
     @Override
     public boolean isValidPosition(BlockPos pos) {
-        return !this.world.getBlockState(pos).isFullOpaque(this.world, pos);
+        return !this.world.getBlockState(pos).isOpaqueFullCube(this.world, pos);
     }
 
     @Override

@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -22,7 +23,7 @@ extends Block {
     private final Block regularBlock;
     private static final Map<Block, Block> REGULAR_TO_INFESTED = Maps.newIdentityHashMap();
 
-    public InfestedBlock(Block regularBlock, Block.Settings settings) {
+    public InfestedBlock(Block regularBlock, AbstractBlock.Settings settings) {
         super(settings);
         this.regularBlock = regularBlock;
         REGULAR_TO_INFESTED.put(regularBlock, this);

@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleTypes;
@@ -15,7 +16,7 @@ import net.minecraft.world.World;
 
 public class CryingObsidianBlock
 extends Block {
-    public CryingObsidianBlock(Block.Settings settings) {
+    public CryingObsidianBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -29,7 +30,7 @@ public class JukeboxBlock
 extends BlockWithEntity {
     public static final BooleanProperty HAS_RECORD = Properties.HAS_RECORD;
 
-    protected JukeboxBlock(Block.Settings settings) {
+    protected JukeboxBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HAS_RECORD, false));
     }
@@ -80,12 +81,12 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (state.getBlock() == newState.getBlock()) {
             return;
         }
         this.removeRecord(world, pos);
-        super.onBlockRemoved(state, world, pos, newState, moved);
+        super.onBlockRemoved(state, world, pos, newState, notify);
     }
 
     @Override

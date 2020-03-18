@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
@@ -63,10 +63,10 @@ extends AbstractMinecartEntity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        ProjectileEntity projectileEntity;
+        PersistentProjectileEntity persistentProjectileEntity;
         Entity entity = source.getSource();
-        if (entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).isOnFire()) {
-            this.explode(projectileEntity.getVelocity().lengthSquared());
+        if (entity instanceof PersistentProjectileEntity && (persistentProjectileEntity = (PersistentProjectileEntity)entity).isOnFire()) {
+            this.explode(persistentProjectileEntity.getVelocity().lengthSquared());
         }
         return super.damage(source, amount);
     }
@@ -145,7 +145,7 @@ extends AbstractMinecartEntity {
 
     @Override
     public float getEffectiveExplosionResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
-        if (this.isPrimed() && (blockState.matches(BlockTags.RAILS) || world.getBlockState(pos.up()).matches(BlockTags.RAILS))) {
+        if (this.isPrimed() && (blockState.isIn(BlockTags.RAILS) || world.getBlockState(pos.up()).isIn(BlockTags.RAILS))) {
             return 0.0f;
         }
         return super.getEffectiveExplosionResistance(explosion, world, pos, blockState, fluidState, max);
@@ -153,7 +153,7 @@ extends AbstractMinecartEntity {
 
     @Override
     public boolean canExplosionDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float explosionPower) {
-        if (this.isPrimed() && (state.matches(BlockTags.RAILS) || world.getBlockState(pos.up()).matches(BlockTags.RAILS))) {
+        if (this.isPrimed() && (state.isIn(BlockTags.RAILS) || world.getBlockState(pos.up()).isIn(BlockTags.RAILS))) {
             return false;
         }
         return super.canExplosionDestroyBlock(explosion, world, pos, state, explosionPower);

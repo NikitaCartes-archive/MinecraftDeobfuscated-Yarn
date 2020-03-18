@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,7 +18,7 @@ import net.minecraft.world.World;
 public class NetherrackBlock
 extends Block
 implements Fertilizable {
-    public NetherrackBlock(Block.Settings settings) {
+    public NetherrackBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
@@ -27,7 +28,7 @@ implements Fertilizable {
             return false;
         }
         for (BlockPos blockPos : BlockPos.iterate(pos.add(-1, -1, -1), pos.add(1, 1, 1))) {
-            if (!world.getBlockState(blockPos).matches(BlockTags.NYLIUM)) continue;
+            if (!world.getBlockState(blockPos).isIn(BlockTags.NYLIUM)) continue;
             return true;
         }
         return false;

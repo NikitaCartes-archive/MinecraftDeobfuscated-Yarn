@@ -35,10 +35,10 @@ import org.jetbrains.annotations.Nullable;
 public class RealmsPlayerScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Identifier field_22704 = new Identifier("realms", "textures/gui/realms/op_icon.png");
-    private static final Identifier field_22705 = new Identifier("realms", "textures/gui/realms/user_icon.png");
-    private static final Identifier field_22706 = new Identifier("realms", "textures/gui/realms/cross_player_icon.png");
-    private static final Identifier field_22707 = new Identifier("minecraft", "textures/gui/options_background.png");
+    private static final Identifier OP_ICON = new Identifier("realms", "textures/gui/realms/op_icon.png");
+    private static final Identifier USER_ICON = new Identifier("realms", "textures/gui/realms/user_icon.png");
+    private static final Identifier CROSS_PLAYER_ICON = new Identifier("realms", "textures/gui/realms/cross_player_icon.png");
+    private static final Identifier OPTIONS_BACKGROUND = new Identifier("minecraft", "textures/gui/options_background.png");
     private String toolTip;
     private final RealmsConfigureWorldScreen lastScreen;
     private final RealmsServer serverData;
@@ -184,7 +184,7 @@ extends RealmsScreen {
         int i = RealmsPlayerScreen.row(12) + 20;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        this.client.getTextureManager().bindTexture(field_22707);
+        this.client.getTextureManager().bindTexture(OPTIONS_BACKGROUND);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -221,7 +221,7 @@ extends RealmsScreen {
 
     private void drawRemoveIcon(int x, int y, int xm, int ym) {
         boolean bl = xm >= x && xm <= x + 9 && ym >= y && ym <= y + 9 && ym < RealmsPlayerScreen.row(12) + 20 && ym > RealmsPlayerScreen.row(1);
-        this.client.getTextureManager().bindTexture(field_22706);
+        this.client.getTextureManager().bindTexture(CROSS_PLAYER_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 7.0f : 0.0f;
         DrawableHelper.drawTexture(x, y, 0.0f, f, 8, 7, 8, 14);
@@ -232,7 +232,7 @@ extends RealmsScreen {
 
     private void drawOpped(int x, int y, int xm, int ym) {
         boolean bl = xm >= x && xm <= x + 9 && ym >= y && ym <= y + 9 && ym < RealmsPlayerScreen.row(12) + 20 && ym > RealmsPlayerScreen.row(1);
-        this.client.getTextureManager().bindTexture(field_22704);
+        this.client.getTextureManager().bindTexture(OP_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 8.0f : 0.0f;
         DrawableHelper.drawTexture(x, y, 0.0f, f, 8, 8, 8, 16);
@@ -243,7 +243,7 @@ extends RealmsScreen {
 
     private void drawNormal(int x, int y, int xm, int ym) {
         boolean bl = xm >= x && xm <= x + 9 && ym >= y && ym <= y + 9 && ym < RealmsPlayerScreen.row(12) + 20 && ym > RealmsPlayerScreen.row(1);
-        this.client.getTextureManager().bindTexture(field_22705);
+        this.client.getTextureManager().bindTexture(USER_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 8.0f : 0.0f;
         DrawableHelper.drawTexture(x, y, 0.0f, f, 8, 8, 8, 16);
@@ -322,28 +322,28 @@ extends RealmsScreen {
         }
 
         @Override
-        public void itemClicked(int i, int j, double d, double e, int k) {
-            if (j < 0 || j > ((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.size() || RealmsPlayerScreen.this.toolTip == null) {
+        public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
+            if (selectionIndex < 0 || selectionIndex > ((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.size() || RealmsPlayerScreen.this.toolTip == null) {
                 return;
             }
             if (RealmsPlayerScreen.this.toolTip.equals(I18n.translate("mco.configure.world.invites.ops.tooltip", new Object[0])) || RealmsPlayerScreen.this.toolTip.equals(I18n.translate("mco.configure.world.invites.normal.tooltip", new Object[0]))) {
-                if (((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.get(j).isOperator()) {
-                    RealmsPlayerScreen.this.deop(j);
+                if (((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.get(selectionIndex).isOperator()) {
+                    RealmsPlayerScreen.this.deop(selectionIndex);
                 } else {
-                    RealmsPlayerScreen.this.op(j);
+                    RealmsPlayerScreen.this.op(selectionIndex);
                 }
             } else if (RealmsPlayerScreen.this.toolTip.equals(I18n.translate("mco.configure.world.invites.remove.tooltip", new Object[0]))) {
-                RealmsPlayerScreen.this.uninvite(j);
+                RealmsPlayerScreen.this.uninvite(selectionIndex);
             }
         }
 
         @Override
-        public void setSelected(int i) {
-            this.setSelectedItem(i);
-            if (i != -1) {
-                Realms.narrateNow(I18n.translate("narrator.select", ((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.get(i).getName()));
+        public void setSelected(int index) {
+            this.setSelectedItem(index);
+            if (index != -1) {
+                Realms.narrateNow(I18n.translate("narrator.select", ((RealmsPlayerScreen)RealmsPlayerScreen.this).serverData.players.get(index).getName()));
             }
-            this.selectInviteListItem(i);
+            this.selectInviteListItem(index);
         }
 
         public void selectInviteListItem(int item) {

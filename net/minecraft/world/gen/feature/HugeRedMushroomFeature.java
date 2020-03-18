@@ -35,7 +35,7 @@ extends HugeMushroomFeature {
                     boolean bl7 = bl6 = bl3 || bl4;
                     if (i < y && bl5 == bl6) continue;
                     mutable.set(start, l, i, m);
-                    if (world.getBlockState(mutable).isFullOpaque(world, mutable)) continue;
+                    if (world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) continue;
                     this.setBlockState(world, mutable, (BlockState)((BlockState)((BlockState)((BlockState)((BlockState)config.capProvider.getBlockState(random, start).with(MushroomBlock.UP, i >= y - 1)).with(MushroomBlock.WEST, l < -k)).with(MushroomBlock.EAST, l > k)).with(MushroomBlock.NORTH, m < -k)).with(MushroomBlock.SOUTH, m > k));
                 }
             }

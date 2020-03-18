@@ -24,11 +24,11 @@ import org.jetbrains.annotations.Nullable;
 public class RealmsWorldSlotButton
 extends ButtonWidget
 implements TickableRealmsButton {
-    public static final Identifier field_22681 = new Identifier("realms", "textures/gui/realms/slot_frame.png");
-    public static final Identifier field_22682 = new Identifier("realms", "textures/gui/realms/empty_frame.png");
-    public static final Identifier field_22683 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
-    public static final Identifier field_22684 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
-    public static final Identifier field_22685 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
+    public static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
+    public static final Identifier EMPTY_FRAME = new Identifier("realms", "textures/gui/realms/empty_frame.png");
+    public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
+    public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
+    public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
     private final Supplier<RealmsServer> serverDataProvider;
     private final Consumer<String> toolTipSetter;
     private final int slotIndex;
@@ -36,15 +36,15 @@ implements TickableRealmsButton {
     @Nullable
     private State state;
 
-    public RealmsWorldSlotButton(int x, int y, int width, int height, Supplier<RealmsServer> serverDataProvider, Consumer<String> toolTipSetter, int id, ButtonWidget.PressAction pressAction) {
-        super(x, y, width, height, "", pressAction);
+    public RealmsWorldSlotButton(int x, int y, int width, int height, Supplier<RealmsServer> serverDataProvider, Consumer<String> toolTipSetter, int id, ButtonWidget.PressAction action) {
+        super(x, y, width, height, "", action);
         this.serverDataProvider = serverDataProvider;
         this.slotIndex = id;
         this.toolTipSetter = toolTipSetter;
     }
 
     @Nullable
-    public State method_25099() {
+    public State getState() {
         return this.state;
     }
 
@@ -93,12 +93,12 @@ implements TickableRealmsButton {
             string3 = I18n.translate("mco.configure.world.slot.tooltip", new Object[0]);
         }
         this.state = new State(bl2, string, l, string2, bl3, bl, action, string3);
-        this.method_25098(realmsServer, this.state.slotName, this.state.empty, this.state.minigame, this.state.action, this.state.actionPrompt);
+        this.setMessage(realmsServer, this.state.slotName, this.state.empty, this.state.minigame, this.state.action, this.state.actionPrompt);
     }
 
-    public void method_25098(RealmsServer realmsServer, String string, boolean bl, boolean bl2, Action action, String string2) {
-        String string3 = action == Action.NOTHING ? string : (bl2 ? (bl ? string2 : string2 + " " + string + " " + realmsServer.minigameName) : string2 + " " + string);
-        this.setMessage(string3);
+    public void setMessage(RealmsServer server, String slotName, boolean isEmpty, boolean isMinigame, Action action, String promptMessage) {
+        String string = action == Action.NOTHING ? slotName : (isMinigame ? (isEmpty ? promptMessage : promptMessage + " " + slotName + " " + server.minigameName) : promptMessage + " " + slotName);
+        this.setMessage(string);
     }
 
     @Override
@@ -120,15 +120,15 @@ implements TickableRealmsButton {
         if (minigame) {
             RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
         } else if (empty) {
-            textureManager.bindTexture(field_22682);
+            textureManager.bindTexture(EMPTY_FRAME);
         } else if (image != null && imageId != -1L) {
             RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
         } else if (i == 1) {
-            textureManager.bindTexture(field_22683);
+            textureManager.bindTexture(PANORAMA_0);
         } else if (i == 2) {
-            textureManager.bindTexture(field_22684);
+            textureManager.bindTexture(PANORAMA_2);
         } else if (i == 3) {
-            textureManager.bindTexture(field_22685);
+            textureManager.bindTexture(PANORAMA_3);
         }
         if (currentlyActiveSlot) {
             float f = 0.85f + 0.15f * MathHelper.cos((float)this.animTick * 0.2f);
@@ -137,7 +137,7 @@ implements TickableRealmsButton {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         }
         RealmsWorldSlotButton.drawTexture(x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
-        textureManager.bindTexture(field_22681);
+        textureManager.bindTexture(SLOT_FRAME);
         boolean bl3 = bl2 = bl && action != Action.NOTHING;
         if (bl2) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);

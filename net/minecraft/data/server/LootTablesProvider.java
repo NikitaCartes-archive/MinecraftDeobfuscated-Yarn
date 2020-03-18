@@ -48,7 +48,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache dataCache) {
+    public void run(DataCache cache) {
         Path path = this.root.getOutput();
         HashMap<Identifier, LootTable> map = Maps.newHashMap();
         this.lootTypeGenerators.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((identifier, builder) -> {
@@ -70,7 +70,7 @@ implements DataProvider {
         map.forEach((identifier, lootTable) -> {
             Path path2 = LootTablesProvider.getOutput(path, identifier);
             try {
-                DataProvider.writeToPath(GSON, dataCache, LootManager.toJson(lootTable), path2);
+                DataProvider.writeToPath(GSON, cache, LootManager.toJson(lootTable), path2);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save loot table {}", (Object)path2, (Object)iOException);
             }

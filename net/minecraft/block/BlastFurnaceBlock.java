@@ -6,8 +6,8 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractFurnaceBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlastFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 
 public class BlastFurnaceBlock
 extends AbstractFurnaceBlock {
-    protected BlastFurnaceBlock(Block.Settings settings) {
+    protected BlastFurnaceBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

@@ -5,14 +5,15 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.WallMountedBlock;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -28,7 +29,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractButtonBlock
@@ -52,19 +52,18 @@ extends WallMountedBlock {
     protected static final VoxelShape EAST_PRESSED_SHAPE = Block.createCuboidShape(0.0, 6.0, 5.0, 1.0, 10.0, 11.0);
     private final boolean wooden;
 
-    protected AbstractButtonBlock(boolean wooden, Block.Settings settings) {
+    protected AbstractButtonBlock(boolean wooden, AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(FACE, WallMountLocation.WALL));
         this.wooden = wooden;
     }
 
-    @Override
-    public int getTickRate(WorldView world) {
+    private int method_26153() {
         return this.wooden ? 30 : 20;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         Direction direction = state.get(FACING);
         boolean bl = state.get(POWERED);
         switch ((WallMountLocation)state.get(FACE)) {
@@ -108,7 +107,7 @@ extends WallMountedBlock {
     public void powerOn(BlockState state, World world, BlockPos pos) {
         world.setBlockState(pos, (BlockState)state.with(POWERED, true), 3);
         this.updateNeighbors(state, world, pos);
-        world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+        world.getBlockTickScheduler().schedule(pos, this, this.method_26153());
     }
 
     protected void playClickSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos, boolean powered) {
@@ -118,24 +117,24 @@ extends WallMountedBlock {
     protected abstract SoundEvent getClickSound(boolean var1);
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (moved || state.getBlock() == newState.getBlock()) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+        if (notify || state.getBlock() == newState.getBlock()) {
             return;
         }
         if (state.get(POWERED).booleanValue()) {
             this.updateNeighbors(state, world, pos);
         }
-        super.onBlockRemoved(state, world, pos, newState, moved);
+        super.onBlockRemoved(state, world, pos, newState, notify);
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return state.get(POWERED) != false ? 15 : 0;
     }
 
     @Override
-    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
-        if (state.get(POWERED).booleanValue() && AbstractButtonBlock.getDirection(state) == facing) {
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        if (state.get(POWERED).booleanValue() && AbstractButtonBlock.getDirection(state) == direction) {
             return 15;
         }
         return 0;
@@ -170,7 +169,7 @@ extends WallMountedBlock {
 
     private void tryPowerWithProjectiles(BlockState state, World world, BlockPos pos) {
         boolean bl2;
-        List<ProjectileEntity> list = world.getNonSpectatingEntities(ProjectileEntity.class, state.getOutlineShape(world, pos).getBoundingBox().offset(pos));
+        List<PersistentProjectileEntity> list = world.getNonSpectatingEntities(PersistentProjectileEntity.class, state.getOutlineShape(world, pos).getBoundingBox().offset(pos));
         boolean bl = !list.isEmpty();
         if (bl != (bl2 = state.get(POWERED).booleanValue())) {
             world.setBlockState(pos, (BlockState)state.with(POWERED, bl), 3);
@@ -178,7 +177,7 @@ extends WallMountedBlock {
             this.playClickSound(null, world, pos, bl);
         }
         if (bl) {
-            world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getTickRate(world));
+            world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.method_26153());
         }
     }
 

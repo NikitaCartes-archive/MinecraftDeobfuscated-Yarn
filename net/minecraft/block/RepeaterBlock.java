@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,7 +31,7 @@ extends AbstractRedstoneGateBlock {
     public static final BooleanProperty LOCKED = Properties.LOCKED;
     public static final IntProperty DELAY = Properties.DELAY;
 
-    protected RepeaterBlock(Block.Settings settings) {
+    protected RepeaterBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(DELAY, 1)).with(LOCKED, false)).with(POWERED, false));
     }
@@ -56,11 +57,11 @@ extends AbstractRedstoneGateBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-        if (!world.isClient() && facing.getAxis() != state.get(FACING).getAxis()) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+        if (!world.isClient() && direction.getAxis() != state.get(FACING).getAxis()) {
             return (BlockState)state.with(LOCKED, this.isLocked(world, pos, state));
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override

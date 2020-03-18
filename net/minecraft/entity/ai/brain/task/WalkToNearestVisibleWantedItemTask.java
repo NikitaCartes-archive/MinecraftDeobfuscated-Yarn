@@ -18,15 +18,17 @@ public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity>
 extends Task<E> {
     private final Predicate<E> startCondition;
     private final int radius;
+    private final float field_23131;
 
-    public WalkToNearestVisibleWantedItemTask(int radius, boolean requiresWalkTarget) {
-        this((E livingEntity) -> true, radius, requiresWalkTarget);
+    public WalkToNearestVisibleWantedItemTask(float f, boolean bl, int i) {
+        this(livingEntity -> true, f, bl, i);
     }
 
-    public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, int radius, boolean requiresWalkTarget) {
+    public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float f, boolean requiresWalkTarget, int i) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.WALK_TARGET, requiresWalkTarget ? MemoryModuleState.REGISTERED : MemoryModuleState.VALUE_ABSENT, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleState.VALUE_PRESENT));
         this.startCondition = startCondition;
-        this.radius = radius;
+        this.radius = i;
+        this.field_23131 = f;
     }
 
     @Override
@@ -36,7 +38,7 @@ extends Task<E> {
 
     @Override
     protected void run(ServerWorld world, E entity, long time) {
-        LookTargetUtil.walkTowards(entity, this.getNearestVisibleWantedItem(entity), 0);
+        LookTargetUtil.walkTowards(entity, this.getNearestVisibleWantedItem(entity), this.field_23131, 0);
     }
 
     private ItemEntity getNearestVisibleWantedItem(E entity) {

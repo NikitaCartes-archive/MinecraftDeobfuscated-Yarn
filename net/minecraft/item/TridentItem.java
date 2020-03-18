@@ -12,7 +12,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -71,7 +71,7 @@ extends Item {
                 TridentEntity tridentEntity = new TridentEntity(world, (LivingEntity)playerEntity, stack);
                 tridentEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, 2.5f + (float)j * 0.5f, 1.0f);
                 if (playerEntity.abilities.creativeMode) {
-                    tridentEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
+                    tridentEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
                 }
                 world.spawnEntity(tridentEntity);
                 world.playSoundFromEntity(null, tridentEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);

@@ -58,20 +58,20 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache dataCache) throws IOException {
+    public void run(DataCache cache) throws IOException {
         Path path = this.root.getOutput();
         HashSet set = Sets.newHashSet();
         RecipesProvider.generate(recipeJsonProvider -> {
             if (!set.add(recipeJsonProvider.getRecipeId())) {
                 throw new IllegalStateException("Duplicate recipe " + recipeJsonProvider.getRecipeId());
             }
-            RecipesProvider.saveRecipe(dataCache, recipeJsonProvider.toJson(), path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/recipes/" + recipeJsonProvider.getRecipeId().getPath() + ".json"));
+            RecipesProvider.saveRecipe(cache, recipeJsonProvider.toJson(), path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/recipes/" + recipeJsonProvider.getRecipeId().getPath() + ".json"));
             JsonObject jsonObject = recipeJsonProvider.toAdvancementJson();
             if (jsonObject != null) {
-                RecipesProvider.saveRecipeAdvancement(dataCache, jsonObject, path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/advancements/" + recipeJsonProvider.getAdvancementId().getPath() + ".json"));
+                RecipesProvider.saveRecipeAdvancement(cache, jsonObject, path.resolve("data/" + recipeJsonProvider.getRecipeId().getNamespace() + "/advancements/" + recipeJsonProvider.getAdvancementId().getPath() + ".json"));
             }
         });
-        RecipesProvider.saveRecipeAdvancement(dataCache, Advancement.Task.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(), path.resolve("data/minecraft/advancements/recipes/root.json"));
+        RecipesProvider.saveRecipeAdvancement(cache, Advancement.Task.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(), path.resolve("data/minecraft/advancements/recipes/root.json"));
     }
 
     private static void saveRecipe(DataCache dataCache, JsonObject jsonObject, Path path) {
@@ -718,7 +718,8 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.STONECUTTER).input(Character.valueOf('I'), Items.IRON_INGOT).input(Character.valueOf('#'), Blocks.STONE).pattern(" I ").pattern("###").criterion("has_stone", RecipesProvider.conditionsFromItem(Blocks.STONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.NETHERITE_BLOCK).input(Character.valueOf('#'), Items.NETHERITE_INGOT).pattern("###").pattern("###").pattern("###").criterion("has_netherite_ingot", RecipesProvider.conditionsFromItem(Items.NETHERITE_INGOT)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Items.NETHERITE_INGOT, 9).input(Blocks.NETHERITE_BLOCK).group("netherite_ingot").criterion("has_netherite_block", RecipesProvider.conditionsFromItem(Blocks.NETHERITE_BLOCK)).offerTo(consumer, "netherite_ingot_from_netherite_block");
-        ShapelessRecipeJsonFactory.create(Items.NETHERITE_INGOT).input(Items.NETHERITE_SCRAP, 4).input(Items.GOLD_INGOT, 4).criterion("has_netherite_scrap", RecipesProvider.conditionsFromItem(Items.NETHERITE_SCRAP)).offerTo(consumer);
+        ShapelessRecipeJsonFactory.create(Items.NETHERITE_INGOT).input(Items.NETHERITE_SCRAP, 4).input(Items.GOLD_INGOT, 4).group("netherite_ingot").criterion("has_netherite_scrap", RecipesProvider.conditionsFromItem(Items.NETHERITE_SCRAP)).offerTo(consumer);
+        ShapedRecipeJsonFactory.create(Blocks.RESPAWN_ANCHOR).input(Character.valueOf('O'), Blocks.CRYING_OBSIDIAN).input(Character.valueOf('G'), Blocks.GLOWSTONE).pattern("OOO").pattern("GGG").pattern("OOO").criterion("has_obsidian", RecipesProvider.conditionsFromItem(Blocks.CRYING_OBSIDIAN)).offerTo(consumer);
         ComplexRecipeJsonFactory.create(RecipeSerializer.ARMOR_DYE).offerTo(consumer, "armor_dye");
         ComplexRecipeJsonFactory.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(consumer, "banner_duplicate");
         ComplexRecipeJsonFactory.create(RecipeSerializer.BOOK_CLONING).offerTo(consumer, "book_cloning");
@@ -783,6 +784,7 @@ implements DataProvider {
         CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.WHITE_TERRACOTTA), Blocks.WHITE_GLAZED_TERRACOTTA.asItem(), 0.1f, 200).criterion("has_white_terracotta", RecipesProvider.conditionsFromItem(Blocks.WHITE_TERRACOTTA)).offerTo(consumer);
         CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.YELLOW_TERRACOTTA), Blocks.YELLOW_GLAZED_TERRACOTTA.asItem(), 0.1f, 200).criterion("has_yellow_terracotta", RecipesProvider.conditionsFromItem(Blocks.YELLOW_TERRACOTTA)).offerTo(consumer);
         CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.ANCIENT_DEBRIS), Items.NETHERITE_SCRAP, 2.0f, 200).criterion("has_ancient_debris", RecipesProvider.conditionsFromItem(Blocks.ANCIENT_DEBRIS)).offerTo(consumer);
+        CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.BASALT), Blocks.POLISHED_BASALT.asItem(), 0.1f, 200).criterion("has_basalt", RecipesProvider.conditionsFromItem(Blocks.BASALT)).offerTo(consumer);
         CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.IRON_ORE.asItem()), Items.IRON_INGOT, 0.7f, 100).criterion("has_iron_ore", RecipesProvider.conditionsFromItem(Blocks.IRON_ORE.asItem())).offerTo(consumer, "iron_ingot_from_blasting");
         CookingRecipeJsonFactory.createBlasting(Ingredient.fromTag(ItemTags.GOLD_ORES), Items.GOLD_INGOT, 1.0f, 100).criterion("has_gold_ore", RecipesProvider.conditionsFromTag(ItemTags.GOLD_ORES)).offerTo(consumer, "gold_ingot_from_blasting");
         CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.DIAMOND_ORE.asItem()), Items.DIAMOND, 1.0f, 100).criterion("has_diamond_ore", RecipesProvider.conditionsFromItem(Blocks.DIAMOND_ORE)).offerTo(consumer, "diamond_from_blasting");
@@ -943,7 +945,7 @@ implements DataProvider {
 
     private static void method_24883(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
         String string = Registry.ITEM.getId(itemConvertible2.asItem()).getPath();
-        ShapedRecipeJsonFactory.create(itemConvertible, 3).input(Character.valueOf('#'), itemConvertible2).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_" + string, RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
+        ShapedRecipeJsonFactory.create(itemConvertible, 3).group("sign").input(Character.valueOf('#'), itemConvertible2).input(Character.valueOf('X'), Items.STICK).pattern("###").pattern("###").pattern(" X ").criterion("has_" + string, RecipesProvider.conditionsFromItem(itemConvertible2)).offerTo(consumer);
     }
 
     private static void method_24884(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {

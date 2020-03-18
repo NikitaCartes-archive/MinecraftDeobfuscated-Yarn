@@ -243,7 +243,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.RED_SAND);
         this.registerForSelfDrop(Blocks.GOLD_ORE);
         this.registerForSelfDrop(Blocks.IRON_ORE);
-        this.registerForSelfDrop(Blocks.NETHER_GOLD_ORE);
         this.registerForSelfDrop(Blocks.OAK_LOG);
         this.registerForSelfDrop(Blocks.SPRUCE_LOG);
         this.registerForSelfDrop(Blocks.BIRCH_LOG);
@@ -353,6 +352,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.SOUL_SAND);
         this.registerForSelfDrop(Blocks.SOUL_SOIL);
         this.registerForSelfDrop(Blocks.BASALT);
+        this.registerForSelfDrop(Blocks.POLISHED_BASALT);
         this.registerForSelfDrop(Blocks.SOUL_FIRE_TORCH);
         this.registerForSelfDrop(Blocks.CARVED_PUMPKIN);
         this.registerForSelfDrop(Blocks.JACK_O_LANTERN);
@@ -573,6 +573,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.SCAFFOLDING);
         this.registerForSelfDrop(Blocks.HONEY_BLOCK);
         this.registerForSelfDrop(Blocks.HONEYCOMB_BLOCK);
+        this.registerForSelfDrop(Blocks.RESPAWN_ANCHOR);
         this.registerForSelfDrop(Blocks.WARPED_STEM);
         this.registerForSelfDrop(Blocks.WARPED_HYPHAE);
         this.registerForSelfDrop(Blocks.WARPED_NYLIUM);
@@ -775,7 +776,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerWithFunction(Blocks.RED_BANNER, BlockLootTableGenerator::createForBanner);
         this.registerWithFunction(Blocks.WHITE_BANNER, BlockLootTableGenerator::createForBanner);
         this.registerWithFunction(Blocks.YELLOW_BANNER, BlockLootTableGenerator::createForBanner);
-        this.registerWithFunction(Blocks.PLAYER_HEAD, block -> LootTable.builder().withPool(BlockLootTableGenerator.addSurvivesExplosionLootCondition(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).withFunction(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("Owner", "SkullOwner"))))));
+        this.registerWithFunction(Blocks.PLAYER_HEAD, block -> LootTable.builder().withPool(BlockLootTableGenerator.addSurvivesExplosionLootCondition(block, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry((LootEntry.Builder<?>)ItemEntry.builder(block).withFunction(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.BLOCK_ENTITY).withOperation("SkullOwner", "SkullOwner"))))));
         this.registerWithFunction(Blocks.BEE_NEST, BlockLootTableGenerator::createForBeeNest);
         this.registerWithFunction(Blocks.BEEHIVE, BlockLootTableGenerator::createForBeehive);
         this.registerWithFunction(Blocks.BIRCH_LEAVES, block -> BlockLootTableGenerator.createForLeaves(block, Blocks.BIRCH_SAPLING, SAPLING_DROP_CHANCES_FROM_LEAVES));
@@ -799,6 +800,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerWithFunction(Blocks.EMERALD_ORE, block -> BlockLootTableGenerator.createForOreWithSingleItemDrop(block, Items.EMERALD));
         this.registerWithFunction(Blocks.NETHER_QUARTZ_ORE, block -> BlockLootTableGenerator.createForOreWithSingleItemDrop(block, Items.QUARTZ));
         this.registerWithFunction(Blocks.DIAMOND_ORE, block -> BlockLootTableGenerator.createForOreWithSingleItemDrop(block, Items.DIAMOND));
+        this.registerWithFunction(Blocks.NETHER_GOLD_ORE, block -> BlockLootTableGenerator.createForNeedingSilkTouch(block, (LootEntry.Builder)BlockLootTableGenerator.addExplosionDecayLootFunction(block, ((LeafEntry.Builder)ItemEntry.builder(Items.GOLD_NUGGET).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 6.0f)))).withFunction(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))));
         this.registerWithFunction(Blocks.LAPIS_ORE, block -> BlockLootTableGenerator.createForNeedingSilkTouch(block, (LootEntry.Builder)BlockLootTableGenerator.addExplosionDecayLootFunction(block, ((LeafEntry.Builder)ItemEntry.builder(Items.LAPIS_LAZULI).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(4.0f, 9.0f)))).withFunction(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))));
         this.registerWithFunction(Blocks.COBWEB, block -> BlockLootTableGenerator.createForNeedingSilkTouchShears(block, (LootEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionLootCondition(block, ItemEntry.builder(Items.STRING))));
         this.registerWithFunction(Blocks.DEAD_BUSH, block -> BlockLootTableGenerator.createForNeedingShears(block, (LootEntry.Builder)BlockLootTableGenerator.addExplosionDecayLootFunction(block, ItemEntry.builder(Items.STICK).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0f, 2.0f))))));
@@ -897,7 +899,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.register(Blocks.SOUL_FIRE, BlockLootTableGenerator.createEmpty());
         HashSet<Identifier> set = Sets.newHashSet();
         for (Block block2 : Registry.BLOCK) {
-            Identifier identifier = block2.getDropTableId();
+            Identifier identifier = block2.getDropTableID();
             if (identifier == LootTables.EMPTY || !set.add(identifier)) continue;
             LootTable.Builder builder5 = this.lootTables.remove(identifier);
             if (builder5 == null) {
@@ -945,7 +947,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     private void register(Block block, LootTable.Builder builder) {
-        this.lootTables.put(block.getDropTableId(), builder);
+        this.lootTables.put(block.getDropTableID(), builder);
     }
 
     @Override

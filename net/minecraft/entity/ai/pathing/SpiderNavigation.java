@@ -26,7 +26,7 @@ extends MobNavigation {
 
     @Override
     public Path findPathTo(Entity entity, int distance) {
-        this.targetPos = entity.getSenseCenterPos();
+        this.targetPos = entity.getBlockPos();
         return super.findPathTo(entity, distance);
     }
 
@@ -36,7 +36,7 @@ extends MobNavigation {
         if (path != null) {
             return this.startMovingAlong(path, speed);
         }
-        this.targetPos = entity.getSenseCenterPos();
+        this.targetPos = entity.getBlockPos();
         this.speed = speed;
         return true;
     }

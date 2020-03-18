@@ -55,7 +55,7 @@ implements VillagerDataContainer {
     private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
     private int conversionTimer;
     private UUID converter;
-    private Tag field_20299;
+    private Tag gossipData;
     private CompoundTag offerData;
     private int xp;
 
@@ -78,12 +78,12 @@ implements VillagerDataContainer {
         if (this.offerData != null) {
             tag.put("Offers", this.offerData);
         }
-        if (this.field_20299 != null) {
-            tag.put("Gossips", this.field_20299);
+        if (this.gossipData != null) {
+            tag.put("Gossips", this.gossipData);
         }
         tag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
         if (this.converter != null) {
-            tag.putUuidOld("ConversionPlayer", this.converter);
+            tag.putUuidNew("ConversionPlayer", this.converter);
         }
         tag.putInt("Xp", this.xp);
     }
@@ -98,10 +98,10 @@ implements VillagerDataContainer {
             this.offerData = tag.getCompound("Offers");
         }
         if (tag.contains("Gossips", 10)) {
-            this.field_20299 = tag.getList("Gossips", 10);
+            this.gossipData = tag.getList("Gossips", 10);
         }
         if (tag.contains("ConversionTime", 99) && tag.getInt("ConversionTime") > -1) {
-            this.setConverting(tag.containsUuidOld("ConversionPlayer") ? tag.getUuidOld("ConversionPlayer") : null, tag.getInt("ConversionTime"));
+            this.setConverting(tag.containsUuidNew("ConversionPlayer") ? tag.getUuidNew("ConversionPlayer") : null, tag.getInt("ConversionTime"));
         }
         if (tag.contains("Xp", 3)) {
             this.xp = tag.getInt("Xp");
@@ -187,14 +187,14 @@ implements VillagerDataContainer {
         }
         villagerEntity.copyPositionAndRotation(this);
         villagerEntity.setVillagerData(this.getVillagerData());
-        if (this.field_20299 != null) {
-            villagerEntity.method_21650(this.field_20299);
+        if (this.gossipData != null) {
+            villagerEntity.method_21650(this.gossipData);
         }
         if (this.offerData != null) {
             villagerEntity.setOffers(new TraderOfferList(this.offerData));
         }
         villagerEntity.setExperience(this.xp);
-        villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getSenseCenterPos()), SpawnType.CONVERSION, null, null);
+        villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnType.CONVERSION, null, null);
         if (this.isBaby()) {
             villagerEntity.setBreedingAge(-24000);
         }
@@ -214,7 +214,9 @@ implements VillagerDataContainer {
             world.handleInteraction(EntityInteraction.ZOMBIE_VILLAGER_CURED, playerEntity, villagerEntity);
         }
         villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-        world.playLevelEvent(null, 1027, this.getSenseCenterPos(), 0);
+        if (!this.isSilent()) {
+            world.playLevelEvent(null, 1027, this.getBlockPos(), 0);
+        }
     }
 
     private int getConversionRate() {
@@ -275,14 +277,14 @@ implements VillagerDataContainer {
         this.offerData = offerTag;
     }
 
-    public void method_21649(Tag tag) {
-        this.field_20299 = tag;
+    public void setGossipData(Tag gossipTag) {
+        this.gossipData = gossipTag;
     }
 
     @Override
     @Nullable
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getSenseCenterPos()))));
+        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 

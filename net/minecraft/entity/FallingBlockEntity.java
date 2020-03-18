@@ -69,7 +69,7 @@ extends Entity {
         this.prevX = x;
         this.prevY = y;
         this.prevZ = z;
-        this.setFallingBlockPos(this.getSenseCenterPos());
+        this.setFallingBlockPos(this.getBlockPos());
     }
 
     @Override
@@ -110,7 +110,7 @@ extends Entity {
         }
         Block block = this.block.getBlock();
         if (this.timeFalling++ == 0) {
-            blockPos = this.getSenseCenterPos();
+            blockPos = this.getBlockPos();
             if (this.world.getBlockState(blockPos).getBlock() == block) {
                 this.world.removeBlock(blockPos, false);
             } else if (!this.world.isClient) {
@@ -124,7 +124,7 @@ extends Entity {
         this.move(MovementType.SELF, this.getVelocity());
         if (!this.world.isClient) {
             BlockHitResult blockHitResult;
-            blockPos = this.getSenseCenterPos();
+            blockPos = this.getBlockPos();
             boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
             boolean bl2 = bl && this.world.getFluidState(blockPos).matches(FluidTags.WATER);
             double d = this.getVelocity().lengthSquared();
@@ -149,7 +149,7 @@ extends Entity {
                             if (this.world.setBlockState(blockPos, this.block, 3)) {
                                 BlockEntity blockEntity;
                                 if (block instanceof FallingBlock) {
-                                    ((FallingBlock)block).onLanding(this.world, blockPos, this.block, blockState);
+                                    ((FallingBlock)block).onLanding(this.world, blockPos, this.block, blockState, this);
                                 }
                                 if (this.blockEntityData != null && block instanceof BlockEntityProvider && (blockEntity = this.world.getBlockEntity(blockPos)) != null) {
                                     CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
@@ -168,7 +168,7 @@ extends Entity {
                             this.dropItem(block);
                         }
                     } else if (block instanceof FallingBlock) {
-                        ((FallingBlock)block).onDestroyedOnLanding(this.world, blockPos);
+                        ((FallingBlock)block).onDestroyedOnLanding(this.world, blockPos, this);
                     }
                 }
             } else if (!(this.world.isClient || (this.timeFalling <= 100 || blockPos.getY() >= 1 && blockPos.getY() <= 256) && this.timeFalling <= 600)) {
@@ -186,7 +186,7 @@ extends Entity {
         int i;
         if (this.hurtEntities && (i = MathHelper.ceil(fallDistance - 1.0f)) > 0) {
             ArrayList<Entity> list = Lists.newArrayList(this.world.getEntities(this, this.getBoundingBox()));
-            boolean bl = this.block.matches(BlockTags.ANVIL);
+            boolean bl = this.block.isIn(BlockTags.ANVIL);
             DamageSource damageSource = bl ? DamageSource.ANVIL : DamageSource.FALLING_BLOCK;
             for (Entity entity : list) {
                 entity.damage(damageSource, Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax));
@@ -224,7 +224,7 @@ extends Entity {
             this.hurtEntities = tag.getBoolean("HurtEntities");
             this.fallHurtAmount = tag.getFloat("FallHurtAmount");
             this.fallHurtMax = tag.getInt("FallHurtMax");
-        } else if (this.block.matches(BlockTags.ANVIL)) {
+        } else if (this.block.isIn(BlockTags.ANVIL)) {
             this.hurtEntities = true;
         }
         if (tag.contains("DropItem", 99)) {

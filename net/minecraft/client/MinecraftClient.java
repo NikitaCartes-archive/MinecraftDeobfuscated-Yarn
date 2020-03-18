@@ -237,7 +237,7 @@ WindowEventHandler {
     private final Snooper snooper = new Snooper("client", this, Util.getMeasuringTimeMs());
     private final BufferBuilderStorage bufferBuilders;
     public final WorldRenderer worldRenderer;
-    private final EntityRenderDispatcher entityRenderManager;
+    private final EntityRenderDispatcher entityRenderDispatcher;
     private final ItemRenderer itemRenderer;
     private final HeldItemRenderer heldItemRenderer;
     public final ParticleManager particleManager;
@@ -426,7 +426,7 @@ WindowEventHandler {
         this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColorMap, this.options.mipmapLevels);
         this.resourceManager.registerListener(this.bakedModelManager);
         this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColorMap);
-        this.entityRenderManager = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
+        this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
         this.heldItemRenderer = new HeldItemRenderer(this);
         this.resourceManager.registerListener(this.itemRenderer);
         this.bufferBuilders = new BufferBuilderStorage();
@@ -1857,7 +1857,7 @@ WindowEventHandler {
                 }
                 return MusicTracker.MusicType.END;
             }
-            Biome.Category category = this.player.world.getBiome(this.player.getSenseCenterPos()).getCategory();
+            Biome.Category category = this.player.world.getBiome(this.player.getBlockPos()).getCategory();
             if (this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER) || this.player.isSubmergedInWater() && !this.musicTracker.isPlayingType(MusicTracker.MusicType.GAME) && (category == Biome.Category.OCEAN || category == Biome.Category.RIVER)) {
                 return MusicTracker.MusicType.UNDER_WATER;
             }
@@ -1907,7 +1907,7 @@ WindowEventHandler {
     }
 
     public EntityRenderDispatcher getEntityRenderManager() {
-        return this.entityRenderManager;
+        return this.entityRenderDispatcher;
     }
 
     public ItemRenderer getItemRenderer() {

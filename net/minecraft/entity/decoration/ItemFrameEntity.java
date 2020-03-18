@@ -156,6 +156,9 @@ extends AbstractDecorationEntity {
     @Override
     public boolean damage(DamageSource source, float amount) {
         if (this.fixed) {
+            if (source == DamageSource.OUT_OF_WORLD || source.isSourceCreativePlayer()) {
+                return super.damage(source, amount);
+            }
             return false;
         }
         if (this.isInvulnerableTo(source)) {
@@ -200,6 +203,9 @@ extends AbstractDecorationEntity {
     }
 
     private void dropHeldStack(@Nullable Entity entity, boolean alwaysDrop) {
+        if (this.fixed) {
+            return;
+        }
         if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
             if (entity == null) {
                 this.removeFromFrame(this.getHeldItemStack());

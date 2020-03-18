@@ -94,7 +94,7 @@ extends Entity {
         if (this.cosmetic || this.world.isClient || !this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
             return;
         }
-        BlockPos blockPos = this.getSenseCenterPos();
+        BlockPos blockPos = this.getBlockPos();
         BlockState blockState = AbstractFireBlock.getState(this.world, blockPos);
         if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
             this.world.setBlockState(blockPos, blockState);

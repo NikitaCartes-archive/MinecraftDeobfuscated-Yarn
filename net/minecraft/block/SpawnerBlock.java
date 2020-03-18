@@ -5,7 +5,7 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 
 public class SpawnerBlock
 extends BlockWithEntity {
-    protected SpawnerBlock(Block.Settings settings) {
+    protected SpawnerBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

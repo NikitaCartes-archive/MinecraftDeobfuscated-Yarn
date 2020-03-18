@@ -69,7 +69,7 @@ implements TutorialStepHandler {
 
     @Override
     public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
-        boolean bl = state.matches(BlockTags.LOGS);
+        boolean bl = state.isIn(BlockTags.LOGS);
         if (bl && f > 0.0f) {
             if (this.field_5637 != null) {
                 this.field_5637.setProgress(f);

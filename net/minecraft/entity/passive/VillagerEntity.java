@@ -145,22 +145,22 @@ VillagerDataContainer {
 
     private void initBrain(Brain<VillagerEntity> brain) {
         VillagerProfession villagerProfession = this.getVillagerData().getProfession();
-        float f = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
+        float f = 0.5f;
         if (this.isBaby()) {
             brain.setSchedule(Schedule.VILLAGER_BABY);
-            brain.setTaskList(Activity.PLAY, VillagerTaskListProvider.createPlayTasks(f));
+            brain.setTaskList(Activity.PLAY, VillagerTaskListProvider.createPlayTasks(0.5f));
         } else {
             brain.setSchedule(Schedule.VILLAGER_DEFAULT);
-            brain.setTaskList(Activity.WORK, VillagerTaskListProvider.createWorkTasks(villagerProfession, f), ImmutableSet.of(Pair.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT)));
+            brain.setTaskList(Activity.WORK, VillagerTaskListProvider.createWorkTasks(villagerProfession, 0.5f), ImmutableSet.of(Pair.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT)));
         }
-        brain.setTaskList(Activity.CORE, VillagerTaskListProvider.createCoreTasks(villagerProfession, f));
-        brain.setTaskList(Activity.MEET, VillagerTaskListProvider.createMeetTasks(villagerProfession, f), ImmutableSet.of(Pair.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT)));
-        brain.setTaskList(Activity.REST, VillagerTaskListProvider.createRestTasks(villagerProfession, f));
-        brain.setTaskList(Activity.IDLE, VillagerTaskListProvider.createIdleTasks(villagerProfession, f));
-        brain.setTaskList(Activity.PANIC, VillagerTaskListProvider.createPanicTasks(villagerProfession, f));
-        brain.setTaskList(Activity.PRE_RAID, VillagerTaskListProvider.createPreRaidTasks(villagerProfession, f));
-        brain.setTaskList(Activity.RAID, VillagerTaskListProvider.createRaidTasks(villagerProfession, f));
-        brain.setTaskList(Activity.HIDE, VillagerTaskListProvider.createHideTasks(villagerProfession, f));
+        brain.setTaskList(Activity.CORE, VillagerTaskListProvider.createCoreTasks(villagerProfession, 0.5f));
+        brain.setTaskList(Activity.MEET, VillagerTaskListProvider.createMeetTasks(villagerProfession, 0.5f), ImmutableSet.of(Pair.of(MemoryModuleType.MEETING_POINT, MemoryModuleState.VALUE_PRESENT)));
+        brain.setTaskList(Activity.REST, VillagerTaskListProvider.createRestTasks(villagerProfession, 0.5f));
+        brain.setTaskList(Activity.IDLE, VillagerTaskListProvider.createIdleTasks(villagerProfession, 0.5f));
+        brain.setTaskList(Activity.PANIC, VillagerTaskListProvider.createPanicTasks(villagerProfession, 0.5f));
+        brain.setTaskList(Activity.PRE_RAID, VillagerTaskListProvider.createPreRaidTasks(villagerProfession, 0.5f));
+        brain.setTaskList(Activity.RAID, VillagerTaskListProvider.createRaidTasks(villagerProfession, 0.5f));
+        brain.setTaskList(Activity.HIDE, VillagerTaskListProvider.createHideTasks(villagerProfession, 0.5f));
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
         brain.method_24526(Activity.IDLE);
@@ -203,7 +203,7 @@ VillagerDataContainer {
             this.world.sendEntityStatus(this, (byte)14);
             this.lastCustomer = null;
         }
-        if (!this.isAiDisabled() && this.random.nextInt(100) == 0 && (raid = ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos())) != null && raid.isActive() && !raid.isFinished()) {
+        if (!this.isAiDisabled() && this.random.nextInt(100) == 0 && (raid = ((ServerWorld)this.world).getRaidAt(this.getBlockPos())) != null && raid.isActive() && !raid.isFinished()) {
             this.world.sendEntityStatus(this, (byte)42);
         }
         if (this.getVillagerData().getProfession() == VillagerProfession.NONE && this.hasCustomer()) {
@@ -611,7 +611,7 @@ VillagerDataContainer {
             this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
         }
         if (spawnType == SpawnType.COMMAND || spawnType == SpawnType.SPAWN_EGG || spawnType == SpawnType.SPAWNER || spawnType == SpawnType.DISPENSER) {
-            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getSenseCenterPos()))));
+            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
         }
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
@@ -619,9 +619,9 @@ VillagerDataContainer {
     @Override
     public VillagerEntity createChild(PassiveEntity passiveEntity) {
         double d = this.random.nextDouble();
-        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(this.world.getBiome(this.getSenseCenterPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
+        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(this.world.getBiome(this.getBlockPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
         VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
-        villagerEntity.initialize(this.world, this.world.getLocalDifficulty(villagerEntity.getSenseCenterPos()), SpawnType.BREEDING, null, null);
+        villagerEntity.initialize(this.world, this.world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnType.BREEDING, null, null);
         return villagerEntity;
     }
 
@@ -629,7 +629,7 @@ VillagerDataContainer {
     public void onStruckByLightning(LightningEntity lightning) {
         WitchEntity witchEntity = EntityType.WITCH.create(this.world);
         witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-        witchEntity.initialize(this.world, this.world.getLocalDifficulty(witchEntity.getSenseCenterPos()), SpawnType.CONVERSION, null, null);
+        witchEntity.initialize(this.world, this.world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnType.CONVERSION, null, null);
         witchEntity.setAiDisabled(this.isAiDisabled());
         if (this.hasCustomName()) {
             witchEntity.setCustomName(this.getCustomName());
@@ -794,7 +794,7 @@ VillagerDataContainer {
 
     @Nullable
     private IronGolemEntity spawnIronGolem() {
-        BlockPos blockPos = this.getSenseCenterPos();
+        BlockPos blockPos = this.getBlockPos();
         for (int i = 0; i < 10; ++i) {
             BlockPos blockPos3;
             IronGolemEntity ironGolemEntity;

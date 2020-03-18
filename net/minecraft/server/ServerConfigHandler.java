@@ -38,6 +38,7 @@ import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.ChatUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public class ServerConfigHandler {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -240,16 +241,21 @@ public class ServerConfigHandler {
         return true;
     }
 
-    public static String getPlayerUuidByName(final MinecraftServer server, String name) {
+    @Nullable
+    public static UUID getPlayerUuidByName(final MinecraftServer server, String name) {
         if (ChatUtil.isEmpty(name) || name.length() > 16) {
-            return name;
+            try {
+                return UUID.fromString(name);
+            } catch (IllegalArgumentException illegalArgumentException) {
+                return null;
+            }
         }
         GameProfile gameProfile = server.getUserCache().findByName(name);
         if (gameProfile != null && gameProfile.getId() != null) {
-            return gameProfile.getId().toString();
+            return gameProfile.getId();
         }
         if (server.isSinglePlayer() || !server.isOnlineMode()) {
-            return PlayerEntity.getUuidFromProfile(new GameProfile(null, name)).toString();
+            return PlayerEntity.getUuidFromProfile(new GameProfile(null, name));
         }
         final ArrayList list = Lists.newArrayList();
         ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback(){
@@ -267,9 +273,9 @@ public class ServerConfigHandler {
         };
         ServerConfigHandler.lookupProfile(server, Lists.newArrayList(name), profileLookupCallback);
         if (!list.isEmpty() && ((GameProfile)list.get(0)).getId() != null) {
-            return ((GameProfile)list.get(0)).getId().toString();
+            return ((GameProfile)list.get(0)).getId();
         }
-        return "";
+        return null;
     }
 
     public static boolean convertPlayerFiles(final MinecraftDedicatedServer minecraftServer) {

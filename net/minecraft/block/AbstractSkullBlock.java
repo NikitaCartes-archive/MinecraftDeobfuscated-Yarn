@@ -5,7 +5,7 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -16,7 +16,7 @@ public abstract class AbstractSkullBlock
 extends BlockWithEntity {
     private final SkullBlock.SkullType type;
 
-    public AbstractSkullBlock(SkullBlock.SkullType type, Block.Settings settings) {
+    public AbstractSkullBlock(SkullBlock.SkullType type, AbstractBlock.Settings settings) {
         super(settings);
         this.type = type;
     }

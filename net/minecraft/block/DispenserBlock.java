@@ -6,6 +6,7 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -45,7 +46,6 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class DispenserBlock
 extends BlockWithEntity {
@@ -57,14 +57,9 @@ extends BlockWithEntity {
         BEHAVIORS.put(provider.asItem(), behavior);
     }
 
-    protected DispenserBlock(Block.Settings settings) {
+    protected DispenserBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(TRIGGERED, false));
-    }
-
-    @Override
-    public int getTickRate(WorldView world) {
-        return 4;
     }
 
     @Override
@@ -104,11 +99,11 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
         boolean bl2 = state.get(TRIGGERED);
         if (bl && !bl2) {
-            world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+            world.getBlockTickScheduler().schedule(pos, this, 4);
             world.setBlockState(pos, (BlockState)state.with(TRIGGERED, true), 4);
         } else if (!bl && bl2) {
             world.setBlockState(pos, (BlockState)state.with(TRIGGERED, false), 4);
@@ -139,7 +134,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (state.getBlock() == newState.getBlock()) {
             return;
         }
@@ -148,7 +143,7 @@ extends BlockWithEntity {
             ItemScatterer.spawn(world, pos, (Inventory)((DispenserBlockEntity)blockEntity));
             world.updateComparators(pos, this);
         }
-        super.onBlockRemoved(state, world, pos, newState, moved);
+        super.onBlockRemoved(state, world, pos, newState, notify);
     }
 
     public static Position getOutputLocation(BlockPointer pointer) {

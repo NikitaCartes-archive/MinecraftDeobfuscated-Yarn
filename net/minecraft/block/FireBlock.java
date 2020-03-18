@@ -7,13 +7,14 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectingBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TntBlock;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -44,13 +45,13 @@ extends AbstractFireBlock {
     private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<Block>();
     private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<Block>();
 
-    public FireBlock(Block.Settings settings) {
+    public FireBlock(AbstractBlock.Settings settings) {
         super(settings, 1.0f);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(UP, false));
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         if (this.canPlaceAt(state, world, pos)) {
             return this.method_24855(world, pos, state.get(AGE));
         }
@@ -58,7 +59,7 @@ extends AbstractFireBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         VoxelShape voxelShape = VoxelShapes.empty();
         if (state.get(UP).booleanValue()) {
             voxelShape = field_22497;
@@ -108,11 +109,6 @@ extends AbstractFireBlock {
     }
 
     @Override
-    public int getTickRate(WorldView world) {
-        return 30;
-    }
-
-    @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         boolean bl2;
         if (!world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
@@ -134,7 +130,7 @@ extends AbstractFireBlock {
             world.setBlockState(pos, state, 4);
         }
         if (!bl) {
-            world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + random.nextInt(10));
+            world.getBlockTickScheduler().schedule(pos, this, FireBlock.method_26155(world.random));
             if (!this.areBlocksAroundFlammable(world, pos)) {
                 BlockPos blockPos = pos.down();
                 if (!world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, Direction.UP) || i > 3) {
@@ -248,9 +244,13 @@ extends AbstractFireBlock {
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-        super.onBlockAdded(state, world, pos, oldState, moved);
-        world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world) + world.random.nextInt(10));
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        super.onBlockAdded(state, world, pos, oldState, notify);
+        world.getBlockTickScheduler().schedule(pos, this, FireBlock.method_26155(world.random));
+    }
+
+    private static int method_26155(Random random) {
+        return 30 + random.nextInt(10);
     }
 
     @Override

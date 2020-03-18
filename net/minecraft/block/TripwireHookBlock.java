@@ -5,12 +5,13 @@ package net.minecraft.block;
 
 import com.google.common.base.MoreObjects;
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TripwireBlock;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -42,13 +43,13 @@ extends Block {
     protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
     protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 5.0, 6.0, 10.0, 11.0);
 
-    public TripwireHookBlock(Block.Settings settings) {
+    public TripwireHookBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(ATTACHED, false));
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         switch (state.get(FACING)) {
             default: {
                 return WEST_SHAPE;
@@ -73,11 +74,11 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-        if (facing.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+        if (direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
@@ -126,7 +127,7 @@ extends Block {
                 bl5 |= bl6 && bl7;
                 blockStates[k] = blockState2;
                 if (k != i) continue;
-                world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+                world.getBlockTickScheduler().schedule(pos, this, 10);
                 bl4 &= bl6;
                 continue;
             }
@@ -182,8 +183,8 @@ extends Block {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (moved || state.getBlock() == newState.getBlock()) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
+        if (notify || state.getBlock() == newState.getBlock()) {
             return;
         }
         boolean bl = state.get(ATTACHED);
@@ -195,20 +196,20 @@ extends Block {
             world.updateNeighborsAlways(pos, this);
             world.updateNeighborsAlways(pos.offset(state.get(FACING).getOpposite()), this);
         }
-        super.onBlockRemoved(state, world, pos, newState, moved);
+        super.onBlockRemoved(state, world, pos, newState, notify);
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return state.get(POWERED) != false ? 15 : 0;
     }
 
     @Override
-    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         if (!state.get(POWERED).booleanValue()) {
             return 0;
         }
-        if (state.get(FACING) == facing) {
+        if (state.get(FACING) == direction) {
             return 15;
         }
         return 0;

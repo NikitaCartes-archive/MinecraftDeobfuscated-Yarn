@@ -24,11 +24,11 @@ import org.jetbrains.annotations.Nullable;
 public class BlockFallingDustParticle
 extends SpriteBillboardParticle {
     private final float field_3809;
-    private final SpriteProvider field_17808;
+    private final SpriteProvider spriteProvider;
 
     private BlockFallingDustParticle(World world, double x, double y, double z, float colorRed, float colorGreen, float colorBlue, SpriteProvider spriteProvider) {
         super(world, x, y, z);
-        this.field_17808 = spriteProvider;
+        this.spriteProvider = spriteProvider;
         this.colorRed = colorRed;
         this.colorGreen = colorGreen;
         this.colorBlue = colorBlue;
@@ -60,7 +60,7 @@ extends SpriteBillboardParticle {
             this.markDead();
             return;
         }
-        this.setSpriteForAge(this.field_17808);
+        this.setSpriteForAge(this.spriteProvider);
         this.prevAngle = this.angle;
         this.angle += (float)Math.PI * this.field_3809 * 2.0f;
         if (this.onGround) {
@@ -75,10 +75,10 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<BlockStateParticleEffect> {
-        private final SpriteProvider field_17809;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17809 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
@@ -88,14 +88,15 @@ extends SpriteBillboardParticle {
             if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.INVISIBLE) {
                 return null;
             }
-            int j = MinecraftClient.getInstance().getBlockColorMap().getColor(blockState, world, new BlockPos(d, e, f));
+            BlockPos blockPos = new BlockPos(d, e, f);
+            int j = MinecraftClient.getInstance().getBlockColorMap().getColor(blockState, world, blockPos);
             if (blockState.getBlock() instanceof FallingBlock) {
-                j = ((FallingBlock)blockState.getBlock()).getColor(blockState);
+                j = ((FallingBlock)blockState.getBlock()).getColor(blockState, world, blockPos);
             }
             float k = (float)(j >> 16 & 0xFF) / 255.0f;
             float l = (float)(j >> 8 & 0xFF) / 255.0f;
             float m = (float)(j & 0xFF) / 255.0f;
-            return new BlockFallingDustParticle(world, d, e, f, k, l, m, this.field_17809);
+            return new BlockFallingDustParticle(world, d, e, f, k, l, m, this.spriteProvider);
         }
     }
 }

@@ -3,13 +3,14 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AttachedStemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.StemBlock;
 
 public abstract class GourdBlock
 extends Block {
-    public GourdBlock(Block.Settings settings) {
+    public GourdBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

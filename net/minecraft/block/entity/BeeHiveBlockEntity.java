@@ -138,7 +138,7 @@ implements Tickable {
         }
         compoundTag.remove("Passengers");
         compoundTag.remove("Leash");
-        compoundTag.removeUuidOld("UUID");
+        compoundTag.remove("UUID");
         Direction direction = state.get(BeehiveBlock.FACING);
         BlockPos blockPos2 = blockPos.offset(direction);
         boolean bl2 = bl = !this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty();
@@ -250,7 +250,7 @@ implements Tickable {
     public ListTag getBees() {
         ListTag listTag = new ListTag();
         for (Bee bee : this.bees) {
-            bee.entityData.removeUuidOld("UUID");
+            bee.entityData.remove("UUID");
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.put("EntityData", bee.entityData);
             compoundTag.putInt("TicksInHive", bee.ticksInHive);
@@ -266,7 +266,7 @@ implements Tickable {
         private final int minOccupationTIcks;
 
         private Bee(CompoundTag entityData, int ticksInHive, int minOccupationTicks) {
-            entityData.removeUuidOld("UUID");
+            entityData.remove("UUID");
             this.entityData = entityData;
             this.ticksInHive = ticksInHive;
             this.minOccupationTIcks = minOccupationTicks;

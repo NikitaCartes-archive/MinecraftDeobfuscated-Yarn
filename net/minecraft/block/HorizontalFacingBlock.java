@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.property.DirectionProperty;
@@ -14,7 +15,7 @@ public abstract class HorizontalFacingBlock
 extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
-    protected HorizontalFacingBlock(Block.Settings settings) {
+    protected HorizontalFacingBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

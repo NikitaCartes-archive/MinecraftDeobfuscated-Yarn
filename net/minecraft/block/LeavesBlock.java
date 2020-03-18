@@ -6,9 +6,9 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -30,13 +30,13 @@ extends Block {
     public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
     public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
 
-    public LeavesBlock(Block.Settings settings) {
+    public LeavesBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DISTANCE, 7)).with(PERSISTENT, false));
     }
 
     @Override
-    public VoxelShape method_25959(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
@@ -64,8 +64,8 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-        int i = LeavesBlock.getDistanceFromLog(neighborState) + 1;
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+        int i = LeavesBlock.getDistanceFromLog(newState) + 1;
         if (i != 1 || state.get(DISTANCE) != i) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
@@ -111,16 +111,6 @@ extends Block {
         double e = (double)pos.getY() - 0.05;
         double f = (float)pos.getZ() + random.nextFloat();
         world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
-    }
-
-    @Override
-    public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
-        return false;
-    }
-
-    @Override
-    public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
-        return type == EntityType.OCELOT || type == EntityType.PARROT;
     }
 
     @Override

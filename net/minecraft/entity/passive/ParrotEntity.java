@@ -17,7 +17,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LogBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -63,6 +62,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -145,6 +145,11 @@ implements Flutterer {
     }
 
     @Override
+    public boolean isBaby() {
+        return false;
+    }
+
+    @Override
     protected void initGoals() {
         this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
         this.goalSelector.add(0, new SwimGoal(this));
@@ -181,10 +186,12 @@ implements Flutterer {
 
     @Override
     public void tickMovement() {
-        ParrotEntity.imitateNearbyMob(this.world, this);
         if (this.songSource == null || !this.songSource.isWithinDistance(this.getPos(), 3.46) || this.world.getBlockState(this.songSource).getBlock() != Blocks.JUKEBOX) {
             this.songPlaying = false;
             this.songSource = null;
+        }
+        if (this.world.random.nextInt(400) == 0) {
+            ParrotEntity.imitateNearbyMob(this.world, this);
         }
         super.tickMovement();
         this.method_6578();
@@ -218,9 +225,9 @@ implements Flutterer {
         this.field_6818 += this.field_6824 * 2.0f;
     }
 
-    private static boolean imitateNearbyMob(World world, Entity parrot) {
+    public static boolean imitateNearbyMob(World world, Entity parrot) {
         MobEntity mobEntity;
-        if (!parrot.isAlive() || parrot.isSilent() || world.random.nextInt(50) != 0) {
+        if (!parrot.isAlive() || parrot.isSilent() || world.random.nextInt(2) != 0) {
             return false;
         }
         List<MobEntity> list = world.getEntities(MobEntity.class, parrot.getBoundingBox().expand(20.0), CAN_IMITATE);
@@ -281,7 +288,7 @@ implements Flutterer {
 
     public static boolean canSpawn(EntityType<ParrotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
         Block block = world.getBlockState(pos.down()).getBlock();
-        return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block instanceof LogBlock || block == Blocks.AIR) && world.getBaseLightLevel(pos, 0) > 8;
+        return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block.isIn(BlockTags.LOGS) || block == Blocks.AIR) && world.getBaseLightLevel(pos, 0) > 8;
     }
 
     @Override
@@ -304,12 +311,6 @@ implements Flutterer {
         return null;
     }
 
-    public static void playMobSound(World world, Entity parrot) {
-        if (!parrot.isSilent() && !ParrotEntity.imitateNearbyMob(world, parrot) && world.random.nextInt(200) == 0) {
-            world.playSound(null, parrot.getX(), parrot.getY(), parrot.getZ(), ParrotEntity.getRandomSound(world.random), parrot.getSoundCategory(), 1.0f, ParrotEntity.getSoundPitch(world.random));
-        }
-    }
-
     @Override
     public boolean tryAttack(Entity target) {
         return target.damage(DamageSource.mob(this), 3.0f);
@@ -318,11 +319,11 @@ implements Flutterer {
     @Override
     @Nullable
     public SoundEvent getAmbientSound() {
-        return ParrotEntity.getRandomSound(this.random);
+        return ParrotEntity.getRandomSound(this.world, this.world.random);
     }
 
-    private static SoundEvent getRandomSound(Random random) {
-        if (random.nextInt(1000) == 0) {
+    public static SoundEvent getRandomSound(World world, Random random) {
+        if (world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(1000) == 0) {
             ArrayList<EntityType<?>> list = Lists.newArrayList(MOB_SOUNDS.keySet());
             return ParrotEntity.getSound((EntityType)list.get(random.nextInt(list.size())));
         }
@@ -364,7 +365,7 @@ implements Flutterer {
         return ParrotEntity.getSoundPitch(this.random);
     }
 
-    private static float getSoundPitch(Random random) {
+    public static float getSoundPitch(Random random) {
         return (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f;
     }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -11,7 +12,7 @@ import net.minecraft.world.BlockView;
 
 public class RedstoneBlock
 extends Block {
-    public RedstoneBlock(Block.Settings settings) {
+    public RedstoneBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
@@ -21,7 +22,7 @@ extends Block {
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return 15;
     }
 }

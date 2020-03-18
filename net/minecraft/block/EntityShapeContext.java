@@ -1,10 +1,10 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.entity;
+package net.minecraft.block;
 
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -12,9 +12,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 
-public class EntityContextImpl
-implements EntityContext {
-    protected static final EntityContext ABSENT = new EntityContextImpl(false, -1.7976931348623157E308, Items.AIR){
+public class EntityShapeContext
+implements ShapeContext {
+    protected static final ShapeContext ABSENT = new EntityShapeContext(false, -1.7976931348623157E308, Items.AIR){
 
         @Override
         public boolean isAbove(VoxelShape shape, BlockPos pos, boolean defaultValue) {
@@ -25,14 +25,14 @@ implements EntityContext {
     private final double minY;
     private final Item heldItem;
 
-    protected EntityContextImpl(boolean descending, double minY, Item heldItem) {
+    protected EntityShapeContext(boolean descending, double minY, Item heldItem) {
         this.descending = descending;
         this.minY = minY;
         this.heldItem = heldItem;
     }
 
     @Deprecated
-    protected EntityContextImpl(Entity entity) {
+    protected EntityShapeContext(Entity entity) {
         this(entity.isDescending(), entity.getY(), entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR);
     }
 

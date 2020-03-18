@@ -4,7 +4,7 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
@@ -23,10 +23,10 @@ extends PotionItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         if (!world.isClient) {
-            ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(world, user);
-            thrownPotionEntity.setItem(itemStack);
-            thrownPotionEntity.setProperties(user, user.pitch, user.yaw, -20.0f, 0.5f, 1.0f);
-            world.spawnEntity(thrownPotionEntity);
+            PotionEntity potionEntity = new PotionEntity(world, user);
+            potionEntity.setItem(itemStack);
+            potionEntity.setProperties(user, user.pitch, user.yaw, -20.0f, 0.5f, 1.0f);
+            world.spawnEntity(potionEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         if (!user.abilities.creativeMode) {

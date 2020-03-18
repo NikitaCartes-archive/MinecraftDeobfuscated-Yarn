@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.RedstoneTorchBlock;
@@ -29,14 +30,9 @@ public class RedstoneOreBlock
 extends Block {
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
-    public RedstoneOreBlock(Block.Settings settings) {
+    public RedstoneOreBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)this.getDefaultState().with(LIT, false));
-    }
-
-    @Override
-    public int getLuminance(BlockState state) {
-        return state.get(LIT) != false ? super.getLuminance(state) : 0;
     }
 
     @Override
@@ -69,7 +65,12 @@ extends Block {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public boolean hasRandomTicks(BlockState state) {
+        return state.get(LIT);
+    }
+
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(LIT).booleanValue()) {
             world.setBlockState(pos, (BlockState)state.with(LIT, false), 3);
         }
@@ -97,7 +98,7 @@ extends Block {
         Random random = world.random;
         for (Direction direction : Direction.values()) {
             BlockPos blockPos = pos.offset(direction);
-            if (world.getBlockState(blockPos).isFullOpaque(world, blockPos)) continue;
+            if (world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) continue;
             Direction.Axis axis = direction.getAxis();
             double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
             double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();

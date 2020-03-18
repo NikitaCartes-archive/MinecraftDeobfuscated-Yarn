@@ -52,7 +52,7 @@ extends BaseFluid {
     @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
         BlockPos blockPos = pos.up();
-        if (world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos).isFullOpaque(world, blockPos)) {
+        if (world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
             if (random.nextInt(100) == 0) {
                 double d = (float)pos.getX() + random.nextFloat();
                 double e = pos.getY() + 1;

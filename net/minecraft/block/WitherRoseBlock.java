@@ -6,12 +6,13 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowerBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
@@ -27,7 +28,7 @@ import net.minecraft.world.World;
 
 public class WitherRoseBlock
 extends FlowerBlock {
-    public WitherRoseBlock(StatusEffect effect, Block.Settings settings) {
+    public WitherRoseBlock(StatusEffect effect, AbstractBlock.Settings settings) {
         super(effect, 8, settings);
     }
 
@@ -40,7 +41,7 @@ extends FlowerBlock {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        VoxelShape voxelShape = this.getOutlineShape(state, world, pos, EntityContext.absent());
+        VoxelShape voxelShape = this.getOutlineShape(state, world, pos, ShapeContext.absent());
         Vec3d vec3d = voxelShape.getBoundingBox().getCenter();
         double d = (double)pos.getX() + vec3d.x;
         double e = (double)pos.getZ() + vec3d.z;

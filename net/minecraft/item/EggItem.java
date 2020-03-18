@@ -4,7 +4,7 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.thrown.ThrownEggEntity;
+import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -25,10 +25,10 @@ extends Item {
         ItemStack itemStack = user.getStackInHand(hand);
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
         if (!world.isClient) {
-            ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, user);
-            thrownEggEntity.setItem(itemStack);
-            thrownEggEntity.setProperties(user, user.pitch, user.yaw, 0.0f, 1.5f, 1.0f);
-            world.spawnEntity(thrownEggEntity);
+            EggEntity eggEntity = new EggEntity(world, user);
+            eggEntity.setItem(itemStack);
+            eggEntity.setProperties(user, user.pitch, user.yaw, 0.0f, 1.5f, 1.0f);
+            world.spawnEntity(eggEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         if (!user.abilities.creativeMode) {

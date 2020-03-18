@@ -18,12 +18,12 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class CloudParticle
 extends SpriteBillboardParticle {
-    private final SpriteProvider field_17862;
+    private final SpriteProvider spriteProvider;
 
     private CloudParticle(World world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         float h;
-        this.field_17862 = spriteProvider;
+        this.spriteProvider = spriteProvider;
         float g = 2.5f;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
@@ -61,7 +61,7 @@ extends SpriteBillboardParticle {
             this.markDead();
             return;
         }
-        this.setSpriteForAge(this.field_17862);
+        this.setSpriteForAge(this.spriteProvider);
         this.move(this.velocityX, this.velocityY, this.velocityZ);
         this.velocityX *= (double)0.96f;
         this.velocityY *= (double)0.96f;
@@ -81,15 +81,15 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class SneezeFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17864;
+        private final SpriteProvider spriteProvider;
 
         public SneezeFactory(SpriteProvider spriteProvider) {
-            this.field_17864 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            CloudParticle particle = new CloudParticle(world, d, e, f, g, h, i, this.field_17864);
+            CloudParticle particle = new CloudParticle(world, d, e, f, g, h, i, this.spriteProvider);
             particle.setColor(200.0f, 50.0f, 120.0f);
             particle.setColorAlpha(0.4f);
             return particle;
@@ -99,15 +99,15 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class CloudFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17863;
+        private final SpriteProvider spriteProvider;
 
         public CloudFactory(SpriteProvider spriteProvider) {
-            this.field_17863 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new CloudParticle(world, d, e, f, g, h, i, this.field_17863);
+            return new CloudParticle(world, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

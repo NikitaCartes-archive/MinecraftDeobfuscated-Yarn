@@ -70,8 +70,8 @@ extends ValueObject {
         this.name = name;
     }
 
-    public void setDescription(String motd) {
-        this.motd = motd;
+    public void setDescription(String description) {
+        this.motd = description;
     }
 
     public void updateServerPing(RealmsServerPlayerList serverPlayerList) {
@@ -148,9 +148,9 @@ extends ValueObject {
         return list;
     }
 
-    private static Map<Integer, RealmsWorldOptions> parseSlots(JsonArray jsonArray) {
+    private static Map<Integer, RealmsWorldOptions> parseSlots(JsonArray json) {
         HashMap<Integer, RealmsWorldOptions> map = Maps.newHashMap();
-        for (JsonElement jsonElement : jsonArray) {
+        for (JsonElement jsonElement : json) {
             try {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
                 JsonParser jsonParser = new JsonParser();
@@ -292,8 +292,8 @@ extends ValueObject {
         }
 
         @Override
-        public /* synthetic */ int compare(Object object, Object object2) {
-            return this.compare((RealmsServer)object, (RealmsServer)object2);
+        public /* synthetic */ int compare(Object one, Object two) {
+            return this.compare((RealmsServer)one, (RealmsServer)two);
         }
     }
 }

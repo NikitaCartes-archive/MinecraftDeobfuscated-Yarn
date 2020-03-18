@@ -367,7 +367,7 @@ extends TameableEntity {
         } else {
             this.setCatType(this.random.nextInt(10));
         }
-        if (Feature.SWAMP_HUT.isInsideStructure(world, this.getSenseCenterPos())) {
+        if (Feature.SWAMP_HUT.isInsideStructure(world, this.getBlockPos())) {
             this.setCatType(10);
             this.setPersistent();
         }
@@ -494,7 +494,7 @@ extends TameableEntity {
                 if (this.cat.squaredDistanceTo(this.owner) > 100.0) {
                     return false;
                 }
-                BlockPos blockPos = this.owner.getSenseCenterPos();
+                BlockPos blockPos = this.owner.getBlockPos();
                 BlockState blockState = this.cat.world.getBlockState(blockPos);
                 if (blockState.getBlock().isIn(BlockTags.BEDS)) {
                     Direction direction = blockState.get(BedBlock.FACING);
@@ -542,9 +542,9 @@ extends TameableEntity {
         private void dropMorningGifts() {
             Random random = this.cat.getRandom();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            mutable.set(this.cat.getSenseCenterPos());
+            mutable.set(this.cat.getBlockPos());
             this.cat.teleport(mutable.getX() + random.nextInt(11) - 5, mutable.getY() + random.nextInt(5) - 2, mutable.getZ() + random.nextInt(11) - 5, false);
-            mutable.set(this.cat.getSenseCenterPos());
+            mutable.set(this.cat.getBlockPos());
             LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world).put(LootContextParameters.POSITION, mutable).put(LootContextParameters.THIS_ENTITY, this.cat).setRandom(random);
             List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.GIFT));

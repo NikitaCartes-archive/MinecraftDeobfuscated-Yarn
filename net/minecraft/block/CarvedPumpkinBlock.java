@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.function.Predicate;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,7 +25,6 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.function.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
@@ -42,13 +42,13 @@ extends HorizontalFacingBlock {
     private BlockPattern ironGolemPattern;
     private static final Predicate<BlockState> IS_PUMPKIN_PREDICATE = blockState -> blockState != null && (blockState.getBlock() == Blocks.CARVED_PUMPKIN || blockState.getBlock() == Blocks.JACK_O_LANTERN);
 
-    protected CarvedPumpkinBlock(Block.Settings settings) {
+    protected CarvedPumpkinBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (oldState.getBlock() == state.getBlock()) {
             return;
         }
@@ -145,11 +145,6 @@ extends HorizontalFacingBlock {
             this.ironGolemPattern = BlockPatternBuilder.start().aisle("~^~", "###", "~#~").where('^', CachedBlockPosition.matchesBlockState(IS_PUMPKIN_PREDICATE)).where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
         }
         return this.ironGolemPattern;
-    }
-
-    @Override
-    public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
-        return true;
     }
 }
 

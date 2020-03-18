@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.entity.thrown;
+package net.minecraft.entity.projectile.thrown;
 
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
@@ -10,8 +10,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -25,7 +25,7 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public abstract class ThrownEntity
-extends Projectile {
+extends ProjectileEntity {
     private int blockX = -1;
     private int blockY = -1;
     private int blockZ = -1;
@@ -34,7 +34,7 @@ extends Projectile {
     private boolean field_21975;
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, World world) {
-        super((EntityType<? extends Projectile>)entityType, world);
+        super((EntityType<? extends ProjectileEntity>)entityType, world);
     }
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> type, double x, double y, double z, World world) {

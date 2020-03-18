@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +24,7 @@ public class CraftingTableBlock
 extends Block {
     private static final Text TITLE = new TranslatableText("container.crafting", new Object[0]);
 
-    protected CraftingTableBlock(Block.Settings settings) {
+    protected CraftingTableBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

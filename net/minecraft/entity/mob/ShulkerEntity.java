@@ -20,6 +20,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ShulkerBulletEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -38,8 +39,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -192,7 +192,7 @@ implements Monster {
         super.tick();
         BlockPos blockPos = this.dataTracker.get(ATTACHED_BLOCK).orElse(null);
         if (blockPos == null && !this.world.isClient) {
-            blockPos = this.getSenseCenterPos();
+            blockPos = this.getBlockPos();
             this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
         }
         if (this.hasVehicle()) {
@@ -306,7 +306,7 @@ implements Monster {
         if (this.isAiDisabled() || !this.isAlive()) {
             return true;
         }
-        BlockPos blockPos = this.getSenseCenterPos();
+        BlockPos blockPos = this.getBlockPos();
         for (int i = 0; i < 5; ++i) {
             Direction direction;
             BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
@@ -353,7 +353,7 @@ implements Monster {
     @Override
     public boolean damage(DamageSource source, float amount) {
         Entity entity;
-        if (this.method_7124() && (entity = source.getSource()) instanceof ProjectileEntity) {
+        if (this.method_7124() && (entity = source.getSource()) instanceof PersistentProjectileEntity) {
             return false;
         }
         if (super.damage(source, amount)) {

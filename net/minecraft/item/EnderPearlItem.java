@@ -4,7 +4,7 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.thrown.ThrownEnderpearlEntity;
+import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -26,10 +26,10 @@ extends Item {
         world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_PEARL_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
         user.getItemCooldownManager().set(this, 20);
         if (!world.isClient) {
-            ThrownEnderpearlEntity thrownEnderpearlEntity = new ThrownEnderpearlEntity(world, user);
-            thrownEnderpearlEntity.setItem(itemStack);
-            thrownEnderpearlEntity.setProperties(user, user.pitch, user.yaw, 0.0f, 1.5f, 1.0f);
-            world.spawnEntity(thrownEnderpearlEntity);
+            EnderPearlEntity enderPearlEntity = new EnderPearlEntity(world, user);
+            enderPearlEntity.setItem(itemStack);
+            enderPearlEntity.setProperties(user, user.pitch, user.yaw, 0.0f, 1.5f, 1.0f);
+            world.spawnEntity(enderPearlEntity);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         if (!user.abilities.creativeMode) {

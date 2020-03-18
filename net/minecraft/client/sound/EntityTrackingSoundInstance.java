@@ -30,6 +30,11 @@ extends MovingSoundInstance {
     }
 
     @Override
+    public boolean canPlay() {
+        return !this.entity.isSilent();
+    }
+
+    @Override
     public void tick() {
         if (this.entity.removed) {
             this.setDone();

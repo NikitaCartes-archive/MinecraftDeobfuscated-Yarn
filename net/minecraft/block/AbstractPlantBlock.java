@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPlantPartBlock;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.Block;
@@ -26,7 +27,7 @@ import net.minecraft.world.World;
 public abstract class AbstractPlantBlock
 extends AbstractPlantPartBlock
 implements Fertilizable {
-    protected AbstractPlantBlock(Block.Settings settings, Direction direction, VoxelShape voxelShape, boolean bl) {
+    protected AbstractPlantBlock(AbstractBlock.Settings settings, Direction direction, VoxelShape voxelShape, boolean bl) {
         super(settings, direction, voxelShape, bl);
     }
 
@@ -35,23 +36,22 @@ implements Fertilizable {
         if (!state.canPlaceAt(world, pos)) {
             world.breakBlock(pos, true);
         }
-        super.scheduledTick(state, world, pos, random);
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         Block block;
-        if (facing == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
+        if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
         AbstractPlantStemBlock abstractPlantStemBlock = this.getStem();
-        if (facing == this.growthDirection && (block = neighborState.getBlock()) != this && block != abstractPlantStemBlock) {
+        if (direction == this.growthDirection && (block = newState.getBlock()) != this && block != abstractPlantStemBlock) {
             return abstractPlantStemBlock.getRandomGrowthState(world);
         }
         if (this.tickWater) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
@@ -92,9 +92,9 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-        boolean bl = super.canReplace(state, ctx);
-        if (bl && ctx.getStack().getItem() == this.getStem().asItem()) {
+    public boolean canReplace(BlockState state, ItemPlacementContext context) {
+        boolean bl = super.canReplace(state, context);
+        if (bl && context.getStack().getItem() == this.getStem().asItem()) {
             return false;
         }
         return bl;

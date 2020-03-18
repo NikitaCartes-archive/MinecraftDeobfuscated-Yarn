@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.List;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,7 +26,7 @@ extends AbstractPressurePlateBlock {
     public static final BooleanProperty POWERED = Properties.POWERED;
     private final ActivationRule type;
 
-    protected PressurePlateBlock(ActivationRule type, Block.Settings settings) {
+    protected PressurePlateBlock(ActivationRule type, AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false));
         this.type = type;

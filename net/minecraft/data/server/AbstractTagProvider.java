@@ -44,7 +44,7 @@ implements DataProvider {
     protected abstract void configure();
 
     @Override
-    public void run(DataCache dataCache) {
+    public void run(DataCache cache) {
         this.tagBuilders.clear();
         this.configure();
         TagContainer tagContainer = new TagContainer(identifier -> Optional.empty(), "", false, "generated");
@@ -56,13 +56,13 @@ implements DataProvider {
             try {
                 String string = GSON.toJson(jsonObject);
                 String string2 = SHA1.hashUnencodedChars(string).toString();
-                if (!Objects.equals(dataCache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
+                if (!Objects.equals(cache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
                     Files.createDirectories(path.getParent(), new FileAttribute[0]);
                     try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, new OpenOption[0]);){
                         bufferedWriter.write(string);
                     }
                 }
-                dataCache.updateSha1(path, string2);
+                cache.updateSha1(path, string2);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save tags to {}", (Object)path, (Object)iOException);
             }

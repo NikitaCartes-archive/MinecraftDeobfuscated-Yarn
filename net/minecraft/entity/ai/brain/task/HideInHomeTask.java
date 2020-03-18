@@ -33,7 +33,7 @@ extends Task<LivingEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-        Optional<BlockPos> optional = world.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, entity.getSenseCenterPos(), this.preferredDistance + 1, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = world.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, entity.getBlockPos(), this.preferredDistance + 1, PointOfInterestStorage.OccupationStatus.ANY);
         this.homePosition = optional.isPresent() && optional.get().isWithinDistance(entity.getPos(), (double)this.preferredDistance) ? optional : Optional.empty();
         return true;
     }
@@ -43,7 +43,7 @@ extends Task<LivingEntity> {
         Optional<GlobalPos> optional2;
         Brain<?> brain = entity.getBrain();
         Optional<BlockPos> optional = this.homePosition;
-        if (!optional.isPresent() && !(optional = world.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, PointOfInterestStorage.OccupationStatus.ANY, entity.getSenseCenterPos(), this.maxDistance, entity.getRandom())).isPresent() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
+        if (!optional.isPresent() && !(optional = world.getPointOfInterestStorage().getPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME, blockPos -> true, PointOfInterestStorage.OccupationStatus.ANY, entity.getBlockPos(), this.maxDistance, entity.getRandom())).isPresent() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
             optional = Optional.of(optional2.get().getPos());
         }
         if (optional.isPresent()) {

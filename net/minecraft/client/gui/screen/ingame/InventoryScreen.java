@@ -179,8 +179,8 @@ implements RecipeBookProvider {
     }
 
     @Override
-    protected void onMouseClick(Slot slot, int invSlot, int button, SlotActionType slotActionType) {
-        super.onMouseClick(slot, invSlot, button, slotActionType);
+    protected void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
+        super.onMouseClick(slot, invSlot, clickData, actionType);
         this.recipeBook.slotClicked(slot);
     }
 

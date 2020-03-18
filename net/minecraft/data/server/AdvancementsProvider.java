@@ -36,7 +36,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache dataCache) throws IOException {
+    public void run(DataCache cache) throws IOException {
         Path path = this.root.getOutput();
         HashSet set = Sets.newHashSet();
         Consumer<Advancement> consumer = advancement -> {
@@ -45,7 +45,7 @@ implements DataProvider {
             }
             Path path2 = AdvancementsProvider.getOutput(path, advancement);
             try {
-                DataProvider.writeToPath(GSON, dataCache, advancement.createTask().toJson(), path2);
+                DataProvider.writeToPath(GSON, cache, advancement.createTask().toJson(), path2);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save advancement {}", (Object)path2, (Object)iOException);
             }

@@ -7,13 +7,14 @@ import com.google.common.cache.LoadingCache;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
@@ -42,13 +43,13 @@ extends Block {
     protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
     protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
 
-    public NetherPortalBlock(Block.Settings settings) {
+    public NetherPortalBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AXIS, Direction.Axis.X));
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         switch (state.get(AXIS)) {
             case Z: {
                 return Z_SHAPE;
@@ -58,7 +59,7 @@ extends Block {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
             ZombifiedPiglinEntity entity;
             while (world.getBlockState(pos).getBlock() == this) {
@@ -93,13 +94,13 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         boolean bl;
-        Direction.Axis axis = facing.getAxis();
+        Direction.Axis axis = direction.getAxis();
         Direction.Axis axis2 = state.get(AXIS);
         boolean bl2 = bl = axis2 != axis && axis.isHorizontal();
-        if (bl || neighborState.getBlock() == this || new AreaHelper(world, pos, axis2).wasAlreadyValid()) {
-            return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        if (bl || newState.getBlock() == this || new AreaHelper(world, pos, axis2).wasAlreadyValid()) {
+            return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
         }
         return Blocks.AIR.getDefaultState();
     }
@@ -290,7 +291,7 @@ extends Block {
 
         protected boolean validStateInsidePortal(BlockState state) {
             Block block = state.getBlock();
-            return state.isAir() || state.matches(BlockTags.FIRE) || block == Blocks.NETHER_PORTAL;
+            return state.isAir() || state.isIn(BlockTags.FIRE) || block == Blocks.NETHER_PORTAL;
         }
 
         public boolean isValid() {

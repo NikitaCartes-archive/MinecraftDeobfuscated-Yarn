@@ -4,7 +4,7 @@
 package net.minecraft.block;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayerSkullBlock
 extends SkullBlock {
-    protected PlayerSkullBlock(Block.Settings settings) {
+    protected PlayerSkullBlock(AbstractBlock.Settings settings) {
         super(SkullBlock.Type.PLAYER, settings);
     }
 

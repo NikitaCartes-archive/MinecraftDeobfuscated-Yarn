@@ -354,7 +354,7 @@ extends World {
             if (bl) {
                 this.addParticle(pos.getX(), pos.getX() + 1, pos.getZ(), pos.getZ() + 1, (double)(pos.getY() + 1) - 0.05, parameters);
             }
-        } else if (!state.matches(BlockTags.IMPERMEABLE)) {
+        } else if (!state.isIn(BlockTags.IMPERMEABLE)) {
             double e = voxelShape.getMinimum(Direction.Axis.Y);
             if (e > 0.0) {
                 this.addParticle(pos, parameters, voxelShape, (double)pos.getY() + e - 0.05);
@@ -672,18 +672,18 @@ extends World {
     }
 
     @Override
-    public float method_24852(Direction direction, boolean bl) {
-        boolean bl2;
-        boolean bl3 = bl2 = this.dimension.getType() == DimensionType.THE_NETHER;
-        if (!bl) {
-            return bl2 ? 0.9f : 1.0f;
+    public float getBrightness(Direction direction, boolean shaded) {
+        boolean bl;
+        boolean bl2 = bl = this.dimension.getType() == DimensionType.THE_NETHER;
+        if (!shaded) {
+            return bl ? 0.9f : 1.0f;
         }
         switch (direction) {
             case DOWN: {
-                return bl2 ? 0.9f : 0.5f;
+                return bl ? 0.9f : 0.5f;
             }
             case UP: {
-                return bl2 ? 0.9f : 1.0f;
+                return bl ? 0.9f : 1.0f;
             }
             case NORTH: 
             case SOUTH: {

@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemPlacementContext;
@@ -16,7 +17,7 @@ public class PillarBlock
 extends Block {
     public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;
 
-    public PillarBlock(Block.Settings settings) {
+    public PillarBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)this.getDefaultState().with(AXIS, Direction.Axis.Y));
     }

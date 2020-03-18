@@ -62,8 +62,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
@@ -1502,7 +1502,7 @@ Runnable {
             Identifier identifier = DimensionType.getId(entry.getKey());
             Path path3 = path2.resolve(identifier.getNamespace()).resolve(identifier.getPath());
             Files.createDirectories(path3, new FileAttribute[0]);
-            entry.getValue().method_21625(path3);
+            entry.getValue().dump(path3);
         }
         this.dumpGamerules(path.resolve("gamerules.txt"));
         this.dumpClasspath(path.resolve("classpath.txt"));
@@ -1569,7 +1569,7 @@ Runnable {
     }
 
     private void method_24154() {
-        Block.STATE_IDS.forEach(BlockState::initShapeCache);
+        Block.STATE_IDS.forEach(AbstractBlock.AbstractBlockState::initShapeCache);
     }
 
     private void startMonitor(@Nullable TickDurationMonitor monitor) {

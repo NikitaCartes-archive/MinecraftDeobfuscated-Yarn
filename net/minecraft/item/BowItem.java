@@ -8,7 +8,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -64,25 +64,25 @@ extends RangedWeaponItem {
             int k;
             int j;
             ArrowItem arrowItem = (ArrowItem)(itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
-            ProjectileEntity projectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
-            projectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, f * 3.0f, 1.0f);
+            PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, itemStack, playerEntity);
+            persistentProjectileEntity.setProperties(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0f, f * 3.0f, 1.0f);
             if (f == 1.0f) {
-                projectileEntity.setCritical(true);
+                persistentProjectileEntity.setCritical(true);
             }
             if ((j = EnchantmentHelper.getLevel(Enchantments.POWER, stack)) > 0) {
-                projectileEntity.setDamage(projectileEntity.getDamage() + (double)j * 0.5 + 0.5);
+                persistentProjectileEntity.setDamage(persistentProjectileEntity.getDamage() + (double)j * 0.5 + 0.5);
             }
             if ((k = EnchantmentHelper.getLevel(Enchantments.PUNCH, stack)) > 0) {
-                projectileEntity.setPunch(k);
+                persistentProjectileEntity.setPunch(k);
             }
             if (EnchantmentHelper.getLevel(Enchantments.FLAME, stack) > 0) {
-                projectileEntity.setOnFireFor(100);
+                persistentProjectileEntity.setOnFireFor(100);
             }
             stack.damage(1, playerEntity, p -> p.sendToolBreakStatus(playerEntity.getActiveHand()));
             if (bl2 || playerEntity.abilities.creativeMode && (itemStack.getItem() == Items.SPECTRAL_ARROW || itemStack.getItem() == Items.TIPPED_ARROW)) {
-                projectileEntity.pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
+                persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
             }
-            world.spawnEntity(projectileEntity);
+            world.spawnEntity(persistentProjectileEntity);
         }
         world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.0f / (RANDOM.nextFloat() * 0.4f + 1.2f) + f * 0.5f);
         if (!bl2 && !playerEntity.abilities.creativeMode) {

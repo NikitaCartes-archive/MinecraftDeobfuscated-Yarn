@@ -36,7 +36,7 @@ extends Task<MobEntityWithAi> {
 
     @Override
     protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-        BlockPos blockPos = mobEntityWithAi.getSenseCenterPos();
+        BlockPos blockPos = mobEntityWithAi.getBlockPos();
         if (serverWorld.isNearOccupiedPointOfInterest(blockPos)) {
             this.updateWalkTarget(mobEntityWithAi);
         } else {

@@ -3,7 +3,7 @@
  */
 package net.minecraft.block;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 public class FletchingTableBlock
 extends CraftingTableBlock {
-    protected FletchingTableBlock(Block.Settings settings) {
+    protected FletchingTableBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

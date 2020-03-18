@@ -27,7 +27,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -234,7 +234,7 @@ public class Explosion {
         }
         if (this.createFire) {
             for (BlockPos blockPos3 : this.affectedBlocks) {
-                if (this.random.nextInt(3) != 0 || !this.world.getBlockState(blockPos3).isAir() || !this.world.getBlockState(blockPos3.down()).isFullOpaque(this.world, blockPos3.down())) continue;
+                if (this.random.nextInt(3) != 0 || !this.world.getBlockState(blockPos3).isAir() || !this.world.getBlockState(blockPos3.down()).isOpaqueFullCube(this.world, blockPos3.down())) continue;
                 this.world.setBlockState(blockPos3, AbstractFireBlock.getState(this.world, blockPos3));
             }
         }
@@ -278,7 +278,7 @@ public class Explosion {
         if (this.entity instanceof LivingEntity) {
             return (LivingEntity)this.entity;
         }
-        if (this.entity instanceof Projectile && (entity = ((Projectile)this.entity).getOwner()) instanceof LivingEntity) {
+        if (this.entity instanceof ProjectileEntity && (entity = ((ProjectileEntity)this.entity).getOwner()) instanceof LivingEntity) {
             return (LivingEntity)entity;
         }
         return null;

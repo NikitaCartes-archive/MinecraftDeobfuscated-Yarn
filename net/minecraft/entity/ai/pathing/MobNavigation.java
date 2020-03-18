@@ -72,7 +72,7 @@ extends EntityNavigation {
 
     @Override
     public Path findPathTo(Entity entity, int distance) {
-        return this.findPathTo(entity.getSenseCenterPos(), distance);
+        return this.findPathTo(entity.getBlockPos(), distance);
     }
 
     /**

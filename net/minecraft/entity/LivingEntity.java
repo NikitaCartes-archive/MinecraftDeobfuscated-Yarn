@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.Dynamic;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -64,7 +65,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ElytraItem;
@@ -120,6 +121,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class LivingEntity
 extends Entity {
     private static final UUID ATTR_SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
+    private static final UUID field_23128 = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
     private static final EntityAttributeModifier ATTR_SPRINTING_SPEED_BOOST = new EntityAttributeModifier(ATTR_SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", (double)0.3f, EntityAttributeModifier.Operation.MULTIPLY_TOTAL).setSerialize(false);
     protected static final TrackedData<Byte> LIVING_FLAGS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -321,7 +323,7 @@ extends Entity {
             } else if (this.getAir() < this.getMaxAir()) {
                 this.setAir(this.getNextAirOnLand(this.getAir()));
             }
-            if (!this.world.isClient && !Objects.equal(this.lastBlockPos, blockPos = this.getSenseCenterPos())) {
+            if (!this.world.isClient && !Objects.equal(this.lastBlockPos, blockPos = this.getBlockPos())) {
                 this.lastBlockPos = blockPos;
                 this.applyFrostWalker(blockPos);
             }
@@ -365,23 +367,23 @@ extends Entity {
     @Override
     public void attemptSprintingParticles() {
         super.attemptSprintingParticles();
-        if (EnchantmentHelper.hasSoulSpeed(this) && this.method_25936().matches(BlockTags.SOUL_SPEED_BLOCKS) && this.getVelocity().x != 0.0 && this.getVelocity().z != 0.0 && this.age % 5 == 0) {
+        if (!this.isSpectator() && EnchantmentHelper.hasSoulSpeed(this) && this.method_25936().isIn(BlockTags.SOUL_SPEED_BLOCKS) && this.getVelocity().x != 0.0 && this.getVelocity().z != 0.0 && this.age % 5 == 0) {
             this.method_25937();
         }
     }
 
     protected void method_25937() {
         Vec3d vec3d = this.getVelocity();
-        this.world.addParticle(ParticleTypes.SOUL, this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), this.getY() + 0.1, this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(), vec3d.x * -0.2, 0.1, vec3d.z * -0.2);
-        float f = this.random.nextFloat() * 0.4f + (this.random.nextFloat() > 0.9f ? 0.6f : 0.0f);
+        this.world.addParticle(ParticleTypes.SOUL, this.getX() + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), this.getY() + 0.1, this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.getWidth(), vec3d.x * -0.2, 0.1, vec3d.z * -0.2);
+        float f = this.random.nextFloat() * 0.4f + this.random.nextFloat() > 0.9f ? 0.6f : 0.0f;
         this.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, f, 0.6f + this.random.nextFloat() * 0.4f);
     }
 
     @Override
     protected float getVelocityMultiplier() {
         int i = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this);
-        if (this.method_25936().matches(BlockTags.SOUL_SPEED_BLOCKS) && i > 0) {
-            return 0.9f + (float)i * 0.125f;
+        if (this.method_25936().isIn(BlockTags.SOUL_SPEED_BLOCKS) && i > 0) {
+            return 1.0f;
         }
         return super.getVelocityMultiplier();
     }
@@ -391,10 +393,19 @@ extends Entity {
         if (i > 0) {
             FrostWalkerEnchantment.freezeWater(this, this.world, pos, i);
         }
-        if (this.method_25936().matches(BlockTags.SOUL_SPEED_BLOCKS) && EnchantmentHelper.hasSoulSpeed(this) && this.getRandom().nextFloat() < 0.04f) {
-            ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
-            ServerPlayerEntity serverPlayerEntity = this instanceof ServerPlayerEntity ? (ServerPlayerEntity)this : null;
-            itemStack.damage(1, this.getRandom(), serverPlayerEntity);
+        if (!this.method_25936().isAir()) {
+            int j;
+            EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+            if (entityAttributeInstance.getModifier(field_23128) != null) {
+                entityAttributeInstance.removeModifier(field_23128);
+            }
+            if ((j = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this)) > 0 && this.method_25936().isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
+                entityAttributeInstance.addModifier(new EntityAttributeModifier(field_23128, "Soul speed boost", (double)(0.03f * (1.0f + (float)j * 0.35f)), EntityAttributeModifier.Operation.ADDITION).setSerialize(false));
+                if (this.getRandom().nextFloat() < 0.04f) {
+                    ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
+                    itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.FEET));
+                }
+            }
         }
     }
 
@@ -721,6 +732,19 @@ extends Entity {
         return this.getGroup() != EntityGroup.UNDEAD || (statusEffect = effect.getEffectType()) != StatusEffects.REGENERATION && statusEffect != StatusEffects.POISON;
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public void method_26082(StatusEffectInstance statusEffectInstance) {
+        if (!this.canHaveStatusEffect(statusEffectInstance)) {
+            return;
+        }
+        StatusEffectInstance statusEffectInstance2 = this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
+        if (statusEffectInstance2 == null) {
+            this.onStatusEffectApplied(statusEffectInstance);
+        } else {
+            this.onStatusEffectUpgraded(statusEffectInstance, true);
+        }
+    }
+
     public boolean isUndead() {
         return this.getGroup() == EntityGroup.UNDEAD;
     }
@@ -963,10 +987,10 @@ extends Entity {
 
     private boolean blockedByShield(DamageSource source) {
         Vec3d vec3d;
-        ProjectileEntity projectileEntity;
+        PersistentProjectileEntity persistentProjectileEntity;
         Entity entity = source.getSource();
         boolean bl = false;
-        if (entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).getPierceLevel() > 0) {
+        if (entity instanceof PersistentProjectileEntity && (persistentProjectileEntity = (PersistentProjectileEntity)entity).getPierceLevel() > 0) {
             bl = true;
         }
         if (!source.bypassesArmor() && this.isBlocking() && !bl && (vec3d = source.getPosition()) != null) {
@@ -1029,7 +1053,7 @@ extends Entity {
         boolean bl = false;
         if (adversary instanceof WitherEntity) {
             if (this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
-                BlockPos blockPos = this.getSenseCenterPos();
+                BlockPos blockPos = this.getBlockPos();
                 BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
                 if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
                     this.world.setBlockState(blockPos, blockState, 3);
@@ -1084,7 +1108,7 @@ extends Entity {
     }
 
     protected LootContext.Builder getLootContextBuilder(boolean causedByPlayer, DamageSource source) {
-        LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).setRandom(this.random).put(LootContextParameters.THIS_ENTITY, this).put(LootContextParameters.POSITION, this.getSenseCenterPos()).put(LootContextParameters.DAMAGE_SOURCE, source).putNullable(LootContextParameters.KILLER_ENTITY, source.getAttacker()).putNullable(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
+        LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).setRandom(this.random).put(LootContextParameters.THIS_ENTITY, this).put(LootContextParameters.POSITION, this.getBlockPos()).put(LootContextParameters.DAMAGE_SOURCE, source).putNullable(LootContextParameters.KILLER_ENTITY, source.getAttacker()).putNullable(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
         if (causedByPlayer && this.attackingPlayer != null) {
             builder = builder.put(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).setLuck(this.attackingPlayer.getLuck());
         }
@@ -1142,7 +1166,7 @@ extends Entity {
         if (this.isSpectator()) {
             return false;
         }
-        BlockPos blockPos = this.getSenseCenterPos();
+        BlockPos blockPos = this.getBlockPos();
         BlockState blockState = this.getBlockState();
         Block block = blockState.getBlock();
         if (block.isIn(BlockTags.CLIMBABLE)) {
@@ -1157,7 +1181,7 @@ extends Entity {
     }
 
     public BlockState getBlockState() {
-        return this.world.getBlockState(this.getSenseCenterPos());
+        return this.world.getBlockState(this.getBlockPos());
     }
 
     private boolean canEnterTrapdoor(BlockPos pos, BlockState state) {
@@ -1569,7 +1593,7 @@ extends Entity {
     }
 
     private void onDismounted(Entity vehicle) {
-        Vec3d vec3d = this.world.getBlockState(vehicle.getSenseCenterPos()).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.method_24829(this);
+        Vec3d vec3d = this.removed || this.world.getBlockState(vehicle.getBlockPos()).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.method_24829(this);
         this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
     }
 
@@ -2133,7 +2157,7 @@ extends Entity {
     }
 
     public void sendPickup(Entity item, int count) {
-        if (!item.removed && !this.world.isClient && (item instanceof ItemEntity || item instanceof ProjectileEntity || item instanceof ExperienceOrbEntity)) {
+        if (!item.removed && !this.world.isClient && (item instanceof ItemEntity || item instanceof PersistentProjectileEntity || item instanceof ExperienceOrbEntity)) {
             ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(item, new ItemPickupAnimationS2CPacket(item.getEntityId(), this.getEntityId(), count));
         }
     }
@@ -2473,6 +2497,10 @@ extends Entity {
 
     public ImmutableList<EntityPose> getPoses() {
         return ImmutableList.of(EntityPose.STANDING);
+    }
+
+    public EntityPose method_26081() {
+        return this.getPoses().stream().min(Comparator.comparing(entityPose -> Float.valueOf(this.getDimensions((EntityPose)entityPose).height))).orElse(EntityPose.STANDING);
     }
 
     public Box method_24833(EntityPose entityPose) {

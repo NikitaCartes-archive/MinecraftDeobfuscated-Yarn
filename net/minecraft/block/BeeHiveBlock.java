@@ -8,6 +8,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -63,7 +64,7 @@ extends BlockWithEntity {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final IntProperty HONEY_LEVEL = Properties.HONEY_LEVEL;
 
-    public BeehiveBlock(Block.Settings settings) {
+    public BeehiveBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HONEY_LEVEL, 0)).with(FACING, Direction.NORTH));
     }
@@ -187,7 +188,7 @@ extends BlockWithEntity {
         }
         VoxelShape voxelShape = state.getCollisionShape(world, pos);
         double d = voxelShape.getMaximum(Direction.Axis.Y);
-        if (d >= 1.0 && !state.matches(BlockTags.IMPERMEABLE)) {
+        if (d >= 1.0 && !state.isIn(BlockTags.IMPERMEABLE)) {
             double e = voxelShape.getMinimum(Direction.Axis.Y);
             if (e > 0.0) {
                 this.addHoneyParticle(world, pos, voxelShape, (double)pos.getY() + e - 0.05);
@@ -274,13 +275,13 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         BlockEntity blockEntity;
-        if (world.getBlockState(neighborPos).getBlock() instanceof FireBlock && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
+        if (world.getBlockState(posFrom).getBlock() instanceof FireBlock && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
             beehiveBlockEntity.angerBees(null, state, BeehiveBlockEntity.BeeState.EMERGENCY);
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 }
 

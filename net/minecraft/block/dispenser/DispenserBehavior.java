@@ -27,20 +27,20 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
-import net.minecraft.entity.thrown.SnowballEntity;
-import net.minecraft.entity.thrown.ThrownEggEntity;
-import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
+import net.minecraft.entity.projectile.thrown.EggEntity;
+import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.BaseFluid;
 import net.minecraft.fluid.Fluid;
@@ -77,50 +77,50 @@ public interface DispenserBehavior {
         DispenserBlock.registerBehavior(Items.ARROW, new ProjectileDispenserBehavior(){
 
             @Override
-            protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
+            protected ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack) {
                 ArrowEntity arrowEntity = new ArrowEntity(position, stack.getX(), stack.getY(), stack.getZ());
-                arrowEntity.pickupType = ProjectileEntity.PickupPermission.ALLOWED;
+                arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
                 return arrowEntity;
             }
         });
         DispenserBlock.registerBehavior(Items.TIPPED_ARROW, new ProjectileDispenserBehavior(){
 
             @Override
-            protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
+            protected ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack) {
                 ArrowEntity arrowEntity = new ArrowEntity(position, stack.getX(), stack.getY(), stack.getZ());
                 arrowEntity.initFromStack(itemStack);
-                arrowEntity.pickupType = ProjectileEntity.PickupPermission.ALLOWED;
+                arrowEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
                 return arrowEntity;
             }
         });
         DispenserBlock.registerBehavior(Items.SPECTRAL_ARROW, new ProjectileDispenserBehavior(){
 
             @Override
-            protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-                SpectralArrowEntity projectileEntity = new SpectralArrowEntity(position, stack.getX(), stack.getY(), stack.getZ());
-                projectileEntity.pickupType = ProjectileEntity.PickupPermission.ALLOWED;
-                return projectileEntity;
+            protected ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack) {
+                SpectralArrowEntity persistentProjectileEntity = new SpectralArrowEntity(position, stack.getX(), stack.getY(), stack.getZ());
+                persistentProjectileEntity.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
+                return persistentProjectileEntity;
             }
         });
         DispenserBlock.registerBehavior(Items.EGG, new ProjectileDispenserBehavior(){
 
             @Override
-            protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-                return Util.make(new ThrownEggEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack));
+            protected ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack) {
+                return Util.make(new EggEntity(position, stack.getX(), stack.getY(), stack.getZ()), eggEntity -> eggEntity.setItem(itemStack));
             }
         });
         DispenserBlock.registerBehavior(Items.SNOWBALL, new ProjectileDispenserBehavior(){
 
             @Override
-            protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
+            protected ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack) {
                 return Util.make(new SnowballEntity(position, stack.getX(), stack.getY(), stack.getZ()), snowballEntity -> snowballEntity.setItem(itemStack));
             }
         });
         DispenserBlock.registerBehavior(Items.EXPERIENCE_BOTTLE, new ProjectileDispenserBehavior(){
 
             @Override
-            protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-                return Util.make(new ThrownExperienceBottleEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownExperienceBottleEntity -> thrownExperienceBottleEntity.setItem(itemStack));
+            protected ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack) {
+                return Util.make(new ExperienceBottleEntity(position, stack.getX(), stack.getY(), stack.getZ()), experienceBottleEntity -> experienceBottleEntity.setItem(itemStack));
             }
 
             @Override
@@ -140,8 +140,8 @@ public interface DispenserBehavior {
                 return new ProjectileDispenserBehavior(){
 
                     @Override
-                    protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-                        return Util.make(new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItem(itemStack));
+                    protected ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack) {
+                        return Util.make(new PotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), potionEntity -> potionEntity.setItem(itemStack));
                     }
 
                     @Override
@@ -163,8 +163,8 @@ public interface DispenserBehavior {
                 return new ProjectileDispenserBehavior(){
 
                     @Override
-                    protected Projectile createProjectile(World position, Position stack, ItemStack itemStack) {
-                        return Util.make(new ThrownPotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), thrownPotionEntity -> thrownPotionEntity.setItem(itemStack));
+                    protected ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack) {
+                        return Util.make(new PotionEntity(position, stack.getX(), stack.getY(), stack.getZ()), potionEntity -> potionEntity.setItem(itemStack));
                     }
 
                     @Override
@@ -219,9 +219,9 @@ public interface DispenserBehavior {
                 double g = pointer.getX() + d;
                 double h = (float)pointer.getBlockPos().getY() + 0.2f;
                 double i = pointer.getZ() + f;
-                FireworkEntity fireworkEntity = new FireworkEntity(pointer.getWorld(), stack, g, h, i, true);
-                fireworkEntity.setVelocity(d, e, f, 0.5f, 1.0f);
-                pointer.getWorld().spawnEntity(fireworkEntity);
+                FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(pointer.getWorld(), stack, g, h, i, true);
+                fireworkRocketEntity.setVelocity(d, e, f, 0.5f, 1.0f);
+                pointer.getWorld().spawnEntity(fireworkRocketEntity);
                 stack.decrement(1);
                 return stack;
             }
@@ -476,7 +476,7 @@ public interface DispenserBehavior {
                         this.success = true;
                         break;
                     }
-                    if (!this.success && (blockState = world.getBlockState(blockPos)).matches(BlockTags.BEEHIVES) && (i = blockState.get(BeehiveBlock.HONEY_LEVEL).intValue()) >= 5) {
+                    if (!this.success && (blockState = world.getBlockState(blockPos)).isIn(BlockTags.BEEHIVES) && (i = blockState.get(BeehiveBlock.HONEY_LEVEL).intValue()) >= 5) {
                         if (stack.damage(1, world.random, null)) {
                             stack.setCount(0);
                         }

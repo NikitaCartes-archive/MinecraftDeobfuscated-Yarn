@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 public class RealmsLongRunningMcoTaskScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Screen lastScreen;
+    private final Screen parent;
     private volatile String title = "";
     private volatile boolean error;
     private volatile String errorMessage;
@@ -31,8 +31,8 @@ extends RealmsScreen {
     private final int buttonLength = 212;
     public static final String[] symbols = new String[]{"\u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583", "_ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584", "_ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585", "_ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586", "_ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587", "_ _ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588", "_ _ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587", "_ _ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586", "_ _ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585", "_ \u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584", "\u2583 \u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583", "\u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _", "\u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _", "\u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _", "\u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _", "\u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _ _", "\u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _ _", "\u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _ _", "\u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _ _", "\u2584 \u2585 \u2586 \u2587 \u2588 \u2587 \u2586 \u2585 \u2584 \u2583 _"};
 
-    public RealmsLongRunningMcoTaskScreen(Screen screen, LongRunningTask task) {
-        this.lastScreen = screen;
+    public RealmsLongRunningMcoTaskScreen(Screen parent, LongRunningTask task) {
+        this.parent = parent;
         this.task = task;
         task.setScreen(this);
         Thread thread = new Thread((Runnable)task, "Realms-long-running-task");
@@ -66,7 +66,7 @@ extends RealmsScreen {
     private void cancelOrBackButtonClicked() {
         this.aborted = true;
         this.task.abortTask();
-        this.client.openScreen(this.lastScreen);
+        this.client.openScreen(this.parent);
     }
 
     @Override
@@ -82,15 +82,15 @@ extends RealmsScreen {
         super.render(mouseX, mouseY, delta);
     }
 
-    public void method_21290(String string) {
+    public void setError(String error) {
         this.error = true;
-        this.errorMessage = string;
-        Realms.narrateNow(string);
-        this.method_25166();
+        this.errorMessage = error;
+        Realms.narrateNow(error);
+        this.onError();
         this.addButton(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.back", new Object[0]), buttonWidget -> this.cancelOrBackButtonClicked()));
     }
 
-    public void method_25166() {
+    public void onError() {
         HashSet set = Sets.newHashSet(this.buttons);
         this.children.removeIf(set::contains);
         this.buttons.clear();

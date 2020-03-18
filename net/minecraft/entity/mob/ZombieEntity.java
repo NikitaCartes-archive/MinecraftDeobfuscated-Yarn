@@ -247,7 +247,9 @@ extends HostileEntity {
 
     protected void convertInWater() {
         this.convertTo(EntityType.DROWNED);
-        this.world.playLevelEvent(null, 1040, this.getSenseCenterPos(), 0);
+        if (!this.isSilent()) {
+            this.world.playLevelEvent(null, 1040, this.getBlockPos(), 0);
+        }
     }
 
     protected void convertTo(EntityType<? extends ZombieEntity> entityType) {
@@ -258,7 +260,7 @@ extends HostileEntity {
         zombieEntity.copyPositionAndRotation(this);
         zombieEntity.setCanPickUpLoot(this.canPickUpLoot());
         zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
-        zombieEntity.applyAttributeModifiers(zombieEntity.world.getLocalDifficulty(zombieEntity.getSenseCenterPos()).getClampedLocalDifficulty());
+        zombieEntity.applyAttributeModifiers(zombieEntity.world.getLocalDifficulty(zombieEntity.getBlockPos()).getClampedLocalDifficulty());
         zombieEntity.setBaby(this.isBaby());
         zombieEntity.setAiDisabled(this.isAiDisabled());
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
@@ -306,7 +308,7 @@ extends HostileEntity {
                     if (this.world.isPlayerInRange(m, n, o, 7.0) || !this.world.intersectsEntities(zombieEntity) || !this.world.doesNotCollide(zombieEntity) || this.world.containsFluid(zombieEntity.getBoundingBox())) continue;
                     this.world.spawnEntity(zombieEntity);
                     zombieEntity.setTarget(livingEntity);
-                    zombieEntity.initialize(this.world, this.world.getLocalDifficulty(zombieEntity.getSenseCenterPos()), SpawnType.REINFORCEMENT, null, null);
+                    zombieEntity.initialize(this.world, this.world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnType.REINFORCEMENT, null, null);
                     this.getAttributeInstance(SPAWN_REINFORCEMENTS).addModifier(new EntityAttributeModifier("Zombie reinforcement caller charge", -0.05f, EntityAttributeModifier.Operation.ADDITION));
                     zombieEntity.getAttributeInstance(SPAWN_REINFORCEMENTS).addModifier(new EntityAttributeModifier("Zombie reinforcement callee charge", -0.05f, EntityAttributeModifier.Operation.ADDITION));
                     break;
@@ -321,7 +323,7 @@ extends HostileEntity {
     public boolean tryAttack(Entity target) {
         boolean bl = super.tryAttack(target);
         if (bl) {
-            float f = this.world.getLocalDifficulty(this.getSenseCenterPos()).getLocalDifficulty();
+            float f = this.world.getLocalDifficulty(this.getBlockPos()).getLocalDifficulty();
             if (this.getMainHandStack().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3f) {
                 target.setOnFireFor(2 * (int)f);
             }
@@ -408,9 +410,9 @@ extends HostileEntity {
             ZombieVillagerEntity zombieVillagerEntity = EntityType.ZOMBIE_VILLAGER.create(this.world);
             zombieVillagerEntity.copyPositionAndRotation(villagerEntity);
             villagerEntity.remove();
-            zombieVillagerEntity.initialize(this.world, this.world.getLocalDifficulty(zombieVillagerEntity.getSenseCenterPos()), SpawnType.CONVERSION, new ZombieData(false), null);
+            zombieVillagerEntity.initialize(this.world, this.world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnType.CONVERSION, new ZombieData(false), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-            zombieVillagerEntity.method_21649(villagerEntity.method_21651().serialize(NbtOps.INSTANCE).getValue());
+            zombieVillagerEntity.setGossipData(villagerEntity.method_21651().serialize(NbtOps.INSTANCE).getValue());
             zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
             zombieVillagerEntity.setXp(villagerEntity.getExperience());
             zombieVillagerEntity.setBaby(villagerEntity.isBaby());
@@ -424,7 +426,9 @@ extends HostileEntity {
             }
             zombieVillagerEntity.setInvulnerable(this.isInvulnerable());
             this.world.spawnEntity(zombieVillagerEntity);
-            this.world.playLevelEvent(null, 1026, this.getSenseCenterPos(), 0);
+            if (!this.isSilent()) {
+                this.world.playLevelEvent(null, 1026, this.getBlockPos(), 0);
+            }
         }
     }
 
@@ -545,12 +549,12 @@ extends HostileEntity {
         }
     }
 
-    public class ZombieData
+    public static class ZombieData
     implements EntityData {
         public final boolean baby;
 
-        private ZombieData(boolean baby) {
-            this.baby = baby;
+        public ZombieData(boolean bl) {
+            this.baby = bl;
         }
     }
 }

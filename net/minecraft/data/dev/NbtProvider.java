@@ -30,7 +30,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache dataCache) throws IOException {
+    public void run(DataCache cache) throws IOException {
         Path path2 = this.root.getOutput();
         for (Path path22 : this.root.getInputs()) {
             Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".nbt")).forEach(path3 -> NbtProvider.convertNbtToSnbt(path3, this.getLocation(path22, (Path)path3), path2));

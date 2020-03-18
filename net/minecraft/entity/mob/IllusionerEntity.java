@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
@@ -30,7 +29,8 @@ import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -193,14 +193,14 @@ implements RangedAttackMob {
     @Override
     public void attack(LivingEntity target, float pullProgress) {
         ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
-        ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
+        PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, pullProgress);
         double d = target.getX() - this.getX();
-        double e = target.getBodyY(0.3333333333333333) - projectileEntity.getY();
+        double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
         double f = target.getZ() - this.getZ();
         double g = MathHelper.sqrt(d * d + f * f);
-        projectileEntity.setVelocity(d, e + g * (double)0.2f, f, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
+        persistentProjectileEntity.setVelocity(d, e + g * (double)0.2f, f, 1.6f, 14 - this.world.getDifficulty().getId() * 4);
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0f, 1.0f / (this.getRandom().nextFloat() * 0.4f + 0.8f));
-        this.world.spawnEntity(projectileEntity);
+        this.world.spawnEntity(persistentProjectileEntity);
     }
 
     @Override
@@ -234,7 +234,7 @@ implements RangedAttackMob {
             if (IllusionerEntity.this.getTarget().getEntityId() == this.targetId) {
                 return false;
             }
-            return IllusionerEntity.this.world.getLocalDifficulty(IllusionerEntity.this.getSenseCenterPos()).isHarderThan(Difficulty.NORMAL.ordinal());
+            return IllusionerEntity.this.world.getLocalDifficulty(IllusionerEntity.this.getBlockPos()).isHarderThan(Difficulty.NORMAL.ordinal());
         }
 
         @Override

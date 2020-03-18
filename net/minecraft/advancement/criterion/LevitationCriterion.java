@@ -65,7 +65,7 @@ extends AbstractCriterion<Conditions> {
         @Override
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.add("distance", this.distance.serialize());
+            jsonObject.add("distance", this.distance.toJson());
             jsonObject.add("duration", this.duration.toJson());
             return jsonObject;
         }

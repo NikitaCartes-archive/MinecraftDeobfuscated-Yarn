@@ -75,6 +75,7 @@ import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -271,7 +272,7 @@ extends World {
                 long l = this.properties.getTimeOfDay() + 24000L;
                 this.setTimeOfDay(l - l % 24000L);
             }
-            this.method_23660();
+            this.wakeSleepingPlayers();
             if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
                 this.resetWeather();
             }
@@ -356,7 +357,7 @@ extends World {
         profiler.pop();
     }
 
-    private void method_23660() {
+    private void wakeSleepingPlayers() {
         this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList()).forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false));
     }
 
@@ -422,9 +423,9 @@ extends World {
     protected BlockPos getSurface(BlockPos pos) {
         BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
         Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getHeight(), blockPos.getZ())).expand(3.0);
-        List<LivingEntity> list = this.getEntities(LivingEntity.class, box, (? super T livingEntity) -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getSenseCenterPos()));
+        List<LivingEntity> list = this.getEntities(LivingEntity.class, box, (? super T livingEntity) -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos()));
         if (!list.isEmpty()) {
-            return list.get(this.random.nextInt(list.size())).getSenseCenterPos();
+            return list.get(this.random.nextInt(list.size())).getBlockPos();
         }
         if (blockPos.getY() == -1) {
             blockPos = blockPos.up(2);
@@ -463,24 +464,6 @@ extends World {
         this.properties.setRaining(false);
         this.properties.setThunderTime(0);
         this.properties.setThundering(false);
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public void setDefaultSpawnClient() {
-        if (this.properties.getSpawnY() <= 0) {
-            this.properties.setSpawnY(this.getSeaLevel() + 1);
-        }
-        int i = this.properties.getSpawnX();
-        int j = this.properties.getSpawnZ();
-        int k = 0;
-        while (this.getTopNonAirState(new BlockPos(i, 0, j)).isAir()) {
-            i += this.random.nextInt(8) - this.random.nextInt(8);
-            j += this.random.nextInt(8) - this.random.nextInt(8);
-            if (++k != 10000) continue;
-        }
-        this.properties.setSpawnX(i);
-        this.properties.setSpawnZ(j);
     }
 
     public void resetIdleTimeout() {
@@ -1000,7 +983,7 @@ extends World {
         if (player.getServerWorld() != this) {
             return false;
         }
-        BlockPos blockPos = player.getSenseCenterPos();
+        BlockPos blockPos = player.getBlockPos();
         if (blockPos.isWithinDistance(new Vec3d(x, y, z), force ? 512.0 : 32.0)) {
             player.networkHandler.sendPacket(packet);
             return true;
@@ -1084,6 +1067,7 @@ extends World {
         super.setSpawnPos(pos);
         this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
         this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
+        this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos));
     }
 
     public LongSet getForcedChunks() {
@@ -1141,8 +1125,8 @@ extends World {
         return this.isNearOccupiedPointOfInterest(pos, 1);
     }
 
-    public boolean isNearOccupiedPointOfInterest(ChunkSectionPos chunkSectionPos) {
-        return this.isNearOccupiedPointOfInterest(chunkSectionPos.getCenterPos());
+    public boolean isNearOccupiedPointOfInterest(ChunkSectionPos sectionPos) {
+        return this.isNearOccupiedPointOfInterest(sectionPos.getCenterPos());
     }
 
     public boolean isNearOccupiedPointOfInterest(BlockPos pos, int maxDistance) {
@@ -1173,7 +1157,7 @@ extends World {
         observer.onInteractionWith(interaction, entity);
     }
 
-    public void method_21625(Path path) throws IOException {
+    public void dump(Path path) throws IOException {
         ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.getChunkManager().threadedAnvilChunkStorage;
         try (BufferedWriter writer = Files.newBufferedWriter(path.resolve("stats.txt"), new OpenOption[0]);){
             writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getLevelCount()));
@@ -1182,10 +1166,10 @@ extends World {
             }
             writer.write(String.format("entities: %d\n", this.entitiesById.size()));
             writer.write(String.format("block_entities: %d\n", this.blockEntities.size()));
-            writer.write(String.format("block_ticks: %d\n", ((ServerTickScheduler)this.getBlockTickScheduler()).method_20825()));
-            writer.write(String.format("fluid_ticks: %d\n", ((ServerTickScheduler)this.getFluidTickScheduler()).method_20825()));
-            writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683() + "\n");
-            writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().method_21694()));
+            writer.write(String.format("block_ticks: %d\n", ((ServerTickScheduler)this.getBlockTickScheduler()).getTicks()));
+            writer.write(String.format("fluid_ticks: %d\n", ((ServerTickScheduler)this.getFluidTickScheduler()).getTicks()));
+            writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().toDumpString() + "\n");
+            writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().getPendingTasks()));
         }
         CrashReport crashReport = new CrashReport("Level dump", new Exception("dummy"));
         this.addDetailsToCrashReport(crashReport);
@@ -1212,35 +1196,35 @@ extends World {
         Path path2 = path.resolve("chunks.csv");
         Throwable throwable = null;
         try (BufferedWriter writer3 = Files.newBufferedWriter(path2, new OpenOption[0]);){
-            threadedAnvilChunkStorage.exportChunks(writer3);
+            threadedAnvilChunkStorage.dump(writer3);
         } catch (Throwable throwable2) {
             Throwable throwable3 = throwable2;
             throw throwable2;
         }
         Path path3 = path.resolve("entities.csv");
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path3, new OpenOption[0]);){
-            ServerWorld.exportEntities(bufferedWriter, this.entitiesById.values());
+            ServerWorld.dumpEntities(bufferedWriter, this.entitiesById.values());
         }
         Path path4 = path.resolve("global_entities.csv");
         try (BufferedWriter writer5 = Files.newBufferedWriter(path4, new OpenOption[0]);){
-            ServerWorld.exportEntities(writer5, this.globalEntities);
+            ServerWorld.dumpEntities(writer5, this.globalEntities);
         }
         Path path5 = path.resolve("block_entities.csv");
         try (BufferedWriter writer6 = Files.newBufferedWriter(path5, new OpenOption[0]);){
-            this.exportBlockEntities(writer6);
+            this.dumpBlockEntities(writer6);
         }
     }
 
-    private static void exportEntities(Writer writer, Iterable<Entity> iterable) throws IOException {
+    private static void dumpEntities(Writer writer, Iterable<Entity> entities) throws IOException {
         CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("uuid").addColumn("type").addColumn("alive").addColumn("display_name").addColumn("custom_name").startBody(writer);
-        for (Entity entity : iterable) {
+        for (Entity entity : entities) {
             Text text = entity.getCustomName();
             Text text2 = entity.getDisplayName();
             csvWriter.printRow(entity.getX(), entity.getY(), entity.getZ(), entity.getUuid(), Registry.ENTITY_TYPE.getId(entity.getType()), entity.isAlive(), text2.getString(), text != null ? text.getString() : null);
         }
     }
 
-    private void exportBlockEntities(Writer writer) throws IOException {
+    private void dumpBlockEntities(Writer writer) throws IOException {
         CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("type").startBody(writer);
         for (BlockEntity blockEntity : this.blockEntities) {
             BlockPos blockPos = blockEntity.getPos();
@@ -1249,8 +1233,8 @@ extends World {
     }
 
     @VisibleForTesting
-    public void method_23658(BlockBox blockBox) {
-        this.pendingBlockActions.removeIf(blockAction -> blockBox.contains(blockAction.getPos()));
+    public void clearUpdatesInArea(BlockBox box) {
+        this.pendingBlockActions.removeIf(blockAction -> box.contains(blockAction.getPos()));
     }
 
     @Override
@@ -1262,7 +1246,7 @@ extends World {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public float method_24852(Direction direction, boolean bl) {
+    public float getBrightness(Direction direction, boolean shaded) {
         return 1.0f;
     }
 

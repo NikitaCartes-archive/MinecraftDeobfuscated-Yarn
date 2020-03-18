@@ -71,7 +71,7 @@ extends Entity {
         } else if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
         }
-        if (this.world.getFluidState(this.getSenseCenterPos()).matches(FluidTags.LAVA)) {
+        if (this.world.getFluidState(this.getBlockPos()).matches(FluidTags.LAVA)) {
             this.setVelocity((this.random.nextFloat() - this.random.nextFloat()) * 0.2f, 0.2f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
             this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
         }

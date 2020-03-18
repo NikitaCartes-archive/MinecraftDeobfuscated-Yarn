@@ -73,6 +73,11 @@ extends MovingSoundInstance {
         return true;
     }
 
+    @Override
+    public boolean canPlay() {
+        return !this.bee.isSilent();
+    }
+
     protected abstract MovingSoundInstance getReplacement();
 
     protected abstract boolean shouldReplace();

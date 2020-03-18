@@ -37,7 +37,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache dataCache) throws IOException {
+    public void run(DataCache cache) throws IOException {
         YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
         MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
         GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
@@ -47,7 +47,7 @@ implements DataProvider {
         MinecraftDedicatedServer minecraftServer = new MinecraftDedicatedServer(file, serverPropertiesLoader, Schemas.getFixer(), yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new, serverPropertiesLoader.getPropertiesHandler().levelName);
         Path path = this.root.getOutput().resolve("reports/commands.json");
         CommandDispatcher<ServerCommandSource> commandDispatcher = minecraftServer.getCommandManager().getDispatcher();
-        DataProvider.writeToPath(GSON, dataCache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
+        DataProvider.writeToPath(GSON, cache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
     }
 
     @Override

@@ -16,10 +16,10 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
-import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.Item;
@@ -192,49 +192,49 @@ extends RangedWeaponItem {
     }
 
     private static void shoot(World world, LivingEntity shooter, Hand hand, ItemStack crossbow, ItemStack projectile, float soundPitch, boolean creative, float speed, float divergence, float simulated) {
-        Projectile projectile2;
+        ProjectileEntity projectileEntity;
         boolean bl;
         if (world.isClient) {
             return;
         }
         boolean bl2 = bl = projectile.getItem() == Items.FIREWORK_ROCKET;
         if (bl) {
-            projectile2 = new FireworkEntity(world, projectile, shooter, shooter.getX(), shooter.getEyeY() - (double)0.15f, shooter.getZ(), true);
+            projectileEntity = new FireworkRocketEntity(world, projectile, shooter, shooter.getX(), shooter.getEyeY() - (double)0.15f, shooter.getZ(), true);
         } else {
-            projectile2 = CrossbowItem.createArrow(world, shooter, crossbow, projectile);
+            projectileEntity = CrossbowItem.createArrow(world, shooter, crossbow, projectile);
             if (creative || simulated != 0.0f) {
-                ((ProjectileEntity)projectile2).pickupType = ProjectileEntity.PickupPermission.CREATIVE_ONLY;
+                ((PersistentProjectileEntity)projectileEntity).pickupType = PersistentProjectileEntity.PickupPermission.CREATIVE_ONLY;
             }
         }
         if (shooter instanceof CrossbowUser) {
             CrossbowUser crossbowUser = (CrossbowUser)((Object)shooter);
-            crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectile2, simulated);
+            crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectileEntity, simulated);
         } else {
             Vec3d vec3d = shooter.getOppositeRotationVector(1.0f);
             Quaternion quaternion = new Quaternion(new Vector3f(vec3d), simulated, true);
             Vec3d vec3d2 = shooter.getRotationVec(1.0f);
             Vector3f vector3f = new Vector3f(vec3d2);
             vector3f.rotate(quaternion);
-            projectile2.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), speed, divergence);
+            projectileEntity.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), speed, divergence);
         }
         crossbow.damage(bl ? 3 : 1, shooter, e -> e.sendToolBreakStatus(hand));
-        world.spawnEntity(projectile2);
+        world.spawnEntity(projectileEntity);
         world.playSound(null, shooter.getX(), shooter.getY(), shooter.getZ(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0f, soundPitch);
     }
 
-    private static ProjectileEntity createArrow(World world, LivingEntity entity, ItemStack crossbow, ItemStack arrow) {
+    private static PersistentProjectileEntity createArrow(World world, LivingEntity entity, ItemStack crossbow, ItemStack arrow) {
         ArrowItem arrowItem = (ArrowItem)(arrow.getItem() instanceof ArrowItem ? arrow.getItem() : Items.ARROW);
-        ProjectileEntity projectileEntity = arrowItem.createArrow(world, arrow, entity);
+        PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(world, arrow, entity);
         if (entity instanceof PlayerEntity) {
-            projectileEntity.setCritical(true);
+            persistentProjectileEntity.setCritical(true);
         }
-        projectileEntity.setSound(SoundEvents.ITEM_CROSSBOW_HIT);
-        projectileEntity.setShotFromCrossbow(true);
+        persistentProjectileEntity.setSound(SoundEvents.ITEM_CROSSBOW_HIT);
+        persistentProjectileEntity.setShotFromCrossbow(true);
         int i = EnchantmentHelper.getLevel(Enchantments.PIERCING, crossbow);
         if (i > 0) {
-            projectileEntity.setPierceLevel((byte)i);
+            persistentProjectileEntity.setPierceLevel((byte)i);
         }
-        return projectileEntity;
+        return persistentProjectileEntity;
     }
 
     public static void shootAll(World world, LivingEntity entity, Hand hand, ItemStack stack, float speed, float divergence) {

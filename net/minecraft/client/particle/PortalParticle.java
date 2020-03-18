@@ -20,22 +20,22 @@ extends SpriteBillboardParticle {
     private final double startY;
     private final double startZ;
 
-    private PortalParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-        super(world, x, y, z);
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
-        this.velocityZ = velocityZ;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    protected PortalParticle(World world, double d, double e, double f, double g, double h, double i) {
+        super(world, d, e, f);
+        this.velocityX = g;
+        this.velocityY = h;
+        this.velocityZ = i;
+        this.x = d;
+        this.y = e;
+        this.z = f;
         this.startX = this.x;
         this.startY = this.y;
         this.startZ = this.z;
         this.scale = 0.1f * (this.random.nextFloat() * 0.2f + 0.5f);
-        float f = this.random.nextFloat() * 0.6f + 0.4f;
-        this.colorRed = f * 0.9f;
-        this.colorGreen = f * 0.3f;
-        this.colorBlue = f;
+        float j = this.random.nextFloat() * 0.6f + 0.4f;
+        this.colorRed = j * 0.9f;
+        this.colorGreen = j * 0.3f;
+        this.colorBlue = j;
         this.maxAge = (int)(Math.random() * 10.0) + 40;
     }
 
@@ -94,16 +94,16 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17865;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17865 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             PortalParticle portalParticle = new PortalParticle(world, d, e, f, g, h, i);
-            portalParticle.setSprite(this.field_17865);
+            portalParticle.setSprite(this.spriteProvider);
             return portalParticle;
         }
     }

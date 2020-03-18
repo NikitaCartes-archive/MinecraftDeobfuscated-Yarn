@@ -8,13 +8,14 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.ClientPlayerTickable;
+import net.minecraft.sound.BiomeAdditionsSound;
+import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -23,7 +24,6 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BiomeEffectSoundPlayer
@@ -32,10 +32,10 @@ implements ClientPlayerTickable {
     private final SoundManager soundManager;
     private final BiomeAccess biomeAccess;
     private final Random random;
-    private Object2ObjectArrayMap<Biome, MusicLoop> soundLoops;
-    private Optional<SoundEvent> moodSound;
-    private Optional<SoundEvent> additionsSound;
-    private int remainingTicks;
+    private Object2ObjectArrayMap<Biome, MusicLoop> soundLoops = new Object2ObjectArrayMap();
+    private Optional<BiomeMoodSound> moodSound = Optional.empty();
+    private Optional<BiomeAdditionsSound> additionsSound = Optional.empty();
+    private float moodPercentage;
     private Biome activeBiome;
 
     public BiomeEffectSoundPlayer(ClientPlayerEntity player, SoundManager soundManager, BiomeAccess biomeAccess) {
@@ -43,10 +43,10 @@ implements ClientPlayerTickable {
         this.player = player;
         this.soundManager = soundManager;
         this.biomeAccess = biomeAccess;
-        this.soundLoops = new Object2ObjectArrayMap();
-        this.moodSound = Optional.empty();
-        this.additionsSound = Optional.empty();
-        this.remainingTicks = BiomeEffectSoundPlayer.chooseDuration(this.random);
+    }
+
+    public float getMoodPercentage() {
+        return this.moodPercentage;
     }
 
     @Override
@@ -67,40 +67,33 @@ implements ClientPlayerTickable {
                 return musicLoop;
             }));
         }
-        this.additionsSound.ifPresent(soundEvent -> {
-            if (this.random.nextDouble() < (double)0.0111f) {
-                this.soundManager.play(PositionedSoundInstance.ambient(soundEvent));
+        this.additionsSound.ifPresent(biomeAdditionsSound -> {
+            if (this.random.nextDouble() < biomeAdditionsSound.getChance()) {
+                this.soundManager.play(PositionedSoundInstance.ambient(biomeAdditionsSound.getEvent()));
             }
         });
-        if (this.remainingTicks > 0) {
-            --this.remainingTicks;
-        } else {
-            this.moodSound.ifPresent(soundEvent -> {
-                BlockPos blockPos = this.findDarkCoveredPosition();
-                if (blockPos != null) {
-                    this.soundManager.play(PositionedSoundInstance.ambient(soundEvent, blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-                    this.remainingTicks = BiomeEffectSoundPlayer.chooseDuration(this.random);
-                }
-            });
-        }
-    }
-
-    @Nullable
-    private BlockPos findDarkCoveredPosition() {
-        BlockState blockState;
-        BlockPos blockPos = this.player.getSenseCenterPos();
-        World world = this.player.world;
-        int i = 9;
-        BlockPos blockPos2 = blockPos.add(this.random.nextInt(9) - 4, this.random.nextInt(9) - 4, this.random.nextInt(9) - 4);
-        double d = blockPos.getSquaredDistance(blockPos2);
-        if (d >= 4.0 && d <= 256.0 && (blockState = world.getBlockState(blockPos2)).isAir() && world.getBaseLightLevel(blockPos2, 0) <= this.random.nextInt(8) && world.getLightLevel(LightType.SKY, blockPos2) <= 0) {
-            return blockPos2;
-        }
-        return null;
-    }
-
-    private static int chooseDuration(Random random) {
-        return random.nextInt(12000) + 6000;
+        this.moodSound.ifPresent(biomeMoodSound -> {
+            World world = this.player.world;
+            int i = biomeMoodSound.getSpawnRange() * 2 + 1;
+            BlockPos blockPos = new BlockPos(this.player.getX() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange(), this.player.getEyeY() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange(), this.player.getZ() + (double)this.random.nextInt(i) - (double)biomeMoodSound.getSpawnRange());
+            int j = world.getLightLevel(LightType.SKY, blockPos);
+            this.moodPercentage = j > 0 ? (this.moodPercentage -= (float)j / (float)world.getMaxLightLevel() * 0.001f) : (this.moodPercentage -= (float)(world.getLightLevel(LightType.BLOCK, blockPos) - 1) / (float)biomeMoodSound.getCultivationTicks());
+            if (this.moodPercentage >= 1.0f) {
+                double d = (double)blockPos.getX() + 0.5;
+                double e = (double)blockPos.getY() + 0.5;
+                double f = (double)blockPos.getZ() + 0.5;
+                double g = d - this.player.getX();
+                double h = e - this.player.getEyeY();
+                double k = f - this.player.getZ();
+                double l = MathHelper.sqrt(g * g + h * h + k * k);
+                double m = l + biomeMoodSound.getExtraDistance();
+                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(biomeMoodSound.getEvent(), (float)(this.player.getX() + g / l * m), (float)(this.player.getEyeY() + h / l * m), (float)(this.player.getZ() + k / l * m));
+                this.soundManager.play(positionedSoundInstance);
+                this.moodPercentage = 0.0f;
+            } else {
+                this.moodPercentage = Math.max(this.moodPercentage, 0.0f);
+            }
+        });
     }
 
     @Environment(value=EnvType.CLIENT)

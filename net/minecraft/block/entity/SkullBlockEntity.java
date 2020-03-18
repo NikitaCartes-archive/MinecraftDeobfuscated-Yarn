@@ -48,7 +48,7 @@ implements Tickable {
         if (this.owner != null) {
             CompoundTag compoundTag = new CompoundTag();
             NbtHelper.fromGameProfile(compoundTag, this.owner);
-            tag.put("Owner", compoundTag);
+            tag.put("SkullOwner", compoundTag);
         }
         return tag;
     }
@@ -57,8 +57,8 @@ implements Tickable {
     public void fromTag(CompoundTag tag) {
         String string;
         super.fromTag(tag);
-        if (tag.contains("Owner", 10)) {
-            this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("Owner")));
+        if (tag.contains("SkullOwner", 10)) {
+            this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
         } else if (tag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = tag.getString("ExtraType"))) {
             this.setOwnerAndType(new GameProfile(null, string));
         }

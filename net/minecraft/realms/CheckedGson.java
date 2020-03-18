@@ -14,14 +14,14 @@ import net.minecraft.realms.RealmsSerializable;
  */
 @Environment(value=EnvType.CLIENT)
 public class CheckedGson {
-    private final Gson gson = new Gson();
+    private final Gson GSON = new Gson();
 
     public String toJson(RealmsSerializable serializable) {
-        return this.gson.toJson(serializable);
+        return this.GSON.toJson(serializable);
     }
 
     public <T extends RealmsSerializable> T fromJson(String json, Class<T> type) {
-        return (T)((RealmsSerializable)this.gson.fromJson(json, type));
+        return (T)((RealmsSerializable)this.GSON.fromJson(json, type));
     }
 }
 

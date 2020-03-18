@@ -40,7 +40,7 @@ extends Task<LivingEntity> {
             return;
         }
         BlockPos blockPos = brain.getOptionalMemory(MemoryModuleType.HIDING_PLACE).get().getPos();
-        if (blockPos.isWithinDistance(entity.getSenseCenterPos(), (double)this.distance)) {
+        if (blockPos.isWithinDistance(entity.getBlockPos(), (double)this.distance)) {
             ++this.hiddenTicks;
         }
     }

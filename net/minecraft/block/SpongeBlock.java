@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.Lists;
 import java.util.LinkedList;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,12 +23,12 @@ import net.minecraft.world.World;
 
 public class SpongeBlock
 extends Block {
-    protected SpongeBlock(Block.Settings settings) {
+    protected SpongeBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (oldState.getBlock() == state.getBlock()) {
             return;
         }
@@ -35,9 +36,9 @@ extends Block {
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         this.update(world, pos);
-        super.neighborUpdate(state, world, pos, block, neighborPos, moved);
+        super.neighborUpdate(state, world, pos, block, fromPos, notify);
     }
 
     protected void update(World world, BlockPos pos) {

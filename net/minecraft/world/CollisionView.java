@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +36,7 @@ extends BlockView {
         return true;
     }
 
-    default public boolean canPlace(BlockState state, BlockPos pos, EntityContext context) {
+    default public boolean canPlace(BlockState state, BlockPos pos, ShapeContext context) {
         VoxelShape voxelShape = state.getCollisionShape(this, pos, context);
         return voxelShape.isEmpty() || this.intersectsEntities(null, voxelShape.offset(pos.getX(), pos.getY(), pos.getZ()));
     }
@@ -76,7 +76,7 @@ extends BlockView {
         int l = MathHelper.floor(box.y2 + 1.0E-7) + 1;
         int m = MathHelper.floor(box.z1 - 1.0E-7) - 1;
         int n = MathHelper.floor(box.z2 + 1.0E-7) + 1;
-        final EntityContext entityContext = entity == null ? EntityContext.absent() : EntityContext.of(entity);
+        final ShapeContext shapeContext = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
         final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
         final BlockPos.Mutable mutable = new BlockPos.Mutable();
         final VoxelShape voxelShape = VoxelShapes.cuboid(box);
@@ -112,7 +112,7 @@ extends BlockView {
                     if (l == 3 || (blockView = CollisionView.this.getExistingChunk(m = i >> 4, n = k >> 4)) == null) continue;
                     mutable.set(i, j, k);
                     BlockState blockState = blockView.getBlockState(mutable);
-                    if (l == 1 && !blockState.exceedsCube() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, entityContext)).offset(i, j, k), BooleanBiFunction.AND)) continue;
+                    if (l == 1 && !blockState.exceedsCube() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, shapeContext)).offset(i, j, k), BooleanBiFunction.AND)) continue;
                     consumer.accept(voxelShape3);
                     return true;
                 }

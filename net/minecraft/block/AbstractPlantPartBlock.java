@@ -3,10 +3,11 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -19,7 +20,7 @@ extends Block {
     protected final boolean tickWater;
     protected final VoxelShape outlineShape;
 
-    protected AbstractPlantPartBlock(Block.Settings settings, Direction growthDirection, VoxelShape outlineShape, boolean tickWater) {
+    protected AbstractPlantPartBlock(AbstractBlock.Settings settings, Direction growthDirection, VoxelShape outlineShape, boolean tickWater) {
         super(settings);
         this.growthDirection = growthDirection;
         this.outlineShape = outlineShape;
@@ -42,7 +43,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.outlineShape;
     }
 

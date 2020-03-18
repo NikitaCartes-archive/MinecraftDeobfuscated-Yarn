@@ -198,7 +198,7 @@ extends HostileEntity {
         if (this.isWet()) {
             this.damage(DamageSource.DROWN, 1.0f);
         }
-        if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(this.getSenseCenterPos()) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
+        if (this.world.isDay() && this.age >= this.ageWhenTargetSet + 600 && (f = this.getBrightnessAtEyes()) > 0.5f && this.world.isSkyVisible(this.getBlockPos()) && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f) {
             this.setTarget(null);
             this.teleportRandomly();
         }
@@ -212,7 +212,7 @@ extends HostileEntity {
         double d = this.getX() + (this.random.nextDouble() - 0.5) * 64.0;
         double e = this.getY() + (double)(this.random.nextInt(64) - 32);
         double f = this.getZ() + (this.random.nextDouble() - 0.5) * 64.0;
-        return this.teleport(d, e, f);
+        return this.teleportTo(d, e, f);
     }
 
     private boolean teleportTo(Entity entity) {
@@ -222,10 +222,10 @@ extends HostileEntity {
         double e = this.getX() + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.x * 16.0;
         double f = this.getY() + (double)(this.random.nextInt(16) - 8) - vec3d.y * 16.0;
         double g = this.getZ() + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.z * 16.0;
-        return this.teleport(e, f, g);
+        return this.teleportTo(e, f, g);
     }
 
-    private boolean teleport(double x, double y, double z) {
+    private boolean teleportTo(double x, double y, double z) {
         BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
         while (mutable.getY() > 0 && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
             mutable.move(Direction.DOWN);
@@ -237,7 +237,7 @@ extends HostileEntity {
             return false;
         }
         boolean bl3 = this.teleport(x, y, z, true);
-        if (bl3) {
+        if (bl3 && !this.isSilent()) {
             this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0f, 1.0f);
             this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
         }

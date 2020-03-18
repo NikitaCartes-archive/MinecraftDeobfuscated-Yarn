@@ -176,9 +176,12 @@ public class SoundSystem {
 
     private void tick() {
         ++this.ticks;
-        this.soundsToPlayNextTick.forEach(this::play);
+        this.soundsToPlayNextTick.stream().filter(SoundInstance::canPlay).forEach(this::play);
         this.soundsToPlayNextTick.clear();
         for (TickableSoundInstance tickableSoundInstance : this.tickingSounds) {
+            if (!tickableSoundInstance.canPlay()) {
+                this.stop(tickableSoundInstance);
+            }
             tickableSoundInstance.tick();
             if (tickableSoundInstance.isDone()) {
                 this.stop(tickableSoundInstance);
@@ -259,6 +262,9 @@ public class SoundSystem {
 
     public void play(SoundInstance soundInstance) {
         if (!this.started) {
+            return;
+        }
+        if (!soundInstance.canPlay()) {
             return;
         }
         WeightedSoundSet weightedSoundSet = soundInstance.getSoundSet(this.loader);

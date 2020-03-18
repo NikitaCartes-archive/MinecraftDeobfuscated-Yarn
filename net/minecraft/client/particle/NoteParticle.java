@@ -66,16 +66,16 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17819;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17819 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             NoteParticle noteParticle = new NoteParticle(world, d, e, f, g);
-            noteParticle.setSprite(this.field_17819);
+            noteParticle.setSprite(this.spriteProvider);
             return noteParticle;
         }
     }

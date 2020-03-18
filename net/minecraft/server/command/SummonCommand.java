@@ -60,7 +60,7 @@ public class SummonCommand {
             throw FAILED_EXCEPTION.create();
         }
         if (initialize && entity22 instanceof MobEntity) {
-            ((MobEntity)entity22).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity22.getSenseCenterPos()), SpawnType.COMMAND, null, null);
+            ((MobEntity)entity22).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity22.getBlockPos()), SpawnType.COMMAND, null, null);
         }
         source.sendFeedback(new TranslatableText("commands.summon.success", entity22.getDisplayName()), true);
         return 1;

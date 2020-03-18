@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -16,14 +17,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class WeightedPressurePlateBlock
 extends AbstractPressurePlateBlock {
     public static final IntProperty POWER = Properties.POWER;
     private final int weight;
 
-    protected WeightedPressurePlateBlock(int weight, Block.Settings settings) {
+    protected WeightedPressurePlateBlock(int weight, AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWER, 0));
         this.weight = weight;
@@ -60,7 +60,7 @@ extends AbstractPressurePlateBlock {
     }
 
     @Override
-    public int getTickRate(WorldView world) {
+    protected int getTickRate() {
         return 10;
     }
 

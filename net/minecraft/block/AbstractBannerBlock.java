@@ -5,7 +5,7 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BannerBlockEntity;
@@ -22,7 +22,7 @@ public abstract class AbstractBannerBlock
 extends BlockWithEntity {
     private final DyeColor color;
 
-    protected AbstractBannerBlock(DyeColor color, Block.Settings settings) {
+    protected AbstractBannerBlock(DyeColor color, AbstractBlock.Settings settings) {
         super(settings);
         this.color = color;
     }

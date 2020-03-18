@@ -21,7 +21,7 @@ import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -111,10 +111,10 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    protected ProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
-        ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, damageModifier);
-        projectileEntity.setOnFireFor(100);
-        return projectileEntity;
+    protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
+        PersistentProjectileEntity persistentProjectileEntity = super.createArrowProjectile(arrow, damageModifier);
+        persistentProjectileEntity.setOnFireFor(100);
+        return persistentProjectileEntity;
     }
 
     @Override

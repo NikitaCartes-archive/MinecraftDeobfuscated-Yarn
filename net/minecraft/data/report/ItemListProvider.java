@@ -27,11 +27,11 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache dataCache) throws IOException {
+    public void run(DataCache cache) throws IOException {
         JsonObject jsonObject = new JsonObject();
         Registry.REGISTRIES.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), ItemListProvider.toJson((MutableRegistry)Registry.REGISTRIES.get((Identifier)identifier))));
         Path path = this.root.getOutput().resolve("reports/registries.json");
-        DataProvider.writeToPath(GSON, dataCache, jsonObject, path);
+        DataProvider.writeToPath(GSON, cache, jsonObject, path);
     }
 
     private static <T> JsonElement toJson(MutableRegistry<T> mutableRegistry) {

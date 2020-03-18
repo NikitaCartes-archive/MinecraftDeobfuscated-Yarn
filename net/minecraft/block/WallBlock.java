@@ -5,12 +5,13 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.enums.WallShape;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -50,7 +51,7 @@ implements Waterloggable {
     private static final VoxelShape field_22166 = Block.createCuboidShape(0.0, 0.0, 5.0, 11.0, 16.0, 11.0);
     private static final VoxelShape field_22167 = Block.createCuboidShape(5.0, 0.0, 5.0, 16.0, 16.0, 11.0);
 
-    public WallBlock(Block.Settings settings) {
+    public WallBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(UP, true)).with(NORTH_SHAPE, WallShape.NONE)).with(EAST_SHAPE, WallShape.NONE)).with(SOUTH_SHAPE, WallShape.NONE)).with(WEST_SHAPE, WallShape.NONE)).with(WATERLOGGED, false));
         this.shapeMap = this.getShapeMap(4.0f, 3.0f, 16.0f, 0.0f, 14.0f, 16.0f);
@@ -107,17 +108,17 @@ implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.shapeMap.get(state);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.collisionShapeMap.get(state);
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
 
@@ -151,17 +152,17 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        if (facing == Direction.DOWN) {
-            return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        if (direction == Direction.DOWN) {
+            return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
         }
-        if (facing == Direction.UP) {
-            return this.method_24421(world, state, neighborPos, neighborState);
+        if (direction == Direction.UP) {
+            return this.method_24421(world, state, posFrom, newState);
         }
-        return this.method_24423(world, pos, state, neighborPos, neighborState, facing);
+        return this.method_24423(world, pos, state, posFrom, newState, direction);
     }
 
     private static boolean method_24424(BlockState blockState, Property<WallShape> property) {

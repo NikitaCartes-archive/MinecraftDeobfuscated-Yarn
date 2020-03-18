@@ -41,7 +41,7 @@ implements Runnable {
     }
 
     public void error(String errorMessage) {
-        this.longRunningMcoTaskScreen.method_21290(errorMessage);
+        this.longRunningMcoTaskScreen.setError(errorMessage);
     }
 
     public void setTitle(String title) {

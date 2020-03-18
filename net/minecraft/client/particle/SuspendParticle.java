@@ -59,17 +59,17 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class DolphinFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17881;
+        private final SpriteProvider spriteProvider;
 
         public DolphinFactory(SpriteProvider spriteProvider) {
-            this.field_17881 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
             suspendParticle.setColor(0.3f, 0.5f, 1.0f);
-            suspendParticle.setSprite(this.field_17881);
+            suspendParticle.setSprite(this.spriteProvider);
             suspendParticle.setColorAlpha(1.0f - world.random.nextFloat() * 0.7f);
             suspendParticle.setMaxAge(suspendParticle.getMaxAge() / 2);
             return suspendParticle;
@@ -79,16 +79,16 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17880;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17880 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
-            suspendParticle.setSprite(this.field_17880);
+            suspendParticle.setSprite(this.spriteProvider);
             suspendParticle.setColor(1.0f, 1.0f, 1.0f);
             suspendParticle.setMaxAge(3 + world.getRandom().nextInt(5));
             return suspendParticle;
@@ -98,16 +98,16 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class HappyVillagerFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17882;
+        private final SpriteProvider spriteProvider;
 
         public HappyVillagerFactory(SpriteProvider spriteProvider) {
-            this.field_17882 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
             SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
-            suspendParticle.setSprite(this.field_17882);
+            suspendParticle.setSprite(this.spriteProvider);
             suspendParticle.setColor(1.0f, 1.0f, 1.0f);
             return suspendParticle;
         }

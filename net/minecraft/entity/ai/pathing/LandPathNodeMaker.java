@@ -65,13 +65,13 @@ extends PathNodeMaker {
         } else if (this.entity.isOnGround()) {
             i = MathHelper.floor(this.entity.getY() + 0.5);
         } else {
-            blockPos = this.entity.getSenseCenterPos();
+            blockPos = this.entity.getBlockPos();
             while ((this.cachedWorld.getBlockState(blockPos).isAir() || this.cachedWorld.getBlockState(blockPos).canPathfindThrough(this.cachedWorld, blockPos, NavigationType.LAND)) && blockPos.getY() > 0) {
                 blockPos = blockPos.down();
             }
             i = blockPos.up().getY();
         }
-        blockPos = this.entity.getSenseCenterPos();
+        blockPos = this.entity.getBlockPos();
         PathNodeType pathNodeType = this.getNodeType(this.entity, blockPos.getX(), i, blockPos.getZ());
         if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0f) {
             HashSet<BlockPos> set = Sets.newHashSet();
@@ -246,7 +246,7 @@ extends PathNodeMaker {
         EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
         PathNodeType pathNodeType = PathNodeType.BLOCKED;
         double d = (double)mob.getWidth() / 2.0;
-        BlockPos blockPos = mob.getSenseCenterPos();
+        BlockPos blockPos = mob.getBlockPos();
         pathNodeType = this.findNearbyNodeTypes(world, x, y, z, sizeX, sizeY, sizeZ, canOpenDoors, canEnterOpenDoors, enumSet, pathNodeType, blockPos);
         if (enumSet.contains((Object)PathNodeType.FENCE)) {
             return PathNodeType.FENCE;
@@ -376,7 +376,7 @@ extends PathNodeMaker {
         if (block.isIn(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
             return PathNodeType.TRAPDOOR;
         }
-        if (blockState.matches(BlockTags.FIRE)) {
+        if (blockState.isIn(BlockTags.FIRE)) {
             return PathNodeType.DAMAGE_FIRE;
         }
         if (block == Blocks.CACTUS) {

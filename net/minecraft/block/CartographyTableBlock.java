@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +24,7 @@ public class CartographyTableBlock
 extends Block {
     private static final TranslatableText TITLE = new TranslatableText("container.cartography_table", new Object[0]);
 
-    protected CartographyTableBlock(Block.Settings settings) {
+    protected CartographyTableBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

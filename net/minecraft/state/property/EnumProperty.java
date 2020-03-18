@@ -68,10 +68,23 @@ extends AbstractProperty<T> {
         return i;
     }
 
+    /**
+     * Creates an enum property.
+     * 
+     * @param name the name of this property
+     * @param type the type this property contains
+     */
     public static <T extends Enum<T>> EnumProperty<T> of(String name, Class<T> type) {
         return EnumProperty.of(name, type, Predicates.alwaysTrue());
     }
 
+    /**
+     * Creates an enum property.
+     * 
+     * @param name the name of this property
+     * @param type the type this property contains
+     * @param filter a filter that specifies if a value is allowed
+     */
     public static <T extends Enum<T>> EnumProperty<T> of(String name, Class<T> type, Predicate<T> filter) {
         return EnumProperty.of(name, type, Arrays.stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
     }
@@ -80,6 +93,13 @@ extends AbstractProperty<T> {
         return EnumProperty.of(name, type, Lists.newArrayList(values));
     }
 
+    /**
+     * Creates an enum property.
+     * 
+     * @param name the name of this property
+     * @param type the type this property contains
+     * @param values the values this property could contain
+     */
     public static <T extends Enum<T>> EnumProperty<T> of(String name, Class<T> type, Collection<T> values) {
         return new EnumProperty<T>(name, type, values);
     }

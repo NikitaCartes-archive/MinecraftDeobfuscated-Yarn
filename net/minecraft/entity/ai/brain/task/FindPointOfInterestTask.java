@@ -60,7 +60,7 @@ extends Task<MobEntityWithAi> {
             this.foundPositionsToExpiry.put(l, this.positionExpireTimeLimit + 40L);
             return true;
         };
-        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(this.poiType.getCompletionCondition(), predicate, mobEntityWithAi.getSenseCenterPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE);
+        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(this.poiType.getCompletionCondition(), predicate, mobEntityWithAi.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.HAS_SPACE);
         Path path = mobEntityWithAi.getNavigation().findPathToAny(stream, this.poiType.getSearchDistance());
         if (path != null && path.reachesTarget()) {
             BlockPos blockPos2 = path.getTarget();

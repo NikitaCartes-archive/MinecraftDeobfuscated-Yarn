@@ -36,7 +36,7 @@ extends Feature<DefaultFeatureConfig> {
     protected boolean spawnCoralPiece(IWorld world, Random random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.up();
         BlockState blockState = world.getBlockState(pos);
-        if (blockState.getBlock() != Blocks.WATER && !blockState.matches(BlockTags.CORALS) || world.getBlockState(blockPos).getBlock() != Blocks.WATER) {
+        if (blockState.getBlock() != Blocks.WATER && !blockState.isIn(BlockTags.CORALS) || world.getBlockState(blockPos).getBlock() != Blocks.WATER) {
             return false;
         }
         world.setBlockState(pos, state, 3);

@@ -189,8 +189,8 @@ extends Entity {
 
     @Override
     protected float getVelocityMultiplier() {
-        BlockState blockState = this.world.getBlockState(this.getSenseCenterPos());
-        if (blockState.matches(BlockTags.RAILS)) {
+        BlockState blockState = this.world.getBlockState(this.getBlockPos());
+        if (blockState.isIn(BlockTags.RAILS)) {
             return 1.0f;
         }
         return super.getVelocityMultiplier();
@@ -267,10 +267,10 @@ extends Entity {
         if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
         }
-        if (this.world.getBlockState(new BlockPos(i = MathHelper.floor(this.getX()), (j = MathHelper.floor(this.getY())) - 1, k = MathHelper.floor(this.getZ()))).matches(BlockTags.RAILS)) {
+        if (this.world.getBlockState(new BlockPos(i = MathHelper.floor(this.getX()), (j = MathHelper.floor(this.getY())) - 1, k = MathHelper.floor(this.getZ()))).isIn(BlockTags.RAILS)) {
             --j;
         }
-        if ((blockState = this.world.getBlockState(blockPos = new BlockPos(i, j, k))).matches(BlockTags.RAILS)) {
+        if ((blockState = this.world.getBlockState(blockPos = new BlockPos(i, j, k))).isIn(BlockTags.RAILS)) {
             this.moveOnRail(blockPos, blockState);
             if (blockState.getBlock() == Blocks.ACTIVATOR_RAIL) {
                 this.onActivatorRail(i, j, k, blockState.get(PoweredRailBlock.POWERED));
@@ -487,7 +487,7 @@ extends Entity {
     }
 
     private boolean willHitBlockAt(BlockPos pos) {
-        return this.world.getBlockState(pos).isSimpleFullBlock(this.world, pos);
+        return this.world.getBlockState(pos).isSolidBlock(this.world, pos);
     }
 
     protected void applySlowdown() {
@@ -502,10 +502,10 @@ extends Entity {
         int k;
         int j;
         int i = MathHelper.floor(d);
-        if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(e)) - 1, k = MathHelper.floor(f))).matches(BlockTags.RAILS)) {
+        if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(e)) - 1, k = MathHelper.floor(f))).isIn(BlockTags.RAILS)) {
             --j;
         }
-        if ((blockState = this.world.getBlockState(new BlockPos(i, j, k))).matches(BlockTags.RAILS)) {
+        if ((blockState = this.world.getBlockState(new BlockPos(i, j, k))).isIn(BlockTags.RAILS)) {
             RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
             e = j;
             if (railShape.isAscending()) {
@@ -533,10 +533,10 @@ extends Entity {
         int k;
         int j;
         int i = MathHelper.floor(d);
-        if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(e)) - 1, k = MathHelper.floor(f))).matches(BlockTags.RAILS)) {
+        if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(e)) - 1, k = MathHelper.floor(f))).isIn(BlockTags.RAILS)) {
             --j;
         }
-        if ((blockState = this.world.getBlockState(new BlockPos(i, j, k))).matches(BlockTags.RAILS)) {
+        if ((blockState = this.world.getBlockState(new BlockPos(i, j, k))).isIn(BlockTags.RAILS)) {
             double s;
             RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
             Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.method_22864(railShape);

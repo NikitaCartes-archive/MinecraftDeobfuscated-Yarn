@@ -61,7 +61,7 @@ public class DistancePredicate {
         return new DistancePredicate(floatRange, floatRange2, floatRange3, floatRange4, floatRange5);
     }
 
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         if (this == ANY) {
             return JsonNull.INSTANCE;
         }

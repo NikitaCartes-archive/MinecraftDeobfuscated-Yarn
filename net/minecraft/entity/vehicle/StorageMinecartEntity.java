@@ -177,7 +177,7 @@ NamedScreenHandlerFactory {
         if (this.lootTableId != null && this.world.getServer() != null) {
             LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
             this.lootTableId = null;
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, this.getSenseCenterPos()).setRandom(this.lootSeed);
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, this.getBlockPos()).setRandom(this.lootSeed);
             if (playerEntity != null) {
                 builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
             }

@@ -3,15 +3,15 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AttachedStemBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.GourdBlock;
 import net.minecraft.block.StemBlock;
 
 public class MelonBlock
 extends GourdBlock {
-    protected MelonBlock(Block.Settings settings) {
+    protected MelonBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

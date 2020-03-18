@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.Packet;
@@ -24,14 +24,14 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity
-extends Projectile {
+extends ProjectileEntity {
     private int ticks;
     public double posX;
     public double posY;
     public double posZ;
 
     protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
-        super((EntityType<? extends Projectile>)entityType, world);
+        super((EntityType<? extends ProjectileEntity>)entityType, world);
     }
 
     public ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> type, double x, double y, double z, double directionX, double directionY, double directionZ, World world) {
@@ -69,7 +69,7 @@ extends Projectile {
     @Override
     public void tick() {
         Entity entity = this.getOwner();
-        if (!this.world.isClient && (entity != null && entity.removed || !this.world.isChunkLoaded(this.getSenseCenterPos()))) {
+        if (!this.world.isClient && (entity != null && entity.removed || !this.world.isChunkLoaded(this.getBlockPos()))) {
             this.remove();
             return;
         }

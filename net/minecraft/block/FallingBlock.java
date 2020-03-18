@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -16,25 +17,25 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class FallingBlock
 extends Block {
-    public FallingBlock(Block.Settings settings) {
+    public FallingBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
-        world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        world.getBlockTickScheduler().schedule(pos, this, this.method_26154());
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-        world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+        world.getBlockTickScheduler().schedule(pos, this, this.method_26154());
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
@@ -50,20 +51,19 @@ extends Block {
     protected void configureFallingBlockEntity(FallingBlockEntity entity) {
     }
 
-    @Override
-    public int getTickRate(WorldView world) {
+    protected int method_26154() {
         return 2;
     }
 
     public static boolean canFallThrough(BlockState state) {
         Material material = state.getMaterial();
-        return state.isAir() || state.matches(BlockTags.FIRE) || material.isLiquid() || material.isReplaceable();
+        return state.isAir() || state.isIn(BlockTags.FIRE) || material.isLiquid() || material.isReplaceable();
     }
 
-    public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
+    public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
     }
 
-    public void onDestroyedOnLanding(World world, BlockPos pos) {
+    public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
     }
 
     @Override
@@ -79,7 +79,7 @@ extends Block {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getColor(BlockState state) {
+    public int getColor(BlockState state, BlockView blockView, BlockPos blockPos) {
         return -16777216;
     }
 }

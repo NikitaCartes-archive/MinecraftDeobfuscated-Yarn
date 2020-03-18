@@ -227,7 +227,7 @@ extends RealmsScreen {
                 this.status = I18n.translate("mco.download.downloading", this.worldName);
                 FileDownload fileDownload = new FileDownload();
                 fileDownload.contentLength(this.worldDownload.downloadLink);
-                fileDownload.method_22100(this.worldDownload, this.worldName, this.downloadStatus, this.client.getLevelStorage());
+                fileDownload.downloadWorld(this.worldDownload, this.worldName, this.downloadStatus, this.client.getLevelStorage());
                 while (!fileDownload.isFinished()) {
                     if (fileDownload.isError()) {
                         fileDownload.cancel();

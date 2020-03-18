@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -15,11 +15,11 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
 public class SpectralArrowEntity
-extends ProjectileEntity {
+extends PersistentProjectileEntity {
     private int duration = 200;
 
     public SpectralArrowEntity(EntityType<? extends SpectralArrowEntity> entityType, World world) {
-        super((EntityType<? extends ProjectileEntity>)entityType, world);
+        super((EntityType<? extends PersistentProjectileEntity>)entityType, world);
     }
 
     public SpectralArrowEntity(World world, LivingEntity owner) {

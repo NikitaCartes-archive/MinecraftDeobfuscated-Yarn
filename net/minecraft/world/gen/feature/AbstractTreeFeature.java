@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,12 +44,12 @@ extends Feature<T> {
     protected static boolean canTreeReplace(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> {
             Block block = state.getBlock();
-            return state.isAir() || state.matches(BlockTags.LEAVES) || AbstractTreeFeature.isDirt(block) || block.isIn(BlockTags.LOGS) || block.isIn(BlockTags.SAPLINGS) || block == Blocks.VINE;
+            return state.isAir() || state.isIn(BlockTags.LEAVES) || AbstractTreeFeature.isDirt(block) || block.isIn(BlockTags.LOGS) || block.isIn(BlockTags.SAPLINGS) || block == Blocks.VINE;
         });
     }
 
     public static boolean isAir(TestableWorld world, BlockPos pos) {
-        return world.testBlockState(pos, BlockState::isAir);
+        return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
     }
 
     protected static boolean isNaturalDirt(TestableWorld world, BlockPos pos) {
@@ -67,7 +68,7 @@ extends Feature<T> {
     }
 
     public static boolean isAirOrLeaves(TestableWorld world, BlockPos pos) {
-        return world.testBlockState(pos, state -> state.isAir() || state.matches(BlockTags.LEAVES));
+        return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
     }
 
     public static boolean isNaturalDirtOrGrass(TestableWorld world, BlockPos pos) {

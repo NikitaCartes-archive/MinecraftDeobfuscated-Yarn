@@ -11,7 +11,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -50,12 +50,12 @@ extends AbstractSkeletonEntity {
     }
 
     @Override
-    protected ProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
-        ProjectileEntity projectileEntity = super.createArrowProjectile(arrow, damageModifier);
-        if (projectileEntity instanceof ArrowEntity) {
-            ((ArrowEntity)projectileEntity).addEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 600));
+    protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
+        PersistentProjectileEntity persistentProjectileEntity = super.createArrowProjectile(arrow, damageModifier);
+        if (persistentProjectileEntity instanceof ArrowEntity) {
+            ((ArrowEntity)persistentProjectileEntity).addEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 600));
         }
-        return projectileEntity;
+        return persistentProjectileEntity;
     }
 }
 

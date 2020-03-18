@@ -483,8 +483,8 @@ implements Monster {
             if (this.ticksSinceDeath > 150 && this.ticksSinceDeath % 5 == 0 && bl) {
                 this.awardExperience(MathHelper.floor((float)i * 0.08f));
             }
-            if (this.ticksSinceDeath == 1) {
-                this.world.playGlobalEvent(1028, this.getSenseCenterPos(), 0);
+            if (this.ticksSinceDeath == 1 && !this.isSilent()) {
+                this.world.playGlobalEvent(1028, this.getBlockPos(), 0);
             }
         }
         this.move(MovementType.SELF, new Vec3d(0.0, 0.1f, 0.0));

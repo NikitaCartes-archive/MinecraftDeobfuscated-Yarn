@@ -10,6 +10,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -31,12 +32,11 @@ import net.minecraft.client.sound.AmbientSoundPlayer;
 import net.minecraft.client.sound.BiomeEffectSoundPlayer;
 import net.minecraft.client.sound.BubbleColumnSoundPlayer;
 import net.minecraft.client.sound.ElytraSoundInstance;
-import net.minecraft.client.sound.MinecartSoundInstance;
+import net.minecraft.client.sound.MinecartInsideSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
@@ -156,7 +156,7 @@ extends AbstractClientPlayerEntity {
             return false;
         }
         if (entity instanceof AbstractMinecartEntity) {
-            this.client.getSoundManager().play(new MinecartSoundInstance(this, (AbstractMinecartEntity)entity));
+            this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity));
         }
         if (entity instanceof BoatEntity) {
             this.prevYaw = entity.yaw;
@@ -204,6 +204,18 @@ extends AbstractClientPlayerEntity {
         for (ClientPlayerTickable clientPlayerTickable : this.tickables) {
             clientPlayerTickable.tick();
         }
+    }
+
+    /**
+     * Returns the percentage for the biome mood sound for the debug HUD to
+     * display.
+     */
+    public float getMoodPercentage() {
+        for (ClientPlayerTickable clientPlayerTickable : this.tickables) {
+            if (!(clientPlayerTickable instanceof BiomeEffectSoundPlayer)) continue;
+            return ((BiomeEffectSoundPlayer)clientPlayerTickable).getMoodPercentage();
+        }
+        return 0.0f;
     }
 
     private void sendMovementPackets() {
@@ -845,14 +857,14 @@ extends AbstractClientPlayerEntity {
         if (j < -0.15f) {
             return;
         }
-        EntityContext entityContext = EntityContext.of(this);
+        ShapeContext shapeContext = ShapeContext.of(this);
         BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().y2, this.getZ());
         BlockState blockState = this.world.getBlockState(blockPos);
-        if (!blockState.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
+        if (!blockState.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
             return;
         }
         BlockState blockState2 = this.world.getBlockState(blockPos = blockPos.up());
-        if (!blockState2.getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
+        if (!blockState2.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
             return;
         }
         float m = 7.0f;
@@ -887,11 +899,11 @@ extends AbstractClientPlayerEntity {
                 BlockState blockState4;
                 BlockPos blockPos3 = blockPos2.up(s);
                 BlockState blockState3 = this.world.getBlockState(blockPos3);
-                VoxelShape voxelShape2 = blockState3.getCollisionShape(this.world, blockPos3, entityContext);
+                VoxelShape voxelShape2 = blockState3.getCollisionShape(this.world, blockPos3, shapeContext);
                 if (!voxelShape2.isEmpty() && (double)(r = (float)voxelShape2.getMaximum(Direction.Axis.Y) + (float)blockPos3.getY()) - this.getY() > (double)n) {
                     return;
                 }
-                if (s > 1 && !(blockState4 = this.world.getBlockState(blockPos = blockPos.up())).getCollisionShape(this.world, blockPos, entityContext).isEmpty()) {
+                if (s > 1 && !(blockState4 = this.world.getBlockState(blockPos = blockPos.up())).getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
                     return;
                 }
                 ++s;

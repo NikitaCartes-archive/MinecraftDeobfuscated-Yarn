@@ -6,17 +6,18 @@ package net.minecraft.block;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FacingBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
@@ -61,7 +62,7 @@ extends BlockWithEntity {
     @Nullable
     private final DyeColor color;
 
-    public ShulkerBoxBlock(@Nullable DyeColor color, Block.Settings settings) {
+    public ShulkerBoxBlock(@Nullable DyeColor color, AbstractBlock.Settings settings) {
         super(settings);
         this.color = color;
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.UP));
@@ -70,11 +71,6 @@ extends BlockWithEntity {
     @Override
     public BlockEntity createBlockEntity(BlockView world) {
         return new ShulkerBoxBlockEntity(this.color);
-    }
-
-    @Override
-    public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
-        return true;
     }
 
     @Override
@@ -162,7 +158,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (state.getBlock() == newState.getBlock()) {
             return;
         }
@@ -170,7 +166,7 @@ extends BlockWithEntity {
         if (blockEntity instanceof ShulkerBoxBlockEntity) {
             world.updateComparators(pos, state.getBlock());
         }
-        super.onBlockRemoved(state, world, pos, newState, moved);
+        super.onBlockRemoved(state, world, pos, newState, notify);
     }
 
     @Override
@@ -209,7 +205,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ShulkerBoxBlockEntity) {
             return VoxelShapes.cuboid(((ShulkerBoxBlockEntity)blockEntity).getBoundingBox(state));

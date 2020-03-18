@@ -4,7 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.TallPlantBlock;
@@ -18,12 +18,12 @@ import net.minecraft.world.World;
 public class TallFlowerBlock
 extends TallPlantBlock
 implements Fertilizable {
-    public TallFlowerBlock(Block.Settings settings) {
+    public TallFlowerBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
     @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+    public boolean canReplace(BlockState state, ItemPlacementContext context) {
         return false;
     }
 

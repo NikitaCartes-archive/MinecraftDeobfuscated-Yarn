@@ -111,6 +111,7 @@ extends Item {
 
     @Environment(value=EnvType.CLIENT)
     public static void createParticles(IWorld world, BlockPos pos, int count) {
+        double e;
         BlockState blockState;
         if (count == 0) {
             count = 15;
@@ -118,11 +119,30 @@ extends Item {
         if ((blockState = world.getBlockState(pos)).isAir()) {
             return;
         }
+        double d = 0.5;
+        if (!blockState.getFluidState().isEmpty()) {
+            count *= 3;
+            e = 1.0;
+            d = 3.0;
+        } else if (blockState.isOpaqueFullCube(world, pos)) {
+            pos = pos.up();
+            count *= 3;
+            d = 3.0;
+            e = 1.0;
+        } else {
+            e = blockState.getOutlineShape(world, pos).getMaximum(Direction.Axis.Y);
+        }
+        world.addParticle(ParticleTypes.HAPPY_VILLAGER, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
         for (int i = 0; i < count; ++i) {
-            double d = RANDOM.nextGaussian() * 0.02;
-            double e = RANDOM.nextGaussian() * 0.02;
+            double m;
+            double l;
             double f = RANDOM.nextGaussian() * 0.02;
-            world.addParticle(ParticleTypes.HAPPY_VILLAGER, (float)pos.getX() + RANDOM.nextFloat(), (double)pos.getY() + (double)RANDOM.nextFloat() * blockState.getOutlineShape(world, pos).getMaximum(Direction.Axis.Y), (float)pos.getZ() + RANDOM.nextFloat(), d, e, f);
+            double g = RANDOM.nextGaussian() * 0.02;
+            double h = RANDOM.nextGaussian() * 0.02;
+            double j = 0.5 - d;
+            double k = (double)pos.getX() + j + RANDOM.nextDouble() * d * 2.0;
+            if (world.getBlockState(new BlockPos(k, l = (double)pos.getY() + RANDOM.nextDouble() * e, m = (double)pos.getZ() + j + RANDOM.nextDouble() * d * 2.0).down()).isAir()) continue;
+            world.addParticle(ParticleTypes.HAPPY_VILLAGER, k, l, m, f, g, h);
         }
     }
 }

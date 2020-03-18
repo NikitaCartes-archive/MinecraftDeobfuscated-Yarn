@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,7 +16,7 @@ public class TwistingVinesBlock
 extends AbstractPlantStemBlock {
     protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 15.0, 12.0);
 
-    public TwistingVinesBlock(Block.Settings settings) {
+    public TwistingVinesBlock(AbstractBlock.Settings settings) {
         super(settings, Direction.UP, SHAPE, false, 0.1);
     }
 

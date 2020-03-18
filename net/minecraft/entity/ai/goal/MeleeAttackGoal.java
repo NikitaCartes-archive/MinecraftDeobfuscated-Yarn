@@ -66,7 +66,7 @@ extends Goal {
         if (!this.pauseWhenMobIdle) {
             return !this.mob.getNavigation().isIdle();
         }
-        if (!this.mob.isInWalkTargetRange(livingEntity.getSenseCenterPos())) {
+        if (!this.mob.isInWalkTargetRange(livingEntity.getBlockPos())) {
             return false;
         }
         return !(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative();

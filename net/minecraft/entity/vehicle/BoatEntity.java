@@ -11,8 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -609,15 +607,14 @@ extends Entity {
         if (!this.world.isWater(blockPos2)) {
             Box box3;
             double h;
-            EntityContext entityContext = EntityContext.of(livingEntity);
-            Box box = livingEntity.method_24833(EntityPose.SWIMMING).offset(d, e, f);
-            double g = BoatEntity.method_24827(this.world, blockPos, entityContext);
+            Box box = livingEntity.method_24833(livingEntity.method_26081()).offset(d, e, f);
+            double g = this.world.method_26097(blockPos);
             if (!Double.isInfinite(g) && g < 1.0) {
                 Box box2 = box.offset(d, (double)blockPos.getY() + g, f);
                 if (this.world.getBlockCollisions(livingEntity, box2).allMatch(VoxelShape::isEmpty)) {
                     return new Vec3d(d, (double)blockPos.getY() + g, f);
                 }
-            } else if (g < 1.0 && !Double.isInfinite(h = BoatEntity.method_24827(this.world, blockPos2, entityContext)) && h <= 0.5 && this.world.getBlockCollisions(livingEntity, box3 = box.offset(d, (double)blockPos2.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
+            } else if (g < 1.0 && !Double.isInfinite(h = this.world.method_26097(blockPos2)) && h <= 0.5 && this.world.getBlockCollisions(livingEntity, box3 = box.offset(d, (double)blockPos2.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
                 return new Vec3d(d, (double)blockPos2.getY() + h, f);
             }
         }
@@ -689,7 +686,7 @@ extends Entity {
                 }
             }
             this.fallDistance = 0.0f;
-        } else if (!this.world.getFluidState(this.getSenseCenterPos().down()).matches(FluidTags.WATER) && heightDifference < 0.0) {
+        } else if (!this.world.getFluidState(this.getBlockPos().down()).matches(FluidTags.WATER) && heightDifference < 0.0) {
             this.fallDistance = (float)((double)this.fallDistance - heightDifference);
         }
     }

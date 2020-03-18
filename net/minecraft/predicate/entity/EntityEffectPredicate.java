@@ -82,7 +82,7 @@ public class EntityEffectPredicate {
         return new EntityEffectPredicate(map);
     }
 
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         if (this == EMPTY) {
             return JsonNull.INSTANCE;
         }

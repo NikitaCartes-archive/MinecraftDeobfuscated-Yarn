@@ -4,13 +4,14 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.PlantBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -41,14 +42,9 @@ Waterloggable {
     protected static final VoxelShape THREE_PICKLES_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 6.0, 14.0);
     protected static final VoxelShape FOUR_PICKLES_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 7.0, 14.0);
 
-    protected SeaPickleBlock(Block.Settings settings) {
+    protected SeaPickleBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(PICKLES, 1)).with(WATERLOGGED, true));
-    }
-
-    @Override
-    public int getLuminance(BlockState state) {
-        return this.isDry(state) ? 0 : super.getLuminance(state) + 3 * state.get(PICKLES);
     }
 
     @Override
@@ -63,8 +59,8 @@ Waterloggable {
         return (BlockState)super.getPlacementState(ctx).with(WATERLOGGED, bl);
     }
 
-    private boolean isDry(BlockState state) {
-        return state.get(WATERLOGGED) == false;
+    public static boolean isDry(BlockState blockState) {
+        return blockState.get(WATERLOGGED) == false;
     }
 
     @Override
@@ -79,26 +75,26 @@ Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         if (!state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-        if (ctx.getStack().getItem() == this.asItem() && state.get(PICKLES) < 4) {
+    public boolean canReplace(BlockState state, ItemPlacementContext context) {
+        if (context.getStack().getItem() == this.asItem() && state.get(PICKLES) < 4) {
             return true;
         }
-        return super.canReplace(state, ctx);
+        return super.canReplace(state, context);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         switch (state.get(PICKLES)) {
             default: {
                 return ONE_PICKLE_SHAPE;
@@ -139,7 +135,7 @@ Waterloggable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        if (!this.isDry(state) && world.getBlockState(pos.down()).matches(BlockTags.CORAL_BLOCKS)) {
+        if (!SeaPickleBlock.isDry(state) && world.getBlockState(pos.down()).isIn(BlockTags.CORAL_BLOCKS)) {
             int i = 5;
             int j = 1;
             int k = 2;
@@ -152,7 +148,7 @@ Waterloggable {
                     for (int r = q - 2; r < q; ++r) {
                         BlockState blockState;
                         BlockPos blockPos = new BlockPos(m + o, r, pos.getZ() - n + p);
-                        if (blockPos == pos || random.nextInt(6) != 0 || world.getBlockState(blockPos).getBlock() != Blocks.WATER || !(blockState = world.getBlockState(blockPos.down())).matches(BlockTags.CORAL_BLOCKS)) continue;
+                        if (blockPos == pos || random.nextInt(6) != 0 || world.getBlockState(blockPos).getBlock() != Blocks.WATER || !(blockState = world.getBlockState(blockPos.down())).isIn(BlockTags.CORAL_BLOCKS)) continue;
                         world.setBlockState(blockPos, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, random.nextInt(4) + 1), 3);
                     }
                 }

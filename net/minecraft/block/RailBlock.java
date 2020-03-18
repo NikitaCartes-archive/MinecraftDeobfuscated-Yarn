@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,7 +22,7 @@ public class RailBlock
 extends AbstractRailBlock {
     public static final EnumProperty<RailShape> SHAPE = Properties.RAIL_SHAPE;
 
-    protected RailBlock(Block.Settings settings) {
+    protected RailBlock(AbstractBlock.Settings settings) {
         super(false, settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SHAPE, RailShape.NORTH_SOUTH));
     }

@@ -6,7 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 
 public class EndGatewayBlock
 extends BlockWithEntity {
-    protected EndGatewayBlock(Block.Settings settings) {
+    protected EndGatewayBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

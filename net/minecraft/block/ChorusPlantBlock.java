@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,7 +22,7 @@ import net.minecraft.world.WorldView;
 
 public class ChorusPlantBlock
 extends ConnectingBlock {
-    protected ChorusPlantBlock(Block.Settings settings) {
+    protected ChorusPlantBlock(AbstractBlock.Settings settings) {
         super(0.3125f, settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(UP, false)).with(DOWN, false));
     }
@@ -42,14 +43,14 @@ extends ConnectingBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         if (!state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
-            return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+            return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
         }
-        Block block = neighborState.getBlock();
-        boolean bl = block == this || block == Blocks.CHORUS_FLOWER || facing == Direction.DOWN && block == Blocks.END_STONE;
-        return (BlockState)state.with((Property)FACING_PROPERTIES.get(facing), bl);
+        Block block = newState.getBlock();
+        boolean bl = block == this || block == Blocks.CHORUS_FLOWER || direction == Direction.DOWN && block == Blocks.END_STONE;
+        return (BlockState)state.with((Property)FACING_PROPERTIES.get(direction), bl);
     }
 
     @Override
@@ -84,7 +85,7 @@ extends ConnectingBlock {
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return false;
     }
 }

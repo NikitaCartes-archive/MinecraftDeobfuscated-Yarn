@@ -57,7 +57,7 @@ public class InGameOverlayRenderer {
             double f = playerEntity.getZ() + (double)(((float)((i >> 2) % 2) - 0.5f) * playerEntity.getWidth() * 0.8f);
             mutable.set(d, e, f);
             BlockState blockState = playerEntity.world.getBlockState(mutable);
-            if (blockState.getRenderType() == BlockRenderType.INVISIBLE || !blockState.hasInWallOverlay(playerEntity.world, mutable)) continue;
+            if (blockState.getRenderType() == BlockRenderType.INVISIBLE || !blockState.shouldBlockVision(playerEntity.world, mutable)) continue;
             return blockState;
         }
         return null;

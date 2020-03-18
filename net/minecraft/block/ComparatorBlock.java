@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -36,7 +37,7 @@ extends AbstractRedstoneGateBlock
 implements BlockEntityProvider {
     public static final EnumProperty<ComparatorMode> MODE = Properties.COMPARATOR_MODE;
 
-    public ComparatorBlock(Block.Settings settings) {
+    public ComparatorBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(POWERED, false)).with(MODE, ComparatorMode.COMPARE));
     }
@@ -83,7 +84,7 @@ implements BlockEntityProvider {
         BlockState blockState = world.getBlockState(blockPos);
         if (blockState.hasComparatorOutput()) {
             i = blockState.getComparatorOutput(world, blockPos);
-        } else if (i < 15 && blockState.isSimpleFullBlock(world, blockPos)) {
+        } else if (i < 15 && blockState.isSolidBlock(world, blockPos)) {
             blockPos = blockPos.offset(direction);
             blockState = world.getBlockState(blockPos);
             ItemFrameEntity itemFrameEntity = this.getAttachedItemFrame(world, direction, blockPos);
@@ -158,10 +159,10 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
-        super.onBlockAction(state, world, pos, type, data);
+    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
+        super.onBlockAction(state, world, pos, channel, value);
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        return blockEntity != null && blockEntity.onBlockAction(type, data);
+        return blockEntity != null && blockEntity.onBlockAction(channel, value);
     }
 
     @Override

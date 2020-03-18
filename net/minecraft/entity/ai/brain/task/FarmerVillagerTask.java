@@ -65,7 +65,7 @@ extends Task<VillagerEntity> {
             this.ableToPickUpSeed = true;
             break;
         }
-        BlockPos.Mutable mutable = villagerEntity.getSenseCenterPos().mutableCopy();
+        BlockPos.Mutable mutable = villagerEntity.getBlockPos().mutableCopy();
         this.targetPositions.clear();
         for (int k = -1; k <= 1; ++k) {
             for (int l = -1; l <= 1; ++l) {

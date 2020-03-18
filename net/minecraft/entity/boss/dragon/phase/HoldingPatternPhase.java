@@ -14,6 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.jetbrains.annotations.Nullable;
@@ -104,11 +105,11 @@ extends AbstractPhase {
     private void method_6842() {
         if (this.field_7043 != null && !this.field_7043.isFinished()) {
             double f;
-            Vec3d vec3d = this.field_7043.getCurrentPosition();
+            Vec3i vec3i = this.field_7043.getCurrentPosition();
             this.field_7043.next();
-            double d = vec3d.x;
-            double e = vec3d.z;
-            while ((f = vec3d.y + (double)(this.dragon.getRandom().nextFloat() * 20.0f)) < vec3d.y) {
+            double d = vec3i.getX();
+            double e = vec3i.getZ();
+            while ((f = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0f)) < (double)vec3i.getY()) {
             }
             this.field_7045 = new Vec3d(d, f, e);
         }

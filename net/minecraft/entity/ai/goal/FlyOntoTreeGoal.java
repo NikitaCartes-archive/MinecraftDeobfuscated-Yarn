@@ -36,7 +36,7 @@ extends WanderAroundFarGoal {
 
     @Nullable
     private Vec3d getTreeTarget() {
-        BlockPos blockPos = this.mob.getSenseCenterPos();
+        BlockPos blockPos = this.mob.getBlockPos();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         Iterable<BlockPos> iterable = BlockPos.iterate(MathHelper.floor(this.mob.getX() - 3.0), MathHelper.floor(this.mob.getY() - 6.0), MathHelper.floor(this.mob.getZ() - 3.0), MathHelper.floor(this.mob.getX() + 3.0), MathHelper.floor(this.mob.getY() + 6.0), MathHelper.floor(this.mob.getZ() + 3.0));

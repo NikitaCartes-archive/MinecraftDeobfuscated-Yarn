@@ -59,24 +59,24 @@ import org.jetbrains.annotations.Nullable;
 public class RealmsMainScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Identifier field_22552 = new Identifier("realms", "textures/gui/realms/on_icon.png");
-    private static final Identifier field_22553 = new Identifier("realms", "textures/gui/realms/off_icon.png");
-    private static final Identifier field_22554 = new Identifier("realms", "textures/gui/realms/expired_icon.png");
-    private static final Identifier field_22555 = new Identifier("realms", "textures/gui/realms/expires_soon_icon.png");
-    private static final Identifier field_22556 = new Identifier("realms", "textures/gui/realms/leave_icon.png");
-    private static final Identifier field_22557 = new Identifier("realms", "textures/gui/realms/invitation_icons.png");
-    private static final Identifier field_22558 = new Identifier("realms", "textures/gui/realms/invite_icon.png");
-    private static final Identifier field_22559 = new Identifier("realms", "textures/gui/realms/world_icon.png");
-    private static final Identifier field_22560 = new Identifier("realms", "textures/gui/title/realms.png");
-    private static final Identifier field_22561 = new Identifier("realms", "textures/gui/realms/configure_icon.png");
-    private static final Identifier field_22562 = new Identifier("realms", "textures/gui/realms/questionmark.png");
-    private static final Identifier field_22563 = new Identifier("realms", "textures/gui/realms/news_icon.png");
-    private static final Identifier field_22564 = new Identifier("realms", "textures/gui/realms/popup.png");
-    private static final Identifier field_22548 = new Identifier("realms", "textures/gui/realms/darken.png");
-    private static final Identifier field_22549 = new Identifier("realms", "textures/gui/realms/cross_icon.png");
-    private static final Identifier field_22550 = new Identifier("realms", "textures/gui/realms/trial_icon.png");
-    private static final Identifier field_22551 = new Identifier("minecraft", "textures/gui/widgets.png");
-    private static List<Identifier> field_21517 = ImmutableList.of();
+    private static final Identifier ON_ICON = new Identifier("realms", "textures/gui/realms/on_icon.png");
+    private static final Identifier OFF_ICON = new Identifier("realms", "textures/gui/realms/off_icon.png");
+    private static final Identifier EXPIRED_ICON = new Identifier("realms", "textures/gui/realms/expired_icon.png");
+    private static final Identifier EXPIRES_SOON_ICON = new Identifier("realms", "textures/gui/realms/expires_soon_icon.png");
+    private static final Identifier LEAVE_ICON = new Identifier("realms", "textures/gui/realms/leave_icon.png");
+    private static final Identifier INVITATION_ICON = new Identifier("realms", "textures/gui/realms/invitation_icons.png");
+    private static final Identifier INVITE_ICON = new Identifier("realms", "textures/gui/realms/invite_icon.png");
+    private static final Identifier WORLD_ICON = new Identifier("realms", "textures/gui/realms/world_icon.png");
+    private static final Identifier REALMS = new Identifier("realms", "textures/gui/title/realms.png");
+    private static final Identifier CONFIGURE_ICON = new Identifier("realms", "textures/gui/realms/configure_icon.png");
+    private static final Identifier QUESTIONMARK = new Identifier("realms", "textures/gui/realms/questionmark.png");
+    private static final Identifier NEWS_ICON = new Identifier("realms", "textures/gui/realms/news_icon.png");
+    private static final Identifier POPUP = new Identifier("realms", "textures/gui/realms/popup.png");
+    private static final Identifier DARKEN = new Identifier("realms", "textures/gui/realms/darken.png");
+    private static final Identifier CROSS_ICON = new Identifier("realms", "textures/gui/realms/cross_icon.png");
+    private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
+    private static final Identifier WIDGETS = new Identifier("minecraft", "textures/gui/widgets.png");
+    private static List<Identifier> IMAGES = ImmutableList.of();
     private static final RealmsDataFetcher realmsDataFetcher = new RealmsDataFetcher();
     private static boolean overrideConfigure;
     private static int lastScrollYPosition;
@@ -85,7 +85,7 @@ extends RealmsScreen {
     private static volatile boolean checkedClientCompatability;
     private static Screen realmsGenericErrorScreen;
     private static boolean regionsPinged;
-    private final RateLimiter field_19477;
+    private final RateLimiter rateLimiter;
     private boolean dontSetConnectedToRealms;
     private final Screen lastScreen;
     private volatile RealmSelectionList realmSelectionList;
@@ -123,7 +123,7 @@ extends RealmsScreen {
 
     public RealmsMainScreen(Screen screen) {
         this.lastScreen = screen;
-        this.field_19477 = RateLimiter.create(0.01666666753590107);
+        this.rateLimiter = RateLimiter.create(0.01666666753590107);
     }
 
     public boolean shouldShowMessageInList() {
@@ -319,7 +319,7 @@ extends RealmsScreen {
         }
         if (realmsDataFetcher.isFetchedSinceLastTry(RealmsDataFetcher.Task.PENDING_INVITE)) {
             this.numberOfPendingInvites = realmsDataFetcher.getPendingInvitesCount();
-            if (this.numberOfPendingInvites > 0 && this.field_19477.tryAcquire(1)) {
+            if (this.numberOfPendingInvites > 0 && this.rateLimiter.tryAcquire(1)) {
                 Realms.narrateNow(I18n.translate("mco.configure.world.invite.narration", this.numberOfPendingInvites));
             }
         }
@@ -553,8 +553,8 @@ extends RealmsScreen {
                             realmsClient.uninviteMyselfFrom(realmsServer.id);
                             realmsDataFetcher.removeItem(realmsServer);
                             RealmsMainScreen.this.realmsServers.remove(realmsServer);
-                            RealmsMainScreen.this.realmSelectionList.children().removeIf(arg -> arg instanceof RealmSelectionListEntry && ((RealmSelectionListEntry)((RealmSelectionListEntry)arg)).mServerData.id == RealmsMainScreen.this.selectedServerId);
-                            RealmsMainScreen.this.realmSelectionList.setSelected((class_4866)null);
+                            RealmsMainScreen.this.realmSelectionList.children().removeIf(entry -> entry instanceof RealmSelectionListEntry && ((RealmSelectionListEntry)((RealmSelectionListEntry)entry)).mServerData.id == RealmsMainScreen.this.selectedServerId);
+                            RealmsMainScreen.this.realmSelectionList.setSelected((Entry)null);
                             RealmsMainScreen.this.updateButtonStates(null);
                             RealmsMainScreen.this.selectedServerId = -1L;
                             ((RealmsMainScreen)RealmsMainScreen.this).playButton.active = false;
@@ -628,7 +628,7 @@ extends RealmsScreen {
             this.renderMousehoverTooltip(this.toolTip, mouseX, mouseY);
         }
         if (this.trialsAvailable && !this.createdTrial && this.shouldShowPopup()) {
-            this.client.getTextureManager().bindTexture(field_22550);
+            this.client.getTextureManager().bindTexture(TRIAL_ICON);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             int i = 8;
             int j = 8;
@@ -641,7 +641,7 @@ extends RealmsScreen {
     }
 
     private void drawRealmsLogo(int x, int y) {
-        this.client.getTextureManager().bindTexture(field_22560);
+        this.client.getTextureManager().bindTexture(REALMS);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(0.5f, 0.5f, 0.5f);
@@ -686,21 +686,21 @@ extends RealmsScreen {
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 0.7f);
         RenderSystem.enableBlend();
-        this.client.getTextureManager().bindTexture(field_22548);
+        this.client.getTextureManager().bindTexture(DARKEN);
         boolean k = false;
         int l = 32;
         DrawableHelper.drawTexture(0, 32, 0.0f, 0.0f, this.width, this.height - 40 - 32, 310, 166);
         RenderSystem.disableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(field_22564);
+        this.client.getTextureManager().bindTexture(POPUP);
         DrawableHelper.drawTexture(i, j, 0.0f, 0.0f, 310, 166, 310, 166);
-        if (!field_21517.isEmpty()) {
-            this.client.getTextureManager().bindTexture(field_21517.get(this.carouselIndex));
+        if (!IMAGES.isEmpty()) {
+            this.client.getTextureManager().bindTexture(IMAGES.get(this.carouselIndex));
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(i + 7, j + 7, 0.0f, 0.0f, 195, 152, 195, 152);
             if (this.carouselTick % 95 < 5) {
                 if (!this.hasSwitchedCarouselImage) {
-                    this.carouselIndex = (this.carouselIndex + 1) % field_21517.size();
+                    this.carouselIndex = (this.carouselIndex + 1) % IMAGES.size();
                     this.hasSwitchedCarouselImage = true;
                 }
             } else {
@@ -741,7 +741,7 @@ extends RealmsScreen {
             this.fillGradient(x + 17, y - 2, x + 18, y + 18, j, j);
             this.fillGradient(x - 2, y + 17, x + 18, y + 18, j, j);
         }
-        this.client.getTextureManager().bindTexture(field_22558);
+        this.client.getTextureManager().bindTexture(INVITE_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         boolean bl32 = active && selectedOrHovered;
         float g = bl32 ? 16.0f : 0.0f;
@@ -750,7 +750,7 @@ extends RealmsScreen {
         if (bl4) {
             k = (Math.min(i, 6) - 1) * 8;
             l = (int)(Math.max(0.0f, Math.max(MathHelper.sin((float)(10 + this.animTick) * 0.57f), MathHelper.cos((float)this.animTick * 0.35f))) * -6.0f);
-            this.client.getTextureManager().bindTexture(field_22557);
+            this.client.getTextureManager().bindTexture(INVITATION_ICON);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             float h = bl ? 8.0f : 0.0f;
             DrawableHelper.drawTexture(x + 4, y + 4 + l, k, h, 8, 8, 48, 16);
@@ -807,7 +807,7 @@ extends RealmsScreen {
     }
 
     private void drawExpired(int x, int y, int xm, int ym) {
-        this.client.getTextureManager().bindTexture(field_22554);
+        this.client.getTextureManager().bindTexture(EXPIRED_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27 && ym < this.height - 40 && ym > 32 && !this.shouldShowPopup()) {
@@ -816,7 +816,7 @@ extends RealmsScreen {
     }
 
     private void method_24987(int i, int j, int k, int l, int m) {
-        this.client.getTextureManager().bindTexture(field_22555);
+        this.client.getTextureManager().bindTexture(EXPIRES_SOON_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         if (this.animTick % 20 < 10) {
             DrawableHelper.drawTexture(i, j, 0.0f, 0.0f, 10, 28, 20, 28);
@@ -829,7 +829,7 @@ extends RealmsScreen {
     }
 
     private void drawOpen(int x, int y, int xm, int ym) {
-        this.client.getTextureManager().bindTexture(field_22552);
+        this.client.getTextureManager().bindTexture(ON_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27 && ym < this.height - 40 && ym > 32 && !this.shouldShowPopup()) {
@@ -838,7 +838,7 @@ extends RealmsScreen {
     }
 
     private void drawClose(int x, int y, int xm, int ym) {
-        this.client.getTextureManager().bindTexture(field_22553);
+        this.client.getTextureManager().bindTexture(OFF_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (xm >= x && xm <= x + 9 && ym >= y && ym <= y + 27 && ym < this.height - 40 && ym > 32 && !this.shouldShowPopup()) {
@@ -851,7 +851,7 @@ extends RealmsScreen {
         if (xm >= x && xm <= x + 28 && ym >= y && ym <= y + 28 && ym < this.height - 40 && ym > 32 && !this.shouldShowPopup()) {
             bl = true;
         }
-        this.client.getTextureManager().bindTexture(field_22556);
+        this.client.getTextureManager().bindTexture(LEAVE_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 28.0f : 0.0f;
         DrawableHelper.drawTexture(x, y, f, 0.0f, 28, 28, 56, 28);
@@ -865,7 +865,7 @@ extends RealmsScreen {
         if (xm >= x && xm <= x + 28 && ym >= y && ym <= y + 28 && ym < this.height - 40 && ym > 32 && !this.shouldShowPopup()) {
             bl = true;
         }
-        this.client.getTextureManager().bindTexture(field_22561);
+        this.client.getTextureManager().bindTexture(CONFIGURE_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 28.0f : 0.0f;
         DrawableHelper.drawTexture(x, y, f, 0.0f, 28, 28, 56, 28);
@@ -903,7 +903,7 @@ extends RealmsScreen {
         if (xm >= x && xm <= x + 20 && ym >= y && ym <= y + 20) {
             bl = true;
         }
-        this.client.getTextureManager().bindTexture(field_22562);
+        this.client.getTextureManager().bindTexture(QUESTIONMARK);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = hoveredOrFocused ? 20.0f : 0.0f;
         DrawableHelper.drawTexture(x, y, f, 0.0f, 20, 20, 40, 20);
@@ -917,7 +917,7 @@ extends RealmsScreen {
         if (xm >= x && xm <= x + 20 && ym >= y && ym <= y + 20) {
             bl = true;
         }
-        this.client.getTextureManager().bindTexture(field_22563);
+        this.client.getTextureManager().bindTexture(NEWS_ICON);
         if (active) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         } else {
@@ -931,7 +931,7 @@ extends RealmsScreen {
         }
         if (unread && active) {
             int i = bl ? 0 : (int)(Math.max(0.0f, Math.max(MathHelper.sin((float)(10 + this.animTick) * 0.57f), MathHelper.cos((float)this.animTick * 0.35f))) * -6.0f);
-            this.client.getTextureManager().bindTexture(field_22557);
+            this.client.getTextureManager().bindTexture(INVITATION_ICON);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(x + 10, y + 2 + i, 40.0f, 0.0f, 8, 8, 48, 16);
         }
@@ -963,9 +963,9 @@ extends RealmsScreen {
         return new RealmsMainScreen(this.lastScreen);
     }
 
-    public static void method_23765(ResourceManager resourceManager) {
-        Collection<Identifier> collection = resourceManager.findResources("textures/gui/images", string -> string.endsWith(".png"));
-        field_21517 = collection.stream().filter(identifier -> identifier.getNamespace().equals("realms")).collect(ImmutableList.toImmutableList());
+    public static void method_23765(ResourceManager manager) {
+        Collection<Identifier> collection = manager.findResources("textures/gui/images", string -> string.endsWith(".png"));
+        IMAGES = collection.stream().filter(identifier -> identifier.getNamespace().equals("realms")).collect(ImmutableList.toImmutableList());
     }
 
     private void method_24985(ButtonWidget buttonWidget) {
@@ -985,7 +985,7 @@ extends RealmsScreen {
 
         @Override
         public void renderButton(int mouseX, int mouseY, float delta) {
-            RealmsMainScreen.this.client.getTextureManager().bindTexture(field_22549);
+            RealmsMainScreen.this.client.getTextureManager().bindTexture(CROSS_ICON);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             float f = this.isHovered() ? 12.0f : 0.0f;
             CloseButton.drawTexture(this.x, this.y, 0.0f, f, 12, 12, 12, 24);
@@ -1054,7 +1054,7 @@ extends RealmsScreen {
 
     @Environment(value=EnvType.CLIENT)
     class RealmSelectionListEntry
-    extends class_4866 {
+    extends Entry {
         private final RealmsServer mServerData;
 
         public RealmSelectionListEntry(RealmsServer serverData) {
@@ -1084,7 +1084,7 @@ extends RealmsScreen {
         private void renderMcoServerItem(RealmsServer serverData, int x, int y, int mouseX, int mouseY) {
             String string;
             if (serverData.state == RealmsServer.State.UNINITIALIZED) {
-                RealmsMainScreen.this.client.getTextureManager().bindTexture(field_22559);
+                RealmsMainScreen.this.client.getTextureManager().bindTexture(WORLD_ICON);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 RenderSystem.enableAlphaTest();
                 DrawableHelper.drawTexture(x + 10, y + 6, 0.0f, 0.0f, 40, 20, 40, 20);
@@ -1119,7 +1119,7 @@ extends RealmsScreen {
             if (RealmsMainScreen.this.isSelfOwnedServer(serverData) && serverData.expired) {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 RenderSystem.enableBlend();
-                RealmsMainScreen.this.client.getTextureManager().bindTexture(field_22551);
+                RealmsMainScreen.this.client.getTextureManager().bindTexture(WIDGETS);
                 RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
                 string = I18n.translate("mco.selectServer.expiredList", new Object[0]);
                 String string2 = I18n.translate("mco.selectServer.expiredRenew", new Object[0]);
@@ -1171,7 +1171,7 @@ extends RealmsScreen {
 
     @Environment(value=EnvType.CLIENT)
     class RealmSelectionListTrialEntry
-    extends class_4866 {
+    extends Entry {
         private RealmSelectionListTrialEntry() {
         }
 
@@ -1206,15 +1206,15 @@ extends RealmsScreen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    abstract class class_4866
-    extends AlwaysSelectedEntryListWidget.Entry<class_4866> {
-        private class_4866() {
+    abstract class Entry
+    extends AlwaysSelectedEntryListWidget.Entry<Entry> {
+        private Entry() {
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     class RealmSelectionList
-    extends RealmsObjectSelectionList<class_4866> {
+    extends RealmsObjectSelectionList<Entry> {
         public RealmSelectionList() {
             super(RealmsMainScreen.this.width, RealmsMainScreen.this.height, 32, RealmsMainScreen.this.height - 40, 36);
         }
@@ -1254,29 +1254,29 @@ extends RealmsScreen {
         }
 
         @Override
-        public void setSelected(int i) {
+        public void setSelected(int index) {
             RealmsServer realmsServer;
-            this.setSelectedItem(i);
-            if (i == -1) {
+            this.setSelectedItem(index);
+            if (index == -1) {
                 return;
             }
             if (RealmsMainScreen.this.shouldShowMessageInList()) {
-                if (i == 0) {
+                if (index == 0) {
                     Realms.narrateNow(I18n.translate("mco.trial.message.line1", new Object[0]), I18n.translate("mco.trial.message.line2", new Object[0]));
                     realmsServer = null;
                 } else {
-                    if (i - 1 >= RealmsMainScreen.this.realmsServers.size()) {
+                    if (index - 1 >= RealmsMainScreen.this.realmsServers.size()) {
                         RealmsMainScreen.this.selectedServerId = -1L;
                         return;
                     }
-                    realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(i - 1);
+                    realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(index - 1);
                 }
             } else {
-                if (i >= RealmsMainScreen.this.realmsServers.size()) {
+                if (index >= RealmsMainScreen.this.realmsServers.size()) {
                     RealmsMainScreen.this.selectedServerId = -1L;
                     return;
                 }
-                realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(i);
+                realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(index);
             }
             RealmsMainScreen.this.updateButtonStates(realmsServer);
             if (realmsServer == null) {
@@ -1296,26 +1296,26 @@ extends RealmsScreen {
         }
 
         @Override
-        public void setSelected(@Nullable class_4866 arg) {
-            super.setSelected(arg);
-            RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(this.children().indexOf(arg) - (RealmsMainScreen.this.shouldShowMessageInList() ? 1 : 0));
+        public void setSelected(@Nullable Entry entry) {
+            super.setSelected(entry);
+            RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(this.children().indexOf(entry) - (RealmsMainScreen.this.shouldShowMessageInList() ? 1 : 0));
             RealmsMainScreen.this.selectedServerId = realmsServer.id;
             RealmsMainScreen.this.updateButtonStates(realmsServer);
         }
 
         @Override
-        public void itemClicked(int i, int j, double d, double e, int k) {
+        public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
             if (RealmsMainScreen.this.shouldShowMessageInList()) {
-                if (j == 0) {
+                if (selectionIndex == 0) {
                     RealmsMainScreen.this.popupOpenedByUser = true;
                     return;
                 }
-                --j;
+                --selectionIndex;
             }
-            if (j >= RealmsMainScreen.this.realmsServers.size()) {
+            if (selectionIndex >= RealmsMainScreen.this.realmsServers.size()) {
                 return;
             }
-            RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(j);
+            RealmsServer realmsServer = (RealmsServer)RealmsMainScreen.this.realmsServers.get(selectionIndex);
             if (realmsServer == null) {
                 return;
             }

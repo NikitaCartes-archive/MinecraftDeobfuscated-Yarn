@@ -94,7 +94,7 @@ extends Goal {
     protected boolean findTargetPos() {
         int i = this.range;
         int j = this.maxYDifference;
-        BlockPos blockPos = this.mob.getSenseCenterPos();
+        BlockPos blockPos = this.mob.getBlockPos();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         int k = this.lowestY;
         while (k <= j) {

@@ -77,7 +77,7 @@ public class CloneCommand {
                         deque.addLast(blockPos3);
                         continue;
                     }
-                    if (blockState.isFullOpaque(serverWorld, blockPos3) || blockState.isFullCube(serverWorld, blockPos3)) {
+                    if (blockState.isOpaqueFullCube(serverWorld, blockPos3) || blockState.isFullCube(serverWorld, blockPos3)) {
                         list.add(new BlockInfo(blockPos4, blockState, null));
                         deque.addLast(blockPos3);
                         continue;

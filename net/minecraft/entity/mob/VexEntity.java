@@ -240,7 +240,7 @@ extends HostileEntity {
         public void tick() {
             BlockPos blockPos = VexEntity.this.getBounds();
             if (blockPos == null) {
-                blockPos = VexEntity.this.getSenseCenterPos();
+                blockPos = VexEntity.this.getBlockPos();
             }
             for (int i = 0; i < 3; ++i) {
                 BlockPos blockPos2 = blockPos.add(VexEntity.this.random.nextInt(15) - 7, VexEntity.this.random.nextInt(11) - 5, VexEntity.this.random.nextInt(15) - 7);

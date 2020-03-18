@@ -3,7 +3,7 @@
  */
 package net.minecraft.block;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -14,14 +14,14 @@ public class ReplaceableTallPlantBlock
 extends TallPlantBlock {
     public static final EnumProperty<DoubleBlockHalf> HALF = TallPlantBlock.HALF;
 
-    public ReplaceableTallPlantBlock(Block.Settings settings) {
+    public ReplaceableTallPlantBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
     @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
-        boolean bl = super.canReplace(state, ctx);
-        if (bl && ctx.getStack().getItem() == this.asItem()) {
+    public boolean canReplace(BlockState state, ItemPlacementContext context) {
+        boolean bl = super.canReplace(state, context);
+        if (bl && context.getStack().getItem() == this.asItem()) {
             return false;
         }
         return bl;

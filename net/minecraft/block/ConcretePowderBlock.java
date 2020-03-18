@@ -5,9 +5,11 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -20,13 +22,13 @@ public class ConcretePowderBlock
 extends FallingBlock {
     private final BlockState hardenedState;
 
-    public ConcretePowderBlock(Block hardened, Block.Settings settings) {
+    public ConcretePowderBlock(Block hardened, AbstractBlock.Settings settings) {
         super(settings);
         this.hardenedState = hardened.getDefaultState();
     }
 
     @Override
-    public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
+    public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
         if (ConcretePowderBlock.method_24279(world, pos, currentStateInPos)) {
             world.setBlockState(pos, this.hardenedState, 3);
         }
@@ -67,17 +69,17 @@ extends FallingBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         if (ConcretePowderBlock.hardensOnAnySide(world, pos)) {
             return this.hardenedState;
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public int getColor(BlockState state) {
-        return this.materialColor.color;
+    public int getColor(BlockState state, BlockView blockView, BlockPos blockPos) {
+        return state.getTopMaterialColor((BlockView)blockView, (BlockPos)blockPos).color;
     }
 }
 

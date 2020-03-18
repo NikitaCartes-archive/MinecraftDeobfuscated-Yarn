@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.mob.PiglinBrain;
@@ -12,7 +13,7 @@ import net.minecraft.world.World;
 
 public class GoldBlock
 extends Block {
-    public GoldBlock(Block.Settings settings) {
+    public GoldBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

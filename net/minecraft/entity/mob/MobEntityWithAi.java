@@ -31,7 +31,7 @@ extends MobEntity {
 
     @Override
     public boolean canSpawn(IWorld world, SpawnType spawnType) {
-        return this.getPathfindingFavor(this.getSenseCenterPos(), world) >= 0.0f;
+        return this.getPathfindingFavor(this.getBlockPos(), world) >= 0.0f;
     }
 
     public boolean isNavigating() {
@@ -43,7 +43,7 @@ extends MobEntity {
         super.updateLeash();
         Entity entity = this.getHoldingEntity();
         if (entity != null && entity.world == this.world) {
-            this.setPositionTarget(entity.getSenseCenterPos(), 5);
+            this.setPositionTarget(entity.getBlockPos(), 5);
             float f = this.distanceTo(entity);
             if (this instanceof TameableEntity && ((TameableEntity)this).isSitting()) {
                 if (f > 10.0f) {

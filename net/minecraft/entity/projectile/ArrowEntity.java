@@ -14,7 +14,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -27,14 +27,14 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class ArrowEntity
-extends ProjectileEntity {
+extends PersistentProjectileEntity {
     private static final TrackedData<Integer> COLOR = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private Potion potion = Potions.EMPTY;
     private final Set<StatusEffectInstance> effects = Sets.newHashSet();
     private boolean colorSet;
 
     public ArrowEntity(EntityType<? extends ArrowEntity> entityType, World world) {
-        super((EntityType<? extends ProjectileEntity>)entityType, world);
+        super((EntityType<? extends PersistentProjectileEntity>)entityType, world);
     }
 
     public ArrowEntity(World world, double x, double y, double z) {

@@ -53,7 +53,7 @@ extends Sensor<MobEntity> {
             this.positionToExpiryTime.put(l, this.expiryTime + 40L);
             return true;
         };
-        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(PointOfInterestType.HOME.getCompletionCondition(), predicate, mobEntity.getSenseCenterPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
+        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(PointOfInterestType.HOME.getCompletionCondition(), predicate, mobEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
         Path path = mobEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
         if (path != null && path.reachesTarget()) {
             BlockPos blockPos2 = path.getTarget();

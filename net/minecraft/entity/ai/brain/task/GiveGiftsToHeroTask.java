@@ -91,7 +91,7 @@ extends Task<VillagerEntity> {
                 this.done = true;
             }
         } else {
-            LookTargetUtil.walkTowards((LivingEntity)villagerEntity, playerEntity, 5);
+            LookTargetUtil.walkTowards((LivingEntity)villagerEntity, playerEntity, 0.5f, 5);
         }
     }
 
@@ -117,7 +117,7 @@ extends Task<VillagerEntity> {
         VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
         if (GIFTS.containsKey(villagerProfession)) {
             LootTable lootTable = villager.world.getServer().getLootManager().getTable(GIFTS.get(villagerProfession));
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.world).put(LootContextParameters.POSITION, villager.getSenseCenterPos()).put(LootContextParameters.THIS_ENTITY, villager).setRandom(villager.getRandom());
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.world).put(LootContextParameters.POSITION, villager.getBlockPos()).put(LootContextParameters.THIS_ENTITY, villager).setRandom(villager.getRandom());
             return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
         }
         return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
@@ -136,8 +136,8 @@ extends Task<VillagerEntity> {
     }
 
     private boolean isCloseEnough(VillagerEntity villager, PlayerEntity player) {
-        BlockPos blockPos = player.getSenseCenterPos();
-        BlockPos blockPos2 = villager.getSenseCenterPos();
+        BlockPos blockPos = player.getBlockPos();
+        BlockPos blockPos2 = villager.getBlockPos();
         return blockPos2.isWithinDistance(blockPos, 5.0);
     }
 

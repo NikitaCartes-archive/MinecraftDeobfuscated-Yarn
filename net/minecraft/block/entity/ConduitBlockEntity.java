@@ -21,7 +21,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -60,14 +59,14 @@ implements Tickable {
     @Override
     public void fromTag(CompoundTag tag) {
         super.fromTag(tag);
-        this.targetUuid = tag.contains("target_uuid") ? NbtHelper.toUuidOld(tag.getCompound("target_uuid")) : null;
+        this.targetUuid = tag.containsUuidNew("Target") ? tag.getUuidNew("Target") : null;
     }
 
     @Override
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
         if (this.targetEntity != null) {
-            tag.put("target_uuid", NbtHelper.fromUuidOld(this.targetEntity.getUuid()));
+            tag.putUuidNew("Target", this.targetEntity.getUuid());
         }
         return tag;
     }
@@ -156,7 +155,7 @@ implements Tickable {
             return;
         }
         for (PlayerEntity playerEntity : list) {
-            if (!this.pos.isWithinDistance(playerEntity.getSenseCenterPos(), (double)j) || !playerEntity.isTouchingWaterOrRain()) continue;
+            if (!this.pos.isWithinDistance(playerEntity.getBlockPos(), (double)j) || !playerEntity.isTouchingWaterOrRain()) continue;
             playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
         }
     }
@@ -174,7 +173,7 @@ implements Tickable {
             if (!list.isEmpty()) {
                 this.targetEntity = list.get(this.world.random.nextInt(list.size()));
             }
-        } else if (!this.targetEntity.isAlive() || !this.pos.isWithinDistance(this.targetEntity.getSenseCenterPos(), 8.0)) {
+        } else if (!this.targetEntity.isAlive() || !this.pos.isWithinDistance(this.targetEntity.getBlockPos(), 8.0)) {
             this.targetEntity = null;
         }
         if (this.targetEntity != null) {

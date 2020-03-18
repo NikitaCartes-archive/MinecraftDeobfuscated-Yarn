@@ -215,7 +215,7 @@ extends HostileEntity {
                     if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
                         this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0f, 1.0f, false);
                     }
-                    this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(this.getSenseCenterPos().down(), this);
+                    this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(this.getBlockPos().down(), this);
                 } else {
                     this.spikesExtensionRate = this.areSpikesRetracted() ? (this.spikesExtensionRate < 0.5f ? 4.0f : (this.spikesExtensionRate += (0.5f - this.spikesExtensionRate) * 0.1f)) : (this.spikesExtensionRate += (0.125f - this.spikesExtensionRate) * 0.2f);
                 }
@@ -424,7 +424,9 @@ extends HostileEntity {
             ++this.beamTicks;
             if (this.beamTicks == 0) {
                 this.guardian.setBeamTarget(this.guardian.getTarget().getEntityId());
-                this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
+                if (!this.guardian.isSilent()) {
+                    this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
+                }
             } else if (this.beamTicks >= this.guardian.getWarmupTime()) {
                 float f = 1.0f;
                 if (this.guardian.world.getDifficulty() == Difficulty.HARD) {

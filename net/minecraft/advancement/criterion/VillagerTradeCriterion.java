@@ -67,7 +67,7 @@ extends AbstractCriterion<Conditions> {
         public JsonElement toJson() {
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("item", this.item.toJson());
-            jsonObject.add("villager", this.villager.serialize());
+            jsonObject.add("villager", this.villager.toJson());
             return jsonObject;
         }
     }

@@ -12,7 +12,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.LogBlock;
+import net.minecraft.block.PillarBlock;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -80,7 +80,7 @@ extends AbstractTreeFeature<BranchedTreeFeatureConfig> {
         for (int j = 0; j <= i; ++j) {
             BlockPos blockPos2 = start.add(0.5f + (float)j * f, 0.5f + (float)j * g, 0.5f + (float)j * h);
             if (make) {
-                this.setBlockState(world, blockPos2, (BlockState)config.trunkProvider.getBlockState(random, blockPos2).with(LogBlock.AXIS, this.getLogAxis(start, blockPos2)), blockBox);
+                this.setBlockState(world, blockPos2, (BlockState)config.trunkProvider.getBlockState(random, blockPos2).with(PillarBlock.AXIS, this.getLogAxis(start, blockPos2)), blockBox);
                 logs.add(blockPos2);
                 continue;
             }

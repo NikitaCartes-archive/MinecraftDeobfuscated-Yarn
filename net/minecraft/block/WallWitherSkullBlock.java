@@ -3,7 +3,7 @@
  */
 package net.minecraft.block;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SkullBlock;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class WallWitherSkullBlock
 extends WallSkullBlock {
-    protected WallWitherSkullBlock(Block.Settings settings) {
+    protected WallWitherSkullBlock(AbstractBlock.Settings settings) {
         super(SkullBlock.Type.WITHER_SKELETON, settings);
     }
 

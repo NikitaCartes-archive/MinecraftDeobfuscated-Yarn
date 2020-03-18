@@ -37,9 +37,9 @@ extends Item {
             BlockPos blockPos = pointer.getBlockPos().offset(direction);
             BlockState blockState = world.getBlockState(blockPos);
             RailShape railShape2 = railShape = blockState.getBlock() instanceof AbstractRailBlock ? blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
-            if (blockState.matches(BlockTags.RAILS)) {
+            if (blockState.isIn(BlockTags.RAILS)) {
                 g = railShape.isAscending() ? 0.6 : 0.1;
-            } else if (blockState.isAir() && world.getBlockState(blockPos.down()).matches(BlockTags.RAILS)) {
+            } else if (blockState.isAir() && world.getBlockState(blockPos.down()).isIn(BlockTags.RAILS)) {
                 RailShape railShape22;
                 BlockState blockState2 = world.getBlockState(blockPos.down());
                 RailShape railShape3 = railShape22 = blockState2.getBlock() instanceof AbstractRailBlock ? blockState2.get(((AbstractRailBlock)blockState2.getBlock()).getShapeProperty()) : RailShape.NORTH_SOUTH;
@@ -74,7 +74,7 @@ extends Item {
         BlockPos blockPos;
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
-        if (!blockState.matches(BlockTags.RAILS)) {
+        if (!blockState.isIn(BlockTags.RAILS)) {
             return ActionResult.FAIL;
         }
         ItemStack itemStack = context.getStack();

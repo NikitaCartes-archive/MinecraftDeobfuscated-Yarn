@@ -5,6 +5,7 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.Dynamic;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
@@ -12,6 +13,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.CrossbowUser;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -37,9 +39,10 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinBrain;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -147,7 +150,7 @@ implements CrossbowUser {
     protected void initAttributes() {
         super.initAttributes();
         this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(16.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
+        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.35f);
         this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
     }
 
@@ -276,7 +279,7 @@ implements CrossbowUser {
             return;
         }
         zombifiedPiglinEntity.copyPositionAndRotation(this);
-        zombifiedPiglinEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(zombifiedPiglinEntity.getSenseCenterPos()), SpawnType.CONVERSION, null, null);
+        zombifiedPiglinEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(zombifiedPiglinEntity.getBlockPos()), SpawnType.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null);
         zombifiedPiglinEntity.setBaby(this.isBaby());
         zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
         PiglinBrain.method_25948(this);
@@ -362,7 +365,7 @@ implements CrossbowUser {
     }
 
     @Override
-    public void shoot(LivingEntity target, ItemStack crossbow, Projectile projectile, float multiShotSpray) {
+    public void shoot(LivingEntity target, ItemStack crossbow, ProjectileEntity projectile, float multiShotSpray) {
         this.shoot(this, target, projectile, multiShotSpray, 1.6f);
     }
 
@@ -414,8 +417,19 @@ implements CrossbowUser {
         PiglinBrain.loot(this, item);
     }
 
-    protected float getWalkSpeed() {
-        return (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
+    @Override
+    public boolean startRiding(Entity entity, boolean force) {
+        int i = 3;
+        Entity entity2 = this.method_26089(entity, i);
+        return super.startRiding(entity2, force);
+    }
+
+    private Entity method_26089(Entity entity, int i) {
+        List<Entity> list = entity.getPassengerList();
+        if (i == 1 || list.isEmpty()) {
+            return entity;
+        }
+        return this.method_26089(list.get(0), i - 1);
     }
 
     @Override

@@ -18,7 +18,6 @@ import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -30,9 +29,9 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 
 public class LookTargetUtil {
-    public static void lookAtAndWalkTowardsEachOther(LivingEntity first, LivingEntity second) {
+    public static void lookAtAndWalkTowardsEachOther(LivingEntity first, LivingEntity second, float f) {
         LookTargetUtil.lookAtEachOther(first, second);
-        LookTargetUtil.walkTowardsEachOther(first, second);
+        LookTargetUtil.walkTowardsEachOther(first, second, f);
     }
 
     public static boolean canSee(Brain<?> brain, LivingEntity target) {
@@ -56,25 +55,24 @@ public class LookTargetUtil {
         entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target));
     }
 
-    private static void walkTowardsEachOther(LivingEntity first, LivingEntity second) {
+    private static void walkTowardsEachOther(LivingEntity first, LivingEntity second, float f) {
         int i = 2;
-        LookTargetUtil.walkTowards(first, second, 2);
-        LookTargetUtil.walkTowards(second, first, 2);
+        LookTargetUtil.walkTowards(first, second, f, 2);
+        LookTargetUtil.walkTowards(second, first, f, 2);
     }
 
-    public static void walkTowards(LivingEntity entity, Entity target, int completionRange) {
+    public static void walkTowards(LivingEntity entity, Entity target, float f, int i) {
         EntityLookTarget lookTarget = new EntityLookTarget(target);
-        LookTargetUtil.walkTowards(entity, lookTarget, completionRange);
+        LookTargetUtil.walkTowards(entity, lookTarget, f, i);
     }
 
-    public static void walkTowards(LivingEntity entity, BlockPos target, int completionRange) {
+    public static void walkTowards(LivingEntity entity, BlockPos target, float f, int i) {
         BlockPosLookTarget lookTarget = new BlockPosLookTarget(target);
-        LookTargetUtil.walkTowards(entity, lookTarget, completionRange);
+        LookTargetUtil.walkTowards(entity, lookTarget, f, i);
     }
 
-    private static void walkTowards(LivingEntity entity, LookTarget target, int completionRange) {
-        float f = (float)entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
-        WalkTarget walkTarget = new WalkTarget(target, f, completionRange);
+    private static void walkTowards(LivingEntity entity, LookTarget target, float f, int i) {
+        WalkTarget walkTarget = new WalkTarget(target, f, i);
         entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, target);
         entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
     }

@@ -22,11 +22,11 @@ extends Item {
 
     @Override
     public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if (!world.isClient) {
+        if (!world.isClient && !state.getBlock().isIn(BlockTags.FIRE)) {
             stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
         Block block = state.getBlock();
-        if (state.matches(BlockTags.LEAVES) || block == Blocks.COBWEB || block == Blocks.GRASS || block == Blocks.FERN || block == Blocks.DEAD_BUSH || block == Blocks.VINE || block == Blocks.TRIPWIRE || block.isIn(BlockTags.WOOL)) {
+        if (state.isIn(BlockTags.LEAVES) || block == Blocks.COBWEB || block == Blocks.GRASS || block == Blocks.FERN || block == Blocks.DEAD_BUSH || block == Blocks.VINE || block == Blocks.TRIPWIRE || block.isIn(BlockTags.WOOL)) {
             return true;
         }
         return super.postMine(stack, world, state, pos, miner);
@@ -41,7 +41,7 @@ extends Item {
     @Override
     public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         Block block = state.getBlock();
-        if (block == Blocks.COBWEB || state.matches(BlockTags.LEAVES)) {
+        if (block == Blocks.COBWEB || state.isIn(BlockTags.LEAVES)) {
             return 15.0f;
         }
         if (block.isIn(BlockTags.WOOL)) {

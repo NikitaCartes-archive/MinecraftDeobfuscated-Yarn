@@ -106,7 +106,7 @@ extends Goal {
     }
 
     private void tryTeleport() {
-        BlockPos blockPos = this.owner.getSenseCenterPos();
+        BlockPos blockPos = this.owner.getBlockPos();
         for (int i = 0; i < 10; ++i) {
             int j = this.getRandomInt(-3, 3);
             int k = this.getRandomInt(-1, 1);
@@ -138,7 +138,7 @@ extends Goal {
         if (!this.leavesAllowed && blockState.getBlock() instanceof LeavesBlock) {
             return false;
         }
-        BlockPos blockPos = pos.subtract(this.tameable.getSenseCenterPos());
+        BlockPos blockPos = pos.subtract(this.tameable.getBlockPos());
         return this.world.doesNotCollide(this.tameable, this.tameable.getBoundingBox().offset(blockPos));
     }
 

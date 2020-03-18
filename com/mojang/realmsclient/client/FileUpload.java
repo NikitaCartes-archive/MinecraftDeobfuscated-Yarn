@@ -51,14 +51,14 @@ public class FileUpload {
     private CompletableFuture<UploadResult> uploadTask;
     private final RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout((int)TimeUnit.MINUTES.toMillis(10L)).setConnectTimeout((int)TimeUnit.SECONDS.toMillis(15L)).build();
 
-    public FileUpload(File file, long worldId, int slotId, UploadInfo uploadInfo, Session session, String string, UploadStatus uploadStatus) {
+    public FileUpload(File file, long worldId, int slotId, UploadInfo uploadInfo, Session session, String clientVersion, UploadStatus uploadStatus) {
         this.file = file;
         this.worldId = worldId;
         this.slotId = slotId;
         this.uploadInfo = uploadInfo;
         this.sessionId = session.getSessionId();
         this.username = session.getUsername();
-        this.clientVersion = string;
+        this.clientVersion = clientVersion;
         this.uploadStatus = uploadStatus;
     }
 

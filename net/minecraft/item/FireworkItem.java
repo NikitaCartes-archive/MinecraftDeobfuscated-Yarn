@@ -11,8 +11,8 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.FireworkChargeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -44,8 +44,8 @@ extends Item {
             ItemStack itemStack = context.getStack();
             Vec3d vec3d = context.getHitPos();
             Direction direction = context.getSide();
-            FireworkEntity fireworkEntity = new FireworkEntity(world, context.getPlayer(), vec3d.x + (double)direction.getOffsetX() * 0.15, vec3d.y + (double)direction.getOffsetY() * 0.15, vec3d.z + (double)direction.getOffsetZ() * 0.15, itemStack);
-            world.spawnEntity(fireworkEntity);
+            FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(world, context.getPlayer(), vec3d.x + (double)direction.getOffsetX() * 0.15, vec3d.y + (double)direction.getOffsetY() * 0.15, vec3d.z + (double)direction.getOffsetZ() * 0.15, itemStack);
+            world.spawnEntity(fireworkRocketEntity);
             itemStack.decrement(1);
         }
         return ActionResult.SUCCESS;
@@ -56,7 +56,7 @@ extends Item {
         if (user.isFallFlying()) {
             ItemStack itemStack = user.getStackInHand(hand);
             if (!world.isClient) {
-                world.spawnEntity(new FireworkEntity(world, itemStack, user));
+                world.spawnEntity(new FireworkRocketEntity(world, itemStack, user));
                 if (!user.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }

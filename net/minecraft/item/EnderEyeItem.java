@@ -9,7 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EndPortalFrameBlock;
 import net.minecraft.block.pattern.BlockPattern;
-import net.minecraft.entity.EnderEyeEntity;
+import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -73,16 +73,16 @@ extends Item {
             return TypedActionResult.pass(itemStack);
         }
         user.setCurrentHand(hand);
-        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", user.getSenseCenterPos(), 100, false)) != null) {
-            EnderEyeEntity enderEyeEntity = new EnderEyeEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
-            enderEyeEntity.setItem(itemStack);
-            enderEyeEntity.moveTowards(blockPos);
-            world.spawnEntity(enderEyeEntity);
+        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", user.getBlockPos(), 100, false)) != null) {
+            EyeOfEnderEntity eyeOfEnderEntity = new EyeOfEnderEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
+            eyeOfEnderEntity.setItem(itemStack);
+            eyeOfEnderEntity.moveTowards(blockPos);
+            world.spawnEntity(eyeOfEnderEntity);
             if (user instanceof ServerPlayerEntity) {
                 Criterions.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);
             }
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
-            world.playLevelEvent(null, 1003, user.getSenseCenterPos(), 0);
+            world.playLevelEvent(null, 1003, user.getBlockPos(), 0);
             if (!user.abilities.creativeMode) {
                 itemStack.decrement(1);
             }

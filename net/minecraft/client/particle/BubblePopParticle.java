@@ -16,11 +16,11 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class BubblePopParticle
 extends SpriteBillboardParticle {
-    private final SpriteProvider field_17787;
+    private final SpriteProvider spriteProvider;
 
     private BubblePopParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z);
-        this.field_17787 = spriteProvider;
+        this.spriteProvider = spriteProvider;
         this.maxAge = 4;
         this.gravityStrength = 0.008f;
         this.velocityX = velocityX;
@@ -40,7 +40,7 @@ extends SpriteBillboardParticle {
         }
         this.velocityY -= (double)this.gravityStrength;
         this.move(this.velocityX, this.velocityY, this.velocityZ);
-        this.setSpriteForAge(this.field_17787);
+        this.setSpriteForAge(this.spriteProvider);
     }
 
     @Override
@@ -51,15 +51,15 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17788;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17788 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new BubblePopParticle(world, d, e, f, g, h, i, this.field_17788);
+            return new BubblePopParticle(world, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

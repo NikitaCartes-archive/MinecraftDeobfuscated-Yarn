@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -35,14 +36,9 @@ extends BlockWithEntity {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final BooleanProperty LIT = Properties.LIT;
 
-    protected AbstractFurnaceBlock(Block.Settings settings) {
+    protected AbstractFurnaceBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(LIT, false));
-    }
-
-    @Override
-    public int getLuminance(BlockState state) {
-        return state.get(LIT) != false ? super.getLuminance(state) : 0;
     }
 
     @Override
@@ -70,7 +66,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
         if (state.getBlock() == newState.getBlock()) {
             return;
         }
@@ -79,7 +75,7 @@ extends BlockWithEntity {
             ItemScatterer.spawn(world, pos, (Inventory)((AbstractFurnaceBlockEntity)blockEntity));
             world.updateComparators(pos, this);
         }
-        super.onBlockRemoved(state, world, pos, newState, moved);
+        super.onBlockRemoved(state, world, pos, newState, notify);
     }
 
     @Override

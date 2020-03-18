@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.entity.thrown;
+package net.minecraft.entity.projectile.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.entity.thrown.ThrownItemEntity;
+import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ItemStackParticleEffect;
@@ -18,17 +18,17 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
-public class ThrownEggEntity
+public class EggEntity
 extends ThrownItemEntity {
-    public ThrownEggEntity(EntityType<? extends ThrownEggEntity> entityType, World world) {
+    public EggEntity(EntityType<? extends EggEntity> entityType, World world) {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
     }
 
-    public ThrownEggEntity(World world, LivingEntity thrower) {
-        super((EntityType<? extends ThrownItemEntity>)EntityType.EGG, thrower, world);
+    public EggEntity(World world, LivingEntity owner) {
+        super((EntityType<? extends ThrownItemEntity>)EntityType.EGG, owner, world);
     }
 
-    public ThrownEggEntity(World world, double x, double y, double z) {
+    public EggEntity(World world, double x, double y, double z) {
         super((EntityType<? extends ThrownItemEntity>)EntityType.EGG, x, y, z, world);
     }
 

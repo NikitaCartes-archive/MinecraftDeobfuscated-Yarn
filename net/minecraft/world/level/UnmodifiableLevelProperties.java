@@ -109,21 +109,6 @@ extends LevelProperties {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
-    public void setSpawnX(int spawnX) {
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public void setSpawnY(int spawnY) {
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public void setSpawnZ(int spawnZ) {
-    }
-
-    @Override
     public void setTime(long time) {
     }
 

@@ -54,7 +54,7 @@ public final class SpawnHelper {
         ChunkGenerator<?> chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
         int i = blockPos.getY();
         BlockState blockState = chunk.getBlockState(blockPos);
-        if (blockState.isSimpleFullBlock(chunk, blockPos)) {
+        if (blockState.isSolidBlock(chunk, blockPos)) {
             return;
         }
         BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -86,7 +86,7 @@ public final class SpawnHelper {
                 }
                 mobEntity.refreshPositionAndAngles(f, i, g, serverWorld.random.nextFloat() * 360.0f, 0.0f);
                 if (!SpawnHelper.method_24932(serverWorld, mobEntity, d)) continue;
-                entityData = mobEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(mobEntity.getSenseCenterPos()), SpawnType.NATURAL, entityData, null);
+                entityData = mobEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(mobEntity.getBlockPos()), SpawnType.NATURAL, entityData, null);
                 ++p;
                 serverWorld.spawnEntity(mobEntity);
                 if (++j >= mobEntity.getLimitPerChunk()) {
@@ -188,7 +188,7 @@ public final class SpawnHelper {
         if (!fluidState.isEmpty()) {
             return false;
         }
-        return !state.matches(BlockTags.RAILS);
+        return !state.isIn(BlockTags.RAILS);
     }
 
     public static boolean canSpawn(SpawnRestriction.Location location, WorldView worldView, BlockPos pos, @Nullable EntityType<?> entityType) {
@@ -204,7 +204,7 @@ public final class SpawnHelper {
         BlockPos blockPos2 = pos.down();
         switch (location) {
             case IN_WATER: {
-                return fluidState.matches(FluidTags.WATER) && worldView.getFluidState(blockPos2).matches(FluidTags.WATER) && !worldView.getBlockState(blockPos).isSimpleFullBlock(worldView, blockPos);
+                return fluidState.matches(FluidTags.WATER) && worldView.getFluidState(blockPos2).matches(FluidTags.WATER) && !worldView.getBlockState(blockPos).isSolidBlock(worldView, blockPos);
             }
         }
         BlockState blockState2 = worldView.getBlockState(blockPos2);
@@ -248,7 +248,7 @@ public final class SpawnHelper {
                         }
                         ((Entity)entity).refreshPositionAndAngles(d, blockPos.getY(), e, random.nextFloat() * 360.0f, 0.0f);
                         if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).canSpawn(world, SpawnType.CHUNK_GENERATION) && mobEntity.canSpawn(world)) {
-                            entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getSenseCenterPos()), SpawnType.CHUNK_GENERATION, entityData, null);
+                            entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnType.CHUNK_GENERATION, entityData, null);
                             world.spawnEntity(mobEntity);
                             bl = true;
                         }

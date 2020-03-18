@@ -823,7 +823,7 @@ extends AnimalEntity {
         }
 
         private boolean isBambooClose() {
-            BlockPos blockPos = this.panda.getSenseCenterPos();
+            BlockPos blockPos = this.panda.getBlockPos();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             for (int i = 0; i < 3; ++i) {
                 for (int j = 0; j < 8; ++j) {
@@ -904,7 +904,7 @@ extends AnimalEntity {
             if ((double)Math.abs(h) > 0.5) {
                 j = (int)((float)j + h / Math.abs(h));
             }
-            if (this.panda.world.getBlockState(this.panda.getSenseCenterPos().add(i, -1, j)).isAir()) {
+            if (this.panda.world.getBlockState(this.panda.getBlockPos().add(i, -1, j)).isAir()) {
                 return true;
             }
             if (this.panda.isPlayful() && this.panda.random.nextInt(60) == 1) {

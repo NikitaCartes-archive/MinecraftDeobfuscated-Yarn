@@ -206,11 +206,11 @@ extends RealmsScreen {
         }
 
         @Override
-        public void setSelected(int i) {
-            this.setSelectedItem(i);
-            if (i != -1) {
-                LevelSummary levelSummary = (LevelSummary)RealmsSelectFileToUploadScreen.this.levelList.get(i);
-                String string = I18n.translate("narrator.select.list.position", i + 1, RealmsSelectFileToUploadScreen.this.levelList.size());
+        public void setSelected(int index) {
+            this.setSelectedItem(index);
+            if (index != -1) {
+                LevelSummary levelSummary = (LevelSummary)RealmsSelectFileToUploadScreen.this.levelList.get(index);
+                String string = I18n.translate("narrator.select.list.position", index + 1, RealmsSelectFileToUploadScreen.this.levelList.size());
                 String string2 = Realms.joinNarrations(Arrays.asList(levelSummary.getDisplayName(), RealmsSelectFileToUploadScreen.method_21404(levelSummary), RealmsSelectFileToUploadScreen.method_21400(levelSummary), string));
                 Realms.narrateNow(I18n.translate("narrator.select", string2));
             }

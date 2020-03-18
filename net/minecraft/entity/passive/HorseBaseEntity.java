@@ -13,7 +13,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -500,7 +499,7 @@ JumpingMount {
             this.heal(1.0f);
         }
         if (this.eatsGrass()) {
-            if (!this.isEatingGrass() && !this.hasPassengers() && this.random.nextInt(300) == 0 && this.world.getBlockState(this.getSenseCenterPos().down()).getBlock() == Blocks.GRASS_BLOCK) {
+            if (!this.isEatingGrass() && !this.hasPassengers() && this.random.nextInt(300) == 0 && this.world.getBlockState(this.getBlockPos().down()).getBlock() == Blocks.GRASS_BLOCK) {
                 this.setEatingGrass(true);
             }
             if (this.isEatingGrass() && ++this.eatingGrassTicks > 50) {
@@ -700,7 +699,7 @@ JumpingMount {
         tag.putInt("Temper", this.getTemper());
         tag.putBoolean("Tame", this.isTame());
         if (this.getOwnerUuid() != null) {
-            tag.putString("OwnerUUID", this.getOwnerUuid().toString());
+            tag.putUuidNew("Owner", this.getOwnerUuid());
         }
         if (!this.items.getInvStack(0).isEmpty()) {
             tag.put("SaddleItem", this.items.getInvStack(0).toTag(new CompoundTag()));
@@ -711,20 +710,20 @@ JumpingMount {
     public void readCustomDataFromTag(CompoundTag tag) {
         ItemStack itemStack;
         EntityAttributeInstance entityAttributeInstance;
-        String string;
+        UUID uUID;
         super.readCustomDataFromTag(tag);
         this.setEatingGrass(tag.getBoolean("EatingHaystack"));
         this.setBred(tag.getBoolean("Bred"));
         this.setTemper(tag.getInt("Temper"));
         this.setTame(tag.getBoolean("Tame"));
-        if (tag.contains("OwnerUUID", 8)) {
-            string = tag.getString("OwnerUUID");
+        if (tag.containsUuidNew("Owner")) {
+            uUID = tag.getUuidNew("Owner");
         } else {
-            String string2 = tag.getString("Owner");
-            string = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string2);
+            String string = tag.getString("Owner");
+            uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
         }
-        if (!string.isEmpty()) {
-            this.setOwnerUuid(UUID.fromString(string));
+        if (uUID != null) {
+            this.setOwnerUuid(uUID);
         }
         if ((entityAttributeInstance = this.getAttributes().get("Speed")) != null) {
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(entityAttributeInstance.getBaseValue() * 0.25);
@@ -918,13 +917,12 @@ JumpingMount {
         double d = this.getX() + vec3d.x;
         double e = this.getBoundingBox().y1;
         double f = this.getZ() + vec3d.z;
-        EntityContext entityContext = EntityContext.of(livingEntity);
-        Box box = livingEntity.method_24833(EntityPose.SWIMMING).offset(d, e, f);
+        Box box = livingEntity.method_24833(livingEntity.method_26081()).offset(d, e, f);
         BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
         double g = this.getBoundingBox().y2 + 0.75;
         do {
             Box box2;
-            double h = HorseBaseEntity.method_24827(this.world, mutable, entityContext);
+            double h = this.world.method_26097(mutable);
             if ((double)mutable.getY() + h > g) break;
             if (!Double.isInfinite(h) && h < 1.0 && this.world.getBlockCollisions(livingEntity, box2 = box.offset(d, (double)mutable.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
                 return new Vec3d(d, (double)mutable.getY() + h, f);

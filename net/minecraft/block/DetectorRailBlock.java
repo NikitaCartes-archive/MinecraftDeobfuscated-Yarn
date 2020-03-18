@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,7 +31,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class DetectorRailBlock
@@ -38,14 +38,9 @@ extends AbstractRailBlock {
     public static final EnumProperty<RailShape> SHAPE = Properties.STRAIGHT_RAIL_SHAPE;
     public static final BooleanProperty POWERED = Properties.POWERED;
 
-    public DetectorRailBlock(Block.Settings settings) {
+    public DetectorRailBlock(AbstractBlock.Settings settings) {
         super(true, settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false)).with(SHAPE, RailShape.NORTH_SOUTH));
-    }
-
-    @Override
-    public int getTickRate(WorldView world) {
-        return 20;
     }
 
     @Override
@@ -73,16 +68,16 @@ extends AbstractRailBlock {
     }
 
     @Override
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return state.get(POWERED) != false ? 15 : 0;
     }
 
     @Override
-    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         if (!state.get(POWERED).booleanValue()) {
             return 0;
         }
-        return facing == Direction.UP ? 15 : 0;
+        return direction == Direction.UP ? 15 : 0;
     }
 
     private void updatePoweredStatus(World world, BlockPos pos, BlockState state) {
@@ -110,7 +105,7 @@ extends AbstractRailBlock {
             world.checkBlockRerender(pos, state, blockState);
         }
         if (bl2) {
-            world.getBlockTickScheduler().schedule(pos, this, this.getTickRate(world));
+            world.getBlockTickScheduler().schedule(pos, this, 20);
         }
         world.updateComparators(pos, this);
     }
@@ -125,11 +120,11 @@ extends AbstractRailBlock {
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (oldState.getBlock() == state.getBlock()) {
             return;
         }
-        this.updatePoweredStatus(world, pos, this.method_24417(state, world, pos, moved));
+        this.updatePoweredStatus(world, pos, this.method_24417(state, world, pos, notify));
     }
 
     @Override

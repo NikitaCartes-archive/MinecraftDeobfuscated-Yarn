@@ -349,7 +349,7 @@ extends AnimalEntity {
     }
 
     private int chooseType(IWorld world) {
-        Biome biome = world.getBiome(this.getSenseCenterPos());
+        Biome biome = world.getBiome(this.getBlockPos());
         int i = this.random.nextInt(100);
         if (biome.getPrecipitation() == Biome.Precipitation.SNOW) {
             return i < 80 ? 1 : 3;

@@ -85,11 +85,16 @@ extends Entity {
 
     @Override
     public void tick() {
-        if (this.obstructionCheckCounter++ == 100 && !this.world.isClient) {
-            this.obstructionCheckCounter = 0;
-            if (!this.removed && !this.canStayAttached()) {
-                this.remove();
-                this.onBreak(null);
+        if (!this.world.isClient) {
+            if (this.getY() < -64.0) {
+                this.destroy();
+            }
+            if (this.obstructionCheckCounter++ == 100) {
+                this.obstructionCheckCounter = 0;
+                if (!this.removed && !this.canStayAttached()) {
+                    this.remove();
+                    this.onBreak(null);
+                }
             }
         }
     }

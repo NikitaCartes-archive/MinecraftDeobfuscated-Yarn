@@ -17,6 +17,7 @@ import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityTypePredicate;
+import net.minecraft.predicate.entity.FishingHookPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -28,7 +29,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityPredicate {
-    public static final EntityPredicate ANY = new EntityPredicate(EntityTypePredicate.ANY, DistancePredicate.ANY, LocationPredicate.ANY, EntityEffectPredicate.EMPTY, NbtPredicate.ANY, EntityFlagsPredicate.ANY, EntityEquipmentPredicate.ANY, PlayerPredicate.ANY, null, null);
+    public static final EntityPredicate ANY = new EntityPredicate(EntityTypePredicate.ANY, DistancePredicate.ANY, LocationPredicate.ANY, EntityEffectPredicate.EMPTY, NbtPredicate.ANY, EntityFlagsPredicate.ANY, EntityEquipmentPredicate.ANY, PlayerPredicate.ANY, FishingHookPredicate.ANY, null, null);
     public static final EntityPredicate[] EMPTY = new EntityPredicate[0];
     private final EntityTypePredicate type;
     private final DistancePredicate distance;
@@ -38,12 +39,13 @@ public class EntityPredicate {
     private final EntityFlagsPredicate flags;
     private final EntityEquipmentPredicate equipment;
     private final PlayerPredicate player;
+    private final FishingHookPredicate fishingHook;
     @Nullable
     private final String team;
     @Nullable
     private final Identifier catType;
 
-    private EntityPredicate(EntityTypePredicate type, DistancePredicate distance, LocationPredicate location, EntityEffectPredicate effects, NbtPredicate nbt, EntityFlagsPredicate flags, EntityEquipmentPredicate equipment, PlayerPredicate player, @Nullable String team, @Nullable Identifier catType) {
+    private EntityPredicate(EntityTypePredicate type, DistancePredicate distance, LocationPredicate location, EntityEffectPredicate effects, NbtPredicate nbt, EntityFlagsPredicate flags, EntityEquipmentPredicate equipment, PlayerPredicate player, FishingHookPredicate fishingHook, @Nullable String string, @Nullable Identifier identifier) {
         this.type = type;
         this.distance = distance;
         this.location = location;
@@ -52,8 +54,9 @@ public class EntityPredicate {
         this.flags = flags;
         this.equipment = equipment;
         this.player = player;
-        this.team = team;
-        this.catType = catType;
+        this.fishingHook = fishingHook;
+        this.team = string;
+        this.catType = identifier;
     }
 
     public boolean test(ServerPlayerEntity player, @Nullable Entity entity) {
@@ -92,6 +95,9 @@ public class EntityPredicate {
         if (!this.player.test(entity)) {
             return false;
         }
+        if (!this.fishingHook.test(entity)) {
+            return false;
+        }
         if (!(this.team == null || (abstractTeam = entity.getScoreboardTeam()) != null && this.team.equals(abstractTeam.getName()))) {
             return false;
         }
@@ -111,9 +117,10 @@ public class EntityPredicate {
         EntityFlagsPredicate entityFlagsPredicate = EntityFlagsPredicate.deserialize(jsonObject.get("flags"));
         EntityEquipmentPredicate entityEquipmentPredicate = EntityEquipmentPredicate.deserialize(jsonObject.get("equipment"));
         PlayerPredicate playerPredicate = PlayerPredicate.fromJson(jsonObject.get("player"));
+        FishingHookPredicate fishingHookPredicate = FishingHookPredicate.fromJson(jsonObject.get("fishing_hook"));
         String string = JsonHelper.getString(jsonObject, "team", null);
         Identifier identifier = jsonObject.has("catType") ? new Identifier(JsonHelper.getString(jsonObject, "catType")) : null;
-        return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).player(playerPredicate).team(string).catType(identifier).build();
+        return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).player(playerPredicate).fishHook(fishingHookPredicate).team(string).catType(identifier).build();
     }
 
     public static EntityPredicate[] fromJsonArray(@Nullable JsonElement element) {
@@ -128,19 +135,20 @@ public class EntityPredicate {
         return entityPredicates;
     }
 
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         if (this == ANY) {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("type", this.type.toJson());
-        jsonObject.add("distance", this.distance.serialize());
+        jsonObject.add("distance", this.distance.toJson());
         jsonObject.add("location", this.location.toJson());
-        jsonObject.add("effects", this.effects.serialize());
+        jsonObject.add("effects", this.effects.toJson());
         jsonObject.add("nbt", this.nbt.toJson());
-        jsonObject.add("flags", this.flags.serialize());
-        jsonObject.add("equipment", this.equipment.serialize());
+        jsonObject.add("flags", this.flags.toJson());
+        jsonObject.add("equipment", this.equipment.toJson());
         jsonObject.add("player", this.player.toJson());
+        jsonObject.add("fishing_hook", this.fishingHook.toJson());
         jsonObject.addProperty("team", this.team);
         if (this.catType != null) {
             jsonObject.addProperty("catType", this.catType.toString());
@@ -154,7 +162,7 @@ public class EntityPredicate {
         }
         JsonArray jsonArray = new JsonArray();
         for (EntityPredicate entityPredicate : predicates) {
-            JsonElement jsonElement = entityPredicate.serialize();
+            JsonElement jsonElement = entityPredicate.toJson();
             if (jsonElement.isJsonNull()) continue;
             jsonArray.add(jsonElement);
         }
@@ -170,6 +178,7 @@ public class EntityPredicate {
         private EntityFlagsPredicate flags = EntityFlagsPredicate.ANY;
         private EntityEquipmentPredicate equipment = EntityEquipmentPredicate.ANY;
         private PlayerPredicate player = PlayerPredicate.ANY;
+        private FishingHookPredicate fishHook = FishingHookPredicate.ANY;
         private String team;
         private Identifier catType;
 
@@ -232,6 +241,11 @@ public class EntityPredicate {
             return this;
         }
 
+        public Builder fishHook(FishingHookPredicate fishingHookPredicate) {
+            this.fishHook = fishingHookPredicate;
+            return this;
+        }
+
         public Builder team(@Nullable String string) {
             this.team = string;
             return this;
@@ -243,7 +257,7 @@ public class EntityPredicate {
         }
 
         public EntityPredicate build() {
-            return new EntityPredicate(this.type, this.distance, this.location, this.effects, this.nbt, this.flags, this.equipment, this.player, this.team, this.catType);
+            return new EntityPredicate(this.type, this.distance, this.location, this.effects, this.nbt, this.flags, this.equipment, this.player, this.fishHook, this.team, this.catType);
         }
     }
 }

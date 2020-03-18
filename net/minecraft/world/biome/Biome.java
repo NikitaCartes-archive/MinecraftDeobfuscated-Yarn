@@ -26,6 +26,8 @@ import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.sound.BiomeAdditionsSound;
+import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -310,21 +312,6 @@ public abstract class Biome {
         return TemperatureGroup.WARM;
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public Optional<SoundEvent> getLoopSound() {
-        return this.effects.getLoopSound();
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public Optional<SoundEvent> getMoodSound() {
-        return this.effects.getMoodSound();
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public Optional<SoundEvent> getAdditionsSound() {
-        return this.effects.getAdditionsSound();
-    }
-
     public final float getDepth() {
         return this.depth;
     }
@@ -369,6 +356,21 @@ public abstract class Biome {
     @Environment(value=EnvType.CLIENT)
     public Optional<BiomeParticleConfig> getParticleConfig() {
         return this.effects.getParticleConfig();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<SoundEvent> getLoopSound() {
+        return this.effects.getLoopSound();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<BiomeMoodSound> getMoodSound() {
+        return this.effects.getMoodSound();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Optional<BiomeAdditionsSound> getAdditionsSound() {
+        return this.effects.getAdditionsSound();
     }
 
     public final Category getCategory() {

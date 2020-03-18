@@ -38,9 +38,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TextureManager
-implements TextureTickListener,
-AutoCloseable,
-ResourceReloadListener {
+implements ResourceReloadListener,
+TextureTickListener,
+AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Identifier MISSING_IDENTIFIER = new Identifier("");
     private final Map<Identifier, AbstractTexture> textures = Maps.newHashMap();

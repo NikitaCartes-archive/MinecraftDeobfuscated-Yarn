@@ -28,22 +28,22 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
-public class EnderEyeEntity
+public class EyeOfEnderEntity
 extends Entity
 implements FlyingItemEntity {
-    private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(EnderEyeEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(EyeOfEnderEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private double velocityX;
     private double velocityY;
     private double velocityZ;
     private int useCount;
     private boolean dropsItem;
 
-    public EnderEyeEntity(EntityType<? extends EnderEyeEntity> entityType, World world) {
+    public EyeOfEnderEntity(EntityType<? extends EyeOfEnderEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    public EnderEyeEntity(World world, double x, double y, double z) {
-        this((EntityType<? extends EnderEyeEntity>)EntityType.EYE_OF_ENDER, world);
+    public EyeOfEnderEntity(World world, double x, double y, double z) {
+        this((EntityType<? extends EyeOfEnderEntity>)EntityType.EYE_OF_ENDER, world);
         this.useCount = 0;
         this.updatePosition(x, y, z);
     }
@@ -119,7 +119,7 @@ implements FlyingItemEntity {
         double d = this.getX() + vec3d.x;
         double e = this.getY() + vec3d.y;
         double f = this.getZ() + vec3d.z;
-        float g = MathHelper.sqrt(EnderEyeEntity.squaredHorizontalLength(vec3d));
+        float g = MathHelper.sqrt(EyeOfEnderEntity.squaredHorizontalLength(vec3d));
         this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
         this.pitch = (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875);
         while (this.pitch - this.prevPitch < -180.0f) {
@@ -168,7 +168,7 @@ implements FlyingItemEntity {
                 if (this.dropsItem) {
                     this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
                 } else {
-                    this.world.playLevelEvent(2003, this.getSenseCenterPos(), 0);
+                    this.world.playLevelEvent(2003, this.getBlockPos(), 0);
                 }
             }
         } else {

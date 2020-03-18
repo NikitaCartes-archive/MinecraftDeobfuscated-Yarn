@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,7 +17,7 @@ import net.minecraft.world.World;
 
 public class OreBlock
 extends Block {
-    public OreBlock(Block.Settings settings) {
+    public OreBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

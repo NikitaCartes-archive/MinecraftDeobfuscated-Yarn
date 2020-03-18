@@ -35,6 +35,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ComposterBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -84,7 +85,6 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -680,7 +680,7 @@ AutoCloseable {
                     bl2 = true;
                 }
                 if (!bl2 || spectator) {
-                    if (spectator && this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos)) {
+                    if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
                         bl = false;
                     }
                     builtChunk.setRebuildFrame(frame);
@@ -733,7 +733,7 @@ AutoCloseable {
         BlockPos blockPos = new BlockPos(pos.getX() >> 4 << 4, pos.getY() >> 4 << 4, pos.getZ() >> 4 << 4);
         WorldChunk worldChunk = this.world.getWorldChunk(blockPos);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(15, 15, 15))) {
-            if (!worldChunk.getBlockState(blockPos2).isFullOpaque(this.world, blockPos2)) continue;
+            if (!worldChunk.getBlockState(blockPos2).isOpaqueFullCube(this.world, blockPos2)) continue;
             chunkOcclusionDataBuilder.markClosed(blockPos2);
         }
         return chunkOcclusionDataBuilder.getOpenFaces(pos);
@@ -1691,7 +1691,7 @@ AutoCloseable {
     }
 
     private void drawBlockOutline(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos blockPos, BlockState blockState) {
-        WorldRenderer.drawShapeOutline(matrixStack, vertexConsumer, blockState.getOutlineShape(this.world, blockPos, EntityContext.of(entity)), (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f, 0.0f, 0.0f, 0.0f, 0.4f);
+        WorldRenderer.drawShapeOutline(matrixStack, vertexConsumer, blockState.getOutlineShape(this.world, blockPos, ShapeContext.of(entity)), (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f, 0.0f, 0.0f, 0.0f, 0.4f);
     }
 
     public static void method_22983(MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
@@ -2130,6 +2130,7 @@ AutoCloseable {
                     if (particle2 == null) continue;
                     particle2.move(aa);
                 }
+                if (data != 1) break;
                 this.world.playSound(pos, SoundEvents.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.HOSTILE, 1.0f, this.world.random.nextFloat() * 0.1f + 0.9f, false);
                 break;
             }
@@ -2333,7 +2334,7 @@ AutoCloseable {
 
     public static int getLightmapCoordinates(BlockRenderView world, BlockState state, BlockPos pos) {
         int k;
-        if (state.hasEmissiveLighting()) {
+        if (state.hasInWallOverlay(world, pos)) {
             return 0xF000F0;
         }
         int i = world.getLightLevel(LightType.SKY, pos);

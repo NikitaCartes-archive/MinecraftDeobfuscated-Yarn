@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BlockWithEntity
 extends Block
 implements BlockEntityProvider {
-    protected BlockWithEntity(Block.Settings settings) {
+    protected BlockWithEntity(AbstractBlock.Settings settings) {
         super(settings);
     }
 
@@ -26,13 +27,13 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int type, int data) {
-        super.onBlockAction(state, world, pos, type, data);
+    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
+        super.onBlockAction(state, world, pos, channel, value);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity == null) {
             return false;
         }
-        return blockEntity.onBlockAction(type, data);
+        return blockEntity.onBlockAction(channel, value);
     }
 
     @Override

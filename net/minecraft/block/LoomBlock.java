@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -25,7 +26,7 @@ public class LoomBlock
 extends HorizontalFacingBlock {
     private static final TranslatableText TITLE = new TranslatableText("container.loom", new Object[0]);
 
-    protected LoomBlock(Block.Settings settings) {
+    protected LoomBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

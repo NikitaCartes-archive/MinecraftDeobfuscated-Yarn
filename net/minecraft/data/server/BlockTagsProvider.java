@@ -90,6 +90,7 @@ extends AbstractTagProvider<Block> {
         this.getOrCreateTagBuilder(BlockTags.PIGLIN_REPELLENTS).add(Blocks.SOUL_FIRE).add(Blocks.SOUL_FIRE_TORCH).add(Blocks.SOUL_FIRE_LANTERN).add(Blocks.SOUL_FIRE_WALL_TORCH);
         this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS).add(Blocks.POTTED_WARPED_FUNGUS);
         this.getOrCreateTagBuilder(BlockTags.GOLD_ORES).add((Block[])new Block[]{Blocks.GOLD_ORE, Blocks.NETHER_GOLD_ORE});
+        this.getOrCreateTagBuilder(BlockTags.SOUL_FIRE_BASE_BLOCKS).add((Block[])new Block[]{Blocks.SOUL_SAND, Blocks.SOUL_SOIL});
     }
 
     @Override

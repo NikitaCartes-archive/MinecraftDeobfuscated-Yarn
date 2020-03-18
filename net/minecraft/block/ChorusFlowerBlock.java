@@ -4,11 +4,12 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChorusPlantBlock;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -27,7 +28,7 @@ extends Block {
     public static final IntProperty AGE = Properties.AGE_5;
     private final ChorusPlantBlock plantBlock;
 
-    protected ChorusFlowerBlock(ChorusPlantBlock plantBlock, Block.Settings settings) {
+    protected ChorusFlowerBlock(ChorusPlantBlock plantBlock, AbstractBlock.Settings settings) {
         super(settings);
         this.plantBlock = plantBlock;
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
@@ -35,11 +36,19 @@ extends Block {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        int j;
         if (!state.canPlaceAt(world, pos)) {
             world.breakBlock(pos, true);
-            return;
         }
+    }
+
+    @Override
+    public boolean hasRandomTicks(BlockState state) {
+        return state.get(AGE) < 5;
+    }
+
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        int j;
         BlockPos blockPos = pos.up();
         if (!world.isAir(blockPos) || blockPos.getY() >= 256) {
             return;
@@ -117,11 +126,11 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-        if (facing != Direction.UP && !state.canPlaceAt(world, pos)) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+        if (direction != Direction.UP && !state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
-        return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
@@ -196,9 +205,9 @@ extends Block {
     }
 
     @Override
-    public void onProjectileHit(World world, BlockState state, BlockHitResult hitResult, Projectile projectile) {
+    public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
         if (projectile.getType().isIn(EntityTypeTags.IMPACT_PROJECTILES)) {
-            BlockPos blockPos = hitResult.getBlockPos();
+            BlockPos blockPos = hit.getBlockPos();
             world.breakBlock(blockPos, true, projectile);
         }
     }

@@ -24,6 +24,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkCache;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +39,7 @@ public abstract class EntityNavigation {
     protected int tickCount;
     protected int pathStartTime;
     protected Vec3d pathStartPos = Vec3d.ZERO;
-    protected Vec3d lastNodePosition = Vec3d.ZERO;
+    protected Vec3i lastNodePosition = Vec3i.ZERO;
     protected long currentNodeMs;
     protected long lastActiveTickMs;
     protected double currentNodeTimeout;
@@ -115,7 +116,7 @@ public abstract class EntityNavigation {
 
     @Nullable
     public Path findPathTo(Entity entity, int distance) {
-        return this.findPathToAny(ImmutableSet.of(entity.getSenseCenterPos()), 16, true, distance);
+        return this.findPathToAny(ImmutableSet.of(entity.getBlockPos()), 16, true, distance);
     }
 
     @Nullable
@@ -134,7 +135,7 @@ public abstract class EntityNavigation {
         }
         this.world.getProfiler().push("pathfind");
         float f = (float)this.followRange.getValue();
-        BlockPos blockPos = bl ? this.entity.getSenseCenterPos().up() : this.entity.getSenseCenterPos();
+        BlockPos blockPos = bl ? this.entity.getBlockPos().up() : this.entity.getBlockPos();
         int i = (int)(f + (float)range);
         ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));
         Path path = this.pathNodeNavigator.findPathToAny(chunkCache, this.entity, positions, f, distance, this.rangeMultiplier);
@@ -142,6 +143,7 @@ public abstract class EntityNavigation {
         if (path != null && path.getTarget() != null) {
             this.currentTarget = path.getTarget();
             this.currentDistance = distance;
+            this.method_26085();
         }
         return path;
     }
@@ -212,8 +214,8 @@ public abstract class EntityNavigation {
     protected void continueFollowingPath() {
         Vec3d vec3d = this.getPos();
         this.nodeReachProximity = this.entity.getWidth() > 0.75f ? this.entity.getWidth() / 2.0f : 0.75f - this.entity.getWidth() / 2.0f;
-        Vec3d vec3d2 = this.currentPath.getCurrentPosition();
-        if (Math.abs(this.entity.getX() - (vec3d2.x + 0.5)) < (double)this.nodeReachProximity && Math.abs(this.entity.getZ() - (vec3d2.z + 0.5)) < (double)this.nodeReachProximity && Math.abs(this.entity.getY() - vec3d2.y) < 1.0) {
+        Vec3i vec3i = this.currentPath.getCurrentPosition();
+        if (Math.abs(this.entity.getX() - (double)((float)vec3i.getX() + 0.5f)) < (double)this.nodeReachProximity && Math.abs(this.entity.getZ() - (double)((float)vec3i.getZ() + 0.5f)) < (double)this.nodeReachProximity && Math.abs(this.entity.getY() - (double)vec3i.getY()) < 1.0) {
             this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
         }
         this.checkTimeouts(vec3d);
@@ -228,22 +230,26 @@ public abstract class EntityNavigation {
             this.pathStartPos = currentPos;
         }
         if (this.currentPath != null && !this.currentPath.isFinished()) {
-            Vec3d vec3d = this.currentPath.getCurrentPosition();
-            if (vec3d.equals(this.lastNodePosition)) {
+            Vec3i vec3i = this.currentPath.getCurrentPosition();
+            if (vec3i.equals(this.lastNodePosition)) {
                 this.currentNodeMs += Util.getMeasuringTimeMs() - this.lastActiveTickMs;
             } else {
-                this.lastNodePosition = vec3d;
-                double d = currentPos.distanceTo(this.lastNodePosition);
+                this.lastNodePosition = vec3i;
+                double d = currentPos.distanceTo(Vec3d.method_24955(this.lastNodePosition));
                 double d2 = this.currentNodeTimeout = this.entity.getMovementSpeed() > 0.0f ? d / (double)this.entity.getMovementSpeed() * 1000.0 : 0.0;
             }
             if (this.currentNodeTimeout > 0.0 && (double)this.currentNodeMs > this.currentNodeTimeout * 3.0) {
-                this.lastNodePosition = Vec3d.ZERO;
-                this.currentNodeMs = 0L;
-                this.currentNodeTimeout = 0.0;
+                this.method_26085();
                 this.stop();
             }
             this.lastActiveTickMs = Util.getMeasuringTimeMs();
         }
+    }
+
+    private void method_26085() {
+        this.lastNodePosition = Vec3i.ZERO;
+        this.currentNodeMs = 0L;
+        this.currentNodeTimeout = 0.0;
     }
 
     public boolean isIdle() {
@@ -292,7 +298,7 @@ public abstract class EntityNavigation {
 
     public boolean isValidPosition(BlockPos pos) {
         BlockPos blockPos = pos.down();
-        return this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos);
+        return this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos);
     }
 
     public PathNodeMaker getNodeMaker() {

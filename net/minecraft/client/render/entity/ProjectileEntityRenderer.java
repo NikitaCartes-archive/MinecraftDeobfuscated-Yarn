@@ -15,21 +15,21 @@ import net.minecraft.client.util.math.Matrix3f;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class ProjectileEntityRenderer<T extends ProjectileEntity>
+public abstract class ProjectileEntityRenderer<T extends PersistentProjectileEntity>
 extends EntityRenderer<T> {
     public ProjectileEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
     }
 
     @Override
-    public void render(T projectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    public void render(T persistentProjectileEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, ((ProjectileEntity)projectileEntity).prevYaw, ((ProjectileEntity)projectileEntity).yaw) - 90.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, ((ProjectileEntity)projectileEntity).prevPitch, ((ProjectileEntity)projectileEntity).pitch)));
+        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.lerp(g, ((PersistentProjectileEntity)persistentProjectileEntity).prevYaw, ((PersistentProjectileEntity)persistentProjectileEntity).yaw) - 90.0f));
+        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerp(g, ((PersistentProjectileEntity)persistentProjectileEntity).prevPitch, ((PersistentProjectileEntity)persistentProjectileEntity).pitch)));
         boolean j = false;
         float h = 0.0f;
         float k = 0.5f;
@@ -40,7 +40,7 @@ extends EntityRenderer<T> {
         float p = 0.15625f;
         float q = 0.3125f;
         float r = 0.05625f;
-        float s = (float)((ProjectileEntity)projectileEntity).shake - g;
+        float s = (float)((PersistentProjectileEntity)persistentProjectileEntity).shake - g;
         if (s > 0.0f) {
             float t = -MathHelper.sin(s * 3.0f) * s;
             matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(t));
@@ -48,7 +48,7 @@ extends EntityRenderer<T> {
         matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0f));
         matrixStack.scale(0.05625f, 0.05625f, 0.05625f);
         matrixStack.translate(-4.0, 0.0, 0.0);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(this.getTexture(projectileEntity)));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutout(this.getTexture(persistentProjectileEntity)));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();
@@ -68,7 +68,7 @@ extends EntityRenderer<T> {
             this.method_23153(matrix4f, matrix3f, vertexConsumer, -8, 2, 0, 0.0f, 0.15625f, 0, 1, 0, i);
         }
         matrixStack.pop();
-        super.render(projectileEntity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(persistentProjectileEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
     public void method_23153(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, int i, int j, int k, float f, float g, int l, int m, int n, int o) {

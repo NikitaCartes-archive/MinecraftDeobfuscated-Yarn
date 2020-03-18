@@ -82,7 +82,7 @@ extends IllagerEntity {
     protected void mobTick() {
         EntityNavigation entityNavigation;
         if (!this.isAiDisabled() && (entityNavigation = this.getNavigation()) instanceof MobNavigation) {
-            boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getSenseCenterPos());
+            boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getBlockPos());
             ((MobNavigation)entityNavigation).setCanPathThroughDoors(bl);
         }
         super.mobTick();

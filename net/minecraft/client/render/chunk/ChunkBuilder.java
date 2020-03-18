@@ -555,7 +555,7 @@ public class ChunkBuilder {
                         BlockEntity blockEntity;
                         BlockState blockState = chunkRendererRegion.getBlockState(blockPos3);
                         Block block = blockState.getBlock();
-                        if (blockState.isFullOpaque(chunkRendererRegion, blockPos3)) {
+                        if (blockState.isOpaqueFullCube(chunkRendererRegion, blockPos3)) {
                             chunkOcclusionDataBuilder.markClosed(blockPos3);
                         }
                         if (block.hasBlockEntity() && (blockEntity = chunkRendererRegion.getBlockEntity(blockPos3, WorldChunk.CreationType.CHECK)) != null) {

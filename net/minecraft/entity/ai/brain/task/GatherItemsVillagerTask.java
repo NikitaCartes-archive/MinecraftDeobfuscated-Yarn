@@ -41,7 +41,7 @@ extends Task<VillagerEntity> {
     @Override
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
-        LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
+        LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5f);
         this.items = GatherItemsVillagerTask.getGatherableItems(villagerEntity, villagerEntity2);
     }
 
@@ -51,7 +51,7 @@ extends Task<VillagerEntity> {
         if (villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0) {
             return;
         }
-        LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
+        LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5f);
         villagerEntity.talkWithVillager(villagerEntity2, l);
         if (villagerEntity.wantsToStartBreeding() && (villagerEntity.getVillagerData().getProfession() == VillagerProfession.FARMER || villagerEntity2.canBreed())) {
             GatherItemsVillagerTask.giveHalfOfStack(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet(), villagerEntity2);

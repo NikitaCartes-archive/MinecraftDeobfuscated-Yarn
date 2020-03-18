@@ -82,6 +82,7 @@ public class BlockTags {
     public static final Tag<Block> CLIMBABLE;
     public static final Tag<Block> SHULKER_BOXES;
     public static final Tag<Block> HOGLIN_REPELLENTS;
+    public static final Tag<Block> SOUL_FIRE_BASE_BLOCKS;
 
     public static void setContainer(TagContainer<Block> container) {
         BlockTags.container = container;
@@ -166,6 +167,7 @@ public class BlockTags {
         CLIMBABLE = BlockTags.register("climbable");
         SHULKER_BOXES = BlockTags.register("shulker_boxes");
         HOGLIN_REPELLENTS = BlockTags.register("hoglin_repellents");
+        SOUL_FIRE_BASE_BLOCKS = BlockTags.register("soul_fire_base_blocks");
     }
 
     static class CachingTag

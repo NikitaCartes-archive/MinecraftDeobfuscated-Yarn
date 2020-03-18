@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IceBlock;
@@ -24,9 +25,14 @@ public class FrostedIceBlock
 extends IceBlock {
     public static final IntProperty AGE = Properties.AGE_3;
 
-    public FrostedIceBlock(Block.Settings settings) {
+    public FrostedIceBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
+    }
+
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        this.scheduledTick(state, world, pos, random);
     }
 
     @Override
@@ -55,11 +61,11 @@ extends IceBlock {
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         if (block == this && this.canMelt(world, pos, 2)) {
             this.melt(state, world, pos);
         }
-        super.neighborUpdate(state, world, pos, block, neighborPos, moved);
+        super.neighborUpdate(state, world, pos, block, fromPos, notify);
     }
 
     private boolean canMelt(BlockView world, BlockPos pos, int maxNeighbors) {

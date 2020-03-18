@@ -44,7 +44,7 @@ public class AdvancementRewards {
 
     public void apply(ServerPlayerEntity serverPlayerEntity) {
         serverPlayerEntity.addExperience(this.experience);
-        LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld()).put(LootContextParameters.THIS_ENTITY, serverPlayerEntity).put(LootContextParameters.POSITION, serverPlayerEntity.getSenseCenterPos()).setRandom(serverPlayerEntity.getRandom()).build(LootContextTypes.ADVANCEMENT_REWARD);
+        LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld()).put(LootContextParameters.THIS_ENTITY, serverPlayerEntity).put(LootContextParameters.POSITION, serverPlayerEntity.getBlockPos()).setRandom(serverPlayerEntity.getRandom()).build(LootContextTypes.ADVANCEMENT_REWARD);
         boolean bl = false;
         for (Identifier identifier : this.loot) {
             for (ItemStack itemStack : serverPlayerEntity.server.getLootManager().getTable(identifier).getDrops(lootContext)) {

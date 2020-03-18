@@ -27,12 +27,12 @@ extends Task<MobEntityWithAi> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-        return !serverWorld.isSkyVisible(mobEntityWithAi.getSenseCenterPos());
+        return !serverWorld.isSkyVisible(mobEntityWithAi.getBlockPos());
     }
 
     @Override
     protected void run(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-        BlockPos blockPos2 = mobEntityWithAi.getSenseCenterPos();
+        BlockPos blockPos2 = mobEntityWithAi.getBlockPos();
         List list = BlockPos.stream(blockPos2.add(-1, -1, -1), blockPos2.add(1, 1, 1)).map(BlockPos::toImmutable).collect(Collectors.toList());
         Collections.shuffle(list);
         Optional<BlockPos> optional = list.stream().filter(blockPos -> !serverWorld.isSkyVisible((BlockPos)blockPos)).filter(blockPos -> serverWorld.isTopSolid((BlockPos)blockPos, mobEntityWithAi)).filter(blockPos -> serverWorld.doesNotCollide(mobEntityWithAi)).findFirst();

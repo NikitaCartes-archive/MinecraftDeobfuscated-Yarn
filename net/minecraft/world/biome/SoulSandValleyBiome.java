@@ -8,6 +8,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.BiomeAdditionsSound;
+import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
@@ -29,7 +31,7 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 public class SoulSandValleyBiome
 extends Biome {
     protected SoulSandValleyBiome() {
-        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.SOUL_SAND_VALLEY, SurfaceBuilder.SOUL_SAND_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.NETHER).depth(0.1f).scale(0.2f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(1787717).particleConfig(new BiomeParticleConfig(ParticleTypes.ASH, 0.00625f, random -> 0.0, random -> 0.0, random -> 0.0)).loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP).moodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD).additionsSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.5f, 1.0f))));
+        super(new Biome.Settings().configureSurfaceBuilder(SurfaceBuilder.SOUL_SAND_VALLEY, SurfaceBuilder.SOUL_SAND_CONFIG).precipitation(Biome.Precipitation.NONE).category(Biome.Category.NETHER).depth(0.1f).scale(0.2f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(1787717).particleConfig(new BiomeParticleConfig(ParticleTypes.ASH, 0.00625f, random -> 0.0, random -> 0.0, random -> 0.0)).loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP).moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD, 6000, 8, 2.0)).additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS, 0.0111)).build()).parent(null).noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.5f, 1.0f))));
         this.addStructureFeature(Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT));
         this.addStructureFeature(Feature.NETHER_FOSSIL.configure(FeatureConfig.DEFAULT));
         this.addCarver(GenerationStep.Carver.AIR, SoulSandValleyBiome.configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2f)));

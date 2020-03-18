@@ -9,10 +9,10 @@ import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.LlamaEntity;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -25,9 +25,9 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class LlamaSpitEntity
-extends Projectile {
+extends ProjectileEntity {
     public LlamaSpitEntity(EntityType<? extends LlamaSpitEntity> entityType, World world) {
-        super((EntityType<? extends Projectile>)entityType, world);
+        super((EntityType<? extends ProjectileEntity>)entityType, world);
     }
 
     public LlamaSpitEntity(World world, LlamaEntity owner) {

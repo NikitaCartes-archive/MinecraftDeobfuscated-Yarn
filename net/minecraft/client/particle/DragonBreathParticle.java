@@ -17,8 +17,8 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class DragonBreathParticle
 extends SpriteBillboardParticle {
-    private boolean field_3792;
-    private final SpriteProvider field_17793;
+    private boolean reachedGround;
+    private final SpriteProvider spriteProvider;
 
     private DragonBreathParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z);
@@ -30,9 +30,9 @@ extends SpriteBillboardParticle {
         this.colorBlue = MathHelper.nextFloat(this.random, 0.8235294f, 0.9764706f);
         this.scale *= 0.75f;
         this.maxAge = (int)(20.0 / ((double)this.random.nextFloat() * 0.8 + 0.2));
-        this.field_3792 = false;
+        this.reachedGround = false;
         this.collidesWithWorld = false;
-        this.field_17793 = spriteProvider;
+        this.spriteProvider = spriteProvider;
         this.setSpriteForAge(spriteProvider);
     }
 
@@ -45,12 +45,12 @@ extends SpriteBillboardParticle {
             this.markDead();
             return;
         }
-        this.setSpriteForAge(this.field_17793);
+        this.setSpriteForAge(this.spriteProvider);
         if (this.onGround) {
             this.velocityY = 0.0;
-            this.field_3792 = true;
+            this.reachedGround = true;
         }
-        if (this.field_3792) {
+        if (this.reachedGround) {
             this.velocityY += 0.002;
         }
         this.move(this.velocityX, this.velocityY, this.velocityZ);
@@ -60,7 +60,7 @@ extends SpriteBillboardParticle {
         }
         this.velocityX *= (double)0.96f;
         this.velocityZ *= (double)0.96f;
-        if (this.field_3792) {
+        if (this.reachedGround) {
             this.velocityY *= (double)0.96f;
         }
     }
@@ -78,15 +78,15 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17794;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_17794 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new DragonBreathParticle(world, d, e, f, g, h, i, this.field_17794);
+            return new DragonBreathParticle(world, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

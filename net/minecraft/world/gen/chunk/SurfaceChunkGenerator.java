@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,6 +25,7 @@ import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -34,8 +36,10 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig>
 extends ChunkGenerator<T> {
@@ -142,35 +146,52 @@ extends ChunkGenerator<T> {
     }
 
     @Override
-    public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
-        int i = Math.floorDiv(x, this.horizontalNoiseResolution);
-        int j = Math.floorDiv(z, this.horizontalNoiseResolution);
-        int k = Math.floorMod(x, this.horizontalNoiseResolution);
-        int l = Math.floorMod(z, this.horizontalNoiseResolution);
-        double d = (double)k / (double)this.horizontalNoiseResolution;
-        double e = (double)l / (double)this.horizontalNoiseResolution;
-        double[][] ds = new double[][]{this.sampleNoiseColumn(i, j), this.sampleNoiseColumn(i, j + 1), this.sampleNoiseColumn(i + 1, j), this.sampleNoiseColumn(i + 1, j + 1)};
-        int m = this.getSeaLevel();
-        for (int n = this.noiseSizeY - 1; n >= 0; --n) {
-            double f = ds[0][n];
-            double g = ds[1][n];
-            double h = ds[2][n];
-            double o = ds[3][n];
-            double p = ds[0][n + 1];
-            double q = ds[1][n + 1];
-            double r = ds[2][n + 1];
-            double s = ds[3][n + 1];
-            for (int t = this.verticalNoiseResolution - 1; t >= 0; --t) {
-                double u = (double)t / (double)this.verticalNoiseResolution;
-                double v = MathHelper.lerp3(u, d, e, f, p, h, r, g, q, o, s);
-                int w = n * this.verticalNoiseResolution + t;
-                if (!(v > 0.0) && w >= m) continue;
-                BlockState blockState = v > 0.0 ? this.defaultBlock : this.defaultFluid;
-                if (!heightmapType.getBlockPredicate().test(blockState)) continue;
-                return w + 1;
+    public int getHeight(int x, int z, Heightmap.Type heightmapType) {
+        return this.method_26263(x, z, null, heightmapType.getBlockPredicate());
+    }
+
+    @Override
+    public BlockView getColumnSample(int x, int z) {
+        BlockState[] blockStates = new BlockState[this.noiseSizeY * this.verticalNoiseResolution];
+        this.method_26263(x, z, blockStates, null);
+        return new VerticalBlockSample(blockStates);
+    }
+
+    private int method_26263(int i, int j, @Nullable BlockState[] blockStates, @Nullable Predicate<BlockState> predicate) {
+        int k = Math.floorDiv(i, this.horizontalNoiseResolution);
+        int l = Math.floorDiv(j, this.horizontalNoiseResolution);
+        int m = Math.floorMod(i, this.horizontalNoiseResolution);
+        int n = Math.floorMod(j, this.horizontalNoiseResolution);
+        double d = (double)m / (double)this.horizontalNoiseResolution;
+        double e = (double)n / (double)this.horizontalNoiseResolution;
+        double[][] ds = new double[][]{this.sampleNoiseColumn(k, l), this.sampleNoiseColumn(k, l + 1), this.sampleNoiseColumn(k + 1, l), this.sampleNoiseColumn(k + 1, l + 1)};
+        for (int o = this.noiseSizeY - 1; o >= 0; --o) {
+            double f = ds[0][o];
+            double g = ds[1][o];
+            double h = ds[2][o];
+            double p = ds[3][o];
+            double q = ds[0][o + 1];
+            double r = ds[1][o + 1];
+            double s = ds[2][o + 1];
+            double t = ds[3][o + 1];
+            for (int u = this.verticalNoiseResolution - 1; u >= 0; --u) {
+                double v = (double)u / (double)this.verticalNoiseResolution;
+                double w = MathHelper.lerp3(v, d, e, f, q, h, s, g, r, p, t);
+                int x = o * this.verticalNoiseResolution + u;
+                BlockState blockState = this.method_26262(w, x);
+                if (blockStates != null) {
+                    blockStates[x] = blockState;
+                }
+                if (predicate == null || !predicate.test(blockState)) continue;
+                return x + 1;
             }
         }
         return 0;
+    }
+
+    protected BlockState method_26262(double d, int i) {
+        BlockState blockState = d > 0.0 ? this.defaultBlock : (i < this.getSeaLevel() ? this.defaultFluid : AIR);
+        return blockState;
     }
 
     protected abstract void sampleNoiseColumn(double[] var1, int var2, int var3);
@@ -180,7 +201,7 @@ extends ChunkGenerator<T> {
     }
 
     @Override
-    public void buildSurface(ChunkRegion chunkRegion, Chunk chunk) {
+    public void buildSurface(ChunkRegion region, Chunk chunk) {
         ChunkPos chunkPos = chunk.getPos();
         int i = chunkPos.x;
         int j = chunkPos.z;
@@ -197,7 +218,7 @@ extends ChunkGenerator<T> {
                 int p = l + n;
                 int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
                 double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625) * 15.0;
-                chunkRegion.getBiome(mutable.set(k + m, q, l + n)).buildSurface(chunkRandom, chunk, o, p, q, e, ((ChunkGeneratorConfig)this.getConfig()).getDefaultBlock(), ((ChunkGeneratorConfig)this.getConfig()).getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
+                region.getBiome(mutable.set(k + m, q, l + n)).buildSurface(chunkRandom, chunk, o, p, q, e, ((ChunkGeneratorConfig)this.getConfig()).getDefaultBlock(), ((ChunkGeneratorConfig)this.getConfig()).getDefaultFluid(), this.getSeaLevel(), this.world.getSeed());
             }
         }
         this.buildBedrock(chunk, chunkRandom);
@@ -228,20 +249,19 @@ extends ChunkGenerator<T> {
 
     @Override
     public void populateNoise(IWorld world, Chunk chunk) {
-        int i = this.getSeaLevel();
         ObjectArrayList objectList = new ObjectArrayList(10);
         ObjectArrayList objectList2 = new ObjectArrayList(32);
         ChunkPos chunkPos = chunk.getPos();
-        int j = chunkPos.x;
-        int k = chunkPos.z;
+        int i = chunkPos.x;
+        int j = chunkPos.z;
+        int k = i << 4;
         int l = j << 4;
-        int m = k << 4;
         for (StructureFeature<?> structureFeature : Feature.JIGSAW_STRUCTURES) {
             String string = structureFeature.getName();
             LongIterator longIterator = chunk.getStructureReferences(string).iterator();
             while (longIterator.hasNext()) {
-                long n = longIterator.nextLong();
-                ChunkPos chunkPos2 = new ChunkPos(n);
+                long m = longIterator.nextLong();
+                ChunkPos chunkPos2 = new ChunkPos(m);
                 Chunk chunk2 = world.getChunk(chunkPos2.x, chunkPos2.z);
                 StructureStart structureStart = chunk2.getStructureStart(string);
                 if (structureStart == null || !structureStart.hasChildren()) continue;
@@ -254,9 +274,9 @@ extends ChunkGenerator<T> {
                             objectList.add(poolStructurePiece);
                         }
                         for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
-                            int o = jigsawJunction.getSourceX();
-                            int p = jigsawJunction.getSourceZ();
-                            if (o <= l - 12 || p <= m - 12 || o >= l + 15 + 12 || p >= m + 15 + 12) continue;
+                            int n = jigsawJunction.getSourceX();
+                            int o = jigsawJunction.getSourceZ();
+                            if (n <= k - 12 || o <= l - 12 || n >= k + 15 + 12 || o >= l + 15 + 12) continue;
                             objectList2.add(jigsawJunction);
                         }
                         continue;
@@ -266,10 +286,10 @@ extends ChunkGenerator<T> {
             }
         }
         double[][][] ds = new double[2][this.noiseSizeZ + 1][this.noiseSizeY + 1];
-        for (int q = 0; q < this.noiseSizeZ + 1; ++q) {
-            ds[0][q] = new double[this.noiseSizeY + 1];
-            this.sampleNoiseColumn(ds[0][q], j * this.noiseSizeX, k * this.noiseSizeZ + q);
-            ds[1][q] = new double[this.noiseSizeY + 1];
+        for (int p = 0; p < this.noiseSizeZ + 1; ++p) {
+            ds[0][p] = new double[this.noiseSizeY + 1];
+            this.sampleNoiseColumn(ds[0][p], i * this.noiseSizeX, j * this.noiseSizeZ + p);
+            ds[1][p] = new double[this.noiseSizeY + 1];
         }
         ProtoChunk protoChunk = (ProtoChunk)chunk;
         Heightmap heightmap = protoChunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
@@ -277,78 +297,78 @@ extends ChunkGenerator<T> {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         Iterator objectListIterator = objectList.iterator();
         Iterator objectListIterator2 = objectList2.iterator();
-        for (int r = 0; r < this.noiseSizeX; ++r) {
-            int s;
-            for (s = 0; s < this.noiseSizeZ + 1; ++s) {
-                this.sampleNoiseColumn(ds[1][s], j * this.noiseSizeX + r + 1, k * this.noiseSizeZ + s);
+        for (int q = 0; q < this.noiseSizeX; ++q) {
+            int r;
+            for (r = 0; r < this.noiseSizeZ + 1; ++r) {
+                this.sampleNoiseColumn(ds[1][r], i * this.noiseSizeX + q + 1, j * this.noiseSizeZ + r);
             }
-            for (s = 0; s < this.noiseSizeZ; ++s) {
+            for (r = 0; r < this.noiseSizeZ; ++r) {
                 ChunkSection chunkSection = protoChunk.getSection(15);
                 chunkSection.lock();
-                for (int t = this.noiseSizeY - 1; t >= 0; --t) {
-                    double d = ds[0][s][t];
-                    double e = ds[0][s + 1][t];
-                    double f = ds[1][s][t];
-                    double g = ds[1][s + 1][t];
-                    double h = ds[0][s][t + 1];
-                    double u = ds[0][s + 1][t + 1];
-                    double v = ds[1][s][t + 1];
-                    double w = ds[1][s + 1][t + 1];
-                    for (int x = this.verticalNoiseResolution - 1; x >= 0; --x) {
-                        int y = t * this.verticalNoiseResolution + x;
-                        int z = y & 0xF;
-                        int aa = y >> 4;
-                        if (chunkSection.getYOffset() >> 4 != aa) {
+                for (int s = this.noiseSizeY - 1; s >= 0; --s) {
+                    double d = ds[0][r][s];
+                    double e = ds[0][r + 1][s];
+                    double f = ds[1][r][s];
+                    double g = ds[1][r + 1][s];
+                    double h = ds[0][r][s + 1];
+                    double t = ds[0][r + 1][s + 1];
+                    double u = ds[1][r][s + 1];
+                    double v = ds[1][r + 1][s + 1];
+                    for (int w = this.verticalNoiseResolution - 1; w >= 0; --w) {
+                        int x = s * this.verticalNoiseResolution + w;
+                        int y = x & 0xF;
+                        int z = x >> 4;
+                        if (chunkSection.getYOffset() >> 4 != z) {
                             chunkSection.unlock();
-                            chunkSection = protoChunk.getSection(aa);
+                            chunkSection = protoChunk.getSection(z);
                             chunkSection.lock();
                         }
-                        double ab = (double)x / (double)this.verticalNoiseResolution;
-                        double ac = MathHelper.lerp(ab, d, h);
-                        double ad = MathHelper.lerp(ab, f, v);
-                        double ae = MathHelper.lerp(ab, e, u);
-                        double af = MathHelper.lerp(ab, g, w);
-                        for (int ag = 0; ag < this.horizontalNoiseResolution; ++ag) {
-                            int ah = l + r * this.horizontalNoiseResolution + ag;
-                            int ai = ah & 0xF;
-                            double aj = (double)ag / (double)this.horizontalNoiseResolution;
-                            double ak = MathHelper.lerp(aj, ac, ad);
-                            double al = MathHelper.lerp(aj, ae, af);
-                            for (int am = 0; am < this.horizontalNoiseResolution; ++am) {
-                                int at;
+                        double aa = (double)w / (double)this.verticalNoiseResolution;
+                        double ab = MathHelper.lerp(aa, d, h);
+                        double ac = MathHelper.lerp(aa, f, u);
+                        double ad = MathHelper.lerp(aa, e, t);
+                        double ae = MathHelper.lerp(aa, g, v);
+                        for (int af = 0; af < this.horizontalNoiseResolution; ++af) {
+                            int ag = k + q * this.horizontalNoiseResolution + af;
+                            int ah = ag & 0xF;
+                            double ai = (double)af / (double)this.horizontalNoiseResolution;
+                            double aj = MathHelper.lerp(ai, ab, ac);
+                            double ak = MathHelper.lerp(ai, ad, ae);
+                            for (int al = 0; al < this.horizontalNoiseResolution; ++al) {
                                 int as;
-                                int an = m + s * this.horizontalNoiseResolution + am;
-                                int ao = an & 0xF;
-                                double ap = (double)am / (double)this.horizontalNoiseResolution;
-                                double aq = MathHelper.lerp(ap, ak, al);
-                                double ar = MathHelper.clamp(aq / 200.0, -1.0, 1.0);
-                                ar = ar / 2.0 - ar * ar * ar / 24.0;
+                                int ar;
+                                int am = l + r * this.horizontalNoiseResolution + al;
+                                int an = am & 0xF;
+                                double ao = (double)al / (double)this.horizontalNoiseResolution;
+                                double ap = MathHelper.lerp(ao, aj, ak);
+                                double aq = MathHelper.clamp(ap / 200.0, -1.0, 1.0);
+                                aq = aq / 2.0 - aq * aq * aq / 24.0;
                                 while (objectListIterator.hasNext()) {
                                     StructurePiece structurePiece2 = (StructurePiece)objectListIterator.next();
                                     BlockBox blockBox = structurePiece2.getBoundingBox();
-                                    as = Math.max(0, Math.max(blockBox.minX - ah, ah - blockBox.maxX));
-                                    at = y - (blockBox.minY + (structurePiece2 instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece2).getGroundLevelDelta() : 0));
-                                    int au = Math.max(0, Math.max(blockBox.minZ - an, an - blockBox.maxZ));
-                                    ar += SurfaceChunkGenerator.method_16572(as, at, au) * 0.8;
+                                    ar = Math.max(0, Math.max(blockBox.minX - ag, ag - blockBox.maxX));
+                                    as = x - (blockBox.minY + (structurePiece2 instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece2).getGroundLevelDelta() : 0));
+                                    int at = Math.max(0, Math.max(blockBox.minZ - am, am - blockBox.maxZ));
+                                    aq += SurfaceChunkGenerator.method_16572(ar, as, at) * 0.8;
                                 }
                                 objectListIterator.back(objectList.size());
                                 while (objectListIterator2.hasNext()) {
                                     JigsawJunction jigsawJunction2 = (JigsawJunction)objectListIterator2.next();
-                                    int av = ah - jigsawJunction2.getSourceX();
-                                    as = y - jigsawJunction2.getSourceGroundY();
-                                    at = an - jigsawJunction2.getSourceZ();
-                                    ar += SurfaceChunkGenerator.method_16572(av, as, at) * 0.4;
+                                    int au = ag - jigsawJunction2.getSourceX();
+                                    ar = x - jigsawJunction2.getSourceGroundY();
+                                    as = am - jigsawJunction2.getSourceZ();
+                                    aq += SurfaceChunkGenerator.method_16572(au, ar, as) * 0.4;
                                 }
                                 objectListIterator2.back(objectList2.size());
-                                BlockState blockState = ar > 0.0 ? this.defaultBlock : (y < i ? this.defaultFluid : AIR);
+                                BlockState blockState = this.method_26262(aq, x);
                                 if (blockState == AIR) continue;
                                 if (blockState.getLuminance() != 0) {
-                                    mutable.set(ah, y, an);
+                                    mutable.set(ag, x, am);
                                     protoChunk.addLightSource(mutable);
                                 }
-                                chunkSection.setBlockState(ai, z, ao, blockState, false);
-                                heightmap.trackUpdate(ai, y, ao, blockState);
-                                heightmap2.trackUpdate(ai, y, ao, blockState);
+                                chunkSection.setBlockState(ah, y, an, blockState, false);
+                                heightmap.trackUpdate(ah, x, an, blockState);
+                                heightmap2.trackUpdate(ah, x, an, blockState);
                             }
                         }
                     }

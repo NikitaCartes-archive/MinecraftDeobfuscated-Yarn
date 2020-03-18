@@ -48,7 +48,7 @@ extends ToolItem {
             return 15.0f;
         }
         Material material = state.getMaterial();
-        if (material == Material.PLANT || material == Material.REPLACEABLE_PLANT || material == Material.UNUSED_PLANT || state.matches(BlockTags.LEAVES) || material == Material.PUMPKIN) {
+        if (material == Material.PLANT || material == Material.REPLACEABLE_PLANT || material == Material.UNUSED_PLANT || state.isIn(BlockTags.LEAVES) || material == Material.PUMPKIN) {
             return 1.5f;
         }
         return 1.0f;

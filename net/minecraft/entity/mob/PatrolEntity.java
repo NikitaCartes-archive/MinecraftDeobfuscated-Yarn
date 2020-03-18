@@ -128,7 +128,7 @@ extends HostileEntity {
     }
 
     public void setRandomPatrolTarget() {
-        this.patrolTarget = this.getSenseCenterPos().add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
+        this.patrolTarget = this.getBlockPos().add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
         this.patrolling = true;
     }
 
@@ -204,7 +204,7 @@ extends HostileEntity {
 
         private boolean wander() {
             Random random = ((LivingEntity)this.actor).getRandom();
-            BlockPos blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ((Entity)this.actor).getSenseCenterPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+            BlockPos blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ((Entity)this.actor).getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
             return ((MobEntity)this.actor).getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.leaderSpeed);
         }
     }

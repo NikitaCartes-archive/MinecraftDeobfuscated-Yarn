@@ -7,12 +7,12 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.util.collection.ReusableStream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -163,7 +163,7 @@ public abstract class Particle {
         double e = dy;
         double f = dz;
         if (this.collidesWithWorld && (dx != 0.0 || dy != 0.0 || dz != 0.0)) {
-            Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, EntityContext.absent(), new ReusableStream<VoxelShape>(Stream.empty()));
+            Vec3d vec3d = Entity.adjustMovementForCollisions(null, new Vec3d(dx, dy, dz), this.getBoundingBox(), this.world, ShapeContext.absent(), new ReusableStream<VoxelShape>(Stream.empty()));
             dx = vec3d.x;
             dy = vec3d.y;
             dz = vec3d.z;

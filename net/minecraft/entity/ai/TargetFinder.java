@@ -79,7 +79,7 @@ public class TargetFinder {
         boolean bl = mob.hasPositionTarget() ? mob.getPositionTarget().isWithinDistance(mob.getPos(), (double)(mob.getPositionTargetRange() + (float)maxHorizontalDistance) + 1.0) : false;
         boolean bl2 = false;
         double d = Double.NEGATIVE_INFINITY;
-        BlockPos blockPos2 = mob.getSenseCenterPos();
+        BlockPos blockPos2 = mob.getBlockPos();
         for (int i = 0; i < 10; ++i) {
             double e;
             PathNodeType pathNodeType;

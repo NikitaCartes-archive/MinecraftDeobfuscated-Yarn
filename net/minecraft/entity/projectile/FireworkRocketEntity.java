@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.entity;
+package net.minecraft.entity.projectile;
 
 import java.util.List;
 import java.util.OptionalInt;
@@ -14,12 +14,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -39,50 +39,50 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 @EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
-public class FireworkEntity
-extends Projectile
+public class FireworkRocketEntity
+extends ProjectileEntity
 implements FlyingItemEntity {
-    private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private static final TrackedData<OptionalInt> SHOOTER_ENTITY_ID = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.field_17910);
-    private static final TrackedData<Boolean> SHOT_AT_ANGLE = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+    private static final TrackedData<OptionalInt> SHOOTER_ENTITY_ID = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.field_17910);
+    private static final TrackedData<Boolean> SHOT_AT_ANGLE = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int life;
     private int lifeTime;
     private LivingEntity shooter;
 
-    public FireworkEntity(EntityType<? extends FireworkEntity> entityType, World world) {
-        super((EntityType<? extends Projectile>)entityType, world);
+    public FireworkRocketEntity(EntityType<? extends FireworkRocketEntity> entityType, World world) {
+        super((EntityType<? extends ProjectileEntity>)entityType, world);
     }
 
-    public FireworkEntity(World world, double x, double y, double z, ItemStack item) {
-        super((EntityType<? extends Projectile>)EntityType.FIREWORK_ROCKET, world);
+    public FireworkRocketEntity(World world, double x, double y, double z, ItemStack stack) {
+        super((EntityType<? extends ProjectileEntity>)EntityType.FIREWORK_ROCKET, world);
         this.life = 0;
         this.updatePosition(x, y, z);
         int i = 1;
-        if (!item.isEmpty() && item.hasTag()) {
-            this.dataTracker.set(ITEM, item.copy());
-            i += item.getOrCreateSubTag("Fireworks").getByte("Flight");
+        if (!stack.isEmpty() && stack.hasTag()) {
+            this.dataTracker.set(ITEM, stack.copy());
+            i += stack.getOrCreateSubTag("Fireworks").getByte("Flight");
         }
         this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
         this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
     }
 
-    public FireworkEntity(World world, Entity entity, double d, double e, double f, ItemStack itemStack) {
-        this(world, d, e, f, itemStack);
+    public FireworkRocketEntity(World world, Entity entity, double x, double y, double z, ItemStack stack) {
+        this(world, x, y, z, stack);
         this.setOwner(entity);
     }
 
-    public FireworkEntity(World world, ItemStack item, LivingEntity shooter) {
-        this(world, shooter, shooter.getX(), shooter.getY(), shooter.getZ(), item);
+    public FireworkRocketEntity(World world, ItemStack stack, LivingEntity shooter) {
+        this(world, shooter, shooter.getX(), shooter.getY(), shooter.getZ(), stack);
         this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getEntityId()));
         this.shooter = shooter;
     }
 
-    public FireworkEntity(World world, ItemStack item, double x, double y, double z, boolean shotAtAngle) {
-        this(world, x, y, z, item);
+    public FireworkRocketEntity(World world, ItemStack stack, double x, double y, double z, boolean shotAtAngle) {
+        this(world, x, y, z, stack);
         this.dataTracker.set(SHOT_AT_ANGLE, shotAtAngle);
     }
 
-    public FireworkEntity(World world, ItemStack itemStack, Entity entity, double d, double e, double f, boolean bl) {
+    public FireworkRocketEntity(World world, ItemStack itemStack, Entity entity, double d, double e, double f, boolean bl) {
         this(world, itemStack, d, e, f, bl);
         this.setOwner(entity);
     }
@@ -142,7 +142,7 @@ implements FlyingItemEntity {
             this.onCollision(hitResult);
             this.velocityDirty = true;
         }
-        float f = MathHelper.sqrt(FireworkEntity.squaredHorizontalLength(vec3d));
+        float f = MathHelper.sqrt(FireworkRocketEntity.squaredHorizontalLength(vec3d));
         this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
         this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
         while (this.pitch - this.prevPitch < -180.0f) {
@@ -188,14 +188,12 @@ implements FlyingItemEntity {
 
     @Override
     protected void method_24920(BlockHitResult blockHitResult) {
-        super.method_24920(blockHitResult);
-        if (this.collided) {
-            BlockPos blockPos = new BlockPos(blockHitResult.getBlockPos());
-            this.world.getBlockState(blockPos).onEntityCollision(this.world, blockPos, this);
-            if (this.hasExplosionEffects()) {
-                this.explodeAndRemove();
-            }
+        BlockPos blockPos = new BlockPos(blockHitResult.getBlockPos());
+        this.world.getBlockState(blockPos).onEntityCollision(this.world, blockPos, this);
+        if (this.hasExplosionEffects()) {
+            this.explodeAndRemove();
         }
+        super.method_24920(blockHitResult);
     }
 
     private boolean hasExplosionEffects() {

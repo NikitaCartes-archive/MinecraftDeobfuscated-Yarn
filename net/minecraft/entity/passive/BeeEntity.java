@@ -112,6 +112,8 @@ implements Flutterer {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.lookControl = new BeeLookControl(this);
+        this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, -1.0f);
+        this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0f);
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
         this.setPathfindingPenalty(PathNodeType.COCOA, -1.0f);
         this.setPathfindingPenalty(PathNodeType.FENCE, -1.0f);
@@ -169,9 +171,7 @@ implements Flutterer {
         tag.putInt("CropsGrownSincePollination", this.cropsGrownSincePollination);
         tag.putInt("Anger", this.getAnger());
         if (this.targetPlayer != null) {
-            tag.putString("HurtBy", this.targetPlayer.toString());
-        } else {
-            tag.putString("HurtBy", "");
+            tag.putUuidNew("HurtBy", this.targetPlayer);
         }
     }
 
@@ -192,9 +192,8 @@ implements Flutterer {
         this.ticksSincePollination = tag.getInt("TicksSincePollination");
         this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
         this.cropsGrownSincePollination = tag.getInt("CropsGrownSincePollination");
-        String string = tag.getString("HurtBy");
-        if (!string.isEmpty()) {
-            this.targetPlayer = UUID.fromString(string);
+        if (tag.containsUuidNew("HurtBy")) {
+            this.targetPlayer = tag.getUuidNew("HurtBy");
             PlayerEntity playerEntity = this.world.getPlayerByUuid(this.targetPlayer);
             this.setAttacker(playerEntity);
             if (playerEntity != null) {
@@ -247,7 +246,7 @@ implements Flutterer {
         Vec3d vec3d2;
         Vec3d vec3d = Vec3d.method_24955(pos);
         int i = 0;
-        BlockPos blockPos = this.getSenseCenterPos();
+        BlockPos blockPos = this.getBlockPos();
         int j = (int)vec3d.y - blockPos.getY();
         if (j > 2) {
             i = 4;
@@ -457,7 +456,7 @@ implements Flutterer {
     }
 
     private boolean isTooFar(BlockPos pos) {
-        return !this.isWithinDistance(pos, 48);
+        return !this.isWithinDistance(pos, 32);
     }
 
     private void setBeeFlag(int bit, boolean value) {
@@ -603,7 +602,7 @@ implements Flutterer {
     }
 
     private boolean isWithinDistance(BlockPos pos, int distance) {
-        return pos.isWithinDistance(this.getSenseCenterPos(), (double)distance);
+        return pos.isWithinDistance(this.getBlockPos(), (double)distance);
     }
 
     @Override
@@ -690,7 +689,7 @@ implements Flutterer {
             }
             for (int i = 1; i <= 2; ++i) {
                 int j;
-                BlockPos blockPos = BeeEntity.this.getSenseCenterPos().down(i);
+                BlockPos blockPos = BeeEntity.this.getBlockPos().down(i);
                 BlockState blockState = BeeEntity.this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
                 boolean bl = false;
@@ -752,7 +751,7 @@ implements Flutterer {
         }
 
         private List<BlockPos> getNearbyFreeHives() {
-            BlockPos blockPos3 = BeeEntity.this.getSenseCenterPos();
+            BlockPos blockPos3 = BeeEntity.this.getBlockPos();
             PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage();
             Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(pointOfInterestType -> pointOfInterestType == PointOfInterestType.BEEHIVE || pointOfInterestType == PointOfInterestType.BEE_NEST, blockPos3, 20, PointOfInterestStorage.OccupationStatus.ANY);
             return stream.map(PointOfInterest::getPos).filter(blockPos -> BeeEntity.this.doesHiveHaveSpace(blockPos)).sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos3))).collect(Collectors.toList());
@@ -770,13 +769,13 @@ implements Flutterer {
 
         PollinateGoal() {
             this.flowerPredicate = blockState -> {
-                if (blockState.matches(BlockTags.TALL_FLOWERS)) {
+                if (blockState.isIn(BlockTags.TALL_FLOWERS)) {
                     if (blockState.getBlock() == Blocks.SUNFLOWER) {
                         return blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;
                     }
                     return true;
                 }
-                return blockState.matches(BlockTags.SMALL_FLOWERS);
+                return blockState.isIn(BlockTags.SMALL_FLOWERS);
             };
             this.pollinationTicks = 0;
             this.lastPollinationTick = 0;
@@ -883,7 +882,7 @@ implements Flutterer {
             }
             if (bl) {
                 boolean bl3;
-                boolean bl4 = bl3 = BeeEntity.this.random.nextInt(100) == 0;
+                boolean bl4 = bl3 = BeeEntity.this.random.nextInt(25) == 0;
                 if (bl3) {
                     this.nextTarget = new Vec3d(vec3d.getX() + (double)this.getRandomOffset(), vec3d.getY(), vec3d.getZ() + (double)this.getRandomOffset());
                     BeeEntity.this.navigation.stop();
@@ -915,7 +914,7 @@ implements Flutterer {
         }
 
         private Optional<BlockPos> findFlower(Predicate<BlockState> predicate, double searchDistance) {
-            BlockPos blockPos = BeeEntity.this.getSenseCenterPos();
+            BlockPos blockPos = BeeEntity.this.getBlockPos();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             int i = 0;
             while ((double)i <= searchDistance) {
@@ -1025,6 +1024,7 @@ implements Flutterer {
         private List<BlockPos> possibleHives;
         @Nullable
         private Path path;
+        private int field_23133;
 
         MoveToHiveGoal() {
             this.ticks = BeeEntity.this.world.random.nextInt(10);
@@ -1035,7 +1035,7 @@ implements Flutterer {
 
         @Override
         public boolean canBeeStart() {
-            return BeeEntity.this.hivePos != null && !BeeEntity.this.hasPositionTarget() && BeeEntity.this.canEnterHive() && !this.isCloseEnough(BeeEntity.this.hivePos) && BeeEntity.this.world.getBlockState(BeeEntity.this.hivePos).matches(BlockTags.BEEHIVES);
+            return BeeEntity.this.hivePos != null && !BeeEntity.this.hasPositionTarget() && BeeEntity.this.canEnterHive() && !this.isCloseEnough(BeeEntity.this.hivePos) && BeeEntity.this.world.getBlockState(BeeEntity.this.hivePos).isIn(BlockTags.BEEHIVES);
         }
 
         @Override
@@ -1046,12 +1046,14 @@ implements Flutterer {
         @Override
         public void start() {
             this.ticks = 0;
+            this.field_23133 = 0;
             super.start();
         }
 
         @Override
         public void stop() {
             this.ticks = 0;
+            this.field_23133 = 0;
             BeeEntity.this.navigation.stop();
             BeeEntity.this.navigation.resetRangeMultiplier();
         }
@@ -1074,7 +1076,11 @@ implements Flutterer {
                 if (!bl) {
                     this.makeChosenHivePossibleHive();
                 } else if (this.path != null && BeeEntity.this.navigation.getCurrentPath().equalsPath(this.path)) {
-                    this.reset();
+                    ++this.field_23133;
+                    if (this.field_23133 > 60) {
+                        this.reset();
+                        this.field_23133 = 0;
+                    }
                 } else {
                     this.path = BeeEntity.this.navigation.getCurrentPath();
                 }
@@ -1156,7 +1162,7 @@ implements Flutterer {
         @Nullable
         private Vec3d getRandomLocation() {
             Vec3d vec3d2;
-            if (BeeEntity.this.isHiveValid() && !BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 40)) {
+            if (BeeEntity.this.isHiveValid() && !BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 22)) {
                 Vec3d vec3d = Vec3d.method_24953(BeeEntity.this.hivePos);
                 vec3d2 = vec3d.subtract(BeeEntity.this.getPos()).normalize();
             } else {

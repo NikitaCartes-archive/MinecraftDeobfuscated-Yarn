@@ -212,7 +212,9 @@ extends HostileEntity {
                     }
                     if (this.field_7218 > 1) {
                         float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5f;
-                        this.blaze.world.playLevelEvent(null, 1018, this.blaze.getSenseCenterPos(), 0);
+                        if (!this.blaze.isSilent()) {
+                            this.blaze.world.playLevelEvent(null, 1018, this.blaze.getBlockPos(), 0);
+                        }
                         for (int i = 0; i < 1; ++i) {
                             SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h);
                             smallFireballEntity.updatePosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());

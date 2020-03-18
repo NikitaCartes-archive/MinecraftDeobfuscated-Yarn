@@ -22,7 +22,7 @@ extends WanderAroundGoal {
     @Override
     public boolean canStart() {
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
-        BlockPos blockPos = this.mob.getSenseCenterPos();
+        BlockPos blockPos = this.mob.getBlockPos();
         if (serverWorld.isNearOccupiedPointOfInterest(blockPos)) {
             return false;
         }
@@ -33,7 +33,7 @@ extends WanderAroundGoal {
     @Nullable
     protected Vec3d getWanderTarget() {
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
-        BlockPos blockPos = this.mob.getSenseCenterPos();
+        BlockPos blockPos = this.mob.getBlockPos();
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
         ChunkSectionPos chunkSectionPos2 = LookTargetUtil.getPosClosestToOccupiedPointOfInterest(serverWorld, chunkSectionPos, 2);
         if (chunkSectionPos2 != chunkSectionPos) {

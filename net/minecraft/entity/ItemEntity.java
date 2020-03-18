@@ -20,7 +20,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
@@ -116,7 +115,7 @@ extends Entity {
         boolean bl = MathHelper.floor(this.prevX) != MathHelper.floor(this.getX()) || MathHelper.floor(this.prevY) != MathHelper.floor(this.getY()) || MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());
         int n = i = bl ? 2 : 40;
         if (this.age % i == 0) {
-            if (this.world.getFluidState(this.getSenseCenterPos()).matches(FluidTags.LAVA) && !this.isFireImmune()) {
+            if (this.world.getFluidState(this.getBlockPos()).matches(FluidTags.LAVA) && !this.isFireImmune()) {
                 this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
             }
             if (!this.world.isClient && this.canMerge()) {
@@ -241,10 +240,10 @@ extends Entity {
         tag.putShort("Age", (short)this.age);
         tag.putShort("PickupDelay", (short)this.pickupDelay);
         if (this.getThrower() != null) {
-            tag.put("Thrower", NbtHelper.fromUuidOld(this.getThrower()));
+            tag.putUuidNew("Thrower", this.getThrower());
         }
         if (this.getOwner() != null) {
-            tag.put("Owner", NbtHelper.fromUuidOld(this.getOwner()));
+            tag.putUuidNew("Owner", this.getOwner());
         }
         if (!this.getStack().isEmpty()) {
             tag.put("Item", this.getStack().toTag(new CompoundTag()));
@@ -258,11 +257,11 @@ extends Entity {
         if (tag.contains("PickupDelay")) {
             this.pickupDelay = tag.getShort("PickupDelay");
         }
-        if (tag.contains("Owner", 10)) {
-            this.owner = NbtHelper.toUuidOld(tag.getCompound("Owner"));
+        if (tag.containsUuidNew("Owner")) {
+            this.owner = tag.getUuidNew("Owner");
         }
-        if (tag.contains("Thrower", 10)) {
-            this.thrower = NbtHelper.toUuidOld(tag.getCompound("Thrower"));
+        if (tag.containsUuidNew("Thrower")) {
+            this.thrower = tag.getUuidNew("Thrower");
         }
         CompoundTag compoundTag = tag.getCompound("Item");
         this.setStack(ItemStack.fromTag(compoundTag));

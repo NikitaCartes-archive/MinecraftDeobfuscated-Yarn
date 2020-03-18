@@ -17,6 +17,7 @@ import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
 
 public class Path {
@@ -95,9 +96,9 @@ public class Path {
         return this.getNodePosition(entity, this.currentNodeIndex);
     }
 
-    public Vec3d getCurrentPosition() {
+    public Vec3i getCurrentPosition() {
         PathNode pathNode = this.nodes.get(this.currentNodeIndex);
-        return new Vec3d(pathNode.x, pathNode.y, pathNode.z);
+        return new Vec3i(pathNode.x, pathNode.y, pathNode.z);
     }
 
     public boolean equalsPath(@Nullable Path path) {

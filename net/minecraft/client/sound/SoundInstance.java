@@ -45,6 +45,10 @@ public interface SoundInstance {
         return false;
     }
 
+    default public boolean canPlay() {
+        return true;
+    }
+
     @Environment(value=EnvType.CLIENT)
     public static enum AttenuationType {
         NONE,

@@ -6,14 +6,16 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FireBlock;
 import net.minecraft.block.NetherPortalBlock;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.block.SoulFireBlock;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,7 +40,7 @@ extends Block {
     protected static final VoxelShape field_22501 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
     protected static final VoxelShape field_22502 = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
 
-    public AbstractFireBlock(Block.Settings settings, float damage) {
+    public AbstractFireBlock(AbstractBlock.Settings settings, float damage) {
         super(settings);
         this.damage = damage;
     }
@@ -51,14 +53,14 @@ extends Block {
     public static BlockState getState(BlockView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.getBlock() == Blocks.SOUL_SOIL) {
+        if (SoulFireBlock.method_26158(blockState.getBlock())) {
             return Blocks.SOUL_FIRE.getDefaultState();
         }
         return ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return field_22498;
     }
 
@@ -142,7 +144,7 @@ extends Block {
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (oldState.getBlock() == state.getBlock()) {
             return;
         }

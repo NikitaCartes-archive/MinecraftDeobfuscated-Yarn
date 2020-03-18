@@ -3,7 +3,7 @@
  */
 package net.minecraft.block;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CraftingTableBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +23,7 @@ public class SmithingTableBlock
 extends CraftingTableBlock {
     private static final TranslatableText SCREEN_TITLE = new TranslatableText("container.upgrade", new Object[0]);
 
-    protected SmithingTableBlock(Block.Settings settings) {
+    protected SmithingTableBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

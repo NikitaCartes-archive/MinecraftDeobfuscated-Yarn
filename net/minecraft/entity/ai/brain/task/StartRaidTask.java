@@ -25,7 +25,7 @@ extends Task<LivingEntity> {
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
         Brain<?> brain = entity.getBrain();
-        Raid raid = world.getRaidAt(entity.getSenseCenterPos());
+        Raid raid = world.getRaidAt(entity.getBlockPos());
         if (raid != null) {
             if (!raid.hasSpawned() || raid.isPreRaid()) {
                 brain.setDefaultActivity(Activity.PRE_RAID);

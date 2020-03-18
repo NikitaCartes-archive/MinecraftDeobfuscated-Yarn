@@ -74,7 +74,7 @@ extends AbstractCriterion<Conditions> {
             JsonObject jsonObject = new JsonObject();
             jsonObject.add("entered", this.enteredPos.toJson());
             jsonObject.add("exited", this.exitedPos.toJson());
-            jsonObject.add("distance", this.distance.serialize());
+            jsonObject.add("distance", this.distance.toJson());
             return jsonObject;
         }
     }

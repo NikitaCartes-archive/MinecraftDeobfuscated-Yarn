@@ -24,8 +24,8 @@ public class BlockDustParticle
 extends SpriteBillboardParticle {
     private final BlockState blockState;
     private BlockPos blockPos;
-    private final float field_17884;
-    private final float field_17885;
+    private final float sampleU;
+    private final float sampleV;
 
     public BlockDustParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState blockState) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
@@ -36,8 +36,8 @@ extends SpriteBillboardParticle {
         this.colorGreen = 0.6f;
         this.colorBlue = 0.6f;
         this.scale /= 2.0f;
-        this.field_17884 = this.random.nextFloat() * 3.0f;
-        this.field_17885 = this.random.nextFloat() * 3.0f;
+        this.sampleU = this.random.nextFloat() * 3.0f;
+        this.sampleV = this.random.nextFloat() * 3.0f;
     }
 
     @Override
@@ -73,22 +73,22 @@ extends SpriteBillboardParticle {
 
     @Override
     protected float getMinU() {
-        return this.sprite.getFrameU((this.field_17884 + 1.0f) / 4.0f * 16.0f);
+        return this.sprite.getFrameU((this.sampleU + 1.0f) / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMaxU() {
-        return this.sprite.getFrameU(this.field_17884 / 4.0f * 16.0f);
+        return this.sprite.getFrameU(this.sampleU / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMinV() {
-        return this.sprite.getFrameV(this.field_17885 / 4.0f * 16.0f);
+        return this.sprite.getFrameV(this.sampleV / 4.0f * 16.0f);
     }
 
     @Override
     protected float getMaxV() {
-        return this.sprite.getFrameV((this.field_17885 + 1.0f) / 4.0f * 16.0f);
+        return this.sprite.getFrameV((this.sampleV + 1.0f) / 4.0f * 16.0f);
     }
 
     @Override

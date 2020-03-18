@@ -3,7 +3,7 @@
  */
 package net.minecraft.block;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 public class SlimeBlock
 extends TransparentBlock {
-    public SlimeBlock(Block.Settings settings) {
+    public SlimeBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 

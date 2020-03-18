@@ -32,7 +32,7 @@ extends Goal {
 
     @Override
     public void tick() {
-        LocalDifficulty localDifficulty = this.skeletonHorse.world.getLocalDifficulty(this.skeletonHorse.getSenseCenterPos());
+        LocalDifficulty localDifficulty = this.skeletonHorse.world.getLocalDifficulty(this.skeletonHorse.getBlockPos());
         this.skeletonHorse.setTrapped(false);
         this.skeletonHorse.setTame(true);
         this.skeletonHorse.setBreedingAge(0);
