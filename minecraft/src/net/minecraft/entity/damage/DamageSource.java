@@ -2,11 +2,11 @@ package net.minecraft.entity.damage;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
@@ -61,7 +61,7 @@ public class DamageSource {
 		return new EntityDamageSource("player", attacker);
 	}
 
-	public static DamageSource arrow(ProjectileEntity projectile, @Nullable Entity attacker) {
+	public static DamageSource arrow(PersistentProjectileEntity projectile, @Nullable Entity attacker) {
 		return new ProjectileDamageSource("arrow", projectile, attacker).setProjectile();
 	}
 
@@ -69,8 +69,8 @@ public class DamageSource {
 		return new ProjectileDamageSource("trident", entity, entity2).setProjectile();
 	}
 
-	public static DamageSource method_24907(FireworkEntity fireworkEntity, @Nullable Entity entity) {
-		return new ProjectileDamageSource("fireworks", fireworkEntity, entity).setExplosive();
+	public static DamageSource method_24907(FireworkRocketEntity fireworkRocketEntity, @Nullable Entity entity) {
+		return new ProjectileDamageSource("fireworks", fireworkRocketEntity, entity).setExplosive();
 	}
 
 	public static DamageSource explosiveProjectile(ExplosiveProjectileEntity projectile, @Nullable Entity attacker) {

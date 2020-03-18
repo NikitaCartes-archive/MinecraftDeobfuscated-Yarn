@@ -77,7 +77,7 @@ public class VindicatorEntity extends IllagerEntity {
 		if (!this.isAiDisabled()) {
 			EntityNavigation entityNavigation = this.getNavigation();
 			if (entityNavigation instanceof MobNavigation) {
-				boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getSenseCenterPos());
+				boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getBlockPos());
 				((MobNavigation)entityNavigation).setCanPathThroughDoors(bl);
 			}
 		}

@@ -9,11 +9,11 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class CloudParticle extends SpriteBillboardParticle {
-	private final SpriteProvider field_17862;
+	private final SpriteProvider spriteProvider;
 
 	private CloudParticle(World world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
-		this.field_17862 = spriteProvider;
+		this.spriteProvider = spriteProvider;
 		float g = 2.5F;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
@@ -50,7 +50,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.setSpriteForAge(this.field_17862);
+			this.setSpriteForAge(this.spriteProvider);
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.96F;
 			this.velocityY *= 0.96F;
@@ -74,27 +74,27 @@ public class CloudParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class CloudFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17863;
+		private final SpriteProvider spriteProvider;
 
 		public CloudFactory(SpriteProvider spriteProvider) {
-			this.field_17863 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new CloudParticle(world, d, e, f, g, h, i, this.field_17863);
+			return new CloudParticle(world, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class SneezeFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17864;
+		private final SpriteProvider spriteProvider;
 
 		public SneezeFactory(SpriteProvider spriteProvider) {
-			this.field_17864 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new CloudParticle(world, d, e, f, g, h, i, this.field_17864);
+			Particle particle = new CloudParticle(world, d, e, f, g, h, i, this.spriteProvider);
 			particle.setColor(200.0F, 50.0F, 120.0F);
 			particle.setColorAlpha(0.4F);
 			return particle;

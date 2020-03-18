@@ -1,9 +1,10 @@
 package net.minecraft.world;
 
 import java.util.function.Predicate;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -15,14 +16,14 @@ public class RayTraceContext {
 	private final Vec3d end;
 	private final RayTraceContext.ShapeType shapeType;
 	private final RayTraceContext.FluidHandling fluid;
-	private final EntityContext entityPosition;
+	private final ShapeContext entityPosition;
 
 	public RayTraceContext(Vec3d start, Vec3d end, RayTraceContext.ShapeType shapeType, RayTraceContext.FluidHandling fluidHandling, Entity entity) {
 		this.start = start;
 		this.end = end;
 		this.shapeType = shapeType;
 		this.fluid = fluidHandling;
-		this.entityPosition = EntityContext.of(entity);
+		this.entityPosition = ShapeContext.of(entity);
 	}
 
 	public Vec3d getEnd() {
@@ -58,12 +59,13 @@ public class RayTraceContext {
 	}
 
 	public interface ShapeProvider {
-		VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext);
+		VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, ShapeContext shapeContext);
 	}
 
 	public static enum ShapeType implements RayTraceContext.ShapeProvider {
-		COLLIDER(BlockState::getCollisionShape),
-		OUTLINE(BlockState::getOutlineShape);
+		COLLIDER(AbstractBlock.AbstractBlockState::getCollisionShape),
+		OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
+		VISUAL(AbstractBlock.AbstractBlockState::getVisualShape);
 
 		private final RayTraceContext.ShapeProvider provider;
 
@@ -72,8 +74,8 @@ public class RayTraceContext {
 		}
 
 		@Override
-		public VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityContext entityContext) {
-			return this.provider.get(blockState, blockView, blockPos, entityContext);
+		public VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, ShapeContext shapeContext) {
+			return this.provider.get(blockState, blockView, blockPos, shapeContext);
 		}
 	}
 }

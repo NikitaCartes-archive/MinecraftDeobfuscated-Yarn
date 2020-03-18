@@ -23,7 +23,7 @@ public class TagMatchRuleTest extends RuleTest {
 
 	@Override
 	public boolean test(BlockState state, Random random) {
-		return state.matches(this.tag);
+		return state.isIn(this.tag);
 	}
 
 	@Override

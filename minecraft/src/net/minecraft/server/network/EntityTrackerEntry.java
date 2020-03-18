@@ -14,7 +14,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
@@ -117,7 +117,7 @@ public class EntityTrackerEntry {
 				Packet<?> packet2 = null;
 				boolean bl3 = bl2 || this.trackingTick % 60 == 0;
 				boolean bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
-				if (this.trackingTick > 0 || this.entity instanceof ProjectileEntity) {
+				if (this.trackingTick > 0 || this.entity instanceof PersistentProjectileEntity) {
 					long l = EntityS2CPacket.encodePacketCoordinate(vec3d.x);
 					long m = EntityS2CPacket.encodePacketCoordinate(vec3d.y);
 					long n = EntityS2CPacket.encodePacketCoordinate(vec3d.z);
@@ -126,7 +126,7 @@ public class EntityTrackerEntry {
 						this.lastOnGround = this.entity.isOnGround();
 						this.updatesWithoutVehicle = 0;
 						packet2 = new EntityPositionS2CPacket(this.entity);
-					} else if ((!bl3 || !bl4) && !(this.entity instanceof ProjectileEntity)) {
+					} else if ((!bl3 || !bl4) && !(this.entity instanceof PersistentProjectileEntity)) {
 						if (bl3) {
 							packet2 = new EntityS2CPacket.MoveRelative(this.entity.getEntityId(), (short)((int)l), (short)((int)m), (short)((int)n), this.entity.isOnGround());
 						} else if (bl4) {

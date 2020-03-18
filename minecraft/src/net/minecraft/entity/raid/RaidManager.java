@@ -89,7 +89,7 @@ public class RaidManager extends PersistentState {
 			if (dimensionType == DimensionType.THE_NETHER) {
 				return null;
 			} else {
-				BlockPos blockPos = player.getSenseCenterPos();
+				BlockPos blockPos = player.getBlockPos();
 				List<PointOfInterest> list = (List)this.world
 					.getPointOfInterestStorage()
 					.getInCircle(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)

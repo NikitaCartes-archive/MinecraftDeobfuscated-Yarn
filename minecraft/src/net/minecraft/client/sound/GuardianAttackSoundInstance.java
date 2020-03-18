@@ -19,6 +19,11 @@ public class GuardianAttackSoundInstance extends MovingSoundInstance {
 	}
 
 	@Override
+	public boolean canPlay() {
+		return !this.guardian.isSilent();
+	}
+
+	@Override
 	public void tick() {
 		if (!this.guardian.removed && this.guardian.getTarget() == null) {
 			this.x = (float)this.guardian.getX();

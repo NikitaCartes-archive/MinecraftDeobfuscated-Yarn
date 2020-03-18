@@ -10,7 +10,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class SpawnerBlock extends BlockWithEntity {
-	protected SpawnerBlock(Block.Settings settings) {
+	protected SpawnerBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

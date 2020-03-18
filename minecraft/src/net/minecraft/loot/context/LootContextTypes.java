@@ -20,7 +20,7 @@ public class LootContextTypes {
 		"selector", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.THIS_ENTITY)
 	);
 	public static final LootContextType FISHING = register(
-		"fishing", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.TOOL)
+		"fishing", builder -> builder.require(LootContextParameters.POSITION).require(LootContextParameters.TOOL).require(LootContextParameters.THIS_ENTITY)
 	);
 	public static final LootContextType ENTITY = register(
 		"entity",

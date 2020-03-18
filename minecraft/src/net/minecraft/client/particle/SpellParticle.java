@@ -72,14 +72,14 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EntityAmbientFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17871;
+		private final SpriteProvider spriteProvider;
 
 		public EntityAmbientFactory(SpriteProvider spriteProvider) {
-			this.field_17871 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new SpellParticle(world, d, e, f, g, h, i, this.field_17871);
+			Particle particle = new SpellParticle(world, d, e, f, g, h, i, this.spriteProvider);
 			particle.setColorAlpha(0.15F);
 			particle.setColor((float)g, (float)h, (float)i);
 			return particle;

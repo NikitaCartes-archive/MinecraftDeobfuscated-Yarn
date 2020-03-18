@@ -1,13 +1,12 @@
 package net.minecraft.block;
 
-import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class AirBlock extends Block {
-	protected AirBlock(Block.Settings settings) {
+	protected AirBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -17,12 +16,7 @@ public class AirBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.empty();
-	}
-
-	@Override
-	public boolean isAir(BlockState state) {
-		return true;
 	}
 }

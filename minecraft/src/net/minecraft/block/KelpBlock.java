@@ -15,7 +15,7 @@ import net.minecraft.world.IWorld;
 public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
-	protected KelpBlock(Block.Settings settings) {
+	protected KelpBlock(AbstractBlock.Settings settings) {
 		super(settings, Direction.UP, SHAPE, true, 0.14);
 	}
 

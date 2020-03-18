@@ -54,8 +54,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
@@ -1599,7 +1599,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			Identifier identifier = DimensionType.getId((DimensionType)entry.getKey());
 			Path path3 = path2.resolve(identifier.getNamespace()).resolve(identifier.getPath());
 			Files.createDirectories(path3);
-			((ServerWorld)entry.getValue()).method_21625(path3);
+			((ServerWorld)entry.getValue()).dump(path3);
 		}
 
 		this.dumpGamerules(path.resolve("gamerules.txt"));
@@ -1758,7 +1758,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void method_24154() {
-		Block.STATE_IDS.forEach(BlockState::initShapeCache);
+		Block.STATE_IDS.forEach(AbstractBlock.AbstractBlockState::initShapeCache);
 	}
 
 	private void startMonitor(@Nullable TickDurationMonitor monitor) {

@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.FireworkEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.LiteralText;
@@ -35,7 +35,7 @@ public class FireworkItem extends Item {
 			ItemStack itemStack = context.getStack();
 			Vec3d vec3d = context.getHitPos();
 			Direction direction = context.getSide();
-			FireworkEntity fireworkEntity = new FireworkEntity(
+			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
 				world,
 				context.getPlayer(),
 				vec3d.x + (double)direction.getOffsetX() * 0.15,
@@ -43,7 +43,7 @@ public class FireworkItem extends Item {
 				vec3d.z + (double)direction.getOffsetZ() * 0.15,
 				itemStack
 			);
-			world.spawnEntity(fireworkEntity);
+			world.spawnEntity(fireworkRocketEntity);
 			itemStack.decrement(1);
 		}
 
@@ -55,7 +55,7 @@ public class FireworkItem extends Item {
 		if (user.isFallFlying()) {
 			ItemStack itemStack = user.getStackInHand(hand);
 			if (!world.isClient) {
-				world.spawnEntity(new FireworkEntity(world, itemStack, user));
+				world.spawnEntity(new FireworkRocketEntity(world, itemStack, user));
 				if (!user.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}

@@ -1,4 +1,4 @@
-package net.minecraft.entity;
+package net.minecraft.entity.projectile;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
@@ -7,8 +7,8 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -62,7 +62,7 @@ public final class ProjectileUtil {
 		Vec3d vec3d2 = entity.getPos();
 		if (bl3
 			&& !world.doesNotCollide(entity, entity.getBoundingBox(), (Set<Entity>)(!bl2 && entity2 != null ? getEntityAndRidingEntity(entity2) : ImmutableSet.of()))) {
-			return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), entity.getSenseCenterPos(), false);
+			return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), entity.getBlockPos(), false);
 		} else {
 			Vec3d vec3d3 = vec3d2.add(vec3d);
 			HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.NONE, entity));
@@ -176,14 +176,14 @@ public final class ProjectileUtil {
 		return entity.getMainHandStack().getItem() == item ? Hand.MAIN_HAND : Hand.OFF_HAND;
 	}
 
-	public static ProjectileEntity createArrowProjectile(LivingEntity entity, ItemStack stack, float damageModifier) {
+	public static PersistentProjectileEntity createArrowProjectile(LivingEntity entity, ItemStack stack, float damageModifier) {
 		ArrowItem arrowItem = (ArrowItem)(stack.getItem() instanceof ArrowItem ? stack.getItem() : Items.ARROW);
-		ProjectileEntity projectileEntity = arrowItem.createArrow(entity.world, stack, entity);
-		projectileEntity.applyEnchantmentEffects(entity, damageModifier);
-		if (stack.getItem() == Items.TIPPED_ARROW && projectileEntity instanceof ArrowEntity) {
-			((ArrowEntity)projectileEntity).initFromStack(stack);
+		PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(entity.world, stack, entity);
+		persistentProjectileEntity.applyEnchantmentEffects(entity, damageModifier);
+		if (stack.getItem() == Items.TIPPED_ARROW && persistentProjectileEntity instanceof ArrowEntity) {
+			((ArrowEntity)persistentProjectileEntity).initFromStack(stack);
 		}
 
-		return projectileEntity;
+		return persistentProjectileEntity;
 	}
 }

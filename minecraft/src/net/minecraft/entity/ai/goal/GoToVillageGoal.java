@@ -34,7 +34,7 @@ public class GoToVillageGoal extends Goal {
 			return false;
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.mob.world;
-			BlockPos blockPos = this.mob.getSenseCenterPos();
+			BlockPos blockPos = this.mob.getBlockPos();
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
@@ -75,7 +75,7 @@ public class GoToVillageGoal extends Goal {
 		Random random = this.mob.getRandom();
 		BlockPos blockPos = this.mob
 			.world
-			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.mob.getSenseCenterPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.mob.getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 		this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}
 }

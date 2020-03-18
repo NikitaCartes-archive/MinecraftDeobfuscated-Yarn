@@ -148,42 +148,6 @@ public class CompoundTag implements Tag {
 		return tag != null && tag.getReader() == IntArrayTag.READER && ((IntArrayTag)tag).getIntArray().length == 4;
 	}
 
-	/**
-	 * @deprecated use {@link #putUuid}.
-	 */
-	@Deprecated
-	public void putUuidOld(String key, UUID uuid) {
-		this.putLong(key + "Most", uuid.getMostSignificantBits());
-		this.putLong(key + "Least", uuid.getLeastSignificantBits());
-	}
-
-	/**
-	 * @deprecated use {@link #getUuidNew} for newly added deserialization methods.
-	 * Other places may keep calling this as well as {@link #getUuidNew} to ensure a smooth transition for old worlds.
-	 */
-	@Deprecated
-	public UUID getUuidOld(String key) {
-		return new UUID(this.getLong(key + "Most"), this.getLong(key + "Least"));
-	}
-
-	/**
-	 * @deprecated use {@link #containsUuidNew} for newly added deserialization methods.
-	 * Other places may keep calling this as well as {@link #containsUuidNew} to ensure a smooth transition for old worlds.
-	 */
-	@Deprecated
-	public boolean containsUuidOld(String key) {
-		return this.contains(key + "Most", 99) && this.contains(key + "Least", 99);
-	}
-
-	/**
-	 * @deprecated use {@link #remove} to remove a UUID serialized using the new {@link #putUuid} method.
-	 */
-	@Deprecated
-	public void removeUuidOld(String key) {
-		this.remove(key + "Most");
-		this.remove(key + "Least");
-	}
-
 	public void putFloat(String key, float value) {
 		this.tags.put(key, FloatTag.of(value));
 	}

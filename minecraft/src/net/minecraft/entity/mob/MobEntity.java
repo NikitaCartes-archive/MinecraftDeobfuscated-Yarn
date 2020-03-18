@@ -360,7 +360,7 @@ public abstract class MobEntity extends LivingEntity {
 			CompoundTag compoundTag2 = new CompoundTag();
 			if (this.holdingEntity instanceof LivingEntity) {
 				UUID uUID = this.holdingEntity.getUuid();
-				compoundTag2.putUuidOld("UUID", uUID);
+				compoundTag2.putUuidNew("UUID", uUID);
 			} else if (this.holdingEntity instanceof AbstractDecorationEntity) {
 				BlockPos blockPos = ((AbstractDecorationEntity)this.holdingEntity).getDecorationBlockPos();
 				compoundTag2.putInt("X", blockPos.getX());
@@ -1010,7 +1010,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean isInWalkTargetRange() {
-		return this.isInWalkTargetRange(this.getSenseCenterPos());
+		return this.isInWalkTargetRange(this.getBlockPos());
 	}
 
 	public boolean isInWalkTargetRange(BlockPos pos) {
@@ -1058,6 +1058,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			this.holdingEntity = null;
+			this.leashTag = null;
 			if (!this.world.isClient && bl) {
 				this.dropItem(Items.LEAD);
 			}
@@ -1087,6 +1088,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	public void attachLeash(Entity entity, boolean bl) {
 		this.holdingEntity = entity;
+		this.leashTag = null;
 		this.teleporting = true;
 		if (!(this.holdingEntity instanceof PlayerEntity)) {
 			this.holdingEntity.teleporting = true;
@@ -1119,8 +1121,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	private void deserializeLeashTag() {
 		if (this.leashTag != null && this.world instanceof ServerWorld) {
-			if (this.leashTag.containsUuidOld("UUID")) {
-				UUID uUID = this.leashTag.getUuidOld("UUID");
+			if (this.leashTag.containsUuidNew("UUID")) {
+				UUID uUID = this.leashTag.getUuidNew("UUID");
 				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
 				if (entity != null) {
 					this.attachLeash(entity, true);
@@ -1132,7 +1134,9 @@ public abstract class MobEntity extends LivingEntity {
 				this.detachLeash(false, true);
 			}
 
-			this.leashTag = null;
+			if (this.age > 100) {
+				this.leashTag = null;
+			}
 		}
 	}
 

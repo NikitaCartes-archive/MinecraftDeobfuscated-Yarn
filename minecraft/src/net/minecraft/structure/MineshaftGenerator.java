@@ -320,7 +320,7 @@ public class MineshaftGenerator {
 					for(int o = 0; o <= m; ++o) {
 						BlockState blockState4 = this.getBlockAt(world, 1, -1, o, box);
 						if (!blockState4.isAir()
-							&& blockState4.isFullOpaque(world, new BlockPos(this.applyXTransform(1, o), this.applyYTransform(-1), this.applyZTransform(1, o)))) {
+							&& blockState4.isOpaqueFullCube(world, new BlockPos(this.applyXTransform(1, o), this.applyYTransform(-1), this.applyZTransform(1, o)))) {
 							float f = this.isUnderSeaLevel(world, 1, 0, o, box) ? 0.7F : 0.9F;
 							this.addBlockWithRandomThreshold(world, box, random, f, 1, 0, o, blockState3);
 						}

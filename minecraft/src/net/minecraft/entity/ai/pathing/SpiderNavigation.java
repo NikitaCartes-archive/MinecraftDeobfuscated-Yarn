@@ -20,7 +20,7 @@ public class SpiderNavigation extends MobNavigation {
 
 	@Override
 	public Path findPathTo(Entity entity, int distance) {
-		this.targetPos = entity.getSenseCenterPos();
+		this.targetPos = entity.getBlockPos();
 		return super.findPathTo(entity, distance);
 	}
 
@@ -30,7 +30,7 @@ public class SpiderNavigation extends MobNavigation {
 		if (path != null) {
 			return this.startMovingAlong(path, speed);
 		} else {
-			this.targetPos = entity.getSenseCenterPos();
+			this.targetPos = entity.getBlockPos();
 			this.speed = speed;
 			return true;
 		}

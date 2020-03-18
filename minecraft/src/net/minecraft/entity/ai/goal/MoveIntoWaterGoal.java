@@ -14,7 +14,7 @@ public class MoveIntoWaterGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.isOnGround() && !this.mob.world.getFluidState(this.mob.getSenseCenterPos()).matches(FluidTags.WATER);
+		return this.mob.isOnGround() && !this.mob.world.getFluidState(this.mob.getBlockPos()).matches(FluidTags.WATER);
 	}
 
 	@Override

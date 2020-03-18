@@ -1,4 +1,4 @@
-package net.minecraft.entity.thrown;
+package net.minecraft.entity.projectile.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.EnvironmentInterface;

@@ -70,7 +70,7 @@ public class EntityFlagsPredicate {
 		}
 	}
 
-	public JsonElement serialize() {
+	public JsonElement toJson() {
 		if (this == ANY) {
 			return JsonNull.INSTANCE;
 		} else {

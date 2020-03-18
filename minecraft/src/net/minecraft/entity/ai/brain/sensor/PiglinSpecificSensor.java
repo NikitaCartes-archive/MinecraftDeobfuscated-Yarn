@@ -97,6 +97,6 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 	}
 
 	private static Optional<BlockPos> findSoulFire(ServerWorld world, LivingEntity entity) {
-		return BlockPos.findClosest(entity.getSenseCenterPos(), 8, 4, blockPos -> world.getBlockState(blockPos).matches(BlockTags.PIGLIN_REPELLENTS));
+		return BlockPos.findClosest(entity.getBlockPos(), 8, 4, blockPos -> world.getBlockState(blockPos).isIn(BlockTags.PIGLIN_REPELLENTS));
 	}
 }

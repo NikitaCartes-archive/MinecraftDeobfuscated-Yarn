@@ -49,8 +49,8 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("signal_strength", this.signalStrength.toJson());
-			jsonObject.add("projectile", this.projectile.serialize());
-			jsonObject.add("shooter", this.shooter.serialize());
+			jsonObject.add("projectile", this.projectile.toJson());
+			jsonObject.add("shooter", this.shooter.toJson());
 			return jsonObject;
 		}
 

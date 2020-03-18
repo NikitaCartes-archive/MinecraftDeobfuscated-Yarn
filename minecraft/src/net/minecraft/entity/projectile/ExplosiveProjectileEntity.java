@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -19,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
-public abstract class ExplosiveProjectileEntity extends Projectile {
+public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	private int ticks;
 	public double posX;
 	public double posY;
@@ -70,7 +69,7 @@ public abstract class ExplosiveProjectileEntity extends Projectile {
 	@Override
 	public void tick() {
 		Entity entity = this.getOwner();
-		if (this.world.isClient || (entity == null || !entity.removed) && this.world.isChunkLoaded(this.getSenseCenterPos())) {
+		if (this.world.isClient || (entity == null || !entity.removed) && this.world.isChunkLoaded(this.getBlockPos())) {
 			super.tick();
 			if (this.isBurning()) {
 				this.setOnFireFor(1);

@@ -4,8 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Collection;
+import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -82,7 +82,7 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("rod", this.rod.toJson());
-			jsonObject.add("entity", this.hookedEntity.serialize());
+			jsonObject.add("entity", this.hookedEntity.toJson());
 			jsonObject.add("item", this.caughtItem.toJson());
 			return jsonObject;
 		}

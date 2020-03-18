@@ -38,7 +38,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	protected boolean canUse(BlockState state) {
-		return state.matches(BlockTags.ANVIL);
+		return state.isIn(BlockTags.ANVIL);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		this.levelCost.set(0);
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 			BlockState blockState = world.getBlockState(blockPos);
-			if (!player.abilities.creativeMode && blockState.matches(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
+			if (!player.abilities.creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
 				BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 				if (blockState2 == null) {
 					world.removeBlock(blockPos, false);

@@ -124,6 +124,6 @@ public class WanderAroundTask extends Task<MobEntity> {
 	}
 
 	private boolean hasReached(MobEntity entity, WalkTarget walkTarget) {
-		return walkTarget.getLookTarget().getBlockPos().getManhattanDistance(entity.getSenseCenterPos()) <= walkTarget.getCompletionRange();
+		return walkTarget.getLookTarget().getBlockPos().getManhattanDistance(entity.getBlockPos()) <= walkTarget.getCompletionRange();
 	}
 }

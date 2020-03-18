@@ -10,8 +10,8 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +31,7 @@ public interface CollisionView extends BlockView {
 		return true;
 	}
 
-	default boolean canPlace(BlockState state, BlockPos pos, EntityContext context) {
+	default boolean canPlace(BlockState state, BlockPos pos, ShapeContext context) {
 		VoxelShape voxelShape = state.getCollisionShape(this, pos, context);
 		return voxelShape.isEmpty() || this.intersectsEntities(null, voxelShape.offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()));
 	}
@@ -71,7 +71,7 @@ public interface CollisionView extends BlockView {
 		int l = MathHelper.floor(box.y2 + 1.0E-7) + 1;
 		int m = MathHelper.floor(box.z1 - 1.0E-7) - 1;
 		int n = MathHelper.floor(box.z2 + 1.0E-7) + 1;
-		final EntityContext entityContext = entity == null ? EntityContext.absent() : EntityContext.of(entity);
+		final ShapeContext shapeContext = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
 		final CuboidBlockIterator cuboidBlockIterator = new CuboidBlockIterator(i, k, m, j, l, n);
 		final BlockPos.Mutable mutable = new BlockPos.Mutable();
 		final VoxelShape voxelShape = VoxelShapes.cuboid(box);
@@ -103,7 +103,7 @@ public interface CollisionView extends BlockView {
 							mutable.set(i, j, k);
 							BlockState blockState = blockView.getBlockState(mutable);
 							if ((l != 1 || blockState.exceedsCube()) && (l != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
-								VoxelShape voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, entityContext);
+								VoxelShape voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, shapeContext);
 								VoxelShape voxelShape3 = voxelShape2.offset((double)i, (double)j, (double)k);
 								if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape3, BooleanBiFunction.AND)) {
 									consumer.accept(voxelShape3);

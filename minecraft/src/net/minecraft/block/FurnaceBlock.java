@@ -17,7 +17,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FurnaceBlock extends AbstractFurnaceBlock {
-	protected FurnaceBlock(Block.Settings settings) {
+	protected FurnaceBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

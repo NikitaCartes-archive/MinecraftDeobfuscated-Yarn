@@ -154,7 +154,7 @@ public class TestUtil {
 		BlockPos.stream(blockPos, blockPos2).filter(blockPosx -> world.getBlockState(blockPosx).getBlock() == Blocks.STRUCTURE_BLOCK).forEach(blockPosx -> {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(blockPosx);
 			BlockPos blockPos2xx = structureBlockBlockEntity.getPos();
-			BlockBox blockBox = StructureTestUtil.method_23646(blockPos2xx, structureBlockBlockEntity.getSize(), 2);
+			BlockBox blockBox = StructureTestUtil.createArea(blockPos2xx, structureBlockBlockEntity.getSize(), 2);
 			StructureTestUtil.clearArea(blockBox, blockPos2xx.getY(), world);
 		});
 	}

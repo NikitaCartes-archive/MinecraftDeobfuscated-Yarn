@@ -77,7 +77,7 @@ public class Structure {
 						compoundTag.remove("y");
 						compoundTag.remove("z");
 						list2.add(new Structure.StructureBlockInfo(blockPos5, blockState, compoundTag));
-					} else if (!blockState.isFullOpaque(world, blockPos4) && !blockState.isFullCube(world, blockPos4)) {
+					} else if (!blockState.isOpaqueFullCube(world, blockPos4) && !blockState.isFullCube(world, blockPos4)) {
 						list3.add(new Structure.StructureBlockInfo(blockPos5, blockState, null));
 					} else {
 						list.add(new Structure.StructureBlockInfo(blockPos5, blockState, null));

@@ -302,7 +302,6 @@ public class MathHelper {
 		return (i << 8) + b;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static float fractionalPart(float value) {
 		return value - (float)floor(value);
 	}

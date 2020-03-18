@@ -9,12 +9,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class TallFlowerBlock extends TallPlantBlock implements Fertilizable {
-	public TallFlowerBlock(Block.Settings settings) {
+	public TallFlowerBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext ctx) {
+	public boolean canReplace(BlockState state, ItemPlacementContext context) {
 		return false;
 	}
 

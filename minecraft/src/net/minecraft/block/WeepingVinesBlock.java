@@ -6,7 +6,7 @@ import net.minecraft.util.shape.VoxelShape;
 public class WeepingVinesBlock extends AbstractPlantStemBlock {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 9.0, 4.0, 12.0, 16.0, 12.0);
 
-	public WeepingVinesBlock(Block.Settings settings) {
+	public WeepingVinesBlock(AbstractBlock.Settings settings) {
 		super(settings, Direction.DOWN, SHAPE, false, 0.1);
 	}
 

@@ -26,7 +26,7 @@ public class VillagerTaskListProvider {
 			Pair.of(0, new StartRaidTask()),
 			Pair.of(1, new WanderAroundTask(200)),
 			Pair.of(2, new FollowCustomerTask(f)),
-			Pair.of(5, new WalkToNearestVisibleWantedItemTask<>(4, false)),
+			Pair.of(5, new WalkToNearestVisibleWantedItemTask<>(0.5F, false, 4)),
 			Pair.of(10, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, true)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true)),
@@ -45,7 +45,7 @@ public class VillagerTaskListProvider {
 						Pair.of(new VillagerWorkTask(), 7),
 						Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 4), 2),
 						Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 1, 10), 5),
-						Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, 0.4F, 1, 6, MemoryModuleType.JOB_SITE), 5),
+						Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, f, 1, 6, MemoryModuleType.JOB_SITE), 5),
 						Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5)
 					)
 				)

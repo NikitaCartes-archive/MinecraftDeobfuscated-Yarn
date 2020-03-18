@@ -106,8 +106,8 @@ public class ChunkRendererRegion implements BlockRenderView {
 	}
 
 	@Override
-	public float method_24852(Direction direction, boolean bl) {
-		return this.world.method_24852(direction, bl);
+	public float getBrightness(Direction direction, boolean shaded) {
+		return this.world.getBrightness(direction, shaded);
 	}
 
 	@Override

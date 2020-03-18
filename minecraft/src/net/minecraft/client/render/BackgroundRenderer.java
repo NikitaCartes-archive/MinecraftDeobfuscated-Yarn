@@ -190,7 +190,7 @@ public class BackgroundRenderer {
 				if (entity instanceof ClientPlayerEntity) {
 					ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
 					f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03F;
-					Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getSenseCenterPos());
+					Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
 					if (biome == Biomes.SWAMP || biome == Biomes.SWAMP_HILLS) {
 						f += 0.005F;
 					}

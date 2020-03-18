@@ -22,7 +22,7 @@ import net.minecraft.potion.Potions;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-public class ArrowEntity extends ProjectileEntity {
+public class ArrowEntity extends PersistentProjectileEntity {
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private Potion potion = Potions.EMPTY;
 	private final Set<StatusEffectInstance> effects = Sets.<StatusEffectInstance>newHashSet();

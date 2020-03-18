@@ -95,7 +95,7 @@ public abstract class TrackTargetGoal extends Goal {
 			return false;
 		} else if (!targetPredicate.test(this.mob, target)) {
 			return false;
-		} else if (!this.mob.isInWalkTargetRange(target.getSenseCenterPos())) {
+		} else if (!this.mob.isInWalkTargetRange(target.getBlockPos())) {
 			return false;
 		} else {
 			if (this.checkCanNavigate) {

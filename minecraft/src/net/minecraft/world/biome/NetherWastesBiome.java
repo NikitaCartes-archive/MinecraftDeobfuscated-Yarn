@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.sound.BiomeAdditionsSound;
+import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
@@ -35,8 +37,8 @@ public final class NetherWastesBiome extends Biome {
 						.waterFogColor(329011)
 						.fogColor(3344392)
 						.loopSound(SoundEvents.AMBIENT_NETHER_WASTES_LOOP)
-						.moodSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD)
-						.additionsSound(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS)
+						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_NETHER_WASTES_MOOD, 6000, 8, 2.0))
+						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS, 0.0111))
 						.build()
 				)
 				.parent(null)

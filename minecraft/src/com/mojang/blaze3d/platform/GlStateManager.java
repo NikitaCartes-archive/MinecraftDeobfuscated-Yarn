@@ -226,7 +226,7 @@ public class GlStateManager {
 	 * Configures the frame buffer and populates {@link FrameBufferInfo} with the appropriate constants
 	 * for the current GLCapabilities.
 	 * 
-	 * @returns human-readable string representing the selected frame buffer technology.
+	 * @return human-readable string representing the selected frame buffer technology.
 	 * @throws IllegalStateException if no known frame buffer technology is supported.
 	 */
 	public static String initFramebufferSupport(GLCapabilities capabilities) {

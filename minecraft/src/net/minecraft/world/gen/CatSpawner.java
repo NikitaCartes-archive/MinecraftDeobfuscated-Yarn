@@ -34,7 +34,7 @@ public class CatSpawner {
 					Random random = serverWorld.random;
 					int i = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
 					int j = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-					BlockPos blockPos = playerEntity.getSenseCenterPos().add(i, 0, j);
+					BlockPos blockPos = playerEntity.getBlockPos().add(i, 0, j);
 					if (!serverWorld.isRegionLoaded(
 						blockPos.getX() - 10, blockPos.getY() - 10, blockPos.getZ() - 10, blockPos.getX() + 10, blockPos.getY() + 10, blockPos.getZ() + 10
 					)) {

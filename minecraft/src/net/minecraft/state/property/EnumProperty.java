@@ -63,10 +63,23 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 		return 31 * i + this.byName.hashCode();
 	}
 
+	/**
+	 * Creates an enum property.
+	 * 
+	 * @param name the name of this property
+	 * @param type the type this property contains
+	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type) {
 		return of(name, type, Predicates.alwaysTrue());
 	}
 
+	/**
+	 * Creates an enum property.
+	 * 
+	 * @param name the name of this property
+	 * @param type the type this property contains
+	 * @param filter a filter that specifies if a value is allowed
+	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Predicate<T> filter) {
 		return of(name, type, (Collection<T>)Arrays.stream(type.getEnumConstants()).filter(filter).collect(Collectors.toList()));
 	}
@@ -75,6 +88,13 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Abstra
 		return of(name, type, Lists.<T>newArrayList(values));
 	}
 
+	/**
+	 * Creates an enum property.
+	 * 
+	 * @param name the name of this property
+	 * @param type the type this property contains
+	 * @param values the values this property could contain
+	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Collection<T> values) {
 		return new EnumProperty<>(name, type, values);
 	}

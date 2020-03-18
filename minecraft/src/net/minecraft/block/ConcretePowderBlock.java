@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -13,13 +14,13 @@ import net.minecraft.world.World;
 public class ConcretePowderBlock extends FallingBlock {
 	private final BlockState hardenedState;
 
-	public ConcretePowderBlock(Block hardened, Block.Settings settings) {
+	public ConcretePowderBlock(Block hardened, AbstractBlock.Settings settings) {
 		super(settings);
 		this.hardenedState = hardened.getDefaultState();
 	}
 
 	@Override
-	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos) {
+	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
 		if (method_24279(world, pos, currentStateInPos)) {
 			world.setBlockState(pos, this.hardenedState, 3);
 		}
@@ -61,13 +62,13 @@ public class ConcretePowderBlock extends FallingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return hardensOnAnySide(world, pos) ? this.hardenedState : super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return hardensOnAnySide(world, pos) ? this.hardenedState : super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getColor(BlockState state) {
-		return this.materialColor.color;
+	public int getColor(BlockState state, BlockView blockView, BlockPos blockPos) {
+		return state.getTopMaterialColor(blockView, blockPos).color;
 	}
 }

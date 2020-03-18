@@ -33,7 +33,7 @@ public class CommandSyntaxProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void run(DataCache cache) throws IOException {
 		YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
 		MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
 		GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
@@ -53,7 +53,7 @@ public class CommandSyntaxProvider implements DataProvider {
 		);
 		Path path = this.root.getOutput().resolve("reports/commands.json");
 		CommandDispatcher<ServerCommandSource> commandDispatcher = minecraftServer.getCommandManager().getDispatcher();
-		DataProvider.writeToPath(GSON, dataCache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
+		DataProvider.writeToPath(GSON, cache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
 	}
 
 	@Override

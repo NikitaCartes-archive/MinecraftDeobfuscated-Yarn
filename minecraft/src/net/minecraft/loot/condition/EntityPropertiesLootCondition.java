@@ -49,7 +49,7 @@ public class EntityPropertiesLootCondition implements LootCondition {
 		}
 
 		public void toJson(JsonObject jsonObject, EntityPropertiesLootCondition entityPropertiesLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.add("predicate", entityPropertiesLootCondition.predicate.serialize());
+			jsonObject.add("predicate", entityPropertiesLootCondition.predicate.toJson());
 			jsonObject.add("entity", jsonSerializationContext.serialize(entityPropertiesLootCondition.entity));
 		}
 

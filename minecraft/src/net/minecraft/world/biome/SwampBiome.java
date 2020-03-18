@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
@@ -26,7 +26,7 @@ public final class SwampBiome extends Biome {
 				.scale(0.1F)
 				.temperature(0.8F)
 				.downfall(0.9F)
-				.effects(new BiomeEffects.Builder().waterColor(6388580).waterFogColor(2302743).fogColor(12638463).moodSound(SoundEvents.AMBIENT_CAVE).build())
+				.effects(new BiomeEffects.Builder().waterColor(6388580).waterFogColor(2302743).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.SWAMP_HUT.configure(FeatureConfig.DEFAULT));

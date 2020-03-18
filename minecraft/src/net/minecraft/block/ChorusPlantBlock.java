@@ -13,7 +13,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldView;
 
 public class ChorusPlantBlock extends ConnectingBlock {
-	protected ChorusPlantBlock(Block.Settings settings) {
+	protected ChorusPlantBlock(AbstractBlock.Settings settings) {
 		super(0.3125F, settings);
 		this.setDefaultState(
 			this.stateManager
@@ -49,14 +49,14 @@ public class ChorusPlantBlock extends ConnectingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
-			return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
-			Block block = neighborState.getBlock();
-			boolean bl = block == this || block == Blocks.CHORUS_FLOWER || facing == Direction.DOWN && block == Blocks.END_STONE;
-			return state.with((Property)FACING_PROPERTIES.get(facing), Boolean.valueOf(bl));
+			Block block = newState.getBlock();
+			boolean bl = block == this || block == Blocks.CHORUS_FLOWER || direction == Direction.DOWN && block == Blocks.END_STONE;
+			return state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(bl));
 		}
 	}
 
@@ -97,7 +97,7 @@ public class ChorusPlantBlock extends ConnectingBlock {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 }

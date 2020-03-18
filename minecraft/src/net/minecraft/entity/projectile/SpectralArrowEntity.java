@@ -10,7 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
-public class SpectralArrowEntity extends ProjectileEntity {
+public class SpectralArrowEntity extends PersistentProjectileEntity {
 	private int duration = 200;
 
 	public SpectralArrowEntity(EntityType<? extends SpectralArrowEntity> entityType, World world) {

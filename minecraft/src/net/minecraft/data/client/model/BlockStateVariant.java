@@ -40,12 +40,12 @@ public class BlockStateVariant implements Supplier<JsonElement> {
 		return jsonObject;
 	}
 
-	public static JsonElement toJson(List<BlockStateVariant> list) {
-		if (list.size() == 1) {
-			return ((BlockStateVariant)list.get(0)).get();
+	public static JsonElement toJson(List<BlockStateVariant> variants) {
+		if (variants.size() == 1) {
+			return ((BlockStateVariant)variants.get(0)).get();
 		} else {
 			JsonArray jsonArray = new JsonArray();
-			list.forEach(blockStateVariant -> jsonArray.add(blockStateVariant.get()));
+			variants.forEach(blockStateVariant -> jsonArray.add(blockStateVariant.get()));
 			return jsonArray;
 		}
 	}

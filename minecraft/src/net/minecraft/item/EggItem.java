@@ -1,7 +1,7 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.thrown.ThrownEggEntity;
+import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -21,10 +21,10 @@ public class EggItem extends Item {
 			null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
-			ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, user);
-			thrownEggEntity.setItem(itemStack);
-			thrownEggEntity.setProperties(user, user.pitch, user.yaw, 0.0F, 1.5F, 1.0F);
-			world.spawnEntity(thrownEggEntity);
+			EggEntity eggEntity = new EggEntity(world, user);
+			eggEntity.setItem(itemStack);
+			eggEntity.setProperties(user, user.pitch, user.yaw, 0.0F, 1.5F, 1.0F);
+			world.spawnEntity(eggEntity);
 		}
 
 		user.incrementStat(Stats.USED.getOrCreateStat(this));

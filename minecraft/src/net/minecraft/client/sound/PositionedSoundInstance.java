@@ -13,12 +13,12 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		this(sound, category, volume, pitch, (float)pos.getX() + 0.5F, (float)pos.getY() + 0.5F, (float)pos.getZ() + 0.5F);
 	}
 
-	public static PositionedSoundInstance master(SoundEvent sound, float volume) {
-		return master(sound, volume, 0.25F);
+	public static PositionedSoundInstance master(SoundEvent sound, float pitch) {
+		return master(sound, pitch, 0.25F);
 	}
 
-	public static PositionedSoundInstance master(SoundEvent sound, float volume, float pitch) {
-		return new PositionedSoundInstance(sound.getId(), SoundCategory.MASTER, pitch, volume, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true);
+	public static PositionedSoundInstance master(SoundEvent sound, float pitch, float volume) {
+		return new PositionedSoundInstance(sound.getId(), SoundCategory.MASTER, volume, pitch, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true);
 	}
 
 	public static PositionedSoundInstance music(SoundEvent sound) {
@@ -29,8 +29,8 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		return new PositionedSoundInstance(sound, SoundCategory.RECORDS, 4.0F, 1.0F, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
 	}
 
-	public static PositionedSoundInstance ambient(SoundEvent sound, float volume, float pitch) {
-		return new PositionedSoundInstance(sound.getId(), SoundCategory.AMBIENT, pitch, volume, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true);
+	public static PositionedSoundInstance ambient(SoundEvent sound, float pitch, float volume) {
+		return new PositionedSoundInstance(sound.getId(), SoundCategory.AMBIENT, volume, pitch, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true);
 	}
 
 	public static PositionedSoundInstance ambient(SoundEvent sound) {

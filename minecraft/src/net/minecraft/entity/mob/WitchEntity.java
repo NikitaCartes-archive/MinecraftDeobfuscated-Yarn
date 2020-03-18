@@ -28,8 +28,8 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.entity.thrown.ThrownPotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
@@ -158,10 +158,13 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					this.equipStack(EquipmentSlot.MAINHAND, PotionUtil.setPotion(new ItemStack(Items.POTION), potion));
 					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
-					this.world
-						.playSound(
-							null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
-						);
+					if (!this.isSilent()) {
+						this.world
+							.playSound(
+								null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
+							);
+					}
+
 					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 					entityAttributeInstance.addModifier(DRINKING_SPEED_PENALTY_MODIFIER);
@@ -241,15 +244,18 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				potion = Potions.WEAKNESS;
 			}
 
-			ThrownPotionEntity thrownPotionEntity = new ThrownPotionEntity(this.world, this);
-			thrownPotionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
-			thrownPotionEntity.pitch -= -20.0F;
-			thrownPotionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
-			this.world
-				.playSound(
-					null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
-				);
-			this.world.spawnEntity(thrownPotionEntity);
+			PotionEntity potionEntity = new PotionEntity(this.world, this);
+			potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+			potionEntity.pitch -= -20.0F;
+			potionEntity.setVelocity(d, e + (double)(g * 0.2F), f, 0.75F, 8.0F);
+			if (!this.isSilent()) {
+				this.world
+					.playSound(
+						null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
+					);
+			}
+
+			this.world.spawnEntity(potionEntity);
 		}
 	}
 

@@ -3,7 +3,6 @@ package net.minecraft.block;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
@@ -29,7 +28,7 @@ public class WallSkullBlock extends AbstractSkullBlock {
 		)
 	);
 
-	protected WallSkullBlock(SkullBlock.SkullType skullType, Block.Settings settings) {
+	protected WallSkullBlock(SkullBlock.SkullType skullType, AbstractBlock.Settings settings) {
 		super(skullType, settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 	}
@@ -40,7 +39,7 @@ public class WallSkullBlock extends AbstractSkullBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return (VoxelShape)FACING_TO_SHAPE.get(state.get(FACING));
 	}
 

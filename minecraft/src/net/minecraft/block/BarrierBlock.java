@@ -2,12 +2,11 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 public class BarrierBlock extends Block {
-	protected BarrierBlock(Block.Settings settings) {
+	protected BarrierBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -25,10 +24,5 @@ public class BarrierBlock extends Block {
 	@Override
 	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
 		return 1.0F;
-	}
-
-	@Override
-	public boolean allowsSpawning(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
-		return false;
 	}
 }

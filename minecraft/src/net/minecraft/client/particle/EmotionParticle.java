@@ -55,15 +55,15 @@ public class EmotionParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class AngryVillagerFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17813;
+		private final SpriteProvider spriteProvider;
 
 		public AngryVillagerFactory(SpriteProvider spriteProvider) {
-			this.field_17813 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EmotionParticle emotionParticle = new EmotionParticle(world, d, e + 0.5, f);
-			emotionParticle.setSprite(this.field_17813);
+			emotionParticle.setSprite(this.spriteProvider);
 			emotionParticle.setColor(1.0F, 1.0F, 1.0F);
 			return emotionParticle;
 		}
@@ -71,15 +71,15 @@ public class EmotionParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class HeartFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17814;
+		private final SpriteProvider spriteProvider;
 
 		public HeartFactory(SpriteProvider spriteProvider) {
-			this.field_17814 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EmotionParticle emotionParticle = new EmotionParticle(world, d, e, f);
-			emotionParticle.setSprite(this.field_17814);
+			emotionParticle.setSprite(this.spriteProvider);
 			return emotionParticle;
 		}
 	}

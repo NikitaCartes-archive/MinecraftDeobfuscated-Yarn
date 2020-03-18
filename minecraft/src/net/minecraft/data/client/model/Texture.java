@@ -40,7 +40,7 @@ public class Texture {
 		throw new IllegalStateException("Can't find texture for slot " + key);
 	}
 
-	public Texture copyAndAnd(TextureKey key, Identifier id) {
+	public Texture copyAndAdd(TextureKey key, Identifier id) {
 		Texture texture = new Texture();
 		texture.entries.putAll(this.entries);
 		texture.inherited.addAll(this.inherited);
@@ -49,12 +49,12 @@ public class Texture {
 	}
 
 	public static Texture all(Block block) {
-		Identifier identifier = getModelId(block);
+		Identifier identifier = getId(block);
 		return all(identifier);
 	}
 
 	public static Texture texture(Block block) {
-		Identifier identifier = getModelId(block);
+		Identifier identifier = getId(block);
 		return texture(identifier);
 	}
 
@@ -67,7 +67,7 @@ public class Texture {
 	}
 
 	public static Texture cross(Block block) {
-		return of(TextureKey.CROSS, getModelId(block));
+		return of(TextureKey.CROSS, getId(block));
 	}
 
 	public static Texture cross(Identifier id) {
@@ -75,7 +75,7 @@ public class Texture {
 	}
 
 	public static Texture plant(Block block) {
-		return of(TextureKey.PLANT, getModelId(block));
+		return of(TextureKey.PLANT, getId(block));
 	}
 
 	public static Texture plant(Identifier id) {
@@ -83,7 +83,7 @@ public class Texture {
 	}
 
 	public static Texture rail(Block block) {
-		return of(TextureKey.RAIL, getModelId(block));
+		return of(TextureKey.RAIL, getId(block));
 	}
 
 	public static Texture rail(Identifier id) {
@@ -91,23 +91,23 @@ public class Texture {
 	}
 
 	public static Texture wool(Block block) {
-		return of(TextureKey.WOOL, getModelId(block));
+		return of(TextureKey.WOOL, getId(block));
 	}
 
 	public static Texture stem(Block block) {
-		return of(TextureKey.STEM, getModelId(block));
+		return of(TextureKey.STEM, getId(block));
 	}
 
 	public static Texture stemAndUpper(Block stem, Block upper) {
-		return new Texture().put(TextureKey.STEM, getModelId(stem)).put(TextureKey.UPPER_STEM, getModelId(upper));
+		return new Texture().put(TextureKey.STEM, getId(stem)).put(TextureKey.UPPER_STEM, getId(upper));
 	}
 
 	public static Texture pattern(Block block) {
-		return of(TextureKey.PATTERN, getModelId(block));
+		return of(TextureKey.PATTERN, getId(block));
 	}
 
 	public static Texture fan(Block block) {
-		return of(TextureKey.FAN, getModelId(block));
+		return of(TextureKey.FAN, getId(block));
 	}
 
 	public static Texture crop(Identifier id) {
@@ -115,7 +115,7 @@ public class Texture {
 	}
 
 	public static Texture paneAndTopForEdge(Block block, Block top) {
-		return new Texture().put(TextureKey.PANE, getModelId(block)).put(TextureKey.EDGE, getSubModelId(top, "_top"));
+		return new Texture().put(TextureKey.PANE, getId(block)).put(TextureKey.EDGE, getSubId(top, "_top"));
 	}
 
 	public static Texture of(TextureKey key, Identifier id) {
@@ -123,15 +123,15 @@ public class Texture {
 	}
 
 	public static Texture sideEnd(Block block) {
-		return new Texture().put(TextureKey.SIDE, getSubModelId(block, "_side")).put(TextureKey.END, getSubModelId(block, "_top"));
+		return new Texture().put(TextureKey.SIDE, getSubId(block, "_side")).put(TextureKey.END, getSubId(block, "_top"));
 	}
 
 	public static Texture sideAndTop(Block block) {
-		return new Texture().put(TextureKey.SIDE, getSubModelId(block, "_side")).put(TextureKey.TOP, getSubModelId(block, "_top"));
+		return new Texture().put(TextureKey.SIDE, getSubId(block, "_side")).put(TextureKey.TOP, getSubId(block, "_top"));
 	}
 
 	public static Texture sideAndEndForTop(Block block) {
-		return new Texture().put(TextureKey.SIDE, getModelId(block)).put(TextureKey.END, getSubModelId(block, "_top"));
+		return new Texture().put(TextureKey.SIDE, getId(block)).put(TextureKey.END, getSubId(block, "_top"));
 	}
 
 	public static Texture sideEnd(Identifier side, Identifier end) {
@@ -140,26 +140,26 @@ public class Texture {
 
 	public static Texture sideTopBottom(Block block) {
 		return new Texture()
-			.put(TextureKey.SIDE, getSubModelId(block, "_side"))
-			.put(TextureKey.TOP, getSubModelId(block, "_top"))
-			.put(TextureKey.BOTTOM, getSubModelId(block, "_bottom"));
+			.put(TextureKey.SIDE, getSubId(block, "_side"))
+			.put(TextureKey.TOP, getSubId(block, "_top"))
+			.put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
 	}
 
 	public static Texture wallSideTopBottom(Block block) {
-		Identifier identifier = getModelId(block);
+		Identifier identifier = getId(block);
 		return new Texture()
 			.put(TextureKey.WALL, identifier)
 			.put(TextureKey.SIDE, identifier)
-			.put(TextureKey.TOP, getSubModelId(block, "_top"))
-			.put(TextureKey.BOTTOM, getSubModelId(block, "_bottom"));
+			.put(TextureKey.TOP, getSubId(block, "_top"))
+			.put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
 	}
 
 	public static Texture topBottom(Block block) {
-		return new Texture().put(TextureKey.TOP, getSubModelId(block, "_top")).put(TextureKey.BOTTOM, getSubModelId(block, "_bottom"));
+		return new Texture().put(TextureKey.TOP, getSubId(block, "_top")).put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
 	}
 
 	public static Texture particle(Block block) {
-		return new Texture().put(TextureKey.PARTICLE, getModelId(block));
+		return new Texture().put(TextureKey.PARTICLE, getId(block));
 	}
 
 	public static Texture particle(Identifier id) {
@@ -167,19 +167,19 @@ public class Texture {
 	}
 
 	public static Texture fire0(Block block) {
-		return new Texture().put(TextureKey.FIRE, getSubModelId(block, "_0"));
+		return new Texture().put(TextureKey.FIRE, getSubId(block, "_0"));
 	}
 
 	public static Texture fire1(Block block) {
-		return new Texture().put(TextureKey.FIRE, getSubModelId(block, "_1"));
+		return new Texture().put(TextureKey.FIRE, getSubId(block, "_1"));
 	}
 
 	public static Texture lantern(Block block) {
-		return new Texture().put(TextureKey.LANTERN, getModelId(block));
+		return new Texture().put(TextureKey.LANTERN, getId(block));
 	}
 
 	public static Texture torch(Block block) {
-		return new Texture().put(TextureKey.TORCH, getModelId(block));
+		return new Texture().put(TextureKey.TORCH, getId(block));
 	}
 
 	public static Texture torch(Identifier id) {
@@ -187,92 +187,92 @@ public class Texture {
 	}
 
 	public static Texture particle(Item item) {
-		return new Texture().put(TextureKey.PARTICLE, getModelId(item));
+		return new Texture().put(TextureKey.PARTICLE, getId(item));
 	}
 
 	public static Texture sideFrontBack(Block block) {
 		return new Texture()
-			.put(TextureKey.SIDE, getSubModelId(block, "_side"))
-			.put(TextureKey.FRONT, getSubModelId(block, "_front"))
-			.put(TextureKey.BACK, getSubModelId(block, "_back"));
+			.put(TextureKey.SIDE, getSubId(block, "_side"))
+			.put(TextureKey.FRONT, getSubId(block, "_front"))
+			.put(TextureKey.BACK, getSubId(block, "_back"));
 	}
 
 	public static Texture sideFrontTopBottom(Block block) {
 		return new Texture()
-			.put(TextureKey.SIDE, getSubModelId(block, "_side"))
-			.put(TextureKey.FRONT, getSubModelId(block, "_front"))
-			.put(TextureKey.TOP, getSubModelId(block, "_top"))
-			.put(TextureKey.BOTTOM, getSubModelId(block, "_bottom"));
+			.put(TextureKey.SIDE, getSubId(block, "_side"))
+			.put(TextureKey.FRONT, getSubId(block, "_front"))
+			.put(TextureKey.TOP, getSubId(block, "_top"))
+			.put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
 	}
 
 	public static Texture sideFrontTop(Block block) {
 		return new Texture()
-			.put(TextureKey.SIDE, getSubModelId(block, "_side"))
-			.put(TextureKey.FRONT, getSubModelId(block, "_front"))
-			.put(TextureKey.TOP, getSubModelId(block, "_top"));
+			.put(TextureKey.SIDE, getSubId(block, "_side"))
+			.put(TextureKey.FRONT, getSubId(block, "_front"))
+			.put(TextureKey.TOP, getSubId(block, "_top"));
 	}
 
 	public static Texture sideFrontEnd(Block block) {
 		return new Texture()
-			.put(TextureKey.SIDE, getSubModelId(block, "_side"))
-			.put(TextureKey.FRONT, getSubModelId(block, "_front"))
-			.put(TextureKey.END, getSubModelId(block, "_end"));
+			.put(TextureKey.SIDE, getSubId(block, "_side"))
+			.put(TextureKey.FRONT, getSubId(block, "_front"))
+			.put(TextureKey.END, getSubId(block, "_end"));
 	}
 
 	public static Texture top(Block top) {
-		return new Texture().put(TextureKey.TOP, getSubModelId(top, "_top"));
+		return new Texture().put(TextureKey.TOP, getSubId(top, "_top"));
 	}
 
 	public static Texture frontSideWithCustomBottom(Block block, Block bottom) {
 		return new Texture()
-			.put(TextureKey.PARTICLE, getSubModelId(block, "_front"))
-			.put(TextureKey.DOWN, getModelId(bottom))
-			.put(TextureKey.UP, getSubModelId(block, "_top"))
-			.put(TextureKey.NORTH, getSubModelId(block, "_front"))
-			.put(TextureKey.EAST, getSubModelId(block, "_side"))
-			.put(TextureKey.SOUTH, getSubModelId(block, "_side"))
-			.put(TextureKey.WEST, getSubModelId(block, "_front"));
+			.put(TextureKey.PARTICLE, getSubId(block, "_front"))
+			.put(TextureKey.DOWN, getId(bottom))
+			.put(TextureKey.UP, getSubId(block, "_top"))
+			.put(TextureKey.NORTH, getSubId(block, "_front"))
+			.put(TextureKey.EAST, getSubId(block, "_side"))
+			.put(TextureKey.SOUTH, getSubId(block, "_side"))
+			.put(TextureKey.WEST, getSubId(block, "_front"));
 	}
 
 	public static Texture frontTopSide(Block frontTopSideBlock, Block downBlock) {
 		return new Texture()
-			.put(TextureKey.PARTICLE, getSubModelId(frontTopSideBlock, "_front"))
-			.put(TextureKey.DOWN, getModelId(downBlock))
-			.put(TextureKey.UP, getSubModelId(frontTopSideBlock, "_top"))
-			.put(TextureKey.NORTH, getSubModelId(frontTopSideBlock, "_front"))
-			.put(TextureKey.SOUTH, getSubModelId(frontTopSideBlock, "_front"))
-			.put(TextureKey.EAST, getSubModelId(frontTopSideBlock, "_side"))
-			.put(TextureKey.WEST, getSubModelId(frontTopSideBlock, "_side"));
+			.put(TextureKey.PARTICLE, getSubId(frontTopSideBlock, "_front"))
+			.put(TextureKey.DOWN, getId(downBlock))
+			.put(TextureKey.UP, getSubId(frontTopSideBlock, "_top"))
+			.put(TextureKey.NORTH, getSubId(frontTopSideBlock, "_front"))
+			.put(TextureKey.SOUTH, getSubId(frontTopSideBlock, "_front"))
+			.put(TextureKey.EAST, getSubId(frontTopSideBlock, "_side"))
+			.put(TextureKey.WEST, getSubId(frontTopSideBlock, "_side"));
 	}
 
 	public static Texture layer0(Item item) {
-		return new Texture().put(TextureKey.LAYER0, getModelId(item));
+		return new Texture().put(TextureKey.LAYER0, getId(item));
 	}
 
 	public static Texture layer0(Block block) {
-		return new Texture().put(TextureKey.LAYER0, getModelId(block));
+		return new Texture().put(TextureKey.LAYER0, getId(block));
 	}
 
 	public static Texture layer0(Identifier id) {
 		return new Texture().put(TextureKey.LAYER0, id);
 	}
 
-	public static Identifier getModelId(Block block) {
+	public static Identifier getId(Block block) {
 		Identifier identifier = Registry.BLOCK.getId(block);
 		return new Identifier(identifier.getNamespace(), "block/" + identifier.getPath());
 	}
 
-	public static Identifier getSubModelId(Block block, String suffix) {
+	public static Identifier getSubId(Block block, String suffix) {
 		Identifier identifier = Registry.BLOCK.getId(block);
 		return new Identifier(identifier.getNamespace(), "block/" + identifier.getPath() + suffix);
 	}
 
-	public static Identifier getModelId(Item item) {
+	public static Identifier getId(Item item) {
 		Identifier identifier = Registry.ITEM.getId(item);
 		return new Identifier(identifier.getNamespace(), "item/" + identifier.getPath());
 	}
 
-	public static Identifier getSubModelId(Item item, String suffix) {
+	public static Identifier getSubId(Item item, String suffix) {
 		Identifier identifier = Registry.ITEM.getId(item);
 		return new Identifier(identifier.getNamespace(), "item/" + identifier.getPath() + suffix);
 	}

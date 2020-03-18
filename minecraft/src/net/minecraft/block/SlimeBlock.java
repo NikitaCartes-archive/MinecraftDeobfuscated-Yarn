@@ -8,7 +8,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class SlimeBlock extends TransparentBlock {
-	public SlimeBlock(Block.Settings settings) {
+	public SlimeBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

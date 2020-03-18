@@ -82,8 +82,8 @@ public class EnderDragonFight {
 	public EnderDragonFight(ServerWorld world, CompoundTag compoundTag) {
 		this.world = world;
 		if (compoundTag.contains("DragonKilled", 99)) {
-			if (compoundTag.containsUuidOld("DragonUUID")) {
-				this.dragonUuid = compoundTag.getUuidOld("DragonUUID");
+			if (compoundTag.containsUuidNew("Dragon")) {
+				this.dragonUuid = compoundTag.getUuidNew("Dragon");
 			}
 
 			this.dragonKilled = compoundTag.getBoolean("DragonKilled");
@@ -124,7 +124,7 @@ public class EnderDragonFight {
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.dragonUuid != null) {
-			compoundTag.putUuidOld("DragonUUID", this.dragonUuid);
+			compoundTag.putUuidNew("Dragon", this.dragonUuid);
 		}
 
 		compoundTag.putBoolean("DragonKilled", this.dragonKilled);
@@ -427,7 +427,7 @@ public class EnderDragonFight {
 			this.countAliveCrystals();
 			Entity entity = this.world.getEntity(this.dragonUuid);
 			if (entity instanceof EnderDragonEntity) {
-				((EnderDragonEntity)entity).crystalDestroyed(enderCrystal, enderCrystal.getSenseCenterPos(), source);
+				((EnderDragonEntity)entity).crystalDestroyed(enderCrystal, enderCrystal.getBlockPos(), source);
 			}
 		}
 	}

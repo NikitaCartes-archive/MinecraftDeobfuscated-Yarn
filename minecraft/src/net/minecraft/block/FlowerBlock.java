@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -12,7 +11,7 @@ public class FlowerBlock extends PlantBlock {
 	private final StatusEffect effectInStew;
 	private final int effectInStewDuration;
 
-	public FlowerBlock(StatusEffect suspiciousStewEffect, int effectDuration, Block.Settings settings) {
+	public FlowerBlock(StatusEffect suspiciousStewEffect, int effectDuration, AbstractBlock.Settings settings) {
 		super(settings);
 		this.effectInStew = suspiciousStewEffect;
 		if (suspiciousStewEffect.isInstant()) {
@@ -23,14 +22,14 @@ public class FlowerBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
-		Vec3d vec3d = state.getOffsetPos(world, pos);
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		Vec3d vec3d = state.getModelOffset(world, pos);
 		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
-	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XZ;
+	public AbstractBlock.OffsetType getOffsetType() {
+		return AbstractBlock.OffsetType.XZ;
 	}
 
 	public StatusEffect getEffectInStew() {

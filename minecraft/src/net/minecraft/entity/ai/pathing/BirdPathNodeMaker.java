@@ -39,7 +39,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			i = MathHelper.floor(this.entity.getY() + 0.5);
 		}
 
-		BlockPos blockPos = this.entity.getSenseCenterPos();
+		BlockPos blockPos = this.entity.getBlockPos();
 		PathNodeType pathNodeType = this.getNodeType(this.entity, blockPos.getX(), i, blockPos.getZ());
 		if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0F) {
 			Set<BlockPos> set = Sets.<BlockPos>newHashSet();
@@ -232,7 +232,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	) {
 		EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
 		PathNodeType pathNodeType = PathNodeType.BLOCKED;
-		BlockPos blockPos = mob.getSenseCenterPos();
+		BlockPos blockPos = mob.getBlockPos();
 		pathNodeType = this.findNearbyNodeTypes(world, x, y, z, sizeX, sizeY, sizeZ, canOpenDoors, canEnterOpenDoors, enumSet, pathNodeType, blockPos);
 		if (enumSet.contains(PathNodeType.FENCE)) {
 			return PathNodeType.FENCE;

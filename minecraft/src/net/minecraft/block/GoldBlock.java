@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class GoldBlock extends Block {
-	public GoldBlock(Block.Settings settings) {
+	public GoldBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -40,7 +41,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 			state -> {
 				Block block = state.getBlock();
 				return state.isAir()
-					|| state.matches(BlockTags.LEAVES)
+					|| state.isIn(BlockTags.LEAVES)
 					|| isDirt(block)
 					|| block.isIn(BlockTags.LOGS)
 					|| block.isIn(BlockTags.SAPLINGS)
@@ -50,7 +51,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 	}
 
 	public static boolean isAir(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, BlockState::isAir);
+		return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
 	}
 
 	protected static boolean isNaturalDirt(TestableWorld world, BlockPos pos) {
@@ -69,7 +70,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 	}
 
 	public static boolean isAirOrLeaves(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> state.isAir() || state.matches(BlockTags.LEAVES));
+		return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
 	}
 
 	public static boolean isNaturalDirtOrGrass(TestableWorld world, BlockPos pos) {

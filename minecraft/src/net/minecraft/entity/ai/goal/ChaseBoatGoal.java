@@ -77,7 +77,7 @@ public class ChaseBoatGoal extends Goal {
 		if (--this.updateCountdownTicks <= 0) {
 			this.updateCountdownTicks = 10;
 			if (this.state == ChaseBoatState.GO_TO_BOAT) {
-				BlockPos blockPos = this.passenger.getSenseCenterPos().offset(this.passenger.getHorizontalFacing().getOpposite());
+				BlockPos blockPos = this.passenger.getBlockPos().offset(this.passenger.getHorizontalFacing().getOpposite());
 				blockPos = blockPos.add(0, -1, 0);
 				this.mob.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 				if (this.mob.distanceTo(this.passenger) < 4.0F) {
@@ -86,7 +86,7 @@ public class ChaseBoatGoal extends Goal {
 				}
 			} else if (this.state == ChaseBoatState.GO_IN_BOAT_DIRECTION) {
 				Direction direction = this.passenger.getMovementDirection();
-				BlockPos blockPos2 = this.passenger.getSenseCenterPos().offset(direction, 10);
+				BlockPos blockPos2 = this.passenger.getBlockPos().offset(direction, 10);
 				this.mob.getNavigation().startMovingTo((double)blockPos2.getX(), (double)(blockPos2.getY() - 1), (double)blockPos2.getZ(), 1.0);
 				if (this.mob.distanceTo(this.passenger) > 12.0F) {
 					this.updateCountdownTicks = 0;

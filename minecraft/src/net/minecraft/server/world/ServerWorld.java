@@ -73,6 +73,7 @@ import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -309,7 +310,7 @@ public class ServerWorld extends World {
 				this.setTimeOfDay(l - l % 24000L);
 			}
 
-			this.method_23660();
+			this.wakeSleepingPlayers();
 			if (this.getGameRules().getBoolean(GameRules.DO_WEATHER_CYCLE)) {
 				this.resetWeather();
 			}
@@ -415,7 +416,7 @@ public class ServerWorld extends World {
 		profiler.pop();
 	}
 
-	private void method_23660() {
+	private void wakeSleepingPlayers() {
 		((List)this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList()))
 			.forEach(serverPlayerEntity -> serverPlayerEntity.wakeUp(false, false));
 	}
@@ -494,10 +495,10 @@ public class ServerWorld extends World {
 		BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
 		Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getHeight(), blockPos.getZ())).expand(3.0);
 		List<LivingEntity> list = this.getEntities(
-			LivingEntity.class, box, livingEntity -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getSenseCenterPos())
+			LivingEntity.class, box, livingEntity -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos())
 		);
 		if (!list.isEmpty()) {
-			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getSenseCenterPos();
+			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
 		} else {
 			if (blockPos.getY() == -1) {
 				blockPos = blockPos.up(2);
@@ -538,29 +539,6 @@ public class ServerWorld extends World {
 		this.properties.setRaining(false);
 		this.properties.setThunderTime(0);
 		this.properties.setThundering(false);
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void setDefaultSpawnClient() {
-		if (this.properties.getSpawnY() <= 0) {
-			this.properties.setSpawnY(this.getSeaLevel() + 1);
-		}
-
-		int i = this.properties.getSpawnX();
-		int j = this.properties.getSpawnZ();
-		int k = 0;
-
-		while(this.getTopNonAirState(new BlockPos(i, 0, j)).isAir()) {
-			i += this.random.nextInt(8) - this.random.nextInt(8);
-			j += this.random.nextInt(8) - this.random.nextInt(8);
-			if (++k == 10000) {
-				break;
-			}
-		}
-
-		this.properties.setSpawnX(i);
-		this.properties.setSpawnZ(j);
 	}
 
 	public void resetIdleTimeout() {
@@ -1199,7 +1177,7 @@ public class ServerWorld extends World {
 		if (player.getServerWorld() != this) {
 			return false;
 		} else {
-			BlockPos blockPos = player.getSenseCenterPos();
+			BlockPos blockPos = player.getBlockPos();
 			if (blockPos.isWithinDistance(new Vec3d(x, y, z), force ? 512.0 : 32.0)) {
 				player.networkHandler.sendPacket(packet);
 				return true;
@@ -1292,6 +1270,7 @@ public class ServerWorld extends World {
 		super.setSpawnPos(pos);
 		this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
 		this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
+		this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos));
 	}
 
 	public LongSet getForcedChunks() {
@@ -1351,8 +1330,8 @@ public class ServerWorld extends World {
 		return this.isNearOccupiedPointOfInterest(pos, 1);
 	}
 
-	public boolean isNearOccupiedPointOfInterest(ChunkSectionPos chunkSectionPos) {
-		return this.isNearOccupiedPointOfInterest(chunkSectionPos.getCenterPos());
+	public boolean isNearOccupiedPointOfInterest(ChunkSectionPos sectionPos) {
+		return this.isNearOccupiedPointOfInterest(sectionPos.getCenterPos());
 	}
 
 	public boolean isNearOccupiedPointOfInterest(BlockPos pos, int maxDistance) {
@@ -1384,7 +1363,7 @@ public class ServerWorld extends World {
 		observer.onInteractionWith(interaction, entity);
 	}
 
-	public void method_21625(Path path) throws IOException {
+	public void dump(Path path) throws IOException {
 		ThreadedAnvilChunkStorage threadedAnvilChunkStorage = this.getChunkManager().threadedAnvilChunkStorage;
 		Writer writer = Files.newBufferedWriter(path.resolve("stats.txt"));
 		Throwable path2 = null;
@@ -1398,10 +1377,10 @@ public class ServerWorld extends World {
 
 			writer.write(String.format("entities: %d\n", this.entitiesById.size()));
 			writer.write(String.format("block_entities: %d\n", this.blockEntities.size()));
-			writer.write(String.format("block_ticks: %d\n", this.getBlockTickScheduler().method_20825()));
-			writer.write(String.format("fluid_ticks: %d\n", this.getFluidTickScheduler().method_20825()));
-			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().method_21683() + "\n");
-			writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().method_21694()));
+			writer.write(String.format("block_ticks: %d\n", this.getBlockTickScheduler().getTicks()));
+			writer.write(String.format("fluid_ticks: %d\n", this.getFluidTickScheduler().getTicks()));
+			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().toDumpString() + "\n");
+			writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().getPendingTasks()));
 		} catch (Throwable var164) {
 			path2 = var164;
 			throw var164;
@@ -1448,7 +1427,7 @@ public class ServerWorld extends World {
 		Throwable var172 = null;
 
 		try {
-			threadedAnvilChunkStorage.exportChunks(writer3);
+			threadedAnvilChunkStorage.dump(writer3);
 		} catch (Throwable var157) {
 			var172 = var157;
 			throw var157;
@@ -1471,7 +1450,7 @@ public class ServerWorld extends World {
 		Throwable path5 = null;
 
 		try {
-			exportEntities(writer4, this.entitiesById.values());
+			dumpEntities(writer4, this.entitiesById.values());
 		} catch (Throwable var156) {
 			path5 = var156;
 			throw var156;
@@ -1494,7 +1473,7 @@ public class ServerWorld extends World {
 		Throwable writer6 = null;
 
 		try {
-			exportEntities(writer5, this.globalEntities);
+			dumpEntities(writer5, this.globalEntities);
 		} catch (Throwable var155) {
 			writer6 = var155;
 			throw var155;
@@ -1517,7 +1496,7 @@ public class ServerWorld extends World {
 		Throwable var9 = null;
 
 		try {
-			this.exportBlockEntities(writer6x);
+			this.dumpBlockEntities(writer6x);
 		} catch (Throwable var154) {
 			var9 = var154;
 			throw var154;
@@ -1536,7 +1515,7 @@ public class ServerWorld extends World {
 		}
 	}
 
-	private static void exportEntities(Writer writer, Iterable<Entity> iterable) throws IOException {
+	private static void dumpEntities(Writer writer, Iterable<Entity> entities) throws IOException {
 		CsvWriter csvWriter = CsvWriter.makeHeader()
 			.addColumn("x")
 			.addColumn("y")
@@ -1548,7 +1527,7 @@ public class ServerWorld extends World {
 			.addColumn("custom_name")
 			.startBody(writer);
 
-		for(Entity entity : iterable) {
+		for(Entity entity : entities) {
 			Text text = entity.getCustomName();
 			Text text2 = entity.getDisplayName();
 			csvWriter.printRow(
@@ -1564,7 +1543,7 @@ public class ServerWorld extends World {
 		}
 	}
 
-	private void exportBlockEntities(Writer writer) throws IOException {
+	private void dumpBlockEntities(Writer writer) throws IOException {
 		CsvWriter csvWriter = CsvWriter.makeHeader().addColumn("x").addColumn("y").addColumn("z").addColumn("type").startBody(writer);
 
 		for(BlockEntity blockEntity : this.blockEntities) {
@@ -1574,8 +1553,8 @@ public class ServerWorld extends World {
 	}
 
 	@VisibleForTesting
-	public void method_23658(BlockBox blockBox) {
-		this.pendingBlockActions.removeIf(blockAction -> blockBox.contains(blockAction.getPos()));
+	public void clearUpdatesInArea(BlockBox box) {
+		this.pendingBlockActions.removeIf(blockAction -> box.contains(blockAction.getPos()));
 	}
 
 	@Override
@@ -1587,7 +1566,7 @@ public class ServerWorld extends World {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float method_24852(Direction direction, boolean bl) {
+	public float getBrightness(Direction direction, boolean shaded) {
 		return 1.0F;
 	}
 }

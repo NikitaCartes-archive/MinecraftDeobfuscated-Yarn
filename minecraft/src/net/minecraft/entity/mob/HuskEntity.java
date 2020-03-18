@@ -53,7 +53,7 @@ public class HuskEntity extends ZombieEntity {
 	public boolean tryAttack(Entity target) {
 		boolean bl = super.tryAttack(target);
 		if (bl && this.getMainHandStack().isEmpty() && target instanceof LivingEntity) {
-			float f = this.world.getLocalDifficulty(this.getSenseCenterPos()).getLocalDifficulty();
+			float f = this.world.getLocalDifficulty(this.getBlockPos()).getLocalDifficulty();
 			((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 140 * (int)f));
 		}
 
@@ -68,7 +68,9 @@ public class HuskEntity extends ZombieEntity {
 	@Override
 	protected void convertInWater() {
 		this.convertTo(EntityType.ZOMBIE);
-		this.world.playLevelEvent(null, 1041, this.getSenseCenterPos(), 0);
+		if (!this.isSilent()) {
+			this.world.playLevelEvent(null, 1041, this.getBlockPos(), 0);
+		}
 	}
 
 	@Override

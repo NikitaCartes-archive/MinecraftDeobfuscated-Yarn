@@ -17,7 +17,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
-	protected JigsawBlock(Block.Settings settings) {
+	protected JigsawBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP));
 	}

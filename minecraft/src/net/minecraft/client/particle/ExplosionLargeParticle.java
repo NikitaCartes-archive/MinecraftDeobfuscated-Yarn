@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ExplosionLargeParticle extends SpriteBillboardParticle {
-	private final SpriteProvider field_17815;
+	private final SpriteProvider spriteProvider;
 
 	private ExplosionLargeParticle(World world, double x, double y, double z, double d, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
@@ -17,7 +17,7 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 		this.colorGreen = f;
 		this.colorBlue = f;
 		this.scale = 2.0F * (1.0F - (float)d * 0.5F);
-		this.field_17815 = spriteProvider;
+		this.spriteProvider = spriteProvider;
 		this.setSpriteForAge(spriteProvider);
 	}
 
@@ -34,7 +34,7 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.setSpriteForAge(this.field_17815);
+			this.setSpriteForAge(this.spriteProvider);
 		}
 	}
 
@@ -45,14 +45,14 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17816;
+		private final SpriteProvider spriteProvider;
 
 		public Factory(SpriteProvider spriteProvider) {
-			this.field_17816 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new ExplosionLargeParticle(world, d, e, f, g, this.field_17816);
+			return new ExplosionLargeParticle(world, d, e, f, g, this.spriteProvider);
 		}
 	}
 }

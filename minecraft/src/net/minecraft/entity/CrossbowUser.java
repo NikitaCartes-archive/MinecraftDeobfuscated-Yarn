@@ -3,7 +3,8 @@ package net.minecraft.entity;
 import javax.annotation.Nullable;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -16,7 +17,7 @@ import net.minecraft.util.math.Vec3d;
 public interface CrossbowUser extends RangedAttackMob {
 	void setCharging(boolean charging);
 
-	void shoot(LivingEntity target, ItemStack crossbow, Projectile projectile, float multiShotSpray);
+	void shoot(LivingEntity target, ItemStack crossbow, ProjectileEntity projectile, float multiShotSpray);
 
 	@Nullable
 	LivingEntity getTarget();
@@ -33,7 +34,7 @@ public interface CrossbowUser extends RangedAttackMob {
 		this.postShoot();
 	}
 
-	default void shoot(LivingEntity entity, LivingEntity target, Projectile projectile, float multishotSpray, float speed) {
+	default void shoot(LivingEntity entity, LivingEntity target, ProjectileEntity projectile, float multishotSpray, float speed) {
 		double d = target.getX() - entity.getX();
 		double e = target.getZ() - entity.getZ();
 		double f = (double)MathHelper.sqrt(d * d + e * e);

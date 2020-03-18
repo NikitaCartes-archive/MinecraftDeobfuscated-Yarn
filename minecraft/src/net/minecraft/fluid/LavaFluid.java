@@ -44,7 +44,7 @@ public abstract class LavaFluid extends BaseFluid {
 	@Override
 	public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
 		BlockPos blockPos = pos.up();
-		if (world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos).isFullOpaque(world, blockPos)) {
+		if (world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) {
 			if (random.nextInt(100) == 0) {
 				double d = (double)((float)pos.getX() + random.nextFloat());
 				double e = (double)(pos.getY() + 1);

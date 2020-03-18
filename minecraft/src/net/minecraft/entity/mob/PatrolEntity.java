@@ -122,7 +122,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	public void setRandomPatrolTarget() {
-		this.patrolTarget = this.getSenseCenterPos().add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
+		this.patrolTarget = this.getBlockPos().add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
 		this.patrolling = true;
 	}
 
@@ -202,7 +202,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			Random random = this.actor.getRandom();
 			BlockPos blockPos = this.actor
 				.world
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.actor.getSenseCenterPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.actor.getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 			return this.actor.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
 		}
 	}

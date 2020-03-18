@@ -26,7 +26,7 @@ public class BarterLootTableGenerator implements Consumer<BiConsumer<Identifier,
 					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(ItemEntry.builder(Items.NETHERITE_HOE).setWeight(1))
-						.withEntry(ItemEntry.builder(Items.ENCHANTED_BOOK).setWeight(1).withFunction(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
+						.withEntry(ItemEntry.builder(Items.BOOK).setWeight(1).withFunction(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
 						.withEntry(ItemEntry.builder(Items.IRON_BOOTS).setWeight(5).withFunction(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SOUL_SPEED)))
 						.withEntry(
 							ItemEntry.builder(Items.POTION)

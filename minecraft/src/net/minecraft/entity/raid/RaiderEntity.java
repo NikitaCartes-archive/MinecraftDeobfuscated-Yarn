@@ -91,7 +91,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.canJoinRaid()) {
 				if (raid == null) {
 					if (this.world.getTime() % 20L == 0L) {
-						Raid raid2 = ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos());
+						Raid raid2 = ((ServerWorld)this.world).getRaidAt(this.getBlockPos());
 						if (raid2 != null && RaidManager.isValidRaiderFor(this, raid2)) {
 							raid2.addRaider(raid2.getGroupsSpawned(), this, null, true);
 						}
@@ -130,7 +130,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				raid.removeFromWave(this, false);
 			}
 
-			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(this.getSenseCenterPos()) == null) {
+			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(this.getBlockPos()) == null) {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				PlayerEntity playerEntity = null;
 				if (entity instanceof PlayerEntity) {
@@ -314,7 +314,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		private boolean tryFindHome() {
 			ServerWorld serverWorld = (ServerWorld)this.raider.world;
-			BlockPos blockPos = this.raider.getSenseCenterPos();
+			BlockPos blockPos = this.raider.getBlockPos();
 			Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
 				.getPosition(
 					pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,

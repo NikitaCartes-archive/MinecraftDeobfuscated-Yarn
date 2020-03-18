@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class FletchingTableBlock extends CraftingTableBlock {
-	protected FletchingTableBlock(Block.Settings settings) {
+	protected FletchingTableBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

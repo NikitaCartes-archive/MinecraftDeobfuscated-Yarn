@@ -27,6 +27,14 @@ public class RecipeBook {
 	public void copyFrom(RecipeBook book) {
 		this.recipes.clear();
 		this.toBeDisplayed.clear();
+		this.guiOpen = book.guiOpen;
+		this.filteringCraftable = book.filteringCraftable;
+		this.furnaceGuiOpen = book.furnaceGuiOpen;
+		this.furnaceFilteringCraftable = book.furnaceFilteringCraftable;
+		this.blastFurnaceGuiOpen = book.blastFurnaceGuiOpen;
+		this.blastFurnaceFilteringCraftable = book.blastFurnaceFilteringCraftable;
+		this.smokerGuiOpen = book.smokerGuiOpen;
+		this.smokerFilteringCraftable = book.smokerFilteringCraftable;
 		this.recipes.addAll(book.recipes);
 		this.toBeDisplayed.addAll(book.toBeDisplayed);
 	}

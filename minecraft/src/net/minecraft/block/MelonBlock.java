@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 public class MelonBlock extends GourdBlock {
-	protected MelonBlock(Block.Settings settings) {
+	protected MelonBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

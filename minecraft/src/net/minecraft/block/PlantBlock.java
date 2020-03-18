@@ -8,7 +8,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldView;
 
 public class PlantBlock extends Block {
-	protected PlantBlock(Block.Settings settings) {
+	protected PlantBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 
@@ -18,8 +18,8 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		return !state.canPlaceAt(world, pos) ? Blocks.AIR.getDefaultState() : super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
-		return env == NavigationType.AIR && !this.collidable ? true : super.canPathfindThrough(state, world, pos, env);
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		return type == NavigationType.AIR && !this.collidable ? true : super.canPathfindThrough(state, world, pos, type);
 	}
 }

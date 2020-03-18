@@ -25,7 +25,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			&& !this.actor.hasPassengers()
 			&& this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getSenseCenterPos());
+			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getBlockPos());
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 		return this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
 			&& this.actor.world instanceof ServerWorld
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getSenseCenterPos());
+			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getBlockPos());
 	}
 
 	@Override

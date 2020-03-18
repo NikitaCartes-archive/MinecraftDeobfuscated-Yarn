@@ -151,7 +151,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.fixed) {
-			return false;
+			return source != DamageSource.OUT_OF_WORLD && !source.isSourceCreativePlayer() ? false : super.damage(source, amount);
 		} else if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (!source.isExplosive() && !this.getHeldItemStack().isEmpty()) {
@@ -196,30 +196,32 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	private void dropHeldStack(@Nullable Entity entity, boolean alwaysDrop) {
-		if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-			if (entity == null) {
-				this.removeFromFrame(this.getHeldItemStack());
-			}
-		} else {
-			ItemStack itemStack = this.getHeldItemStack();
-			this.setHeldItemStack(ItemStack.EMPTY);
-			if (entity instanceof PlayerEntity) {
-				PlayerEntity playerEntity = (PlayerEntity)entity;
-				if (playerEntity.abilities.creativeMode) {
-					this.removeFromFrame(itemStack);
-					return;
+		if (!this.fixed) {
+			if (!this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+				if (entity == null) {
+					this.removeFromFrame(this.getHeldItemStack());
 				}
-			}
+			} else {
+				ItemStack itemStack = this.getHeldItemStack();
+				this.setHeldItemStack(ItemStack.EMPTY);
+				if (entity instanceof PlayerEntity) {
+					PlayerEntity playerEntity = (PlayerEntity)entity;
+					if (playerEntity.abilities.creativeMode) {
+						this.removeFromFrame(itemStack);
+						return;
+					}
+				}
 
-			if (alwaysDrop) {
-				this.dropItem(Items.ITEM_FRAME);
-			}
+				if (alwaysDrop) {
+					this.dropItem(Items.ITEM_FRAME);
+				}
 
-			if (!itemStack.isEmpty()) {
-				itemStack = itemStack.copy();
-				this.removeFromFrame(itemStack);
-				if (this.random.nextFloat() < this.itemDropChance) {
-					this.dropStack(itemStack);
+				if (!itemStack.isEmpty()) {
+					itemStack = itemStack.copy();
+					this.removeFromFrame(itemStack);
+					if (this.random.nextFloat() < this.itemDropChance) {
+						this.dropStack(itemStack);
+					}
 				}
 			}
 		}

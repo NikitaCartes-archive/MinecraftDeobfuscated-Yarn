@@ -47,7 +47,7 @@ public class MoveThroughVillageGoal extends Goal {
 			return false;
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.mob.world;
-			BlockPos blockPos = this.mob.getSenseCenterPos();
+			BlockPos blockPos = this.mob.getBlockPos();
 			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {

@@ -32,7 +32,7 @@ public class BarrelBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = Properties.FACING;
 	public static final BooleanProperty OPEN = Properties.OPEN;
 
-	public BarrelBlock(Block.Settings settings) {
+	public BarrelBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(OPEN, Boolean.valueOf(false)));
 	}
@@ -54,7 +54,7 @@ public class BarrelBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (state.getBlock() != newState.getBlock()) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof Inventory) {
@@ -62,7 +62,7 @@ public class BarrelBlock extends BlockWithEntity {
 				world.updateComparators(pos, this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onBlockRemoved(state, world, pos, newState, notify);
 		}
 	}
 

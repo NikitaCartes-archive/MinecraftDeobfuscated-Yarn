@@ -7,7 +7,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.BaseFluid;
 import net.minecraft.fluid.Fluid;
@@ -27,14 +26,13 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class FluidBlock extends Block implements FluidDrainable {
 	public static final IntProperty LEVEL = Properties.LEVEL_15;
 	protected final BaseFluid fluid;
 	private final List<FluidState> statesByLevel;
 
-	protected FluidBlock(BaseFluid fluid, Block.Settings settings) {
+	protected FluidBlock(BaseFluid fluid, AbstractBlock.Settings settings) {
 		super(settings);
 		this.fluid = fluid;
 		this.statesByLevel = Lists.<FluidState>newArrayList();
@@ -49,8 +47,13 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
+	public boolean hasRandomTicks(BlockState state) {
+		return state.getFluidState().hasRandomTicks();
+	}
+
+	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		world.getFluidState(pos).onRandomTick(world, pos, random);
+		state.getFluidState().onRandomTick(world, pos, random);
 	}
 
 	@Override
@@ -59,7 +62,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return !this.fluid.isIn(FluidTags.LAVA);
 	}
 
@@ -71,8 +74,8 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean isSideInvisible(BlockState state, BlockState neighbor, Direction facing) {
-		return neighbor.getFluidState().getFluid().matchesType(this.fluid);
+	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+		return stateFrom.getFluidState().getFluid().matchesType(this.fluid);
 	}
 
 	@Override
@@ -86,35 +89,30 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.empty();
 	}
 
 	@Override
-	public int getTickRate(WorldView world) {
-		return this.fluid.getTickRate(world);
-	}
-
-	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (this.receiveNeighborFluids(world, pos, state)) {
-			world.getFluidTickScheduler().schedule(pos, state.getFluidState().getFluid(), this.getTickRate(world));
+			world.getFluidTickScheduler().schedule(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
-		if (state.getFluidState().isStill() || neighborState.getFluidState().isStill()) {
-			world.getFluidTickScheduler().schedule(pos, state.getFluidState().getFluid(), this.getTickRate(world));
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+		if (state.getFluidState().isStill() || newState.getFluidState().isStill()) {
+			world.getFluidTickScheduler().schedule(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos, boolean moved) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (this.receiveNeighborFluids(world, pos, state)) {
-			world.getFluidTickScheduler().schedule(pos, state.getFluidState().getFluid(), this.getTickRate(world));
+			world.getFluidTickScheduler().schedule(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
 		}
 	}
 

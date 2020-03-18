@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WallPlayerSkullBlock extends WallSkullBlock {
-	protected WallPlayerSkullBlock(Block.Settings settings) {
+	protected WallPlayerSkullBlock(AbstractBlock.Settings settings) {
 		super(SkullBlock.Type.PLAYER, settings);
 	}
 

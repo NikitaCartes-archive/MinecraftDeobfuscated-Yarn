@@ -4,7 +4,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
 public class WoodButtonBlock extends AbstractButtonBlock {
-	protected WoodButtonBlock(Block.Settings settings) {
+	protected WoodButtonBlock(AbstractBlock.Settings settings) {
 		super(true, settings);
 	}
 

@@ -724,7 +724,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return Iterables.unmodifiableIterable(this.chunkHolders.values());
 	}
 
-	void exportChunks(Writer writer) throws IOException {
+	void dump(Writer writer) throws IOException {
 		CsvWriter csvWriter = CsvWriter.makeHeader()
 			.addColumn("x")
 			.addColumn("z")

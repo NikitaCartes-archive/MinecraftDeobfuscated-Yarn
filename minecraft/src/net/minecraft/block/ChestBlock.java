@@ -13,7 +13,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.block.ChestAnimationProgress;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.PiglinBrain;
@@ -115,7 +114,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		}
 	};
 
-	protected ChestBlock(Block.Settings settings, Supplier<BlockEntityType<? extends ChestBlockEntity>> supplier) {
+	protected ChestBlock(AbstractBlock.Settings settings, Supplier<BlockEntityType<? extends ChestBlockEntity>> supplier) {
 		super(settings, supplier);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CHEST_TYPE, ChestType.SINGLE).with(WATERLOGGED, Boolean.valueOf(false))
@@ -137,28 +136,28 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if (state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		if (neighborState.getBlock() == this && facing.getAxis().isHorizontal()) {
-			ChestType chestType = neighborState.get(CHEST_TYPE);
+		if (newState.getBlock() == this && direction.getAxis().isHorizontal()) {
+			ChestType chestType = newState.get(CHEST_TYPE);
 			if (state.get(CHEST_TYPE) == ChestType.SINGLE
 				&& chestType != ChestType.SINGLE
-				&& state.get(FACING) == neighborState.get(FACING)
-				&& getFacing(neighborState) == facing.getOpposite()) {
+				&& state.get(FACING) == newState.get(FACING)
+				&& getFacing(newState) == direction.getOpposite()) {
 				return state.with(CHEST_TYPE, chestType.getOpposite());
 			}
-		} else if (getFacing(state) == facing) {
+		} else if (getFacing(state) == direction) {
 			return state.with(CHEST_TYPE, ChestType.SINGLE);
 		}
 
-		return super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, EntityContext context) {
+	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if (state.get(CHEST_TYPE) == ChestType.SINGLE) {
 			return SINGLE_SHAPE;
 		} else {
@@ -229,7 +228,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (state.getBlock() != newState.getBlock()) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof Inventory) {
@@ -237,7 +236,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 				world.updateComparators(pos, this);
 			}
 
-			super.onBlockRemoved(state, world, pos, newState, moved);
+			super.onBlockRemoved(state, world, pos, newState, notify);
 		}
 	}
 
@@ -325,7 +324,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	private static boolean hasBlockOnTop(BlockView world, BlockPos pos) {
 		BlockPos blockPos = pos.up();
-		return world.getBlockState(blockPos).isSimpleFullBlock(world, blockPos);
+		return world.getBlockState(blockPos).isSolidBlock(world, blockPos);
 	}
 
 	private static boolean hasOcelotOnTop(IWorld world, BlockPos pos) {
@@ -370,7 +369,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	@Override
-	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType env) {
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
 

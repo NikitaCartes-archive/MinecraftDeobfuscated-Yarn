@@ -1,4 +1,4 @@
-package net.minecraft.entity.thrown;
+package net.minecraft.entity.projectile.thrown;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,16 +14,16 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 
-public class ThrownEggEntity extends ThrownItemEntity {
-	public ThrownEggEntity(EntityType<? extends ThrownEggEntity> entityType, World world) {
+public class EggEntity extends ThrownItemEntity {
+	public EggEntity(EntityType<? extends EggEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public ThrownEggEntity(World world, LivingEntity thrower) {
-		super(EntityType.EGG, thrower, world);
+	public EggEntity(World world, LivingEntity owner) {
+		super(EntityType.EGG, owner, world);
 	}
 
-	public ThrownEggEntity(World world, double x, double y, double z) {
+	public EggEntity(World world, double x, double y, double z) {
 		super(EntityType.EGG, x, y, z, world);
 	}
 

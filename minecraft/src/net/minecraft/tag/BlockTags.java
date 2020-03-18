@@ -77,6 +77,7 @@ public class BlockTags {
 	public static final Tag<Block> CLIMBABLE = register("climbable");
 	public static final Tag<Block> SHULKER_BOXES = register("shulker_boxes");
 	public static final Tag<Block> HOGLIN_REPELLENTS = register("hoglin_repellents");
+	public static final Tag<Block> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");
 
 	public static void setContainer(TagContainer<Block> container) {
 		BlockTags.container = container;

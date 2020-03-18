@@ -14,7 +14,7 @@ import java.util.Objects;
 public interface DataProvider {
 	HashFunction SHA1 = Hashing.sha1();
 
-	void run(DataCache dataCache) throws IOException;
+	void run(DataCache cache) throws IOException;
 
 	String getName();
 

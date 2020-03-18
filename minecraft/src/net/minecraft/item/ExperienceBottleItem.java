@@ -1,7 +1,7 @@
 package net.minecraft.item;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.thrown.ThrownExperienceBottleEntity;
+import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -33,10 +33,10 @@ public class ExperienceBottleItem extends Item {
 			0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
-			ThrownExperienceBottleEntity thrownExperienceBottleEntity = new ThrownExperienceBottleEntity(world, user);
-			thrownExperienceBottleEntity.setItem(itemStack);
-			thrownExperienceBottleEntity.setProperties(user, user.pitch, user.yaw, -20.0F, 0.7F, 1.0F);
-			world.spawnEntity(thrownExperienceBottleEntity);
+			ExperienceBottleEntity experienceBottleEntity = new ExperienceBottleEntity(world, user);
+			experienceBottleEntity.setItem(itemStack);
+			experienceBottleEntity.setProperties(user, user.pitch, user.yaw, -20.0F, 0.7F, 1.0F);
+			world.spawnEntity(experienceBottleEntity);
 		}
 
 		user.incrementStat(Stats.USED.getOrCreateStat(this));

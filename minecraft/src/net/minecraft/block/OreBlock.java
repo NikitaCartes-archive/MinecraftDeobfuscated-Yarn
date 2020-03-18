@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class OreBlock extends Block {
-	public OreBlock(Block.Settings settings) {
+	public OreBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

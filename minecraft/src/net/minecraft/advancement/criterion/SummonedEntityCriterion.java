@@ -44,7 +44,7 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("entity", this.entity.serialize());
+			jsonObject.add("entity", this.entity.toJson());
 			return jsonObject;
 		}
 	}

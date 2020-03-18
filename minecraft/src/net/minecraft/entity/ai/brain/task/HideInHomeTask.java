@@ -41,7 +41,7 @@ public class HideInHomeTask extends Task<LivingEntity> {
 			.getPosition(
 				pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
 				blockPos -> true,
-				entity.getSenseCenterPos(),
+				entity.getBlockPos(),
 				this.preferredDistance + 1,
 				PointOfInterestStorage.OccupationStatus.ANY
 			);
@@ -64,7 +64,7 @@ public class HideInHomeTask extends Task<LivingEntity> {
 					pointOfInterestType -> pointOfInterestType == PointOfInterestType.HOME,
 					blockPos -> true,
 					PointOfInterestStorage.OccupationStatus.ANY,
-					entity.getSenseCenterPos(),
+					entity.getBlockPos(),
 					this.maxDistance,
 					entity.getRandom()
 				);

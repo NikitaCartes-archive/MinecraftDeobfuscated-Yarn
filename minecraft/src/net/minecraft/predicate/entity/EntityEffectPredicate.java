@@ -84,7 +84,7 @@ public class EntityEffectPredicate {
 		}
 	}
 
-	public JsonElement serialize() {
+	public JsonElement toJson() {
 		if (this == EMPTY) {
 			return JsonNull.INSTANCE;
 		} else {

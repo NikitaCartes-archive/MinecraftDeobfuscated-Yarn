@@ -1,4 +1,4 @@
-package net.minecraft.entity.thrown;
+package net.minecraft.entity.projectile.thrown;
 
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -24,20 +24,20 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public class ThrownEnderpearlEntity extends ThrownItemEntity {
+public class EnderPearlEntity extends ThrownItemEntity {
 	private LivingEntity owner;
 
-	public ThrownEnderpearlEntity(EntityType<? extends ThrownEnderpearlEntity> entityType, World world) {
+	public EnderPearlEntity(EntityType<? extends EnderPearlEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
-	public ThrownEnderpearlEntity(World world, LivingEntity owner) {
+	public EnderPearlEntity(World world, LivingEntity owner) {
 		super(EntityType.ENDER_PEARL, owner, world);
 		this.owner = owner;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ThrownEnderpearlEntity(World world, double x, double y, double z) {
+	public EnderPearlEntity(World world, double x, double y, double z) {
 		super(EntityType.ENDER_PEARL, x, y, z, world);
 	}
 

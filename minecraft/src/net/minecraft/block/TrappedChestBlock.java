@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 
 public class TrappedChestBlock extends ChestBlock {
-	public TrappedChestBlock(Block.Settings settings) {
+	public TrappedChestBlock(AbstractBlock.Settings settings) {
 		super(settings, () -> BlockEntityType.TRAPPED_CHEST);
 	}
 
@@ -33,12 +33,12 @@ public class TrappedChestBlock extends ChestBlock {
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
+	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		return MathHelper.clamp(ChestBlockEntity.getPlayersLookingInChestCount(world, pos), 0, 15);
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction facing) {
-		return facing == Direction.UP ? state.getWeakRedstonePower(world, pos, facing) : 0;
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+		return direction == Direction.UP ? state.getWeakRedstonePower(world, pos, direction) : 0;
 	}
 }

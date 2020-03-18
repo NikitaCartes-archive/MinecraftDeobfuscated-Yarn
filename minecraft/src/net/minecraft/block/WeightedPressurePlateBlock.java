@@ -10,13 +10,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 	public static final IntProperty POWER = Properties.POWER;
 	private final int weight;
 
-	protected WeightedPressurePlateBlock(int weight, Block.Settings settings) {
+	protected WeightedPressurePlateBlock(int weight, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(POWER, Integer.valueOf(0)));
 		this.weight = weight;
@@ -54,7 +53,7 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	@Override
-	public int getTickRate(WorldView world) {
+	protected int getTickRate() {
 		return 10;
 	}
 

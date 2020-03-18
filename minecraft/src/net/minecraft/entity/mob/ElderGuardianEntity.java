@@ -74,14 +74,14 @@ public class ElderGuardianEntity extends GuardianEntity {
 				if (!serverPlayerEntity.hasStatusEffect(statusEffect)
 					|| serverPlayerEntity.getStatusEffect(statusEffect).getAmplifier() < 2
 					|| serverPlayerEntity.getStatusEffect(statusEffect).getDuration() < 1200) {
-					serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(10, 0.0F));
+					serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(10, this.isSilent() ? 0.0F : 1.0F));
 					serverPlayerEntity.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2));
 				}
 			}
 		}
 
 		if (!this.hasPositionTarget()) {
-			this.setPositionTarget(this.getSenseCenterPos(), 16);
+			this.setPositionTarget(this.getBlockPos(), 16);
 		}
 	}
 }

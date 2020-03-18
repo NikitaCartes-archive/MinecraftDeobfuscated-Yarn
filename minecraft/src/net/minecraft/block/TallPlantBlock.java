@@ -22,20 +22,20 @@ import net.minecraft.world.WorldView;
 public class TallPlantBlock extends PlantBlock {
 	public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
 
-	public TallPlantBlock(Block.Settings settings) {
+	public TallPlantBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(HALF, DoubleBlockHalf.LOWER));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState, IWorld world, BlockPos pos, BlockPos neighborPos) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
-		if (facing.getAxis() != Direction.Axis.Y
-			|| doubleBlockHalf == DoubleBlockHalf.LOWER != (facing == Direction.UP)
-			|| neighborState.getBlock() == this && neighborState.get(HALF) != doubleBlockHalf) {
-			return doubleBlockHalf == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.canPlaceAt(world, pos)
+		if (direction.getAxis() != Direction.Axis.Y
+			|| doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)
+			|| newState.getBlock() == this && newState.get(HALF) != doubleBlockHalf) {
+			return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 				? Blocks.AIR.getDefaultState()
-				: super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+				: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
 			return Blocks.AIR.getDefaultState();
 		}
@@ -96,8 +96,8 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public Block.OffsetType getOffsetType() {
-		return Block.OffsetType.XZ;
+	public AbstractBlock.OffsetType getOffsetType() {
+		return AbstractBlock.OffsetType.XZ;
 	}
 
 	@Environment(EnvType.CLIENT)

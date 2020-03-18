@@ -375,17 +375,20 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		double f = target.getZ() - this.getZ();
 		float g = MathHelper.sqrt(d * d + f * f) * 0.2F;
 		llamaSpitEntity.setVelocity(d, e + (double)g, f, 1.5F, 10.0F);
-		this.world
-			.playSound(
-				null,
-				this.getX(),
-				this.getY(),
-				this.getZ(),
-				SoundEvents.ENTITY_LLAMA_SPIT,
-				this.getSoundCategory(),
-				1.0F,
-				1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
-			);
+		if (!this.isSilent()) {
+			this.world
+				.playSound(
+					null,
+					this.getX(),
+					this.getY(),
+					this.getZ(),
+					SoundEvents.ENTITY_LLAMA_SPIT,
+					this.getSoundCategory(),
+					1.0F,
+					1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+				);
+		}
+
 		this.world.spawnEntity(llamaSpitEntity);
 		this.spit = true;
 	}
