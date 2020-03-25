@@ -4,9 +4,11 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,7 +21,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
@@ -37,65 +38,58 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		super.onBlockAdded(state, world, pos, oldState, notify);
-		world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
-	}
-
-	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		int i = (Integer)state.get(CHARGES);
-		if (player.getStackInHand(hand).getItem() == Items.GLOWSTONE) {
-			if (i < 4) {
-				world.setBlockState(pos, state.with(CHARGES, Integer.valueOf(i + 1)), 3);
-				world.playSound(
-					(double)pos.getX() + 0.5,
-					(double)pos.getY() + 0.5,
-					(double)pos.getZ() + 0.5,
-					SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE,
-					SoundCategory.BLOCKS,
-					1.0F,
-					1.0F,
-					false
-				);
-				return ActionResult.SUCCESS;
-			} else {
-				return ActionResult.CONSUME;
-			}
-		} else if (i == 0) {
-			return ActionResult.CONSUME;
-		} else {
-			if (world.dimension.getType() == DimensionType.THE_NETHER) {
-				if (!world.isClient) {
-					((ServerPlayerEntity)player).setSpawnPoint(world.dimension.getType(), pos, false, true);
-				}
-
-				world.playSound(
-					(double)pos.getX() + 0.5,
-					(double)pos.getY() + 0.5,
-					(double)pos.getZ() + 0.5,
-					SoundEvents.BLOCK_RESPAWN_ANCHOR_SET_SPAWN,
-					SoundCategory.BLOCKS,
-					1.0F,
-					1.0F,
-					false
-				);
-			} else {
-				world.removeBlock(pos, false);
-				world.createExplosion(
-					null,
-					DamageSource.netherBed(),
-					(double)pos.getX() + 0.5,
-					(double)pos.getY() + 0.5,
-					(double)pos.getZ() + 0.5,
-					5.0F,
-					true,
-					Explosion.DestructionType.DESTROY
-				);
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (itemStack.getItem() == Items.GLOWSTONE && (Integer)state.get(CHARGES) < 4) {
+			method_26382(world, pos, state);
+			if (!player.abilities.creativeMode) {
+				itemStack.decrement(1);
 			}
 
 			return ActionResult.SUCCESS;
+		} else if ((Integer)state.get(CHARGES) == 0) {
+			return ActionResult.PASS;
+		} else if (world.dimension.getType() != DimensionType.THE_NETHER) {
+			world.removeBlock(pos, false);
+			world.createExplosion(
+				null, DamageSource.netherBed(), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0F, true, Explosion.DestructionType.DESTROY
+			);
+			return ActionResult.SUCCESS;
+		} else {
+			if (!world.isClient) {
+				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
+				if (serverPlayerEntity.getSpawnPointDimension() != world.dimension.getType() || !serverPlayerEntity.getSpawnPointPosition().equals(pos)) {
+					serverPlayerEntity.setSpawnPoint(world.dimension.getType(), pos, false, true);
+					world.playSound(
+						null,
+						(double)pos.getX() + 0.5,
+						(double)pos.getY() + 0.5,
+						(double)pos.getZ() + 0.5,
+						SoundEvents.BLOCK_RESPAWN_ANCHOR_SET_SPAWN,
+						SoundCategory.BLOCKS,
+						1.0F,
+						1.0F
+					);
+					return ActionResult.SUCCESS;
+				}
+			}
+
+			return state.get(CHARGES) < 4 ? ActionResult.PASS : ActionResult.CONSUME;
 		}
+	}
+
+	public static void method_26382(World world, BlockPos blockPos, BlockState blockState) {
+		world.setBlockState(blockPos, blockState.with(CHARGES, Integer.valueOf((Integer)blockState.get(CHARGES) + 1)), 3);
+		world.playSound(
+			null,
+			(double)blockPos.getX() + 0.5,
+			(double)blockPos.getY() + 0.5,
+			(double)blockPos.getZ() + 0.5,
+			SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE,
+			SoundCategory.BLOCKS,
+			1.0F,
+			1.0F
+		);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -104,14 +98,14 @@ public class RespawnAnchorBlock extends Block {
 		if ((Integer)state.get(CHARGES) != 0) {
 			if (random.nextInt(100) == 0) {
 				world.playSound(
+					null,
 					(double)pos.getX() + 0.5,
 					(double)pos.getY() + 0.5,
 					(double)pos.getZ() + 0.5,
 					SoundEvents.BLOCK_RESPAWN_ANCHOR_AMBIENT,
 					SoundCategory.BLOCKS,
-					0.5F,
-					random.nextFloat() * 0.4F + 0.8F,
-					false
+					1.0F,
+					1.0F
 				);
 			}
 
@@ -142,14 +136,11 @@ public class RespawnAnchorBlock extends Block {
 		return getLightLevel(state, 15);
 	}
 
-	public static Optional<Vec3d> findRespawnPosition(WorldView world, BlockPos pos) {
-		for (BlockPos blockPos : BlockPos.iterate(pos.add(-1, 0, -1), pos.add(1, 0, 1))) {
-			BlockPos blockPos2 = blockPos.down();
-			BlockPos blockPos3 = blockPos.up();
-			if (world.getBlockState(blockPos2).isSideSolidFullSquare(world, blockPos2, Direction.DOWN)
-				&& world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty()
-				&& world.getBlockState(blockPos3).getCollisionShape(world, blockPos3).isEmpty()) {
-				return Optional.of(Vec3d.method_24955(blockPos));
+	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entityType, WorldView worldView, BlockPos blockPos) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-1, -1, -1), blockPos.add(1, 1, 1))) {
+			Optional<Vec3d> optional = BedBlock.canWakeUpAt(entityType, worldView, blockPos2);
+			if (optional.isPresent()) {
+				return optional;
 			}
 		}
 

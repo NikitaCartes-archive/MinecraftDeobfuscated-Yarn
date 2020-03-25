@@ -148,12 +148,12 @@ public class StructurePoolBasedGenerator {
 			for (Structure.StructureBlockInfo structureBlockInfo : structurePoolElement.getStructureBlockInfos(
 				this.structureManager, blockPos, blockRotation, this.random
 			)) {
-				Direction direction = structureBlockInfo.state.get(JigsawBlock.FACING);
+				Direction direction = JigsawBlock.method_26378(structureBlockInfo.state);
 				BlockPos blockPos2 = structureBlockInfo.pos;
 				BlockPos blockPos3 = blockPos2.offset(direction);
 				int j = blockPos2.getY() - i;
 				int k = -1;
-				StructurePool structurePool = StructurePoolBasedGenerator.REGISTRY.get(new Identifier(structureBlockInfo.tag.getString("target_pool")));
+				StructurePool structurePool = StructurePoolBasedGenerator.REGISTRY.get(new Identifier(structureBlockInfo.tag.getString("pool")));
 				StructurePool structurePool2 = StructurePoolBasedGenerator.REGISTRY.get(structurePool.getTerminatorsId());
 				if (structurePool != StructurePool.INVALID && (structurePool.getElementCount() != 0 || structurePool == StructurePool.EMPTY)) {
 					boolean bl2 = blockBox.contains(blockPos3);
@@ -192,10 +192,10 @@ public class StructurePoolBasedGenerator {
 								m = 0;
 							} else {
 								m = list2.stream().mapToInt(structureBlockInfox -> {
-									if (!blockBox2.contains(structureBlockInfox.pos.offset(structureBlockInfox.state.get(JigsawBlock.FACING)))) {
+									if (!blockBox2.contains(structureBlockInfox.pos.offset(JigsawBlock.method_26378(structureBlockInfox.state)))) {
 										return 0;
 									} else {
-										Identifier identifier = new Identifier(structureBlockInfox.tag.getString("target_pool"));
+										Identifier identifier = new Identifier(structureBlockInfox.tag.getString("pool"));
 										StructurePool structurePoolx = StructurePoolBasedGenerator.REGISTRY.get(identifier);
 										StructurePool structurePool2x = StructurePoolBasedGenerator.REGISTRY.get(structurePoolx.getTerminatorsId());
 										return Math.max(structurePoolx.getHighestY(this.structureManager), structurePool2x.getHighestY(this.structureManager));
@@ -212,7 +212,7 @@ public class StructurePoolBasedGenerator {
 									StructurePool.Projection projection2 = structurePoolElement2.getProjection();
 									boolean bl3 = projection2 == StructurePool.Projection.RIGID;
 									int o = blockPos4.getY();
-									int p = j - o + ((Direction)structureBlockInfo.state.get(JigsawBlock.FACING)).getOffsetY();
+									int p = j - o + JigsawBlock.method_26378(structureBlockInfo.state).getOffsetY();
 									int q;
 									if (bl && bl3) {
 										q = i + p;
@@ -272,7 +272,7 @@ public class StructurePoolBasedGenerator {
 						}
 					}
 				} else {
-					StructurePoolBasedGenerator.LOGGER.warn("Empty or none existent pool: {}", structureBlockInfo.tag.getString("target_pool"));
+					StructurePoolBasedGenerator.LOGGER.warn("Empty or none existent pool: {}", structureBlockInfo.tag.getString("pool"));
 				}
 			}
 		}

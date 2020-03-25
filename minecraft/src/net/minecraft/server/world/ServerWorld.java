@@ -157,10 +157,10 @@ public class ServerWorld extends World {
 	private int idleTimeout;
 	private final PortalForcer portalForcer;
 	private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<>(
-		this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, this::tickBlock
+		this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, this::tickBlock
 	);
 	private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<>(
-		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this::tickFluid
+		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, this::tickFluid
 	);
 	private final Set<EntityNavigation> entityNavigations = Sets.<EntityNavigation>newHashSet();
 	protected final RaidManager raidManager;

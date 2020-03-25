@@ -20,11 +20,11 @@ import net.minecraft.world.WorldView;
 
 public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-	public static final BooleanProperty LIT_2 = RedstoneTorchBlock.LIT;
+	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
 	protected WallRedstoneTorchBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT_2, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(LIT, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -57,13 +57,13 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-		if ((Boolean)state.get(LIT_2)) {
+		if ((Boolean)state.get(LIT)) {
 			Direction direction = ((Direction)state.get(FACING)).getOpposite();
 			double d = 0.27;
 			double e = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
 			double f = (double)pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
 			double g = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
-			world.addParticle(this.field_22155, e, f, g, 0.0, 0.0, 0.0);
+			world.addParticle(this.particle, e, f, g, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -75,7 +75,7 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	@Override
 	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		return state.get(LIT_2) && state.get(FACING) != direction ? 15 : 0;
+		return state.get(LIT) && state.get(FACING) != direction ? 15 : 0;
 	}
 
 	@Override
@@ -90,6 +90,6 @@ public class WallRedstoneTorchBlock extends RedstoneTorchBlock {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING, LIT_2);
+		builder.add(FACING, LIT);
 	}
 }

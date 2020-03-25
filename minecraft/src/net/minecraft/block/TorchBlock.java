@@ -15,11 +15,11 @@ import net.minecraft.world.WorldView;
 
 public class TorchBlock extends Block {
 	protected static final VoxelShape BOUNDING_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
-	protected final ParticleEffect field_22155;
+	protected final ParticleEffect particle;
 
-	protected TorchBlock(AbstractBlock.Settings settings, ParticleEffect particleEffect) {
+	protected TorchBlock(AbstractBlock.Settings settings, ParticleEffect particle) {
 		super(settings);
-		this.field_22155 = particleEffect;
+		this.particle = particle;
 	}
 
 	@Override
@@ -46,6 +46,6 @@ public class TorchBlock extends Block {
 		double e = (double)pos.getY() + 0.7;
 		double f = (double)pos.getZ() + 0.5;
 		world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
-		world.addParticle(this.field_22155, d, e, f, 0.0, 0.0, 0.0);
+		world.addParticle(this.particle, d, e, f, 0.0, 0.0, 0.0);
 	}
 }

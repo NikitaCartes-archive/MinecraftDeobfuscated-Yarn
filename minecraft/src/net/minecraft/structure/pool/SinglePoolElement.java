@@ -96,17 +96,18 @@ public class SinglePoolElement extends StructurePoolElement {
 		IWorld world,
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
+		BlockPos blockPos2,
 		BlockRotation blockRotation,
 		BlockBox blockBox,
 		Random random
 	) {
 		Structure structure = structureManager.getStructureOrBlank(this.location);
 		StructurePlacementData structurePlacementData = this.createPlacementData(blockRotation, blockBox);
-		if (!structure.place(world, blockPos, structurePlacementData, 18)) {
+		if (!structure.place(world, blockPos, blockPos2, structurePlacementData, 18)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(
-				world, blockPos, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false)
+				world, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false)
 			)) {
 				this.method_16756(world, structureBlockInfo, blockPos, blockRotation, random, blockBox);
 			}

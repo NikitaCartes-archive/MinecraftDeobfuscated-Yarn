@@ -62,11 +62,11 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag)) {
-			Inventories.fromTag(tag, this.inventory);
+		if (!this.deserializeLootTable(compoundTag)) {
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 

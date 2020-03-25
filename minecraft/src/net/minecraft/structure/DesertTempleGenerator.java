@@ -7,6 +7,7 @@ import net.minecraft.block.StairsBlock;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
@@ -37,7 +38,7 @@ public class DesertTempleGenerator extends StructurePieceWithDimensions {
 	}
 
 	@Override
-	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 		this.fillWithOutline(world, box, 0, -4, 0, this.width - 1, 0, this.depth - 1, Blocks.SANDSTONE.getDefaultState(), Blocks.SANDSTONE.getDefaultState(), false);
 
 		for (int i = 1; i <= 9; i++) {

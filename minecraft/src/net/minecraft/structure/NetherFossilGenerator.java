@@ -76,9 +76,9 @@ public class NetherFossilGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			box.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			return super.generate(world, generator, random, box, pos);
+			return super.generate(world, generator, random, box, pos, blockPos);
 		}
 	}
 }

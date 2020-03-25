@@ -136,13 +136,14 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.CRIMSON_STEMS)
 			.add(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM, Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE);
 		this.getOrCreateTagBuilder(BlockTags.WARPED_STEMS).add(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM, Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE);
-		this.getOrCreateTagBuilder(BlockTags.LOGS)
+		this.getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN)
 			.add(BlockTags.DARK_OAK_LOGS)
 			.add(BlockTags.OAK_LOGS)
 			.add(BlockTags.ACACIA_LOGS)
 			.add(BlockTags.BIRCH_LOGS)
 			.add(BlockTags.JUNGLE_LOGS)
 			.add(BlockTags.SPRUCE_LOGS);
+		this.getOrCreateTagBuilder(BlockTags.LOGS).add(BlockTags.LOGS_THAT_BURN).add(BlockTags.CRIMSON_STEMS).add(BlockTags.WARPED_STEMS);
 		this.getOrCreateTagBuilder(BlockTags.ANVIL).add(Blocks.ANVIL, Blocks.CHIPPED_ANVIL, Blocks.DAMAGED_ANVIL);
 		this.getOrCreateTagBuilder(BlockTags.SMALL_FLOWERS)
 			.add(
@@ -458,7 +459,8 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.OBSIDIAN,
 				Blocks.CRYING_OBSIDIAN,
 				Blocks.END_STONE,
-				Blocks.IRON_BARS
+				Blocks.IRON_BARS,
+				Blocks.RESPAWN_ANCHOR
 			);
 		this.getOrCreateTagBuilder(BlockTags.WITHER_IMMUNE)
 			.add(
@@ -519,6 +521,40 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS).add(Blocks.POTTED_WARPED_FUNGUS);
 		this.getOrCreateTagBuilder(BlockTags.GOLD_ORES).add(Blocks.GOLD_ORE, Blocks.NETHER_GOLD_ORE);
 		this.getOrCreateTagBuilder(BlockTags.SOUL_FIRE_BASE_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
+		this.getOrCreateTagBuilder(BlockTags.NON_FLAMMABLE_WOOD)
+			.add(
+				Blocks.WARPED_STEM,
+				Blocks.STRIPPED_WARPED_STEM,
+				Blocks.WARPED_HYPHAE,
+				Blocks.STRIPPED_WARPED_HYPHAE,
+				Blocks.CRIMSON_STEM,
+				Blocks.STRIPPED_CRIMSON_STEM,
+				Blocks.CRIMSON_HYPHAE,
+				Blocks.STRIPPED_CRIMSON_HYPHAE,
+				Blocks.CRIMSON_PLANKS,
+				Blocks.WARPED_PLANKS,
+				Blocks.CRIMSON_SLAB,
+				Blocks.WARPED_SLAB,
+				Blocks.CRIMSON_PRESSURE_PLATE,
+				Blocks.WARPED_PRESSURE_PLATE,
+				Blocks.CRIMSON_FENCE,
+				Blocks.WARPED_FENCE,
+				Blocks.CRIMSON_TRAPDOOR,
+				Blocks.WARPED_TRAPDOOR,
+				Blocks.CRIMSON_FENCE_GATE,
+				Blocks.WARPED_FENCE_GATE,
+				Blocks.CRIMSON_STAIRS,
+				Blocks.WARPED_STAIRS,
+				Blocks.CRIMSON_BUTTON,
+				Blocks.WARPED_BUTTON,
+				Blocks.CRIMSON_DOOR,
+				Blocks.WARPED_DOOR,
+				Blocks.CRIMSON_SIGN,
+				Blocks.WARPED_SIGN,
+				Blocks.CRIMSON_WALL_SIGN,
+				Blocks.WARPED_WALL_SIGN
+			);
+		this.getOrCreateTagBuilder(BlockTags.STRIDER_WARM_BLOCKS).add(Blocks.LAVA);
 	}
 
 	@Override

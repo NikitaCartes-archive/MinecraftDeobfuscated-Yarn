@@ -31,6 +31,10 @@ public class Vec3d implements Position {
 		return new Vec3d((double)vec3i.getX() + 0.5, (double)vec3i.getY(), (double)vec3i.getZ() + 0.5);
 	}
 
+	public static Vec3d method_26410(Vec3i vec3i, double d) {
+		return new Vec3d((double)vec3i.getX() + 0.5, (double)vec3i.getY() + d, (double)vec3i.getZ() + 0.5);
+	}
+
 	public Vec3d(double x, double y, double z) {
 		this.x = x;
 		this.y = y;

@@ -116,29 +116,25 @@ public class FluidBlock extends Block implements FluidDrainable {
 		}
 	}
 
-	public boolean receiveNeighborFluids(World world, BlockPos pos, BlockState state) {
+	private boolean receiveNeighborFluids(World world, BlockPos pos, BlockState state) {
 		if (this.fluid.isIn(FluidTags.LAVA)) {
-			boolean bl = false;
+			boolean bl = world.getBlockState(pos.down()).getBlock() == Blocks.SOUL_SOIL;
 
 			for (Direction direction : Direction.values()) {
-				if (direction != Direction.DOWN && world.getFluidState(pos.offset(direction)).matches(FluidTags.WATER)) {
-					bl = true;
-					break;
-				}
-			}
+				if (direction != Direction.DOWN) {
+					BlockPos blockPos = pos.offset(direction);
+					if (world.getFluidState(blockPos).matches(FluidTags.WATER)) {
+						Block block = world.getFluidState(pos).isStill() ? Blocks.OBSIDIAN : Blocks.COBBLESTONE;
+						world.setBlockState(pos, block.getDefaultState());
+						this.playExtinguishSound(world, pos);
+						return false;
+					}
 
-			if (bl) {
-				FluidState fluidState = world.getFluidState(pos);
-				if (fluidState.isStill()) {
-					world.setBlockState(pos, Blocks.OBSIDIAN.getDefaultState());
-					this.playExtinguishSound(world, pos);
-					return false;
-				}
-
-				if (fluidState.getHeight(world, pos) >= 0.44444445F) {
-					world.setBlockState(pos, Blocks.COBBLESTONE.getDefaultState());
-					this.playExtinguishSound(world, pos);
-					return false;
+					if (bl && world.getBlockState(blockPos).getBlock() == Blocks.BLUE_ICE) {
+						world.setBlockState(pos, Blocks.BASALT.getDefaultState());
+						this.playExtinguishSound(world, pos);
+						return false;
+					}
 				}
 			}
 		}

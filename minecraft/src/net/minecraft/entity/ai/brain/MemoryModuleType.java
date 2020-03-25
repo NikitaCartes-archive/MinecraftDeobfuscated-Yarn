@@ -70,6 +70,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<HoglinEntity> NEAREST_VISIBLE_BABY_HOGLIN = register("nearest_visible_baby_hoglin");
 	public static final MemoryModuleType<PiglinEntity> NEAREST_VISIBLE_BABY_PIGLIN = register("nearest_visible_baby_piglin");
 	public static final MemoryModuleType<PlayerEntity> NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD = register("nearest_targetable_player_not_wearing_gold");
+	public static final MemoryModuleType<List<PiglinEntity>> NEAREST_ADULT_PIGLINS = register("nearest_adult_piglins");
 	public static final MemoryModuleType<List<PiglinEntity>> NEAREST_VISIBLE_ADULT_PIGLINS = register("nearest_visible_adult_piglins");
 	public static final MemoryModuleType<List<HoglinEntity>> NEAREST_VISIBLE_ADULT_HOGLINS = register("nearest_visible_adult_hoglins");
 	public static final MemoryModuleType<PiglinEntity> NEAREST_VISIBLE_ADULT_PIGLIN = register("nearest_visible_adult_piglin");

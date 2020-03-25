@@ -62,9 +62,6 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	default void updateNeighbors(BlockPos pos, Block block) {
 	}
 
-	@Environment(EnvType.CLIENT)
-	BlockPos getSpawnPos();
-
 	void playSound(@Nullable PlayerEntity player, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch);
 
 	void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);

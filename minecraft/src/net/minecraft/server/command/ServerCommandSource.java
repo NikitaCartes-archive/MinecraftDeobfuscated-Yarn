@@ -328,7 +328,7 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public void sendFeedback(Text message, boolean broadcastToOps) {
-		if (this.output.sendCommandFeedback() && !this.silent) {
+		if (this.output.shouldReceiveFeedback() && !this.silent) {
 			this.output.sendMessage(message);
 		}
 

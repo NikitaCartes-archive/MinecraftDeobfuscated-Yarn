@@ -994,7 +994,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		double g = this.getBoundingBox().y2 + 0.75;
 
 		do {
-			double h = this.world.method_26097(mutable);
+			double h = this.world.method_26372(mutable);
 			if ((double)mutable.getY() + h > g) {
 				break;
 			}

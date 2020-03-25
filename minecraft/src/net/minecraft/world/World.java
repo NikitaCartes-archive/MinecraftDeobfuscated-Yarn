@@ -52,6 +52,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
@@ -156,11 +157,17 @@ public abstract class World implements IWorld, AutoCloseable {
 		return y < 0 || y >= 256;
 	}
 
-	public double method_26097(BlockPos blockPos) {
-		VoxelShape voxelShape = this.getBlockState(blockPos).getCollisionShape(this, blockPos);
+	public double method_26372(BlockPos blockPos) {
+		return this.method_26097(blockPos, blockState -> false);
+	}
+
+	public double method_26097(BlockPos blockPos, Predicate<BlockState> predicate) {
+		BlockState blockState = this.getBlockState(blockPos);
+		VoxelShape voxelShape = predicate.test(blockState) ? VoxelShapes.empty() : blockState.getCollisionShape(this, blockPos);
 		if (voxelShape.isEmpty()) {
 			BlockPos blockPos2 = blockPos.down();
-			VoxelShape voxelShape2 = this.getBlockState(blockPos2).getCollisionShape(this, blockPos2);
+			BlockState blockState2 = this.getBlockState(blockPos2);
+			VoxelShape voxelShape2 = predicate.test(blockState2) ? VoxelShapes.empty() : blockState2.getCollisionShape(this, blockPos2);
 			double d = voxelShape2.getMaximum(Direction.Axis.Y);
 			return d >= 1.0 ? d - 1.0 : Double.NEGATIVE_INFINITY;
 		} else {
@@ -1009,7 +1016,6 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	@Override
 	public BlockPos getSpawnPos() {
 		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
 		if (!this.getWorldBorder().contains(blockPos)) {

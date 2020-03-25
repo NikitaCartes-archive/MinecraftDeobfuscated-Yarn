@@ -518,6 +518,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * Checks if this client is modded.
+	 * 
+	 * <p>This checks the client's brand and if the MinecraftClient's class is still signed.
+	 */
 	public boolean isModded() {
 		return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
 	}
@@ -1971,6 +1976,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.isIntegratedServerRunning && this.server != null;
 	}
 
+	/**
+	 * Gets this client's own integrated server.
+	 * 
+	 * <p>The integrated server is only present when a local single player world is open.
+	 */
 	@Nullable
 	public IntegratedServer getServer() {
 		return this.server;

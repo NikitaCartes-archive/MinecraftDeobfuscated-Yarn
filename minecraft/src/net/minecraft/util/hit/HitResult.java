@@ -10,7 +10,7 @@ public abstract class HitResult {
 		this.pos = pos;
 	}
 
-	public double method_24801(Entity entity) {
+	public double squaredDistanceTo(Entity entity) {
 		double d = this.pos.x - entity.getX();
 		double e = this.pos.y - entity.getY();
 		double f = this.pos.z - entity.getZ();

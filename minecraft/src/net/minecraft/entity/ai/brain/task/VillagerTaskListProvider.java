@@ -36,17 +36,25 @@ public class VillagerTaskListProvider {
 	}
 
 	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createWorkTasks(VillagerProfession profession, float f) {
+		VillagerWorkTask villagerWorkTask;
+		if (profession == VillagerProfession.FARMER) {
+			villagerWorkTask = new FarmerWorkTask();
+		} else {
+			villagerWorkTask = new VillagerWorkTask();
+		}
+
 		return ImmutableList.of(
 			createBusyFollowTask(),
 			Pair.of(
 				5,
 				new RandomTask<>(
 					ImmutableList.of(
-						Pair.of(new VillagerWorkTask(), 7),
+						Pair.of(villagerWorkTask, 7),
 						Pair.of(new GoToIfNearbyTask(MemoryModuleType.JOB_SITE, 4), 2),
 						Pair.of(new GoToNearbyPositionTask(MemoryModuleType.JOB_SITE, 1, 10), 5),
 						Pair.of(new GoToSecondaryPositionTask(MemoryModuleType.SECONDARY_JOB_SITE, f, 1, 6, MemoryModuleType.JOB_SITE), 5),
-						Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5)
+						Pair.of(new FarmerVillagerTask(), profession == VillagerProfession.FARMER ? 2 : 5),
+						Pair.of(new BoneMealTask(), profession == VillagerProfession.FARMER ? 4 : 7)
 					)
 				)
 			),

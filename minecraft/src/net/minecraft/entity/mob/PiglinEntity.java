@@ -87,6 +87,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
 		MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
 		MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS,
+		MemoryModuleType.NEAREST_ADULT_PIGLINS,
 		MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
 		MemoryModuleType.HURT_BY,
 		MemoryModuleType.HURT_BY_ENTITY,
@@ -105,6 +106,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN,
 		MemoryModuleType.NEAREST_VISIBLE_BABY_PIGLIN,
 		MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN,
+		MemoryModuleType.NEAREST_VISIBLE_WITHER_SKELETON,
 		MemoryModuleType.RIDE_TARGET,
 		MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT,
 		MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT,
@@ -438,17 +440,17 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	protected boolean method_24846(ItemStack stack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-		return this.isBetterItemFor(stack, itemStack, equipmentSlot);
+		return this.isBetterItemFor(stack, itemStack);
 	}
 
 	@Override
-	protected boolean isBetterItemFor(ItemStack current, ItemStack previous, EquipmentSlot slot) {
-		if (PiglinBrain.isGoldenItem(previous.getItem())) {
+	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2) {
+		if (PiglinBrain.isGoldenItem(itemStack2.getItem())) {
 			return false;
-		} else if (this.isAdult() && previous.getItem() == Items.CROSSBOW) {
+		} else if (this.isAdult() && itemStack2.getItem() == Items.CROSSBOW) {
 			return false;
 		} else {
-			return PiglinBrain.isGoldenItem(current.getItem()) ? true : super.isBetterItemFor(current, previous, slot);
+			return PiglinBrain.isGoldenItem(itemStack.getItem()) ? true : super.isBetterItemFor(itemStack, itemStack2);
 		}
 	}
 

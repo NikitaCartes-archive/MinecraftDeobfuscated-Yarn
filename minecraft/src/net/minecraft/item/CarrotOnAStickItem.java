@@ -1,15 +1,20 @@
 package net.minecraft.item;
 
-import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.class_4981;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class CarrotOnAStickItem extends Item {
-	public CarrotOnAStickItem(Item.Settings settings) {
+public class CarrotOnAStickItem<T extends Entity & class_4981> extends Item {
+	private final EntityType<T> field_23253;
+
+	public CarrotOnAStickItem(Item.Settings settings, EntityType<T> entityType) {
 		super(settings);
+		this.field_23253 = entityType;
 	}
 
 	@Override
@@ -18,9 +23,10 @@ public class CarrotOnAStickItem extends Item {
 		if (world.isClient) {
 			return TypedActionResult.pass(itemStack);
 		} else {
-			if (user.hasVehicle() && user.getVehicle() instanceof PigEntity) {
-				PigEntity pigEntity = (PigEntity)user.getVehicle();
-				if (pigEntity.method_6577()) {
+			Entity entity = user.getVehicle();
+			if (user.hasVehicle() && entity instanceof class_4981 && entity.getType() == this.field_23253) {
+				class_4981 lv = (class_4981)entity;
+				if (lv.method_6577()) {
 					itemStack.damage(7, user, p -> p.sendToolBreakStatus(hand));
 					user.swingHand(hand, true);
 					if (itemStack.isEmpty()) {

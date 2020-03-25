@@ -46,6 +46,7 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
@@ -133,8 +134,19 @@ public abstract class MobEntity extends LivingEntity {
 		return new MobNavigation(this, world);
 	}
 
+	protected boolean method_26323() {
+		return false;
+	}
+
 	public float getPathfindingPenalty(PathNodeType nodeType) {
-		Float float_ = (Float)this.pathfindingPenalties.get(nodeType);
+		MobEntity mobEntity;
+		if (this.getVehicle() instanceof MobEntity && ((MobEntity)this.getVehicle()).method_26323()) {
+			mobEntity = (MobEntity)this.getVehicle();
+		} else {
+			mobEntity = this;
+		}
+
+		Float float_ = (Float)mobEntity.pathfindingPenalties.get(nodeType);
 		return float_ == null ? nodeType.getDefaultPenalty() : float_;
 	}
 
@@ -503,7 +515,7 @@ public abstract class MobEntity extends LivingEntity {
 	public boolean tryEquip(ItemStack equipment) {
 		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(equipment);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-		boolean bl = this.isBetterItemFor(equipment, itemStack, equipmentSlot);
+		boolean bl = this.isBetterItemFor(equipment, itemStack);
 		if (bl && this.canPickupItem(equipment)) {
 			double d = (double)this.getDropChance(equipmentSlot);
 			if (!itemStack.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d) {
@@ -533,31 +545,66 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	protected boolean isBetterItemFor(ItemStack current, ItemStack previous, EquipmentSlot slot) {
-		if (previous.isEmpty()) {
+	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2) {
+		if (itemStack2.isEmpty()) {
 			return true;
-		} else if (slot.getType() == EquipmentSlot.Type.HAND) {
-			if (current.getItem() instanceof SwordItem && !(previous.getItem() instanceof SwordItem)) {
+		} else if (itemStack.getItem() instanceof SwordItem) {
+			if (!(itemStack2.getItem() instanceof SwordItem)) {
 				return true;
-			} else if (current.getItem() instanceof SwordItem) {
-				SwordItem swordItem = (SwordItem)current.getItem();
-				SwordItem swordItem2 = (SwordItem)previous.getItem();
+			} else {
+				SwordItem swordItem = (SwordItem)itemStack.getItem();
+				SwordItem swordItem2 = (SwordItem)itemStack2.getItem();
 				return swordItem.getAttackDamage() != swordItem2.getAttackDamage()
 					? swordItem.getAttackDamage() > swordItem2.getAttackDamage()
-					: current.getDamage() < previous.getDamage() || current.hasTag() && !previous.hasTag();
-			} else {
-				return current.getItem() instanceof BowItem && previous.getItem() instanceof BowItem ? current.hasTag() && !previous.hasTag() : false;
+					: this.method_26320(itemStack, itemStack2);
 			}
-		} else if (current.getItem() instanceof ArmorItem && !(previous.getItem() instanceof ArmorItem)) {
-			return true;
-		} else if (current.getItem() instanceof ArmorItem && previous.getItem() instanceof ArmorItem && !EnchantmentHelper.hasBindingCurse(previous)) {
-			ArmorItem armorItem = (ArmorItem)current.getItem();
-			ArmorItem armorItem2 = (ArmorItem)previous.getItem();
-			return armorItem.getProtection() != armorItem2.getProtection()
-				? armorItem.getProtection() > armorItem2.getProtection()
-				: current.getDamage() < previous.getDamage() || current.hasTag() && !previous.hasTag();
+		} else if (itemStack.getItem() instanceof BowItem && itemStack2.getItem() instanceof BowItem) {
+			return this.method_26320(itemStack, itemStack2);
+		} else if (itemStack.getItem() instanceof ArmorItem) {
+			if (!(itemStack2.getItem() instanceof ArmorItem)) {
+				return true;
+			} else if (EnchantmentHelper.hasBindingCurse(itemStack2)) {
+				return false;
+			} else {
+				ArmorItem armorItem = (ArmorItem)itemStack.getItem();
+				ArmorItem armorItem2 = (ArmorItem)itemStack2.getItem();
+				if (armorItem.getProtection() != armorItem2.getProtection()) {
+					return armorItem.getProtection() > armorItem2.getProtection();
+				} else {
+					return armorItem.method_26353() != armorItem2.method_26353()
+						? armorItem.method_26353() > armorItem2.method_26353()
+						: this.method_26320(itemStack, itemStack2);
+				}
+			}
 		} else {
+			if (itemStack.getItem() instanceof MiningToolItem) {
+				if (itemStack2.getItem() instanceof BlockItem) {
+					return true;
+				}
+
+				if (itemStack2.getItem() instanceof MiningToolItem) {
+					MiningToolItem miningToolItem = (MiningToolItem)itemStack.getItem();
+					MiningToolItem miningToolItem2 = (MiningToolItem)itemStack2.getItem();
+					if (miningToolItem.method_26366() != miningToolItem2.method_26366()) {
+						return miningToolItem.method_26366() > miningToolItem2.method_26366();
+					}
+
+					return this.method_26320(itemStack, itemStack2);
+				}
+			}
+
 			return false;
+		}
+	}
+
+	private boolean method_26320(ItemStack itemStack, ItemStack itemStack2) {
+		if (itemStack.getDamage() >= itemStack2.getDamage() && (!itemStack.hasTag() || itemStack2.hasTag())) {
+			return itemStack.hasTag() && itemStack2.hasTag()
+				? itemStack.getTag().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
+					&& !itemStack2.getTag().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
+				: false;
+		} else {
+			return true;
 		}
 	}
 

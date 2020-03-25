@@ -24,9 +24,10 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 	public Structure.StructureBlockInfo process(
 		WorldView worldView,
 		BlockPos pos,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	) {
 		Block block = structureBlockInfo2.state.getBlock();
 		if (block != Blocks.JIGSAW) {
@@ -37,8 +38,8 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 
 			try {
 				blockArgumentParser.parse(true);
-			} catch (CommandSyntaxException var10) {
-				throw new RuntimeException(var10);
+			} catch (CommandSyntaxException var11) {
+				throw new RuntimeException(var11);
 			}
 
 			return blockArgumentParser.getBlockState().getBlock() == Blocks.STRUCTURE_VOID

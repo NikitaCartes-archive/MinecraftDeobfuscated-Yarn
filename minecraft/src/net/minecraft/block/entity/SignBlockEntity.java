@@ -5,6 +5,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -46,18 +47,18 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
 		this.editable = false;
-		super.fromTag(tag);
-		this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
+		super.fromTag(blockState, compoundTag);
+		this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
 
 		for (int i = 0; i < 4; i++) {
-			String string = tag.getString("Text" + (i + 1));
+			String string = compoundTag.getString("Text" + (i + 1));
 			Text text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
 			if (this.world instanceof ServerWorld) {
 				try {
 					this.text[i] = Texts.parse(this.getCommandSource(null), text, null, 0);
-				} catch (CommandSyntaxException var6) {
+				} catch (CommandSyntaxException var7) {
 					this.text[i] = text;
 				}
 			} else {

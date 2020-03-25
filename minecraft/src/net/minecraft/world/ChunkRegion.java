@@ -198,16 +198,17 @@ public class ChunkRegion implements IWorld {
 			return blockEntity;
 		} else {
 			CompoundTag compoundTag = chunk.getBlockEntityTagAt(pos);
+			BlockState blockState = chunk.getBlockState(pos);
 			if (compoundTag != null) {
 				if ("DUMMY".equals(compoundTag.getString("id"))) {
-					Block block = this.getBlockState(pos).getBlock();
+					Block block = blockState.getBlock();
 					if (!(block instanceof BlockEntityProvider)) {
 						return null;
 					}
 
 					blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 				} else {
-					blockEntity = BlockEntity.createFromTag(compoundTag);
+					blockEntity = BlockEntity.createFromTag(blockState, compoundTag);
 				}
 
 				if (blockEntity != null) {
@@ -216,7 +217,7 @@ public class ChunkRegion implements IWorld {
 				}
 			}
 
-			if (chunk.getBlockState(pos).getBlock() instanceof BlockEntityProvider) {
+			if (blockState.getBlock() instanceof BlockEntityProvider) {
 				LOGGER.warn("Tried to access a block entity before it was created. {}", pos);
 			}
 
@@ -346,12 +347,6 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public BlockPos getSpawnPos() {
-		return this.world.getSpawnPos();
 	}
 
 	@Override

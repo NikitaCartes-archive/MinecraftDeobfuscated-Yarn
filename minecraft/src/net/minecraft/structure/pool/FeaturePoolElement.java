@@ -6,8 +6,10 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_5000;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
+import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -30,7 +32,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		this(feature, StructurePool.Projection.RIGID);
 	}
 
-	public FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
+	private FeaturePoolElement(ConfiguredFeature<?, ?> configuredFeature, StructurePool.Projection projection) {
 		super(projection);
 		this.feature = configuredFeature;
 		this.tag = this.createDefaultJigsawTag();
@@ -42,11 +44,13 @@ public class FeaturePoolElement extends StructurePoolElement {
 		this.tag = this.createDefaultJigsawTag();
 	}
 
-	public CompoundTag createDefaultJigsawTag() {
+	private CompoundTag createDefaultJigsawTag() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("target_pool", "minecraft:empty");
-		compoundTag.putString("attachement_type", "minecraft:bottom");
+		compoundTag.putString("name", "minecraft:bottom");
 		compoundTag.putString("final_state", "minecraft:air");
+		compoundTag.putString("pool", "minecraft:empty");
+		compoundTag.putString("target", "minecraft:empty");
+		compoundTag.putString("joint", JigsawBlockEntity.class_4991.field_23329.asString());
 		return compoundTag;
 	}
 
@@ -57,7 +61,11 @@ public class FeaturePoolElement extends StructurePoolElement {
 	@Override
 	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
-		list.add(new Structure.StructureBlockInfo(pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.tag));
+		list.add(
+			new Structure.StructureBlockInfo(
+				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.field_23262, class_5000.method_26425(Direction.DOWN, Direction.SOUTH)), this.tag
+			)
+		);
 		return list;
 	}
 
@@ -73,6 +81,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		IWorld world,
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
+		BlockPos blockPos2,
 		BlockRotation blockRotation,
 		BlockBox blockBox,
 		Random random

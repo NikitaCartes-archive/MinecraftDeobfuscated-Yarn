@@ -436,21 +436,14 @@ public abstract class PlayerManager {
 
 		ServerWorld serverWorld = this.server.getWorld(player.dimension);
 		this.setGameMode(serverPlayerEntity, player, serverWorld);
+		boolean bl3 = false;
 		if (blockPos != null) {
-			Optional<Vec3d> optional = PlayerEntity.findRespawnPosition(this.server.getWorld(player.dimension), blockPos, bl2);
+			Optional<Vec3d> optional = PlayerEntity.findRespawnPosition(this.server.getWorld(player.dimension), blockPos, bl2, bl);
 			if (optional.isPresent()) {
 				Vec3d vec3d = (Vec3d)optional.get();
 				serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0F, 0.0F);
 				serverPlayerEntity.setSpawnPoint(player.dimension, blockPos, bl2, false);
-				BlockState blockState = serverWorld.getBlockState(blockPos);
-				if (blockState.getBlock() instanceof RespawnAnchorBlock) {
-					serverPlayerEntity.networkHandler
-						.sendPacket(
-							new PlaySoundS2CPacket(
-								SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.BLOCKS, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0F, 1.0F
-							)
-						);
-				}
+				bl3 = !bl;
 			} else {
 				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0F));
 				serverPlayerEntity.dimension = DimensionType.OVERWORLD;
@@ -486,6 +479,16 @@ public abstract class PlayerManager {
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
 		serverPlayerEntity.onSpawn();
 		serverPlayerEntity.setHealth(serverPlayerEntity.getHealth());
+		BlockState blockState = serverWorld.getBlockState(blockPos);
+		if (bl3 && blockState.getBlock() instanceof RespawnAnchorBlock) {
+			serverPlayerEntity.networkHandler
+				.sendPacket(
+					new PlaySoundS2CPacket(
+						SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.BLOCKS, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0F, 1.0F
+					)
+				);
+		}
+
 		return serverPlayerEntity;
 	}
 

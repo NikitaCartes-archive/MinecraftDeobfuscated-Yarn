@@ -9,6 +9,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
@@ -53,16 +54,21 @@ public abstract class StructureStart {
 
 	public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
 		synchronized (this.children) {
-			Iterator<StructurePiece> iterator = this.children.iterator();
+			if (!this.children.isEmpty()) {
+				BlockBox blockBox = ((StructurePiece)this.children.get(0)).boundingBox;
+				Vec3i vec3i = blockBox.getCenter();
+				BlockPos blockPos = new BlockPos(vec3i.getX(), blockBox.minY, vec3i.getZ());
+				Iterator<StructurePiece> iterator = this.children.iterator();
 
-			while (iterator.hasNext()) {
-				StructurePiece structurePiece = (StructurePiece)iterator.next();
-				if (structurePiece.getBoundingBox().intersects(box) && !structurePiece.generate(world, chunkGenerator, random, box, pos)) {
-					iterator.remove();
+				while (iterator.hasNext()) {
+					StructurePiece structurePiece = (StructurePiece)iterator.next();
+					if (structurePiece.getBoundingBox().intersects(box) && !structurePiece.generate(world, chunkGenerator, random, box, pos, blockPos)) {
+						iterator.remove();
+					}
 				}
-			}
 
-			this.setBoundingBoxFromChildren();
+				this.setBoundingBoxFromChildren();
+			}
 		}
 	}
 

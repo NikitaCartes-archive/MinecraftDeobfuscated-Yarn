@@ -21,7 +21,7 @@ public class VillagerProfession {
 	public static final VillagerProfession FARMER = register(
 		"farmer",
 		PointOfInterestType.FARMER,
-		ImmutableSet.of(Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS),
+		ImmutableSet.of(Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT_SEEDS, Items.BONE_MEAL),
 		ImmutableSet.of(Blocks.FARMLAND),
 		SoundEvents.ENTITY_VILLAGER_WORK_FARMER
 	);

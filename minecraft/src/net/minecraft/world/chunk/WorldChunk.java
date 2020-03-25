@@ -728,24 +728,25 @@ public class WorldChunk implements Chunk {
 
 	@Nullable
 	private BlockEntity loadBlockEntity(BlockPos pos, CompoundTag compoundTag) {
+		BlockState blockState = this.getBlockState(pos);
 		BlockEntity blockEntity;
 		if ("DUMMY".equals(compoundTag.getString("id"))) {
-			Block block = this.getBlockState(pos).getBlock();
+			Block block = blockState.getBlock();
 			if (block instanceof BlockEntityProvider) {
 				blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 			} else {
 				blockEntity = null;
-				LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", pos, this.getBlockState(pos));
+				LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", pos, blockState);
 			}
 		} else {
-			blockEntity = BlockEntity.createFromTag(compoundTag);
+			blockEntity = BlockEntity.createFromTag(blockState, compoundTag);
 		}
 
 		if (blockEntity != null) {
 			blockEntity.setLocation(this.world, pos);
 			this.addBlockEntity(blockEntity);
 		} else {
-			LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", this.getBlockState(pos), pos);
+			LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", blockState, pos);
 		}
 
 		return blockEntity;
@@ -766,7 +767,7 @@ public class WorldChunk implements Chunk {
 			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState(blockPos).getBlock());
 			this.blockTickScheduler = DummyClientTickScheduler.get();
 		} else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
-			this.world.getBlockTickScheduler().scheduleAll(((SimpleTickScheduler)this.blockTickScheduler).stream());
+			((SimpleTickScheduler)this.blockTickScheduler).scheduleTo(this.world.getBlockTickScheduler());
 			this.blockTickScheduler = DummyClientTickScheduler.get();
 		}
 
@@ -774,19 +775,23 @@ public class WorldChunk implements Chunk {
 			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState(blockPos).getFluid());
 			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		} else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
-			this.world.getFluidTickScheduler().scheduleAll(((SimpleTickScheduler)this.fluidTickScheduler).stream());
+			((SimpleTickScheduler)this.fluidTickScheduler).scheduleTo(this.world.getFluidTickScheduler());
 			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		}
 	}
 
 	public void enableTickSchedulers(ServerWorld world) {
 		if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-			this.blockTickScheduler = new SimpleTickScheduler<>(Registry.BLOCK::getId, world.getBlockTickScheduler().getScheduledTicksInChunk(this.pos, true, false));
+			this.blockTickScheduler = new SimpleTickScheduler<>(
+				Registry.BLOCK::getId, world.getBlockTickScheduler().getScheduledTicksInChunk(this.pos, true, false), world.getTime()
+			);
 			this.setShouldSave(true);
 		}
 
 		if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-			this.fluidTickScheduler = new SimpleTickScheduler<>(Registry.FLUID::getId, world.getFluidTickScheduler().getScheduledTicksInChunk(this.pos, true, false));
+			this.fluidTickScheduler = new SimpleTickScheduler<>(
+				Registry.FLUID::getId, world.getFluidTickScheduler().getScheduledTicksInChunk(this.pos, true, false), world.getTime()
+			);
 			this.setShouldSave(true);
 		}
 	}

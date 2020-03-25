@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 
 public class VillagerGossips {
 	private final Map<UUID, VillagerGossips.Reputation> entityReputation = Maps.<UUID, VillagerGossips.Reputation>newHashMap();
@@ -137,11 +138,17 @@ public class VillagerGossips {
 		}
 
 		public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-			return Util.writeUuid(
-				"Target",
-				this.target,
-				new Dynamic<>(
-					ops, ops.createMap(ImmutableMap.of(ops.createString("Type"), ops.createString(this.type.key), ops.createString("Value"), ops.createInt(this.value)))
+			return new Dynamic<>(
+				ops,
+				ops.createMap(
+					ImmutableMap.of(
+						ops.createString("Target"),
+						DynamicSerializableUuid.method_26430(ops, this.target),
+						ops.createString("Type"),
+						ops.createString(this.type.key),
+						ops.createString("Value"),
+						ops.createInt(this.value)
+					)
 				)
 			);
 		}
@@ -151,7 +158,8 @@ public class VillagerGossips {
 				.asString()
 				.map(VillageGossipType::byKey)
 				.flatMap(
-					villageGossipType -> Util.readUuid("Target", dynamic)
+					villageGossipType -> dynamic.get("Target")
+							.map(DynamicSerializableUuid::method_26431)
 							.flatMap(uUID -> dynamic.get("Value").asNumber().map(number -> new VillagerGossips.GossipEntry(uUID, villageGossipType, number.intValue())))
 				);
 		}

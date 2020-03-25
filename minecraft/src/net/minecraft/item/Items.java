@@ -148,6 +148,9 @@ public class Items {
 	public static final Item NETHER_SPROUTS = register(Blocks.NETHER_SPROUTS, ItemGroup.DECORATIONS);
 	public static final Item WEEPING_VINES = register(Blocks.WEEPING_VINES, ItemGroup.DECORATIONS);
 	public static final Item field_23070 = register(Blocks.TWISTING_VINES, ItemGroup.DECORATIONS);
+	public static final Item SUGAR_CANE = register(Blocks.SUGAR_CANE, ItemGroup.DECORATIONS);
+	public static final Item KELP = register(Blocks.KELP, ItemGroup.DECORATIONS);
+	public static final Item BAMBOO = register(Blocks.BAMBOO, ItemGroup.DECORATIONS);
 	public static final Item GOLD_BLOCK = register(Blocks.GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item IRON_BLOCK = register(Blocks.IRON_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_SLAB = register(Blocks.OAK_SLAB, ItemGroup.BUILDING_BLOCKS);
@@ -812,10 +815,7 @@ public class Items {
 	);
 	public static final Item BRICK = register("brick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item CLAY_BALL = register("clay_ball", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item SUGAR_CANE = register(Blocks.SUGAR_CANE, ItemGroup.MISC);
-	public static final Item KELP = register(Blocks.KELP, ItemGroup.MISC);
 	public static final Item DRIED_KELP_BLOCK = register(Blocks.DRIED_KELP_BLOCK, ItemGroup.BUILDING_BLOCKS);
-	public static final Item BAMBOO = register(Blocks.BAMBOO, ItemGroup.MATERIALS);
 	public static final Item PAPER = register("paper", new Item(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item BOOK = register("book", new BookItem(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item SLIME_BALL = register("slime_ball", new Item(new Item.Settings().group(ItemGroup.MISC)));
@@ -1043,6 +1043,9 @@ public class Items {
 	public static final Item STRAY_SPAWN_EGG = register(
 		"stray_spawn_egg", new SpawnEggItem(EntityType.STRAY, 6387319, 14543594, new Item.Settings().group(ItemGroup.MISC))
 	);
+	public static final Item STRIDER_SPAWN_EGG = register(
+		"strider_spawn_egg", new SpawnEggItem(EntityType.STRIDER, 10236982, 5065037, new Item.Settings().group(ItemGroup.MISC))
+	);
 	public static final Item TRADER_LLAMA_SPAWN_EGG = register(
 		"trader_llama_spawn_egg", new SpawnEggItem(EntityType.TRADER_LLAMA, 15377456, 4547222, new Item.Settings().group(ItemGroup.MISC))
 	);
@@ -1127,7 +1130,10 @@ public class Items {
 		new WallStandingBlockItem(Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON))
 	);
 	public static final Item CARROT_ON_A_STICK = register(
-		"carrot_on_a_stick", new CarrotOnAStickItem(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION))
+		"carrot_on_a_stick", new CarrotOnAStickItem<>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.PIG)
+	);
+	public static final Item WARPED_FUNGUS_ON_A_STICK = register(
+		"warped_fungus_on_a_stick", new CarrotOnAStickItem<>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.STRIDER)
 	);
 	public static final Item NETHER_STAR = register("nether_star", new NetherStarItem(new Item.Settings().group(ItemGroup.MATERIALS).rarity(Rarity.UNCOMMON)));
 	public static final Item PUMPKIN_PIE = register("pumpkin_pie", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.PUMPKIN_PIE)));
@@ -1346,6 +1352,7 @@ public class Items {
 	);
 	public static final Item HONEY_BLOCK = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
 	public static final Item HONEYCOMB_BLOCK = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
+	public static final Item field_23256 = register(Blocks.LODESTONE, ItemGroup.DECORATIONS);
 	public static final Item NETHERITE_BLOCK = register(new BlockItem(Blocks.NETHERITE_BLOCK, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
 	public static final Item ANCIENT_DEBRIS = register(new BlockItem(Blocks.ANCIENT_DEBRIS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
 	public static final Item NETHERITE_INGOT = register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));

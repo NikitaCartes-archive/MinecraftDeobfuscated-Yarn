@@ -39,7 +39,7 @@ public class ServerCommandOutput implements CommandOutput {
 	}
 
 	@Override
-	public boolean sendCommandFeedback() {
+	public boolean shouldReceiveFeedback() {
 		return true;
 	}
 

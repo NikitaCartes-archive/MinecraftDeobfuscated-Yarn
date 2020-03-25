@@ -65,7 +65,7 @@ public class TestCommand {
 					CommandManager.literal("runall")
 						.executes(commandContext -> executeRunAll(commandContext.getSource()))
 						.then(
-							CommandManager.argument("testClassName", TestClassArgumentType.method_22370())
+							CommandManager.argument("testClassName", TestClassArgumentType.testClass())
 								.executes(commandContext -> executeRunAll(commandContext.getSource(), TestClassArgumentType.getTestClass(commandContext, "testClassName")))
 						)
 				)

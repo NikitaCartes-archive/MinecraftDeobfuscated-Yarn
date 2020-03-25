@@ -360,10 +360,6 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			tradeOffer.resetUses();
 		}
 
-		if (this.getVillagerData().getProfession() == VillagerProfession.FARMER) {
-			this.craftBread();
-		}
-
 		this.lastRestockTime = this.world.getTime();
 		this.restocksToday++;
 	}
@@ -787,20 +783,6 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	private int getAvailableFood() {
 		BasicInventory basicInventory = this.getInventory();
 		return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.countInInv((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
-	}
-
-	private void craftBread() {
-		BasicInventory basicInventory = this.getInventory();
-		int i = basicInventory.countInInv(Items.WHEAT);
-		int j = i / 3;
-		if (j != 0) {
-			int k = j * 3;
-			basicInventory.poll(Items.WHEAT, k);
-			ItemStack itemStack = basicInventory.add(new ItemStack(Items.BREAD, j));
-			if (!itemStack.isEmpty()) {
-				this.dropStack(itemStack, 0.5F);
-			}
-		}
 	}
 
 	public boolean hasSeedToPlant() {

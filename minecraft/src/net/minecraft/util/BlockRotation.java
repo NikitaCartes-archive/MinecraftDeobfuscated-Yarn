@@ -4,13 +4,20 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.class_4990;
 import net.minecraft.util.math.Direction;
 
 public enum BlockRotation {
-	NONE,
-	CLOCKWISE_90,
-	CLOCKWISE_180,
-	COUNTERCLOCKWISE_90;
+	NONE(class_4990.field_23292),
+	CLOCKWISE_90(class_4990.field_23318),
+	CLOCKWISE_180(class_4990.field_23300),
+	COUNTERCLOCKWISE_90(class_4990.field_23319);
+
+	private final class_4990 field_23264;
+
+	private BlockRotation(class_4990 arg) {
+		this.field_23264 = arg;
+	}
 
 	public BlockRotation rotate(BlockRotation rotation) {
 		switch (rotation) {
@@ -50,6 +57,10 @@ public enum BlockRotation {
 			default:
 				return this;
 		}
+	}
+
+	public class_4990 method_26383() {
+		return this.field_23264;
 	}
 
 	public Direction rotate(Direction direction) {

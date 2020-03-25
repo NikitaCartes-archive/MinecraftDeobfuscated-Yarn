@@ -276,15 +276,15 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.primary = getPotionEffectById(tag.getInt("Primary"));
-		this.secondary = getPotionEffectById(tag.getInt("Secondary"));
-		if (tag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
+		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
+		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
+		if (compoundTag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
-		this.lock = ContainerLock.fromTag(tag);
+		this.lock = ContainerLock.fromTag(compoundTag);
 	}
 
 	@Override

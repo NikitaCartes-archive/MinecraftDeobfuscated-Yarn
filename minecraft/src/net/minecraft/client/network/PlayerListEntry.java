@@ -61,6 +61,11 @@ public class PlayerListEntry {
 		this.latency = latency;
 	}
 
+	/**
+	 * Checks if the player represented by this entry has a custom skin.
+	 * 
+	 * <p>If the player has the default skin, this will return false.
+	 */
 	public boolean hasSkinTexture() {
 		return this.getSkinTexture() != null;
 	}

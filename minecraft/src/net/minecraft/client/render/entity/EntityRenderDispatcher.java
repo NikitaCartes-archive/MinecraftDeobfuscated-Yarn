@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4999;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -176,6 +177,7 @@ public class EntityRenderDispatcher {
 		this.register(EntityType.ZOMBIE, new ZombieEntityRenderer(this));
 		this.register(EntityType.ZOMBIFIED_PIGLIN, new PiglinEntityRenderer(this, true));
 		this.register(EntityType.ZOMBIE_VILLAGER, new ZombieVillagerEntityRenderer(this, reloadableResourceManager));
+		this.register(EntityType.STRIDER, new class_4999(this));
 	}
 
 	public EntityRenderDispatcher(

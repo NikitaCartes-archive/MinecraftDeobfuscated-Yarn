@@ -90,10 +90,10 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		if (tag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
+		if (compoundTag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
 		}
 
 		if (this.hasWorld()) {
@@ -102,7 +102,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 			this.baseColor = null;
 		}
 
-		this.patternListTag = tag.getList("Patterns", 10);
+		this.patternListTag = compoundTag.getList("Patterns", 10);
 		this.patterns = null;
 		this.patternListTagRead = true;
 	}

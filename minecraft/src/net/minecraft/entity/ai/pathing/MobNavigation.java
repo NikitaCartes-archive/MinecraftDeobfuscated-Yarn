@@ -185,15 +185,7 @@ public class MobNavigation extends EntityNavigation {
 					double e = (double)l + 0.5 - entityPos.z;
 					if (!(d * lookVecX + e * lookVecZ < 0.0)) {
 						PathNodeType pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY - 1, l, this.entity, xSize, ySize, zSize, true, true);
-						if (pathNodeType == PathNodeType.WATER) {
-							return false;
-						}
-
-						if (pathNodeType == PathNodeType.LAVA) {
-							return false;
-						}
-
-						if (pathNodeType == PathNodeType.OPEN) {
+						if (!this.method_26338(pathNodeType)) {
 							return false;
 						}
 
@@ -211,6 +203,14 @@ public class MobNavigation extends EntityNavigation {
 			}
 
 			return true;
+		}
+	}
+
+	protected boolean method_26338(PathNodeType pathNodeType) {
+		if (pathNodeType == PathNodeType.WATER) {
+			return false;
+		} else {
+			return pathNodeType == PathNodeType.LAVA ? false : pathNodeType != PathNodeType.OPEN;
 		}
 	}
 

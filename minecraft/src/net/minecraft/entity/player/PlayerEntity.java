@@ -1301,20 +1301,24 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.wakeUp(true, true);
 	}
 
-	public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, boolean bl) {
+	public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, boolean bl, boolean bl2) {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
 		if (block instanceof RespawnAnchorBlock && (Integer)blockState.get(RespawnAnchorBlock.CHARGES) > 0) {
-			world.setBlockState(pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), 3);
-			return RespawnAnchorBlock.findRespawnPosition(world, pos);
+			Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
+			if (!bl2 && optional.isPresent()) {
+				world.setBlockState(pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), 3);
+			}
+
+			return optional;
 		} else if (block instanceof BedBlock) {
 			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, 0);
 		} else if (!bl) {
 			return Optional.empty();
 		} else {
-			boolean bl2 = block.canMobSpawnInside();
-			boolean bl3 = world.getBlockState(pos.up()).getBlock().canMobSpawnInside();
-			return bl2 && bl3 ? Optional.of(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 0.1, (double)pos.getZ() + 0.5)) : Optional.empty();
+			boolean bl3 = block.canMobSpawnInside();
+			boolean bl4 = world.getBlockState(pos.up()).getBlock().canMobSpawnInside();
+			return bl3 && bl4 ? Optional.of(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 0.1, (double)pos.getZ() + 0.5)) : Optional.empty();
 		}
 	}
 

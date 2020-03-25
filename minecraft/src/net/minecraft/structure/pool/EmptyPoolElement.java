@@ -36,6 +36,7 @@ public class EmptyPoolElement extends StructurePoolElement {
 		IWorld world,
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
+		BlockPos blockPos2,
 		BlockRotation blockRotation,
 		BlockBox blockBox,
 		Random random

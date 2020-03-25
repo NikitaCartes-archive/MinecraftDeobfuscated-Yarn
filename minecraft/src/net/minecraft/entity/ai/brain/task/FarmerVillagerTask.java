@@ -63,11 +63,6 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					this.ableToPickUpSeed = true;
 					break;
 				}
-
-				if (itemStack.getItem() == Items.WHEAT_SEEDS || itemStack.getItem() == Items.BEETROOT_SEEDS) {
-					this.ableToPickUpSeed = true;
-					break;
-				}
 			}
 
 			BlockPos.Mutable mutable = villagerEntity.getBlockPos().mutableCopy();
@@ -117,68 +112,70 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		if (this.currentTarget != null && l > this.nextResponseTime) {
-			BlockState blockState = serverWorld.getBlockState(this.currentTarget);
-			Block block = blockState.getBlock();
-			Block block2 = serverWorld.getBlockState(this.currentTarget.down()).getBlock();
-			if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.ableToPickUpSeed) {
-				serverWorld.breakBlock(this.currentTarget, true, villagerEntity);
-			}
+		if (this.currentTarget == null || this.currentTarget.isWithinDistance(villagerEntity.getPos(), 1.0)) {
+			if (this.currentTarget != null && l > this.nextResponseTime) {
+				BlockState blockState = serverWorld.getBlockState(this.currentTarget);
+				Block block = blockState.getBlock();
+				Block block2 = serverWorld.getBlockState(this.currentTarget.down()).getBlock();
+				if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.ableToPickUpSeed) {
+					serverWorld.breakBlock(this.currentTarget, true, villagerEntity);
+				}
 
-			if (blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant) {
-				BasicInventory basicInventory = villagerEntity.getInventory();
+				if (blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant) {
+					BasicInventory basicInventory = villagerEntity.getInventory();
 
-				for (int i = 0; i < basicInventory.getInvSize(); i++) {
-					ItemStack itemStack = basicInventory.getInvStack(i);
-					boolean bl = false;
-					if (!itemStack.isEmpty()) {
-						if (itemStack.getItem() == Items.WHEAT_SEEDS) {
-							serverWorld.setBlockState(this.currentTarget, Blocks.WHEAT.getDefaultState(), 3);
-							bl = true;
-						} else if (itemStack.getItem() == Items.POTATO) {
-							serverWorld.setBlockState(this.currentTarget, Blocks.POTATOES.getDefaultState(), 3);
-							bl = true;
-						} else if (itemStack.getItem() == Items.CARROT) {
-							serverWorld.setBlockState(this.currentTarget, Blocks.CARROTS.getDefaultState(), 3);
-							bl = true;
-						} else if (itemStack.getItem() == Items.BEETROOT_SEEDS) {
-							serverWorld.setBlockState(this.currentTarget, Blocks.BEETROOTS.getDefaultState(), 3);
-							bl = true;
+					for (int i = 0; i < basicInventory.getInvSize(); i++) {
+						ItemStack itemStack = basicInventory.getInvStack(i);
+						boolean bl = false;
+						if (!itemStack.isEmpty()) {
+							if (itemStack.getItem() == Items.WHEAT_SEEDS) {
+								serverWorld.setBlockState(this.currentTarget, Blocks.WHEAT.getDefaultState(), 3);
+								bl = true;
+							} else if (itemStack.getItem() == Items.POTATO) {
+								serverWorld.setBlockState(this.currentTarget, Blocks.POTATOES.getDefaultState(), 3);
+								bl = true;
+							} else if (itemStack.getItem() == Items.CARROT) {
+								serverWorld.setBlockState(this.currentTarget, Blocks.CARROTS.getDefaultState(), 3);
+								bl = true;
+							} else if (itemStack.getItem() == Items.BEETROOT_SEEDS) {
+								serverWorld.setBlockState(this.currentTarget, Blocks.BEETROOTS.getDefaultState(), 3);
+								bl = true;
+							}
+						}
+
+						if (bl) {
+							serverWorld.playSound(
+								null,
+								(double)this.currentTarget.getX(),
+								(double)this.currentTarget.getY(),
+								(double)this.currentTarget.getZ(),
+								SoundEvents.ITEM_CROP_PLANT,
+								SoundCategory.BLOCKS,
+								1.0F,
+								1.0F
+							);
+							itemStack.decrement(1);
+							if (itemStack.isEmpty()) {
+								basicInventory.setInvStack(i, ItemStack.EMPTY);
+							}
+							break;
 						}
 					}
+				}
 
-					if (bl) {
-						serverWorld.playSound(
-							null,
-							(double)this.currentTarget.getX(),
-							(double)this.currentTarget.getY(),
-							(double)this.currentTarget.getZ(),
-							SoundEvents.ITEM_CROP_PLANT,
-							SoundCategory.BLOCKS,
-							1.0F,
-							1.0F
-						);
-						itemStack.decrement(1);
-						if (itemStack.isEmpty()) {
-							basicInventory.setInvStack(i, ItemStack.EMPTY);
-						}
-						break;
+				if (block instanceof CropBlock && !((CropBlock)block).isMature(blockState)) {
+					this.targetPositions.remove(this.currentTarget);
+					this.currentTarget = this.chooseRandomTarget(serverWorld);
+					if (this.currentTarget != null) {
+						this.nextResponseTime = l + 20L;
+						villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5F, 1));
+						villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
 					}
 				}
 			}
 
-			if (block instanceof CropBlock && !((CropBlock)block).isMature(blockState)) {
-				this.targetPositions.remove(this.currentTarget);
-				this.currentTarget = this.chooseRandomTarget(serverWorld);
-				if (this.currentTarget != null) {
-					this.nextResponseTime = l + 20L;
-					villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new BlockPosLookTarget(this.currentTarget), 0.5F, 1));
-					villagerEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(this.currentTarget));
-				}
-			}
+			this.ticksRan++;
 		}
-
-		this.ticksRan++;
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {

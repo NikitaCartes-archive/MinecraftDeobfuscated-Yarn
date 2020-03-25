@@ -194,7 +194,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	public abstract ServerCommandSource getSource();
 
 	@Override
-	public boolean sendCommandFeedback() {
+	public boolean shouldReceiveFeedback() {
 		return this.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK) && this.trackOutput;
 	}
 

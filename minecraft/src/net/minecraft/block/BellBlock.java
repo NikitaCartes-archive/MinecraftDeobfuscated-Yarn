@@ -33,7 +33,7 @@ import net.minecraft.world.WorldView;
 public class BellBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final EnumProperty<Attachment> ATTACHMENT = Properties.ATTACHMENT;
-	public static final BooleanProperty field_20648 = Properties.POWERED;
+	public static final BooleanProperty POWERED = Properties.POWERED;
 	private static final VoxelShape NORTH_SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 4.0, 16.0, 16.0, 12.0);
 	private static final VoxelShape EAST_WEST_SHAPE = Block.createCuboidShape(4.0, 0.0, 0.0, 12.0, 16.0, 16.0);
 	private static final VoxelShape BELL_WAIST_SHAPE = Block.createCuboidShape(5.0, 6.0, 5.0, 11.0, 13.0, 11.0);
@@ -50,19 +50,19 @@ public class BellBlock extends BlockWithEntity {
 	public BellBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(ATTACHMENT, Attachment.FLOOR).with(field_20648, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(ATTACHMENT, Attachment.FLOOR).with(POWERED, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos);
-		if (bl != (Boolean)state.get(field_20648)) {
+		if (bl != (Boolean)state.get(POWERED)) {
 			if (bl) {
 				this.ring(world, pos, null);
 			}
 
-			world.setBlockState(pos, state.with(field_20648, Boolean.valueOf(bl)), 3);
+			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), 3);
 		}
 	}
 
@@ -242,7 +242,7 @@ public class BellBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING, ATTACHMENT, field_20648);
+		builder.add(FACING, ATTACHMENT, POWERED);
 	}
 
 	@Nullable

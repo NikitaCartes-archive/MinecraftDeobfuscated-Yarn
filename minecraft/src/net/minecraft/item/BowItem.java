@@ -22,7 +22,7 @@ public class BowItem extends RangedWeaponItem {
 			if (entity == null) {
 				return 0.0F;
 			} else {
-				return entity.getActiveItem().getItem() != Items.BOW ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0F;
+				return entity.getActiveItem() != stack ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0F;
 			}
 		});
 		this.addPropertyGetter(

@@ -251,7 +251,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			if (this.method_14937(world, box)) {
 				return false;
 			} else {
@@ -291,11 +291,11 @@ public class MineshaftGenerator {
 						int q = o - 1 + random.nextInt(3);
 						int r = this.applyXTransform(1, q);
 						int s = this.applyZTransform(1, q);
-						BlockPos blockPos = new BlockPos(r, p, s);
-						if (box.contains(blockPos) && this.isUnderSeaLevel(world, 1, 0, q, box)) {
+						BlockPos blockPos2 = new BlockPos(r, p, s);
+						if (box.contains(blockPos2) && this.isUnderSeaLevel(world, 1, 0, q, box)) {
 							this.hasSpawner = true;
-							world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
-							BlockEntity blockEntity = world.getBlockEntity(blockPos);
+							world.setBlockState(blockPos2, Blocks.SPAWNER.getDefaultState(), 2);
+							BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 							if (blockEntity instanceof MobSpawnerBlockEntity) {
 								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.CAVE_SPIDER);
 							}
@@ -493,7 +493,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			if (this.method_14937(world, box)) {
 				return false;
 			} else {
@@ -770,7 +770,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			if (this.method_14937(world, box)) {
 				return false;
 			} else {
@@ -909,7 +909,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			if (this.method_14937(world, box)) {
 				return false;
 			} else {

@@ -19,9 +19,10 @@ public class NopStructureProcessor extends StructureProcessor {
 	public Structure.StructureBlockInfo process(
 		WorldView worldView,
 		BlockPos pos,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	) {
 		return structureBlockInfo2;
 	}

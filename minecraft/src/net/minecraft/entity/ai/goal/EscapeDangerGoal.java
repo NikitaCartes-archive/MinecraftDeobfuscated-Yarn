@@ -16,6 +16,7 @@ public class EscapeDangerGoal extends Goal {
 	protected double targetX;
 	protected double targetY;
 	protected double targetZ;
+	protected boolean field_23227;
 
 	public EscapeDangerGoal(MobEntityWithAi mob, double speed) {
 		this.mob = mob;
@@ -54,9 +55,19 @@ public class EscapeDangerGoal extends Goal {
 		}
 	}
 
+	public boolean method_26337() {
+		return this.field_23227;
+	}
+
 	@Override
 	public void start() {
 		this.mob.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+		this.field_23227 = true;
+	}
+
+	@Override
+	public void stop() {
+		this.field_23227 = false;
 	}
 
 	@Override

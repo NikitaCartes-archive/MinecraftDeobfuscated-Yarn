@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.brain.sensor;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -24,12 +25,14 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of(
 			MemoryModuleType.VISIBLE_MOBS,
+			MemoryModuleType.MOBS,
 			MemoryModuleType.NEAREST_VISIBLE_WITHER_SKELETON,
 			MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD,
 			MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM,
 			MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLIN,
 			MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN,
 			MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS,
+			MemoryModuleType.NEAREST_ADULT_PIGLINS,
 			MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT,
 			MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT,
 			MemoryModuleType.NEAREST_REPELLENT
@@ -49,8 +52,9 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		Optional<PlayerEntity> optional7 = Optional.empty();
 		int i = 0;
 		List<PiglinEntity> list = Lists.<PiglinEntity>newArrayList();
+		List<PiglinEntity> list2 = Lists.<PiglinEntity>newArrayList();
 
-		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(Lists.newArrayList())) {
+		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())) {
 			if (livingEntity instanceof HoglinEntity) {
 				HoglinEntity hoglinEntity = (HoglinEntity)livingEntity;
 				if (hoglinEntity.isBaby() && !optional3.isPresent()) {
@@ -84,6 +88,12 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 			}
 		}
 
+		for (LivingEntity livingEntity2 : (List)brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
+			if (livingEntity2 instanceof PiglinEntity && ((PiglinEntity)livingEntity2).isAdult()) {
+				list2.add((PiglinEntity)livingEntity2);
+			}
+		}
+
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_WITHER_SKELETON, optional);
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLIN, optional2);
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, optional3);
@@ -91,6 +101,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN, optional5);
 		brain.remember(MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, optional6);
 		brain.remember(MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, optional7);
+		brain.remember(MemoryModuleType.NEAREST_ADULT_PIGLINS, list2);
 		brain.remember(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, list);
 		brain.remember(MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, list.size());
 		brain.remember(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, i);

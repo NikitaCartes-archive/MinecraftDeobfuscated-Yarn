@@ -164,7 +164,7 @@ public class FallingBlockEntity extends Entity {
 												}
 											}
 
-											blockEntity.fromTag(compoundTag);
+											blockEntity.fromTag(this.block, compoundTag);
 											blockEntity.markDirty();
 										}
 									}

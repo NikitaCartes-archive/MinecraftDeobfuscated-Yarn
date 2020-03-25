@@ -9,6 +9,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
+/**
+ * Represents a player entity that is present on the client but is not the client's own player.
+ */
 @Environment(EnvType.CLIENT)
 public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile) {

@@ -241,22 +241,22 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
 		this.bees.clear();
-		ListTag listTag = tag.getList("Bees", 10);
+		ListTag listTag = compoundTag.getList("Bees", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
+			CompoundTag compoundTag2 = listTag.getCompound(i);
 			BeehiveBlockEntity.Bee bee = new BeehiveBlockEntity.Bee(
-				compoundTag.getCompound("EntityData"), compoundTag.getInt("TicksInHive"), compoundTag.getInt("MinOccupationTicks")
+				compoundTag2.getCompound("EntityData"), compoundTag2.getInt("TicksInHive"), compoundTag2.getInt("MinOccupationTicks")
 			);
 			this.bees.add(bee);
 		}
 
 		this.flowerPos = null;
-		if (tag.contains("FlowerPos")) {
-			this.flowerPos = NbtHelper.toBlockPos(tag.getCompound("FlowerPos"));
+		if (compoundTag.contains("FlowerPos")) {
+			this.flowerPos = NbtHelper.toBlockPos(compoundTag.getCompound("FlowerPos"));
 		}
 	}
 

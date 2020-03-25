@@ -13,7 +13,6 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -31,7 +30,6 @@ import net.minecraft.world.TickScheduler;
 public class ServerTickScheduler<T> implements TickScheduler<T> {
 	protected final Predicate<T> invalidObjPredicate;
 	private final Function<T, Identifier> idToName;
-	private final Function<Identifier, T> nameToId;
 	private final Set<ScheduledTick<T>> scheduledTickActions = Sets.<ScheduledTick<T>>newHashSet();
 	private final TreeSet<ScheduledTick<T>> scheduledTickActionsInOrder = Sets.newTreeSet(ScheduledTick.getComparator());
 	private final ServerWorld world;
@@ -39,18 +37,11 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	private final List<ScheduledTick<T>> consumedTickActions = Lists.<ScheduledTick<T>>newArrayList();
 	private final Consumer<ScheduledTick<T>> tickConsumer;
 
-	public ServerTickScheduler(
-		ServerWorld world,
-		Predicate<T> invalidObjPredicate,
-		Function<T, Identifier> idToName,
-		Function<Identifier, T> nameToId,
-		Consumer<ScheduledTick<T>> tickConsumer
-	) {
+	public ServerTickScheduler(ServerWorld world, Predicate<T> invalidObjPredicate, Function<T, Identifier> idToName, Consumer<ScheduledTick<T>> consumer) {
 		this.invalidObjPredicate = invalidObjPredicate;
 		this.idToName = idToName;
-		this.nameToId = nameToId;
 		this.world = world;
-		this.tickConsumer = tickConsumer;
+		this.tickConsumer = consumer;
 	}
 
 	public void tick() {
@@ -108,11 +99,6 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	@Override
 	public boolean isTicking(BlockPos pos, T object) {
 		return this.currentTickActions.contains(new ScheduledTick(pos, object));
-	}
-
-	@Override
-	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
-		stream.forEach(this::addScheduledTick);
 	}
 
 	public List<ScheduledTick<T>> getScheduledTicksInChunk(ChunkPos chunkPos, boolean updateState, boolean getStaleTicks) {
@@ -175,7 +161,7 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		return serializeScheduledTicks(this.idToName, list, this.world.getTime());
 	}
 
-	public static <T> ListTag serializeScheduledTicks(Function<T, Identifier> identifierProvider, Iterable<ScheduledTick<T>> scheduledTicks, long time) {
+	private static <T> ListTag serializeScheduledTicks(Function<T, Identifier> identifierProvider, Iterable<ScheduledTick<T>> scheduledTicks, long time) {
 		ListTag listTag = new ListTag();
 
 		for (ScheduledTick<T> scheduledTick : scheduledTicks) {

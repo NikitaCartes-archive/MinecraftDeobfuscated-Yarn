@@ -88,6 +88,8 @@ import net.minecraft.datafixer.fix.ItemStackEnchantmentFix;
 import net.minecraft.datafixer.fix.ItemStackUuidFix;
 import net.minecraft.datafixer.fix.ItemWaterPotionFix;
 import net.minecraft.datafixer.fix.ItemWrittenBookPagesStrictJsonFix;
+import net.minecraft.datafixer.fix.JigsawPropertiesFix;
+import net.minecraft.datafixer.fix.JigsawRotationFix;
 import net.minecraft.datafixer.fix.LeavesFix;
 import net.minecraft.datafixer.fix.LevelDataGeneratorOptionsFix;
 import net.minecraft.datafixer.fix.LevelFlatGeneratorInfoFix;
@@ -116,6 +118,7 @@ import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.SwimStatsRenameFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
+import net.minecraft.datafixer.fix.VillagerGossipFix;
 import net.minecraft.datafixer.fix.VillagerProfessionFix;
 import net.minecraft.datafixer.fix.VillagerTradeFix;
 import net.minecraft.datafixer.fix.VillagerXpRebuildFix;
@@ -164,6 +167,7 @@ import net.minecraft.datafixer.schema.Schema2501;
 import net.minecraft.datafixer.schema.Schema2502;
 import net.minecraft.datafixer.schema.Schema2505;
 import net.minecraft.datafixer.schema.Schema2509;
+import net.minecraft.datafixer.schema.Schema2519;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -586,5 +590,13 @@ public class Schemas {
 		builder.addFixer(new WorldUuidFix(schema108));
 		builder.addFixer(new PersistentStateUuidFix(schema108));
 		builder.addFixer(new ItemStackUuidFix(schema108));
+		Schema schema109 = builder.addSchema(2516, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new VillagerGossipFix(schema109, "minecraft:villager"));
+		builder.addFixer(new VillagerGossipFix(schema109, "minecraft:zombie_villager"));
+		Schema schema110 = builder.addSchema(2518, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new JigsawPropertiesFix(schema110, false));
+		builder.addFixer(new JigsawRotationFix(schema110, false));
+		Schema schema111 = builder.addSchema(2519, Schema2519::new);
+		builder.addFixer(new ChoiceTypesFix(schema111, "Added Strider", TypeReferences.ENTITY));
 	}
 }

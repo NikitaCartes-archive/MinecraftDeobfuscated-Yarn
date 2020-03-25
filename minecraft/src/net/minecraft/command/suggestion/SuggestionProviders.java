@@ -30,7 +30,7 @@ public class SuggestionProviders {
 		new Identifier("available_sounds"),
 		(commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(commandContext.getSource().getSoundIds(), suggestionsBuilder)
 	);
-	public static final SuggestionProvider<ServerCommandSource> field_22245 = register(
+	public static final SuggestionProvider<ServerCommandSource> ALL_BIOMES = register(
 		new Identifier("available_biomes"), (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(Registry.BIOME.getIds(), suggestionsBuilder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
@@ -52,8 +52,8 @@ public class SuggestionProviders {
 		}
 	}
 
-	public static SuggestionProvider<CommandSource> byId(Identifier name) {
-		return (SuggestionProvider<CommandSource>)REGISTRY.getOrDefault(name, ASK_SERVER);
+	public static SuggestionProvider<CommandSource> byId(Identifier id) {
+		return (SuggestionProvider<CommandSource>)REGISTRY.getOrDefault(id, ASK_SERVER);
 	}
 
 	public static Identifier computeName(SuggestionProvider<CommandSource> provider) {

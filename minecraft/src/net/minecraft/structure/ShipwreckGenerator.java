@@ -116,19 +116,19 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			int i = 256;
 			int j = 0;
-			BlockPos blockPos = this.structure.getSize();
+			BlockPos blockPos2 = this.structure.getSize();
 			Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
-			int k = blockPos.getX() * blockPos.getZ();
+			int k = blockPos2.getX() * blockPos2.getZ();
 			if (k == 0) {
 				j = world.getTopY(type, this.pos.getX(), this.pos.getZ());
 			} else {
-				BlockPos blockPos2 = this.pos.add(blockPos.getX() - 1, 0, blockPos.getZ() - 1);
+				BlockPos blockPos3 = this.pos.add(blockPos2.getX() - 1, 0, blockPos2.getZ() - 1);
 
-				for (BlockPos blockPos3 : BlockPos.iterate(this.pos, blockPos2)) {
-					int l = world.getTopY(type, blockPos3.getX(), blockPos3.getZ());
+				for (BlockPos blockPos4 : BlockPos.iterate(this.pos, blockPos3)) {
+					int l = world.getTopY(type, blockPos4.getX(), blockPos4.getZ());
 					j += l;
 					i = Math.min(i, l);
 				}
@@ -136,9 +136,9 @@ public class ShipwreckGenerator {
 				j /= k;
 			}
 
-			int m = this.grounded ? i - blockPos.getY() / 2 - random.nextInt(3) : j;
+			int m = this.grounded ? i - blockPos2.getY() / 2 - random.nextInt(3) : j;
 			this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-			return super.generate(world, generator, random, box, pos);
+			return super.generate(world, generator, random, box, pos, blockPos);
 		}
 	}
 }

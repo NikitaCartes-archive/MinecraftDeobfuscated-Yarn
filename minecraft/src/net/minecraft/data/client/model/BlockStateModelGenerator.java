@@ -15,6 +15,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
+import net.minecraft.class_5000;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.Attachment;
@@ -1365,15 +1366,6 @@ public class BlockStateModelGenerator {
 			)
 			.register(
 				Direction.EAST, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R90)
-			);
-	}
-
-	private void registerUpDefaultFacing(Block block, TexturedModel.Factory modelFactory) {
-		Identifier identifier = modelFactory.upload(block, this.modelCollector);
-		this.blockStateCollector
-			.accept(
-				VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
-					.coordinate(this.createUpDefaultFacingVariantMap())
 			);
 	}
 
@@ -3302,6 +3294,58 @@ public class BlockStateModelGenerator {
 		this.registerParentedItemModel(Items.RESPAWN_ANCHOR, identifiers[0]);
 	}
 
+	private BlockStateVariant method_26433(class_5000 arg, BlockStateVariant blockStateVariant) {
+		switch (arg) {
+			case field_23382:
+				return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R90);
+			case field_23383:
+				return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R180);
+			case field_23384:
+				return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R270);
+			case field_23381:
+				return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+			case field_23386:
+				return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R180);
+			case field_23387:
+				return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R270);
+			case field_23388:
+				return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+			case field_23385:
+				return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R270);
+			case field_23391:
+				return blockStateVariant;
+			case field_23392:
+				return blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R180);
+			case field_23389:
+				return blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R270);
+			case field_23390:
+				return blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R90);
+			default:
+				throw new UnsupportedOperationException("Rotation " + arg + " can't be expressed with existing x and y values");
+		}
+	}
+
+	private void method_26434() {
+		Identifier identifier = Texture.getSubId(Blocks.JIGSAW, "_top");
+		Identifier identifier2 = Texture.getSubId(Blocks.JIGSAW, "_bottom");
+		Identifier identifier3 = Texture.getSubId(Blocks.JIGSAW, "_side");
+		Identifier identifier4 = Texture.getSubId(Blocks.JIGSAW, "_lock");
+		Texture texture = new Texture()
+			.put(TextureKey.DOWN, identifier3)
+			.put(TextureKey.WEST, identifier3)
+			.put(TextureKey.EAST, identifier3)
+			.put(TextureKey.PARTICLE, identifier)
+			.put(TextureKey.NORTH, identifier)
+			.put(TextureKey.SOUTH, identifier2)
+			.put(TextureKey.UP, identifier4);
+		Identifier identifier5 = Models.CUBE_DIRECTIONAL.upload(Blocks.JIGSAW, texture, this.modelCollector);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.JIGSAW, BlockStateVariant.create().put(VariantSettings.MODEL, identifier5))
+					.coordinate(BlockStateVariantMap.create(Properties.field_23333).register(arg -> this.method_26433(arg, BlockStateVariant.create())))
+			);
+	}
+
 	public void register() {
 		this.registerSimpleState(Blocks.AIR);
 		this.registerStateWithModelReference(Blocks.CAVE_AIR, Blocks.AIR);
@@ -3354,6 +3398,7 @@ public class BlockStateModelGenerator {
 		this.registerSingleton(Blocks.HONEYCOMB_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.ICE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.JUKEBOX, TexturedModel.CUBE_TOP);
+		this.registerSingleton(Blocks.LODESTONE, TexturedModel.CUBE_COLUMN);
 		this.registerSingleton(Blocks.MELON, TexturedModel.CUBE_COLUMN);
 		this.registerSingleton(Blocks.NETHER_WART_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.NOTE_BLOCK, TexturedModel.CUBE_ALL);
@@ -3423,6 +3468,7 @@ public class BlockStateModelGenerator {
 		this.registerTurtleEgg();
 		this.registerVine();
 		this.registerMagmaBlock();
+		this.method_26434();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
@@ -3446,7 +3492,6 @@ public class BlockStateModelGenerator {
 		this.registerAxisRotated(Blocks.HAY_BLOCK, TexturedModel.CUBE_COLUMN, TexturedModel.CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.PURPUR_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.QUARTZ_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
-		this.registerUpDefaultFacing(Blocks.JIGSAW, TexturedModel.CUBE_BOTTOM_TOP);
 		this.registerNorthDefaultHorizontalRotated(Blocks.LOOM, TexturedModel.ORIENTABLE_WITH_BOTTOM);
 		this.registerPumpkins();
 		this.registerBeehive(Blocks.BEE_NEST, Texture::sideFrontTopBottom);

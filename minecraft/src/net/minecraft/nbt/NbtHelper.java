@@ -251,11 +251,28 @@ public final class NbtHelper {
 		return property.name((T)value);
 	}
 
+	/**
+	 * Uses the data fixer to update a tag to the latest data version.
+	 * 
+	 * @param fixer the data fixer
+	 * @param fixTypes the fix types
+	 * @param tag the tag to fix
+	 * @param oldVersion the data version of the compound tag
+	 */
 	public static CompoundTag update(DataFixer fixer, DataFixTypes fixTypes, CompoundTag tag, int oldVersion) {
 		return update(fixer, fixTypes, tag, oldVersion, SharedConstants.getGameVersion().getWorldVersion());
 	}
 
-	public static CompoundTag update(DataFixer fixer, DataFixTypes fixTypes, CompoundTag tag, int oldVersion, int currentVersion) {
-		return (CompoundTag)fixer.update(fixTypes.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, tag), oldVersion, currentVersion).getValue();
+	/**
+	 * Uses the data fixer to update a tag.
+	 * 
+	 * @param fixer the data fixer
+	 * @param fixTypes the fix types
+	 * @param tag the tag to fix
+	 * @param oldVersion the data version of the compound tag
+	 * @param targetVersion the data version to update the tag to
+	 */
+	public static CompoundTag update(DataFixer fixer, DataFixTypes fixTypes, CompoundTag tag, int oldVersion, int targetVersion) {
+		return (CompoundTag)fixer.update(fixTypes.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, tag), oldVersion, targetVersion).getValue();
 	}
 }

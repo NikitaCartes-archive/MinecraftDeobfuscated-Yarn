@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -42,6 +43,11 @@ public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 	@Override
 	public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
 		return false;
+	}
+
+	@Override
+	protected int method_26376(Random random) {
+		return 1;
 	}
 
 	@Nullable

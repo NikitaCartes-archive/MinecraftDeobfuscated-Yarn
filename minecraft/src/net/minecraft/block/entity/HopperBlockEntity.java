@@ -42,14 +42,14 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag)) {
-			Inventories.fromTag(tag, this.inventory);
+		if (!this.deserializeLootTable(compoundTag)) {
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 
-		this.transferCooldown = tag.getInt("TransferCooldown");
+		this.transferCooldown = compoundTag.getInt("TransferCooldown");
 	}
 
 	@Override

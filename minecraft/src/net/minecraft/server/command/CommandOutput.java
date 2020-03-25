@@ -2,6 +2,9 @@ package net.minecraft.server.command;
 
 import net.minecraft.text.Text;
 
+/**
+ * Represents a subject which can receive command feedback.
+ */
 public interface CommandOutput {
 	CommandOutput DUMMY = new CommandOutput() {
 		@Override
@@ -9,7 +12,7 @@ public interface CommandOutput {
 		}
 
 		@Override
-		public boolean sendCommandFeedback() {
+		public boolean shouldReceiveFeedback() {
 			return false;
 		}
 
@@ -26,7 +29,7 @@ public interface CommandOutput {
 
 	void sendMessage(Text message);
 
-	boolean sendCommandFeedback();
+	boolean shouldReceiveFeedback();
 
 	boolean shouldTrackOutput();
 

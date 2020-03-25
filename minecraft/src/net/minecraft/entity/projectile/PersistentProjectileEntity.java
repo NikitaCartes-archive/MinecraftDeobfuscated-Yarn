@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -158,13 +159,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 
 		if (this.inGround && !bl) {
-			if (this.inBlockState != blockState && this.world.doesNotCollide(this.getBoundingBox().expand(0.06))) {
-				this.inGround = false;
-				this.setVelocity(
-					vec3d.multiply((double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F))
-				);
-				this.life = 0;
-				this.flyingTick = 0;
+			if (this.inBlockState != blockState && this.method_26351()) {
+				this.method_26352();
 			} else if (!this.world.isClient) {
 				this.age();
 			}
@@ -269,6 +265,26 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 			this.updatePosition(h, j, k);
 			this.checkBlockCollision();
+		}
+	}
+
+	private boolean method_26351() {
+		return this.inGround && this.world.doesNotCollide(new Box(this.getPos(), this.getPos()).expand(0.06));
+	}
+
+	private void method_26352() {
+		this.inGround = false;
+		Vec3d vec3d = this.getVelocity();
+		this.setVelocity(vec3d.multiply((double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F)));
+		this.life = 0;
+		this.flyingTick = 0;
+	}
+
+	@Override
+	public void move(MovementType type, Vec3d movement) {
+		super.move(type, movement);
+		if (type != MovementType.SELF && this.method_26351()) {
+			this.method_26352();
 		}
 	}
 

@@ -55,6 +55,18 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			}
 
 			i--;
+		} else if (this.entity.isInLava() && this.entity.method_26319()) {
+			i = MathHelper.floor(this.entity.getY());
+			BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
+
+			for (BlockState blockState = this.cachedWorld.getBlockState(mutable);
+				blockState.getBlock() == Blocks.LAVA || blockState.getFluidState() == Fluids.LAVA.getStill(false);
+				blockState = this.cachedWorld.getBlockState(mutable)
+			) {
+				mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ());
+			}
+
+			i--;
 		} else if (this.entity.isOnGround()) {
 			i = MathHelper.floor(this.entity.getY() + 0.5);
 		} else {

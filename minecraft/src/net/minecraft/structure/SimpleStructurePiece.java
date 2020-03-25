@@ -49,10 +49,10 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 		this.placementData.setBoundingBox(box);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (this.structure.place(world, this.pos, this.placementData, 2)) {
+		if (this.structure.place(world, this.pos, blockPos, this.placementData, 2)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.tag != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
@@ -76,7 +76,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 						} else {
 							LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 						}
-					} catch (CommandSyntaxException var14) {
+					} catch (CommandSyntaxException var15) {
 						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 					}
 

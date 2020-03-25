@@ -213,7 +213,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 4, 4, 6, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 1, 1, 0);
 			this.generateEntrance(world, random, box, StrongholdGenerator.Piece.EntranceType.OPENING, 1, 1, 6);
@@ -282,7 +282,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 4, 4, 6, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 1, 1, 0);
 			this.generateEntrance(world, random, box, StrongholdGenerator.Piece.EntranceType.OPENING, 1, 1, 6);
@@ -374,7 +374,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 9, 8, 10, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 4, 3, 0);
 			if (this.lowerLeftExists) {
@@ -454,7 +454,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 4, 4, 4, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 1, 1, 0);
 			Direction direction = this.getFacing();
@@ -503,7 +503,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			int i = 11;
 			if (!this.tall) {
 				i = 6;
@@ -877,7 +877,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 10, 7, 15, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, StrongholdGenerator.Piece.EntranceType.GRATES, 4, 1, 0);
 			int i = 6;
@@ -953,11 +953,11 @@ public class StrongholdGenerator {
 
 			if (!this.spawnerPlaced) {
 				i = this.applyYTransform(3);
-				BlockPos blockPos = new BlockPos(this.applyXTransform(5, 6), i, this.applyZTransform(5, 6));
-				if (box.contains(blockPos)) {
+				BlockPos blockPos2 = new BlockPos(this.applyXTransform(5, 6), i, this.applyZTransform(5, 6));
+				if (box.contains(blockPos2)) {
 					this.spawnerPlaced = true;
-					world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
-					BlockEntity blockEntity = world.getBlockEntity(blockPos);
+					world.setBlockState(blockPos2, Blocks.SPAWNER.getDefaultState(), 2);
+					BlockEntity blockEntity = world.getBlockEntity(blockPos2);
 					if (blockEntity instanceof MobSpawnerBlockEntity) {
 						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.SILVERFISH);
 					}
@@ -993,7 +993,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 8, 4, 10, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 1, 1, 0);
 			this.fillWithOutline(world, box, 1, 1, 10, 3, 3, 10, AIR, AIR, false);
@@ -1078,7 +1078,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 4, 4, 4, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 1, 1, 0);
 			Direction direction = this.getFacing();
@@ -1134,7 +1134,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			for (int i = 0; i < this.length; i++) {
 				this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 0, 0, i, box);
 				this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 1, 0, i, box);
@@ -1216,7 +1216,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 4, 10, 4, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 1, 7, 0);
 			this.generateEntrance(world, random, box, StrongholdGenerator.Piece.EntranceType.OPENING, 1, 1, 4);
@@ -1278,7 +1278,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 10, 6, 10, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 4, 1, 0);
 			this.fillWithOutline(world, box, 4, 1, 10, 6, 3, 10, AIR, AIR, false);
@@ -1393,7 +1393,7 @@ public class StrongholdGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 0, 0, 4, 10, 7, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, box, this.entryDoor, 1, 7, 0);
 			this.generateEntrance(world, random, box, StrongholdGenerator.Piece.EntranceType.OPENING, 1, 1, 7);

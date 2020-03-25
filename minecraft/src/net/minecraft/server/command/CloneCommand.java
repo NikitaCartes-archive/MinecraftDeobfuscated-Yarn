@@ -299,7 +299,7 @@ public class CloneCommand {
 							blockInfo2x.blockEntityTag.putInt("x", blockInfo2x.pos.getX());
 							blockInfo2x.blockEntityTag.putInt("y", blockInfo2x.pos.getY());
 							blockInfo2x.blockEntityTag.putInt("z", blockInfo2x.pos.getZ());
-							blockEntity4.fromTag(blockInfo2x.blockEntityTag);
+							blockEntity4.fromTag(blockInfo2x.state, blockInfo2x.blockEntityTag);
 							blockEntity4.markDirty();
 						}
 

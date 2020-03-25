@@ -105,6 +105,9 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
+/**
+ * Represents an entity which has a health value and can receive damage.
+ */
 public abstract class LivingEntity extends Entity {
 	private static final UUID ATTR_SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
 	private static final UUID field_23128 = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
@@ -165,7 +168,7 @@ public abstract class LivingEntity extends Entity {
 	public float sidewaysSpeed;
 	public float upwardSpeed;
 	public float forwardSpeed;
-	protected int bodyTrackingIncrements;
+	public int bodyTrackingIncrements;
 	protected double serverX;
 	protected double serverY;
 	protected double serverZ;
@@ -1699,10 +1702,20 @@ public abstract class LivingEntity extends Entity {
 		return this.getEquippedStack(EquipmentSlot.OFFHAND);
 	}
 
+	/**
+	 * Checks if this entity is holding a certain item.
+	 * 
+	 * <p>This checks both the entity's main and off hand.
+	 */
 	public boolean isHolding(Item item) {
 		return this.isHolding(item2 -> item2 == item);
 	}
 
+	/**
+	 * Checks if this entity is holding a certain item.
+	 * 
+	 * <p>This checks both the entity's main and off hand.
+	 */
 	public boolean isHolding(Predicate<Item> predicate) {
 		return predicate.test(this.getMainHandStack().getItem()) || predicate.test(this.getOffHandStack().getItem());
 	}
@@ -1791,7 +1804,7 @@ public abstract class LivingEntity extends Entity {
 
 	private void onDismounted(Entity vehicle) {
 		Vec3d vec3d;
-		if (!this.removed && !this.world.getBlockState(vehicle.getBlockPos()).getBlock().isIn(BlockTags.PORTALS)) {
+		if (!vehicle.removed && !this.world.getBlockState(vehicle.getBlockPos()).getBlock().isIn(BlockTags.PORTALS)) {
 			vec3d = vehicle.method_24829(this);
 		} else {
 			vec3d = new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ());
@@ -1839,6 +1852,10 @@ public abstract class LivingEntity extends Entity {
 		return 0.8F;
 	}
 
+	public boolean method_26319() {
+		return false;
+	}
+
 	public void travel(Vec3d movementInput) {
 		if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
 			double d = 0.08;
@@ -1858,35 +1875,35 @@ public abstract class LivingEntity extends Entity {
 
 						Vec3d vec3d5 = this.getRotationVector();
 						float f = this.pitch * (float) (Math.PI / 180.0);
-						double j = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
-						double k = Math.sqrt(squaredHorizontalLength(vec3d4));
-						double i = vec3d5.length();
-						float l = MathHelper.cos(f);
-						l = (float)((double)l * (double)l * Math.min(1.0, i / 0.4));
-						vec3d4 = this.getVelocity().add(0.0, d * (-1.0 + (double)l * 0.75), 0.0);
-						if (vec3d4.y < 0.0 && j > 0.0) {
-							double m = vec3d4.y * -0.1 * (double)l;
-							vec3d4 = vec3d4.add(vec3d5.x * m / j, m, vec3d5.z * m / j);
+						double k = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
+						double l = Math.sqrt(squaredHorizontalLength(vec3d4));
+						double m = vec3d5.length();
+						float n = MathHelper.cos(f);
+						n = (float)((double)n * (double)n * Math.min(1.0, m / 0.4));
+						vec3d4 = this.getVelocity().add(0.0, d * (-1.0 + (double)n * 0.75), 0.0);
+						if (vec3d4.y < 0.0 && k > 0.0) {
+							double o = vec3d4.y * -0.1 * (double)n;
+							vec3d4 = vec3d4.add(vec3d5.x * o / k, o, vec3d5.z * o / k);
 						}
 
-						if (f < 0.0F && j > 0.0) {
-							double m = k * (double)(-MathHelper.sin(f)) * 0.04;
-							vec3d4 = vec3d4.add(-vec3d5.x * m / j, m * 3.2, -vec3d5.z * m / j);
+						if (f < 0.0F && k > 0.0) {
+							double o = l * (double)(-MathHelper.sin(f)) * 0.04;
+							vec3d4 = vec3d4.add(-vec3d5.x * o / k, o * 3.2, -vec3d5.z * o / k);
 						}
 
-						if (j > 0.0) {
-							vec3d4 = vec3d4.add((vec3d5.x / j * k - vec3d4.x) * 0.1, 0.0, (vec3d5.z / j * k - vec3d4.z) * 0.1);
+						if (k > 0.0) {
+							vec3d4 = vec3d4.add((vec3d5.x / k * l - vec3d4.x) * 0.1, 0.0, (vec3d5.z / k * l - vec3d4.z) * 0.1);
 						}
 
 						this.setVelocity(vec3d4.multiply(0.99F, 0.98F, 0.99F));
 						this.move(MovementType.SELF, this.getVelocity());
 						if (this.horizontalCollision && !this.world.isClient) {
-							double m = Math.sqrt(squaredHorizontalLength(this.getVelocity()));
-							double n = k - m;
-							float o = (float)(n * 10.0 - 3.0);
-							if (o > 0.0F) {
-								this.playSound(this.getFallSound((int)o), 1.0F, 1.0F);
-								this.damage(DamageSource.FLY_INTO_WALL, o);
+							double o = Math.sqrt(squaredHorizontalLength(this.getVelocity()));
+							double p = l - o;
+							float q = (float)(p * 10.0 - 3.0);
+							if (q > 0.0F) {
+								this.playSound(this.getFallSound((int)q), 1.0F, 1.0F);
+								this.damage(DamageSource.FLY_INTO_WALL, q);
 							}
 						}
 
@@ -1895,31 +1912,34 @@ public abstract class LivingEntity extends Entity {
 						}
 					} else {
 						BlockPos blockPos = this.getVelocityAffectingPos();
-						float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
-						float fx = this.onGround ? p * 0.91F : 0.91F;
-						this.updateVelocity(this.getMovementSpeed(p), movementInput);
-						this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
-						this.move(MovementType.SELF, this.getVelocity());
-						Vec3d vec3d6 = this.getVelocity();
-						if ((this.horizontalCollision || this.jumping) && this.isClimbing()) {
-							vec3d6 = new Vec3d(vec3d6.x, 0.2, vec3d6.z);
-						}
-
-						double q = vec3d6.y;
+						float j = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
+						float fx = this.onGround ? j * 0.91F : 0.91F;
+						Vec3d vec3d6 = this.method_26318(movementInput, j);
+						double r = vec3d6.y;
 						if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
-							q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
+							r += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
 							this.fallDistance = 0.0F;
 						} else if (this.world.isClient && !this.world.isChunkLoaded(blockPos)) {
 							if (this.getY() > 0.0) {
-								q = -0.1;
+								r = -0.1;
 							} else {
-								q = 0.0;
+								r = 0.0;
 							}
 						} else if (!this.hasNoGravity()) {
-							q -= d;
+							r -= d;
 						}
 
-						this.setVelocity(vec3d6.x * (double)fx, q * 0.98F, vec3d6.z * (double)fx);
+						this.setVelocity(vec3d6.x * (double)fx, r * 0.98F, vec3d6.z * (double)fx);
+					}
+				} else if (this.method_26319()) {
+					float i = 0.6F;
+					float j = 0.54600006F;
+					Vec3d vec3d3 = this.method_26318(movementInput, 0.54600006F);
+					vec3d3 = vec3d3.multiply(1.0, 0.8F, 1.0);
+					vec3d3 = this.method_26317(d, bl, vec3d3);
+					this.setVelocity(vec3d3.x * 0.54600006F, vec3d3.y, vec3d3.z * 0.54600006F);
+					if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + 0.6F - this.getY() + this.prevY, vec3d3.z)) {
+						this.setVelocity(vec3d3.x, 0.3F, vec3d3.z);
 					}
 				} else {
 					double e = this.getY();
@@ -1937,7 +1957,7 @@ public abstract class LivingEntity extends Entity {
 				}
 			} else {
 				double ex = this.getY();
-				float fxx = this.isSprinting() ? 0.9F : this.getBaseMovementSpeedMultiplier();
+				float fx = this.isSprinting() ? 0.9F : this.getBaseMovementSpeedMultiplier();
 				float g = 0.02F;
 				float h = (float)EnchantmentHelper.getDepthStrider(this);
 				if (h > 3.0F) {
@@ -1949,12 +1969,12 @@ public abstract class LivingEntity extends Entity {
 				}
 
 				if (h > 0.0F) {
-					fxx += (0.54600006F - fxx) * h / 3.0F;
+					fx += (0.54600006F - fx) * h / 3.0F;
 					g += (this.getMovementSpeed() - g) * h / 3.0F;
 				}
 
 				if (this.hasStatusEffect(StatusEffects.DOLPHINS_GRACE)) {
-					fxx = 0.96F;
+					fx = 0.96F;
 				}
 
 				this.updateVelocity(g, movementInput);
@@ -1964,20 +1984,9 @@ public abstract class LivingEntity extends Entity {
 					vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
 				}
 
-				this.setVelocity(vec3d.multiply((double)fxx, 0.8F, (double)fxx));
-				if (!this.hasNoGravity() && !this.isSprinting()) {
-					Vec3d vec3d2 = this.getVelocity();
-					double ix;
-					if (bl && Math.abs(vec3d2.y - 0.005) >= 0.003 && Math.abs(vec3d2.y - d / 16.0) < 0.003) {
-						ix = -0.003;
-					} else {
-						ix = vec3d2.y - d / 16.0;
-					}
-
-					this.setVelocity(vec3d2.x, ix, vec3d2.z);
-				}
-
-				Vec3d vec3d2 = this.getVelocity();
+				this.setVelocity(vec3d.multiply((double)fx, 0.8F, (double)fx));
+				Vec3d vec3d2 = this.method_26317(d, bl, this.getVelocity());
+				this.setVelocity(vec3d2);
 				if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + 0.6F - this.getY() + ex, vec3d2.z)) {
 					this.setVelocity(vec3d2.x, 0.3F, vec3d2.z);
 				}
@@ -1986,15 +1995,42 @@ public abstract class LivingEntity extends Entity {
 
 		this.lastLimbDistance = this.limbDistance;
 		double dx = this.getX() - this.prevX;
-		double r = this.getZ() - this.prevZ;
-		double s = this instanceof Flutterer ? this.getY() - this.prevY : 0.0;
-		float gx = MathHelper.sqrt(dx * dx + s * s + r * r) * 4.0F;
+		double s = this.getZ() - this.prevZ;
+		double t = this instanceof Flutterer ? this.getY() - this.prevY : 0.0;
+		float gx = MathHelper.sqrt(dx * dx + t * t + s * s) * 4.0F;
 		if (gx > 1.0F) {
 			gx = 1.0F;
 		}
 
 		this.limbDistance = this.limbDistance + (gx - this.limbDistance) * 0.4F;
 		this.limbAngle = this.limbAngle + this.limbDistance;
+	}
+
+	public Vec3d method_26318(Vec3d vec3d, float f) {
+		this.updateVelocity(this.getMovementSpeed(f), vec3d);
+		this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
+		this.move(MovementType.SELF, this.getVelocity());
+		Vec3d vec3d2 = this.getVelocity();
+		if ((this.horizontalCollision || this.jumping) && this.isClimbing()) {
+			vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
+		}
+
+		return vec3d2;
+	}
+
+	public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {
+		if (!this.hasNoGravity() && !this.isSprinting()) {
+			double e;
+			if (bl && Math.abs(vec3d.y - 0.005) >= 0.003 && Math.abs(vec3d.y - d / 16.0) < 0.003) {
+				e = -0.003;
+			} else {
+				e = vec3d.y - d / 16.0;
+			}
+
+			return new Vec3d(vec3d.x, e, vec3d.z);
+		} else {
+			return vec3d;
+		}
 	}
 
 	private Vec3d applyClimbingSpeed(Vec3d motion) {
@@ -2537,6 +2573,7 @@ public abstract class LivingEntity extends Entity {
 	private void tickActiveItemStack() {
 		if (this.isUsingItem()) {
 			if (ItemStack.areItemsEqual(this.getStackInHand(this.getActiveHand()), this.activeItemStack)) {
+				this.activeItemStack = this.getStackInHand(this.getActiveHand());
 				this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
 				if (this.shouldSpawnConsumptionEffects()) {
 					this.spawnConsumptionEffects(this.activeItemStack, 5);

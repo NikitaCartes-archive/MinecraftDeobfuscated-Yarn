@@ -59,7 +59,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 					compoundTag.putInt("x", blockPos.getX());
 					compoundTag.putInt("y", blockPos.getY());
 					compoundTag.putInt("z", blockPos.getZ());
-					blockEntity.fromTag(compoundTag);
+					blockEntity.fromTag(this.state, compoundTag);
 				}
 			}
 

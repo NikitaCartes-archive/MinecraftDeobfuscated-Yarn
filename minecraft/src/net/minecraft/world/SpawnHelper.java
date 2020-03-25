@@ -203,6 +203,10 @@ public final class SpawnHelper {
 					return fluidState.matches(FluidTags.WATER)
 						&& worldView.getFluidState(blockPos2).matches(FluidTags.WATER)
 						&& !worldView.getBlockState(blockPos).isSolidBlock(worldView, blockPos);
+				case IN_LAVA:
+					return fluidState.matches(FluidTags.LAVA)
+						&& worldView.getFluidState(blockPos2).matches(FluidTags.LAVA)
+						&& !worldView.getBlockState(blockPos).isSolidBlock(worldView, blockPos);
 				case ON_GROUND:
 				default:
 					BlockState blockState2 = worldView.getBlockState(blockPos2);

@@ -216,7 +216,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			int i = Math.max(world.getSeaLevel(), 64) - this.boundingBox.minY;
 			this.setAirAndWater(world, box, 0, 0, 0, 58, i, 58);
 			this.method_14761(false, 0, world, random, box);
@@ -263,7 +263,7 @@ public class OceanMonumentGenerator {
 
 			for (OceanMonumentGenerator.Piece piece : this.field_14465) {
 				if (piece.getBoundingBox().intersects(box)) {
-					piece.generate(world, generator, random, box, pos);
+					piece.generate(world, generator, random, box, pos, blockPos);
 				}
 			}
 
@@ -597,7 +597,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.method_14771(world, box, 1, 8, 0, 14, 8, 14, PRISMARINE);
 			int i = 7;
 			BlockState blockState = PRISMARINE_BRICKS;
@@ -676,7 +676,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 			if (this.setting.roomIndex / 25 > 0) {
@@ -764,7 +764,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 			OceanMonumentGenerator.PieceSetting pieceSetting3 = pieceSetting2.neighbors[Direction.UP.getId()];
@@ -906,7 +906,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			if (this.setting.roomIndex / 25 > 0) {
 				this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
@@ -941,14 +941,14 @@ public class OceanMonumentGenerator {
 					this.fillWithOutline(world, box, 0, i + 1, j, 7, i + 1, j, PRISMARINE, PRISMARINE, false);
 				}
 
-				int var11 = 7;
+				int var12 = 7;
 				if (pieceSetting2.neighborPresences[Direction.NORTH.getId()]) {
-					this.fillWithOutline(world, box, 2, i, var11, 2, i + 2, var11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(world, box, 5, i, var11, 5, i + 2, var11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(world, box, 3, i + 2, var11, 4, i + 2, var11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, 2, i, var12, 2, i + 2, var12, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, 5, i, var12, 5, i + 2, var12, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, 3, i + 2, var12, 4, i + 2, var12, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(world, box, 0, i, var11, 7, i + 2, var11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(world, box, 0, i + 1, var11, 7, i + 1, var11, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, box, 0, i, var12, 7, i + 2, var12, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, 0, i + 1, var12, 7, i + 1, var12, PRISMARINE, PRISMARINE, false);
 				}
 
 				int k = 0;
@@ -961,14 +961,14 @@ public class OceanMonumentGenerator {
 					this.fillWithOutline(world, box, k, i + 1, 0, k, i + 1, 7, PRISMARINE, PRISMARINE, false);
 				}
 
-				int var12 = 7;
+				int var13 = 7;
 				if (pieceSetting2.neighborPresences[Direction.EAST.getId()]) {
-					this.fillWithOutline(world, box, var12, i, 2, var12, i + 2, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(world, box, var12, i, 5, var12, i + 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(world, box, var12, i + 2, 3, var12, i + 2, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, var13, i, 2, var13, i + 2, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, var13, i, 5, var13, i + 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, var13, i + 2, 3, var13, i + 2, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(world, box, var12, i, 0, var12, i + 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(world, box, var12, i + 1, 0, var12, i + 1, 7, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, box, var13, i, 0, var13, i + 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, var13, i + 1, 0, var13, i + 1, 7, PRISMARINE, PRISMARINE, false);
 				}
 
 				pieceSetting2 = pieceSetting;
@@ -1005,7 +1005,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 			OceanMonumentGenerator.PieceSetting pieceSetting3 = pieceSetting.neighbors[Direction.UP.getId()];
@@ -1145,7 +1145,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 			if (this.setting.roomIndex / 25 > 0) {
@@ -1257,7 +1257,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 0, 3, 0, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, box, 5, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, box, 0, 2, 0, 1, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1293,7 +1293,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			this.fillWithOutline(world, box, 2, -1, 2, 11, -1, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, box, 0, -1, 0, 1, -1, 11, PRISMARINE, PRISMARINE, false);
 			this.fillWithOutline(world, box, 12, -1, 0, 13, -1, 11, PRISMARINE, PRISMARINE, false);
@@ -1553,7 +1553,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			if (this.setting.roomIndex / 25 > 0) {
 				this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
@@ -1737,7 +1737,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			if (this.setting.roomIndex / 25 > 0) {
 				this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
@@ -1813,7 +1813,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 			if (this.field_14481 == 0) {
 				for (int i = 0; i < 4; i++) {
 					this.fillWithOutline(world, box, 10 - i, 3 - i, 20 - i, 12 + i, 3 - i, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1877,24 +1877,24 @@ public class OceanMonumentGenerator {
 				}
 
 				this.fillWithOutline(world, box, 7, 3, 7, 15, 3, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				int var12 = 10;
+				int var13 = 10;
 
 				for (int l = 0; l < 2; l++) {
-					this.fillWithOutline(world, box, var12, 0, 10, var12, 6, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(world, box, var12, 0, 12, var12, 6, 12, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.addBlock(world, SEA_LANTERN, var12, 0, 10, box);
-					this.addBlock(world, SEA_LANTERN, var12, 0, 12, box);
-					this.addBlock(world, SEA_LANTERN, var12, 4, 10, box);
-					this.addBlock(world, SEA_LANTERN, var12, 4, 12, box);
-					var12 = 12;
+					this.fillWithOutline(world, box, var13, 0, 10, var13, 6, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, var13, 0, 12, var13, 6, 12, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.addBlock(world, SEA_LANTERN, var13, 0, 10, box);
+					this.addBlock(world, SEA_LANTERN, var13, 0, 12, box);
+					this.addBlock(world, SEA_LANTERN, var13, 4, 10, box);
+					this.addBlock(world, SEA_LANTERN, var13, 4, 12, box);
+					var13 = 12;
 				}
 
-				var12 = 8;
+				var13 = 8;
 
 				for (int l = 0; l < 2; l++) {
-					this.fillWithOutline(world, box, var12, 0, 7, var12, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(world, box, var12, 0, 14, var12, 2, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					var12 = 14;
+					this.fillWithOutline(world, box, var13, 0, 7, var13, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, box, var13, 0, 14, var13, 2, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					var13 = 14;
 				}
 
 				this.fillWithOutline(world, box, 8, 3, 8, 8, 3, 13, DARK_PRISMARINE, DARK_PRISMARINE, false);

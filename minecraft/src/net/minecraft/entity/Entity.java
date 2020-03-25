@@ -29,6 +29,7 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
@@ -228,6 +229,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return false;
 	}
 
+	/**
+	 * Removes all the passengers and removes this entity from any vehicles it is riding.
+	 */
 	public final void detach() {
 		if (this.hasPassengers()) {
 			this.removeAllPassengers();
@@ -320,7 +324,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return d * d + e * e + f * f < radius * radius;
 	}
 
-	protected void setRotation(float yaw, float pitch) {
+	public void setRotation(float yaw, float pitch) {
 		this.yaw = yaw % 360.0F;
 		this.pitch = pitch % 360.0F;
 	}
@@ -1556,6 +1560,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
+	/**
+	 * Called when a player interacts with this entity.
+	 * 
+	 * @param player the player
+	 * @param hand the hand the player used to interact with this entity
+	 */
 	public boolean interact(PlayerEntity player, Hand hand) {
 		return false;
 	}
@@ -2508,6 +2518,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
+	/**
+	 * Gets the lowest entity this entity is riding.
+	 */
 	public Entity getRootVehicle() {
 		Entity entity = this;
 
@@ -2518,6 +2531,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return entity;
 	}
 
+	/**
+	 * Checks if this entity and another entity share the same root vehicle.
+	 * 
+	 * @param entity the other entity
+	 */
 	public boolean isConnectedThroughVehicle(Entity entity) {
 		return this.getRootVehicle() == entity.getRootVehicle();
 	}
@@ -2572,40 +2590,57 @@ public abstract class Entity implements Nameable, CommandOutput {
 				{direction.getOffsetX(), direction.getOffsetZ()}
 			};
 			BlockPos blockPos = this.getBlockPos();
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			ImmutableList<EntityPose> immutableList = livingEntity.getPoses();
 
 			for (EntityPose entityPose : immutableList) {
-				double d = (double)livingEntity.getDimensions(entityPose).height;
+				EntityDimensions entityDimensions = livingEntity.getDimensions(entityPose);
+				float f = Math.min(entityDimensions.width, 1.0F) / 2.0F;
+				float g = 0.5F - f;
+				float h = 0.5F + f;
 
 				for (int i : field_22417.get(entityPose)) {
 					for (int[] js : is) {
-						BlockPos blockPos2 = blockPos.add(js[0], i, js[1]);
-						double e = this.world.method_26097(blockPos2);
-						if (!Double.isInfinite(e) && !(e >= 1.0)) {
-							double f = (double)blockPos2.getY() + e;
-							Box box = new Box((double)blockPos2.getX(), f, (double)blockPos2.getZ(), (double)blockPos2.getX() + 1.0, f + d, (double)blockPos2.getZ() + 1.0);
+						mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
+						double d = this.world
+							.method_26097(
+								mutable,
+								blockState -> blockState.isIn(BlockTags.CLIMBABLE)
+										? true
+										: blockState.getBlock() instanceof TrapdoorBlock && (Boolean)blockState.get(TrapdoorBlock.OPEN)
+							);
+						if (!Double.isInfinite(d) && !(d >= 1.0)) {
+							double e = (double)mutable.getY() + d;
+							Box box = new Box(
+								(double)((float)mutable.getX() + g),
+								e,
+								(double)((float)mutable.getZ() + g),
+								(double)((float)mutable.getX() + h),
+								e + (double)entityDimensions.height,
+								(double)((float)mutable.getZ() + h)
+							);
 							if (this.world.getBlockCollisions(livingEntity, box).allMatch(VoxelShape::isEmpty)) {
 								livingEntity.setPose(entityPose);
-								return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + e, (double)blockPos2.getZ() + 0.5);
+								return Vec3d.method_26410(mutable, d);
 							}
 						}
 					}
 				}
 			}
 
-			double g = this.getBoundingBox().y2;
-			BlockPos blockPos3 = new BlockPos((double)blockPos.getX(), g, (double)blockPos.getZ());
+			double j = this.getBoundingBox().y2;
+			mutable.set((double)blockPos.getX(), j, (double)blockPos.getZ());
 
 			for (EntityPose entityPose2 : immutableList) {
-				double h = (double)livingEntity.getDimensions(entityPose2).height;
-				double j = (double)blockPos3.getY() + this.world.method_26096(blockPos3, g - (double)blockPos3.getY() + h);
-				if (g + h <= j) {
+				double k = (double)livingEntity.getDimensions(entityPose2).height;
+				double l = (double)mutable.getY() + this.world.method_26096(mutable, j - (double)mutable.getY() + k);
+				if (j + k <= l) {
 					livingEntity.setPose(entityPose2);
 					break;
 				}
 			}
 
-			return new Vec3d(this.getX(), g, this.getZ());
+			return new Vec3d(this.getX(), j, this.getZ());
 		}
 	}
 
@@ -2649,7 +2684,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Override
-	public boolean sendCommandFeedback() {
+	public boolean shouldReceiveFeedback() {
 		return this.world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK);
 	}
 

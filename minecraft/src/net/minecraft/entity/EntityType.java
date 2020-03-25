@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4985;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.boss.WitherEntity;
@@ -427,6 +428,9 @@ public class EntityType<T extends Entity> {
 	);
 	public static final EntityType<PiglinEntity> PIGLIN = register(
 		"piglin", EntityType.Builder.create(PiglinEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
+	);
+	public static final EntityType<class_4985> STRIDER = register(
+		"strider", EntityType.Builder.create(class_4985::new, EntityCategory.CREATURE).makeFireImmune().setDimensions(0.9F, 1.7F)
 	);
 	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(
 		"lightning_bolt", EntityType.Builder.<LightningEntity>create(EntityCategory.MISC).disableSaving().setDimensions(0.0F, 0.0F)

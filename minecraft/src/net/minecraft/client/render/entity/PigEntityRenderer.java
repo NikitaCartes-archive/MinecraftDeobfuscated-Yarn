@@ -13,7 +13,7 @@ public class PigEntityRenderer extends MobEntityRenderer<PigEntity, PigEntityMod
 
 	public PigEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new PigEntityModel<>(), 0.7F);
-		this.addFeature(new PigSaddleFeatureRenderer(this));
+		this.addFeature(new PigSaddleFeatureRenderer<>(this, new PigEntityModel<>(0.5F), new Identifier("textures/entity/pig/pig_saddle.png")));
 	}
 
 	public Identifier getTexture(PigEntity pigEntity) {

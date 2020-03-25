@@ -7,7 +7,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.AbstractFurnaceBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,6 +31,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -154,14 +157,31 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		return map;
 	}
 
+	private static boolean method_26395(Item item) {
+		return ItemTags.NON_FLAMMABLE_WOOD.contains(item);
+	}
+
 	private static void addFuel(Map<Item, Integer> fuelTimes, Tag<Item> tag, int fuelTime) {
 		for (Item item : tag.values()) {
-			fuelTimes.put(item, fuelTime);
+			if (!method_26395(item)) {
+				fuelTimes.put(item, fuelTime);
+			}
 		}
 	}
 
-	private static void addFuel(Map<Item, Integer> fuelTimes, ItemConvertible item, int fuelTime) {
-		fuelTimes.put(item.asItem(), fuelTime);
+	private static void addFuel(Map<Item, Integer> map, ItemConvertible itemConvertible, int fuelTime) {
+		Item item = itemConvertible.asItem();
+		if (method_26395(item)) {
+			if (SharedConstants.isDevelopment) {
+				throw (IllegalStateException)Util.throwOrPause(
+					new IllegalStateException(
+						"A developer tried to explicitly make fire resistant item " + item.getName(null).getString() + " a furnace fuel. That will not work!"
+					)
+				);
+			}
+		} else {
+			map.put(item, fuelTime);
+		}
 	}
 
 	private boolean isBurning() {
@@ -169,18 +189,18 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
 		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		Inventories.fromTag(tag, this.inventory);
-		this.burnTime = tag.getShort("BurnTime");
-		this.cookTime = tag.getShort("CookTime");
-		this.cookTimeTotal = tag.getShort("CookTimeTotal");
+		Inventories.fromTag(compoundTag, this.inventory);
+		this.burnTime = compoundTag.getShort("BurnTime");
+		this.cookTime = compoundTag.getShort("CookTime");
+		this.cookTimeTotal = compoundTag.getShort("CookTimeTotal");
 		this.fuelTime = this.getFuelTime(this.inventory.get(1));
-		CompoundTag compoundTag = tag.getCompound("RecipesUsed");
+		CompoundTag compoundTag2 = compoundTag.getCompound("RecipesUsed");
 
-		for (String string : compoundTag.getKeys()) {
-			this.recipesUsed.put(new Identifier(string), compoundTag.getInt(string));
+		for (String string : compoundTag2.getKeys()) {
+			this.recipesUsed.put(new Identifier(string), compoundTag2.getInt(string));
 		}
 	}
 

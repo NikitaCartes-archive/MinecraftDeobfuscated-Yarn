@@ -257,8 +257,7 @@ public class Keyboard {
 	private void copyEntity(Identifier identifier, Vec3d vec3d, @Nullable CompoundTag compoundTag) {
 		String string2;
 		if (compoundTag != null) {
-			compoundTag.remove("UUIDMost");
-			compoundTag.remove("UUIDLeast");
+			compoundTag.remove("UUID");
 			compoundTag.remove("Pos");
 			compoundTag.remove("Dimension");
 			String string = compoundTag.toText().getString();

@@ -643,6 +643,13 @@ public class RecipesProvider implements DataProvider {
 			.pattern(" X")
 			.criterion("has_carrot", conditionsFromItem(Items.CARROT))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Items.WARPED_FUNGUS_ON_A_STICK)
+			.input('#', Items.FISHING_ROD)
+			.input('X', Items.WARPED_FUNGUS)
+			.pattern("# ")
+			.pattern(" X")
+			.criterion("has_warped_fungus", conditionsFromItem(Items.WARPED_FUNGUS))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.CAULDRON)
 			.input('#', Items.IRON_INGOT)
 			.pattern("# #")
@@ -1704,6 +1711,12 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#R#")
 			.criterion("has_redstone", conditionsFromItem(Items.REDSTONE))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BASALT, 4)
+			.input('S', Blocks.BASALT)
+			.pattern("SS")
+			.pattern("SS")
+			.criterion("has_basalt", conditionsFromItem(Blocks.BASALT))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.POLISHED_GRANITE, 4)
 			.input('S', Blocks.GRANITE)
 			.pattern("SS")
@@ -2630,6 +2643,14 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_stone", conditionsFromItem(Blocks.STONE))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.LODESTONE)
+			.input('S', Items.CHISELED_STONE_BRICKS)
+			.input('#', Items.NETHERITE_INGOT)
+			.pattern("SSS")
+			.pattern("S#S")
+			.pattern("SSS")
+			.criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.NETHERITE_BLOCK)
 			.input('#', Items.NETHERITE_INGOT)
 			.pattern("###")
@@ -2675,8 +2696,8 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.CLAY_BALL), Items.BRICK, 0.3F, 200)
 			.criterion("has_clay_ball", conditionsFromItem(Items.CLAY_BALL))
 			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.LOGS), Items.CHARCOAL, 0.15F, 200)
-			.criterion("has_log", conditionsFromTag(ItemTags.LOGS))
+		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.LOGS_THAT_BURN), Items.CHARCOAL, 0.15F, 200)
+			.criterion("has_log", conditionsFromTag(ItemTags.LOGS_THAT_BURN))
 			.offerTo(consumer);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.CHORUS_FRUIT), Items.POPPED_CHORUS_FRUIT, 0.1F, 200)
 			.criterion("has_chorus_fruit", conditionsFromItem(Items.CHORUS_FRUIT))
@@ -2879,9 +2900,6 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.ANCIENT_DEBRIS), Items.NETHERITE_SCRAP, 2.0F, 200)
 			.criterion("has_ancient_debris", conditionsFromItem(Blocks.ANCIENT_DEBRIS))
-			.offerTo(consumer);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.BASALT), Blocks.POLISHED_BASALT.asItem(), 0.1F, 200)
-			.criterion("has_basalt", conditionsFromItem(Blocks.BASALT))
 			.offerTo(consumer);
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.IRON_ORE.asItem()), Items.IRON_INGOT, 0.7F, 100)
 			.criterion("has_iron_ore", conditionsFromItem(Blocks.IRON_ORE.asItem()))
@@ -3153,6 +3171,9 @@ public class RecipesProvider implements DataProvider {
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_ANDESITE), Blocks.POLISHED_ANDESITE_STAIRS)
 			.create("has_polished_andesite", conditionsFromItem(Blocks.POLISHED_ANDESITE))
 			.offerTo(consumer, "polished_andesite_stairs_from_polished_andesite_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BASALT), Blocks.POLISHED_BASALT)
+			.create("has_basalt", conditionsFromItem(Blocks.BASALT))
+			.offerTo(consumer, "polished_basalt_from_basalt_stonecutting");
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.GRANITE), Blocks.GRANITE_SLAB, 2)
 			.create("has_granite", conditionsFromItem(Blocks.GRANITE))
 			.offerTo(consumer, "granite_slab_from_granite_stonecutting");

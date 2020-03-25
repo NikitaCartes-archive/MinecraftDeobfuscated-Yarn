@@ -535,6 +535,10 @@ public class PiglinBrain {
 		return (List<PiglinEntity>)piglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
 	}
 
+	private static List<PiglinEntity> method_26350(PiglinEntity piglinEntity) {
+		return (List<PiglinEntity>)piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ADULT_PIGLINS).orElse(ImmutableList.of());
+	}
+
 	public static boolean wearsGoldArmor(LivingEntity entity) {
 		for (ItemStack itemStack : entity.getArmorItems()) {
 			Item item = itemStack.getItem();
@@ -559,7 +563,7 @@ public class PiglinBrain {
 	}
 
 	public static void angerAtCloserTargets(PiglinEntity piglin, LivingEntity target) {
-		getNearbyPiglins(piglin).forEach(piglinx -> angerAtIfCloser(piglinx, target));
+		method_26350(piglin).forEach(piglinx -> angerAtIfCloser(piglinx, target));
 	}
 
 	public static void rememberGroupHunting(PiglinEntity piglin) {

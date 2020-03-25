@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.dynamic.DynamicSerializable;
@@ -251,20 +250,23 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	 */
 	public static Iterable<BlockPos> iterateOutwards(BlockPos center, int xRange, int yRange, int zRange) {
 		int i = xRange + yRange + zRange;
+		int j = center.getX();
+		int k = center.getY();
+		int l = center.getZ();
 		return () -> new AbstractIterator<BlockPos>() {
+				private final BlockPos.Mutable field_23378 = new BlockPos.Mutable();
 				private int manhattanDistance;
 				private int limitX;
 				private int limitY;
 				private int dx;
 				private int dy;
-				@Nullable
-				private BlockPos pendingOpposite;
+				private boolean field_23379;
 
 				protected BlockPos computeNext() {
-					if (this.pendingOpposite != null) {
-						BlockPos blockPos = this.pendingOpposite;
-						this.pendingOpposite = null;
-						return blockPos;
+					if (this.field_23379) {
+						this.field_23379 = false;
+						this.field_23378.setZ(l - (this.field_23378.getZ() - l));
+						return this.field_23378;
 					} else {
 						BlockPos blockPos;
 						for (blockPos = null; blockPos == null; this.dy++) {
@@ -288,11 +290,8 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 							int j = this.dy;
 							int k = this.manhattanDistance - Math.abs(i) - Math.abs(j);
 							if (k <= zRange) {
-								if (k != 0) {
-									this.pendingOpposite = center.add(i, j, -k);
-								}
-
-								blockPos = center.add(i, j, k);
+								this.field_23379 = k != 0;
+								blockPos = this.field_23378.set(j + i, k + j, l + k);
 							}
 						}
 
@@ -346,6 +345,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		int k = endZ - startZ + 1;
 		int l = i * j * k;
 		return () -> new AbstractIterator<BlockPos>() {
+				private final BlockPos.Mutable field_23380 = new BlockPos.Mutable();
 				private int index;
 
 				protected BlockPos computeNext() {
@@ -357,7 +357,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 						int k = j % j;
 						int l = j / j;
 						this.index++;
-						return new BlockPos(startX + i, startY + k, startZ + l);
+						return this.field_23380.set(startX + i, startY + k, startZ + l);
 					}
 				}
 			};

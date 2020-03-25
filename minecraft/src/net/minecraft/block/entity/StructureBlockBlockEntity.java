@@ -77,49 +77,49 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.setStructureName(tag.getString("name"));
-		this.author = tag.getString("author");
-		this.metadata = tag.getString("metadata");
-		int i = MathHelper.clamp(tag.getInt("posX"), -32, 32);
-		int j = MathHelper.clamp(tag.getInt("posY"), -32, 32);
-		int k = MathHelper.clamp(tag.getInt("posZ"), -32, 32);
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
+		this.setStructureName(compoundTag.getString("name"));
+		this.author = compoundTag.getString("author");
+		this.metadata = compoundTag.getString("metadata");
+		int i = MathHelper.clamp(compoundTag.getInt("posX"), -32, 32);
+		int j = MathHelper.clamp(compoundTag.getInt("posY"), -32, 32);
+		int k = MathHelper.clamp(compoundTag.getInt("posZ"), -32, 32);
 		this.offset = new BlockPos(i, j, k);
-		int l = MathHelper.clamp(tag.getInt("sizeX"), 0, 32);
-		int m = MathHelper.clamp(tag.getInt("sizeY"), 0, 32);
-		int n = MathHelper.clamp(tag.getInt("sizeZ"), 0, 32);
+		int l = MathHelper.clamp(compoundTag.getInt("sizeX"), 0, 32);
+		int m = MathHelper.clamp(compoundTag.getInt("sizeY"), 0, 32);
+		int n = MathHelper.clamp(compoundTag.getInt("sizeZ"), 0, 32);
 		this.size = new BlockPos(l, m, n);
 
 		try {
-			this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
-		} catch (IllegalArgumentException var11) {
+			this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
+		} catch (IllegalArgumentException var12) {
 			this.rotation = BlockRotation.NONE;
 		}
 
 		try {
-			this.mirror = BlockMirror.valueOf(tag.getString("mirror"));
-		} catch (IllegalArgumentException var10) {
+			this.mirror = BlockMirror.valueOf(compoundTag.getString("mirror"));
+		} catch (IllegalArgumentException var11) {
 			this.mirror = BlockMirror.NONE;
 		}
 
 		try {
-			this.mode = StructureBlockMode.valueOf(tag.getString("mode"));
-		} catch (IllegalArgumentException var9) {
+			this.mode = StructureBlockMode.valueOf(compoundTag.getString("mode"));
+		} catch (IllegalArgumentException var10) {
 			this.mode = StructureBlockMode.DATA;
 		}
 
-		this.ignoreEntities = tag.getBoolean("ignoreEntities");
-		this.powered = tag.getBoolean("powered");
-		this.showAir = tag.getBoolean("showair");
-		this.showBoundingBox = tag.getBoolean("showboundingbox");
-		if (tag.contains("integrity")) {
-			this.integrity = tag.getFloat("integrity");
+		this.ignoreEntities = compoundTag.getBoolean("ignoreEntities");
+		this.powered = compoundTag.getBoolean("powered");
+		this.showAir = compoundTag.getBoolean("showair");
+		this.showBoundingBox = compoundTag.getBoolean("showboundingbox");
+		if (compoundTag.contains("integrity")) {
+			this.integrity = compoundTag.getFloat("integrity");
 		} else {
 			this.integrity = 1.0F;
 		}
 
-		this.seed = tag.getLong("seed");
+		this.seed = compoundTag.getLong("seed");
 		this.updateBlockMode();
 	}
 

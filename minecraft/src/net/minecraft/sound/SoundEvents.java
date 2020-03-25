@@ -419,6 +419,12 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_LLAMA_STEP = register("entity.llama.step");
 	public static final SoundEvent ENTITY_LLAMA_SWAG = register("entity.llama.swag");
 	public static final SoundEvent ENTITY_MAGMA_CUBE_DEATH_SMALL = register("entity.magma_cube.death_small");
+	public static final SoundEvent BLOCK_LODESTONE_BREAK = register("block.lodestone.break");
+	public static final SoundEvent BLOCK_LODESTONE_STEP = register("block.lodestone.step");
+	public static final SoundEvent BLOCK_LODESTONE_PLACE = register("block.lodestone.place");
+	public static final SoundEvent BLOCK_LODESTONE_HIT = register("block.lodestone.hit");
+	public static final SoundEvent BLOCK_LODESTONE_FALL = register("block.lodestone.fall");
+	public static final SoundEvent ITEM_LODESTONE_COMPASS_LOCK = register("item.lodestone_compass.lock");
 	public static final SoundEvent ENTITY_MAGMA_CUBE_DEATH = register("entity.magma_cube.death");
 	public static final SoundEvent ENTITY_MAGMA_CUBE_HURT = register("entity.magma_cube.hurt");
 	public static final SoundEvent ENTITY_MAGMA_CUBE_HURT_SMALL = register("entity.magma_cube.hurt_small");
@@ -740,6 +746,14 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_SOUL_SOIL_HIT = register("block.soul_soil.hit");
 	public static final SoundEvent BLOCK_SOUL_SOIL_FALL = register("block.soul_soil.fall");
 	public static final SoundEvent PARTICLE_SOUL_ESCAPE = register("particle.soul_escape");
+	public static final SoundEvent ENTITY_STRIDER_AMBIENT = register("entity.strider.ambient");
+	public static final SoundEvent ENTITY_STRIDER_HAPPY = register("entity.strider.happy");
+	public static final SoundEvent ENTITY_STRIDER_RETREAT = register("entity.strider.retreat");
+	public static final SoundEvent ENTITY_STRIDER_DEATH = register("entity.strider.death");
+	public static final SoundEvent ENTITY_STRIDER_HURT = register("entity.strider.hurt");
+	public static final SoundEvent ENTITY_STRIDER_STEP = register("entity.strider.step");
+	public static final SoundEvent ENTITY_STRIDER_STEP_LAVA = register("entity.strider.step_lava");
+	public static final SoundEvent ENTITY_STRIDER_EAT = register("entity.strider.eat");
 	public static final SoundEvent ENTITY_SLIME_DEATH_SMALL = register("entity.slime.death_small");
 	public static final SoundEvent ENTITY_SLIME_HURT_SMALL = register("entity.slime.hurt_small");
 	public static final SoundEvent ENTITY_SLIME_JUMP_SMALL = register("entity.slime.jump_small");
