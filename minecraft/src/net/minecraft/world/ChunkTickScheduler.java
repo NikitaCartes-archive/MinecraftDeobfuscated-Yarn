@@ -3,7 +3,6 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -62,10 +61,5 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	@Override
 	public boolean isTicking(BlockPos pos, T object) {
 		return false;
-	}
-
-	@Override
-	public void scheduleAll(Stream<ScheduledTick<T>> stream) {
-		stream.forEach(scheduledTick -> this.schedule(scheduledTick.pos, (T)scheduledTick.getObject(), 0, scheduledTick.priority));
 	}
 }

@@ -159,17 +159,21 @@ public class SpawnEggItem extends Item {
 				return Optional.empty();
 			} else {
 				mobEntity.setBaby(true);
-				mobEntity.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
-				world.spawnEntity(mobEntity);
-				if (itemStack.hasCustomName()) {
-					mobEntity.setCustomName(itemStack.getName());
-				}
+				if (!mobEntity.isBaby()) {
+					return Optional.empty();
+				} else {
+					mobEntity.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
+					world.spawnEntity(mobEntity);
+					if (itemStack.hasCustomName()) {
+						mobEntity.setCustomName(itemStack.getName());
+					}
 
-				if (!playerEntity.abilities.creativeMode) {
-					itemStack.decrement(1);
-				}
+					if (!playerEntity.abilities.creativeMode) {
+						itemStack.decrement(1);
+					}
 
-				return Optional.of(mobEntity);
+					return Optional.of(mobEntity);
+				}
 			}
 		}
 	}

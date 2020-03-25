@@ -621,7 +621,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
 				jigsawBlockEntity.setAttachmentType(packet.getAttachmentType());
 				jigsawBlockEntity.setTargetPool(packet.getTargetPool());
+				jigsawBlockEntity.method_26398(packet.method_26435());
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
+				jigsawBlockEntity.method_26396(packet.method_26436());
 				jigsawBlockEntity.markDirty();
 				this.player.world.updateListeners(blockPos, blockState, blockState, 3);
 			}
@@ -790,7 +792,6 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							}
 
 							this.player.updatePositionAndAngles(h, i, j, k, l);
-							this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
 							if (!this.player.noClip && !this.player.isSleeping()) {
 								boolean bl3 = this.isPlayerNotCollidingWithBlocks(serverWorld);
 								if (bl && (bl2 || !bl3)) {
@@ -809,6 +810,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 							this.player.handleFall(this.player.getY() - g, packet.isOnGround());
 							this.player.setOnGround(packet.isOnGround());
+							this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
 							this.updatedX = this.player.getX();
 							this.updatedY = this.player.getY();
 							this.updatedZ = this.player.getZ();
@@ -855,6 +857,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					ItemStack itemStack = this.player.getStackInHand(Hand.OFF_HAND);
 					this.player.setStackInHand(Hand.OFF_HAND, this.player.getStackInHand(Hand.MAIN_HAND));
 					this.player.setStackInHand(Hand.MAIN_HAND, itemStack);
+					this.player.clearActiveItem();
 				}
 
 				return;
@@ -994,6 +997,10 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (packet.getSelectedSlot() >= 0 && packet.getSelectedSlot() < PlayerInventory.getHotbarSize()) {
+			if (this.player.inventory.selectedSlot != packet.getSelectedSlot() && this.player.getActiveHand() == Hand.MAIN_HAND) {
+				this.player.clearActiveItem();
+			}
+
 			this.player.inventory.selectedSlot = packet.getSelectedSlot();
 			this.player.updateLastActionTime();
 		} else {

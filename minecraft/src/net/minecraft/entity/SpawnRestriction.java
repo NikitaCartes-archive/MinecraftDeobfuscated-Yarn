@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_4985;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.entity.mob.GhastEntity;
@@ -106,6 +107,7 @@ public class SpawnRestriction {
 		register(EntityType.SNOW_GOLEM, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
 		register(EntityType.SPIDER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
 		register(EntityType.STRAY, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, StrayEntity::canSpawn);
+		register(EntityType.STRIDER, SpawnRestriction.Location.IN_LAVA, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, class_4985::method_26344);
 		register(EntityType.TURTLE, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, TurtleEntity::canSpawn);
 		register(EntityType.VILLAGER, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
 		register(EntityType.WITCH, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
@@ -146,7 +148,8 @@ public class SpawnRestriction {
 	public static enum Location {
 		ON_GROUND,
 		IN_WATER,
-		NO_RESTRICTIONS;
+		NO_RESTRICTIONS,
+		IN_LAVA;
 	}
 
 	@FunctionalInterface

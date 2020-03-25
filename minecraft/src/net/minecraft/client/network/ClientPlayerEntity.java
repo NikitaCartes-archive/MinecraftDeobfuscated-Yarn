@@ -78,6 +78,9 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.dimension.DimensionType;
 
+/**
+ * Represents the client's own player entity.
+ */
 @Environment(EnvType.CLIENT)
 public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public final ClientPlayNetworkHandler networkHandler;

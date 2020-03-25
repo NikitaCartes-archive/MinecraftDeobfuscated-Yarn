@@ -1503,7 +1503,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	@Override
-	public boolean sendCommandFeedback() {
+	public boolean shouldReceiveFeedback() {
 		return true;
 	}
 

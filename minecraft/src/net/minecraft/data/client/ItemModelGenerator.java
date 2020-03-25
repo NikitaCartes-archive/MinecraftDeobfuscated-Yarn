@@ -53,6 +53,7 @@ public class ItemModelGenerator {
 		this.register(Items.BROWN_DYE, Models.GENERATED);
 		this.register(Items.BUCKET, Models.GENERATED);
 		this.register(Items.CARROT_ON_A_STICK, Models.HANDHELD_ROD);
+		this.register(Items.WARPED_FUNGUS_ON_A_STICK, Models.HANDHELD_ROD);
 		this.register(Items.CHAINMAIL_BOOTS, Models.GENERATED);
 		this.register(Items.CHAINMAIL_CHESTPLATE, Models.GENERATED);
 		this.register(Items.CHAINMAIL_HELMET, Models.GENERATED);

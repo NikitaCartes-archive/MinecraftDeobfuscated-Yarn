@@ -16,6 +16,7 @@ import net.minecraft.block.enums.WireConnection;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
@@ -50,7 +51,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 	}
 
 	@Override
-	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 		if (!this.method_14839(world, box, 0)) {
 			return false;
 		} else {

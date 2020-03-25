@@ -51,6 +51,11 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return this.getInCircle(typePredicate, pos, radius, occupationStatus).count();
 	}
 
+	public boolean method_26339(PointOfInterestType pointOfInterestType, BlockPos blockPos) {
+		Optional<PointOfInterestType> optional = this.getOrCreate(ChunkSectionPos.from(blockPos).asLong()).getType(blockPos);
+		return optional.isPresent() && ((PointOfInterestType)optional.get()).equals(pointOfInterestType);
+	}
+
 	public Stream<PointOfInterest> getInSquare(
 		Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {

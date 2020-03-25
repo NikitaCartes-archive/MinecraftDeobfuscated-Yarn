@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
@@ -48,12 +49,12 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		if (tag.contains("SkullOwner", 10)) {
-			this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
-		} else if (tag.contains("ExtraType", 8)) {
-			String string = tag.getString("ExtraType");
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
+		if (compoundTag.contains("SkullOwner", 10)) {
+			this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner")));
+		} else if (compoundTag.contains("ExtraType", 8)) {
+			String string = compoundTag.getString("ExtraType");
 			if (!ChatUtil.isEmpty(string)) {
 				this.setOwnerAndType(new GameProfile(null, string));
 			}

@@ -10,6 +10,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
@@ -18,6 +19,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -28,8 +30,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
-public class ShulkerBulletEntity extends Entity {
-	private Entity owner;
+public class ShulkerBulletEntity extends ProjectileEntity {
 	private Entity target;
 	@Nullable
 	private Direction direction;
@@ -37,8 +38,6 @@ public class ShulkerBulletEntity extends Entity {
 	private double targetX;
 	private double targetY;
 	private double targetZ;
-	@Nullable
-	private UUID ownerUuid;
 	@Nullable
 	private UUID targetUuid;
 
@@ -56,7 +55,7 @@ public class ShulkerBulletEntity extends Entity {
 
 	public ShulkerBulletEntity(World world, LivingEntity owner, Entity target, Direction.Axis axis) {
 		this(EntityType.SHULKER_BULLET, world);
-		this.owner = owner;
+		this.setOwner(owner);
 		BlockPos blockPos = owner.getBlockPos();
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.5;
@@ -74,10 +73,7 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag tag) {
-		if (this.owner != null) {
-			tag.putUuidNew("Owner", this.owner.getUuid());
-		}
-
+		super.writeCustomDataToTag(tag);
 		if (this.target != null) {
 			tag.putUuidNew("Target", this.target.getUuid());
 		}
@@ -94,16 +90,13 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Override
 	protected void readCustomDataFromTag(CompoundTag tag) {
+		super.readCustomDataFromTag(tag);
 		this.stepCount = tag.getInt("Steps");
 		this.targetX = tag.getDouble("TXD");
 		this.targetY = tag.getDouble("TYD");
 		this.targetZ = tag.getDouble("TZD");
 		if (tag.contains("Dir", 99)) {
 			this.direction = Direction.byId(tag.getInt("Dir"));
-		}
-
-		if (tag.containsUuidNew("Owner")) {
-			this.ownerUuid = tag.getUuidNew("Owner");
 		}
 
 		if (tag.containsUuidNew("Target")) {
@@ -211,13 +204,6 @@ public class ShulkerBulletEntity extends Entity {
 				}
 			}
 
-			if (this.owner == null && this.ownerUuid != null) {
-				this.owner = ((ServerWorld)this.world).getEntity(this.ownerUuid);
-				if (this.owner == null) {
-					this.ownerUuid = null;
-				}
-			}
-
 			if (this.target == null || !this.target.isAlive() || this.target instanceof PlayerEntity && ((PlayerEntity)this.target).isSpectator()) {
 				if (!this.hasNoGravity()) {
 					this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
@@ -230,9 +216,9 @@ public class ShulkerBulletEntity extends Entity {
 				this.setVelocity(vec3d.add((this.targetX - vec3d.x) * 0.2, (this.targetY - vec3d.y) * 0.2, (this.targetZ - vec3d.z) * 0.2));
 			}
 
-			HitResult hitResult = ProjectileUtil.getCollision(this, true, false, this.owner, RayTraceContext.ShapeType.COLLIDER);
+			HitResult hitResult = ProjectileUtil.getCollision(this, true, false, this.getOwner(), RayTraceContext.ShapeType.COLLIDER);
 			if (hitResult.getType() != HitResult.Type.MISS) {
-				this.onHit(hitResult);
+				this.onCollision(hitResult);
 			}
 		}
 
@@ -282,22 +268,31 @@ public class ShulkerBulletEntity extends Entity {
 		return 1.0F;
 	}
 
-	protected void onHit(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.ENTITY) {
-			Entity entity = ((EntityHitResult)hitResult).getEntity();
-			LivingEntity livingEntity = this.owner instanceof LivingEntity ? (LivingEntity)this.owner : null;
-			boolean bl = entity.damage(DamageSource.mobProjectile(this, livingEntity).setProjectile(), 4.0F);
-			if (bl) {
-				this.dealDamage(livingEntity, entity);
-				if (entity instanceof LivingEntity) {
-					((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200));
-				}
+	@Override
+	protected void onEntityHit(EntityHitResult entityHitResult) {
+		super.onEntityHit(entityHitResult);
+		Entity entity = entityHitResult.getEntity();
+		Entity entity2 = this.getOwner();
+		LivingEntity livingEntity = entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null;
+		boolean bl = entity.damage(DamageSource.mobProjectile(this, livingEntity).setProjectile(), 4.0F);
+		if (bl) {
+			this.dealDamage(livingEntity, entity);
+			if (entity instanceof LivingEntity) {
+				((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200));
 			}
-		} else {
-			((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
-			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HIT, 1.0F, 1.0F);
 		}
+	}
 
+	@Override
+	protected void method_24920(BlockHitResult blockHitResult) {
+		super.method_24920(blockHitResult);
+		((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
+		this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HIT, 1.0F, 1.0F);
+	}
+
+	@Override
+	protected void onCollision(HitResult hitResult) {
+		super.onCollision(hitResult);
 		this.remove();
 	}
 

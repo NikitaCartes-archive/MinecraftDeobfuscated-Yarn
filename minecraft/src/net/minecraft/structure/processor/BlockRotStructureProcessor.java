@@ -26,11 +26,12 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 	public Structure.StructureBlockInfo process(
 		WorldView worldView,
 		BlockPos pos,
+		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
-		StructurePlacementData placementData
+		StructurePlacementData structurePlacementData
 	) {
-		Random random = placementData.getRandom(structureBlockInfo2.pos);
+		Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
 		return !(this.integrity >= 1.0F) && !(random.nextFloat() <= this.integrity) ? null : structureBlockInfo2;
 	}
 

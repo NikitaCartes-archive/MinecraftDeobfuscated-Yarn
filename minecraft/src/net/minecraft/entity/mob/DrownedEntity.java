@@ -153,17 +153,17 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	@Override
-	protected boolean isBetterItemFor(ItemStack current, ItemStack previous, EquipmentSlot slot) {
-		if (previous.getItem() == Items.NAUTILUS_SHELL) {
+	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2) {
+		if (itemStack2.getItem() == Items.NAUTILUS_SHELL) {
 			return false;
-		} else if (previous.getItem() == Items.TRIDENT) {
-			if (current.getItem() == Items.TRIDENT) {
-				return current.getDamage() < previous.getDamage();
+		} else if (itemStack2.getItem() == Items.TRIDENT) {
+			if (itemStack.getItem() == Items.TRIDENT) {
+				return itemStack.getDamage() < itemStack2.getDamage();
 			} else {
 				return false;
 			}
 		} else {
-			return current.getItem() == Items.TRIDENT ? true : super.isBetterItemFor(current, previous, slot);
+			return itemStack.getItem() == Items.TRIDENT ? true : super.isBetterItemFor(itemStack, itemStack2);
 		}
 	}
 

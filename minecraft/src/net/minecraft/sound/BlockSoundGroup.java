@@ -346,6 +346,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_ANCIENT_DEBRIS_HIT,
 		SoundEvents.BLOCK_ANCIENT_DEBRIS_FALL
 	);
+	public static final BlockSoundGroup field_23265 = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_LODESTONE_BREAK,
+		SoundEvents.BLOCK_LODESTONE_STEP,
+		SoundEvents.BLOCK_LODESTONE_PLACE,
+		SoundEvents.BLOCK_LODESTONE_HIT,
+		SoundEvents.BLOCK_LODESTONE_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

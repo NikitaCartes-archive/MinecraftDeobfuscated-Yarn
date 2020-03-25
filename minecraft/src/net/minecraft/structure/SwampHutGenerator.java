@@ -39,7 +39,7 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 	}
 
 	@Override
-	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
 		if (!this.method_14839(world, box, 0)) {
 			return false;
 		} else {

@@ -28,7 +28,7 @@ public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior 
 		pointer.getWorld().playLevelEvent(1002, pointer.getBlockPos(), 0);
 	}
 
-	protected abstract ProjectileEntity createProjectile(World position, Position stack, ItemStack itemStack);
+	protected abstract ProjectileEntity createProjectile(World world, Position position, ItemStack stack);
 
 	protected float getVariation() {
 		return 6.0F;

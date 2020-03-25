@@ -77,7 +77,7 @@ public enum Instrument implements StringIdentifiable {
 			} else if (material == Material.GLASS) {
 				return HAT;
 			} else {
-				return material == Material.WOOD ? BASS : HARP;
+				return material != Material.WOOD && material != Material.NETHER_WOOD ? HARP : BASS;
 			}
 		}
 	}

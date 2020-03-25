@@ -12,6 +12,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.VillagerProfession;
 
@@ -43,6 +44,11 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 			villagerEntity.talkWithVillager(villagerEntity2, l);
 			if (villagerEntity.wantsToStartBreeding() && (villagerEntity.getVillagerData().getProfession() == VillagerProfession.FARMER || villagerEntity2.canBreed())) {
 				giveHalfOfStack(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet(), villagerEntity2);
+			}
+
+			if (villagerEntity2.getVillagerData().getProfession() == VillagerProfession.FARMER
+				&& villagerEntity.getInventory().countInInv(Items.WHEAT) > Items.WHEAT.getMaxCount() / 2) {
+				giveHalfOfStack(villagerEntity, ImmutableSet.of(Items.WHEAT), villagerEntity2);
 			}
 
 			if (!this.items.isEmpty() && villagerEntity.getInventory().containsAnyInInv(this.items)) {

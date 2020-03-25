@@ -22,6 +22,7 @@ public class ItemTags {
 	public static final Tag<Item> WOODEN_TRAPDOORS = register("wooden_trapdoors");
 	public static final Tag<Item> DOORS = register("doors");
 	public static final Tag<Item> SAPLINGS = register("saplings");
+	public static final Tag<Item> LOGS_THAT_BURN = register("logs_that_burn");
 	public static final Tag<Item> LOGS = register("logs");
 	public static final Tag<Item> DARK_OAK_LOGS = register("dark_oak_logs");
 	public static final Tag<Item> OAK_LOGS = register("oak_logs");
@@ -47,6 +48,7 @@ public class ItemTags {
 	public static final Tag<Item> FLOWERS = register("flowers");
 	public static final Tag<Item> PIGLIN_REPELLENTS = register("piglin_repellents");
 	public static final Tag<Item> GOLD_ORES = register("gold_ores");
+	public static final Tag<Item> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
 	public static final Tag<Item> BOATS = register("boats");
 	public static final Tag<Item> FISHES = register("fishes");
 	public static final Tag<Item> SIGNS = register("signs");

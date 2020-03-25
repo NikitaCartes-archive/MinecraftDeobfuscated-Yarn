@@ -26,7 +26,7 @@ public class LocateBiomeCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("biome", IdentifierArgumentType.identifier())
-						.suggests(SuggestionProviders.field_22245)
+						.suggests(SuggestionProviders.ALL_BIOMES)
 						.executes(commandContext -> execute(commandContext.getSource(), method_24493(commandContext, "biome")))
 				)
 		);

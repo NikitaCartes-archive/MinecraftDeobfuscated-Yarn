@@ -83,7 +83,7 @@ public abstract class StructurePiece {
 	public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 	}
 
-	public abstract boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos);
+	public abstract boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos);
 
 	public BlockBox getBoundingBox() {
 		return this.boundingBox;

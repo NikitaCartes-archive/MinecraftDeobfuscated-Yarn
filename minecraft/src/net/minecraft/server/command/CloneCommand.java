@@ -300,7 +300,7 @@ public class CloneCommand {
 							blockInfo2.blockEntityTag.putInt("x", blockInfo2.pos.getX());
 							blockInfo2.blockEntityTag.putInt("y", blockInfo2.pos.getY());
 							blockInfo2.blockEntityTag.putInt("z", blockInfo2.pos.getZ());
-							blockEntity4.fromTag(blockInfo2.blockEntityTag);
+							blockEntity4.fromTag(blockInfo2.state, blockInfo2.blockEntityTag);
 							blockEntity4.markDirty();
 						}
 

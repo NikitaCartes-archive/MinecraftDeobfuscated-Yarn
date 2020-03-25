@@ -807,6 +807,19 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 		);
 		this.register(
+			EntityType.STRIDER,
+			LootTable.builder()
+				.withPool(
+					LootPool.builder()
+						.withRolls(ConstantLootTableRange.create(1))
+						.withEntry(
+							ItemEntry.builder(Items.STRING)
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 5.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+						)
+				)
+		);
+		this.register(
 			EntityType.TRADER_LLAMA,
 			LootTable.builder()
 				.withPool(

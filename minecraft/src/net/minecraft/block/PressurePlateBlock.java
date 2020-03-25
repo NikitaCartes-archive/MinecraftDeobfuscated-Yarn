@@ -35,19 +35,19 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected void playPressSound(IWorld world, BlockPos pos) {
-		if (this.material == Material.WOOD) {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.8F);
-		} else {
+		if (this.material != Material.WOOD && this.material != Material.NETHER_WOOD) {
 			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
+		} else {
+			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.8F);
 		}
 	}
 
 	@Override
 	protected void playDepressSound(IWorld world, BlockPos pos) {
-		if (this.material == Material.WOOD) {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.7F);
-		} else {
+		if (this.material != Material.WOOD && this.material != Material.NETHER_WOOD) {
 			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
+		} else {
+			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.7F);
 		}
 	}
 

@@ -3,6 +3,7 @@ package net.minecraft.block.entity;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventories;
@@ -113,17 +114,17 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+		super.fromTag(blockState, compoundTag);
 		this.itemsBeingCooked.clear();
-		Inventories.fromTag(tag, this.itemsBeingCooked);
-		if (tag.contains("CookingTimes", 11)) {
-			int[] is = tag.getIntArray("CookingTimes");
+		Inventories.fromTag(compoundTag, this.itemsBeingCooked);
+		if (compoundTag.contains("CookingTimes", 11)) {
+			int[] is = compoundTag.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 
-		if (tag.contains("CookingTotalTimes", 11)) {
-			int[] is = tag.getIntArray("CookingTotalTimes");
+		if (compoundTag.contains("CookingTotalTimes", 11)) {
+			int[] is = compoundTag.getIntArray("CookingTotalTimes");
 			System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 	}

@@ -22,6 +22,7 @@ public class BlockTags {
 	public static final Tag<Block> WOODEN_TRAPDOORS = register("wooden_trapdoors");
 	public static final Tag<Block> DOORS = register("doors");
 	public static final Tag<Block> SAPLINGS = register("saplings");
+	public static final Tag<Block> LOGS_THAT_BURN = register("logs_that_burn");
 	public static final Tag<Block> LOGS = register("logs");
 	public static final Tag<Block> DARK_OAK_LOGS = register("dark_oak_logs");
 	public static final Tag<Block> OAK_LOGS = register("oak_logs");
@@ -47,6 +48,7 @@ public class BlockTags {
 	public static final Tag<Block> FLOWERS = register("flowers");
 	public static final Tag<Block> PIGLIN_REPELLENTS = register("piglin_repellents");
 	public static final Tag<Block> GOLD_ORES = register("gold_ores");
+	public static final Tag<Block> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
 	public static final Tag<Block> FLOWER_POTS = register("flower_pots");
 	public static final Tag<Block> ENDERMAN_HOLDABLE = register("enderman_holdable");
 	public static final Tag<Block> ICE = register("ice");
@@ -78,6 +80,7 @@ public class BlockTags {
 	public static final Tag<Block> SHULKER_BOXES = register("shulker_boxes");
 	public static final Tag<Block> HOGLIN_REPELLENTS = register("hoglin_repellents");
 	public static final Tag<Block> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");
+	public static final Tag<Block> STRIDER_WARM_BLOCKS = register("strider_warm_blocks");
 
 	public static void setContainer(TagContainer<Block> container) {
 		BlockTags.container = container;

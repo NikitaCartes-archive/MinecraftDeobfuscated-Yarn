@@ -8,6 +8,9 @@ public class Models {
 	public static final Model CUBE = block(
 		"cube", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN
 	);
+	public static final Model CUBE_DIRECTIONAL = block(
+		"cube_directional", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN
+	);
 	public static final Model CUBE_ALL = block("cube_all", TextureKey.ALL);
 	public static final Model CUBE_MIRRORED_ALL = block("cube_mirrored_all", "_mirrored", TextureKey.ALL);
 	public static final Model CUBE_COLUMN = block("cube_column", TextureKey.END, TextureKey.SIDE);
