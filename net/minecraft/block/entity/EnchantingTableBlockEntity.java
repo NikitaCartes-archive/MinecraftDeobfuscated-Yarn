@@ -4,6 +4,7 @@
 package net.minecraft.block.entity;
 
 import java.util.Random;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -46,10 +47,10 @@ Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        if (tag.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
+        if (compoundTag.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
     }
 

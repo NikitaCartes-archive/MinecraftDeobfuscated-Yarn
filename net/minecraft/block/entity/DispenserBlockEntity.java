@@ -4,6 +4,7 @@
 package net.minecraft.block.entity;
 
 import java.util.Random;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -60,11 +61,11 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
         this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(tag)) {
-            Inventories.fromTag(tag, this.inventory);
+        if (!this.deserializeLootTable(compoundTag)) {
+            Inventories.fromTag(compoundTag, this.inventory);
         }
     }
 

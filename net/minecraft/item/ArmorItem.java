@@ -118,5 +118,9 @@ extends Item {
     public int getProtection() {
         return this.protection;
     }
+
+    public float method_26353() {
+        return this.toughness;
+    }
 }
 

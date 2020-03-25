@@ -7,6 +7,7 @@ import java.util.List;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -85,6 +86,11 @@ extends SurfaceChunkGenerator<CavesChunkGeneratorConfig> {
     @Override
     public int getSeaLevel() {
         return 32;
+    }
+
+    @Override
+    public int getHeight(int x, int z, Heightmap.Type heightmapType) {
+        return this.getMaxY() / 2;
     }
 }
 

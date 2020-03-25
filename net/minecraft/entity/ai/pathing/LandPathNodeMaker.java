@@ -52,12 +52,23 @@ extends PathNodeMaker {
     @Override
     public PathNode getStart() {
         BlockPos blockPos;
+        BlockState blockState;
+        BlockPos.Mutable mutable;
         int i;
         if (this.canSwim() && this.entity.isTouchingWater()) {
             i = MathHelper.floor(this.entity.getY());
-            BlockPos.Mutable mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
-            BlockState blockState = this.cachedWorld.getBlockState(mutable);
+            mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
+            blockState = this.cachedWorld.getBlockState(mutable);
             while (blockState.getBlock() == Blocks.WATER || blockState.getFluidState() == Fluids.WATER.getStill(false)) {
+                mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ());
+                blockState = this.cachedWorld.getBlockState(mutable);
+            }
+            --i;
+        } else if (this.entity.isInLava() && this.entity.method_26319()) {
+            i = MathHelper.floor(this.entity.getY());
+            mutable = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
+            blockState = this.cachedWorld.getBlockState(mutable);
+            while (blockState.getBlock() == Blocks.LAVA || blockState.getFluidState() == Fluids.LAVA.getStill(false)) {
                 mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ());
                 blockState = this.cachedWorld.getBlockState(mutable);
             }

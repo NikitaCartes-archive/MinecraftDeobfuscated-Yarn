@@ -57,11 +57,7 @@ extends Task<VillagerEntity> {
         int i = basicInventory.getInvSize();
         for (int j = 0; j < i; ++j) {
             ItemStack itemStack = basicInventory.getInvStack(j);
-            if (itemStack.isEmpty()) {
-                this.ableToPickUpSeed = true;
-                break;
-            }
-            if (itemStack.getItem() != Items.WHEAT_SEEDS && itemStack.getItem() != Items.BEETROOT_SEEDS) continue;
+            if (!itemStack.isEmpty()) continue;
             this.ableToPickUpSeed = true;
             break;
         }
@@ -110,6 +106,9 @@ extends Task<VillagerEntity> {
 
     @Override
     protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        if (this.currentTarget != null && !this.currentTarget.isWithinDistance(villagerEntity.getPos(), 1.0)) {
+            return;
+        }
         if (this.currentTarget != null && l > this.nextResponseTime) {
             BlockState blockState = serverWorld.getBlockState(this.currentTarget);
             Block block = blockState.getBlock();

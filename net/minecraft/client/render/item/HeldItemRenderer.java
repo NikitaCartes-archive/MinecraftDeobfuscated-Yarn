@@ -394,13 +394,19 @@ public class HeldItemRenderer {
         ClientPlayerEntity clientPlayerEntity = this.client.player;
         ItemStack itemStack = clientPlayerEntity.getMainHandStack();
         ItemStack itemStack2 = clientPlayerEntity.getOffHandStack();
+        if (ItemStack.areEqual(this.mainHand, itemStack)) {
+            this.mainHand = itemStack;
+        }
+        if (ItemStack.areEqual(this.offHand, itemStack2)) {
+            this.offHand = itemStack2;
+        }
         if (clientPlayerEntity.isRiding()) {
             this.equipProgressMainHand = MathHelper.clamp(this.equipProgressMainHand - 0.4f, 0.0f, 1.0f);
             this.equipProgressOffHand = MathHelper.clamp(this.equipProgressOffHand - 0.4f, 0.0f, 1.0f);
         } else {
             float f = clientPlayerEntity.getAttackCooldownProgress(1.0f);
-            this.equipProgressMainHand += MathHelper.clamp((ItemStack.areEqual(this.mainHand, itemStack) ? f * f * f : 0.0f) - this.equipProgressMainHand, -0.4f, 0.4f);
-            this.equipProgressOffHand += MathHelper.clamp((float)(ItemStack.areEqual(this.offHand, itemStack2) ? 1 : 0) - this.equipProgressOffHand, -0.4f, 0.4f);
+            this.equipProgressMainHand += MathHelper.clamp((this.mainHand == itemStack ? f * f * f : 0.0f) - this.equipProgressMainHand, -0.4f, 0.4f);
+            this.equipProgressOffHand += MathHelper.clamp((float)(this.offHand == itemStack2 ? 1 : 0) - this.equipProgressOffHand, -0.4f, 0.4f);
         }
         if (this.equipProgressMainHand < 0.1f) {
             this.mainHand = itemStack;

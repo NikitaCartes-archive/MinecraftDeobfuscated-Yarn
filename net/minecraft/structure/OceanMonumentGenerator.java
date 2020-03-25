@@ -235,7 +235,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             int i;
             this.fillWithOutline(world, box, 2, -1, 2, 11, -1, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, box, 0, -1, 0, 1, -1, 11, PRISMARINE, PRISMARINE, false);
@@ -291,7 +291,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             if (this.field_14481 == 0) {
                 int i;
                 for (i = 0; i < 4; ++i) {
@@ -387,7 +387,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             this.method_14771(world, box, 1, 8, 0, 14, 8, 14, PRISMARINE);
             int i = 7;
             BlockState blockState = PRISMARINE_BRICKS;
@@ -461,7 +461,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             BlockState blockState;
             int i;
             PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
@@ -558,7 +558,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
             PieceSetting pieceSetting2 = this.setting;
             PieceSetting pieceSetting3 = pieceSetting2.neighbors[Direction.UP.getId()];
@@ -657,7 +657,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
             PieceSetting pieceSetting2 = this.setting;
             if (this.setting.roomIndex / 25 > 0) {
@@ -739,7 +739,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
             PieceSetting pieceSetting2 = this.setting;
             if (this.setting.roomIndex / 25 > 0) {
@@ -802,7 +802,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             PieceSetting pieceSetting;
             if (this.setting.roomIndex / 25 > 0) {
                 this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
@@ -877,7 +877,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             if (this.setting.roomIndex / 25 > 0) {
                 this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
             }
@@ -929,7 +929,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             boolean bl;
             if (this.setting.roomIndex / 25 > 0) {
                 this.method_14774(world, box, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
@@ -1082,7 +1082,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             this.fillWithOutline(world, box, 0, 3, 0, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, box, 5, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, box, 0, 2, 0, 1, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1257,7 +1257,7 @@ public class OceanMonumentGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             int j;
             int i = Math.max(world.getSeaLevel(), 64) - this.boundingBox.minY;
             this.setAirAndWater(world, box, 0, 0, 0, 58, i, 58);
@@ -1298,7 +1298,7 @@ public class OceanMonumentGenerator {
             }
             for (Piece piece : this.field_14465) {
                 if (!piece.getBoundingBox().intersects(box)) continue;
-                piece.generate(world, generator, random, box, pos);
+                piece.generate(world, generator, random, box, pos, blockPos);
             }
             return true;
         }

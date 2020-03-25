@@ -574,6 +574,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.HONEY_BLOCK);
         this.registerForSelfDrop(Blocks.HONEYCOMB_BLOCK);
         this.registerForSelfDrop(Blocks.RESPAWN_ANCHOR);
+        this.registerForSelfDrop(Blocks.LODESTONE);
         this.registerForSelfDrop(Blocks.WARPED_STEM);
         this.registerForSelfDrop(Blocks.WARPED_HYPHAE);
         this.registerForSelfDrop(Blocks.WARPED_NYLIUM);

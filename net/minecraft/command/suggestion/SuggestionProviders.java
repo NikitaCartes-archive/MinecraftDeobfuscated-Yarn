@@ -25,7 +25,7 @@ public class SuggestionProviders {
     public static final SuggestionProvider<CommandSource> ASK_SERVER = SuggestionProviders.register(ASK_SERVER_NAME, (commandContext, suggestionsBuilder) -> ((CommandSource)commandContext.getSource()).getCompletions(commandContext, suggestionsBuilder));
     public static final SuggestionProvider<ServerCommandSource> ALL_RECIPES = SuggestionProviders.register(new Identifier("all_recipes"), (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(((CommandSource)commandContext.getSource()).getRecipeIds(), suggestionsBuilder));
     public static final SuggestionProvider<ServerCommandSource> AVAILABLE_SOUNDS = SuggestionProviders.register(new Identifier("available_sounds"), (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(((CommandSource)commandContext.getSource()).getSoundIds(), suggestionsBuilder));
-    public static final SuggestionProvider<ServerCommandSource> field_22245 = SuggestionProviders.register(new Identifier("available_biomes"), (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(Registry.BIOME.getIds(), suggestionsBuilder));
+    public static final SuggestionProvider<ServerCommandSource> ALL_BIOMES = SuggestionProviders.register(new Identifier("available_biomes"), (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(Registry.BIOME.getIds(), suggestionsBuilder));
     public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = SuggestionProviders.register(new Identifier("summonable_entities"), (commandContext, suggestionsBuilder) -> CommandSource.suggestFromIdentifier(Registry.ENTITY_TYPE.stream().filter(EntityType::isSummonable), suggestionsBuilder, EntityType::getId, entityType -> new TranslatableText(Util.createTranslationKey("entity", EntityType.getId(entityType)), new Object[0])));
 
     public static <S extends CommandSource> SuggestionProvider<S> register(Identifier name, SuggestionProvider<CommandSource> provider) {
@@ -36,8 +36,8 @@ public class SuggestionProviders {
         return new LocalProvider(name, provider);
     }
 
-    public static SuggestionProvider<CommandSource> byId(Identifier name) {
-        return REGISTRY.getOrDefault(name, ASK_SERVER);
+    public static SuggestionProvider<CommandSource> byId(Identifier id) {
+        return REGISTRY.getOrDefault(id, ASK_SERVER);
     }
 
     public static Identifier computeName(SuggestionProvider<CommandSource> provider) {

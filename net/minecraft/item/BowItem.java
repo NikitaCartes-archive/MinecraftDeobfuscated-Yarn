@@ -31,7 +31,7 @@ extends RangedWeaponItem {
             if (entity == null) {
                 return 0.0f;
             }
-            if (entity.getActiveItem().getItem() != Items.BOW) {
+            if (entity.getActiveItem() != stack) {
                 return 0.0f;
             }
             return (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0f;

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class StructureProcessor {
     @Nullable
-    public abstract Structure.StructureBlockInfo process(WorldView var1, BlockPos var2, Structure.StructureBlockInfo var3, Structure.StructureBlockInfo var4, StructurePlacementData var5);
+    public abstract Structure.StructureBlockInfo process(WorldView var1, BlockPos var2, BlockPos var3, Structure.StructureBlockInfo var4, Structure.StructureBlockInfo var5, StructurePlacementData var6);
 
     protected abstract StructureProcessorType getType();
 

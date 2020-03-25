@@ -47,7 +47,7 @@ extends Block
 implements InventoryProvider {
     public static final IntProperty LEVEL = Properties.LEVEL_8;
     public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<ItemConvertible>();
-    public static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
+    private static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
     private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(new VoxelShape[9], voxelShapes -> {
         for (int i = 0; i < 8; ++i) {
             voxelShapes[i] = VoxelShapes.combineAndSimplify(RAY_TRACE_SHAPE, Block.createCuboidShape(2.0, Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
@@ -185,8 +185,8 @@ implements InventoryProvider {
         ItemStack itemStack = player.getStackInHand(hand);
         if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
             if (i < 7 && !world.isClient) {
-                boolean bl = ComposterBlock.addToComposter(state, world, pos, itemStack);
-                world.playLevelEvent(1500, pos, bl ? 1 : 0);
+                BlockState blockState = ComposterBlock.addToComposter(state, world, pos, itemStack);
+                world.playLevelEvent(1500, pos, state != blockState ? 1 : 0);
                 if (!player.abilities.creativeMode) {
                     itemStack.decrement(1);
                 }
@@ -194,38 +194,57 @@ implements InventoryProvider {
             return ActionResult.SUCCESS;
         }
         if (i == 8) {
-            if (!world.isClient) {
-                float f = 0.7f;
-                double d = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
-                double e = (double)(world.random.nextFloat() * 0.7f) + 0.06000000238418579 + 0.6;
-                double g = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
-                ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + g, new ItemStack(Items.BONE_MEAL));
-                itemEntity.setToDefaultPickupDelay();
-                world.spawnEntity(itemEntity);
-            }
-            ComposterBlock.emptyComposter(state, world, pos);
-            world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            ComposterBlock.emptyFullComposter(state, world, pos);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
 
-    private static void emptyComposter(BlockState state, IWorld world, BlockPos pos) {
-        world.setBlockState(pos, (BlockState)state.with(LEVEL, 0), 3);
+    public static BlockState compost(BlockState state, ServerWorld world, ItemStack stack, BlockPos pos) {
+        int i = state.get(LEVEL);
+        if (i < 7 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem())) {
+            BlockState blockState = ComposterBlock.addToComposter(state, world, pos, stack);
+            stack.decrement(1);
+            world.playLevelEvent(1500, pos, state != blockState ? 1 : 0);
+            return blockState;
+        }
+        return state;
     }
 
-    private static boolean addToComposter(BlockState state, IWorld world, BlockPos pos, ItemStack item) {
+    public static BlockState emptyFullComposter(BlockState state, World world, BlockPos pos) {
+        if (!world.isClient) {
+            float f = 0.7f;
+            double d = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
+            double e = (double)(world.random.nextFloat() * 0.7f) + 0.06000000238418579 + 0.6;
+            double g = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
+            ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + g, new ItemStack(Items.BONE_MEAL));
+            itemEntity.setToDefaultPickupDelay();
+            world.spawnEntity(itemEntity);
+        }
+        BlockState blockState = ComposterBlock.emptyComposter(state, world, pos);
+        world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        return blockState;
+    }
+
+    private static BlockState emptyComposter(BlockState state, IWorld world, BlockPos pos) {
+        BlockState blockState = (BlockState)state.with(LEVEL, 0);
+        world.setBlockState(pos, blockState, 3);
+        return blockState;
+    }
+
+    private static BlockState addToComposter(BlockState state, IWorld world, BlockPos pos, ItemStack item) {
         int i = state.get(LEVEL);
         float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(item.getItem());
         if (i == 0 && f > 0.0f || world.getRandom().nextDouble() < (double)f) {
             int j = i + 1;
-            world.setBlockState(pos, (BlockState)state.with(LEVEL, j), 3);
+            BlockState blockState = (BlockState)state.with(LEVEL, j);
+            world.setBlockState(pos, blockState, 3);
             if (j == 7) {
                 world.getBlockTickScheduler().schedule(pos, state.getBlock(), 20);
             }
-            return true;
+            return blockState;
         }
-        return false;
+        return state;
     }
 
     @Override
@@ -316,7 +335,8 @@ implements InventoryProvider {
             ItemStack itemStack = this.getInvStack(0);
             if (!itemStack.isEmpty()) {
                 this.dirty = true;
-                this.world.playLevelEvent(1500, this.pos, ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack) ? 1 : 0);
+                BlockState blockState = ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack);
+                this.world.playLevelEvent(1500, this.pos, blockState != this.state ? 1 : 0);
                 this.removeInvStack(0);
             }
         }

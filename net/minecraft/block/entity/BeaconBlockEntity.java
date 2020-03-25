@@ -274,14 +274,14 @@ Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        this.primary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Primary"));
-        this.secondary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Secondary"));
-        if (tag.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
+        this.primary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Primary"));
+        this.secondary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Secondary"));
+        if (compoundTag.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
-        this.lock = ContainerLock.fromTag(tag);
+        this.lock = ContainerLock.fromTag(compoundTag);
     }
 
     @Override

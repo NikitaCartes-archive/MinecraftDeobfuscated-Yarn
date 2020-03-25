@@ -24,7 +24,7 @@ public class LocateBiomeCommand {
     private static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.locatebiome.notFound", object));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locatebiome").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("biome", IdentifierArgumentType.identifier()).suggests(SuggestionProviders.field_22245).executes(commandContext -> LocateBiomeCommand.execute((ServerCommandSource)commandContext.getSource(), LocateBiomeCommand.method_24493(commandContext, "biome")))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locatebiome").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("biome", IdentifierArgumentType.identifier()).suggests(SuggestionProviders.ALL_BIOMES).executes(commandContext -> LocateBiomeCommand.execute((ServerCommandSource)commandContext.getSource(), LocateBiomeCommand.method_24493(commandContext, "biome")))));
     }
 
     private static int execute(ServerCommandSource source, Biome biome) throws CommandSyntaxException {

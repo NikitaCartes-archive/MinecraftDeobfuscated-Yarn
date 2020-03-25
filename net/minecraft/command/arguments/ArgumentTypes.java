@@ -66,8 +66,13 @@ public class ArgumentTypes {
     private static final Map<Class<?>, Entry<?>> classMap = Maps.newHashMap();
     private static final Map<Identifier, Entry<?>> idMap = Maps.newHashMap();
 
-    public static <T extends ArgumentType<?>> void register(String string, Class<T> class_, ArgumentSerializer<T> argumentSerializer) {
-        Identifier identifier = new Identifier(string);
+    /**
+     * Registers an argument type's serializer.
+     * 
+     * @param id the id of the argument type
+     */
+    public static <T extends ArgumentType<?>> void register(String id, Class<T> class_, ArgumentSerializer<T> argumentSerializer) {
+        Identifier identifier = new Identifier(id);
         if (classMap.containsKey(class_)) {
             throw new IllegalArgumentException("Class " + class_.getName() + " already has a serializer!");
         }
@@ -119,7 +124,7 @@ public class ArgumentTypes {
         ArgumentTypes.register("time", TimeArgumentType.class, new ConstantArgumentSerializer<TimeArgumentType>(TimeArgumentType::time));
         if (SharedConstants.isDevelopment) {
             ArgumentTypes.register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer<TestFunctionArgumentType>(TestFunctionArgumentType::testFunction));
-            ArgumentTypes.register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer<TestClassArgumentType>(TestClassArgumentType::method_22370));
+            ArgumentTypes.register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer<TestClassArgumentType>(TestClassArgumentType::testClass));
         }
     }
 

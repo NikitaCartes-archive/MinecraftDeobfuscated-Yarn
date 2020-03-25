@@ -15,15 +15,15 @@ import net.minecraft.text.TranslatableText;
 public class NetherBedDamageSource
 extends DamageSource {
     protected NetherBedDamageSource() {
-        super("netherBed");
+        super("badRespawnPoint");
         this.setScaledWithDifficulty();
         this.setExplosive();
     }
 
     @Override
     public Text getDeathMessage(LivingEntity livingEntity) {
-        Text text = Texts.bracketed(new TranslatableText("death.attack.netherBed.link", new Object[0])).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://bugs.mojang.com/browse/MCPE-28723")).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("MCPE-28723"))));
-        return new TranslatableText("death.attack.netherBed.message", livingEntity.getDisplayName(), text);
+        Text text = Texts.bracketed(new TranslatableText("death.attack.badRespawnPoint.link", new Object[0])).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://bugs.mojang.com/browse/MCPE-28723")).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("MCPE-28723"))));
+        return new TranslatableText("death.attack.badRespawnPoint.message", livingEntity.getDisplayName(), text);
     }
 }
 

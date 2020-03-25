@@ -58,6 +58,11 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.getInCircle(typePredicate, pos, radius, occupationStatus).count();
     }
 
+    public boolean method_26339(PointOfInterestType pointOfInterestType, BlockPos blockPos) {
+        Optional<PointOfInterestType> optional = ((PointOfInterestSet)this.getOrCreate(ChunkSectionPos.from(blockPos).asLong())).getType(blockPos);
+        return optional.isPresent() && optional.get().equals(pointOfInterestType);
+    }
+
     public Stream<PointOfInterest> getInSquare(Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
         int i = Math.floorDiv(radius, 16) + 1;
         return ChunkPos.stream(new ChunkPos(pos), i).flatMap(chunkPos -> this.getInChunk(typePredicate, (ChunkPos)chunkPos, occupationStatus));

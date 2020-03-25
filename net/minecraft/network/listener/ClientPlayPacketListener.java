@@ -95,8 +95,14 @@ import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 
+/**
+ * A client side packet listener where play stage packets from the server are processed.
+ */
 public interface ClientPlayPacketListener
 extends PacketListener {
+    /**
+     * Handles the spawning of non-living entities.
+     */
     public void onEntitySpawn(EntitySpawnS2CPacket var1);
 
     public void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket var1);

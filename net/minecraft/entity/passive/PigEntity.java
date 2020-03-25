@@ -4,6 +4,8 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4980;
+import net.minecraft.class_4981;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -40,16 +42,16 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class PigEntity
-extends AnimalEntity {
+extends AnimalEntity
+implements class_4981 {
     private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> field_6815 = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CARROT, Items.POTATO, Items.BEETROOT);
-    private boolean field_6814;
-    private int field_6812;
-    private int field_6813;
+    private final class_4980 field_23230;
 
     public PigEntity(EntityType<? extends PigEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
+        this.field_23230 = new class_4980(this.dataTracker, field_6815, SADDLED);
     }
 
     @Override
@@ -94,9 +96,7 @@ extends AnimalEntity {
     @Override
     public void onTrackedDataSet(TrackedData<?> data) {
         if (field_6815.equals(data) && this.world.isClient) {
-            this.field_6814 = true;
-            this.field_6812 = 0;
-            this.field_6813 = this.dataTracker.get(field_6815);
+            this.field_23230.method_26307();
         }
         super.onTrackedDataSet(data);
     }
@@ -111,13 +111,13 @@ extends AnimalEntity {
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
-        tag.putBoolean("Saddle", this.isSaddled());
+        this.field_23230.method_26309(tag);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
-        this.setSaddled(tag.getBoolean("Saddle"));
+        this.field_23230.method_26312(tag);
     }
 
     @Override
@@ -143,18 +143,7 @@ extends AnimalEntity {
     @Override
     public boolean interactMob(PlayerEntity player, Hand hand) {
         if (!super.interactMob(player, hand)) {
-            ItemStack itemStack = player.getStackInHand(hand);
-            if (itemStack.getItem() == Items.NAME_TAG) {
-                itemStack.useOnEntity(player, this, hand);
-                return true;
-            }
-            if (this.isSaddled() && !this.hasPassengers()) {
-                if (!this.world.isClient) {
-                    player.startRiding(this);
-                }
-                return true;
-            }
-            return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
+            return this.method_26314(this, player, hand, true);
         }
         return true;
     }
@@ -167,16 +156,14 @@ extends AnimalEntity {
         }
     }
 
+    @Override
     public boolean isSaddled() {
-        return this.dataTracker.get(SADDLED);
+        return this.field_23230.method_26311();
     }
 
-    public void setSaddled(boolean saddled) {
-        if (saddled) {
-            this.dataTracker.set(SADDLED, true);
-        } else {
-            this.dataTracker.set(SADDLED, false);
-        }
+    @Override
+    public void setSaddled(boolean bl) {
+        this.field_23230.method_26310(bl);
     }
 
     @Override
@@ -196,58 +183,32 @@ extends AnimalEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
-        Entity entity;
-        if (!this.isAlive()) {
-            return;
-        }
-        Entity entity2 = entity = this.getPassengerList().isEmpty() ? null : this.getPassengerList().get(0);
-        if (!this.hasPassengers() || !this.canBeControlledByRider()) {
-            this.stepHeight = 0.5f;
-            this.flyingSpeed = 0.02f;
-            super.travel(movementInput);
-            return;
-        }
-        this.prevYaw = this.yaw = entity.yaw;
-        this.pitch = entity.pitch * 0.5f;
-        this.setRotation(this.yaw, this.pitch);
-        this.bodyYaw = this.yaw;
-        this.headYaw = this.yaw;
-        this.stepHeight = 1.0f;
-        this.flyingSpeed = this.getMovementSpeed() * 0.1f;
-        if (this.field_6814 && this.field_6812++ > this.field_6813) {
-            this.field_6814 = false;
-        }
-        if (this.isLogicalSideForUpdatingMovement()) {
-            float f = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225f;
-            if (this.field_6814) {
-                f += f * 1.15f * MathHelper.sin((float)this.field_6812 / (float)this.field_6813 * (float)Math.PI);
+        if (this.method_26313(this, this.field_23230, movementInput)) {
+            double e;
+            this.lastLimbDistance = this.limbDistance;
+            double d = this.getX() - this.prevX;
+            float f = MathHelper.sqrt(d * d + (e = this.getZ() - this.prevZ) * e) * 4.0f;
+            if (f > 1.0f) {
+                f = 1.0f;
             }
-            this.setMovementSpeed(f);
-            super.travel(new Vec3d(0.0, 0.0, 1.0));
-            this.bodyTrackingIncrements = 0;
-        } else {
-            this.setVelocity(Vec3d.ZERO);
+            this.limbDistance += (f - this.limbDistance) * 0.4f;
+            this.limbAngle += this.limbDistance;
         }
-        this.lastLimbDistance = this.limbDistance;
-        double d = this.getX() - this.prevX;
-        double e = this.getZ() - this.prevZ;
-        float g = MathHelper.sqrt(d * d + e * e) * 4.0f;
-        if (g > 1.0f) {
-            g = 1.0f;
-        }
-        this.limbDistance += (g - this.limbDistance) * 0.4f;
-        this.limbAngle += this.limbDistance;
     }
 
+    @Override
+    public float method_26316() {
+        return (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225f;
+    }
+
+    @Override
+    public void method_26315(Vec3d vec3d) {
+        super.travel(vec3d);
+    }
+
+    @Override
     public boolean method_6577() {
-        if (this.field_6814) {
-            return false;
-        }
-        this.field_6814 = true;
-        this.field_6812 = 0;
-        this.field_6813 = this.getRandom().nextInt(841) + 140;
-        this.getDataTracker().set(field_6815, this.field_6813);
-        return true;
+        return this.field_23230.method_26308(this.getRandom());
     }
 
     @Override

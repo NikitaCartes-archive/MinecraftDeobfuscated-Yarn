@@ -265,7 +265,7 @@ public class ChunkSerializer {
         if (tickScheduler instanceof ChunkTickScheduler) {
             compoundTag2.put("ToBeTicked", ((ChunkTickScheduler)tickScheduler).toNbt());
         } else if (tickScheduler instanceof SimpleTickScheduler) {
-            compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt(serverWorld.getTime()));
+            compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt());
         } else {
             compoundTag2.put("TileTicks", ((ServerTickScheduler)serverWorld.getBlockTickScheduler()).toTag(chunkPos));
         }
@@ -273,7 +273,7 @@ public class ChunkSerializer {
         if (tickScheduler2 instanceof ChunkTickScheduler) {
             compoundTag2.put("LiquidsToBeTicked", ((ChunkTickScheduler)tickScheduler2).toNbt());
         } else if (tickScheduler2 instanceof SimpleTickScheduler) {
-            compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt(serverWorld.getTime()));
+            compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt());
         } else {
             compoundTag2.put("LiquidTicks", ((ServerTickScheduler)serverWorld.getFluidTickScheduler()).toTag(chunkPos));
         }
@@ -315,7 +315,8 @@ public class ChunkSerializer {
                 chunk.addPendingBlockEntityTag(compoundTag2);
                 continue;
             }
-            BlockEntity blockEntity = BlockEntity.createFromTag(compoundTag2);
+            BlockPos blockPos = new BlockPos(compoundTag2.getInt("x"), compoundTag2.getInt("y"), compoundTag2.getInt("z"));
+            BlockEntity blockEntity = BlockEntity.createFromTag(chunk.getBlockState(blockPos), compoundTag2);
             if (blockEntity == null) continue;
             chunk.addBlockEntity(blockEntity);
         }

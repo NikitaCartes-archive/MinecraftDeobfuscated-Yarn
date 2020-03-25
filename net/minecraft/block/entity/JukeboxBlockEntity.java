@@ -3,6 +3,7 @@
  */
 package net.minecraft.block.entity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
@@ -19,10 +20,10 @@ implements Clearable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        if (tag.contains("RecordItem", 10)) {
-            this.setRecord(ItemStack.fromTag(tag.getCompound("RecordItem")));
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
+        if (compoundTag.contains("RecordItem", 10)) {
+            this.setRecord(ItemStack.fromTag(compoundTag.getCompound("RecordItem")));
         }
     }
 

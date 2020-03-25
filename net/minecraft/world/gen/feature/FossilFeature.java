@@ -76,11 +76,11 @@ extends Feature<DefaultFeatureConfig> {
         BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
         BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9f);
         structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
-        structure.place(iWorld, blockPos3, structurePlacementData, 4);
+        structure.place(iWorld, blockPos3, blockPos3, structurePlacementData, 4);
         structurePlacementData.removeProcessor(blockRotStructureProcessor);
         BlockRotStructureProcessor blockRotStructureProcessor2 = new BlockRotStructureProcessor(0.1f);
         structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor2);
-        structure2.place(iWorld, blockPos3, structurePlacementData, 4);
+        structure2.place(iWorld, blockPos3, blockPos3, structurePlacementData, 4);
         return true;
     }
 }

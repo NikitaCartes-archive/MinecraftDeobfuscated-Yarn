@@ -6,8 +6,10 @@ package net.minecraft.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.class_4985;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
@@ -234,6 +236,9 @@ public class Items {
     public static final Item NETHER_SPROUTS = Items.register(Blocks.NETHER_SPROUTS, ItemGroup.DECORATIONS);
     public static final Item WEEPING_VINES = Items.register(Blocks.WEEPING_VINES, ItemGroup.DECORATIONS);
     public static final Item field_23070 = Items.register(Blocks.TWISTING_VINES, ItemGroup.DECORATIONS);
+    public static final Item SUGAR_CANE = Items.register(Blocks.SUGAR_CANE, ItemGroup.DECORATIONS);
+    public static final Item KELP = Items.register(Blocks.KELP, ItemGroup.DECORATIONS);
+    public static final Item BAMBOO = Items.register(Blocks.BAMBOO, ItemGroup.DECORATIONS);
     public static final Item GOLD_BLOCK = Items.register(Blocks.GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item IRON_BLOCK = Items.register(Blocks.IRON_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_SLAB = Items.register(Blocks.OAK_SLAB, ItemGroup.BUILDING_BLOCKS);
@@ -763,10 +768,7 @@ public class Items {
     public static final Item TROPICAL_FISH_BUCKET = Items.register("tropical_fish_bucket", (Item)new FishBucketItem(EntityType.TROPICAL_FISH, Fluids.WATER, new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
     public static final Item BRICK = Items.register("brick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item CLAY_BALL = Items.register("clay_ball", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-    public static final Item SUGAR_CANE = Items.register(Blocks.SUGAR_CANE, ItemGroup.MISC);
-    public static final Item KELP = Items.register(Blocks.KELP, ItemGroup.MISC);
     public static final Item DRIED_KELP_BLOCK = Items.register(Blocks.DRIED_KELP_BLOCK, ItemGroup.BUILDING_BLOCKS);
-    public static final Item BAMBOO = Items.register(Blocks.BAMBOO, ItemGroup.MATERIALS);
     public static final Item PAPER = Items.register("paper", new Item(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item BOOK = Items.register("book", (Item)new BookItem(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item SLIME_BALL = Items.register("slime_ball", new Item(new Item.Settings().group(ItemGroup.MISC)));
@@ -896,6 +898,7 @@ public class Items {
     public static final Item SPIDER_SPAWN_EGG = Items.register("spider_spawn_egg", (Item)new SpawnEggItem(EntityType.SPIDER, 3419431, 11013646, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item SQUID_SPAWN_EGG = Items.register("squid_spawn_egg", (Item)new SpawnEggItem(EntityType.SQUID, 2243405, 7375001, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item STRAY_SPAWN_EGG = Items.register("stray_spawn_egg", (Item)new SpawnEggItem(EntityType.STRAY, 0x617677, 0xDDEAEA, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item STRIDER_SPAWN_EGG = Items.register("strider_spawn_egg", (Item)new SpawnEggItem(EntityType.STRIDER, 10236982, 0x4D494D, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item TRADER_LLAMA_SPAWN_EGG = Items.register("trader_llama_spawn_egg", (Item)new SpawnEggItem(EntityType.TRADER_LLAMA, 15377456, 4547222, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item TROPICAL_FISH_SPAWN_EGG = Items.register("tropical_fish_spawn_egg", (Item)new SpawnEggItem(EntityType.TROPICAL_FISH, 15690005, 0xFFF9EF, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item TURTLE_SPAWN_EGG = Items.register("turtle_spawn_egg", (Item)new SpawnEggItem(EntityType.TURTLE, 0xE7E7E7, 44975, new Item.Settings().group(ItemGroup.MISC)));
@@ -929,7 +932,8 @@ public class Items {
     public static final Item ZOMBIE_HEAD = Items.register(new WallStandingBlockItem(Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON)));
     public static final Item CREEPER_HEAD = Items.register(new WallStandingBlockItem(Blocks.CREEPER_HEAD, Blocks.CREEPER_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON)));
     public static final Item DRAGON_HEAD = Items.register(new WallStandingBlockItem(Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON)));
-    public static final Item CARROT_ON_A_STICK = Items.register("carrot_on_a_stick", (Item)new CarrotOnAStickItem(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION)));
+    public static final Item CARROT_ON_A_STICK = Items.register("carrot_on_a_stick", new CarrotOnAStickItem<PigEntity>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.PIG));
+    public static final Item WARPED_FUNGUS_ON_A_STICK = Items.register("warped_fungus_on_a_stick", new CarrotOnAStickItem<class_4985>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.STRIDER));
     public static final Item NETHER_STAR = Items.register("nether_star", (Item)new NetherStarItem(new Item.Settings().group(ItemGroup.MATERIALS).rarity(Rarity.UNCOMMON)));
     public static final Item PUMPKIN_PIE = Items.register("pumpkin_pie", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.PUMPKIN_PIE)));
     public static final Item FIREWORK_ROCKET = Items.register("firework_rocket", (Item)new FireworkItem(new Item.Settings().group(ItemGroup.MISC)));
@@ -1041,6 +1045,7 @@ public class Items {
     public static final Item HONEY_BOTTLE = Items.register("honey_bottle", (Item)new HoneyBottleItem(new Item.Settings().recipeRemainder(GLASS_BOTTLE).food(FoodComponents.HONEY_BOTTLE).group(ItemGroup.FOOD).maxCount(16)));
     public static final Item HONEY_BLOCK = Items.register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
     public static final Item HONEYCOMB_BLOCK = Items.register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
+    public static final Item field_23256 = Items.register(Blocks.LODESTONE, ItemGroup.DECORATIONS);
     public static final Item NETHERITE_BLOCK = Items.register(new BlockItem(Blocks.NETHERITE_BLOCK, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
     public static final Item ANCIENT_DEBRIS = Items.register(new BlockItem(Blocks.ANCIENT_DEBRIS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
     public static final Item NETHERITE_INGOT = Items.register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));

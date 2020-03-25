@@ -32,11 +32,11 @@ import org.jetbrains.annotations.Nullable;
 public class WallRedstoneTorchBlock
 extends RedstoneTorchBlock {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-    public static final BooleanProperty LIT_2 = RedstoneTorchBlock.LIT;
+    public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
     protected WallRedstoneTorchBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(LIT_2, true));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(LIT, true));
     }
 
     @Override
@@ -69,7 +69,7 @@ extends RedstoneTorchBlock {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
-        if (!state.get(LIT_2).booleanValue()) {
+        if (!state.get(LIT).booleanValue()) {
             return;
         }
         Direction direction = state.get(FACING).getOpposite();
@@ -77,7 +77,7 @@ extends RedstoneTorchBlock {
         double e = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
         double f = (double)pos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
         double g = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetZ();
-        world.addParticle(this.field_22155, e, f, g, 0.0, 0.0, 0.0);
+        world.addParticle(this.particle, e, f, g, 0.0, 0.0, 0.0);
     }
 
     @Override
@@ -88,7 +88,7 @@ extends RedstoneTorchBlock {
 
     @Override
     public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-        if (state.get(LIT_2).booleanValue() && state.get(FACING) != direction) {
+        if (state.get(LIT).booleanValue() && state.get(FACING) != direction) {
             return 15;
         }
         return 0;
@@ -106,7 +106,7 @@ extends RedstoneTorchBlock {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, LIT_2);
+        builder.add(FACING, LIT);
     }
 }
 

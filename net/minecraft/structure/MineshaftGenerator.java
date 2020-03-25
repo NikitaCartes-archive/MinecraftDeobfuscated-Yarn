@@ -138,7 +138,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             if (this.method_14937(world, box)) {
                 return false;
             }
@@ -257,7 +257,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             if (this.method_14937(world, box)) {
                 return false;
             }
@@ -458,7 +458,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             int r;
             int p;
             int o;
@@ -499,11 +499,11 @@ public class MineshaftGenerator {
                 p = this.applyYTransform(0);
                 int q = o - 1 + random.nextInt(3);
                 r = this.applyXTransform(1, q);
-                BlockPos blockPos = new BlockPos(r, p, s = this.applyZTransform(1, q));
-                if (!box.contains(blockPos) || !this.isUnderSeaLevel(world, 1, 0, q, box)) continue;
+                BlockPos blockPos2 = new BlockPos(r, p, s = this.applyZTransform(1, q));
+                if (!box.contains(blockPos2) || !this.isUnderSeaLevel(world, 1, 0, q, box)) continue;
                 this.hasSpawner = true;
-                world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
-                BlockEntity blockEntity = world.getBlockEntity(blockPos);
+                world.setBlockState(blockPos2, Blocks.SPAWNER.getDefaultState(), 2);
+                BlockEntity blockEntity = world.getBlockEntity(blockPos2);
                 if (!(blockEntity instanceof MobSpawnerBlockEntity)) continue;
                 ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.CAVE_SPIDER);
             }
@@ -608,7 +608,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos) {
+        public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
             if (this.method_14937(world, box)) {
                 return false;
             }

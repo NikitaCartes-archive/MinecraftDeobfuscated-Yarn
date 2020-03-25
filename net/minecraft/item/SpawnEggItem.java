@@ -147,6 +147,9 @@ extends Item {
             return Optional.empty();
         }
         mobEntity.setBaby(true);
+        if (!mobEntity.isBaby()) {
+            return Optional.empty();
+        }
         mobEntity.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0f, 0.0f);
         world.spawnEntity(mobEntity);
         if (itemStack.hasCustomName()) {

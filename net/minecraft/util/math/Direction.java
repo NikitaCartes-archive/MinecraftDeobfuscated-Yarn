@@ -357,6 +357,10 @@ public enum Direction implements StringIdentifiable
         public String toString() {
             return this.desc;
         }
+
+        public AxisDirection method_26424() {
+            return this == POSITIVE ? NEGATIVE : POSITIVE;
+        }
     }
 
     public static enum Axis implements StringIdentifiable,
@@ -424,7 +428,6 @@ public enum Direction implements StringIdentifiable
         }
 
         @Nullable
-        @Environment(value=EnvType.CLIENT)
         public static Axis fromName(String name) {
             return BY_NAME.get(name.toLowerCase(Locale.ROOT));
         }

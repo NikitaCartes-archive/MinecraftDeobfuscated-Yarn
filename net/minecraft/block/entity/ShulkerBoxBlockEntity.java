@@ -212,9 +212,9 @@ Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        this.deserializeInventory(tag);
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
+        this.deserializeInventory(compoundTag);
     }
 
     @Override

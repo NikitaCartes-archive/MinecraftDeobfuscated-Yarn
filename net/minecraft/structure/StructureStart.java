@@ -14,6 +14,7 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
@@ -63,10 +64,16 @@ public abstract class StructureStart {
     public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
         List<StructurePiece> list = this.children;
         synchronized (list) {
+            if (this.children.isEmpty()) {
+                return;
+            }
+            BlockBox blockBox = this.children.get((int)0).boundingBox;
+            Vec3i vec3i = blockBox.getCenter();
+            BlockPos blockPos = new BlockPos(vec3i.getX(), blockBox.minY, vec3i.getZ());
             Iterator<StructurePiece> iterator = this.children.iterator();
             while (iterator.hasNext()) {
                 StructurePiece structurePiece = iterator.next();
-                if (!structurePiece.getBoundingBox().intersects(box) || structurePiece.generate(world, chunkGenerator, random, box, pos)) continue;
+                if (!structurePiece.getBoundingBox().intersects(box) || structurePiece.generate(world, chunkGenerator, random, box, pos, blockPos)) continue;
                 iterator.remove();
             }
             this.setBoundingBoxFromChildren();

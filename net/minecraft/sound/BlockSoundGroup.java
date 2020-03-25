@@ -51,6 +51,7 @@ public class BlockSoundGroup {
     public static final BlockSoundGroup BONE = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_BONE_BLOCK_BREAK, SoundEvents.BLOCK_BONE_BLOCK_STEP, SoundEvents.BLOCK_BONE_BLOCK_PLACE, SoundEvents.BLOCK_BONE_BLOCK_HIT, SoundEvents.BLOCK_BONE_BLOCK_FALL);
     public static final BlockSoundGroup NETHERITE = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_NETHERITE_BLOCK_BREAK, SoundEvents.BLOCK_NETHERITE_BLOCK_STEP, SoundEvents.BLOCK_NETHERITE_BLOCK_PLACE, SoundEvents.BLOCK_NETHERITE_BLOCK_HIT, SoundEvents.BLOCK_NETHERITE_BLOCK_FALL);
     public static final BlockSoundGroup ANCIENT_DEBRIS = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_ANCIENT_DEBRIS_BREAK, SoundEvents.BLOCK_ANCIENT_DEBRIS_STEP, SoundEvents.BLOCK_ANCIENT_DEBRIS_PLACE, SoundEvents.BLOCK_ANCIENT_DEBRIS_HIT, SoundEvents.BLOCK_ANCIENT_DEBRIS_FALL);
+    public static final BlockSoundGroup field_23265 = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_LODESTONE_BREAK, SoundEvents.BLOCK_LODESTONE_STEP, SoundEvents.BLOCK_LODESTONE_PLACE, SoundEvents.BLOCK_LODESTONE_HIT, SoundEvents.BLOCK_LODESTONE_FALL);
     public final float volume;
     public final float pitch;
     private final SoundEvent breakSound;

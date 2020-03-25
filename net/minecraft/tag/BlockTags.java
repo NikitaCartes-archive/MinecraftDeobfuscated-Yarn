@@ -27,6 +27,7 @@ public class BlockTags {
     public static final Tag<Block> WOODEN_TRAPDOORS;
     public static final Tag<Block> DOORS;
     public static final Tag<Block> SAPLINGS;
+    public static final Tag<Block> LOGS_THAT_BURN;
     public static final Tag<Block> LOGS;
     public static final Tag<Block> DARK_OAK_LOGS;
     public static final Tag<Block> OAK_LOGS;
@@ -52,6 +53,7 @@ public class BlockTags {
     public static final Tag<Block> FLOWERS;
     public static final Tag<Block> PIGLIN_REPELLENTS;
     public static final Tag<Block> GOLD_ORES;
+    public static final Tag<Block> NON_FLAMMABLE_WOOD;
     public static final Tag<Block> FLOWER_POTS;
     public static final Tag<Block> ENDERMAN_HOLDABLE;
     public static final Tag<Block> ICE;
@@ -83,6 +85,7 @@ public class BlockTags {
     public static final Tag<Block> SHULKER_BOXES;
     public static final Tag<Block> HOGLIN_REPELLENTS;
     public static final Tag<Block> SOUL_FIRE_BASE_BLOCKS;
+    public static final Tag<Block> STRIDER_WARM_BLOCKS;
 
     public static void setContainer(TagContainer<Block> container) {
         BlockTags.container = container;
@@ -112,6 +115,7 @@ public class BlockTags {
         WOODEN_TRAPDOORS = BlockTags.register("wooden_trapdoors");
         DOORS = BlockTags.register("doors");
         SAPLINGS = BlockTags.register("saplings");
+        LOGS_THAT_BURN = BlockTags.register("logs_that_burn");
         LOGS = BlockTags.register("logs");
         DARK_OAK_LOGS = BlockTags.register("dark_oak_logs");
         OAK_LOGS = BlockTags.register("oak_logs");
@@ -137,6 +141,7 @@ public class BlockTags {
         FLOWERS = BlockTags.register("flowers");
         PIGLIN_REPELLENTS = BlockTags.register("piglin_repellents");
         GOLD_ORES = BlockTags.register("gold_ores");
+        NON_FLAMMABLE_WOOD = BlockTags.register("non_flammable_wood");
         FLOWER_POTS = BlockTags.register("flower_pots");
         ENDERMAN_HOLDABLE = BlockTags.register("enderman_holdable");
         ICE = BlockTags.register("ice");
@@ -168,6 +173,7 @@ public class BlockTags {
         SHULKER_BOXES = BlockTags.register("shulker_boxes");
         HOGLIN_REPELLENTS = BlockTags.register("hoglin_repellents");
         SOUL_FIRE_BASE_BLOCKS = BlockTags.register("soul_fire_base_blocks");
+        STRIDER_WARM_BLOCKS = BlockTags.register("strider_warm_blocks");
     }
 
     static class CachingTag

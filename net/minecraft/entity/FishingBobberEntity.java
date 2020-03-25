@@ -5,6 +5,7 @@ package net.minecraft.entity;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criterions;
@@ -50,7 +51,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class FishingBobberEntity
 extends Entity {
+    private final Random velocityRandom = new Random();
+    private boolean caughtFish;
+    private int outOfOpenWaterTicks;
     private static final TrackedData<Integer> HOOK_ENTITY_ID = DataTracker.registerData(FishingBobberEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> CAUGHT_FISH = DataTracker.registerData(FishingBobberEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int removalTimer;
     private final PlayerEntity owner;
     private int selfHitTimer;
@@ -107,13 +112,20 @@ extends Entity {
     @Override
     protected void initDataTracker() {
         this.getDataTracker().startTracking(HOOK_ENTITY_ID, 0);
+        this.getDataTracker().startTracking(CAUGHT_FISH, false);
     }
 
     @Override
     public void onTrackedDataSet(TrackedData<?> data) {
         if (HOOK_ENTITY_ID.equals(data)) {
             int i = this.getDataTracker().get(HOOK_ENTITY_ID);
-            this.hookedEntity = i > 0 ? this.world.getEntityById(i - 1) : null;
+            Entity entity = this.hookedEntity = i > 0 ? this.world.getEntityById(i - 1) : null;
+        }
+        if (CAUGHT_FISH.equals(data)) {
+            this.caughtFish = this.getDataTracker().get(CAUGHT_FISH);
+            if (this.caughtFish) {
+                this.setVelocity(this.getVelocity().x, -0.4f * MathHelper.nextFloat(this.velocityRandom, 0.6f, 1.0f), this.getVelocity().z);
+            }
         }
         super.onTrackedDataSet(data);
     }
@@ -132,6 +144,8 @@ extends Entity {
 
     @Override
     public void tick() {
+        boolean bl;
+        this.velocityRandom.setSeed(this.getUuid().getLeastSignificantBits() ^ this.world.getTime());
         super.tick();
         if (this.owner == null) {
             this.remove();
@@ -146,6 +160,8 @@ extends Entity {
                 this.remove();
                 return;
             }
+        } else {
+            this.removalTimer = 0;
         }
         float f = 0.0f;
         BlockPos blockPos = this.getBlockPos();
@@ -153,13 +169,14 @@ extends Entity {
         if (fluidState.matches(FluidTags.WATER)) {
             f = fluidState.getHeight(this.world, blockPos);
         }
+        boolean bl2 = bl = f > 0.0f;
         if (this.state == State.FLYING) {
             if (this.hookedEntity != null) {
                 this.setVelocity(Vec3d.ZERO);
                 this.state = State.HOOKED_IN_ENTITY;
                 return;
             }
-            if (f > 0.0f) {
+            if (bl) {
                 this.setVelocity(this.getVelocity().multiply(0.3, 0.2, 0.3));
                 this.state = State.BOBBING;
                 return;
@@ -184,9 +201,17 @@ extends Entity {
                     d += Math.signum(d) * 0.1;
                 }
                 this.setVelocity(vec3d.x * 0.9, vec3d.y - d * (double)this.random.nextFloat() * 0.2, vec3d.z * 0.9);
-                boolean bl = this.inOpenWater = this.inOpenWater && this.isOpenOrWaterAround(blockPos);
-                if (!this.world.isClient && f > 0.0f) {
-                    this.tickFishingLogic(blockPos);
+                this.inOpenWater = this.hookCountdown > 0 || this.fishTravelCountdown > 0 ? this.inOpenWater && this.outOfOpenWaterTicks < 10 && this.isOpenOrWaterAround(blockPos) : true;
+                if (bl) {
+                    this.outOfOpenWaterTicks = Math.max(0, this.outOfOpenWaterTicks - 1);
+                    if (this.caughtFish) {
+                        this.setVelocity(this.getVelocity().add(0.0, -0.1 * (double)this.velocityRandom.nextFloat() * (double)this.velocityRandom.nextFloat(), 0.0));
+                    }
+                    if (!this.world.isClient) {
+                        this.tickFishingLogic(blockPos);
+                    }
+                } else {
+                    this.outOfOpenWaterTicks = Math.min(10, this.outOfOpenWaterTicks + 1);
                 }
             }
         }
@@ -243,7 +268,7 @@ extends Entity {
     }
 
     private void checkForCollision() {
-        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !(entity.isSpectator() || !entity.collides() && !(entity instanceof ItemEntity) || entity == this.owner && this.selfHitTimer < 5), RayTraceContext.ShapeType.COLLIDER, true);
+        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), this::canCollide, RayTraceContext.ShapeType.COLLIDER, true);
         if (hitResult.getType() != HitResult.Type.MISS) {
             if (hitResult.getType() == HitResult.Type.ENTITY) {
                 if (!this.world.isClient) {
@@ -251,9 +276,13 @@ extends Entity {
                     this.updateHookedEntityId();
                 }
             } else {
-                this.setVelocity(this.getVelocity().normalize().multiply(hitResult.method_24801(this)));
+                this.setVelocity(this.getVelocity().normalize().multiply(hitResult.squaredDistanceTo(this)));
             }
         }
+    }
+
+    private boolean canCollide(Entity entity) {
+        return !(entity.isSpectator() || !entity.collides() && !(entity instanceof ItemEntity) || entity == this.owner && this.selfHitTimer < 5);
     }
 
     private void updateHookedEntityId() {
@@ -275,8 +304,7 @@ extends Entity {
             if (this.hookCountdown <= 0) {
                 this.waitCountdown = 0;
                 this.fishTravelCountdown = 0;
-            } else {
-                this.setVelocity(this.getVelocity().add(0.0, -0.2 * (double)this.random.nextFloat() * (double)this.random.nextFloat(), 0.0));
+                this.getDataTracker().set(CAUGHT_FISH, false);
             }
         } else if (this.fishTravelCountdown > 0) {
             this.fishTravelCountdown -= i;
@@ -299,13 +327,12 @@ extends Entity {
                     serverWorld.spawnParticles(ParticleTypes.FISHING, d, e, j, 0, -l, 0.01, k, 1.0);
                 }
             } else {
-                Vec3d vec3d = this.getVelocity();
-                this.setVelocity(vec3d.x, -0.4f * MathHelper.nextFloat(this.random, 0.6f, 1.0f), vec3d.z);
                 this.playSound(SoundEvents.ENTITY_FISHING_BOBBER_SPLASH, 0.25f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
                 double m = this.getY() + 0.5;
                 serverWorld.spawnParticles(ParticleTypes.BUBBLE, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
                 serverWorld.spawnParticles(ParticleTypes.FISHING, this.getX(), m, this.getZ(), (int)(1.0f + this.getWidth() * 20.0f), this.getWidth(), 0.0, this.getWidth(), 0.2f);
                 this.hookCountdown = MathHelper.nextInt(this.random, 20, 40);
+                this.getDataTracker().set(CAUGHT_FISH, true);
             }
         } else if (this.waitCountdown > 0) {
             this.waitCountdown -= i;
@@ -339,16 +366,41 @@ extends Entity {
     }
 
     private boolean isOpenOrWaterAround(BlockPos pos) {
-        return BlockPos.stream(pos.add(-2, -1, -2), pos.add(2, 2, 2)).allMatch(this::isOpenOrWater);
+        PositionType positionType = PositionType.INVALID;
+        for (int i = -1; i <= 2; ++i) {
+            PositionType positionType2 = this.getPositionType(pos.add(-2, i, -2), pos.add(2, i, 2));
+            switch (positionType2) {
+                case INVALID: {
+                    return false;
+                }
+                case ABOVE_WATER: {
+                    if (positionType != PositionType.INVALID) break;
+                    return false;
+                }
+                case INSIDE_WATER: {
+                    if (positionType != PositionType.ABOVE_WATER) break;
+                    return false;
+                }
+            }
+            positionType = positionType2;
+        }
+        return true;
     }
 
-    private boolean isOpenOrWater(BlockPos pos) {
+    private PositionType getPositionType(BlockPos start, BlockPos end) {
+        return BlockPos.stream(start, end).map(this::getPositionType).reduce((positionType, positionType2) -> positionType == positionType2 ? positionType : PositionType.INVALID).orElse(PositionType.INVALID);
+    }
+
+    private PositionType getPositionType(BlockPos pos) {
         BlockState blockState = this.world.getBlockState(pos);
-        if (blockState.isAir()) {
-            return true;
+        if (blockState.isAir() || blockState.getBlock() == Blocks.LILY_PAD) {
+            return PositionType.ABOVE_WATER;
         }
         FluidState fluidState = blockState.getFluidState();
-        return fluidState.matches(FluidTags.WATER) && fluidState.isStill() && blockState.getBlock() != Blocks.BUBBLE_COLUMN && blockState.getCollisionShape(this.world, pos).isEmpty();
+        if (fluidState.matches(FluidTags.WATER) && fluidState.isStill() && blockState.getCollisionShape(this.world, pos).isEmpty()) {
+            return PositionType.INSIDE_WATER;
+        }
+        return PositionType.INVALID;
     }
 
     public boolean isInOpenWater() {
@@ -443,6 +495,13 @@ extends Entity {
     public Packet<?> createSpawnPacket() {
         PlayerEntity entity = this.getOwner();
         return new EntitySpawnS2CPacket(this, entity == null ? this.getEntityId() : entity.getEntityId());
+    }
+
+    static enum PositionType {
+        ABOVE_WATER,
+        INSIDE_WATER,
+        INVALID;
+
     }
 
     static enum State {

@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -50,12 +51,12 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
         this.editable = false;
-        super.fromTag(tag);
-        this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
+        super.fromTag(blockState, compoundTag);
+        this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
         for (int i = 0; i < 4; ++i) {
-            String string = tag.getString("Text" + (i + 1));
+            String string = compoundTag.getString("Text" + (i + 1));
             Text text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
             if (this.world instanceof ServerWorld) {
                 try {

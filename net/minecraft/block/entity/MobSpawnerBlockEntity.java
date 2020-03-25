@@ -51,9 +51,9 @@ implements Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        this.logic.deserialize(tag);
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
+        this.logic.deserialize(compoundTag);
     }
 
     @Override

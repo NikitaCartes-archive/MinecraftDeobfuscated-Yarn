@@ -9,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Quaternion;
 
-@Environment(value=EnvType.CLIENT)
 public final class Matrix4f {
     protected float a00;
     protected float a01;
@@ -107,6 +106,7 @@ public final class Matrix4f {
         return i;
     }
 
+    @Environment(value=EnvType.CLIENT)
     private static int pack(int x, int y) {
         return y * 4 + x;
     }
@@ -149,6 +149,7 @@ public final class Matrix4f {
         return stringBuilder.toString();
     }
 
+    @Environment(value=EnvType.CLIENT)
     public void writeToBuffer(FloatBuffer floatBuffer) {
         floatBuffer.put(Matrix4f.pack(0, 0), this.a00);
         floatBuffer.put(Matrix4f.pack(0, 1), this.a01);
@@ -168,6 +169,7 @@ public final class Matrix4f {
         floatBuffer.put(Matrix4f.pack(3, 3), this.a33);
     }
 
+    @Environment(value=EnvType.CLIENT)
     public void loadIdentity() {
         this.a00 = 1.0f;
         this.a01 = 0.0f;
@@ -187,6 +189,7 @@ public final class Matrix4f {
         this.a33 = 1.0f;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public float determinantAndAdjugate() {
         float f = this.a00 * this.a11 - this.a01 * this.a10;
         float g = this.a00 * this.a12 - this.a02 * this.a10;
@@ -235,6 +238,7 @@ public final class Matrix4f {
         return f * q - g * p + h * o + i * n - j * m + k * l;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public void transpose() {
         float f = this.a10;
         this.a10 = this.a01;
@@ -256,6 +260,7 @@ public final class Matrix4f {
         this.a23 = f;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public boolean invert() {
         float f = this.determinantAndAdjugate();
         if (Math.abs(f) > 1.0E-6f) {
@@ -265,6 +270,7 @@ public final class Matrix4f {
         return false;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public void multiply(Matrix4f matrix) {
         float f = this.a00 * matrix.a00 + this.a01 * matrix.a10 + this.a02 * matrix.a20 + this.a03 * matrix.a30;
         float g = this.a00 * matrix.a01 + this.a01 * matrix.a11 + this.a02 * matrix.a21 + this.a03 * matrix.a31;
@@ -300,10 +306,12 @@ public final class Matrix4f {
         this.a33 = u;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public void multiply(Quaternion quaternion) {
         this.multiply(new Matrix4f(quaternion));
     }
 
+    @Environment(value=EnvType.CLIENT)
     public void multiply(float scalar) {
         this.a00 *= scalar;
         this.a01 *= scalar;
@@ -323,6 +331,7 @@ public final class Matrix4f {
         this.a33 *= scalar;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public static Matrix4f viewboxMatrix(double fov, float aspectRatio, float cameraDepth, float viewDistance) {
         float f = (float)(1.0 / Math.tan(fov * 0.01745329238474369 / 2.0));
         Matrix4f matrix4f = new Matrix4f();
@@ -334,6 +343,7 @@ public final class Matrix4f {
         return matrix4f;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public static Matrix4f projectionMatrix(float width, float height, float nearPlane, float farPlane) {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.a00 = 2.0f / width;
@@ -347,16 +357,19 @@ public final class Matrix4f {
         return matrix4f;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public void addToLastColumn(Vector3f vector) {
         this.a03 += vector.getX();
         this.a13 += vector.getY();
         this.a23 += vector.getZ();
     }
 
+    @Environment(value=EnvType.CLIENT)
     public Matrix4f copy() {
         return new Matrix4f(this);
     }
 
+    @Environment(value=EnvType.CLIENT)
     public static Matrix4f scale(float x, float y, float z) {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.a00 = x;
@@ -366,6 +379,7 @@ public final class Matrix4f {
         return matrix4f;
     }
 
+    @Environment(value=EnvType.CLIENT)
     public static Matrix4f translate(float x, float y, float z) {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.a00 = 1.0f;

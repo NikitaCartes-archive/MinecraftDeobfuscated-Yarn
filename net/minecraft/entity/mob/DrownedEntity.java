@@ -168,20 +168,20 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected boolean isBetterItemFor(ItemStack current, ItemStack previous, EquipmentSlot slot) {
-        if (previous.getItem() == Items.NAUTILUS_SHELL) {
+    protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2) {
+        if (itemStack2.getItem() == Items.NAUTILUS_SHELL) {
             return false;
         }
-        if (previous.getItem() == Items.TRIDENT) {
-            if (current.getItem() == Items.TRIDENT) {
-                return current.getDamage() < previous.getDamage();
+        if (itemStack2.getItem() == Items.TRIDENT) {
+            if (itemStack.getItem() == Items.TRIDENT) {
+                return itemStack.getDamage() < itemStack2.getDamage();
             }
             return false;
         }
-        if (current.getItem() == Items.TRIDENT) {
+        if (itemStack.getItem() == Items.TRIDENT) {
             return true;
         }
-        return super.isBetterItemFor(current, previous, slot);
+        return super.isBetterItemFor(itemStack, itemStack2);
     }
 
     @Override

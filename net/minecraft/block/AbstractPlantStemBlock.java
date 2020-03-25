@@ -90,12 +90,15 @@ implements Fertilizable {
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.offset(this.growthDirection);
         int i = Math.min(state.get(AGE) + 1, 25);
-        for (double d = 1.0; this.chooseStemState(world.getBlockState(blockPos)) && random.nextDouble() < d; d *= 0.94) {
+        int j = this.method_26376(random);
+        for (int k = 0; k < j && this.chooseStemState(world.getBlockState(blockPos)); ++k) {
             world.setBlockState(blockPos, (BlockState)state.with(AGE, i));
             blockPos = blockPos.offset(this.growthDirection);
             i = Math.min(i + 1, 25);
         }
     }
+
+    protected abstract int method_26376(Random var1);
 
     protected abstract boolean chooseStemState(BlockState var1);
 

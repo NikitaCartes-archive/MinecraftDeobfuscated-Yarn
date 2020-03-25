@@ -27,6 +27,7 @@ public class ItemTags {
     public static final Tag<Item> WOODEN_TRAPDOORS;
     public static final Tag<Item> DOORS;
     public static final Tag<Item> SAPLINGS;
+    public static final Tag<Item> LOGS_THAT_BURN;
     public static final Tag<Item> LOGS;
     public static final Tag<Item> DARK_OAK_LOGS;
     public static final Tag<Item> OAK_LOGS;
@@ -52,6 +53,7 @@ public class ItemTags {
     public static final Tag<Item> FLOWERS;
     public static final Tag<Item> PIGLIN_REPELLENTS;
     public static final Tag<Item> GOLD_ORES;
+    public static final Tag<Item> NON_FLAMMABLE_WOOD;
     public static final Tag<Item> BOATS;
     public static final Tag<Item> FISHES;
     public static final Tag<Item> SIGNS;
@@ -89,6 +91,7 @@ public class ItemTags {
         WOODEN_TRAPDOORS = ItemTags.register("wooden_trapdoors");
         DOORS = ItemTags.register("doors");
         SAPLINGS = ItemTags.register("saplings");
+        LOGS_THAT_BURN = ItemTags.register("logs_that_burn");
         LOGS = ItemTags.register("logs");
         DARK_OAK_LOGS = ItemTags.register("dark_oak_logs");
         OAK_LOGS = ItemTags.register("oak_logs");
@@ -114,6 +117,7 @@ public class ItemTags {
         FLOWERS = ItemTags.register("flowers");
         PIGLIN_REPELLENTS = ItemTags.register("piglin_repellents");
         GOLD_ORES = ItemTags.register("gold_ores");
+        NON_FLAMMABLE_WOOD = ItemTags.register("non_flammable_wood");
         BOATS = ItemTags.register("boats");
         FISHES = ItemTags.register("fishes");
         SIGNS = ItemTags.register("signs");

@@ -200,22 +200,23 @@ implements IWorld {
             return blockEntity;
         }
         CompoundTag compoundTag = chunk.getBlockEntityTagAt(pos);
+        BlockState blockState = chunk.getBlockState(pos);
         if (compoundTag != null) {
             if ("DUMMY".equals(compoundTag.getString("id"))) {
-                Block block = this.getBlockState(pos).getBlock();
+                Block block = blockState.getBlock();
                 if (!(block instanceof BlockEntityProvider)) {
                     return null;
                 }
                 blockEntity = ((BlockEntityProvider)((Object)block)).createBlockEntity(this.world);
             } else {
-                blockEntity = BlockEntity.createFromTag(compoundTag);
+                blockEntity = BlockEntity.createFromTag(blockState, compoundTag);
             }
             if (blockEntity != null) {
                 chunk.setBlockEntity(pos, blockEntity);
                 return blockEntity;
             }
         }
-        if (chunk.getBlockState(pos).getBlock() instanceof BlockEntityProvider) {
+        if (blockState.getBlock() instanceof BlockEntityProvider) {
             LOGGER.warn("Tried to access a block entity before it was created. {}", (Object)pos);
         }
         return null;
@@ -340,12 +341,6 @@ implements IWorld {
 
     @Override
     public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public BlockPos getSpawnPos() {
-        return this.world.getSpawnPos();
     }
 
     @Override

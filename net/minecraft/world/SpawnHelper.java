@@ -206,6 +206,9 @@ public final class SpawnHelper {
             case IN_WATER: {
                 return fluidState.matches(FluidTags.WATER) && worldView.getFluidState(blockPos2).matches(FluidTags.WATER) && !worldView.getBlockState(blockPos).isSolidBlock(worldView, blockPos);
             }
+            case IN_LAVA: {
+                return fluidState.matches(FluidTags.LAVA) && worldView.getFluidState(blockPos2).matches(FluidTags.LAVA) && !worldView.getBlockState(blockPos).isSolidBlock(worldView, blockPos);
+            }
         }
         BlockState blockState2 = worldView.getBlockState(blockPos2);
         if (!blockState2.allowsSpawning(worldView, blockPos2, entityType)) {

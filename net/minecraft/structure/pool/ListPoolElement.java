@@ -66,9 +66,9 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
+    public boolean generate(StructureManager structureManager, IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random) {
         for (StructurePoolElement structurePoolElement : this.elements) {
-            if (structurePoolElement.generate(structureManager, world, chunkGenerator, blockPos, blockRotation, blockBox, random)) continue;
+            if (structurePoolElement.generate(structureManager, world, chunkGenerator, blockPos, blockPos2, blockRotation, blockBox, random)) continue;
             return false;
         }
         return true;

@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.Block;
@@ -53,6 +54,11 @@ implements FluidFillable {
     @Override
     public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
         return false;
+    }
+
+    @Override
+    protected int method_26376(Random random) {
+        return 1;
     }
 
     @Override

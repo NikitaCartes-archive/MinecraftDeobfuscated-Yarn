@@ -5,6 +5,8 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Objects;
+import java.util.Optional;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -42,9 +44,28 @@ extends Task<VillagerEntity> {
         brain.remember(MemoryModuleType.LAST_WORKED_AT_POI, Timestamp.of(l));
         brain.getOptionalMemory(MemoryModuleType.JOB_SITE).ifPresent(globalPos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(globalPos.getPos())));
         villagerEntity.playWorkSound();
+        this.performAdditionalWork(serverWorld, villagerEntity);
         if (villagerEntity.shouldRestock()) {
             villagerEntity.restock();
         }
+    }
+
+    protected void performAdditionalWork(ServerWorld world, VillagerEntity entity) {
+    }
+
+    @Override
+    protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+        Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
+        if (!optional.isPresent()) {
+            return false;
+        }
+        GlobalPos globalPos = optional.get();
+        return Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+    }
+
+    @Override
+    protected /* synthetic */ boolean shouldRun(ServerWorld world, LivingEntity entity) {
+        return this.shouldRun(world, (VillagerEntity)entity);
     }
 }
 

@@ -608,13 +608,13 @@ extends Entity {
             Box box3;
             double h;
             Box box = livingEntity.method_24833(livingEntity.method_26081()).offset(d, e, f);
-            double g = this.world.method_26097(blockPos);
+            double g = this.world.method_26372(blockPos);
             if (!Double.isInfinite(g) && g < 1.0) {
                 Box box2 = box.offset(d, (double)blockPos.getY() + g, f);
                 if (this.world.getBlockCollisions(livingEntity, box2).allMatch(VoxelShape::isEmpty)) {
                     return new Vec3d(d, (double)blockPos.getY() + g, f);
                 }
-            } else if (g < 1.0 && !Double.isInfinite(h = this.world.method_26097(blockPos2)) && h <= 0.5 && this.world.getBlockCollisions(livingEntity, box3 = box.offset(d, (double)blockPos2.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
+            } else if (g < 1.0 && !Double.isInfinite(h = this.world.method_26372(blockPos2)) && h <= 0.5 && this.world.getBlockCollisions(livingEntity, box3 = box.offset(d, (double)blockPos2.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
                 return new Vec3d(d, (double)blockPos2.getY() + h, f);
             }
         }

@@ -33,6 +33,7 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
@@ -242,6 +243,9 @@ CommandOutput {
         return false;
     }
 
+    /**
+     * Removes all the passengers and removes this entity from any vehicles it is riding.
+     */
     public final void detach() {
         if (this.hasPassengers()) {
             this.removeAllPassengers();
@@ -1460,6 +1464,12 @@ CommandOutput {
         return false;
     }
 
+    /**
+     * Called when a player interacts with this entity.
+     * 
+     * @param player the player
+     * @param hand the hand the player used to interact with this entity
+     */
     public boolean interact(PlayerEntity player, Hand hand) {
         return false;
     }
@@ -2362,6 +2372,9 @@ CommandOutput {
         }
     }
 
+    /**
+     * Gets the lowest entity this entity is riding.
+     */
     public Entity getRootVehicle() {
         Entity entity = this;
         while (entity.hasVehicle()) {
@@ -2370,6 +2383,11 @@ CommandOutput {
         return entity;
     }
 
+    /**
+     * Checks if this entity and another entity share the same root vehicle.
+     * 
+     * @param entity the other entity
+     */
     public boolean isConnectedThroughVehicle(Entity entity) {
         return this.getRootVehicle() == entity.getRootVehicle();
     }
@@ -2415,34 +2433,43 @@ CommandOutput {
         Direction direction2 = direction.rotateYClockwise();
         int[][] is = new int[][]{{direction2.getOffsetX(), direction2.getOffsetZ()}, {-direction2.getOffsetX(), -direction2.getOffsetZ()}, {-direction.getOffsetX() + direction2.getOffsetX(), -direction.getOffsetZ() + direction2.getOffsetZ()}, {-direction.getOffsetX() - direction2.getOffsetX(), -direction.getOffsetZ() - direction2.getOffsetZ()}, {direction.getOffsetX() + direction2.getOffsetX(), direction.getOffsetZ() + direction2.getOffsetZ()}, {direction.getOffsetX() - direction2.getOffsetX(), direction.getOffsetZ() - direction2.getOffsetZ()}, {-direction.getOffsetX(), -direction.getOffsetZ()}, {direction.getOffsetX(), direction.getOffsetZ()}};
         BlockPos blockPos = this.getBlockPos();
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
         ImmutableList<EntityPose> immutableList = livingEntity.getPoses();
         for (EntityPose entityPose : immutableList) {
-            double d = livingEntity.getDimensions((EntityPose)entityPose).height;
+            EntityDimensions entityDimensions = livingEntity.getDimensions(entityPose);
+            float f = Math.min(entityDimensions.width, 1.0f) / 2.0f;
+            float g = 0.5f - f;
+            float h = 0.5f + f;
             Iterator iterator = field_22417.get((Object)entityPose).iterator();
             while (iterator.hasNext()) {
                 int i = (Integer)iterator.next();
                 for (int[] js : is) {
-                    BlockPos blockPos2 = blockPos.add(js[0], i, js[1]);
-                    double e = this.world.method_26097(blockPos2);
-                    if (Double.isInfinite(e) || e >= 1.0) continue;
-                    double f = (double)blockPos2.getY() + e;
-                    Box box = new Box(blockPos2.getX(), f, blockPos2.getZ(), (double)blockPos2.getX() + 1.0, f + d, (double)blockPos2.getZ() + 1.0);
+                    mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
+                    double d = this.world.method_26097(mutable, blockState -> {
+                        if (blockState.isIn(BlockTags.CLIMBABLE)) {
+                            return true;
+                        }
+                        return blockState.getBlock() instanceof TrapdoorBlock && blockState.get(TrapdoorBlock.OPEN) != false;
+                    });
+                    if (Double.isInfinite(d) || d >= 1.0) continue;
+                    double e = (double)mutable.getY() + d;
+                    Box box = new Box((float)mutable.getX() + g, e, (float)mutable.getZ() + g, (float)mutable.getX() + h, e + (double)entityDimensions.height, (float)mutable.getZ() + h);
                     if (!this.world.getBlockCollisions(livingEntity, box).allMatch(VoxelShape::isEmpty)) continue;
                     livingEntity.setPose(entityPose);
-                    return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + e, (double)blockPos2.getZ() + 0.5);
+                    return Vec3d.method_26410(mutable, d);
                 }
             }
         }
-        double g = this.getBoundingBox().y2;
-        BlockPos blockPos3 = new BlockPos((double)blockPos.getX(), g, (double)blockPos.getZ());
+        double j = this.getBoundingBox().y2;
+        mutable.set((double)blockPos.getX(), j, (double)blockPos.getZ());
         for (EntityPose entityPose2 : immutableList) {
-            double h = livingEntity.getDimensions((EntityPose)entityPose2).height;
-            double j = (double)blockPos3.getY() + this.world.method_26096(blockPos3, g - (double)blockPos3.getY() + h);
-            if (!(g + h <= j)) continue;
+            double k = livingEntity.getDimensions((EntityPose)entityPose2).height;
+            double l = (double)mutable.getY() + this.world.method_26096(mutable, j - (double)mutable.getY() + k);
+            if (!(j + k <= l)) continue;
             livingEntity.setPose(entityPose2);
             break;
         }
-        return new Vec3d(this.getX(), g, this.getZ());
+        return new Vec3d(this.getX(), j, this.getZ());
     }
 
     @Nullable
@@ -2475,7 +2502,7 @@ CommandOutput {
     }
 
     @Override
-    public boolean sendCommandFeedback() {
+    public boolean shouldReceiveFeedback() {
         return this.world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK);
     }
 

@@ -8,34 +8,39 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4994;
+import net.minecraft.class_4995;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.util.dynamic.DynamicDeserializer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class StructureProcessorRule {
     private final RuleTest inputPredicate;
     private final RuleTest locationPredicate;
+    private final class_4995 field_23347;
     private final BlockState outputState;
     @Nullable
     private final CompoundTag tag;
 
     public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, BlockState blockState) {
-        this(ruleTest, ruleTest2, blockState, null);
+        this(ruleTest, ruleTest2, class_4994.field_23343, blockState, null);
     }
 
-    public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, BlockState blockState, @Nullable CompoundTag compoundTag) {
+    public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, class_4995 arg, BlockState blockState, @Nullable CompoundTag compoundTag) {
         this.inputPredicate = ruleTest;
         this.locationPredicate = ruleTest2;
+        this.field_23347 = arg;
         this.outputState = blockState;
         this.tag = compoundTag;
     }
 
-    public boolean test(BlockState input, BlockState location, Random random) {
-        return this.inputPredicate.test(input, random) && this.locationPredicate.test(location, random);
+    public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, Random random) {
+        return this.inputPredicate.test(input, random) && this.locationPredicate.test(location, random) && this.field_23347.method_26406(blockPos, blockPos2, blockPos3, random);
     }
 
     public BlockState getOutputState() {
@@ -48,7 +53,7 @@ public class StructureProcessorRule {
     }
 
     public <T> Dynamic<T> toDynamic(DynamicOps<T> dynamicOps) {
-        T object = dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("input_predicate"), this.inputPredicate.serializeWithId(dynamicOps).getValue(), dynamicOps.createString("location_predicate"), this.locationPredicate.serializeWithId(dynamicOps).getValue(), dynamicOps.createString("output_state"), BlockState.serialize(dynamicOps, this.outputState).getValue()));
+        T object = dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("input_predicate"), this.inputPredicate.serializeWithId(dynamicOps).getValue(), dynamicOps.createString("location_predicate"), this.locationPredicate.serializeWithId(dynamicOps).getValue(), dynamicOps.createString("position_predicate"), this.field_23347.method_26407(dynamicOps).getValue(), dynamicOps.createString("output_state"), BlockState.serialize(dynamicOps, this.outputState).getValue()));
         if (this.tag == null) {
             return new Dynamic<T>(dynamicOps, object);
         }
@@ -58,11 +63,13 @@ public class StructureProcessorRule {
     public static <T> StructureProcessorRule fromDynamic(Dynamic<T> dynamic2) {
         Dynamic<T> dynamic22 = dynamic2.get("input_predicate").orElseEmptyMap();
         Dynamic<T> dynamic3 = dynamic2.get("location_predicate").orElseEmptyMap();
+        Dynamic<T> dynamic4 = dynamic2.get("position_predicate").orElseEmptyMap();
         RuleTest ruleTest = DynamicDeserializer.deserialize(dynamic22, Registry.RULE_TEST, "predicate_type", AlwaysTrueRuleTest.INSTANCE);
         RuleTest ruleTest2 = DynamicDeserializer.deserialize(dynamic3, Registry.RULE_TEST, "predicate_type", AlwaysTrueRuleTest.INSTANCE);
+        class_4995 lv = DynamicDeserializer.deserialize(dynamic4, Registry.POS_RULE_TEST, "predicate_type", class_4994.field_23343);
         BlockState blockState = BlockState.deserialize(dynamic2.get("output_state").orElseEmptyMap());
         CompoundTag compoundTag = dynamic2.get("output_nbt").map(dynamic -> dynamic.convert(NbtOps.INSTANCE).getValue()).orElse(null);
-        return new StructureProcessorRule(ruleTest, ruleTest2, blockState, compoundTag);
+        return new StructureProcessorRule(ruleTest, ruleTest2, lv, blockState, compoundTag);
     }
 }
 

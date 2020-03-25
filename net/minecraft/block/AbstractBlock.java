@@ -345,8 +345,8 @@ public abstract class AbstractBlock {
 
     protected abstract Block asBlock();
 
-    public Function<BlockState, MaterialColor> getMaterialColor() {
-        return this.settings.materialColorFactory;
+    public MaterialColor method_26403() {
+        return (MaterialColor)this.settings.materialColorFactory.apply(this.asBlock().getDefaultState());
     }
 
     public static interface TypedContextPredicate<A> {
@@ -364,7 +364,7 @@ public abstract class AbstractBlock {
         private final boolean hasSidedTransparency;
         private final boolean isAir;
         private final Material material;
-        private final Function<BlockState, MaterialColor> materialColor;
+        private final MaterialColor materialColor;
         private final float hardness;
         private final boolean opaque;
         private final ContextPredicate solidBlockPredicate;
@@ -382,7 +382,7 @@ public abstract class AbstractBlock {
             this.hasSidedTransparency = block.hasSidedTransparency(this.asBlockState());
             this.isAir = settings.isAir;
             this.material = settings.material;
-            this.materialColor = settings.materialColorFactory;
+            this.materialColor = (MaterialColor)settings.materialColorFactory.apply(this.asBlockState());
             this.hardness = settings.hardness;
             this.opaque = settings.opaque;
             this.solidBlockPredicate = settings.solidBlockPredicate;
@@ -452,7 +452,7 @@ public abstract class AbstractBlock {
         }
 
         public MaterialColor getTopMaterialColor(BlockView world, BlockPos pos) {
-            return this.materialColor.apply(this.asBlockState());
+            return this.materialColor;
         }
 
         public BlockState rotate(BlockRotation rotation) {

@@ -3,6 +3,7 @@
  */
 package net.minecraft.block.entity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,11 +33,11 @@ Nameable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        this.lock = ContainerLock.fromTag(tag);
-        if (tag.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
+        this.lock = ContainerLock.fromTag(compoundTag);
+        if (compoundTag.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
         }
     }
 

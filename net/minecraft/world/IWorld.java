@@ -76,9 +76,6 @@ ModifiableTestableWorld {
     default public void updateNeighbors(BlockPos pos, Block block) {
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public BlockPos getSpawnPos();
-
     public void playSound(@Nullable PlayerEntity var1, BlockPos var2, SoundEvent var3, SoundCategory var4, float var5, float var6);
 
     public void addParticle(ParticleEffect var1, double var2, double var4, double var6, double var8, double var10, double var12);

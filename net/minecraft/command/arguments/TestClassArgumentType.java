@@ -20,7 +20,7 @@ import net.minecraft.text.LiteralText;
 
 public class TestClassArgumentType
 implements ArgumentType<String> {
-    private static final Collection<String> field_20580 = Arrays.asList("techtests", "mobtests");
+    private static final Collection<String> EXAMPLES = Arrays.asList("techtests", "mobtests");
 
     @Override
     public String parse(StringReader stringReader) throws CommandSyntaxException {
@@ -32,7 +32,7 @@ implements ArgumentType<String> {
         throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
     }
 
-    public static TestClassArgumentType method_22370() {
+    public static TestClassArgumentType testClass() {
         return new TestClassArgumentType();
     }
 
@@ -47,7 +47,7 @@ implements ArgumentType<String> {
 
     @Override
     public Collection<String> getExamples() {
-        return field_20580;
+        return EXAMPLES;
     }
 
     @Override

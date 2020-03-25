@@ -677,7 +677,7 @@ implements ClientPlayPacketListener {
             BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
             BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
             if (blockEntity == null) continue;
-            blockEntity.fromTag(compoundTag);
+            blockEntity.fromTag(this.world.getBlockState(blockPos), compoundTag);
         }
     }
 
@@ -721,6 +721,11 @@ implements ClientPlayPacketListener {
         }
     }
 
+    /**
+     * Sends a packet to the server.
+     * 
+     * @param packet the packet to send
+     */
     public void sendPacket(Packet<?> packet) {
         this.connection.send(packet);
     }
@@ -1038,18 +1043,17 @@ implements ClientPlayPacketListener {
 
     @Override
     public void onBlockEntityUpdate(BlockEntityUpdateS2CPacket packet) {
+        boolean bl;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        if (this.client.world.isChunkLoaded(packet.getPos())) {
-            boolean bl;
-            BlockEntity blockEntity = this.client.world.getBlockEntity(packet.getPos());
-            int i = packet.getBlockEntityType();
-            boolean bl2 = bl = i == 2 && blockEntity instanceof CommandBlockBlockEntity;
-            if (i == 1 && blockEntity instanceof MobSpawnerBlockEntity || bl || i == 3 && blockEntity instanceof BeaconBlockEntity || i == 4 && blockEntity instanceof SkullBlockEntity || i == 6 && blockEntity instanceof BannerBlockEntity || i == 7 && blockEntity instanceof StructureBlockBlockEntity || i == 8 && blockEntity instanceof EndGatewayBlockEntity || i == 9 && blockEntity instanceof SignBlockEntity || i == 11 && blockEntity instanceof BedBlockEntity || i == 5 && blockEntity instanceof ConduitBlockEntity || i == 12 && blockEntity instanceof JigsawBlockEntity || i == 13 && blockEntity instanceof CampfireBlockEntity || i == 14 && blockEntity instanceof BeehiveBlockEntity) {
-                blockEntity.fromTag(packet.getCompoundTag());
-            }
-            if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
-                ((CommandBlockScreen)this.client.currentScreen).updateCommandBlock();
-            }
+        BlockPos blockPos = packet.getPos();
+        BlockEntity blockEntity = this.client.world.getBlockEntity(blockPos);
+        int i = packet.getBlockEntityType();
+        boolean bl2 = bl = i == 2 && blockEntity instanceof CommandBlockBlockEntity;
+        if (i == 1 && blockEntity instanceof MobSpawnerBlockEntity || bl || i == 3 && blockEntity instanceof BeaconBlockEntity || i == 4 && blockEntity instanceof SkullBlockEntity || i == 6 && blockEntity instanceof BannerBlockEntity || i == 7 && blockEntity instanceof StructureBlockBlockEntity || i == 8 && blockEntity instanceof EndGatewayBlockEntity || i == 9 && blockEntity instanceof SignBlockEntity || i == 11 && blockEntity instanceof BedBlockEntity || i == 5 && blockEntity instanceof ConduitBlockEntity || i == 12 && blockEntity instanceof JigsawBlockEntity || i == 13 && blockEntity instanceof CampfireBlockEntity || i == 14 && blockEntity instanceof BeehiveBlockEntity) {
+            blockEntity.fromTag(this.client.world.getBlockState(blockPos), packet.getCompoundTag());
+        }
+        if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
+            ((CommandBlockScreen)this.client.currentScreen).updateCommandBlock();
         }
     }
 

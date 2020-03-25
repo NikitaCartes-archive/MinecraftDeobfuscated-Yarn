@@ -23,7 +23,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 /**
@@ -273,25 +272,28 @@ implements DynamicSerializable {
      * @param yRange the maximum y difference from the center
      * @param zRange the maximum z difference from the center
      */
-    public static Iterable<BlockPos> iterateOutwards(final BlockPos center, final int xRange, final int yRange, final int zRange) {
+    public static Iterable<BlockPos> iterateOutwards(BlockPos center, final int xRange, final int yRange, final int zRange) {
         final int i = xRange + yRange + zRange;
+        final int j = center.getX();
+        final int k = center.getY();
+        final int l = center.getZ();
         return () -> new AbstractIterator<BlockPos>(){
+            private final Mutable field_23378 = new Mutable();
             private int manhattanDistance;
             private int limitX;
             private int limitY;
             private int dx;
             private int dy;
-            @Nullable
-            private BlockPos pendingOpposite;
+            private boolean field_23379;
 
             @Override
             protected BlockPos computeNext() {
-                if (this.pendingOpposite != null) {
-                    BlockPos blockPos = this.pendingOpposite;
-                    this.pendingOpposite = null;
-                    return blockPos;
+                if (this.field_23379) {
+                    this.field_23379 = false;
+                    this.field_23378.setZ(l - (this.field_23378.getZ() - l));
+                    return this.field_23378;
                 }
-                BlockPos blockPos = null;
+                Mutable blockPos = null;
                 while (blockPos == null) {
                     if (this.dy > this.limitY) {
                         ++this.dx;
@@ -307,13 +309,11 @@ implements DynamicSerializable {
                         this.dy = -this.limitY;
                     }
                     int i2 = this.dx;
-                    int j = this.dy;
-                    int k = this.manhattanDistance - Math.abs(i2) - Math.abs(j);
-                    if (k <= zRange) {
-                        if (k != 0) {
-                            this.pendingOpposite = center.add(i2, j, -k);
-                        }
-                        blockPos = center.add(i2, j, k);
+                    int j2 = this.dy;
+                    int k2 = this.manhattanDistance - Math.abs(i2) - Math.abs(j2);
+                    if (k2 <= zRange) {
+                        this.field_23379 = k2 != 0;
+                        blockPos = this.field_23378.set(j + i2, k + j2, l + k2);
                     }
                     ++this.dy;
                 }
@@ -357,6 +357,7 @@ implements DynamicSerializable {
         int k = endZ - startZ + 1;
         final int l = i * j * k;
         return () -> new AbstractIterator<BlockPos>(){
+            private final Mutable field_23380 = new Mutable();
             private int index;
 
             @Override
@@ -369,7 +370,7 @@ implements DynamicSerializable {
                 int k = j2 % j;
                 int l2 = j2 / j;
                 ++this.index;
-                return new BlockPos(startX + i2, startY + k, startZ + l2);
+                return this.field_23380.set(startX + i2, startY + k, startZ + l2);
             }
 
             @Override

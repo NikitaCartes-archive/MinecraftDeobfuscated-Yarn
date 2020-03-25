@@ -44,7 +44,7 @@ extends AbstractPressurePlateBlock {
 
     @Override
     protected void playPressSound(IWorld world, BlockPos pos) {
-        if (this.material == Material.WOOD) {
+        if (this.material == Material.WOOD || this.material == Material.NETHER_WOOD) {
             world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.8f);
         } else {
             world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.6f);
@@ -53,7 +53,7 @@ extends AbstractPressurePlateBlock {
 
     @Override
     protected void playDepressSound(IWorld world, BlockPos pos) {
-        if (this.material == Material.WOOD) {
+        if (this.material == Material.WOOD || this.material == Material.NETHER_WOOD) {
             world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.7f);
         } else {
             world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.5f);

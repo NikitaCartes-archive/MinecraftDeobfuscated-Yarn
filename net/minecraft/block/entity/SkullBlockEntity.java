@@ -10,6 +10,7 @@ import com.mojang.authlib.properties.Property;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -54,12 +55,12 @@ implements Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
         String string;
-        super.fromTag(tag);
-        if (tag.contains("SkullOwner", 10)) {
-            this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
-        } else if (tag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = tag.getString("ExtraType"))) {
+        super.fromTag(blockState, compoundTag);
+        if (compoundTag.contains("SkullOwner", 10)) {
+            this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner")));
+        } else if (compoundTag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = compoundTag.getString("ExtraType"))) {
             this.setOwnerAndType(new GameProfile(null, string));
         }
     }

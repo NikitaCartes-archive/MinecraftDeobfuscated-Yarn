@@ -285,13 +285,13 @@ implements Tickable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
-        this.facing = Direction.byId(tag.getInt("facing"));
-        this.lastProgress = this.progress = tag.getFloat("progress");
-        this.extending = tag.getBoolean("extending");
-        this.source = tag.getBoolean("source");
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
+        this.pushedBlock = NbtHelper.toBlockState(compoundTag.getCompound("blockState"));
+        this.facing = Direction.byId(compoundTag.getInt("facing"));
+        this.lastProgress = this.progress = compoundTag.getFloat("progress");
+        this.extending = compoundTag.getBoolean("extending");
+        this.source = compoundTag.getBoolean("source");
     }
 
     @Override

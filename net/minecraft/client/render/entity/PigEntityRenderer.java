@@ -19,7 +19,7 @@ extends MobEntityRenderer<PigEntity, PigEntityModel<PigEntity>> {
 
     public PigEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new PigEntityModel(), 0.7f);
-        this.addFeature(new PigSaddleFeatureRenderer(this));
+        this.addFeature(new PigSaddleFeatureRenderer(this, new PigEntityModel(0.5f), new Identifier("textures/entity/pig/pig_saddle.png")));
     }
 
     @Override

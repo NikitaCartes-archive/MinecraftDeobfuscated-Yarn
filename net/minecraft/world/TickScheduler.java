@@ -3,9 +3,7 @@
  */
 package net.minecraft.world;
 
-import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.TickPriority;
 
 public interface TickScheduler<T> {
@@ -18,7 +16,5 @@ public interface TickScheduler<T> {
     public void schedule(BlockPos var1, T var2, int var3, TickPriority var4);
 
     public boolean isTicking(BlockPos var1, T var2);
-
-    public void scheduleAll(Stream<ScheduledTick<T>> var1);
 }
 

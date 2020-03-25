@@ -48,6 +48,9 @@ import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 
+/**
+ * A server side packet listener where play stage packets from a client are processed.
+ */
 public interface ServerPlayPacketListener
 extends PacketListener {
     public void onHandSwing(HandSwingC2SPacket var1);

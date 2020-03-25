@@ -50,12 +50,12 @@ extends FacingBlock {
     protected static final VoxelShape EXTENDED_NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 4.0, 16.0, 16.0, 16.0);
     protected static final VoxelShape EXTENDED_UP_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
     protected static final VoxelShape EXTENDED_DOWN_SHAPE = Block.createCuboidShape(0.0, 4.0, 0.0, 16.0, 16.0, 16.0);
-    private final boolean isSticky;
+    private final boolean sticky;
 
-    public PistonBlock(boolean isSticky, AbstractBlock.Settings settings) {
+    public PistonBlock(boolean sticky, AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(EXTENDED, false));
-        this.isSticky = isSticky;
+        this.sticky = sticky;
     }
 
     @Override
@@ -177,12 +177,12 @@ extends FacingBlock {
             if (blockEntity instanceof PistonBlockEntity) {
                 ((PistonBlockEntity)blockEntity).finish();
             }
-            BlockState blockState = (BlockState)((BlockState)Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, direction)).with(PistonExtensionBlock.TYPE, this.isSticky ? PistonType.STICKY : PistonType.DEFAULT);
+            BlockState blockState = (BlockState)((BlockState)Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, direction)).with(PistonExtensionBlock.TYPE, this.sticky ? PistonType.STICKY : PistonType.DEFAULT);
             world.setBlockState(pos, blockState, 20);
             world.setBlockEntity(pos, PistonExtensionBlock.createBlockEntityPiston((BlockState)this.getDefaultState().with(FACING, Direction.byId(value & 7)), direction, false, true));
             world.updateNeighbors(pos, blockState.getBlock());
             blockState.updateNeighbors(world, pos, 2);
-            if (this.isSticky) {
+            if (this.sticky) {
                 PistonBlockEntity pistonBlockEntity;
                 BlockEntity blockEntity2;
                 BlockPos blockPos = pos.add(direction.getOffsetX() * 2, direction.getOffsetY() * 2, direction.getOffsetZ() * 2);
@@ -289,9 +289,9 @@ extends FacingBlock {
             blockStates[--j] = blockState;
         }
         if (retract) {
-            PistonType pistonType = this.isSticky ? PistonType.STICKY : PistonType.DEFAULT;
+            PistonType pistonType = this.sticky ? PistonType.STICKY : PistonType.DEFAULT;
             BlockState blockState3 = (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, dir)).with(PistonHeadBlock.TYPE, pistonType);
-            BlockState blockState = (BlockState)((BlockState)Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, dir)).with(PistonExtensionBlock.TYPE, this.isSticky ? PistonType.STICKY : PistonType.DEFAULT);
+            BlockState blockState = (BlockState)((BlockState)Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, dir)).with(PistonExtensionBlock.TYPE, this.sticky ? PistonType.STICKY : PistonType.DEFAULT);
             map.remove(blockPos);
             world.setBlockState(blockPos, blockState, 68);
             world.setBlockEntity(blockPos, PistonExtensionBlock.createBlockEntityPiston(blockState3, dir, true, true));

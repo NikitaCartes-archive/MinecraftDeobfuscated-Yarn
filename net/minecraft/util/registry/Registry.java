@@ -16,6 +16,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_4996;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -111,6 +112,7 @@ implements IndexedIterable<T> {
     public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = Registry.create("structure_feature", () -> StructureFeatures.MINESHAFT);
     public static final Registry<StructurePieceType> STRUCTURE_PIECE = Registry.create("structure_piece", () -> StructurePieceType.MINESHAFT_ROOM);
     public static final Registry<RuleTestType> RULE_TEST = Registry.create("rule_test", () -> RuleTestType.ALWAYS_TRUE);
+    public static final Registry<class_4996> POS_RULE_TEST = Registry.create("pos_rule_test", () -> class_4996.field_23344);
     public static final Registry<StructureProcessorType> STRUCTURE_PROCESSOR = Registry.create("structure_processor", () -> StructureProcessorType.BLOCK_IGNORE);
     public static final Registry<StructurePoolElementType> STRUCTURE_POOL_ELEMENT = Registry.create("structure_pool_element", () -> StructurePoolElementType.EMPTY_POOL_ELEMENT);
     public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = Registry.create("menu", () -> ScreenHandlerType.ANVIL);

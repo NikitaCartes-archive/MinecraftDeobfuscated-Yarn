@@ -61,5 +61,9 @@ extends ToolItem {
         }
         return multimap;
     }
+
+    public float method_26366() {
+        return this.attackDamage;
+    }
 }
 

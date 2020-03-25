@@ -118,6 +118,9 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents an entity which has a health value and can receive damage.
+ */
 public abstract class LivingEntity
 extends Entity {
     private static final UUID ATTR_SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
@@ -1505,10 +1508,20 @@ extends Entity {
         return this.getEquippedStack(EquipmentSlot.OFFHAND);
     }
 
+    /**
+     * Checks if this entity is holding a certain item.
+     * 
+     * <p>This checks both the entity's main and off hand.
+     */
     public boolean isHolding(Item item) {
         return this.isHolding((Item item2) -> item2 == item);
     }
 
+    /**
+     * Checks if this entity is holding a certain item.
+     * 
+     * <p>This checks both the entity's main and off hand.
+     */
     public boolean isHolding(Predicate<Item> predicate) {
         return predicate.test(this.getMainHandStack().getItem()) || predicate.test(this.getOffHandStack().getItem());
     }
@@ -1593,7 +1606,7 @@ extends Entity {
     }
 
     private void onDismounted(Entity vehicle) {
-        Vec3d vec3d = this.removed || this.world.getBlockState(vehicle.getBlockPos()).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.method_24829(this);
+        Vec3d vec3d = vehicle.removed || this.world.getBlockState(vehicle.getBlockPos()).getBlock().isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.method_24829(this);
         this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
     }
 
@@ -1634,11 +1647,16 @@ extends Entity {
         return 0.8f;
     }
 
+    public boolean method_26319() {
+        return false;
+    }
+
     public void travel(Vec3d movementInput) {
-        double r;
         double s;
+        double t;
         double d;
         if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
+            float j;
             boolean bl;
             d = 0.08;
             boolean bl2 = bl = this.getVelocity().y <= 0.0;
@@ -1647,7 +1665,6 @@ extends Entity {
                 this.fallDistance = 0.0f;
             }
             if (!(!this.isTouchingWater() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying)) {
-                Vec3d vec3d2;
                 double e = this.getY();
                 float f = this.isSprinting() ? 0.9f : this.getBaseMovementSpeedMultiplier();
                 float g = 0.02f;
@@ -1672,96 +1689,117 @@ extends Entity {
                     vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
                 }
                 this.setVelocity(vec3d.multiply(f, 0.8f, f));
-                if (!this.hasNoGravity() && !this.isSprinting()) {
-                    vec3d2 = this.getVelocity();
-                    double i = bl && Math.abs(vec3d2.y - 0.005) >= 0.003 && Math.abs(vec3d2.y - d / 16.0) < 0.003 ? -0.003 : vec3d2.y - d / 16.0;
-                    this.setVelocity(vec3d2.x, i, vec3d2.z);
-                }
-                vec3d2 = this.getVelocity();
+                Vec3d vec3d2 = this.method_26317(d, bl, this.getVelocity());
+                this.setVelocity(vec3d2);
                 if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + (double)0.6f - this.getY() + e, vec3d2.z)) {
                     this.setVelocity(vec3d2.x, 0.3f, vec3d2.z);
                 }
             } else if (!(!this.isInLava() || this instanceof PlayerEntity && ((PlayerEntity)this).abilities.flying)) {
-                double e = this.getY();
-                this.updateVelocity(0.02f, movementInput);
-                this.move(MovementType.SELF, this.getVelocity());
-                this.setVelocity(this.getVelocity().multiply(0.5));
-                if (!this.hasNoGravity()) {
-                    this.setVelocity(this.getVelocity().add(0.0, -d / 4.0, 0.0));
-                }
-                Vec3d vec3d3 = this.getVelocity();
-                if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.getY() + e, vec3d3.z)) {
-                    this.setVelocity(vec3d3.x, 0.3f, vec3d3.z);
+                if (this.method_26319()) {
+                    float i = 0.6f;
+                    j = 0.54600006f;
+                    Vec3d vec3d3 = this.method_26318(movementInput, 0.54600006f);
+                    vec3d3 = vec3d3.multiply(1.0, 0.8f, 1.0);
+                    vec3d3 = this.method_26317(d, bl, vec3d3);
+                    this.setVelocity(vec3d3.x * 0.546000063419342, vec3d3.y, vec3d3.z * 0.546000063419342);
+                    if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.getY() + this.prevY, vec3d3.z)) {
+                        this.setVelocity(vec3d3.x, 0.3f, vec3d3.z);
+                    }
+                } else {
+                    double e = this.getY();
+                    this.updateVelocity(0.02f, movementInput);
+                    this.move(MovementType.SELF, this.getVelocity());
+                    this.setVelocity(this.getVelocity().multiply(0.5));
+                    if (!this.hasNoGravity()) {
+                        this.setVelocity(this.getVelocity().add(0.0, -d / 4.0, 0.0));
+                    }
+                    Vec3d vec3d3 = this.getVelocity();
+                    if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.getY() + e, vec3d3.z)) {
+                        this.setVelocity(vec3d3.x, 0.3f, vec3d3.z);
+                    }
                 }
             } else if (this.isFallFlying()) {
-                double n;
-                float o;
-                double m;
+                double p;
+                float q;
+                double o;
                 Vec3d vec3d4 = this.getVelocity();
                 if (vec3d4.y > -0.5) {
                     this.fallDistance = 1.0f;
                 }
                 Vec3d vec3d5 = this.getRotationVector();
                 float f = this.pitch * ((float)Math.PI / 180);
-                double j = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
-                double k = Math.sqrt(LivingEntity.squaredHorizontalLength(vec3d4));
-                double i = vec3d5.length();
-                float l = MathHelper.cos(f);
-                l = (float)((double)l * ((double)l * Math.min(1.0, i / 0.4)));
-                vec3d4 = this.getVelocity().add(0.0, d * (-1.0 + (double)l * 0.75), 0.0);
-                if (vec3d4.y < 0.0 && j > 0.0) {
-                    m = vec3d4.y * -0.1 * (double)l;
-                    vec3d4 = vec3d4.add(vec3d5.x * m / j, m, vec3d5.z * m / j);
+                double k = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
+                double l = Math.sqrt(LivingEntity.squaredHorizontalLength(vec3d4));
+                double m = vec3d5.length();
+                float n = MathHelper.cos(f);
+                n = (float)((double)n * ((double)n * Math.min(1.0, m / 0.4)));
+                vec3d4 = this.getVelocity().add(0.0, d * (-1.0 + (double)n * 0.75), 0.0);
+                if (vec3d4.y < 0.0 && k > 0.0) {
+                    o = vec3d4.y * -0.1 * (double)n;
+                    vec3d4 = vec3d4.add(vec3d5.x * o / k, o, vec3d5.z * o / k);
                 }
-                if (f < 0.0f && j > 0.0) {
-                    m = k * (double)(-MathHelper.sin(f)) * 0.04;
-                    vec3d4 = vec3d4.add(-vec3d5.x * m / j, m * 3.2, -vec3d5.z * m / j);
+                if (f < 0.0f && k > 0.0) {
+                    o = l * (double)(-MathHelper.sin(f)) * 0.04;
+                    vec3d4 = vec3d4.add(-vec3d5.x * o / k, o * 3.2, -vec3d5.z * o / k);
                 }
-                if (j > 0.0) {
-                    vec3d4 = vec3d4.add((vec3d5.x / j * k - vec3d4.x) * 0.1, 0.0, (vec3d5.z / j * k - vec3d4.z) * 0.1);
+                if (k > 0.0) {
+                    vec3d4 = vec3d4.add((vec3d5.x / k * l - vec3d4.x) * 0.1, 0.0, (vec3d5.z / k * l - vec3d4.z) * 0.1);
                 }
                 this.setVelocity(vec3d4.multiply(0.99f, 0.98f, 0.99f));
                 this.move(MovementType.SELF, this.getVelocity());
-                if (this.horizontalCollision && !this.world.isClient && (o = (float)((n = k - (m = Math.sqrt(LivingEntity.squaredHorizontalLength(this.getVelocity())))) * 10.0 - 3.0)) > 0.0f) {
-                    this.playSound(this.getFallSound((int)o), 1.0f, 1.0f);
-                    this.damage(DamageSource.FLY_INTO_WALL, o);
+                if (this.horizontalCollision && !this.world.isClient && (q = (float)((p = l - (o = Math.sqrt(LivingEntity.squaredHorizontalLength(this.getVelocity())))) * 10.0 - 3.0)) > 0.0f) {
+                    this.playSound(this.getFallSound((int)q), 1.0f, 1.0f);
+                    this.damage(DamageSource.FLY_INTO_WALL, q);
                 }
                 if (this.onGround && !this.world.isClient) {
                     this.setFlag(7, false);
                 }
             } else {
                 BlockPos blockPos = this.getVelocityAffectingPos();
-                float p = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
-                float f = this.onGround ? p * 0.91f : 0.91f;
-                this.updateVelocity(this.getMovementSpeed(p), movementInput);
-                this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
-                this.move(MovementType.SELF, this.getVelocity());
-                Vec3d vec3d6 = this.getVelocity();
-                if ((this.horizontalCollision || this.jumping) && this.isClimbing()) {
-                    vec3d6 = new Vec3d(vec3d6.x, 0.2, vec3d6.z);
-                }
-                double q = vec3d6.y;
+                j = this.world.getBlockState(blockPos).getBlock().getSlipperiness();
+                float f = this.onGround ? j * 0.91f : 0.91f;
+                Vec3d vec3d6 = this.method_26318(movementInput, j);
+                double r = vec3d6.y;
                 if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
-                    q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
+                    r += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
                     this.fallDistance = 0.0f;
                 } else if (!this.world.isClient || this.world.isChunkLoaded(blockPos)) {
                     if (!this.hasNoGravity()) {
-                        q -= d;
+                        r -= d;
                     }
                 } else {
-                    q = this.getY() > 0.0 ? -0.1 : 0.0;
+                    r = this.getY() > 0.0 ? -0.1 : 0.0;
                 }
-                this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
+                this.setVelocity(vec3d6.x * (double)f, r * (double)0.98f, vec3d6.z * (double)f);
             }
         }
         this.lastLimbDistance = this.limbDistance;
         d = this.getX() - this.prevX;
-        float g = MathHelper.sqrt(d * d + (s = this instanceof Flutterer ? this.getY() - this.prevY : 0.0) * s + (r = this.getZ() - this.prevZ) * r) * 4.0f;
+        float g = MathHelper.sqrt(d * d + (t = this instanceof Flutterer ? this.getY() - this.prevY : 0.0) * t + (s = this.getZ() - this.prevZ) * s) * 4.0f;
         if (g > 1.0f) {
             g = 1.0f;
         }
         this.limbDistance += (g - this.limbDistance) * 0.4f;
         this.limbAngle += this.limbDistance;
+    }
+
+    public Vec3d method_26318(Vec3d vec3d, float f) {
+        this.updateVelocity(this.getMovementSpeed(f), vec3d);
+        this.setVelocity(this.applyClimbingSpeed(this.getVelocity()));
+        this.move(MovementType.SELF, this.getVelocity());
+        Vec3d vec3d2 = this.getVelocity();
+        if ((this.horizontalCollision || this.jumping) && this.isClimbing()) {
+            vec3d2 = new Vec3d(vec3d2.x, 0.2, vec3d2.z);
+        }
+        return vec3d2;
+    }
+
+    public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {
+        if (!this.hasNoGravity() && !this.isSprinting()) {
+            double e = bl && Math.abs(vec3d.y - 0.005) >= 0.003 && Math.abs(vec3d.y - d / 16.0) < 0.003 ? -0.003 : vec3d.y - d / 16.0;
+            return new Vec3d(vec3d.x, e, vec3d.z);
+        }
+        return vec3d;
     }
 
     private Vec3d applyClimbingSpeed(Vec3d motion) {
@@ -2253,6 +2291,7 @@ extends Entity {
     private void tickActiveItemStack() {
         if (this.isUsingItem()) {
             if (ItemStack.areItemsEqual(this.getStackInHand(this.getActiveHand()), this.activeItemStack)) {
+                this.activeItemStack = this.getStackInHand(this.getActiveHand());
                 this.activeItemStack.usageTick(this.world, this, this.getItemUseTimeLeft());
                 if (this.shouldSpawnConsumptionEffects()) {
                     this.spawnConsumptionEffects(this.activeItemStack, 5);

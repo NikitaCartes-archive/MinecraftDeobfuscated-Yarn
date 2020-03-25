@@ -87,11 +87,11 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockRotation blockRotation, BlockBox blockBox, Random random) {
+    public boolean generate(StructureManager structureManager, IWorld world, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random) {
         StructurePlacementData structurePlacementData;
         Structure structure = structureManager.getStructureOrBlank(this.location);
-        if (structure.place(world, blockPos, structurePlacementData = this.createPlacementData(blockRotation, blockBox), 18)) {
-            List<Structure.StructureBlockInfo> list = Structure.process(world, blockPos, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
+        if (structure.place(world, blockPos, blockPos2, structurePlacementData = this.createPlacementData(blockRotation, blockBox), 18)) {
+            List<Structure.StructureBlockInfo> list = Structure.process(world, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 this.method_16756(world, structureBlockInfo, blockPos, blockRotation, random, blockBox);
             }

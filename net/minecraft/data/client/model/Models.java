@@ -11,6 +11,7 @@ import net.minecraft.util.Identifier;
 
 public class Models {
     public static final Model CUBE = Models.block("cube", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN);
+    public static final Model CUBE_DIRECTIONAL = Models.block("cube_directional", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN);
     public static final Model CUBE_ALL = Models.block("cube_all", TextureKey.ALL);
     public static final Model CUBE_MIRRORED_ALL = Models.block("cube_mirrored_all", "_mirrored", TextureKey.ALL);
     public static final Model CUBE_COLUMN = Models.block("cube_column", TextureKey.END, TextureKey.SIDE);

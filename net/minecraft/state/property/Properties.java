@@ -20,6 +20,7 @@ import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
+import net.minecraft.class_5000;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -207,6 +208,7 @@ public class Properties {
      * <p>This property only allows a block to face in one of the cardinal directions (north, south, east and west).
      */
     public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
+    public static final EnumProperty<class_5000> field_23333 = EnumProperty.of("orientation", class_5000.class);
     /**
      * A property that specifies the type of wall a block is attached to.
      */

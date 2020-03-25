@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4990;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.client.util.math.Vector3f;
@@ -35,27 +36,33 @@ public enum ModelRotation implements ModelBakeSettings
     X270_Y270(270, 270);
 
     private static final Map<Integer, ModelRotation> BY_INDEX;
+    private final Rotation3 field_23373;
+    private final class_4990 field_23374;
     private final int index;
-    private final Quaternion quaternion;
-    private final int xRotations;
-    private final int yRotations;
 
     private static int getIndex(int x, int y) {
         return x * 360 + y;
     }
 
     private ModelRotation(int x, int y) {
+        int j;
         this.index = ModelRotation.getIndex(x, y);
         Quaternion quaternion = new Quaternion(new Vector3f(0.0f, 1.0f, 0.0f), -y, true);
         quaternion.hamiltonProduct(new Quaternion(new Vector3f(1.0f, 0.0f, 0.0f), -x, true));
-        this.quaternion = quaternion;
-        this.xRotations = MathHelper.abs(x / 90);
-        this.yRotations = MathHelper.abs(y / 90);
+        class_4990 lv = class_4990.field_23292;
+        for (j = 0; j < y; j += 90) {
+            lv = lv.method_26385(class_4990.field_23318);
+        }
+        for (j = 0; j < x; j += 90) {
+            lv = lv.method_26385(class_4990.field_23316);
+        }
+        this.field_23373 = new Rotation3(null, quaternion, null, null);
+        this.field_23374 = lv;
     }
 
     @Override
     public Rotation3 getRotation() {
-        return new Rotation3(null, this.quaternion, null, null);
+        return this.field_23373;
     }
 
     public static ModelRotation get(int x, int y) {

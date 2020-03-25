@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_4999;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -269,6 +270,7 @@ public class EntityRenderDispatcher {
         this.register(EntityType.ZOMBIE, new ZombieEntityRenderer(this));
         this.register(EntityType.ZOMBIFIED_PIGLIN, new PiglinEntityRenderer(this, true));
         this.register(EntityType.ZOMBIE_VILLAGER, new ZombieVillagerEntityRenderer(this, reloadableResourceManager));
+        this.register(EntityType.STRIDER, new class_4999(this));
     }
 
     public EntityRenderDispatcher(TextureManager textureManager, ItemRenderer itemRenderer, ReloadableResourceManager reloadableResourceManager, TextRenderer textRenderer, GameOptions gameOptions) {

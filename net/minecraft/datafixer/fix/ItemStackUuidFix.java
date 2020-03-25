@@ -21,13 +21,24 @@ extends AbstractUuidFix {
     @Override
     public TypeRewriteRule makeRule() {
         OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), DSL.namespacedString()));
-        return this.fixTypeEverywhereTyped("ItemStackUUIDFix", this.getInputSchema().getType(this.typeReference), typed2 -> {
-            if (typed2.getOptional(opticFinder).map(pair -> "minecraft:player_head".equals(pair.getSecond())).orElse(false).booleanValue()) {
-                OpticFinder<?> opticFinder2 = typed2.getType().findField("tag");
-                return typed2.updateTyped(opticFinder2, typed -> typed.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("SkullOwner", dynamic -> ItemStackUuidFix.updateStringUuid(dynamic, "Id", "Id").orElse((Dynamic<?>)dynamic))));
-            }
-            return typed2;
+        return this.fixTypeEverywhereTyped("ItemStackUUIDFix", this.getInputSchema().getType(this.typeReference), typed -> {
+            OpticFinder<?> opticFinder2 = typed.getType().findField("tag");
+            return typed.updateTyped(opticFinder2, typed2 -> typed2.update(DSL.remainderFinder(), dynamic -> {
+                dynamic = this.method_26297((Dynamic<?>)dynamic);
+                if (typed.getOptional(opticFinder).map(pair -> "minecraft:player_head".equals(pair.getSecond())).orElse(false).booleanValue()) {
+                    dynamic = this.method_26298((Dynamic<?>)dynamic);
+                }
+                return dynamic;
+            }));
         });
+    }
+
+    private Dynamic<?> method_26297(Dynamic<?> dynamic) {
+        return dynamic.update("AttributeModifiers", dynamic22 -> dynamic.createList(dynamic22.asStream().map(dynamic -> ItemStackUuidFix.updateRegularMostLeast(dynamic, "UUID", "UUID").orElse((Dynamic<?>)dynamic))));
+    }
+
+    private Dynamic<?> method_26298(Dynamic<?> dynamic2) {
+        return dynamic2.update("SkullOwner", dynamic -> ItemStackUuidFix.updateStringUuid(dynamic, "Id", "Id").orElse((Dynamic<?>)dynamic));
     }
 }
 

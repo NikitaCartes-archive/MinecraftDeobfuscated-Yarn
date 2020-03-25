@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.Block;
@@ -18,6 +19,11 @@ extends AbstractPlantStemBlock {
 
     public WeepingVinesBlock(AbstractBlock.Settings settings) {
         super(settings, Direction.DOWN, SHAPE, false, 0.1);
+    }
+
+    @Override
+    protected int method_26376(Random random) {
+        return VineLogic.method_26381(random);
     }
 
     @Override

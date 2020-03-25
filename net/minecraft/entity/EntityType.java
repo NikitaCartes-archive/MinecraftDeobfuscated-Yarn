@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4985;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -251,6 +252,7 @@ public class EntityType<T extends Entity> {
     public static final EntityType<RavagerEntity> RAVAGER = EntityType.register("ravager", Builder.create(RavagerEntity::new, EntityCategory.MONSTER).setDimensions(1.95f, 2.2f));
     public static final EntityType<HoglinEntity> HOGLIN = EntityType.register("hoglin", Builder.create(HoglinEntity::new, EntityCategory.MONSTER).setDimensions(1.3964844f, 1.4f));
     public static final EntityType<PiglinEntity> PIGLIN = EntityType.register("piglin", Builder.create(PiglinEntity::new, EntityCategory.MONSTER).setDimensions(0.6f, 1.95f));
+    public static final EntityType<class_4985> STRIDER = EntityType.register("strider", Builder.create(class_4985::new, EntityCategory.CREATURE).makeFireImmune().setDimensions(0.9f, 1.7f));
     public static final EntityType<LightningEntity> LIGHTNING_BOLT = EntityType.register("lightning_bolt", Builder.create(EntityCategory.MISC).disableSaving().setDimensions(0.0f, 0.0f));
     public static final EntityType<PlayerEntity> PLAYER = EntityType.register("player", Builder.create(EntityCategory.MISC).disableSaving().disableSummon().setDimensions(0.6f, 1.8f));
     public static final EntityType<FishingBobberEntity> FISHING_BOBBER = EntityType.register("fishing_bobber", Builder.create(EntityCategory.MISC).disableSaving().disableSummon().setDimensions(0.25f, 0.25f));

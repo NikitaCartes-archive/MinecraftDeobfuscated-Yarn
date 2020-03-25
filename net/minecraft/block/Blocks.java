@@ -251,18 +251,18 @@ public class Blocks {
     public static final Block IRON_ORE = Blocks.register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
     public static final Block COAL_ORE = Blocks.register("coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
     public static final Block NETHER_GOLD_ORE = Blocks.register("nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
-    public static final Block OAK_LOG = Blocks.register("oak_log", Blocks.method_26117(MaterialColor.WOOD, MaterialColor.SPRUCE));
-    public static final Block SPRUCE_LOG = Blocks.register("spruce_log", Blocks.method_26117(MaterialColor.SPRUCE, MaterialColor.BROWN));
-    public static final Block BIRCH_LOG = Blocks.register("birch_log", Blocks.method_26117(MaterialColor.SAND, MaterialColor.QUARTZ));
-    public static final Block JUNGLE_LOG = Blocks.register("jungle_log", Blocks.method_26117(MaterialColor.DIRT, MaterialColor.SPRUCE));
-    public static final Block ACACIA_LOG = Blocks.register("acacia_log", Blocks.method_26117(MaterialColor.ORANGE, MaterialColor.STONE));
-    public static final Block DARK_OAK_LOG = Blocks.register("dark_oak_log", Blocks.method_26117(MaterialColor.BROWN, MaterialColor.BROWN));
-    public static final Block STRIPPED_SPRUCE_LOG = Blocks.register("stripped_spruce_log", Blocks.method_26117(MaterialColor.SPRUCE, MaterialColor.SPRUCE));
-    public static final Block STRIPPED_BIRCH_LOG = Blocks.register("stripped_birch_log", Blocks.method_26117(MaterialColor.SAND, MaterialColor.SAND));
-    public static final Block STRIPPED_JUNGLE_LOG = Blocks.register("stripped_jungle_log", Blocks.method_26117(MaterialColor.DIRT, MaterialColor.DIRT));
-    public static final Block STRIPPED_ACACIA_LOG = Blocks.register("stripped_acacia_log", Blocks.method_26117(MaterialColor.ORANGE, MaterialColor.ORANGE));
-    public static final Block STRIPPED_DARK_OAK_LOG = Blocks.register("stripped_dark_oak_log", Blocks.method_26117(MaterialColor.BROWN, MaterialColor.BROWN));
-    public static final Block STRIPPED_OAK_LOG = Blocks.register("stripped_oak_log", Blocks.method_26117(MaterialColor.WOOD, MaterialColor.WOOD));
+    public static final Block OAK_LOG = Blocks.register("oak_log", Blocks.createLogBlock(MaterialColor.WOOD, MaterialColor.SPRUCE));
+    public static final Block SPRUCE_LOG = Blocks.register("spruce_log", Blocks.createLogBlock(MaterialColor.SPRUCE, MaterialColor.BROWN));
+    public static final Block BIRCH_LOG = Blocks.register("birch_log", Blocks.createLogBlock(MaterialColor.SAND, MaterialColor.QUARTZ));
+    public static final Block JUNGLE_LOG = Blocks.register("jungle_log", Blocks.createLogBlock(MaterialColor.DIRT, MaterialColor.SPRUCE));
+    public static final Block ACACIA_LOG = Blocks.register("acacia_log", Blocks.createLogBlock(MaterialColor.ORANGE, MaterialColor.STONE));
+    public static final Block DARK_OAK_LOG = Blocks.register("dark_oak_log", Blocks.createLogBlock(MaterialColor.BROWN, MaterialColor.BROWN));
+    public static final Block STRIPPED_SPRUCE_LOG = Blocks.register("stripped_spruce_log", Blocks.createLogBlock(MaterialColor.SPRUCE, MaterialColor.SPRUCE));
+    public static final Block STRIPPED_BIRCH_LOG = Blocks.register("stripped_birch_log", Blocks.createLogBlock(MaterialColor.SAND, MaterialColor.SAND));
+    public static final Block STRIPPED_JUNGLE_LOG = Blocks.register("stripped_jungle_log", Blocks.createLogBlock(MaterialColor.DIRT, MaterialColor.DIRT));
+    public static final Block STRIPPED_ACACIA_LOG = Blocks.register("stripped_acacia_log", Blocks.createLogBlock(MaterialColor.ORANGE, MaterialColor.ORANGE));
+    public static final Block STRIPPED_DARK_OAK_LOG = Blocks.register("stripped_dark_oak_log", Blocks.createLogBlock(MaterialColor.BROWN, MaterialColor.BROWN));
+    public static final Block STRIPPED_OAK_LOG = Blocks.register("stripped_oak_log", Blocks.createLogBlock(MaterialColor.WOOD, MaterialColor.WOOD));
     public static final Block OAK_WOOD = Blocks.register("oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.WOOD).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block SPRUCE_WOOD = Blocks.register("spruce_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BIRCH_WOOD = Blocks.register("birch_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SAND).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
@@ -275,12 +275,12 @@ public class Blocks {
     public static final Block STRIPPED_JUNGLE_WOOD = Blocks.register("stripped_jungle_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.DIRT).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block STRIPPED_ACACIA_WOOD = Blocks.register("stripped_acacia_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.ORANGE).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block STRIPPED_DARK_OAK_WOOD = Blocks.register("stripped_dark_oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block OAK_LEAVES = Blocks.register("oak_leaves", Blocks.method_26106());
-    public static final Block SPRUCE_LEAVES = Blocks.register("spruce_leaves", Blocks.method_26106());
-    public static final Block BIRCH_LEAVES = Blocks.register("birch_leaves", Blocks.method_26106());
-    public static final Block JUNGLE_LEAVES = Blocks.register("jungle_leaves", Blocks.method_26106());
-    public static final Block ACACIA_LEAVES = Blocks.register("acacia_leaves", Blocks.method_26106());
-    public static final Block DARK_OAK_LEAVES = Blocks.register("dark_oak_leaves", Blocks.method_26106());
+    public static final Block OAK_LEAVES = Blocks.register("oak_leaves", Blocks.createLeavesBlock());
+    public static final Block SPRUCE_LEAVES = Blocks.register("spruce_leaves", Blocks.createLeavesBlock());
+    public static final Block BIRCH_LEAVES = Blocks.register("birch_leaves", Blocks.createLeavesBlock());
+    public static final Block JUNGLE_LEAVES = Blocks.register("jungle_leaves", Blocks.createLeavesBlock());
+    public static final Block ACACIA_LEAVES = Blocks.register("acacia_leaves", Blocks.createLeavesBlock());
+    public static final Block DARK_OAK_LEAVES = Blocks.register("dark_oak_leaves", Blocks.createLeavesBlock());
     public static final Block SPONGE = Blocks.register("sponge", new SpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6f).sounds(BlockSoundGroup.GRASS)));
     public static final Block WET_SPONGE = Blocks.register("wet_sponge", new WetSpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6f).sounds(BlockSoundGroup.GRASS)));
     public static final Block GLASS = Blocks.register("glass", new GlassBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::method_26114).solidBlock(Blocks::method_26122).suffocates(Blocks::method_26122)));
@@ -291,32 +291,32 @@ public class Blocks {
     public static final Block CHISELED_SANDSTONE = Blocks.register("chiseled_sandstone", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(0.8f)));
     public static final Block CUT_SANDSTONE = Blocks.register("cut_sandstone", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(0.8f)));
     public static final Block NOTE_BLOCK = Blocks.register("note_block", new NoteBlock(AbstractBlock.Settings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).strength(0.8f)));
-    public static final Block WHITE_BED = Blocks.register("white_bed", Blocks.method_26109(DyeColor.WHITE));
-    public static final Block ORANGE_BED = Blocks.register("orange_bed", Blocks.method_26109(DyeColor.ORANGE));
-    public static final Block MAGENTA_BED = Blocks.register("magenta_bed", Blocks.method_26109(DyeColor.MAGENTA));
-    public static final Block LIGHT_BLUE_BED = Blocks.register("light_blue_bed", Blocks.method_26109(DyeColor.LIGHT_BLUE));
-    public static final Block YELLOW_BED = Blocks.register("yellow_bed", Blocks.method_26109(DyeColor.YELLOW));
-    public static final Block LIME_BED = Blocks.register("lime_bed", Blocks.method_26109(DyeColor.LIME));
-    public static final Block PINK_BED = Blocks.register("pink_bed", Blocks.method_26109(DyeColor.PINK));
-    public static final Block GRAY_BED = Blocks.register("gray_bed", Blocks.method_26109(DyeColor.GRAY));
-    public static final Block LIGHT_GRAY_BED = Blocks.register("light_gray_bed", Blocks.method_26109(DyeColor.LIGHT_GRAY));
-    public static final Block CYAN_BED = Blocks.register("cyan_bed", Blocks.method_26109(DyeColor.CYAN));
-    public static final Block PURPLE_BED = Blocks.register("purple_bed", Blocks.method_26109(DyeColor.PURPLE));
-    public static final Block BLUE_BED = Blocks.register("blue_bed", Blocks.method_26109(DyeColor.BLUE));
-    public static final Block BROWN_BED = Blocks.register("brown_bed", Blocks.method_26109(DyeColor.BROWN));
-    public static final Block GREEN_BED = Blocks.register("green_bed", Blocks.method_26109(DyeColor.GREEN));
-    public static final Block RED_BED = Blocks.register("red_bed", Blocks.method_26109(DyeColor.RED));
-    public static final Block BLACK_BED = Blocks.register("black_bed", Blocks.method_26109(DyeColor.BLACK));
+    public static final Block WHITE_BED = Blocks.register("white_bed", Blocks.createBedBlock(DyeColor.WHITE));
+    public static final Block ORANGE_BED = Blocks.register("orange_bed", Blocks.createBedBlock(DyeColor.ORANGE));
+    public static final Block MAGENTA_BED = Blocks.register("magenta_bed", Blocks.createBedBlock(DyeColor.MAGENTA));
+    public static final Block LIGHT_BLUE_BED = Blocks.register("light_blue_bed", Blocks.createBedBlock(DyeColor.LIGHT_BLUE));
+    public static final Block YELLOW_BED = Blocks.register("yellow_bed", Blocks.createBedBlock(DyeColor.YELLOW));
+    public static final Block LIME_BED = Blocks.register("lime_bed", Blocks.createBedBlock(DyeColor.LIME));
+    public static final Block PINK_BED = Blocks.register("pink_bed", Blocks.createBedBlock(DyeColor.PINK));
+    public static final Block GRAY_BED = Blocks.register("gray_bed", Blocks.createBedBlock(DyeColor.GRAY));
+    public static final Block LIGHT_GRAY_BED = Blocks.register("light_gray_bed", Blocks.createBedBlock(DyeColor.LIGHT_GRAY));
+    public static final Block CYAN_BED = Blocks.register("cyan_bed", Blocks.createBedBlock(DyeColor.CYAN));
+    public static final Block PURPLE_BED = Blocks.register("purple_bed", Blocks.createBedBlock(DyeColor.PURPLE));
+    public static final Block BLUE_BED = Blocks.register("blue_bed", Blocks.createBedBlock(DyeColor.BLUE));
+    public static final Block BROWN_BED = Blocks.register("brown_bed", Blocks.createBedBlock(DyeColor.BROWN));
+    public static final Block GREEN_BED = Blocks.register("green_bed", Blocks.createBedBlock(DyeColor.GREEN));
+    public static final Block RED_BED = Blocks.register("red_bed", Blocks.createBedBlock(DyeColor.RED));
+    public static final Block BLACK_BED = Blocks.register("black_bed", Blocks.createBedBlock(DyeColor.BLACK));
     public static final Block POWERED_RAIL = Blocks.register("powered_rail", new PoweredRailBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.7f).sounds(BlockSoundGroup.METAL)));
     public static final Block DETECTOR_RAIL = Blocks.register("detector_rail", new DetectorRailBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.7f).sounds(BlockSoundGroup.METAL)));
-    public static final Block STICKY_PISTON = Blocks.register("sticky_piston", Blocks.method_26119(true));
+    public static final Block STICKY_PISTON = Blocks.register("sticky_piston", Blocks.createPistonBlock(true));
     public static final Block COBWEB = Blocks.register("cobweb", new CobwebBlock(AbstractBlock.Settings.of(Material.COBWEB).noCollision().strength(4.0f)));
     public static final Block GRASS = Blocks.register("grass", new FernBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block FERN = Blocks.register("fern", new FernBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block DEAD_BUSH = Blocks.register("dead_bush", new DeadBushBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MaterialColor.WOOD).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block SEAGRASS = Blocks.register("seagrass", new SeagrassBlock(AbstractBlock.Settings.of(Material.SEAGRASS).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS)));
     public static final Block TALL_SEAGRASS = Blocks.register("tall_seagrass", new TallSeagrassBlock(AbstractBlock.Settings.of(Material.SEAGRASS).noCollision().breakInstantly().sounds(BlockSoundGroup.WET_GRASS)));
-    public static final Block PISTON = Blocks.register("piston", Blocks.method_26119(false));
+    public static final Block PISTON = Blocks.register("piston", Blocks.createPistonBlock(false));
     public static final Block PISTON_HEAD = Blocks.register("piston_head", new PistonHeadBlock(AbstractBlock.Settings.of(Material.PISTON).strength(1.5f).dropsNothing()));
     public static final Block WHITE_WOOL = Blocks.register("white_wool", new Block(AbstractBlock.Settings.of(Material.WOOL, MaterialColor.WHITE).strength(0.8f).sounds(BlockSoundGroup.WOOL)));
     public static final Block ORANGE_WOOL = Blocks.register("orange_wool", new Block(AbstractBlock.Settings.of(Material.WOOL, MaterialColor.ORANGE).strength(0.8f).sounds(BlockSoundGroup.WOOL)));
@@ -370,35 +370,35 @@ public class Blocks {
     public static final Block CRAFTING_TABLE = Blocks.register("crafting_table", new CraftingTableBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block WHEAT = Blocks.register("wheat", new CropBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP)));
     public static final Block FARMLAND = Blocks.register("farmland", new FarmlandBlock(AbstractBlock.Settings.of(Material.EARTH).ticksRandomly().strength(0.6f).sounds(BlockSoundGroup.GRAVEL).blockVision(Blocks::method_26113)));
-    public static final Block FURNACE = Blocks.register("furnace", new FurnaceBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.5f).lightLevel(Blocks.method_26107(13))));
+    public static final Block FURNACE = Blocks.register("furnace", new FurnaceBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.5f).lightLevel(Blocks.createLightLevelFromBlockState(13))));
     public static final Block OAK_SIGN = Blocks.register("oak_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.OAK));
-    public static final Block SPRUCE_SIGN = Blocks.register("spruce_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_LOG.getMaterialColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.SPRUCE));
+    public static final Block SPRUCE_SIGN = Blocks.register("spruce_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_LOG.method_26403()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.SPRUCE));
     public static final Block BIRCH_SIGN = Blocks.register("birch_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SAND).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.BIRCH));
     public static final Block ACACIA_SIGN = Blocks.register("acacia_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.ORANGE).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.ACACIA));
-    public static final Block JUNGLE_SIGN = Blocks.register("jungle_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_LOG.getMaterialColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.JUNGLE));
-    public static final Block DARK_OAK_SIGN = Blocks.register("dark_oak_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_LOG.getMaterialColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.DARK_OAK));
-    public static final Block OAK_DOOR = Blocks.register("oak_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getMaterialColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
+    public static final Block JUNGLE_SIGN = Blocks.register("jungle_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_LOG.method_26403()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.JUNGLE));
+    public static final Block DARK_OAK_SIGN = Blocks.register("dark_oak_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_LOG.method_26403()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.DARK_OAK));
+    public static final Block OAK_DOOR = Blocks.register("oak_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.method_26403()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
     public static final Block LADDER = Blocks.register("ladder", new LadderBlock(AbstractBlock.Settings.of(Material.PART).strength(0.4f).sounds(BlockSoundGroup.LADDER).nonOpaque()));
     public static final Block RAIL = Blocks.register("rail", new RailBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.7f).sounds(BlockSoundGroup.METAL)));
     public static final Block COBBLESTONE_STAIRS = Blocks.register("cobblestone_stairs", new StairsBlock(COBBLESTONE.getDefaultState(), AbstractBlock.Settings.copy(COBBLESTONE)));
     public static final Block OAK_WALL_SIGN = Blocks.register("oak_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(OAK_SIGN), SignType.OAK));
-    public static final Block SPRUCE_WALL_SIGN = Blocks.register("spruce_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_LOG.getMaterialColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(SPRUCE_SIGN), SignType.SPRUCE));
+    public static final Block SPRUCE_WALL_SIGN = Blocks.register("spruce_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_LOG.method_26403()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(SPRUCE_SIGN), SignType.SPRUCE));
     public static final Block BIRCH_WALL_SIGN = Blocks.register("birch_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SAND).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(BIRCH_SIGN), SignType.BIRCH));
     public static final Block ACACIA_WALL_SIGN = Blocks.register("acacia_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.ORANGE).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(ACACIA_SIGN), SignType.ACACIA));
-    public static final Block JUNGLE_WALL_SIGN = Blocks.register("jungle_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_LOG.getMaterialColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(JUNGLE_SIGN), SignType.JUNGLE));
-    public static final Block DARK_OAK_WALL_SIGN = Blocks.register("dark_oak_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_LOG.getMaterialColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(DARK_OAK_SIGN), SignType.DARK_OAK));
+    public static final Block JUNGLE_WALL_SIGN = Blocks.register("jungle_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_LOG.method_26403()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(JUNGLE_SIGN), SignType.JUNGLE));
+    public static final Block DARK_OAK_WALL_SIGN = Blocks.register("dark_oak_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_LOG.method_26403()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(DARK_OAK_SIGN), SignType.DARK_OAK));
     public static final Block LEVER = Blocks.register("lever", new LeverBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block STONE_PRESSURE_PLATE = Blocks.register("stone_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.MOBS, AbstractBlock.Settings.of(Material.STONE).noCollision().strength(0.5f)));
     public static final Block IRON_DOOR = Blocks.register("iron_door", new DoorBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.IRON).strength(5.0f).sounds(BlockSoundGroup.METAL).nonOpaque()));
-    public static final Block OAK_PRESSURE_PLATE = Blocks.register("oak_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getMaterialColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block SPRUCE_PRESSURE_PLATE = Blocks.register("spruce_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.getMaterialColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block BIRCH_PRESSURE_PLATE = Blocks.register("birch_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, BIRCH_PLANKS.getMaterialColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block JUNGLE_PRESSURE_PLATE = Blocks.register("jungle_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, JUNGLE_PLANKS.getMaterialColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block ACACIA_PRESSURE_PLATE = Blocks.register("acacia_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, ACACIA_PLANKS.getMaterialColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block DARK_OAK_PRESSURE_PLATE = Blocks.register("dark_oak_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getMaterialColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block REDSTONE_ORE = Blocks.register("redstone_ore", new RedstoneOreBlock(AbstractBlock.Settings.of(Material.STONE).ticksRandomly().lightLevel(Blocks.method_26107(9)).strength(3.0f, 3.0f)));
-    public static final Block REDSTONE_TORCH = Blocks.register("redstone_torch", new RedstoneTorchBlock(AbstractBlock.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(Blocks.method_26107(7)).sounds(BlockSoundGroup.WOOD)));
-    public static final Block REDSTONE_WALL_TORCH = Blocks.register("redstone_wall_torch", new WallRedstoneTorchBlock(AbstractBlock.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(Blocks.method_26107(7)).sounds(BlockSoundGroup.WOOD).dropsLike(REDSTONE_TORCH)));
+    public static final Block OAK_PRESSURE_PLATE = Blocks.register("oak_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.method_26403()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block SPRUCE_PRESSURE_PLATE = Blocks.register("spruce_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.method_26403()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block BIRCH_PRESSURE_PLATE = Blocks.register("birch_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, BIRCH_PLANKS.method_26403()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block JUNGLE_PRESSURE_PLATE = Blocks.register("jungle_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, JUNGLE_PLANKS.method_26403()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block ACACIA_PRESSURE_PLATE = Blocks.register("acacia_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, ACACIA_PLANKS.method_26403()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block DARK_OAK_PRESSURE_PLATE = Blocks.register("dark_oak_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.method_26403()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block REDSTONE_ORE = Blocks.register("redstone_ore", new RedstoneOreBlock(AbstractBlock.Settings.of(Material.STONE).ticksRandomly().lightLevel(Blocks.createLightLevelFromBlockState(9)).strength(3.0f, 3.0f)));
+    public static final Block REDSTONE_TORCH = Blocks.register("redstone_torch", new RedstoneTorchBlock(AbstractBlock.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(Blocks.createLightLevelFromBlockState(7)).sounds(BlockSoundGroup.WOOD)));
+    public static final Block REDSTONE_WALL_TORCH = Blocks.register("redstone_wall_torch", new WallRedstoneTorchBlock(AbstractBlock.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(Blocks.createLightLevelFromBlockState(7)).sounds(BlockSoundGroup.WOOD).dropsLike(REDSTONE_TORCH)));
     public static final Block STONE_BUTTON = Blocks.register("stone_button", new StoneButtonBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.5f)));
     public static final Block SNOW = Blocks.register("snow", new SnowBlock(AbstractBlock.Settings.of(Material.SNOW).ticksRandomly().strength(0.1f).sounds(BlockSoundGroup.SNOW)));
     public static final Block ICE = Blocks.register("ice", new IceBlock(AbstractBlock.Settings.of(Material.ICE).slipperiness(0.98f).ticksRandomly().strength(0.5f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning((blockState, blockView, blockPos, entityType) -> entityType == EntityType.POLAR_BEAR)));
@@ -407,7 +407,7 @@ public class Blocks {
     public static final Block CLAY = Blocks.register("clay", new Block(AbstractBlock.Settings.of(Material.CLAY).strength(0.6f).sounds(BlockSoundGroup.GRAVEL)));
     public static final Block SUGAR_CANE = Blocks.register("sugar_cane", new SugarCaneBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block JUKEBOX = Blocks.register("jukebox", new JukeboxBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.DIRT).strength(2.0f, 6.0f)));
-    public static final Block OAK_FENCE = Blocks.register("oak_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block OAK_FENCE = Blocks.register("oak_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block PUMPKIN = Blocks.register("pumpkin", new PumpkinBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block NETHERRACK = Blocks.register("netherrack", new NetherrackBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(0.4f).sounds(BlockSoundGroup.NETHERRACK)));
     public static final Block SOUL_SAND = Blocks.register("soul_sand", new SoulSandBlock(AbstractBlock.Settings.of(Material.SAND, MaterialColor.BROWN).strength(0.5f).velocityMultiplier(0.4f).sounds(BlockSoundGroup.SOUL_SAND).allowsSpawning(Blocks::method_26123).solidBlock(Blocks::method_26113).blockVision(Blocks::method_26113)));
@@ -422,22 +422,22 @@ public class Blocks {
     public static final Block JACK_O_LANTERN = Blocks.register("jack_o_lantern", new CarvedPumpkinBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD).lightLevel(blockState -> 15).allowsSpawning(Blocks::method_26123)));
     public static final Block CAKE = Blocks.register("cake", new CakeBlock(AbstractBlock.Settings.of(Material.CAKE).strength(0.5f).sounds(BlockSoundGroup.WOOL)));
     public static final Block REPEATER = Blocks.register("repeater", new RepeaterBlock(AbstractBlock.Settings.of(Material.PART).breakInstantly().sounds(BlockSoundGroup.WOOD)));
-    public static final Block WHITE_STAINED_GLASS = Blocks.register("white_stained_glass", Blocks.method_26120(DyeColor.WHITE));
-    public static final Block ORANGE_STAINED_GLASS = Blocks.register("orange_stained_glass", Blocks.method_26120(DyeColor.ORANGE));
-    public static final Block MAGENTA_STAINED_GLASS = Blocks.register("magenta_stained_glass", Blocks.method_26120(DyeColor.MAGENTA));
-    public static final Block LIGHT_BLUE_STAINED_GLASS = Blocks.register("light_blue_stained_glass", Blocks.method_26120(DyeColor.LIGHT_BLUE));
-    public static final Block YELLOW_STAINED_GLASS = Blocks.register("yellow_stained_glass", Blocks.method_26120(DyeColor.YELLOW));
-    public static final Block LIME_STAINED_GLASS = Blocks.register("lime_stained_glass", Blocks.method_26120(DyeColor.LIME));
-    public static final Block PINK_STAINED_GLASS = Blocks.register("pink_stained_glass", Blocks.method_26120(DyeColor.PINK));
-    public static final Block GRAY_STAINED_GLASS = Blocks.register("gray_stained_glass", Blocks.method_26120(DyeColor.GRAY));
-    public static final Block LIGHT_GRAY_STAINED_GLASS = Blocks.register("light_gray_stained_glass", Blocks.method_26120(DyeColor.LIGHT_GRAY));
-    public static final Block CYAN_STAINED_GLASS = Blocks.register("cyan_stained_glass", Blocks.method_26120(DyeColor.CYAN));
-    public static final Block PURPLE_STAINED_GLASS = Blocks.register("purple_stained_glass", Blocks.method_26120(DyeColor.PURPLE));
-    public static final Block BLUE_STAINED_GLASS = Blocks.register("blue_stained_glass", Blocks.method_26120(DyeColor.BLUE));
-    public static final Block BROWN_STAINED_GLASS = Blocks.register("brown_stained_glass", Blocks.method_26120(DyeColor.BROWN));
-    public static final Block GREEN_STAINED_GLASS = Blocks.register("green_stained_glass", Blocks.method_26120(DyeColor.GREEN));
-    public static final Block RED_STAINED_GLASS = Blocks.register("red_stained_glass", Blocks.method_26120(DyeColor.RED));
-    public static final Block BLACK_STAINED_GLASS = Blocks.register("black_stained_glass", Blocks.method_26120(DyeColor.BLACK));
+    public static final Block WHITE_STAINED_GLASS = Blocks.register("white_stained_glass", Blocks.createStainedGlassBlock(DyeColor.WHITE));
+    public static final Block ORANGE_STAINED_GLASS = Blocks.register("orange_stained_glass", Blocks.createStainedGlassBlock(DyeColor.ORANGE));
+    public static final Block MAGENTA_STAINED_GLASS = Blocks.register("magenta_stained_glass", Blocks.createStainedGlassBlock(DyeColor.MAGENTA));
+    public static final Block LIGHT_BLUE_STAINED_GLASS = Blocks.register("light_blue_stained_glass", Blocks.createStainedGlassBlock(DyeColor.LIGHT_BLUE));
+    public static final Block YELLOW_STAINED_GLASS = Blocks.register("yellow_stained_glass", Blocks.createStainedGlassBlock(DyeColor.YELLOW));
+    public static final Block LIME_STAINED_GLASS = Blocks.register("lime_stained_glass", Blocks.createStainedGlassBlock(DyeColor.LIME));
+    public static final Block PINK_STAINED_GLASS = Blocks.register("pink_stained_glass", Blocks.createStainedGlassBlock(DyeColor.PINK));
+    public static final Block GRAY_STAINED_GLASS = Blocks.register("gray_stained_glass", Blocks.createStainedGlassBlock(DyeColor.GRAY));
+    public static final Block LIGHT_GRAY_STAINED_GLASS = Blocks.register("light_gray_stained_glass", Blocks.createStainedGlassBlock(DyeColor.LIGHT_GRAY));
+    public static final Block CYAN_STAINED_GLASS = Blocks.register("cyan_stained_glass", Blocks.createStainedGlassBlock(DyeColor.CYAN));
+    public static final Block PURPLE_STAINED_GLASS = Blocks.register("purple_stained_glass", Blocks.createStainedGlassBlock(DyeColor.PURPLE));
+    public static final Block BLUE_STAINED_GLASS = Blocks.register("blue_stained_glass", Blocks.createStainedGlassBlock(DyeColor.BLUE));
+    public static final Block BROWN_STAINED_GLASS = Blocks.register("brown_stained_glass", Blocks.createStainedGlassBlock(DyeColor.BROWN));
+    public static final Block GREEN_STAINED_GLASS = Blocks.register("green_stained_glass", Blocks.createStainedGlassBlock(DyeColor.GREEN));
+    public static final Block RED_STAINED_GLASS = Blocks.register("red_stained_glass", Blocks.createStainedGlassBlock(DyeColor.RED));
+    public static final Block BLACK_STAINED_GLASS = Blocks.register("black_stained_glass", Blocks.createStainedGlassBlock(DyeColor.BLACK));
     public static final Block OAK_TRAPDOOR = Blocks.register("oak_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.WOOD).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
     public static final Block SPRUCE_TRAPDOOR = Blocks.register("spruce_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
     public static final Block BIRCH_TRAPDOOR = Blocks.register("birch_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SAND).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
@@ -465,7 +465,7 @@ public class Blocks {
     public static final Block PUMPKIN_STEM = Blocks.register("pumpkin_stem", new StemBlock((GourdBlock)PUMPKIN, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block MELON_STEM = Blocks.register("melon_stem", new StemBlock((GourdBlock)MELON, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block VINE = Blocks.register("vine", new VineBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2f).sounds(BlockSoundGroup.field_23083)));
-    public static final Block OAK_FENCE_GATE = Blocks.register("oak_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block OAK_FENCE_GATE = Blocks.register("oak_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BRICK_STAIRS = Blocks.register("brick_stairs", new StairsBlock(BRICKS.getDefaultState(), AbstractBlock.Settings.copy(BRICKS)));
     public static final Block STONE_BRICK_STAIRS = Blocks.register("stone_brick_stairs", new StairsBlock(STONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(STONE_BRICKS)));
     public static final Block MYCELIUM = Blocks.register("mycelium", new MyceliumBlock(AbstractBlock.Settings.of(Material.ORGANIC, MaterialColor.PURPLE).ticksRandomly().strength(0.6f).sounds(BlockSoundGroup.GRASS)));
@@ -481,7 +481,7 @@ public class Blocks {
     public static final Block END_PORTAL_FRAME = Blocks.register("end_portal_frame", new EndPortalFrameBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.GREEN).sounds(BlockSoundGroup.GLASS).lightLevel(blockState -> 1).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block END_STONE = Blocks.register("end_stone", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(3.0f, 9.0f)));
     public static final Block DRAGON_EGG = Blocks.register("dragon_egg", new DragonEggBlock(AbstractBlock.Settings.of(Material.EGG, MaterialColor.BLACK).strength(3.0f, 9.0f).lightLevel(blockState -> 1).nonOpaque()));
-    public static final Block REDSTONE_LAMP = Blocks.register("redstone_lamp", new RedstoneLampBlock(AbstractBlock.Settings.of(Material.REDSTONE_LAMP).lightLevel(Blocks.method_26107(15)).strength(0.3f).sounds(BlockSoundGroup.GLASS).allowsSpawning(Blocks::method_26123)));
+    public static final Block REDSTONE_LAMP = Blocks.register("redstone_lamp", new RedstoneLampBlock(AbstractBlock.Settings.of(Material.REDSTONE_LAMP).lightLevel(Blocks.createLightLevelFromBlockState(15)).strength(0.3f).sounds(BlockSoundGroup.GLASS).allowsSpawning(Blocks::method_26123)));
     public static final Block COCOA = Blocks.register("cocoa", new CocoaBlock(AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().strength(0.2f, 3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
     public static final Block SANDSTONE_STAIRS = Blocks.register("sandstone_stairs", new StairsBlock(SANDSTONE.getDefaultState(), AbstractBlock.Settings.copy(SANDSTONE)));
     public static final Block EMERALD_ORE = Blocks.register("emerald_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
@@ -690,21 +690,21 @@ public class Blocks {
     public static final Block SMOOTH_SANDSTONE = Blocks.register("smooth_sandstone", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(2.0f, 6.0f)));
     public static final Block SMOOTH_QUARTZ = Blocks.register("smooth_quartz", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.QUARTZ).strength(2.0f, 6.0f)));
     public static final Block SMOOTH_RED_SANDSTONE = Blocks.register("smooth_red_sandstone", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.ORANGE).strength(2.0f, 6.0f)));
-    public static final Block SPRUCE_FENCE_GATE = Blocks.register("spruce_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block BIRCH_FENCE_GATE = Blocks.register("birch_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, BIRCH_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block JUNGLE_FENCE_GATE = Blocks.register("jungle_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block ACACIA_FENCE_GATE = Blocks.register("acacia_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, ACACIA_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block DARK_OAK_FENCE_GATE = Blocks.register("dark_oak_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block SPRUCE_FENCE = Blocks.register("spruce_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block BIRCH_FENCE = Blocks.register("birch_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, BIRCH_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block JUNGLE_FENCE = Blocks.register("jungle_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block ACACIA_FENCE = Blocks.register("acacia_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, ACACIA_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block DARK_OAK_FENCE = Blocks.register("dark_oak_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block SPRUCE_DOOR = Blocks.register("spruce_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.getMaterialColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
-    public static final Block BIRCH_DOOR = Blocks.register("birch_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, BIRCH_PLANKS.getMaterialColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
-    public static final Block JUNGLE_DOOR = Blocks.register("jungle_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_PLANKS.getMaterialColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
-    public static final Block ACACIA_DOOR = Blocks.register("acacia_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, ACACIA_PLANKS.getMaterialColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
-    public static final Block DARK_OAK_DOOR = Blocks.register("dark_oak_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getMaterialColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
+    public static final Block SPRUCE_FENCE_GATE = Blocks.register("spruce_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block BIRCH_FENCE_GATE = Blocks.register("birch_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, BIRCH_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block JUNGLE_FENCE_GATE = Blocks.register("jungle_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block ACACIA_FENCE_GATE = Blocks.register("acacia_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, ACACIA_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block DARK_OAK_FENCE_GATE = Blocks.register("dark_oak_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block SPRUCE_FENCE = Blocks.register("spruce_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block BIRCH_FENCE = Blocks.register("birch_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, BIRCH_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block JUNGLE_FENCE = Blocks.register("jungle_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block ACACIA_FENCE = Blocks.register("acacia_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, ACACIA_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block DARK_OAK_FENCE = Blocks.register("dark_oak_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.method_26403()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block SPRUCE_DOOR = Blocks.register("spruce_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.method_26403()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
+    public static final Block BIRCH_DOOR = Blocks.register("birch_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, BIRCH_PLANKS.method_26403()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
+    public static final Block JUNGLE_DOOR = Blocks.register("jungle_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_PLANKS.method_26403()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
+    public static final Block ACACIA_DOOR = Blocks.register("acacia_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, ACACIA_PLANKS.method_26403()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
+    public static final Block DARK_OAK_DOOR = Blocks.register("dark_oak_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.method_26403()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
     public static final Block END_ROD = Blocks.register("end_rod", new EndRodBlock(AbstractBlock.Settings.of(Material.PART).breakInstantly().lightLevel(blockState -> 14).sounds(BlockSoundGroup.WOOD).nonOpaque()));
     public static final Block CHORUS_PLANT = Blocks.register("chorus_plant", new ChorusPlantBlock(AbstractBlock.Settings.of(Material.PLANT, MaterialColor.PURPLE).strength(0.4f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
     public static final Block CHORUS_FLOWER = Blocks.register("chorus_flower", new ChorusFlowerBlock((ChorusPlantBlock)CHORUS_PLANT, AbstractBlock.Settings.of(Material.PLANT, MaterialColor.PURPLE).ticksRandomly().strength(0.4f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
@@ -724,23 +724,23 @@ public class Blocks {
     public static final Block BONE_BLOCK = Blocks.register("bone_block", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(2.0f).sounds(BlockSoundGroup.BONE)));
     public static final Block STRUCTURE_VOID = Blocks.register("structure_void", new StructureVoidBlock(AbstractBlock.Settings.of(Material.STRUCTURE_VOID).noCollision().dropsNothing()));
     public static final Block OBSERVER = Blocks.register("observer", new ObserverBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f)));
-    public static final Block SHULKER_BOX = Blocks.register("shulker_box", Blocks.method_26110(null, AbstractBlock.Settings.of(Material.SHULKER_BOX)));
-    public static final Block WHITE_SHULKER_BOX = Blocks.register("white_shulker_box", Blocks.method_26110(DyeColor.WHITE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.WHITE)));
-    public static final Block ORANGE_SHULKER_BOX = Blocks.register("orange_shulker_box", Blocks.method_26110(DyeColor.ORANGE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.ORANGE)));
-    public static final Block MAGENTA_SHULKER_BOX = Blocks.register("magenta_shulker_box", Blocks.method_26110(DyeColor.MAGENTA, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.MAGENTA)));
-    public static final Block LIGHT_BLUE_SHULKER_BOX = Blocks.register("light_blue_shulker_box", Blocks.method_26110(DyeColor.LIGHT_BLUE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_BLUE)));
-    public static final Block YELLOW_SHULKER_BOX = Blocks.register("yellow_shulker_box", Blocks.method_26110(DyeColor.YELLOW, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.YELLOW)));
-    public static final Block LIME_SHULKER_BOX = Blocks.register("lime_shulker_box", Blocks.method_26110(DyeColor.LIME, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.LIME)));
-    public static final Block PINK_SHULKER_BOX = Blocks.register("pink_shulker_box", Blocks.method_26110(DyeColor.PINK, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.PINK)));
-    public static final Block GRAY_SHULKER_BOX = Blocks.register("gray_shulker_box", Blocks.method_26110(DyeColor.GRAY, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.GRAY)));
-    public static final Block LIGHT_GRAY_SHULKER_BOX = Blocks.register("light_gray_shulker_box", Blocks.method_26110(DyeColor.LIGHT_GRAY, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_GRAY)));
-    public static final Block CYAN_SHULKER_BOX = Blocks.register("cyan_shulker_box", Blocks.method_26110(DyeColor.CYAN, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.CYAN)));
-    public static final Block PURPLE_SHULKER_BOX = Blocks.register("purple_shulker_box", Blocks.method_26110(DyeColor.PURPLE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.PURPLE_TERRACOTTA)));
-    public static final Block BLUE_SHULKER_BOX = Blocks.register("blue_shulker_box", Blocks.method_26110(DyeColor.BLUE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.BLUE)));
-    public static final Block BROWN_SHULKER_BOX = Blocks.register("brown_shulker_box", Blocks.method_26110(DyeColor.BROWN, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.BROWN)));
-    public static final Block GREEN_SHULKER_BOX = Blocks.register("green_shulker_box", Blocks.method_26110(DyeColor.GREEN, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.GREEN)));
-    public static final Block RED_SHULKER_BOX = Blocks.register("red_shulker_box", Blocks.method_26110(DyeColor.RED, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.RED)));
-    public static final Block BLACK_SHULKER_BOX = Blocks.register("black_shulker_box", Blocks.method_26110(DyeColor.BLACK, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.BLACK)));
+    public static final Block SHULKER_BOX = Blocks.register("shulker_box", Blocks.createShulkerBoxBlock(null, AbstractBlock.Settings.of(Material.SHULKER_BOX)));
+    public static final Block WHITE_SHULKER_BOX = Blocks.register("white_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.WHITE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.WHITE)));
+    public static final Block ORANGE_SHULKER_BOX = Blocks.register("orange_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.ORANGE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.ORANGE)));
+    public static final Block MAGENTA_SHULKER_BOX = Blocks.register("magenta_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.MAGENTA, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.MAGENTA)));
+    public static final Block LIGHT_BLUE_SHULKER_BOX = Blocks.register("light_blue_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.LIGHT_BLUE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_BLUE)));
+    public static final Block YELLOW_SHULKER_BOX = Blocks.register("yellow_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.YELLOW, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.YELLOW)));
+    public static final Block LIME_SHULKER_BOX = Blocks.register("lime_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.LIME, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.LIME)));
+    public static final Block PINK_SHULKER_BOX = Blocks.register("pink_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.PINK, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.PINK)));
+    public static final Block GRAY_SHULKER_BOX = Blocks.register("gray_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.GRAY, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.GRAY)));
+    public static final Block LIGHT_GRAY_SHULKER_BOX = Blocks.register("light_gray_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.LIGHT_GRAY, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.LIGHT_GRAY)));
+    public static final Block CYAN_SHULKER_BOX = Blocks.register("cyan_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.CYAN, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.CYAN)));
+    public static final Block PURPLE_SHULKER_BOX = Blocks.register("purple_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.PURPLE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.PURPLE_TERRACOTTA)));
+    public static final Block BLUE_SHULKER_BOX = Blocks.register("blue_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.BLUE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.BLUE)));
+    public static final Block BROWN_SHULKER_BOX = Blocks.register("brown_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.BROWN, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.BROWN)));
+    public static final Block GREEN_SHULKER_BOX = Blocks.register("green_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.GREEN, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.GREEN)));
+    public static final Block RED_SHULKER_BOX = Blocks.register("red_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.RED, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.RED)));
+    public static final Block BLACK_SHULKER_BOX = Blocks.register("black_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.BLACK, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.BLACK)));
     public static final Block WHITE_GLAZED_TERRACOTTA = Blocks.register("white_glazed_terracotta", new GlazedTerracottaBlock(AbstractBlock.Settings.of(Material.STONE, DyeColor.WHITE).strength(1.4f)));
     public static final Block ORANGE_GLAZED_TERRACOTTA = Blocks.register("orange_glazed_terracotta", new GlazedTerracottaBlock(AbstractBlock.Settings.of(Material.STONE, DyeColor.ORANGE).strength(1.4f)));
     public static final Block MAGENTA_GLAZED_TERRACOTTA = Blocks.register("magenta_glazed_terracotta", new GlazedTerracottaBlock(AbstractBlock.Settings.of(Material.STONE, DyeColor.MAGENTA).strength(1.4f)));
@@ -884,8 +884,8 @@ public class Blocks {
     public static final Block SCAFFOLDING = Blocks.register("scaffolding", new ScaffoldingBlock(AbstractBlock.Settings.of(Material.PART, MaterialColor.SAND).noCollision().sounds(BlockSoundGroup.SCAFFOLDING).hasDynamicBounds()));
     public static final Block LOOM = Blocks.register("loom", new LoomBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BARREL = Blocks.register("barrel", new BarrelBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block SMOKER = Blocks.register("smoker", new SmokerBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.5f).lightLevel(Blocks.method_26107(13))));
-    public static final Block BLAST_FURNACE = Blocks.register("blast_furnace", new BlastFurnaceBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.5f).lightLevel(Blocks.method_26107(13))));
+    public static final Block SMOKER = Blocks.register("smoker", new SmokerBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.5f).lightLevel(Blocks.createLightLevelFromBlockState(13))));
+    public static final Block BLAST_FURNACE = Blocks.register("blast_furnace", new BlastFurnaceBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.5f).lightLevel(Blocks.createLightLevelFromBlockState(13))));
     public static final Block CARTOGRAPHY_TABLE = Blocks.register("cartography_table", new CartographyTableBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block FLETCHING_TABLE = Blocks.register("fletching_table", new FletchingTableBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block GRINDSTONE = Blocks.register("grindstone", new GrindstoneBlock(AbstractBlock.Settings.of(Material.ANVIL, MaterialColor.IRON).strength(2.0f, 6.0f).sounds(BlockSoundGroup.STONE)));
@@ -895,21 +895,21 @@ public class Blocks {
     public static final Block BELL = Blocks.register("bell", new BellBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.GOLD).strength(5.0f).sounds(BlockSoundGroup.ANVIL)));
     public static final Block LANTERN = Blocks.register("lantern", new LanternBlock(AbstractBlock.Settings.of(Material.METAL).strength(3.5f).sounds(BlockSoundGroup.LANTERN).lightLevel(blockState -> 15).nonOpaque()));
     public static final Block SOUL_FIRE_LANTERN = Blocks.register("soul_fire_lantern", new LanternBlock(AbstractBlock.Settings.of(Material.METAL).strength(3.5f).sounds(BlockSoundGroup.LANTERN).lightLevel(blockState -> 10).nonOpaque()));
-    public static final Block CAMPFIRE = Blocks.register("campfire", new CampfireBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(2.0f).sounds(BlockSoundGroup.WOOD).lightLevel(Blocks.method_26107(15)).nonOpaque()));
+    public static final Block CAMPFIRE = Blocks.register("campfire", new CampfireBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(2.0f).sounds(BlockSoundGroup.WOOD).lightLevel(Blocks.createLightLevelFromBlockState(15)).nonOpaque()));
     public static final Block SWEET_BERRY_BUSH = Blocks.register("sweet_berry_bush", new SweetBerryBushBlock(AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().noCollision().sounds(BlockSoundGroup.SWEET_BERRY_BUSH)));
-    public static final Block WARPED_STEM = Blocks.register("warped_stem", Blocks.method_26115(MaterialColor.CYAN));
-    public static final Block STRIPPED_WARPED_STEM = Blocks.register("stripped_warped_stem", Blocks.method_26115(MaterialColor.CYAN));
-    public static final Block WARPED_HYPHAE = Blocks.register("warped_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.CYAN).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
-    public static final Block STRIPPED_WARPED_HYPHAE = Blocks.register("stripped_warped_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.CYAN).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
+    public static final Block WARPED_STEM = Blocks.register("warped_stem", Blocks.createNetherStemBlock(MaterialColor.CYAN));
+    public static final Block STRIPPED_WARPED_STEM = Blocks.register("stripped_warped_stem", Blocks.createNetherStemBlock(MaterialColor.CYAN));
+    public static final Block WARPED_HYPHAE = Blocks.register("warped_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
+    public static final Block STRIPPED_WARPED_HYPHAE = Blocks.register("stripped_warped_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
     public static final Block WARPED_NYLIUM = Blocks.register("warped_nylium", new NyliumBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.CYAN).strength(1.0f).sounds(BlockSoundGroup.NYLIUM).ticksRandomly()));
     public static final Block WARPED_FUNGUS = Blocks.register("warped_fungus", new FungusBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS), () -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.WARPED_FUNGUS_CONFIG)));
     public static final Block WARPED_WART_BLOCK = Blocks.register("warped_wart_block", new Block(AbstractBlock.Settings.of(Material.ORGANIC, MaterialColor.CYAN).strength(1.0f).sounds(BlockSoundGroup.WART_BLOCK)));
     public static final Block WARPED_ROOTS = Blocks.register("warped_roots", new RootsBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS)));
     public static final Block NETHER_SPROUTS = Blocks.register("nether_sprouts", new SproutsBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MaterialColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.NETHER_SPROUTS)));
-    public static final Block CRIMSON_STEM = Blocks.register("crimson_stem", Blocks.method_26115(MaterialColor.RED));
-    public static final Block STRIPPED_CRIMSON_STEM = Blocks.register("stripped_crimson_stem", Blocks.method_26115(MaterialColor.RED));
-    public static final Block CRIMSON_HYPHAE = Blocks.register("crimson_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.RED).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
-    public static final Block STRIPPED_CRIMSON_HYPHAE = Blocks.register("stripped_crimson_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.RED).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
+    public static final Block CRIMSON_STEM = Blocks.register("crimson_stem", Blocks.createNetherStemBlock(MaterialColor.RED));
+    public static final Block STRIPPED_CRIMSON_STEM = Blocks.register("stripped_crimson_stem", Blocks.createNetherStemBlock(MaterialColor.RED));
+    public static final Block CRIMSON_HYPHAE = Blocks.register("crimson_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.RED).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
+    public static final Block STRIPPED_CRIMSON_HYPHAE = Blocks.register("stripped_crimson_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.RED).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
     public static final Block CRIMSON_NYLIUM = Blocks.register("crimson_nylium", new NyliumBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.RED).strength(1.0f).sounds(BlockSoundGroup.NYLIUM).ticksRandomly()));
     public static final Block CRIMSON_FUNGUS = Blocks.register("crimson_fungus", new FungusBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS), () -> Feature.HUGE_FUNGUS.configure(HugeFungusFeatureConfig.CRIMSON_FUNGUS_CONFIG)));
     public static final Block SHROOMLIGHT = Blocks.register("shroomlight", new Block(AbstractBlock.Settings.of(Material.ORGANIC, MaterialColor.RED).strength(1.0f).sounds(BlockSoundGroup.SHROOMLIGHT).lightLevel(blockState -> 15)));
@@ -934,8 +934,8 @@ public class Blocks {
     public static final Block WARPED_STAIRS = Blocks.register("warped_stairs", new StairsBlock(WARPED_PLANKS.getDefaultState(), AbstractBlock.Settings.copy(WARPED_PLANKS)));
     public static final Block CRIMSON_BUTTON = Blocks.register("crimson_button", new WoodButtonBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block WARPED_BUTTON = Blocks.register("warped_button", new WoodButtonBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block CRIMSON_DOOR = Blocks.register("crimson_door", new DoorBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.getMaterialColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
-    public static final Block WARPED_DOOR = Blocks.register("warped_door", new DoorBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.getMaterialColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
+    public static final Block CRIMSON_DOOR = Blocks.register("crimson_door", new DoorBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, CRIMSON_PLANKS.method_26403()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
+    public static final Block WARPED_DOOR = Blocks.register("warped_door", new DoorBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, WARPED_PLANKS.method_26403()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
     public static final Block CRIMSON_SIGN = Blocks.register("crimson_sign", new SignBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.NETHER).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.CRIMSON));
     public static final Block WARPED_SIGN = Blocks.register("warped_sign", new SignBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MaterialColor.CYAN).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.WARPED));
     public static final Block CRIMSON_WALL_SIGN = Blocks.register("crimson_wall_sign", new WallSignBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(CRIMSON_SIGN), SignType.CRIMSON));
@@ -944,7 +944,7 @@ public class Blocks {
     public static final Block JIGSAW = Blocks.register("jigsaw", new JigsawBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.LIGHT_GRAY).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block COMPOSTER = Blocks.register("composter", new ComposterBlock(AbstractBlock.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
     public static final Block TARGET = Blocks.register("target", new TargetBlock(AbstractBlock.Settings.of(Material.ORGANIC, MaterialColor.QUARTZ).strength(0.5f).sounds(BlockSoundGroup.GRASS)));
-    public static final Block BEE_NEST = Blocks.register("bee_nest", new BeehiveBlock(AbstractBlock.Settings.of(Material.WOOD).strength(0.3f).sounds(BlockSoundGroup.WOOD)));
+    public static final Block BEE_NEST = Blocks.register("bee_nest", new BeehiveBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.YELLOW).strength(0.3f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BEEHIVE = Blocks.register("beehive", new BeehiveBlock(AbstractBlock.Settings.of(Material.WOOD).strength(0.6f).sounds(BlockSoundGroup.WOOD)));
     public static final Block HONEY_BLOCK = Blocks.register("honey_block", new HoneyBlock(AbstractBlock.Settings.of(Material.CLAY, MaterialColor.ORANGE).velocityMultiplier(0.4f).jumpVelocityMultiplier(0.5f).nonOpaque().sounds(BlockSoundGroup.HONEY)));
     public static final Block HONEYCOMB_BLOCK = Blocks.register("honeycomb_block", new Block(AbstractBlock.Settings.of(Material.CLAY, MaterialColor.ORANGE).strength(0.6f).sounds(BlockSoundGroup.CORAL)));
@@ -956,9 +956,10 @@ public class Blocks {
     public static final Block POTTED_WARPED_FUNGUS = Blocks.register("potted_warped_fungus", new FlowerPotBlock(WARPED_FUNGUS, AbstractBlock.Settings.of(Material.PART).breakInstantly().nonOpaque()));
     public static final Block POTTED_CRIMSON_ROOTS = Blocks.register("potted_crimson_roots", new FlowerPotBlock(CRIMSON_ROOTS, AbstractBlock.Settings.of(Material.PART).breakInstantly().nonOpaque()));
     public static final Block POTTED_WARPED_ROOTS = Blocks.register("potted_warped_roots", new FlowerPotBlock(WARPED_ROOTS, AbstractBlock.Settings.of(Material.PART).breakInstantly().nonOpaque()));
+    public static final Block LODESTONE = Blocks.register("lodestone", new Block(AbstractBlock.Settings.of(Material.ANVIL).strength(3.5f).sounds(BlockSoundGroup.field_23265)));
 
-    private static ToIntFunction<BlockState> method_26107(int i) {
-        return blockState -> blockState.get(Properties.LIT) != false ? i : 0;
+    private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
+        return blockState -> blockState.get(Properties.LIT) != false ? litLevel : 0;
     }
 
     private static Boolean method_26114(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
@@ -969,20 +970,20 @@ public class Blocks {
         return true;
     }
 
-    private static Boolean method_26126(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
-        return entityType == EntityType.OCELOT || entityType == EntityType.PARROT;
+    private static Boolean canSpawnOnLeaves(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
+        return type == EntityType.OCELOT || type == EntityType.PARROT;
     }
 
-    private static BedBlock method_26109(DyeColor dyeColor) {
-        return new BedBlock(dyeColor, AbstractBlock.Settings.of(Material.WOOL, blockState -> blockState.get(BedBlock.PART) == BedPart.FOOT ? dyeColor.getMaterialColor() : MaterialColor.WEB).sounds(BlockSoundGroup.WOOD).strength(0.2f).nonOpaque());
+    private static BedBlock createBedBlock(DyeColor color) {
+        return new BedBlock(color, AbstractBlock.Settings.of(Material.WOOL, blockState -> blockState.get(BedBlock.PART) == BedPart.FOOT ? color.getMaterialColor() : MaterialColor.WEB).sounds(BlockSoundGroup.WOOD).strength(0.2f).nonOpaque());
     }
 
-    private static PillarBlock method_26117(MaterialColor materialColor, MaterialColor materialColor2) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, blockState -> blockState.get(PillarBlock.AXIS) == Direction.Axis.Y ? materialColor : materialColor2).strength(2.0f).sounds(BlockSoundGroup.WOOD));
+    private static PillarBlock createLogBlock(MaterialColor topMaterialColor, MaterialColor sideMaterialColor) {
+        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, blockState -> blockState.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMaterialColor : sideMaterialColor).strength(2.0f).sounds(BlockSoundGroup.WOOD));
     }
 
-    private static Block method_26115(MaterialColor materialColor) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, blockState -> materialColor).strength(1.0f).sounds(BlockSoundGroup.NETHER_STEM));
+    private static Block createNetherStemBlock(MaterialColor materialColor) {
+        return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, blockState -> materialColor).strength(1.0f).sounds(BlockSoundGroup.NETHER_STEM));
     }
 
     private static boolean method_26113(BlockState blockState, BlockView blockView, BlockPos blockPos) {
@@ -993,20 +994,20 @@ public class Blocks {
         return false;
     }
 
-    private static StainedGlassBlock method_26120(DyeColor dyeColor) {
-        return new StainedGlassBlock(dyeColor, AbstractBlock.Settings.of(Material.GLASS, dyeColor).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::method_26114).solidBlock(Blocks::method_26122).suffocates(Blocks::method_26122));
+    private static StainedGlassBlock createStainedGlassBlock(DyeColor color) {
+        return new StainedGlassBlock(color, AbstractBlock.Settings.of(Material.GLASS, color).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::method_26114).solidBlock(Blocks::method_26122).suffocates(Blocks::method_26122));
     }
 
-    private static LeavesBlock method_26106() {
-        return new LeavesBlock(AbstractBlock.Settings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning(Blocks::method_26126).suffocates(Blocks::method_26122));
+    private static LeavesBlock createLeavesBlock() {
+        return new LeavesBlock(AbstractBlock.Settings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning(Blocks::canSpawnOnLeaves).suffocates(Blocks::method_26122));
     }
 
-    private static ShulkerBoxBlock method_26110(DyeColor dyeColor, AbstractBlock.Settings settings) {
-        return new ShulkerBoxBlock(dyeColor, settings.strength(2.0f).hasDynamicBounds().nonOpaque().suffocates(Blocks::method_26113));
+    private static ShulkerBoxBlock createShulkerBoxBlock(DyeColor color, AbstractBlock.Settings settings) {
+        return new ShulkerBoxBlock(color, settings.strength(2.0f).hasDynamicBounds().nonOpaque().suffocates(Blocks::method_26113));
     }
 
-    private static PistonBlock method_26119(boolean bl) {
-        return new PistonBlock(bl, AbstractBlock.Settings.of(Material.PISTON).strength(1.5f).solidBlock(Blocks::method_26122).suffocates((blockState, blockView, blockPos) -> blockState.get(PistonBlock.EXTENDED) == false));
+    private static PistonBlock createPistonBlock(boolean sticky) {
+        return new PistonBlock(sticky, AbstractBlock.Settings.of(Material.PISTON).strength(1.5f).solidBlock(Blocks::method_26122).suffocates((blockState, blockView, blockPos) -> blockState.get(PistonBlock.EXTENDED) == false));
     }
 
     private static Block register(String id, Block block) {

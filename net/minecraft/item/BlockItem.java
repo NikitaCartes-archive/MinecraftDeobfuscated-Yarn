@@ -162,7 +162,7 @@ extends Item {
             compoundTag2.putInt("y", pos.getY());
             compoundTag2.putInt("z", pos.getZ());
             if (!compoundTag2.equals(compoundTag3)) {
-                blockEntity.fromTag(compoundTag2);
+                blockEntity.fromTag(world.getBlockState(pos), compoundTag2);
                 blockEntity.markDirty();
                 return true;
             }

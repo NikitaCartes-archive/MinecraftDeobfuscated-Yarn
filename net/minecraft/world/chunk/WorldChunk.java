@@ -651,22 +651,23 @@ implements Chunk {
     @Nullable
     private BlockEntity loadBlockEntity(BlockPos pos, CompoundTag compoundTag) {
         BlockEntity blockEntity;
+        BlockState blockState = this.getBlockState(pos);
         if ("DUMMY".equals(compoundTag.getString("id"))) {
-            Block block = this.getBlockState(pos).getBlock();
+            Block block = blockState.getBlock();
             if (block instanceof BlockEntityProvider) {
                 blockEntity = ((BlockEntityProvider)((Object)block)).createBlockEntity(this.world);
             } else {
                 blockEntity = null;
-                LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", (Object)pos, (Object)this.getBlockState(pos));
+                LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", (Object)pos, (Object)blockState);
             }
         } else {
-            blockEntity = BlockEntity.createFromTag(compoundTag);
+            blockEntity = BlockEntity.createFromTag(blockState, compoundTag);
         }
         if (blockEntity != null) {
             blockEntity.setLocation(this.world, pos);
             this.addBlockEntity(blockEntity);
         } else {
-            LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", (Object)this.getBlockState(pos), (Object)pos);
+            LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", (Object)blockState, (Object)pos);
         }
         return blockEntity;
     }
@@ -686,25 +687,25 @@ implements Chunk {
             ((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState((BlockPos)blockPos).getBlock());
             this.blockTickScheduler = DummyClientTickScheduler.get();
         } else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
-            this.world.getBlockTickScheduler().scheduleAll(((SimpleTickScheduler)this.blockTickScheduler).stream());
+            ((SimpleTickScheduler)this.blockTickScheduler).scheduleTo(this.world.getBlockTickScheduler());
             this.blockTickScheduler = DummyClientTickScheduler.get();
         }
         if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
             ((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState((BlockPos)blockPos).getFluid());
             this.fluidTickScheduler = DummyClientTickScheduler.get();
         } else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
-            this.world.getFluidTickScheduler().scheduleAll(((SimpleTickScheduler)this.fluidTickScheduler).stream());
+            ((SimpleTickScheduler)this.fluidTickScheduler).scheduleTo(this.world.getFluidTickScheduler());
             this.fluidTickScheduler = DummyClientTickScheduler.get();
         }
     }
 
     public void enableTickSchedulers(ServerWorld world) {
         if (this.blockTickScheduler == DummyClientTickScheduler.get()) {
-            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, ((ServerTickScheduler)world.getBlockTickScheduler()).getScheduledTicksInChunk(this.pos, true, false));
+            this.blockTickScheduler = new SimpleTickScheduler<Block>(Registry.BLOCK::getId, ((ServerTickScheduler)world.getBlockTickScheduler()).getScheduledTicksInChunk(this.pos, true, false), world.getTime());
             this.setShouldSave(true);
         }
         if (this.fluidTickScheduler == DummyClientTickScheduler.get()) {
-            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, ((ServerTickScheduler)world.getFluidTickScheduler()).getScheduledTicksInChunk(this.pos, true, false));
+            this.fluidTickScheduler = new SimpleTickScheduler<Fluid>(Registry.FLUID::getId, ((ServerTickScheduler)world.getFluidTickScheduler()).getScheduledTicksInChunk(this.pos, true, false), world.getTime());
             this.setShouldSave(true);
         }
     }

@@ -1408,7 +1408,7 @@ Runnable {
     }
 
     @Override
-    public boolean sendCommandFeedback() {
+    public boolean shouldReceiveFeedback() {
         return true;
     }
 

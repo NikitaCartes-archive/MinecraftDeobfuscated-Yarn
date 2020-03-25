@@ -49,8 +49,8 @@ public abstract class BlockEntity {
         return this.world != null;
     }
 
-    public void fromTag(CompoundTag tag) {
-        this.pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        this.pos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
     }
 
     public CompoundTag toTag(CompoundTag tag) {
@@ -70,7 +70,7 @@ public abstract class BlockEntity {
     }
 
     @Nullable
-    public static BlockEntity createFromTag(CompoundTag compoundTag) {
+    public static BlockEntity createFromTag(BlockState blockState, CompoundTag compoundTag) {
         String string = compoundTag.getString("id");
         return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
             try {
@@ -81,7 +81,7 @@ public abstract class BlockEntity {
             }
         }).map(blockEntity -> {
             try {
-                blockEntity.fromTag(compoundTag);
+                blockEntity.fromTag(blockState, compoundTag);
                 return blockEntity;
             } catch (Throwable throwable) {
                 LOGGER.error("Failed to load data for block entity {}", (Object)string, (Object)throwable);

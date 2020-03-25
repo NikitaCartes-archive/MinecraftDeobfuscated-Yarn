@@ -3,14 +3,20 @@
  */
 package net.minecraft.util;
 
+import net.minecraft.class_4990;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.Direction;
 
 public enum BlockMirror {
-    NONE,
-    LEFT_RIGHT,
-    FRONT_BACK;
+    NONE(class_4990.field_23292),
+    LEFT_RIGHT(class_4990.field_23267),
+    FRONT_BACK(class_4990.field_23323);
 
+    private final class_4990 field_23263;
+
+    private BlockMirror(class_4990 arg) {
+        this.field_23263 = arg;
+    }
 
     public int mirror(int rotation, int fullTurn) {
         int i = fullTurn / 2;
@@ -39,6 +45,10 @@ public enum BlockMirror {
             return direction.getOpposite();
         }
         return direction;
+    }
+
+    public class_4990 method_26380() {
+        return this.field_23263;
     }
 }
 

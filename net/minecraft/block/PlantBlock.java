@@ -41,7 +41,7 @@ extends Block {
 
     @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-        return true;
+        return state.getFluidState().isEmpty();
     }
 
     @Override

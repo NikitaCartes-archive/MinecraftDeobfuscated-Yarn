@@ -3,6 +3,7 @@
  */
 package net.minecraft.block.entity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.LecternBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -206,11 +207,11 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        this.book = tag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null) : ItemStack.EMPTY;
+    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+        super.fromTag(blockState, compoundTag);
+        this.book = compoundTag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null) : ItemStack.EMPTY;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
-        this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
+        this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
     }
 
     @Override

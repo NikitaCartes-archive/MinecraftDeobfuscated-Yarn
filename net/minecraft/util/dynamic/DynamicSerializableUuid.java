@@ -23,15 +23,11 @@ implements DynamicSerializable {
 
     @Override
     public <T> T serialize(DynamicOps<T> ops) {
-        return ops.createIntList(Arrays.stream(DynamicSerializableUuid.method_26275(this.uuid)));
+        return DynamicSerializableUuid.method_26430(ops, this.uuid);
     }
 
     public static DynamicSerializableUuid of(Dynamic<?> dynamic) {
-        int[] is = dynamic.asIntStream().toArray();
-        if (is.length != 4) {
-            throw new IllegalArgumentException("Could not read UUID. Expected int-array of length 4, got " + is.length + ".");
-        }
-        return new DynamicSerializableUuid(DynamicSerializableUuid.method_26276(is));
+        return new DynamicSerializableUuid(DynamicSerializableUuid.method_26431(dynamic));
     }
 
     public String toString() {
@@ -50,6 +46,18 @@ implements DynamicSerializable {
 
     public static int[] method_26274(long l, long m) {
         return new int[]{(int)(l >> 32), (int)l, (int)(m >> 32), (int)m};
+    }
+
+    public static UUID method_26431(Dynamic<?> dynamic) {
+        int[] is = dynamic.asIntStream().toArray();
+        if (is.length != 4) {
+            throw new IllegalArgumentException("Could not read UUID. Expected int-array of length 4, got " + is.length + ".");
+        }
+        return DynamicSerializableUuid.method_26276(is);
+    }
+
+    public static <T> T method_26430(DynamicOps<T> dynamicOps, UUID uUID) {
+        return dynamicOps.createIntList(Arrays.stream(DynamicSerializableUuid.method_26275(uUID)));
     }
 }
 

@@ -5,6 +5,9 @@ package net.minecraft.util;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents an object which can be cleared.
+ */
 public interface Clearable {
     public void clear();
 

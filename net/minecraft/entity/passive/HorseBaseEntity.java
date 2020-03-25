@@ -922,7 +922,7 @@ JumpingMount {
         double g = this.getBoundingBox().y2 + 0.75;
         do {
             Box box2;
-            double h = this.world.method_26097(mutable);
+            double h = this.world.method_26372(mutable);
             if ((double)mutable.getY() + h > g) break;
             if (!Double.isInfinite(h) && h < 1.0 && this.world.getBlockCollisions(livingEntity, box2 = box.offset(d, (double)mutable.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
                 return new Vec3d(d, (double)mutable.getY() + h, f);

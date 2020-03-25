@@ -33,7 +33,9 @@ extends AbstractSlowingParticle {
     @Override
     public void tick() {
         super.tick();
-        this.setSpriteForAge(this.spriteProvider);
+        if (!this.dead) {
+            this.setSpriteForAge(this.spriteProvider);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)

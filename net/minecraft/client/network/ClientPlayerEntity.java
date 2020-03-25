@@ -83,6 +83,9 @@ import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents the client's own player entity.
+ */
 @Environment(value=EnvType.CLIENT)
 public class ClientPlayerEntity
 extends AbstractClientPlayerEntity {
