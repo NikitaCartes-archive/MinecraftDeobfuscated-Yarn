@@ -4,19 +4,19 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_4990;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.DirectionTransformation;
 
 public enum BlockRotation {
-	NONE(class_4990.field_23292),
-	CLOCKWISE_90(class_4990.field_23318),
-	CLOCKWISE_180(class_4990.field_23300),
-	COUNTERCLOCKWISE_90(class_4990.field_23319);
+	NONE(DirectionTransformation.IDENTITY),
+	CLOCKWISE_90(DirectionTransformation.ROT_90_Y_NEG),
+	CLOCKWISE_180(DirectionTransformation.ROT_180_FACE_XZ),
+	COUNTERCLOCKWISE_90(DirectionTransformation.ROT_90_Y_POS);
 
-	private final class_4990 field_23264;
+	private final DirectionTransformation directionTransformation;
 
-	private BlockRotation(class_4990 arg) {
-		this.field_23264 = arg;
+	private BlockRotation(DirectionTransformation directionTransformation) {
+		this.directionTransformation = directionTransformation;
 	}
 
 	public BlockRotation rotate(BlockRotation rotation) {
@@ -59,8 +59,8 @@ public enum BlockRotation {
 		}
 	}
 
-	public class_4990 method_26383() {
-		return this.field_23264;
+	public DirectionTransformation getDirectionTransformation() {
+		return this.directionTransformation;
 	}
 
 	public Direction rotate(Direction direction) {

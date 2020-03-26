@@ -5,7 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -150,7 +150,7 @@ public abstract class TameableEntity extends AnimalEntity {
 		this.setTamed(true);
 		this.setOwnerUuid(player.getUuid());
 		if (player instanceof ServerPlayerEntity) {
-			Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
+			Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
 		}
 	}
 

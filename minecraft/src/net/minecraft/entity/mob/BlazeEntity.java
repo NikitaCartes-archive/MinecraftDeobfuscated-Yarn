@@ -149,9 +149,9 @@ public class BlazeEntity extends HostileEntity {
 		return (this.dataTracker.get(BLAZE_FLAGS) & 1) != 0;
 	}
 
-	private void setFireActive(boolean bl) {
+	private void setFireActive(boolean fireActive) {
 		byte b = this.dataTracker.get(BLAZE_FLAGS);
-		if (bl) {
+		if (fireActive) {
 			b = (byte)(b | 1);
 		} else {
 			b = (byte)(b & -2);

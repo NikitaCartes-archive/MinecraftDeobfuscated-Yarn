@@ -338,7 +338,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity player, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
+	public void playSound(@Nullable PlayerEntity player, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 	}
 
 	@Override
@@ -346,7 +346,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
+	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
 	}
 
 	@Override
@@ -355,8 +355,8 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> state) {
-		return state.test(this.getBlockState(blockPos));
+	public boolean testBlockState(BlockPos pos, Predicate<BlockState> state) {
+		return state.test(this.getBlockState(pos));
 	}
 
 	@Override

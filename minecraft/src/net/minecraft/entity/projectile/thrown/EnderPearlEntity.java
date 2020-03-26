@@ -3,7 +3,7 @@ package net.minecraft.entity.projectile.thrown;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.entity.Entity;
@@ -56,8 +56,8 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected void method_24920(BlockHitResult blockHitResult) {
-		super.method_24920(blockHitResult);
+	protected void onBlockHit(BlockHitResult blockHitResult) {
+		super.onBlockHit(blockHitResult);
 		Entity entity = this.getOwner();
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
@@ -65,7 +65,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 			EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
 			if (entity != null) {
 				if (entity instanceof ServerPlayerEntity) {
-					Criterions.ENTER_BLOCK.trigger((ServerPlayerEntity)entity, this.world.getBlockState(blockPos));
+					Criteria.ENTER_BLOCK.trigger((ServerPlayerEntity)entity, this.world.getBlockState(blockPos));
 				}
 
 				endGatewayBlockEntity.tryTeleportingEntity(entity);

@@ -79,15 +79,15 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.leftPantLeg, this.rightPantLeg, this.leftSleeve, this.rightSleeve, this.jacket));
 	}
 
-	public void renderEars(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
+	public void renderEars(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
 		this.ears.copyPositionAndRotation(this.head);
 		this.ears.pivotX = 0.0F;
 		this.ears.pivotY = 0.0F;
-		this.ears.render(matrixStack, vertexConsumer, i, j);
+		this.ears.render(matrices, vertices, light, overlay);
 	}
 
-	public void renderCape(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j) {
-		this.cape.render(matrixStack, vertexConsumer, i, j);
+	public void renderCape(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
+		this.cape.render(matrices, vertices, light, overlay);
 	}
 
 	@Override

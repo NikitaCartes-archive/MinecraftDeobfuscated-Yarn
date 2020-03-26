@@ -38,15 +38,15 @@ public class LocationArrivalCriterion extends AbstractCriterion<LocationArrivalC
 		}
 
 		public static LocationArrivalCriterion.Conditions create(LocationPredicate location) {
-			return new LocationArrivalCriterion.Conditions(Criterions.LOCATION.id, location);
+			return new LocationArrivalCriterion.Conditions(Criteria.LOCATION.id, location);
 		}
 
 		public static LocationArrivalCriterion.Conditions createSleptInBed() {
-			return new LocationArrivalCriterion.Conditions(Criterions.SLEPT_IN_BED.id, LocationPredicate.ANY);
+			return new LocationArrivalCriterion.Conditions(Criteria.SLEPT_IN_BED.id, LocationPredicate.ANY);
 		}
 
 		public static LocationArrivalCriterion.Conditions createHeroOfTheVillage() {
-			return new LocationArrivalCriterion.Conditions(Criterions.HERO_OF_THE_VILLAGE.id, LocationPredicate.ANY);
+			return new LocationArrivalCriterion.Conditions(Criteria.HERO_OF_THE_VILLAGE.id, LocationPredicate.ANY);
 		}
 
 		public boolean matches(ServerWorld world, double x, double y, double z) {

@@ -5,12 +5,12 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_4994;
-import net.minecraft.class_4995;
 import net.minecraft.block.BlockState;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.structure.rule.AlwaysTruePosRuleTest;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
+import net.minecraft.structure.rule.PosRuleTest;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.math.BlockPos;
@@ -19,19 +19,19 @@ import net.minecraft.util.registry.Registry;
 public class StructureProcessorRule {
 	private final RuleTest inputPredicate;
 	private final RuleTest locationPredicate;
-	private final class_4995 field_23347;
+	private final PosRuleTest positionPredicate;
 	private final BlockState outputState;
 	@Nullable
 	private final CompoundTag tag;
 
 	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, BlockState blockState) {
-		this(ruleTest, ruleTest2, class_4994.field_23343, blockState, null);
+		this(ruleTest, ruleTest2, AlwaysTruePosRuleTest.INSTANCE, blockState, null);
 	}
 
-	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, class_4995 arg, BlockState blockState, @Nullable CompoundTag compoundTag) {
+	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, PosRuleTest posRuleTest, BlockState blockState, @Nullable CompoundTag compoundTag) {
 		this.inputPredicate = ruleTest;
 		this.locationPredicate = ruleTest2;
-		this.field_23347 = arg;
+		this.positionPredicate = posRuleTest;
 		this.outputState = blockState;
 		this.tag = compoundTag;
 	}
@@ -39,7 +39,7 @@ public class StructureProcessorRule {
 	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, Random random) {
 		return this.inputPredicate.test(input, random)
 			&& this.locationPredicate.test(location, random)
-			&& this.field_23347.method_26406(blockPos, blockPos2, blockPos3, random);
+			&& this.positionPredicate.test(blockPos, blockPos2, blockPos3, random);
 	}
 
 	public BlockState getOutputState() {
@@ -59,7 +59,7 @@ public class StructureProcessorRule {
 				dynamicOps.createString("location_predicate"),
 				this.locationPredicate.serializeWithId(dynamicOps).getValue(),
 				dynamicOps.createString("position_predicate"),
-				this.field_23347.method_26407(dynamicOps).getValue(),
+				this.positionPredicate.serialize(dynamicOps).getValue(),
 				dynamicOps.createString("output_state"),
 				BlockState.serialize(dynamicOps, this.outputState).getValue()
 			)
@@ -77,9 +77,9 @@ public class StructureProcessorRule {
 		Dynamic<T> dynamic4 = dynamic.get("position_predicate").orElseEmptyMap();
 		RuleTest ruleTest = DynamicDeserializer.deserialize(dynamic2, Registry.RULE_TEST, "predicate_type", AlwaysTrueRuleTest.INSTANCE);
 		RuleTest ruleTest2 = DynamicDeserializer.deserialize(dynamic3, Registry.RULE_TEST, "predicate_type", AlwaysTrueRuleTest.INSTANCE);
-		class_4995 lv = DynamicDeserializer.deserialize(dynamic4, Registry.POS_RULE_TEST, "predicate_type", class_4994.field_23343);
+		PosRuleTest posRuleTest = DynamicDeserializer.deserialize(dynamic4, Registry.POS_RULE_TEST, "predicate_type", AlwaysTruePosRuleTest.INSTANCE);
 		BlockState blockState = BlockState.deserialize(dynamic.get("output_state").orElseEmptyMap());
 		CompoundTag compoundTag = (CompoundTag)dynamic.get("output_nbt").map(dynamicx -> dynamicx.convert(NbtOps.INSTANCE).getValue()).orElse(null);
-		return new StructureProcessorRule(ruleTest, ruleTest2, lv, blockState, compoundTag);
+		return new StructureProcessorRule(ruleTest, ruleTest2, posRuleTest, blockState, compoundTag);
 	}
 }

@@ -30,9 +30,9 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 	public static class Conditions extends AbstractCriterionConditions {
 		private final NumberRange.FloatRange distance;
 
-		public Conditions(NumberRange.FloatRange floatRange) {
+		public Conditions(NumberRange.FloatRange distance) {
 			super(UsedEnderEyeCriterion.id);
-			this.distance = floatRange;
+			this.distance = distance;
 		}
 
 		public boolean matches(double distance) {

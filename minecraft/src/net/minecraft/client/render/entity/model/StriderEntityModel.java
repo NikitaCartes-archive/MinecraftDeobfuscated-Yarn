@@ -1,14 +1,14 @@
-package net.minecraft;
+package net.minecraft.client.render.entity.model;
 
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
+import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class class_4997<T extends class_4985> extends CompositeEntityModel<T> {
+public class StriderEntityModel<T extends StriderEntity> extends CompositeEntityModel<T> {
 	private final ModelPart field_23353;
 	private final ModelPart field_23354;
 	private final ModelPart field_23355;
@@ -19,7 +19,7 @@ public class class_4997<T extends class_4985> extends CompositeEntityModel<T> {
 	private final ModelPart field_23360;
 	private final ModelPart field_23361;
 
-	public class_4997() {
+	public StriderEntityModel() {
 		this.textureWidth = 128;
 		this.textureHeight = 128;
 		this.field_23353 = new ModelPart(this, 0, 32);
@@ -63,9 +63,9 @@ public class class_4997<T extends class_4985> extends CompositeEntityModel<T> {
 		this.field_23355.addChild(this.field_23361);
 	}
 
-	public void setAngles(class_4985 arg, float f, float g, float h, float i, float j) {
+	public void setAngles(StriderEntity striderEntity, float f, float g, float h, float i, float j) {
 		g = Math.min(0.25F, g);
-		if (arg.getPassengerList().size() <= 0) {
+		if (striderEntity.getPassengerList().size() <= 0) {
 			this.field_23355.pitch = j * (float) (Math.PI / 180.0);
 			this.field_23355.yaw = i * (float) (Math.PI / 180.0);
 		} else {

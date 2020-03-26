@@ -24,9 +24,9 @@ public class EnchantmentPredicate {
 		this.levels = NumberRange.IntRange.ANY;
 	}
 
-	public EnchantmentPredicate(@Nullable Enchantment enchantment, NumberRange.IntRange intRange) {
+	public EnchantmentPredicate(@Nullable Enchantment enchantment, NumberRange.IntRange levels) {
 		this.enchantment = enchantment;
-		this.levels = intRange;
+		this.levels = levels;
 	}
 
 	public boolean test(Map<Enchantment, Integer> map) {

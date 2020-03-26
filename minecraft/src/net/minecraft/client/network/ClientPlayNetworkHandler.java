@@ -1107,7 +1107,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				playerEntity.inventory.setCursorStack(itemStack);
 			}
 		} else if (packet.getSyncId() == -2) {
-			playerEntity.inventory.setInvStack(i, itemStack);
+			playerEntity.inventory.setStack(i, itemStack);
 		} else {
 			boolean bl = false;
 			if (this.client.currentScreen instanceof CreativeInventoryScreen) {

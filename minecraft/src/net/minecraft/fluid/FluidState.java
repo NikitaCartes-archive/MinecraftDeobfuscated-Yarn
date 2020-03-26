@@ -103,8 +103,8 @@ public interface FluidState extends State<FluidState> {
 		return this.getFluid().getBlastResistance();
 	}
 
-	default boolean method_15764(BlockView world, BlockPos blockPos, Fluid fluid, Direction direction) {
-		return this.getFluid().canBeReplacedWith(this, world, blockPos, fluid, direction);
+	default boolean canBeReplacedWith(BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
+		return this.getFluid().canBeReplacedWith(this, world, pos, fluid, direction);
 	}
 
 	static <T> Dynamic<T> serialize(DynamicOps<T> ops, FluidState state) {

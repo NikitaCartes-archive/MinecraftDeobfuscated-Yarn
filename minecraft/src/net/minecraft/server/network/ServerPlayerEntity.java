@@ -11,7 +11,7 @@ import java.util.OptionalInt;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -328,7 +328,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	@Override
 	protected void onBlockCollision(BlockState state) {
-		Criterions.ENTER_BLOCK.trigger(this, state);
+		Criteria.ENTER_BLOCK.trigger(this, state);
 	}
 
 	@Override
@@ -377,9 +377,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			}
 		}
 
-		Criterions.TICK.trigger(this);
+		Criteria.TICK.trigger(this);
 		if (this.levitationStartPos != null) {
-			Criterions.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
+			Criteria.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
 		}
 
 		this.advancementTracker.sendUpdate(this);
@@ -391,8 +391,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				super.tick();
 			}
 
-			for(int i = 0; i < this.inventory.getInvSize(); ++i) {
-				ItemStack itemStack = this.inventory.getInvStack(i);
+			for(int i = 0; i < this.inventory.size(); ++i) {
+				ItemStack itemStack = this.inventory.getStack(i);
 				if (itemStack.getItem().isNetworkSynced()) {
 					Packet<?> packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, this);
 					if (packet != null) {
@@ -446,7 +446,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			}
 
 			if (this.age % 20 == 0) {
-				Criterions.LOCATION.trigger(this);
+				Criteria.LOCATION.trigger(this);
 			}
 		} catch (Throwable var4) {
 			CrashReport crashReport = CrashReport.create(var4, "Ticking player");
@@ -530,7 +530,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 			this.updateScoreboardScore(string, string2, ScoreboardCriterion.TEAM_KILLS);
 			this.updateScoreboardScore(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
-			Criterions.PLAYER_KILLED_ENTITY.trigger(this, killer, damageSource);
+			Criteria.PLAYER_KILLED_ENTITY.trigger(this, killer, damageSource);
 		}
 	}
 
@@ -698,9 +698,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private void dimensionChanged(ServerWorld targetWorld) {
 		DimensionType dimensionType = targetWorld.dimension.getType();
 		DimensionType dimensionType2 = this.world.dimension.getType();
-		Criterions.CHANGED_DIMENSION.trigger(this, dimensionType, dimensionType2);
+		Criteria.CHANGED_DIMENSION.trigger(this, dimensionType, dimensionType2);
 		if (dimensionType == DimensionType.THE_NETHER && dimensionType2 == DimensionType.OVERWORLD && this.enteredNetherPos != null) {
-			Criterions.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
+			Criteria.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
 		}
 
 		if (dimensionType2 != DimensionType.THE_NETHER) {
@@ -765,7 +765,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 				Either<PlayerEntity.SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> {
 					this.incrementStat(Stats.SLEEP_IN_BED);
-					Criterions.SLEPT_IN_BED.trigger(this);
+					Criteria.SLEPT_IN_BED.trigger(this);
 				});
 				((ServerWorld)this.world).updateSleepingPlayers();
 				return either;
@@ -855,9 +855,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
-		signBlockEntity.setEditor(this);
-		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.getPos()));
+	public void openEditSignScreen(SignBlockEntity sign) {
+		sign.setEditor(this);
+		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos()));
 	}
 
 	private void incrementScreenHandlerSyncId() {
@@ -896,14 +896,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
+	public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
 		if (this.currentScreenHandler != this.playerScreenHandler) {
 			this.closeHandledScreen();
 		}
 
 		this.incrementScreenHandlerSyncId();
-		this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
-		this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.inventory, inventory, horseBaseEntity);
+		this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getEntityId()));
+		this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.inventory, inventory, horse);
 		this.currentScreenHandler.addListener(this);
 	}
 
@@ -920,16 +920,16 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
-		commandBlockBlockEntity.setNeedsUpdatePacket(true);
-		this.sendBlockEntityUpdate(commandBlockBlockEntity);
+	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
+		commandBlock.setNeedsUpdatePacket(true);
+		this.sendBlockEntityUpdate(commandBlock);
 	}
 
 	@Override
 	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
 		if (!(handler.getSlot(slotId) instanceof CraftingResultSlot)) {
 			if (handler == this.playerScreenHandler) {
-				Criterions.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
+				Criteria.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
 			}
 
 			if (!this.field_13991) {
@@ -1108,14 +1108,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.levitationStartPos = this.getPos();
 		}
 
-		Criterions.EFFECTS_CHANGED.trigger(this);
+		Criteria.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
 	protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect) {
 		super.onStatusEffectUpgraded(effect, reapplyEffect);
 		this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), effect));
-		Criterions.EFFECTS_CHANGED.trigger(this);
+		Criteria.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
@@ -1126,7 +1126,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.levitationStartPos = null;
 		}
 
-		Criterions.EFFECTS_CHANGED.trigger(this);
+		Criteria.EFFECTS_CHANGED.trigger(this);
 	}
 
 	@Override
@@ -1355,6 +1355,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 	}
 
+	@Nullable
 	public BlockPos getSpawnPointPosition() {
 		return this.spawnPointPosition;
 	}

@@ -19,7 +19,7 @@ public class ShulkerBoxScreenHandler extends ScreenHandler {
 		super(ScreenHandlerType.SHULKER_BOX, syncId);
 		checkSize(inventory, 27);
 		this.inventory = inventory;
-		inventory.onInvOpen(playerInventory.player);
+		inventory.onOpen(playerInventory.player);
 		int i = 3;
 		int j = 9;
 
@@ -42,7 +42,7 @@ public class ShulkerBoxScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUseInv(player);
+		return this.inventory.canPlayerUse(player);
 	}
 
 	@Override
@@ -52,11 +52,11 @@ public class ShulkerBoxScreenHandler extends ScreenHandler {
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (index < this.inventory.getInvSize()) {
-				if (!this.insertItem(itemStack2, this.inventory.getInvSize(), this.slots.size(), true)) {
+			if (index < this.inventory.size()) {
+				if (!this.insertItem(itemStack2, this.inventory.size(), this.slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
+			} else if (!this.insertItem(itemStack2, 0, this.inventory.size(), false)) {
 				return ItemStack.EMPTY;
 			}
 
@@ -73,6 +73,6 @@ public class ShulkerBoxScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.inventory.onInvClose(player);
+		this.inventory.onClose(player);
 	}
 }

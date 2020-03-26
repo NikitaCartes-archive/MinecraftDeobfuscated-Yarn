@@ -367,32 +367,32 @@ public class ArmorStandEntity extends LivingEntity {
 		return equipmentSlot;
 	}
 
-	private boolean isSlotDisabled(EquipmentSlot equipmentSlot) {
-		return (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId()) != 0 || equipmentSlot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
+	private boolean isSlotDisabled(EquipmentSlot slot) {
+		return (this.disabledSlots & 1 << slot.getArmorStandSlotId()) != 0 || slot.getType() == EquipmentSlot.Type.HAND && !this.shouldShowArms();
 	}
 
-	private boolean equip(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
-		ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-		if (!itemStack2.isEmpty() && (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 8) != 0) {
+	private boolean equip(PlayerEntity player, EquipmentSlot slot, ItemStack stack, Hand hand) {
+		ItemStack itemStack = this.getEquippedStack(slot);
+		if (!itemStack.isEmpty() && (this.disabledSlots & 1 << slot.getArmorStandSlotId() + 8) != 0) {
 			return false;
-		} else if (itemStack2.isEmpty() && (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 16) != 0) {
+		} else if (itemStack.isEmpty() && (this.disabledSlots & 1 << slot.getArmorStandSlotId() + 16) != 0) {
 			return false;
-		} else if (playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !itemStack.isEmpty()) {
-			ItemStack itemStack3 = itemStack.copy();
-			itemStack3.setCount(1);
-			this.equipStack(equipmentSlot, itemStack3);
+		} else if (player.abilities.creativeMode && itemStack.isEmpty() && !stack.isEmpty()) {
+			ItemStack itemStack2 = stack.copy();
+			itemStack2.setCount(1);
+			this.equipStack(slot, itemStack2);
 			return true;
-		} else if (itemStack.isEmpty() || itemStack.getCount() <= 1) {
-			this.equipStack(equipmentSlot, itemStack);
-			playerEntity.setStackInHand(hand, itemStack2);
+		} else if (stack.isEmpty() || stack.getCount() <= 1) {
+			this.equipStack(slot, stack);
+			player.setStackInHand(hand, itemStack);
 			return true;
-		} else if (!itemStack2.isEmpty()) {
+		} else if (!itemStack.isEmpty()) {
 			return false;
 		} else {
-			ItemStack itemStack3 = itemStack.copy();
-			itemStack3.setCount(1);
-			this.equipStack(equipmentSlot, itemStack3);
-			itemStack.decrement(1);
+			ItemStack itemStack2 = stack.copy();
+			itemStack2.setCount(1);
+			this.equipStack(slot, itemStack2);
+			stack.decrement(1);
 			return true;
 		}
 	}

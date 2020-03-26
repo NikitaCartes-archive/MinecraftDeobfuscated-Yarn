@@ -279,7 +279,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		PlayerActionC2SPacket.Action action = dropEntireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
 		this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
 		return this.inventory
-				.takeInvStack(
+				.removeStack(
 					this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1
 				)
 			!= ItemStack.EMPTY;
@@ -565,8 +565,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
-		this.client.openScreen(new SignEditScreen(signBlockEntity));
+	public void openEditSignScreen(SignBlockEntity sign) {
+		this.client.openScreen(new SignEditScreen(sign));
 	}
 
 	@Override
@@ -575,18 +575,18 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
-		this.client.openScreen(new CommandBlockScreen(commandBlockBlockEntity));
+	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
+		this.client.openScreen(new CommandBlockScreen(commandBlock));
 	}
 
 	@Override
-	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
-		this.client.openScreen(new StructureBlockScreen(structureBlockBlockEntity));
+	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlock) {
+		this.client.openScreen(new StructureBlockScreen(structureBlock));
 	}
 
 	@Override
-	public void openJigsawScreen(JigsawBlockEntity jigsawBlockEntity) {
-		this.client.openScreen(new JigsawBlockScreen(jigsawBlockEntity));
+	public void openJigsawScreen(JigsawBlockEntity jigsaw) {
+		this.client.openScreen(new JigsawBlockScreen(jigsaw));
 	}
 
 	@Override

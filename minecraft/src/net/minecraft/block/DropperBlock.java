@@ -39,7 +39,7 @@ public class DropperBlock extends DispenserBlock {
 		if (i < 0) {
 			world.playLevelEvent(1001, pos, 0);
 		} else {
-			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
+			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			if (!itemStack.isEmpty()) {
 				Direction direction = world.getBlockState(pos).get(FACING);
 				Inventory inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
@@ -56,7 +56,7 @@ public class DropperBlock extends DispenserBlock {
 					}
 				}
 
-				dispenserBlockEntity.setInvStack(i, itemStack2);
+				dispenserBlockEntity.setStack(i, itemStack2);
 			}
 		}
 	}

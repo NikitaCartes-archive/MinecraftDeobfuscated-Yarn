@@ -25,8 +25,8 @@ public class DamageTracker {
 	private boolean hasDamage;
 	private String fallDeathSuffix;
 
-	public DamageTracker(LivingEntity livingEntity) {
-		this.entity = livingEntity;
+	public DamageTracker(LivingEntity entity) {
+		this.entity = entity;
 	}
 
 	public void setFallDeathSuffix() {

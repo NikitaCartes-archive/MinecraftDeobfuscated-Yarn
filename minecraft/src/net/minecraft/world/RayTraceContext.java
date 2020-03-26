@@ -34,12 +34,12 @@ public class RayTraceContext {
 		return this.start;
 	}
 
-	public VoxelShape getBlockShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return this.shapeType.get(blockState, blockView, blockPos, this.entityPosition);
+	public VoxelShape getBlockShape(BlockState state, BlockView world, BlockPos pos) {
+		return this.shapeType.get(state, world, pos, this.entityPosition);
 	}
 
-	public VoxelShape getFluidShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return this.fluid.handled(fluidState) ? fluidState.getShape(blockView, blockPos) : VoxelShapes.empty();
+	public VoxelShape getFluidShape(FluidState state, BlockView world, BlockPos pos) {
+		return this.fluid.handled(state) ? state.getShape(world, pos) : VoxelShapes.empty();
 	}
 
 	public static enum FluidHandling {
@@ -53,13 +53,13 @@ public class RayTraceContext {
 			this.predicate = predicate;
 		}
 
-		public boolean handled(FluidState fluidState) {
-			return this.predicate.test(fluidState);
+		public boolean handled(FluidState state) {
+			return this.predicate.test(state);
 		}
 	}
 
 	public interface ShapeProvider {
-		VoxelShape get(BlockState blockState, BlockView blockView, BlockPos blockPos, ShapeContext shapeContext);
+		VoxelShape get(BlockState state, BlockView world, BlockPos pos, ShapeContext context);
 	}
 
 	public static enum ShapeType implements RayTraceContext.ShapeProvider {
@@ -69,8 +69,8 @@ public class RayTraceContext {
 
 		private final RayTraceContext.ShapeProvider provider;
 
-		private ShapeType(RayTraceContext.ShapeProvider shapeProvider) {
-			this.provider = shapeProvider;
+		private ShapeType(RayTraceContext.ShapeProvider provider) {
+			this.provider = provider;
 		}
 
 		@Override

@@ -1,17 +1,17 @@
 package net.minecraft.util;
 
-import net.minecraft.class_4990;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.DirectionTransformation;
 
 public enum BlockMirror {
-	NONE(class_4990.field_23292),
-	LEFT_RIGHT(class_4990.field_23267),
-	FRONT_BACK(class_4990.field_23323);
+	NONE(DirectionTransformation.IDENTITY),
+	LEFT_RIGHT(DirectionTransformation.INVERT_Z),
+	FRONT_BACK(DirectionTransformation.INVERT_X);
 
-	private final class_4990 field_23263;
+	private final DirectionTransformation directionTransformation;
 
-	private BlockMirror(class_4990 arg) {
-		this.field_23263 = arg;
+	private BlockMirror(DirectionTransformation directionTransformation) {
+		this.directionTransformation = directionTransformation;
 	}
 
 	public int mirror(int rotation, int fullTurn) {
@@ -42,7 +42,7 @@ public enum BlockMirror {
 		}
 	}
 
-	public class_4990 method_26380() {
-		return this.field_23263;
+	public DirectionTransformation getDirectionTransformation() {
+		return this.directionTransformation;
 	}
 }

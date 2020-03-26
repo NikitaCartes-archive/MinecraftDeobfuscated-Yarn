@@ -20,9 +20,9 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 	private final Block block;
 	private final StatePredicate properties;
 
-	private BlockStatePropertyLootCondition(Block block, StatePredicate statePredicate) {
+	private BlockStatePropertyLootCondition(Block block, StatePredicate properties) {
 		this.block = block;
-		this.properties = statePredicate;
+		this.properties = properties;
 	}
 
 	@Override

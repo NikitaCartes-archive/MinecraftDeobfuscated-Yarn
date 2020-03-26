@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.util.math.Matrix4f;
+import net.minecraft.util.math.Matrix4f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -702,12 +702,12 @@ public class RenderSystem {
 
 	public static void setupGuiFlatDiffuseLighting() {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_24221();
+		GlStateManager.setupGuiFlatDiffuseLighting();
 	}
 
 	public static void setupGui3DDiffuseLighting() {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.method_24222();
+		GlStateManager.setupGui3dDiffuseLighting();
 	}
 
 	public static void mulTextureByProjModelView() {

@@ -167,8 +167,8 @@ public class Tag<T> {
 	public static class CollectionEntry<T> implements Tag.Entry<T> {
 		private final Collection<T> values;
 
-		public CollectionEntry(Collection<T> collection) {
-			this.values = collection;
+		public CollectionEntry(Collection<T> values) {
+			this.values = values;
 		}
 
 		@Override

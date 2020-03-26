@@ -270,7 +270,7 @@ public class Structure {
 						BlockPos blockPos4 = pair2.getFirst();
 						if (!structurePlacementData.shouldUpdateNeighbors()) {
 							BlockState blockState3 = world.getBlockState(blockPos4);
-							BlockState blockState2 = Block.getRenderingState(blockState3, world, blockPos4);
+							BlockState blockState2 = Block.postProcessState(blockState3, world, blockPos4);
 							if (blockState3 != blockState2) {
 								world.setBlockState(blockPos4, blockState2, i & -2 | 16);
 							}

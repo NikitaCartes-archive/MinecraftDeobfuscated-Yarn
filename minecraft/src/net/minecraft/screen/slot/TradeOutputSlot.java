@@ -51,13 +51,13 @@ public class TradeOutputSlot extends Slot {
 		this.onCrafted(stack);
 		TradeOffer tradeOffer = this.traderInventory.getTradeOffer();
 		if (tradeOffer != null) {
-			ItemStack itemStack = this.traderInventory.getInvStack(0);
-			ItemStack itemStack2 = this.traderInventory.getInvStack(1);
+			ItemStack itemStack = this.traderInventory.getStack(0);
+			ItemStack itemStack2 = this.traderInventory.getStack(1);
 			if (tradeOffer.depleteBuyItems(itemStack, itemStack2) || tradeOffer.depleteBuyItems(itemStack2, itemStack)) {
 				this.trader.trade(tradeOffer);
 				player.incrementStat(Stats.TRADED_WITH_VILLAGER);
-				this.traderInventory.setInvStack(0, itemStack);
-				this.traderInventory.setInvStack(1, itemStack2);
+				this.traderInventory.setStack(0, itemStack);
+				this.traderInventory.setStack(1, itemStack2);
 			}
 
 			this.trader.setExperienceFromServer(this.trader.getExperience() + tradeOffer.getTraderExperience());

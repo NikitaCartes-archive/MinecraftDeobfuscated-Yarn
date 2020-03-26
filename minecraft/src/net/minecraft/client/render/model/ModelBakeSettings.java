@@ -2,12 +2,12 @@ package net.minecraft.client.render.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.AffineTransformation;
 
 @Environment(EnvType.CLIENT)
 public interface ModelBakeSettings {
-	default Rotation3 getRotation() {
-		return Rotation3.identity();
+	default AffineTransformation getRotation() {
+		return AffineTransformation.identity();
 	}
 
 	default boolean isShaded() {

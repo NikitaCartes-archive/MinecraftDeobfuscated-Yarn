@@ -448,10 +448,10 @@ public abstract class RenderLayer extends RenderPhase {
 		RenderPhase.Texture texture;
 		if (layer <= 1) {
 			transparency = TRANSLUCENT_TRANSPARENCY;
-			texture = new RenderPhase.Texture(EndPortalBlockEntityRenderer.SKY_TEX, false, false);
+			texture = new RenderPhase.Texture(EndPortalBlockEntityRenderer.SKY_TEXTURE, false, false);
 		} else {
 			transparency = ADDITIVE_TRANSPARENCY;
-			texture = new RenderPhase.Texture(EndPortalBlockEntityRenderer.PORTAL_TEX, false, false);
+			texture = new RenderPhase.Texture(EndPortalBlockEntityRenderer.PORTAL_TEXTURE, false, false);
 		}
 
 		return of(

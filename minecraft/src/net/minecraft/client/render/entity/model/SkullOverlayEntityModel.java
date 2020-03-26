@@ -17,15 +17,15 @@ public class SkullOverlayEntityModel extends SkullEntityModel {
 	}
 
 	@Override
-	public void render(float f, float g, float h) {
-		super.render(f, g, h);
+	public void method_2821(float f, float g, float h) {
+		super.method_2821(f, g, h);
 		this.skullOverlay.yaw = this.skull.yaw;
 		this.skullOverlay.pitch = this.skull.pitch;
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		super.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-		this.skullOverlay.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+		super.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		this.skullOverlay.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 	}
 }

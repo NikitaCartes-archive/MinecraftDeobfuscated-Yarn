@@ -44,7 +44,7 @@ import net.minecraft.world.World;
 
 public class Explosion {
 	private final boolean createFire;
-	private final Explosion.DestructionType blockDestructionType;
+	private final Explosion.DestructionType destructionType;
 	private final Random random = new Random();
 	private final World world;
 	private final double x;
@@ -79,7 +79,7 @@ public class Explosion {
 	}
 
 	public Explosion(
-		World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType blockDestructionType
+		World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType
 	) {
 		this.world = world;
 		this.entity = entity;
@@ -88,7 +88,7 @@ public class Explosion {
 		this.y = y;
 		this.z = z;
 		this.createFire = createFire;
-		this.blockDestructionType = blockDestructionType;
+		this.destructionType = destructionType;
 		this.damageSource = DamageSource.explosion(this);
 	}
 
@@ -232,7 +232,7 @@ public class Explosion {
 				);
 		}
 
-		boolean bl2 = this.blockDestructionType != Explosion.DestructionType.NONE;
+		boolean bl2 = this.destructionType != Explosion.DestructionType.NONE;
 		if (bl) {
 			if (!(this.power < 2.0F) && bl2) {
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
@@ -259,7 +259,7 @@ public class Explosion {
 							.put(LootContextParameters.TOOL, ItemStack.EMPTY)
 							.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity)
 							.putNullable(LootContextParameters.THIS_ENTITY, this.entity);
-						if (this.blockDestructionType == Explosion.DestructionType.DESTROY) {
+						if (this.destructionType == Explosion.DestructionType.DESTROY) {
 							builder.put(LootContextParameters.EXPLOSION_RADIUS, this.power);
 						}
 

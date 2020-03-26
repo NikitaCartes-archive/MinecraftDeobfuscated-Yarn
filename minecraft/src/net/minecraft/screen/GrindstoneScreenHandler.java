@@ -69,15 +69,15 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 
 					world.playLevelEvent(1042, blockPos, 0);
 				}));
-				GrindstoneScreenHandler.this.input.setInvStack(0, ItemStack.EMPTY);
-				GrindstoneScreenHandler.this.input.setInvStack(1, ItemStack.EMPTY);
+				GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
+				GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);
 				return stack;
 			}
 
 			private int getExperience(World world) {
 				int i = 0;
-				i += this.getExperience(GrindstoneScreenHandler.this.input.getInvStack(0));
-				i += this.getExperience(GrindstoneScreenHandler.this.input.getInvStack(1));
+				i += this.getExperience(GrindstoneScreenHandler.this.input.getStack(0));
+				i += this.getExperience(GrindstoneScreenHandler.this.input.getStack(1));
 				if (i > 0) {
 					int j = (int)Math.ceil((double)i / 2.0);
 					return j + world.random.nextInt(j);
@@ -122,17 +122,17 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	}
 
 	private void updateResult() {
-		ItemStack itemStack = this.input.getInvStack(0);
-		ItemStack itemStack2 = this.input.getInvStack(1);
+		ItemStack itemStack = this.input.getStack(0);
+		ItemStack itemStack2 = this.input.getStack(1);
 		boolean bl = !itemStack.isEmpty() || !itemStack2.isEmpty();
 		boolean bl2 = !itemStack.isEmpty() && !itemStack2.isEmpty();
 		if (!bl) {
-			this.result.setInvStack(0, ItemStack.EMPTY);
+			this.result.setStack(0, ItemStack.EMPTY);
 		} else {
 			boolean bl3 = !itemStack.isEmpty() && itemStack.getItem() != Items.ENCHANTED_BOOK && !itemStack.hasEnchantments()
 				|| !itemStack2.isEmpty() && itemStack2.getItem() != Items.ENCHANTED_BOOK && !itemStack2.hasEnchantments();
 			if (itemStack.getCount() > 1 || itemStack2.getCount() > 1 || !bl2 && bl3) {
-				this.result.setInvStack(0, ItemStack.EMPTY);
+				this.result.setStack(0, ItemStack.EMPTY);
 				this.sendContentUpdates();
 				return;
 			}
@@ -142,7 +142,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			ItemStack itemStack3;
 			if (bl2) {
 				if (itemStack.getItem() != itemStack2.getItem()) {
-					this.result.setInvStack(0, ItemStack.EMPTY);
+					this.result.setStack(0, ItemStack.EMPTY);
 					this.sendContentUpdates();
 					return;
 				}
@@ -155,7 +155,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 				itemStack3 = this.transferEnchantments(itemStack, itemStack2);
 				if (!itemStack3.isDamageable()) {
 					if (!ItemStack.areEqual(itemStack, itemStack2)) {
-						this.result.setInvStack(0, ItemStack.EMPTY);
+						this.result.setStack(0, ItemStack.EMPTY);
 						this.sendContentUpdates();
 						return;
 					}
@@ -168,7 +168,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 				itemStack3 = bl4 ? itemStack : itemStack2;
 			}
 
-			this.result.setInvStack(0, this.grind(itemStack3, m, i));
+			this.result.setStack(0, this.grind(itemStack3, m, i));
 		}
 
 		this.sendContentUpdates();
@@ -238,8 +238,8 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			ItemStack itemStack3 = this.input.getInvStack(0);
-			ItemStack itemStack4 = this.input.getInvStack(1);
+			ItemStack itemStack3 = this.input.getStack(0);
+			ItemStack itemStack4 = this.input.getStack(1);
 			if (index == 2) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;

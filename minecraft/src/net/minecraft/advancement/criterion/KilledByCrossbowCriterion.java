@@ -38,10 +38,10 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		private final EntityPredicate[] victims;
 		private final NumberRange.IntRange uniqueEntityTypes;
 
-		public Conditions(EntityPredicate[] victims, NumberRange.IntRange intRange) {
+		public Conditions(EntityPredicate[] victims, NumberRange.IntRange uniqueEntityTypes) {
 			super(KilledByCrossbowCriterion.ID);
 			this.victims = victims;
-			this.uniqueEntityTypes = intRange;
+			this.uniqueEntityTypes = uniqueEntityTypes;
 		}
 
 		public static KilledByCrossbowCriterion.Conditions create(EntityPredicate.Builder... builders) {
@@ -55,9 +55,9 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 			return new KilledByCrossbowCriterion.Conditions(entityPredicates, NumberRange.IntRange.ANY);
 		}
 
-		public static KilledByCrossbowCriterion.Conditions create(NumberRange.IntRange intRange) {
+		public static KilledByCrossbowCriterion.Conditions create(NumberRange.IntRange uniqueEntityTypes) {
 			EntityPredicate[] entityPredicates = new EntityPredicate[0];
-			return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
+			return new KilledByCrossbowCriterion.Conditions(entityPredicates, uniqueEntityTypes);
 		}
 
 		public boolean matches(ServerPlayerEntity player, Collection<Entity> victims, int amount) {

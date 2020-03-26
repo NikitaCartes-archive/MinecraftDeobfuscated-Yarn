@@ -307,7 +307,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	private boolean method_24350(BlockPos blockPos, Direction direction) {
-		return this.world.method_24368(blockPos.offset(direction), this, direction.getOpposite())
+		return this.world.isDirectionSolid(blockPos.offset(direction), this, direction.getOpposite())
 			&& this.world.doesNotCollide(this, ShulkerLidCollisions.getLidCollisionBox(blockPos, direction.getOpposite()));
 	}
 

@@ -14,9 +14,9 @@ public class EntityDamageSource extends DamageSource {
 	protected final Entity source;
 	private boolean thorns;
 
-	public EntityDamageSource(String name, @Nullable Entity entity) {
+	public EntityDamageSource(String name, @Nullable Entity source) {
 		super(name);
-		this.source = entity;
+		this.source = source;
 	}
 
 	public EntityDamageSource setThorns() {
@@ -35,12 +35,12 @@ public class EntityDamageSource extends DamageSource {
 	}
 
 	@Override
-	public Text getDeathMessage(LivingEntity livingEntity) {
+	public Text getDeathMessage(LivingEntity entity) {
 		ItemStack itemStack = this.source instanceof LivingEntity ? ((LivingEntity)this.source).getMainHandStack() : ItemStack.EMPTY;
 		String string = "death.attack." + this.name;
 		return !itemStack.isEmpty() && itemStack.hasCustomName()
-			? new TranslatableText(string + ".item", livingEntity.getDisplayName(), this.source.getDisplayName(), itemStack.toHoverableText())
-			: new TranslatableText(string, livingEntity.getDisplayName(), this.source.getDisplayName());
+			? new TranslatableText(string + ".item", entity.getDisplayName(), this.source.getDisplayName(), itemStack.toHoverableText())
+			: new TranslatableText(string, entity.getDisplayName(), this.source.getDisplayName());
 	}
 
 	@Override

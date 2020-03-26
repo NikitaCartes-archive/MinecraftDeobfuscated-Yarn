@@ -25,8 +25,8 @@ public class LootContext {
 	private final Random random;
 	private final float luck;
 	private final ServerWorld world;
-	private final Function<Identifier, LootTable> supplierGetter;
-	private final Set<LootTable> suppliers = Sets.<LootTable>newLinkedHashSet();
+	private final Function<Identifier, LootTable> tableGetter;
+	private final Set<LootTable> tables = Sets.<LootTable>newLinkedHashSet();
 	private final Function<Identifier, LootCondition> conditionGetter;
 	private final Set<LootCondition> conditions = Sets.<LootCondition>newLinkedHashSet();
 	private final Map<LootContextParameter<?>, Object> parameters;
@@ -34,20 +34,20 @@ public class LootContext {
 
 	private LootContext(
 		Random random,
-		float f,
-		ServerWorld serverWorld,
-		Function<Identifier, LootTable> function,
-		Function<Identifier, LootCondition> function2,
-		Map<LootContextParameter<?>, Object> map,
-		Map<Identifier, LootContext.Dropper> map2
+		float luck,
+		ServerWorld world,
+		Function<Identifier, LootTable> tableGetter,
+		Function<Identifier, LootCondition> conditionSetter,
+		Map<LootContextParameter<?>, Object> parameters,
+		Map<Identifier, LootContext.Dropper> drops
 	) {
 		this.random = random;
-		this.luck = f;
-		this.world = serverWorld;
-		this.supplierGetter = function;
-		this.conditionGetter = function2;
-		this.parameters = ImmutableMap.copyOf(map);
-		this.drops = ImmutableMap.copyOf(map2);
+		this.luck = luck;
+		this.world = world;
+		this.tableGetter = tableGetter;
+		this.conditionGetter = conditionSetter;
+		this.parameters = ImmutableMap.copyOf(parameters);
+		this.drops = ImmutableMap.copyOf(drops);
 	}
 
 	public boolean hasParameter(LootContextParameter<?> parameter) {
@@ -67,11 +67,11 @@ public class LootContext {
 	}
 
 	public boolean addDrop(LootTable supplier) {
-		return this.suppliers.add(supplier);
+		return this.tables.add(supplier);
 	}
 
 	public void removeDrop(LootTable supplier) {
-		this.suppliers.remove(supplier);
+		this.tables.remove(supplier);
 	}
 
 	public boolean addCondition(LootCondition condition) {
@@ -83,7 +83,7 @@ public class LootContext {
 	}
 
 	public LootTable getSupplier(Identifier id) {
-		return (LootTable)this.supplierGetter.apply(id);
+		return (LootTable)this.tableGetter.apply(id);
 	}
 
 	public LootCondition getCondition(Identifier id) {

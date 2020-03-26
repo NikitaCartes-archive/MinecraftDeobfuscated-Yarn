@@ -102,7 +102,7 @@ public class ShapedRecipe implements CraftingRecipe {
 					}
 				}
 
-				if (!ingredient.test(inv.getInvStack(i + j * inv.getWidth()))) {
+				if (!ingredient.test(inv.getStack(i + j * inv.getWidth()))) {
 					return false;
 				}
 			}

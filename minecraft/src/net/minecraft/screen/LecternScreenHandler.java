@@ -55,7 +55,7 @@ public class LecternScreenHandler extends ScreenHandler {
 						return false;
 					}
 
-					ItemStack itemStack = this.inventory.removeInvStack(0);
+					ItemStack itemStack = this.inventory.removeStack(0);
 					this.inventory.markDirty();
 					if (!player.inventory.insertStack(itemStack)) {
 						player.dropItem(itemStack, false);
@@ -76,12 +76,12 @@ public class LecternScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUseInv(player);
+		return this.inventory.canPlayerUse(player);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public ItemStack getBookItem() {
-		return this.inventory.getInvStack(0);
+		return this.inventory.getStack(0);
 	}
 
 	@Environment(EnvType.CLIENT)

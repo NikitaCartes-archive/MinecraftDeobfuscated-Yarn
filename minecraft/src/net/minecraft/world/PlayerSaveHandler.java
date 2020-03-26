@@ -5,8 +5,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 
 public interface PlayerSaveHandler {
-	void savePlayerData(PlayerEntity playerEntity);
+	void savePlayerData(PlayerEntity player);
 
 	@Nullable
-	CompoundTag loadPlayerData(PlayerEntity playerEntity);
+	CompoundTag loadPlayerData(PlayerEntity player);
 }

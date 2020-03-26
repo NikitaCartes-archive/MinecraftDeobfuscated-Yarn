@@ -57,8 +57,8 @@ public class EntityPredicate {
 		EntityEquipmentPredicate equipment,
 		PlayerPredicate player,
 		FishingHookPredicate fishingHook,
-		@Nullable String string,
-		@Nullable Identifier identifier
+		@Nullable String team,
+		@Nullable Identifier catType
 	) {
 		this.type = type;
 		this.distance = distance;
@@ -69,8 +69,8 @@ public class EntityPredicate {
 		this.equipment = equipment;
 		this.player = player;
 		this.fishingHook = fishingHook;
-		this.team = string;
-		this.catType = identifier;
+		this.team = team;
+		this.catType = catType;
 	}
 
 	public boolean test(ServerPlayerEntity player, @Nullable Entity entity) {
@@ -224,8 +224,8 @@ public class EntityPredicate {
 			return new EntityPredicate.Builder();
 		}
 
-		public EntityPredicate.Builder type(EntityType<?> entityType) {
-			this.type = EntityTypePredicate.create(entityType);
+		public EntityPredicate.Builder type(EntityType<?> type) {
+			this.type = EntityTypePredicate.create(type);
 			return this;
 		}
 
@@ -234,63 +234,63 @@ public class EntityPredicate {
 			return this;
 		}
 
-		public EntityPredicate.Builder type(Identifier identifier) {
-			this.catType = identifier;
+		public EntityPredicate.Builder type(Identifier catType) {
+			this.catType = catType;
 			return this;
 		}
 
-		public EntityPredicate.Builder type(EntityTypePredicate entityTypePredicate) {
-			this.type = entityTypePredicate;
+		public EntityPredicate.Builder type(EntityTypePredicate type) {
+			this.type = type;
 			return this;
 		}
 
-		public EntityPredicate.Builder distance(DistancePredicate distancePredicate) {
-			this.distance = distancePredicate;
+		public EntityPredicate.Builder distance(DistancePredicate distance) {
+			this.distance = distance;
 			return this;
 		}
 
-		public EntityPredicate.Builder location(LocationPredicate locationPredicate) {
-			this.location = locationPredicate;
+		public EntityPredicate.Builder location(LocationPredicate location) {
+			this.location = location;
 			return this;
 		}
 
-		public EntityPredicate.Builder effects(EntityEffectPredicate entityEffectPredicate) {
-			this.effects = entityEffectPredicate;
+		public EntityPredicate.Builder effects(EntityEffectPredicate effects) {
+			this.effects = effects;
 			return this;
 		}
 
-		public EntityPredicate.Builder nbt(NbtPredicate nbtPredicate) {
-			this.nbt = nbtPredicate;
+		public EntityPredicate.Builder nbt(NbtPredicate nbt) {
+			this.nbt = nbt;
 			return this;
 		}
 
-		public EntityPredicate.Builder flags(EntityFlagsPredicate entityFlagsPredicate) {
-			this.flags = entityFlagsPredicate;
+		public EntityPredicate.Builder flags(EntityFlagsPredicate flags) {
+			this.flags = flags;
 			return this;
 		}
 
-		public EntityPredicate.Builder equipment(EntityEquipmentPredicate entityEquipmentPredicate) {
-			this.equipment = entityEquipmentPredicate;
+		public EntityPredicate.Builder equipment(EntityEquipmentPredicate equipment) {
+			this.equipment = equipment;
 			return this;
 		}
 
-		public EntityPredicate.Builder player(PlayerPredicate playerPredicate) {
-			this.player = playerPredicate;
+		public EntityPredicate.Builder player(PlayerPredicate player) {
+			this.player = player;
 			return this;
 		}
 
-		public EntityPredicate.Builder fishHook(FishingHookPredicate fishingHookPredicate) {
-			this.fishHook = fishingHookPredicate;
+		public EntityPredicate.Builder fishHook(FishingHookPredicate fishHook) {
+			this.fishHook = fishHook;
 			return this;
 		}
 
-		public EntityPredicate.Builder team(@Nullable String string) {
-			this.team = string;
+		public EntityPredicate.Builder team(@Nullable String team) {
+			this.team = team;
 			return this;
 		}
 
-		public EntityPredicate.Builder catType(@Nullable Identifier identifier) {
-			this.catType = identifier;
+		public EntityPredicate.Builder catType(@Nullable Identifier catType) {
+			this.catType = catType;
 			return this;
 		}
 

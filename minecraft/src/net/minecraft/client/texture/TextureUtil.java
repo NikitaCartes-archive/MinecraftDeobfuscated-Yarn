@@ -23,7 +23,7 @@ public class TextureUtil {
 
 	public static int method_24956() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		return GlStateManager.getTexLevelParameter();
+		return GlStateManager.genTextures();
 	}
 
 	public static void method_24957(int i) {

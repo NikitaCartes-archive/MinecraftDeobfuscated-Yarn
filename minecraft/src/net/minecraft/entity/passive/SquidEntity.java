@@ -204,10 +204,10 @@ public class SquidEntity extends WaterCreatureEntity {
 		}
 	}
 
-	public void setConstantVelocity(float f, float g, float h) {
-		this.constantVelocityX = f;
-		this.constantVelocityY = g;
-		this.constantVelocityZ = h;
+	public void setConstantVelocity(float x, float y, float z) {
+		this.constantVelocityX = x;
+		this.constantVelocityY = y;
+		this.constantVelocityZ = z;
 	}
 
 	public boolean hasConstantVelocity() {

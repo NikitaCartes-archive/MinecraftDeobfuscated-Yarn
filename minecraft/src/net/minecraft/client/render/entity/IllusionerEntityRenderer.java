@@ -65,7 +65,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 		}
 	}
 
-	protected boolean isFullyVisible(IllusionerEntity illusionerEntity) {
+	protected boolean isVisible(IllusionerEntity illusionerEntity) {
 		return true;
 	}
 }

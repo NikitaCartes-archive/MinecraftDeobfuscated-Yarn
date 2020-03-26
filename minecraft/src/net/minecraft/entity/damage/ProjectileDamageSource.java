@@ -10,9 +10,9 @@ import net.minecraft.text.TranslatableText;
 public class ProjectileDamageSource extends EntityDamageSource {
 	private final Entity attacker;
 
-	public ProjectileDamageSource(String name, Entity projectile, @Nullable Entity entity) {
+	public ProjectileDamageSource(String name, Entity projectile, @Nullable Entity attacker) {
 		super(name, projectile);
-		this.attacker = entity;
+		this.attacker = attacker;
 	}
 
 	@Nullable
@@ -28,13 +28,13 @@ public class ProjectileDamageSource extends EntityDamageSource {
 	}
 
 	@Override
-	public Text getDeathMessage(LivingEntity livingEntity) {
+	public Text getDeathMessage(LivingEntity entity) {
 		Text text = this.attacker == null ? this.source.getDisplayName() : this.attacker.getDisplayName();
 		ItemStack itemStack = this.attacker instanceof LivingEntity ? ((LivingEntity)this.attacker).getMainHandStack() : ItemStack.EMPTY;
 		String string = "death.attack." + this.name;
 		String string2 = string + ".item";
 		return !itemStack.isEmpty() && itemStack.hasCustomName()
-			? new TranslatableText(string2, livingEntity.getDisplayName(), text, itemStack.toHoverableText())
-			: new TranslatableText(string, livingEntity.getDisplayName(), text);
+			? new TranslatableText(string2, entity.getDisplayName(), text, itemStack.toHoverableText())
+			: new TranslatableText(string, entity.getDisplayName(), text);
 	}
 }

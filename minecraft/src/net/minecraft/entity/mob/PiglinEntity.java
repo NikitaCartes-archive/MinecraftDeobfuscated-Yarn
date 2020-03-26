@@ -164,7 +164,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	protected ItemStack addItem(ItemStack stack) {
-		return this.inventory.add(stack);
+		return this.inventory.addStack(stack);
 	}
 
 	@Override

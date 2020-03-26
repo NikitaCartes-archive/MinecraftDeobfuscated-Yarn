@@ -33,7 +33,7 @@ public class BellBlockEntityRenderer extends BlockEntityRenderer<BellBlockEntity
 		float g = (float)bellBlockEntity.ringTicks + f;
 		float h = 0.0F;
 		float k = 0.0F;
-		if (bellBlockEntity.isRinging) {
+		if (bellBlockEntity.ringing) {
 			float l = MathHelper.sin(g / (float) Math.PI) / (4.0F + g / 3.0F);
 			if (bellBlockEntity.lastSideHit == Direction.NORTH) {
 				h = -l;

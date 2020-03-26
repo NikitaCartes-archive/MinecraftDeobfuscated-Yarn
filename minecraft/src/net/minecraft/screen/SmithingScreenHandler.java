@@ -42,31 +42,31 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	protected boolean canTakeOutput(PlayerEntity player, boolean present) {
-		return RECIPES.containsKey(this.input.getInvStack(0).getItem()) && this.input.getInvStack(1).getItem() == Items.NETHERITE_INGOT;
+		return RECIPES.containsKey(this.input.getStack(0).getItem()) && this.input.getStack(1).getItem() == Items.NETHERITE_INGOT;
 	}
 
 	@Override
 	protected ItemStack onTakeOutput(PlayerEntity player, ItemStack stack) {
-		this.input.setInvStack(0, ItemStack.EMPTY);
-		ItemStack itemStack = this.input.getInvStack(1);
+		this.input.setStack(0, ItemStack.EMPTY);
+		ItemStack itemStack = this.input.getStack(1);
 		itemStack.decrement(1);
-		this.input.setInvStack(1, itemStack);
+		this.input.setStack(1, itemStack);
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> world.playLevelEvent(1044, blockPos, 0)));
 		return stack;
 	}
 
 	@Override
 	public void updateResult() {
-		ItemStack itemStack = this.input.getInvStack(0);
-		ItemStack itemStack2 = this.input.getInvStack(1);
+		ItemStack itemStack = this.input.getStack(0);
+		ItemStack itemStack2 = this.input.getStack(1);
 		Item item = (Item)RECIPES.get(itemStack.getItem());
 		if (itemStack2.getItem() == Items.NETHERITE_INGOT && item != null) {
 			ItemStack itemStack3 = new ItemStack(item);
 			CompoundTag compoundTag = itemStack.getTag();
 			itemStack3.setTag(compoundTag != null ? compoundTag.copy() : null);
-			this.output.setInvStack(0, itemStack3);
+			this.output.setStack(0, itemStack3);
 		} else {
-			this.output.setInvStack(0, ItemStack.EMPTY);
+			this.output.setStack(0, ItemStack.EMPTY);
 		}
 	}
 }

@@ -164,15 +164,15 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void removeBlockEntity(BlockPos blockPos) {
+	public void removeBlockEntity(BlockPos pos) {
 	}
 
 	@Override
-	public void markBlockForPostProcessing(BlockPos blockPos) {
+	public void markBlockForPostProcessing(BlockPos pos) {
 	}
 
 	@Override
-	public void addPendingBlockEntityTag(CompoundTag compoundTag) {
+	public void addPendingBlockEntityTag(CompoundTag tag) {
 	}
 
 	@Nullable

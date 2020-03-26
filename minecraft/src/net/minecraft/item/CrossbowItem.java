@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -296,7 +296,7 @@ public class CrossbowItem extends RangedWeaponItem {
 		if (entity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 			if (!world.isClient) {
-				Criterions.SHOT_CROSSBOW.trigger(serverPlayerEntity, stack);
+				Criteria.SHOT_CROSSBOW.trigger(serverPlayerEntity, stack);
 			}
 
 			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));

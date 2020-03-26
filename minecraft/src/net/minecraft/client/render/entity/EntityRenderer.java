@@ -7,20 +7,20 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
 	protected final EntityRenderDispatcher dispatcher;
-	protected float shadowSize;
-	protected float shadowDarkness = 1.0F;
+	protected float shadowRadius;
+	protected float shadowOpacity = 1.0F;
 
 	protected EntityRenderer(EntityRenderDispatcher dispatcher) {
 		this.dispatcher = dispatcher;
@@ -36,8 +36,8 @@ public abstract class EntityRenderer<T extends Entity> {
 		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, new BlockPos(entity.getCameraPosVec(tickDelta)));
 	}
 
-	public boolean shouldRender(T entity, Frustum visibleRegion, double cameraX, double cameraY, double cameraZ) {
-		if (!entity.shouldRender(cameraX, cameraY, cameraZ)) {
+	public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
+		if (!entity.shouldRender(x, y, z)) {
 			return false;
 		} else if (entity.ignoreCameraFrustum) {
 			return true;
@@ -47,7 +47,7 @@ public abstract class EntityRenderer<T extends Entity> {
 				box = new Box(entity.getX() - 2.0, entity.getY() - 2.0, entity.getZ() - 2.0, entity.getX() + 2.0, entity.getY() + 2.0, entity.getZ() + 2.0);
 			}
 
-			return visibleRegion.isVisible(box);
+			return frustum.isVisible(box);
 		}
 	}
 

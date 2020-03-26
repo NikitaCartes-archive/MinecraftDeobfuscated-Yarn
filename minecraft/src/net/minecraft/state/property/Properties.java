@@ -1,7 +1,6 @@
 package net.minecraft.state.property;
 
 import java.util.function.Predicate;
-import net.minecraft.class_5000;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.block.enums.BedPart;
@@ -11,6 +10,7 @@ import net.minecraft.block.enums.ComparatorMode;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.enums.SlabType;
@@ -204,7 +204,10 @@ public class Properties {
 	 * <p>This property only allows a block to face in one of the cardinal directions (north, south, east and west).
 	 */
 	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
-	public static final EnumProperty<class_5000> field_23333 = EnumProperty.of("orientation", class_5000.class);
+	/**
+	 * A property that specifies the orientation of a jigsaw.
+	 */
+	public static final EnumProperty<JigsawOrientation> ORIENTATION = EnumProperty.of("orientation", JigsawOrientation.class);
 	/**
 	 * A property that specifies the type of wall a block is attached to.
 	 */

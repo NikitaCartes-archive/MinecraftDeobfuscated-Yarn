@@ -130,8 +130,8 @@ public abstract class PatrolEntity extends HostileEntity {
 		return this.patrolling;
 	}
 
-	protected void method_22332(boolean bl) {
-		this.patrolling = bl;
+	protected void setPatrolling(boolean patrolling) {
+		this.patrolling = patrolling;
 	}
 
 	public static class PatrolGoal<T extends PatrolEntity> extends Goal {
@@ -169,7 +169,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			if (entityNavigation.isIdle()) {
 				List<PatrolEntity> list = this.method_22333();
 				if (this.actor.isRaidCenterSet() && list.isEmpty()) {
-					this.actor.method_22332(false);
+					this.actor.setPatrolling(false);
 				} else if (bl && this.actor.getPatrolTarget().isWithinDistance(this.actor.getPos(), 10.0)) {
 					this.actor.setRandomPatrolTarget();
 				} else {

@@ -27,7 +27,7 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 
 	public EndCrystalEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.shadowSize = 0.5F;
+		this.shadowRadius = 0.5F;
 		this.frame = new ModelPart(64, 32, 0, 0);
 		this.frame.addCuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F);
 		this.core = new ModelPart(64, 32, 32, 0);

@@ -50,10 +50,10 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		if (compoundTag.containsUuidNew("Target")) {
-			this.targetUuid = compoundTag.getUuidNew("Target");
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		if (tag.containsUuidNew("Target")) {
+			this.targetUuid = tag.getUuidNew("Target");
 		} else {
 			this.targetUuid = null;
 		}

@@ -77,12 +77,12 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		this.commandExecutor.deserialize(compoundTag);
-		this.powered = compoundTag.getBoolean("powered");
-		this.conditionMet = compoundTag.getBoolean("conditionMet");
-		this.setAuto(compoundTag.getBoolean("auto"));
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.commandExecutor.deserialize(tag);
+		this.powered = tag.getBoolean("powered");
+		this.conditionMet = tag.getBoolean("conditionMet");
+		this.setAuto(tag.getBoolean("auto"));
 	}
 
 	@Nullable

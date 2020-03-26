@@ -107,7 +107,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isInvEmpty()) {
+			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
 				CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
 				if (!compoundTag.isEmpty()) {
@@ -136,8 +136,8 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 			builder = builder.putDrop(CONTENTS, (lootContext, consumer) -> {
-				for(int i = 0; i < shulkerBoxBlockEntity.getInvSize(); ++i) {
-					consumer.accept(shulkerBoxBlockEntity.getInvStack(i));
+				for(int i = 0; i < shulkerBoxBlockEntity.size(); ++i) {
+					consumer.accept(shulkerBoxBlockEntity.getStack(i));
 				}
 			});
 		}

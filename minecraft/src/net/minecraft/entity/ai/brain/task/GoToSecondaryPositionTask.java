@@ -10,7 +10,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.GlobalPos;
+import net.minecraft.util.dynamic.GlobalPos;
 
 public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 	private final MemoryModuleType<List<GlobalPos>> secondaryPositions;

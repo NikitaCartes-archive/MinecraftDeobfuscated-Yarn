@@ -1,10 +1,9 @@
-package net.minecraft.client.util.math;
+package net.minecraft.util.math;
 
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
+import net.minecraft.client.util.math.Vector3f;
 import org.apache.commons.lang3.tuple.Triple;
 
 public final class Matrix3f {
@@ -13,23 +12,23 @@ public final class Matrix3f {
 	private static final float SIN_PI_OVER_EIGHT = (float)Math.sin(Math.PI / 8);
 	private static final float SQRT_HALF = 1.0F / (float)Math.sqrt(2.0);
 	public float a00;
-	protected float a01;
-	protected float a02;
-	protected float a10;
+	public float a01;
+	public float a02;
+	public float a10;
 	public float a11;
-	protected float a12;
-	protected float a20;
-	protected float a21;
+	public float a12;
+	public float a20;
+	public float a21;
 	public float a22;
 
 	public Matrix3f() {
 	}
 
-	public Matrix3f(Quaternion quaternion) {
-		float f = quaternion.getB();
-		float g = quaternion.getC();
-		float h = quaternion.getD();
-		float i = quaternion.getA();
+	public Matrix3f(Quaternion source) {
+		float f = source.getB();
+		float g = source.getC();
+		float h = source.getD();
+		float i = source.getA();
 		float j = 2.0F * f * f;
 		float k = 2.0F * g * g;
 		float l = 2.0F * h * h;
@@ -383,29 +382,29 @@ public final class Matrix3f {
 		}
 	}
 
-	public void method_26288(int i, int j, float f) {
-		if (i == 0) {
-			if (j == 0) {
-				this.a00 = f;
-			} else if (j == 1) {
-				this.a01 = f;
+	public void set(int x, int y, float value) {
+		if (x == 0) {
+			if (y == 0) {
+				this.a00 = value;
+			} else if (y == 1) {
+				this.a01 = value;
 			} else {
-				this.a02 = f;
+				this.a02 = value;
 			}
-		} else if (i == 1) {
-			if (j == 0) {
-				this.a10 = f;
-			} else if (j == 1) {
-				this.a11 = f;
+		} else if (x == 1) {
+			if (y == 0) {
+				this.a10 = value;
+			} else if (y == 1) {
+				this.a11 = value;
 			} else {
-				this.a12 = f;
+				this.a12 = value;
 			}
-		} else if (j == 0) {
-			this.a20 = f;
-		} else if (j == 1) {
-			this.a21 = f;
+		} else if (y == 0) {
+			this.a20 = value;
+		} else if (y == 1) {
+			this.a21 = value;
 		} else {
-			this.a22 = f;
+			this.a22 = value;
 		}
 	}
 

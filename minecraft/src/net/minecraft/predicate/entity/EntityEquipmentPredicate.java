@@ -16,7 +16,7 @@ public class EntityEquipmentPredicate {
 	public static final EntityEquipmentPredicate ANY = new EntityEquipmentPredicate(
 		ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY
 	);
-	public static final EntityEquipmentPredicate field_19240 = new EntityEquipmentPredicate(
+	public static final EntityEquipmentPredicate OMINOUS_BANNER_ON_HEAD = new EntityEquipmentPredicate(
 		ItemPredicate.Builder.create().item(Items.WHITE_BANNER).nbt(Raid.getOminousBanner().getTag()).build(),
 		ItemPredicate.ANY,
 		ItemPredicate.ANY,
@@ -32,14 +32,14 @@ public class EntityEquipmentPredicate {
 	private final ItemPredicate offhand;
 
 	public EntityEquipmentPredicate(
-		ItemPredicate head, ItemPredicate chest, ItemPredicate legs, ItemPredicate feet, ItemPredicate mainhand, ItemPredicate itemPredicate
+		ItemPredicate head, ItemPredicate chest, ItemPredicate legs, ItemPredicate feet, ItemPredicate mainhand, ItemPredicate offhand
 	) {
 		this.head = head;
 		this.chest = chest;
 		this.legs = legs;
 		this.feet = feet;
 		this.mainhand = mainhand;
-		this.offhand = itemPredicate;
+		this.offhand = offhand;
 	}
 
 	public boolean test(@Nullable Entity entity) {

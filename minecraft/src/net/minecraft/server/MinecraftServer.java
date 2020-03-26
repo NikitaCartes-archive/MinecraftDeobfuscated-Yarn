@@ -911,7 +911,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				return;
 			}
 
-			CrashReport.method_24305();
+			CrashReport.initCrashReport();
 			Bootstrap.initialize();
 			Bootstrap.logMissingTranslations();
 			String string = optionSet.valueOf(optionSpec9);

@@ -49,7 +49,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 
 	public LoomScreen(LoomScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title);
-		this.bannerField = BannerBlockEntityRenderer.createField();
+		this.bannerField = BannerBlockEntityRenderer.createBanner();
 		handler.setInventoryChangeListener(this::onInventoryChanged);
 	}
 
@@ -101,7 +101,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
 			this.bannerField.pitch = 0.0F;
 			this.bannerField.pivotY = -32.0F;
-			BannerBlockEntityRenderer.method_23802(
+			BannerBlockEntityRenderer.renderCanvas(
 				matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.field_21841
 			);
 			immediate.draw();
@@ -157,8 +157,8 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
-		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.method_24281(itemStack));
-		BannerBlockEntityRenderer.method_23802(matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
+		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.getPatternListTag(itemStack));
+		BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
 		matrixStack.pop();
 		immediate.draw();
 	}
@@ -234,7 +234,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		if (itemStack.isEmpty()) {
 			this.field_21841 = null;
 		} else {
-			this.field_21841 = BannerBlockEntity.method_24280(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.method_24281(itemStack));
+			this.field_21841 = BannerBlockEntity.method_24280(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListTag(itemStack));
 		}
 
 		ItemStack itemStack2 = this.handler.getBannerSlot().getStack();

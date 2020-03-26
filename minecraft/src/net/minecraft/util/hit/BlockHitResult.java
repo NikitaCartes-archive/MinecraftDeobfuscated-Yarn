@@ -14,8 +14,8 @@ public class BlockHitResult extends HitResult {
 		return new BlockHitResult(true, pos, side, blockPos, false);
 	}
 
-	public BlockHitResult(Vec3d pos, Direction side, BlockPos blockPos, boolean bl) {
-		this(false, pos, side, blockPos, bl);
+	public BlockHitResult(Vec3d pos, Direction side, BlockPos blockPos, boolean insideBlock) {
+		this(false, pos, side, blockPos, insideBlock);
 	}
 
 	private BlockHitResult(boolean missed, Vec3d pos, Direction side, BlockPos blockPos, boolean insideBlock) {

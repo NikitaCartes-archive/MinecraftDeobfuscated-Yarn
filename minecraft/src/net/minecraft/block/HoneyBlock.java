@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
@@ -74,7 +74,7 @@ public class HoneyBlock extends TransparentBlock {
 
 	private void triggerAdvancement(Entity entity, BlockPos pos) {
 		if (entity instanceof ServerPlayerEntity && entity.world.getTime() % 20L == 0L) {
-			Criterions.SLIDE_DOWN_BLOCK.test((ServerPlayerEntity)entity, entity.world.getBlockState(pos));
+			Criteria.SLIDE_DOWN_BLOCK.test((ServerPlayerEntity)entity, entity.world.getBlockState(pos));
 		}
 	}
 

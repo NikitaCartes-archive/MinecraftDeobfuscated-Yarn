@@ -67,7 +67,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 				}
 			}
 
-			resultInventory.setInvStack(0, itemStack);
+			resultInventory.setStack(0, itemStack);
 			serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, 0, itemStack));
 		}
 	}

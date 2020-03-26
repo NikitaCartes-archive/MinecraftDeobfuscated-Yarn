@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,7 +42,7 @@ public class FlintAndSteelItem extends Item {
 				iWorld.setBlockState(blockPos2, blockState2, 11);
 				ItemStack itemStack = context.getStack();
 				if (playerEntity instanceof ServerPlayerEntity) {
-					Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
+					Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
 					itemStack.damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 				}
 
