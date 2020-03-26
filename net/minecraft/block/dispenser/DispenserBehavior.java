@@ -498,7 +498,7 @@ public interface DispenserBehavior {
                 World world = pointer.getWorld();
                 BlockState blockState = world.getBlockState(blockPos);
                 if (blockState.getBlock() == Blocks.RESPAWN_ANCHOR && blockState.get(RespawnAnchorBlock.CHARGES) != 4) {
-                    RespawnAnchorBlock.method_26382(world, blockPos, blockState);
+                    RespawnAnchorBlock.charge(world, blockPos, blockState);
                     stack.decrement(1);
                 }
                 return stack;

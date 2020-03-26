@@ -27,7 +27,7 @@ extends ScreenHandler {
         this.inventory = inventory;
         this.entity = entity;
         int i = 3;
-        inventory.onInvOpen(playerInventory.player);
+        inventory.onOpen(playerInventory.player);
         int j = -18;
         this.addSlot(new Slot(inventory, 0, 8, 18){
 
@@ -79,7 +79,7 @@ extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUseInv(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
+        return this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
     }
 
     @Override
@@ -89,7 +89,7 @@ extends ScreenHandler {
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            int i = this.inventory.getInvSize();
+            int i = this.inventory.size();
             if (index < i) {
                 if (!this.insertItem(itemStack2, i, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
@@ -124,7 +124,7 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.inventory.onInvClose(player);
+        this.inventory.onClose(player);
     }
 }
 

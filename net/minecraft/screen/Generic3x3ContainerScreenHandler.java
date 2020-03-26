@@ -26,7 +26,7 @@ extends ScreenHandler {
         int i;
         Generic3x3ContainerScreenHandler.checkSize(inventory, 9);
         this.inventory = inventory;
-        inventory.onInvOpen(playerInventory.player);
+        inventory.onOpen(playerInventory.player);
         for (i = 0; i < 3; ++i) {
             for (j = 0; j < 3; ++j) {
                 this.addSlot(new Slot(inventory, j + i * 3, 62 + j * 18, 17 + i * 18));
@@ -44,7 +44,7 @@ extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUseInv(player);
+        return this.inventory.canPlayerUse(player);
     }
 
     @Override
@@ -73,7 +73,7 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.inventory.onInvClose(player);
+        this.inventory.onClose(player);
     }
 }
 

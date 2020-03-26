@@ -94,8 +94,8 @@ implements RangedAttackMob {
         super.writeCustomDataToTag(tag);
         tag.putInt("Variant", this.getVariant());
         tag.putInt("Strength", this.getStrength());
-        if (!this.items.getInvStack(1).isEmpty()) {
-            tag.put("DecorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
+        if (!this.items.getStack(1).isEmpty()) {
+            tag.put("DecorItem", this.items.getStack(1).toTag(new CompoundTag()));
         }
     }
 
@@ -105,7 +105,7 @@ implements RangedAttackMob {
         super.readCustomDataFromTag(tag);
         this.setVariant(tag.getInt("Variant"));
         if (tag.contains("DecorItem", 10)) {
-            this.items.setInvStack(1, ItemStack.fromTag(tag.getCompound("DecorItem")));
+            this.items.setStack(1, ItemStack.fromTag(tag.getCompound("DecorItem")));
         }
         this.updateSaddle();
     }
@@ -300,9 +300,9 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void onInvChange(Inventory inventory) {
+    public void onInventoryChanged(Inventory sender) {
         DyeColor dyeColor = this.getCarpetColor();
-        super.onInvChange(inventory);
+        super.onInventoryChanged(sender);
         DyeColor dyeColor2 = this.getCarpetColor();
         if (this.age > 20 && dyeColor2 != null && dyeColor2 != dyeColor) {
             this.playSound(SoundEvents.ENTITY_LLAMA_SWAG, 0.5f, 1.0f);
@@ -315,7 +315,7 @@ implements RangedAttackMob {
             return;
         }
         super.updateSaddle();
-        this.setCarpetColor(LlamaEntity.getColorFromCarpet(this.items.getInvStack(1)));
+        this.setCarpetColor(LlamaEntity.getColorFromCarpet(this.items.getStack(1)));
     }
 
     private void setCarpetColor(@Nullable DyeColor color) {
@@ -408,8 +408,8 @@ implements RangedAttackMob {
         this.following = null;
     }
 
-    public void follow(LlamaEntity llamaEntity) {
-        this.following = llamaEntity;
+    public void follow(LlamaEntity llama) {
+        this.following = llama;
         this.following.follower = this;
     }
 
@@ -467,8 +467,8 @@ implements RangedAttackMob {
 
     static class SpitRevengeGoal
     extends RevengeGoal {
-        public SpitRevengeGoal(LlamaEntity llamaEntity) {
-            super(llamaEntity, new Class[0]);
+        public SpitRevengeGoal(LlamaEntity llama) {
+            super(llama, new Class[0]);
         }
 
         @Override

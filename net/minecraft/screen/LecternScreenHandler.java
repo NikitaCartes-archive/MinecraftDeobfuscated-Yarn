@@ -63,7 +63,7 @@ extends ScreenHandler {
                 if (!player.canModifyWorld()) {
                     return false;
                 }
-                ItemStack itemStack = this.inventory.removeInvStack(0);
+                ItemStack itemStack = this.inventory.removeStack(0);
                 this.inventory.markDirty();
                 if (!player.inventory.insertStack(itemStack)) {
                     player.dropItem(itemStack, false);
@@ -82,12 +82,12 @@ extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUseInv(player);
+        return this.inventory.canPlayerUse(player);
     }
 
     @Environment(value=EnvType.CLIENT)
     public ItemStack getBookItem() {
-        return this.inventory.getInvStack(0);
+        return this.inventory.getStack(0);
     }
 
     @Environment(value=EnvType.CLIENT)

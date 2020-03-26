@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
-import net.minecraft.class_5000;
+import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -59,7 +59,7 @@ extends StructurePoolElement {
         compoundTag.putString("final_state", "minecraft:air");
         compoundTag.putString("pool", "minecraft:empty");
         compoundTag.putString("target", "minecraft:empty");
-        compoundTag.putString("joint", JigsawBlockEntity.class_4991.field_23329.asString());
+        compoundTag.putString("joint", JigsawBlockEntity.Joint.ROLLABLE.asString());
         return compoundTag;
     }
 
@@ -70,7 +70,7 @@ extends StructurePoolElement {
     @Override
     public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
         ArrayList<Structure.StructureBlockInfo> list = Lists.newArrayList();
-        list.add(new Structure.StructureBlockInfo(pos, (BlockState)Blocks.JIGSAW.getDefaultState().with(JigsawBlock.field_23262, class_5000.method_26425(Direction.DOWN, Direction.SOUTH)), this.tag));
+        list.add(new Structure.StructureBlockInfo(pos, (BlockState)Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.tag));
         return list;
     }
 

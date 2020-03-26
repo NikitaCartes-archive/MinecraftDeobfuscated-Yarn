@@ -36,9 +36,9 @@ public class GameTest {
     @Nullable
     private Throwable throwable;
 
-    public GameTest(TestFunction testFunction, ServerWorld serverWorld) {
+    public GameTest(TestFunction testFunction, ServerWorld world) {
         this.testFunction = testFunction;
-        this.world = serverWorld;
+        this.world = world;
         this.ticksLeft = testFunction.getTickLimit();
     }
 
@@ -47,8 +47,8 @@ public class GameTest {
         this.setPos(pos);
     }
 
-    void setPos(BlockPos blockPos) {
-        this.pos = blockPos;
+    void setPos(BlockPos pos) {
+        this.pos = pos;
     }
 
     void startCountdown() {

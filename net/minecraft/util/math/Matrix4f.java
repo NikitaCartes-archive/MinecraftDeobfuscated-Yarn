@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.util.math;
+package net.minecraft.util.math;
 
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;

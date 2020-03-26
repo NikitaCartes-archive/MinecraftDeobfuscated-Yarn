@@ -52,8 +52,8 @@ extends SpecialCraftingRecipe {
         boolean bl3 = false;
         boolean bl4 = false;
         boolean bl5 = false;
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
-            ItemStack itemStack = craftingInventory.getInvStack(i);
+        for (int i = 0; i < craftingInventory.size(); ++i) {
+            ItemStack itemStack = craftingInventory.getStack(i);
             if (itemStack.isEmpty()) continue;
             if (TYPE_MODIFIER.test(itemStack)) {
                 if (bl3) {
@@ -98,8 +98,8 @@ extends SpecialCraftingRecipe {
         CompoundTag compoundTag = itemStack.getOrCreateSubTag("Explosion");
         FireworkItem.Type type = FireworkItem.Type.SMALL_BALL;
         ArrayList<Integer> list = Lists.newArrayList();
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
-            ItemStack itemStack2 = craftingInventory.getInvStack(i);
+        for (int i = 0; i < craftingInventory.size(); ++i) {
+            ItemStack itemStack2 = craftingInventory.getStack(i);
             if (itemStack2.isEmpty()) continue;
             if (TYPE_MODIFIER.test(itemStack2)) {
                 type = TYPE_MODIFIER_MAP.get(itemStack2.getItem());

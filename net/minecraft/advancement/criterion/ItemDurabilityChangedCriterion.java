@@ -47,15 +47,15 @@ extends AbstractCriterion<Conditions> {
         private final NumberRange.IntRange durability;
         private final NumberRange.IntRange delta;
 
-        public Conditions(ItemPredicate item, NumberRange.IntRange intRange, NumberRange.IntRange intRange2) {
+        public Conditions(ItemPredicate item, NumberRange.IntRange durability, NumberRange.IntRange delta) {
             super(ID);
             this.item = item;
-            this.durability = intRange;
-            this.delta = intRange2;
+            this.durability = durability;
+            this.delta = delta;
         }
 
-        public static Conditions create(ItemPredicate item, NumberRange.IntRange intRange) {
-            return new Conditions(item, intRange, NumberRange.IntRange.ANY);
+        public static Conditions create(ItemPredicate item, NumberRange.IntRange durability) {
+            return new Conditions(item, durability, NumberRange.IntRange.ANY);
         }
 
         public boolean matches(ItemStack stack, int damage) {

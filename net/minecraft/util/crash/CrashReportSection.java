@@ -20,9 +20,9 @@ public class CrashReportSection {
     private final List<Element> elements = Lists.newArrayList();
     private StackTraceElement[] stackTrace = new StackTraceElement[0];
 
-    public CrashReportSection(CrashReport report, String string) {
+    public CrashReportSection(CrashReport report, String title) {
         this.report = report;
-        this.title = string;
+        this.title = title;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -168,15 +168,15 @@ public class CrashReportSection {
         private final String name;
         private final String detail;
 
-        public Element(String string, Object object) {
-            this.name = string;
-            if (object == null) {
+        public Element(String name, Object detail) {
+            this.name = name;
+            if (detail == null) {
                 this.detail = "~~NULL~~";
-            } else if (object instanceof Throwable) {
-                Throwable throwable = (Throwable)object;
+            } else if (detail instanceof Throwable) {
+                Throwable throwable = (Throwable)detail;
                 this.detail = "~~ERROR~~ " + throwable.getClass().getSimpleName() + ": " + throwable.getMessage();
             } else {
-                this.detail = object.toString();
+                this.detail = detail.toString();
             }
         }
 

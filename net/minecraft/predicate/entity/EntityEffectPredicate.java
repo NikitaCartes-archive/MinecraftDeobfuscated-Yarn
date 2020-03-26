@@ -25,8 +25,8 @@ public class EntityEffectPredicate {
     public static final EntityEffectPredicate EMPTY = new EntityEffectPredicate(Collections.emptyMap());
     private final Map<StatusEffect, EffectData> effects;
 
-    public EntityEffectPredicate(Map<StatusEffect, EffectData> map) {
-        this.effects = map;
+    public EntityEffectPredicate(Map<StatusEffect, EffectData> effects) {
+        this.effects = effects;
     }
 
     public static EntityEffectPredicate create() {
@@ -101,11 +101,11 @@ public class EntityEffectPredicate {
         @Nullable
         private final Boolean visible;
 
-        public EffectData(NumberRange.IntRange amplifier, NumberRange.IntRange duration, @Nullable Boolean ambient, @Nullable Boolean boolean_) {
+        public EffectData(NumberRange.IntRange amplifier, NumberRange.IntRange duration, @Nullable Boolean ambient, @Nullable Boolean visible) {
             this.amplifier = amplifier;
             this.duration = duration;
             this.ambient = ambient;
-            this.visible = boolean_;
+            this.visible = visible;
         }
 
         public EffectData() {

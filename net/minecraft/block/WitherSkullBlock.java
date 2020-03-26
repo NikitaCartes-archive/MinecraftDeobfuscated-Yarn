@@ -3,7 +3,7 @@
  */
 package net.minecraft.block;
 
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -78,7 +78,7 @@ extends SkullBlock {
         witherEntity.bodyYaw = result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f;
         witherEntity.method_6885();
         for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
-            Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
+            Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
         }
         world.spawnEntity(witherEntity);
         for (int k = 0; k < blockPattern.getWidth(); ++k) {

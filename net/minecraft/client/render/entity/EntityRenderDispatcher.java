@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4999;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -95,6 +94,7 @@ import net.minecraft.client.render.entity.SpectralArrowEntityRenderer;
 import net.minecraft.client.render.entity.SpiderEntityRenderer;
 import net.minecraft.client.render.entity.SquidEntityRenderer;
 import net.minecraft.client.render.entity.StrayEntityRenderer;
+import net.minecraft.client.render.entity.StriderEntityRenderer;
 import net.minecraft.client.render.entity.TntEntityRenderer;
 import net.minecraft.client.render.entity.TntMinecartEntityRenderer;
 import net.minecraft.client.render.entity.TridentEntityRenderer;
@@ -116,7 +116,6 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
@@ -133,6 +132,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -270,7 +270,7 @@ public class EntityRenderDispatcher {
         this.register(EntityType.ZOMBIE, new ZombieEntityRenderer(this));
         this.register(EntityType.ZOMBIFIED_PIGLIN, new PiglinEntityRenderer(this, true));
         this.register(EntityType.ZOMBIE_VILLAGER, new ZombieVillagerEntityRenderer(this, reloadableResourceManager));
-        this.register(EntityType.STRIDER, new class_4999(this));
+        this.register(EntityType.STRIDER, new StriderEntityRenderer(this));
     }
 
     public EntityRenderDispatcher(TextureManager textureManager, ItemRenderer itemRenderer, ReloadableResourceManager reloadableResourceManager, TextRenderer textRenderer, GameOptions gameOptions) {
@@ -299,11 +299,11 @@ public class EntityRenderDispatcher {
         return this.renderers.get(entity.getType());
     }
 
-    public void configure(World world, Camera camera, Entity targetedEntity) {
+    public void configure(World world, Camera camera, Entity target) {
         this.world = world;
         this.camera = camera;
         this.rotation = camera.getRotation();
-        this.targetedEntity = targetedEntity;
+        this.targetedEntity = target;
     }
 
     public void setRotation(Quaternion rotation) {
@@ -322,9 +322,9 @@ public class EntityRenderDispatcher {
         return this.renderHitboxes;
     }
 
-    public <E extends Entity> boolean shouldRender(E entity, Frustum frustum, double cameraX, double cameraY, double cameraZ) {
+    public <E extends Entity> boolean shouldRender(E entity, Frustum frustum, double x, double y, double z) {
         EntityRenderer<E> entityRenderer = this.getRenderer(entity);
-        return entityRenderer.shouldRender(entity, frustum, cameraX, cameraY, cameraZ);
+        return entityRenderer.shouldRender(entity, frustum, x, y, z);
     }
 
     public <E extends Entity> void render(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
@@ -343,8 +343,8 @@ public class EntityRenderDispatcher {
                 this.renderFire(matrices, vertexConsumers, entity);
             }
             matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
-            if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.shadowSize > 0.0f && !entity.isInvisible() && (h = (float)((1.0 - (g = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ())) / 256.0) * (double)entityRenderer.shadowDarkness)) > 0.0f) {
-                EntityRenderDispatcher.renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, entityRenderer.shadowSize);
+            if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.shadowRadius > 0.0f && !entity.isInvisible() && (h = (float)((1.0 - (g = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ())) / 256.0) * (double)entityRenderer.shadowOpacity)) > 0.0f) {
+                EntityRenderDispatcher.renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, entityRenderer.shadowRadius);
             }
             if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
                 this.renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity, tickDelta);
@@ -363,54 +363,54 @@ public class EntityRenderDispatcher {
         }
     }
 
-    private void renderHitbox(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, float f) {
-        float g = entity.getWidth() / 2.0f;
-        this.method_23164(matrixStack, vertexConsumer, entity, 1.0f, 1.0f, 1.0f);
+    private void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta) {
+        float f = entity.getWidth() / 2.0f;
+        this.drawBox(matrices, vertices, entity, 1.0f, 1.0f, 1.0f);
         if (entity instanceof EnderDragonEntity) {
-            double d = entity.getX() - MathHelper.lerp((double)f, entity.lastRenderX, entity.getX());
-            double e = entity.getY() - MathHelper.lerp((double)f, entity.lastRenderY, entity.getY());
-            double h = entity.getZ() - MathHelper.lerp((double)f, entity.lastRenderZ, entity.getZ());
+            double d = entity.getX() - MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
+            double e = entity.getY() - MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
+            double g = entity.getZ() - MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
             for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
-                matrixStack.push();
-                double i = d + MathHelper.lerp((double)f, enderDragonPart.lastRenderX, enderDragonPart.getX());
-                double j = e + MathHelper.lerp((double)f, enderDragonPart.lastRenderY, enderDragonPart.getY());
-                double k = h + MathHelper.lerp((double)f, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
-                matrixStack.translate(i, j, k);
-                this.method_23164(matrixStack, vertexConsumer, enderDragonPart, 0.25f, 1.0f, 0.0f);
-                matrixStack.pop();
+                matrices.push();
+                double h = d + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderX, enderDragonPart.getX());
+                double i = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
+                double j = g + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
+                matrices.translate(h, i, j);
+                this.drawBox(matrices, vertices, enderDragonPart, 0.25f, 1.0f, 0.0f);
+                matrices.pop();
             }
         }
         if (entity instanceof LivingEntity) {
-            float l = 0.01f;
-            WorldRenderer.drawBox(matrixStack, vertexConsumer, -g, entity.getStandingEyeHeight() - 0.01f, -g, g, entity.getStandingEyeHeight() + 0.01f, g, 1.0f, 0.0f, 0.0f, 1.0f);
+            float k = 0.01f;
+            WorldRenderer.drawBox(matrices, vertices, -f, entity.getStandingEyeHeight() - 0.01f, -f, f, entity.getStandingEyeHeight() + 0.01f, f, 1.0f, 0.0f, 0.0f, 1.0f);
         }
-        Vec3d vec3d = entity.getRotationVec(f);
-        Matrix4f matrix4f = matrixStack.peek().getModel();
-        vertexConsumer.vertex(matrix4f, 0.0f, entity.getStandingEyeHeight(), 0.0f).color(0, 0, 255, 255).next();
-        vertexConsumer.vertex(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0)).color(0, 0, 255, 255).next();
+        Vec3d vec3d = entity.getRotationVec(tickDelta);
+        Matrix4f matrix4f = matrices.peek().getModel();
+        vertices.vertex(matrix4f, 0.0f, entity.getStandingEyeHeight(), 0.0f).color(0, 0, 255, 255).next();
+        vertices.vertex(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0)).color(0, 0, 255, 255).next();
     }
 
-    private void method_23164(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, float f, float g, float h) {
+    private void drawBox(MatrixStack matrix, VertexConsumer vertices, Entity entity, float red, float green, float blue) {
         Box box = entity.getBoundingBox().offset(-entity.getX(), -entity.getY(), -entity.getZ());
-        WorldRenderer.drawBox(matrixStack, vertexConsumer, box, f, g, h, 1.0f);
+        WorldRenderer.drawBox(matrix, vertices, box, red, green, blue, 1.0f);
     }
 
-    private void renderFire(MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider, Entity entity) {
+    private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity) {
         Sprite sprite = ModelLoader.FIRE_0.getSprite();
         Sprite sprite2 = ModelLoader.FIRE_1.getSprite();
-        matrix.push();
+        matrices.push();
         float f = entity.getWidth() * 1.4f;
-        matrix.scale(f, f, f);
+        matrices.scale(f, f, f);
         float g = 0.5f;
         float h = 0.0f;
         float i = entity.getHeight() / f;
         float j = 0.0f;
-        matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-this.camera.getYaw()));
-        matrix.translate(0.0, 0.0, -0.3f + (float)((int)i) * 0.02f);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-this.camera.getYaw()));
+        matrices.translate(0.0, 0.0, -0.3f + (float)((int)i) * 0.02f);
         float k = 0.0f;
         int l = 0;
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntityCutout());
-        MatrixStack.Entry entry = matrix.peek();
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(TexturedRenderLayers.getEntityCutout());
+        MatrixStack.Entry entry = matrices.peek();
         while (i > 0.0f) {
             Sprite sprite3 = l % 2 == 0 ? sprite : sprite2;
             float m = sprite3.getMinU();
@@ -422,26 +422,26 @@ public class EntityRenderDispatcher {
                 o = m;
                 m = q;
             }
-            EntityRenderDispatcher.fireVertex(entry, vertexConsumer, g - 0.0f, 0.0f - j, k, o, p);
-            EntityRenderDispatcher.fireVertex(entry, vertexConsumer, -g - 0.0f, 0.0f - j, k, m, p);
-            EntityRenderDispatcher.fireVertex(entry, vertexConsumer, -g - 0.0f, 1.4f - j, k, m, n);
-            EntityRenderDispatcher.fireVertex(entry, vertexConsumer, g - 0.0f, 1.4f - j, k, o, n);
+            EntityRenderDispatcher.drawFireVertex(entry, vertexConsumer, g - 0.0f, 0.0f - j, k, o, p);
+            EntityRenderDispatcher.drawFireVertex(entry, vertexConsumer, -g - 0.0f, 0.0f - j, k, m, p);
+            EntityRenderDispatcher.drawFireVertex(entry, vertexConsumer, -g - 0.0f, 1.4f - j, k, m, n);
+            EntityRenderDispatcher.drawFireVertex(entry, vertexConsumer, g - 0.0f, 1.4f - j, k, o, n);
             i -= 0.45f;
             j -= 0.45f;
             g *= 0.9f;
             k += 0.03f;
             ++l;
         }
-        matrix.pop();
+        matrices.pop();
     }
 
-    private static void fireVertex(MatrixStack.Entry matrix, VertexConsumer vertexConsumer, float x, float y, float z, float u, float v) {
-        vertexConsumer.vertex(matrix.getModel(), x, y, z).color(255, 255, 255, 255).texture(u, v).overlay(0, 10).light(240).normal(matrix.getNormal(), 0.0f, 1.0f, 0.0f).next();
+    private static void drawFireVertex(MatrixStack.Entry entry, VertexConsumer vertices, float x, float y, float z, float u, float v) {
+        vertices.vertex(entry.getModel(), x, y, z).color(255, 255, 255, 255).texture(u, v).overlay(0, 10).light(240).normal(entry.getNormal(), 0.0f, 1.0f, 0.0f).next();
     }
 
-    private static void renderShadow(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, float darkness, float tickDelta, WorldView world, float size) {
+    private static void renderShadow(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, float opacity, float tickDelta, WorldView world, float radius) {
         MobEntity mobEntity;
-        float f = size;
+        float f = radius;
         if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).isBaby()) {
             f *= 0.5f;
         }
@@ -457,11 +457,11 @@ public class EntityRenderDispatcher {
         MatrixStack.Entry entry = matrices.peek();
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(SHADOW_LAYER);
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(i, k, m), new BlockPos(j, l, n))) {
-            EntityRenderDispatcher.renderShadowPart(entry, vertexConsumer, world, blockPos, d, e, g, f, darkness);
+            EntityRenderDispatcher.renderShadowPart(entry, vertexConsumer, world, blockPos, d, e, g, f, opacity);
         }
     }
 
-    private static void renderShadowPart(MatrixStack.Entry matrix, VertexConsumer vertexConsumer, WorldView world, BlockPos pos, double x, double y, double z, float size, float darkness) {
+    private static void renderShadowPart(MatrixStack.Entry entry, VertexConsumer vertices, WorldView world, BlockPos pos, double x, double y, double z, float radius, float opacity) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
         if (blockState.getRenderType() == BlockRenderType.INVISIBLE || world.getLightLevel(pos) <= 3) {
@@ -474,7 +474,7 @@ public class EntityRenderDispatcher {
         if (voxelShape.isEmpty()) {
             return;
         }
-        float f = (float)(((double)darkness - (y - (double)pos.getY()) / 2.0) * 0.5 * (double)world.getBrightness(pos));
+        float f = (float)(((double)opacity - (y - (double)pos.getY()) / 2.0) * 0.5 * (double)world.getBrightness(pos));
         if (f >= 0.0f) {
             if (f > 1.0f) {
                 f = 1.0f;
@@ -490,19 +490,19 @@ public class EntityRenderDispatcher {
             float l = (float)(g - y);
             float m = (float)(h - z);
             float n = (float)(i - z);
-            float o = -j / 2.0f / size + 0.5f;
-            float p = -k / 2.0f / size + 0.5f;
-            float q = -m / 2.0f / size + 0.5f;
-            float r = -n / 2.0f / size + 0.5f;
-            EntityRenderDispatcher.shadowVertex(matrix, vertexConsumer, f, j, l, m, o, q);
-            EntityRenderDispatcher.shadowVertex(matrix, vertexConsumer, f, j, l, n, o, r);
-            EntityRenderDispatcher.shadowVertex(matrix, vertexConsumer, f, k, l, n, p, r);
-            EntityRenderDispatcher.shadowVertex(matrix, vertexConsumer, f, k, l, m, p, q);
+            float o = -j / 2.0f / radius + 0.5f;
+            float p = -k / 2.0f / radius + 0.5f;
+            float q = -m / 2.0f / radius + 0.5f;
+            float r = -n / 2.0f / radius + 0.5f;
+            EntityRenderDispatcher.drawShadowVertex(entry, vertices, f, j, l, m, o, q);
+            EntityRenderDispatcher.drawShadowVertex(entry, vertices, f, j, l, n, o, r);
+            EntityRenderDispatcher.drawShadowVertex(entry, vertices, f, k, l, n, p, r);
+            EntityRenderDispatcher.drawShadowVertex(entry, vertices, f, k, l, m, p, q);
         }
     }
 
-    private static void shadowVertex(MatrixStack.Entry matrix, VertexConsumer vertexConsumer, float alpha, float x, float y, float z, float u, float v) {
-        vertexConsumer.vertex(matrix.getModel(), x, y, z).color(1.0f, 1.0f, 1.0f, alpha).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(matrix.getNormal(), 0.0f, 1.0f, 0.0f).next();
+    private static void drawShadowVertex(MatrixStack.Entry entry, VertexConsumer vertices, float alpha, float x, float y, float z, float u, float v) {
+        vertices.vertex(entry.getModel(), x, y, z).color(1.0f, 1.0f, 1.0f, alpha).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(0xF000F0).normal(entry.getNormal(), 0.0f, 1.0f, 0.0f).next();
     }
 
     public void setWorld(@Nullable World world) {

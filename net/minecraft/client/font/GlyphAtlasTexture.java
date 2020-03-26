@@ -73,7 +73,7 @@ implements Closeable {
         private final int height;
         private Slot subSlot1;
         private Slot subSlot2;
-        private boolean isOccupied;
+        private boolean occupied;
 
         private Slot(int x, int y, int width, int height) {
             this.x = x;
@@ -91,7 +91,7 @@ implements Closeable {
                 }
                 return slot;
             }
-            if (this.isOccupied) {
+            if (this.occupied) {
                 return null;
             }
             int i = glyph.getWidth();
@@ -100,7 +100,7 @@ implements Closeable {
                 return null;
             }
             if (i == this.width && j == this.height) {
-                this.isOccupied = true;
+                this.occupied = true;
                 return this;
             }
             int k = this.width - i;

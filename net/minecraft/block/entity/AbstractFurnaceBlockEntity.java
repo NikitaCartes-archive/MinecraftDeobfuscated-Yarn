@@ -204,17 +204,17 @@ Tickable {
     }
 
     @Override
-    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-        super.fromTag(blockState, compoundTag);
-        this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        Inventories.fromTag(compoundTag, this.inventory);
-        this.burnTime = compoundTag.getShort("BurnTime");
-        this.cookTime = compoundTag.getShort("CookTime");
-        this.cookTimeTotal = compoundTag.getShort("CookTimeTotal");
+    public void fromTag(BlockState state, CompoundTag tag) {
+        super.fromTag(state, tag);
+        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+        Inventories.fromTag(tag, this.inventory);
+        this.burnTime = tag.getShort("BurnTime");
+        this.cookTime = tag.getShort("CookTime");
+        this.cookTimeTotal = tag.getShort("CookTimeTotal");
         this.fuelTime = this.getFuelTime(this.inventory.get(1));
-        CompoundTag compoundTag2 = compoundTag.getCompound("RecipesUsed");
-        for (String string : compoundTag2.getKeys()) {
-            this.recipesUsed.put(new Identifier(string), compoundTag2.getInt(string));
+        CompoundTag compoundTag = tag.getCompound("RecipesUsed");
+        for (String string : compoundTag.getKeys()) {
+            this.recipesUsed.put(new Identifier(string), compoundTag.getInt(string));
         }
     }
 
@@ -295,7 +295,7 @@ Tickable {
         if (!itemStack2.isItemEqualIgnoreDamage(itemStack)) {
             return false;
         }
-        if (itemStack2.getCount() < this.getInvMaxStackAmount() && itemStack2.getCount() < itemStack2.getMaxCount()) {
+        if (itemStack2.getCount() < this.getMaxCountPerStack() && itemStack2.getCount() < itemStack2.getMaxCount()) {
             return true;
         }
         return itemStack2.getCount() < itemStack.getMaxCount();
@@ -339,7 +339,7 @@ Tickable {
     }
 
     @Override
-    public int[] getInvAvailableSlots(Direction side) {
+    public int[] getAvailableSlots(Direction side) {
         if (side == Direction.DOWN) {
             return BOTTOM_SLOTS;
         }
@@ -350,23 +350,23 @@ Tickable {
     }
 
     @Override
-    public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
-        return this.isValidInvStack(slot, stack);
+    public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+        return this.isValid(slot, stack);
     }
 
     @Override
-    public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+    public boolean canExtract(int slot, ItemStack stack, Direction dir) {
         Item item;
         return dir != Direction.DOWN || slot != 1 || (item = stack.getItem()) == Items.WATER_BUCKET || item == Items.BUCKET;
     }
 
     @Override
-    public int getInvSize() {
+    public int size() {
         return this.inventory.size();
     }
 
     @Override
-    public boolean isInvEmpty() {
+    public boolean isEmpty() {
         for (ItemStack itemStack : this.inventory) {
             if (itemStack.isEmpty()) continue;
             return false;
@@ -375,27 +375,27 @@ Tickable {
     }
 
     @Override
-    public ItemStack getInvStack(int slot) {
+    public ItemStack getStack(int slot) {
         return this.inventory.get(slot);
     }
 
     @Override
-    public ItemStack takeInvStack(int slot, int amount) {
+    public ItemStack removeStack(int slot, int amount) {
         return Inventories.splitStack(this.inventory, slot, amount);
     }
 
     @Override
-    public ItemStack removeInvStack(int slot) {
+    public ItemStack removeStack(int slot) {
         return Inventories.removeStack(this.inventory, slot);
     }
 
     @Override
-    public void setInvStack(int slot, ItemStack stack) {
+    public void setStack(int slot, ItemStack stack) {
         ItemStack itemStack = this.inventory.get(slot);
         boolean bl = !stack.isEmpty() && stack.isItemEqualIgnoreDamage(itemStack) && ItemStack.areTagsEqual(stack, itemStack);
         this.inventory.set(slot, stack);
-        if (stack.getCount() > this.getInvMaxStackAmount()) {
-            stack.setCount(this.getInvMaxStackAmount());
+        if (stack.getCount() > this.getMaxCountPerStack()) {
+            stack.setCount(this.getMaxCountPerStack());
         }
         if (slot == 0 && !bl) {
             this.cookTimeTotal = this.getCookTime();
@@ -405,7 +405,7 @@ Tickable {
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity player) {
+    public boolean canPlayerUse(PlayerEntity player) {
         if (this.world.getBlockEntity(this.pos) != this) {
             return false;
         }
@@ -413,7 +413,7 @@ Tickable {
     }
 
     @Override
-    public boolean isValidInvStack(int slot, ItemStack stack) {
+    public boolean isValid(int slot, ItemStack stack) {
         if (slot == 2) {
             return false;
         }

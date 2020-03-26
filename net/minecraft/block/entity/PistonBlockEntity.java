@@ -246,7 +246,7 @@ implements Tickable {
             this.world.removeBlockEntity(this.pos);
             this.markRemoved();
             if (this.world.getBlockState(this.pos).getBlock() == Blocks.MOVING_PISTON) {
-                BlockState blockState = this.source ? Blocks.AIR.getDefaultState() : Block.getRenderingState(this.pushedBlock, this.world, this.pos);
+                BlockState blockState = this.source ? Blocks.AIR.getDefaultState() : Block.postProcessState(this.pushedBlock, this.world, this.pos);
                 this.world.setBlockState(this.pos, blockState, 3);
                 this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
             }
@@ -261,7 +261,7 @@ implements Tickable {
             this.world.removeBlockEntity(this.pos);
             this.markRemoved();
             if (this.pushedBlock != null && this.world.getBlockState(this.pos).getBlock() == Blocks.MOVING_PISTON) {
-                BlockState blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
+                BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
                 if (blockState.isAir()) {
                     this.world.setBlockState(this.pos, this.pushedBlock, 84);
                     Block.replaceBlock(this.pushedBlock, blockState, this.world, this.pos, 3);
@@ -285,13 +285,13 @@ implements Tickable {
     }
 
     @Override
-    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-        super.fromTag(blockState, compoundTag);
-        this.pushedBlock = NbtHelper.toBlockState(compoundTag.getCompound("blockState"));
-        this.facing = Direction.byId(compoundTag.getInt("facing"));
-        this.lastProgress = this.progress = compoundTag.getFloat("progress");
-        this.extending = compoundTag.getBoolean("extending");
-        this.source = compoundTag.getBoolean("source");
+    public void fromTag(BlockState state, CompoundTag tag) {
+        super.fromTag(state, tag);
+        this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
+        this.facing = Direction.byId(tag.getInt("facing"));
+        this.lastProgress = this.progress = tag.getFloat("progress");
+        this.extending = tag.getBoolean("extending");
+        this.source = tag.getBoolean("source");
     }
 
     @Override
@@ -305,8 +305,8 @@ implements Tickable {
         return tag;
     }
 
-    public VoxelShape getCollisionShape(BlockView blockView, BlockPos blockPos) {
-        VoxelShape voxelShape = !this.extending && this.source ? ((BlockState)this.pushedBlock.with(PistonBlock.EXTENDED, true)).getCollisionShape(blockView, blockPos) : VoxelShapes.empty();
+    public VoxelShape getCollisionShape(BlockView world, BlockPos pos) {
+        VoxelShape voxelShape = !this.extending && this.source ? ((BlockState)this.pushedBlock.with(PistonBlock.EXTENDED, true)).getCollisionShape(world, pos) : VoxelShapes.empty();
         Direction direction = field_12205.get();
         if ((double)this.progress < 1.0 && direction == this.getMovementDirection()) {
             return voxelShape;
@@ -316,7 +316,7 @@ implements Tickable {
         double d = (float)this.facing.getOffsetX() * f;
         double e = (float)this.facing.getOffsetY() * f;
         double g = (float)this.facing.getOffsetZ() * f;
-        return VoxelShapes.union(voxelShape, blockState.getCollisionShape(blockView, blockPos).offset(d, e, g));
+        return VoxelShapes.union(voxelShape, blockState.getCollisionShape(world, pos).offset(d, e, g));
     }
 
     public long getSavedWorldTime() {

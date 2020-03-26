@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -44,7 +44,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.InventoryListener;
+import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -70,7 +70,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class HorseBaseEntity
 extends AnimalEntity
-implements InventoryListener,
+implements InventoryChangedListener,
 JumpingMount {
     private static final Predicate<LivingEntity> IS_BRED_HORSE = livingEntity -> livingEntity instanceof HorseBaseEntity && ((HorseBaseEntity)livingEntity).isBred();
     private static final TargetPredicate PARENT_HORSE_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().includeTeammates().includeHidden().setPredicate(IS_BRED_HORSE);
@@ -182,12 +182,12 @@ JumpingMount {
         return this.getHorseFlag(8);
     }
 
-    public void setBred(boolean bl) {
-        this.setHorseFlag(8, bl);
+    public void setBred(boolean bred) {
+        this.setHorseFlag(8, bred);
     }
 
-    public void setSaddled(boolean bl) {
-        this.setHorseFlag(4, bl);
+    public void setSaddled(boolean saddled) {
+        this.setHorseFlag(4, saddled);
     }
 
     public int getTemper() {
@@ -258,11 +258,11 @@ JumpingMount {
         this.items = new BasicInventory(this.getInventorySize());
         if (basicInventory != null) {
             basicInventory.removeListener(this);
-            int i = Math.min(basicInventory.getInvSize(), this.items.getInvSize());
+            int i = Math.min(basicInventory.size(), this.items.size());
             for (int j = 0; j < i; ++j) {
-                ItemStack itemStack = basicInventory.getInvStack(j);
+                ItemStack itemStack = basicInventory.getStack(j);
                 if (itemStack.isEmpty()) continue;
-                this.items.setInvStack(j, itemStack.copy());
+                this.items.setStack(j, itemStack.copy());
             }
         }
         this.items.addListener(this);
@@ -273,11 +273,11 @@ JumpingMount {
         if (this.world.isClient) {
             return;
         }
-        this.setSaddled(!this.items.getInvStack(0).isEmpty() && this.canBeSaddled());
+        this.setSaddled(!this.items.getStack(0).isEmpty() && this.canBeSaddled());
     }
 
     @Override
-    public void onInvChange(Inventory inventory) {
+    public void onInventoryChanged(Inventory sender) {
         boolean bl = this.isSaddled();
         this.updateSaddle();
         if (this.age > 20 && !bl && this.isSaddled()) {
@@ -479,8 +479,8 @@ JumpingMount {
         if (this.items == null) {
             return;
         }
-        for (int i = 0; i < this.items.getInvSize(); ++i) {
-            ItemStack itemStack = this.items.getInvStack(i);
+        for (int i = 0; i < this.items.size(); ++i) {
+            ItemStack itemStack = this.items.getStack(i);
             if (itemStack.isEmpty() || EnchantmentHelper.hasVanishingCurse(itemStack)) continue;
             this.dropStack(itemStack);
         }
@@ -618,7 +618,7 @@ JumpingMount {
         this.setOwnerUuid(player.getUuid());
         this.setTame(true);
         if (player instanceof ServerPlayerEntity) {
-            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
+            Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
         }
         this.world.sendEntityStatus(this, (byte)7);
         return true;
@@ -701,8 +701,8 @@ JumpingMount {
         if (this.getOwnerUuid() != null) {
             tag.putUuidNew("Owner", this.getOwnerUuid());
         }
-        if (!this.items.getInvStack(0).isEmpty()) {
-            tag.put("SaddleItem", this.items.getInvStack(0).toTag(new CompoundTag()));
+        if (!this.items.getStack(0).isEmpty()) {
+            tag.put("SaddleItem", this.items.getStack(0).toTag(new CompoundTag()));
         }
     }
 
@@ -729,7 +729,7 @@ JumpingMount {
             this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(entityAttributeInstance.getBaseValue() * 0.25);
         }
         if (tag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
-            this.items.setInvStack(0, itemStack);
+            this.items.setStack(0, itemStack);
         }
         this.updateSaddle();
     }
@@ -883,20 +883,20 @@ JumpingMount {
     @Override
     public boolean equip(int slot, ItemStack item) {
         int i = slot - 400;
-        if (i >= 0 && i < 2 && i < this.items.getInvSize()) {
+        if (i >= 0 && i < 2 && i < this.items.size()) {
             if (i == 0 && item.getItem() != Items.SADDLE) {
                 return false;
             }
             if (!(i != 1 || this.canEquip() && this.canEquip(item))) {
                 return false;
             }
-            this.items.setInvStack(i, item);
+            this.items.setStack(i, item);
             this.updateSaddle();
             return true;
         }
         int j = slot - 500 + 2;
-        if (j >= 2 && j < this.items.getInvSize()) {
-            this.items.setInvStack(j, item);
+        if (j >= 2 && j < this.items.size()) {
+            this.items.setStack(j, item);
             return true;
         }
         return false;

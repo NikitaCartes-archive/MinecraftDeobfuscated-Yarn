@@ -16,13 +16,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
@@ -257,8 +257,8 @@ public enum Direction implements StringIdentifiable
         return Direction.values()[random.nextInt(Direction.values().length)];
     }
 
-    public static Direction getFacing(double x, double d, double e) {
-        return Direction.getFacing((float)x, (float)d, (float)e);
+    public static Direction getFacing(double x, double y, double z) {
+        return Direction.getFacing((float)x, (float)y, (float)z);
     }
 
     public static Direction getFacing(float x, float y, float z) {
@@ -358,7 +358,7 @@ public enum Direction implements StringIdentifiable
             return this.desc;
         }
 
-        public AxisDirection method_26424() {
+        public AxisDirection getOpposite() {
             return this == POSITIVE ? NEGATIVE : POSITIVE;
         }
     }

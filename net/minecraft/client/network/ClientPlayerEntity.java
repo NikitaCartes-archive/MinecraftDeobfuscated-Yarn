@@ -276,7 +276,7 @@ extends AbstractClientPlayerEntity {
     public boolean dropSelectedItem(boolean dropEntireStack) {
         PlayerActionC2SPacket.Action action = dropEntireStack ? PlayerActionC2SPacket.Action.DROP_ALL_ITEMS : PlayerActionC2SPacket.Action.DROP_ITEM;
         this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, BlockPos.ORIGIN, Direction.DOWN));
-        return this.inventory.takeInvStack(this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1) != ItemStack.EMPTY;
+        return this.inventory.removeStack(this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1) != ItemStack.EMPTY;
     }
 
     public void sendChatMessage(String message) {
@@ -556,8 +556,8 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void openEditSignScreen(SignBlockEntity signBlockEntity) {
-        this.client.openScreen(new SignEditScreen(signBlockEntity));
+    public void openEditSignScreen(SignBlockEntity sign) {
+        this.client.openScreen(new SignEditScreen(sign));
     }
 
     @Override
@@ -566,18 +566,18 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
-        this.client.openScreen(new CommandBlockScreen(commandBlockBlockEntity));
+    public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
+        this.client.openScreen(new CommandBlockScreen(commandBlock));
     }
 
     @Override
-    public void openStructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
-        this.client.openScreen(new StructureBlockScreen(structureBlockBlockEntity));
+    public void openStructureBlockScreen(StructureBlockBlockEntity structureBlock) {
+        this.client.openScreen(new StructureBlockScreen(structureBlock));
     }
 
     @Override
-    public void openJigsawScreen(JigsawBlockEntity jigsawBlockEntity) {
-        this.client.openScreen(new JigsawBlockScreen(jigsawBlockEntity));
+    public void openJigsawScreen(JigsawBlockEntity jigsaw) {
+        this.client.openScreen(new JigsawBlockScreen(jigsaw));
     }
 
     @Override

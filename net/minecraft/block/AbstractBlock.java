@@ -345,7 +345,7 @@ public abstract class AbstractBlock {
 
     protected abstract Block asBlock();
 
-    public MaterialColor method_26403() {
+    public MaterialColor getDefaultMaterialColor() {
         return (MaterialColor)this.settings.materialColorFactory.apply(this.asBlock().getDefaultState());
     }
 
@@ -371,7 +371,7 @@ public abstract class AbstractBlock {
         private final ContextPredicate suffocationPredicate;
         private final ContextPredicate blockVisionPredicate;
         private final ContextPredicate postProcessPredicate;
-        private final ContextPredicate inWallOverlayPredicate;
+        private final ContextPredicate emissiveLightingPredicate;
         @Nullable
         protected ShapeCache shapeCache;
 
@@ -389,7 +389,7 @@ public abstract class AbstractBlock {
             this.suffocationPredicate = settings.suffocationPredicate;
             this.blockVisionPredicate = settings.blockVisionPredicate;
             this.postProcessPredicate = settings.postProcessPredicate;
-            this.inWallOverlayPredicate = settings.inWallOverlayPredicate;
+            this.emissiveLightingPredicate = settings.emissiveLightingPredicate;
         }
 
         public void initShapeCache() {
@@ -468,8 +468,8 @@ public abstract class AbstractBlock {
         }
 
         @Environment(value=EnvType.CLIENT)
-        public boolean hasInWallOverlay(BlockView world, BlockPos pos) {
-            return this.inWallOverlayPredicate.test(this.asBlockState(), world, pos);
+        public boolean hasEmissiveLighting(BlockView world, BlockPos pos) {
+            return this.emissiveLightingPredicate.test(this.asBlockState(), world, pos);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -779,7 +779,7 @@ public abstract class AbstractBlock {
         private ContextPredicate suffocationPredicate;
         private ContextPredicate blockVisionPredicate = this.suffocationPredicate = (state, world, pos) -> this.material.blocksMovement() && state.isFullCube(world, pos);
         private ContextPredicate postProcessPredicate = (state, world, pos) -> false;
-        private ContextPredicate inWallOverlayPredicate = (state, world, pos) -> false;
+        private ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
         private boolean dynamicBounds;
 
         private Settings(Material material, MaterialColor materialColorFactory) {
@@ -881,7 +881,7 @@ public abstract class AbstractBlock {
             return this;
         }
 
-        public Settings hasDynamicBounds() {
+        public Settings dynamicBounds() {
             this.dynamicBounds = true;
             return this;
         }
@@ -926,8 +926,8 @@ public abstract class AbstractBlock {
             return this;
         }
 
-        public Settings inWallOverlay(ContextPredicate predicate) {
-            this.inWallOverlayPredicate = predicate;
+        public Settings emissiveLighting(ContextPredicate predicate) {
+            this.emissiveLightingPredicate = predicate;
             return this;
         }
     }

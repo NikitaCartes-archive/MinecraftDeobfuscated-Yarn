@@ -30,8 +30,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
@@ -48,6 +47,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
@@ -384,7 +384,7 @@ extends DrawableHelper {
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-        Matrix4f matrix4f = Rotation3.identity().getMatrix();
+        Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
         while (m != l) {
             int v = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
             int w = bl ? 100 : 60;

@@ -15,13 +15,13 @@ import net.minecraft.client.render.entity.EndCrystalEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -40,7 +40,7 @@ extends EntityRenderer<EnderDragonEntity> {
 
     public EnderDragonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.shadowSize = 0.5f;
+        this.shadowRadius = 0.5f;
     }
 
     @Override
@@ -114,21 +114,21 @@ extends EntityRenderer<EnderDragonEntity> {
         super.render(enderDragonEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    private static void method_23157(VertexConsumer vertexConsumer, Matrix4f vertexTransform, int alpha) {
-        vertexConsumer.vertex(vertexTransform, 0.0f, 0.0f, 0.0f).color(255, 255, 255, alpha).next();
-        vertexConsumer.vertex(vertexTransform, 0.0f, 0.0f, 0.0f).color(255, 255, 255, alpha).next();
+    private static void method_23157(VertexConsumer vertices, Matrix4f matrix, int alpha) {
+        vertices.vertex(matrix, 0.0f, 0.0f, 0.0f).color(255, 255, 255, alpha).next();
+        vertices.vertex(matrix, 0.0f, 0.0f, 0.0f).color(255, 255, 255, alpha).next();
     }
 
-    private static void method_23156(VertexConsumer vertexConsumer, Matrix4f vertexTransform, float f, float g) {
-        vertexConsumer.vertex(vertexTransform, -HALF_SQRT_3 * g, f, -0.5f * g).color(255, 0, 255, 0).next();
+    private static void method_23156(VertexConsumer vertices, Matrix4f matrix, float y, float x) {
+        vertices.vertex(matrix, -HALF_SQRT_3 * x, y, -0.5f * x).color(255, 0, 255, 0).next();
     }
 
-    private static void method_23158(VertexConsumer vertexConsumer, Matrix4f vertexTransform, float f, float g) {
-        vertexConsumer.vertex(vertexTransform, HALF_SQRT_3 * g, f, -0.5f * g).color(255, 0, 255, 0).next();
+    private static void method_23158(VertexConsumer vertices, Matrix4f matrix, float y, float x) {
+        vertices.vertex(matrix, HALF_SQRT_3 * x, y, -0.5f * x).color(255, 0, 255, 0).next();
     }
 
-    private static void method_23159(VertexConsumer vertexConsumer, Matrix4f vertexTransform, float y, float z) {
-        vertexConsumer.vertex(vertexTransform, 0.0f, y, 1.0f * z).color(255, 0, 255, 0).next();
+    private static void method_23159(VertexConsumer vertices, Matrix4f matrix, float y, float z) {
+        vertices.vertex(matrix, 0.0f, y, 1.0f * z).color(255, 0, 255, 0).next();
     }
 
     public static void renderCrystalBeam(float dx, float dy, float dz, float tickDelta, int age, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
@@ -298,7 +298,7 @@ extends EntityRenderer<EnderDragonEntity> {
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
             float p;
             matrices.push();
             float f = MathHelper.lerp(this.tickDelta, this.dragon.prevWingPosition, this.dragon.wingPosition);
@@ -327,7 +327,7 @@ extends EntityRenderer<EnderDragonEntity> {
                 i = (float)((double)i + Math.sin(this.neck.pitch) * 10.0);
                 j = (float)((double)j - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
                 h = (float)((double)h - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                this.neck.render(matrices, vertexConsumer, light, overlay);
+                this.neck.render(matrices, vertices, light, overlay);
             }
             this.head.pivotY = i;
             this.head.pivotZ = j;
@@ -336,13 +336,13 @@ extends EntityRenderer<EnderDragonEntity> {
             this.head.yaw = MathHelper.fwrapDegrees(fs[0] - ds[0]) * ((float)Math.PI / 180);
             this.head.pitch = MathHelper.fwrapDegrees(this.dragon.method_6823(6, ds, fs)) * ((float)Math.PI / 180) * 1.5f * 5.0f;
             this.head.roll = -MathHelper.fwrapDegrees(fs[0] - (double)m) * ((float)Math.PI / 180);
-            this.head.render(matrices, vertexConsumer, light, overlay);
+            this.head.render(matrices, vertices, light, overlay);
             matrices.push();
             matrices.translate(0.0, 1.0, 0.0);
             matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-l * 1.5f));
             matrices.translate(0.0, -1.0, 0.0);
             this.body.roll = 0.0f;
-            this.body.render(matrices, vertexConsumer, light, overlay);
+            this.body.render(matrices, vertices, light, overlay);
             float q = f * ((float)Math.PI * 2);
             this.wing.pitch = 0.125f - (float)Math.cos(q) * 0.2f;
             this.wing.yaw = -0.25f;
@@ -352,8 +352,8 @@ extends EntityRenderer<EnderDragonEntity> {
             this.field_21555.yaw = -this.wing.yaw;
             this.field_21555.roll = -this.wing.roll;
             this.wingTip.roll = -this.field_21548.roll;
-            this.method_23838(matrices, vertexConsumer, light, overlay, g, this.wing, this.field_21549, this.field_21550, this.field_21551, this.field_21552, this.field_21553, this.field_21554);
-            this.method_23838(matrices, vertexConsumer, light, overlay, g, this.field_21555, this.frontLeg, this.frontLegTip, this.frontFoot, this.rearLeg, this.rearLegTip, this.rearFoot);
+            this.method_23838(matrices, vertices, light, overlay, g, this.wing, this.field_21549, this.field_21550, this.field_21551, this.field_21552, this.field_21553, this.field_21554);
+            this.method_23838(matrices, vertices, light, overlay, g, this.field_21555, this.frontLeg, this.frontLegTip, this.frontFoot, this.rearLeg, this.rearLegTip, this.rearFoot);
             matrices.pop();
             p = -((float)Math.sin(f * ((float)Math.PI * 2))) * 0.0f;
             n = f * ((float)Math.PI * 2);
@@ -373,21 +373,21 @@ extends EntityRenderer<EnderDragonEntity> {
                 i = (float)((double)i + Math.sin(this.neck.pitch) * 10.0);
                 j = (float)((double)j - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
                 h = (float)((double)h - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                this.neck.render(matrices, vertexConsumer, light, overlay);
+                this.neck.render(matrices, vertices, light, overlay);
             }
             matrices.pop();
         }
 
-        private void method_23838(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float offset, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, ModelPart modelPart4, ModelPart modelPart5, ModelPart modelPart6, ModelPart modelPart7) {
-            modelPart5.pitch = 1.0f + offset * 0.1f;
-            modelPart6.pitch = 0.5f + offset * 0.1f;
-            modelPart7.pitch = 0.75f + offset * 0.1f;
-            modelPart2.pitch = 1.3f + offset * 0.1f;
-            modelPart3.pitch = -0.5f - offset * 0.1f;
-            modelPart4.pitch = 0.75f + offset * 0.1f;
-            modelPart.render(matrices, vertexConsumer, light, overlay);
-            modelPart2.render(matrices, vertexConsumer, light, overlay);
-            modelPart5.render(matrices, vertexConsumer, light, overlay);
+        private void method_23838(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offse, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, ModelPart modelPart4, ModelPart modelPart5, ModelPart modelPart6, ModelPart modelPart7) {
+            modelPart5.pitch = 1.0f + offse * 0.1f;
+            modelPart6.pitch = 0.5f + offse * 0.1f;
+            modelPart7.pitch = 0.75f + offse * 0.1f;
+            modelPart2.pitch = 1.3f + offse * 0.1f;
+            modelPart3.pitch = -0.5f - offse * 0.1f;
+            modelPart4.pitch = 0.75f + offse * 0.1f;
+            modelPart.render(matrices, vertices, light, overlay);
+            modelPart2.render(matrices, vertices, light, overlay);
+            modelPart5.render(matrices, vertices, light, overlay);
         }
     }
 }

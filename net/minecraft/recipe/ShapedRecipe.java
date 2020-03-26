@@ -103,7 +103,7 @@ implements CraftingRecipe {
                 if (k >= 0 && l >= 0 && k < this.width && l < this.height) {
                     ingredient = bl ? this.inputs.get(this.width - k - 1 + l * this.width) : this.inputs.get(k + l * this.width);
                 }
-                if (ingredient.test(inv.getInvStack(i + j * inv.getWidth()))) continue;
+                if (ingredient.test(inv.getStack(i + j * inv.getWidth()))) continue;
                 return false;
             }
         }

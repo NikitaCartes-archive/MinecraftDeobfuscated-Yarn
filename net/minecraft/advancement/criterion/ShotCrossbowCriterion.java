@@ -48,8 +48,8 @@ extends AbstractCriterion<Conditions> {
             this.item = item;
         }
 
-        public static Conditions create(ItemConvertible itemConvertible) {
-            return new Conditions(ItemPredicate.Builder.create().item(itemConvertible).build());
+        public static Conditions create(ItemConvertible item) {
+            return new Conditions(ItemPredicate.Builder.create().item(item).build());
         }
 
         public boolean matches(ItemStack stack) {

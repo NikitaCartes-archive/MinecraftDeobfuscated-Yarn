@@ -11,20 +11,20 @@ import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
     protected final EntityRenderDispatcher dispatcher;
-    protected float shadowSize;
-    protected float shadowDarkness = 1.0f;
+    protected float shadowRadius;
+    protected float shadowOpacity = 1.0f;
 
     protected EntityRenderer(EntityRenderDispatcher dispatcher) {
         this.dispatcher = dispatcher;
@@ -41,8 +41,8 @@ public abstract class EntityRenderer<T extends Entity> {
         return ((Entity)entity).world.getLightLevel(LightType.BLOCK, new BlockPos(((Entity)entity).getCameraPosVec(tickDelta)));
     }
 
-    public boolean shouldRender(T entity, Frustum visibleRegion, double cameraX, double cameraY, double cameraZ) {
-        if (!((Entity)entity).shouldRender(cameraX, cameraY, cameraZ)) {
+    public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
+        if (!((Entity)entity).shouldRender(x, y, z)) {
             return false;
         }
         if (((Entity)entity).ignoreCameraFrustum) {
@@ -52,7 +52,7 @@ public abstract class EntityRenderer<T extends Entity> {
         if (box.isValid() || box.getAverageSideLength() == 0.0) {
             box = new Box(((Entity)entity).getX() - 2.0, ((Entity)entity).getY() - 2.0, ((Entity)entity).getZ() - 2.0, ((Entity)entity).getX() + 2.0, ((Entity)entity).getY() + 2.0, ((Entity)entity).getZ() + 2.0);
         }
-        return visibleRegion.isVisible(box);
+        return frustum.isVisible(box);
     }
 
     public Vec3d getPositionOffset(T entity, float tickDelta) {

@@ -30,18 +30,18 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class BannerBlockEntityRenderer
 extends BlockEntityRenderer<BannerBlockEntity> {
-    private final ModelPart field = BannerBlockEntityRenderer.createField();
-    private final ModelPart verticalBar = new ModelPart(64, 64, 44, 0);
-    private final ModelPart topBar;
+    private final ModelPart banner = BannerBlockEntityRenderer.createBanner();
+    private final ModelPart pillar = new ModelPart(64, 64, 44, 0);
+    private final ModelPart crossbar;
 
     public BannerBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
         super(blockEntityRenderDispatcher);
-        this.verticalBar.addCuboid(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f, 0.0f);
-        this.topBar = new ModelPart(64, 64, 0, 42);
-        this.topBar.addCuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f, 0.0f);
+        this.pillar.addCuboid(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f, 0.0f);
+        this.crossbar = new ModelPart(64, 64, 0, 42);
+        this.crossbar.addCuboid(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f, 0.0f);
     }
 
-    public static ModelPart createField() {
+    public static ModelPart createBanner() {
         ModelPart modelPart = new ModelPart(64, 64, 0, 0);
         modelPart.addCuboid(-10.0f, 0.0f, -2.0f, 20.0f, 40.0f, 1.0f, 0.0f);
         return modelPart;
@@ -60,7 +60,7 @@ extends BlockEntityRenderer<BannerBlockEntity> {
         if (bl) {
             l = 0L;
             matrixStack.translate(0.5, 0.5, 0.5);
-            this.verticalBar.visible = true;
+            this.pillar.visible = true;
         } else {
             float h;
             l = bannerBlockEntity.getWorld().getTime();
@@ -69,36 +69,36 @@ extends BlockEntityRenderer<BannerBlockEntity> {
                 matrixStack.translate(0.5, 0.5, 0.5);
                 h = (float)(-blockState.get(BannerBlock.ROTATION).intValue() * 360) / 16.0f;
                 matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
-                this.verticalBar.visible = true;
+                this.pillar.visible = true;
             } else {
                 matrixStack.translate(0.5, -0.1666666716337204, 0.5);
                 h = -blockState.get(WallBannerBlock.FACING).asRotation();
                 matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
                 matrixStack.translate(0.0, -0.3125, -0.4375);
-                this.verticalBar.visible = false;
+                this.pillar.visible = false;
             }
         }
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
         VertexConsumer vertexConsumer = ModelLoader.BANNER_BASE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-        this.verticalBar.render(matrixStack, vertexConsumer, i, j);
-        this.topBar.render(matrixStack, vertexConsumer, i, j);
+        this.pillar.render(matrixStack, vertexConsumer, i, j);
+        this.crossbar.render(matrixStack, vertexConsumer, i, j);
         BlockPos blockPos = bannerBlockEntity.getPos();
         float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0f;
-        this.field.pitch = (-0.0125f + 0.01f * MathHelper.cos((float)Math.PI * 2 * k)) * (float)Math.PI;
-        this.field.pivotY = -32.0f;
-        BannerBlockEntityRenderer.method_23802(matrixStack, vertexConsumerProvider, i, j, this.field, ModelLoader.BANNER_BASE, true, list);
+        this.banner.pitch = (-0.0125f + 0.01f * MathHelper.cos((float)Math.PI * 2 * k)) * (float)Math.PI;
+        this.banner.pivotY = -32.0f;
+        BannerBlockEntityRenderer.renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
         matrixStack.pop();
         matrixStack.pop();
     }
 
-    public static void method_23802(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, ModelPart modelPart, SpriteIdentifier spriteIdentifier, boolean bl, List<Pair<BannerPattern, DyeColor>> list) {
-        modelPart.render(matrixStack, spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid), i, j);
-        for (int k = 0; k < 17 && k < list.size(); ++k) {
-            Pair<BannerPattern, DyeColor> pair = list.get(k);
+    public static void renderCanvas(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, ModelPart canvas, SpriteIdentifier baseSprite, boolean isBanner, List<Pair<BannerPattern, DyeColor>> patterns) {
+        canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid), light, overlay);
+        for (int i = 0; i < 17 && i < patterns.size(); ++i) {
+            Pair<BannerPattern, DyeColor> pair = patterns.get(i);
             float[] fs = pair.getSecond().getColorComponents();
-            SpriteIdentifier spriteIdentifier2 = new SpriteIdentifier(bl ? TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE : TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, pair.getFirst().getSpriteId(bl));
-            modelPart.render(matrixStack, spriteIdentifier2.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityNoOutline), i, j, fs[0], fs[1], fs[2], 1.0f);
+            SpriteIdentifier spriteIdentifier = new SpriteIdentifier(isBanner ? TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE : TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, pair.getFirst().getSpriteId(isBanner));
+            canvas.render(matrices, spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0f);
         }
     }
 }

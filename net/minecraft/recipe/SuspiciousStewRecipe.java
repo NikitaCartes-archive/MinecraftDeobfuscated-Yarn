@@ -31,8 +31,8 @@ extends SpecialCraftingRecipe {
         boolean bl2 = false;
         boolean bl3 = false;
         boolean bl4 = false;
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
-            ItemStack itemStack = craftingInventory.getInvStack(i);
+        for (int i = 0; i < craftingInventory.size(); ++i) {
+            ItemStack itemStack = craftingInventory.getStack(i);
             if (itemStack.isEmpty()) continue;
             if (itemStack.getItem() == Blocks.BROWN_MUSHROOM.asItem() && !bl3) {
                 bl3 = true;
@@ -58,8 +58,8 @@ extends SpecialCraftingRecipe {
     @Override
     public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = ItemStack.EMPTY;
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
-            ItemStack itemStack2 = craftingInventory.getInvStack(i);
+        for (int i = 0; i < craftingInventory.size(); ++i) {
+            ItemStack itemStack2 = craftingInventory.getStack(i);
             if (itemStack2.isEmpty() || !itemStack2.getItem().isIn(ItemTags.SMALL_FLOWERS)) continue;
             itemStack = itemStack2;
             break;

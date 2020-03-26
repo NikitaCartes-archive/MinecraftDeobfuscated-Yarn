@@ -28,8 +28,8 @@ extends SpecialCraftingRecipe {
         DyeColor dyeColor = null;
         ItemStack itemStack = null;
         ItemStack itemStack2 = null;
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
-            ItemStack itemStack3 = craftingInventory.getInvStack(i);
+        for (int i = 0; i < craftingInventory.size(); ++i) {
+            ItemStack itemStack3 = craftingInventory.getStack(i);
             Item item = itemStack3.getItem();
             if (!(item instanceof BannerItem)) continue;
             BannerItem bannerItem = (BannerItem)item;
@@ -60,9 +60,9 @@ extends SpecialCraftingRecipe {
 
     @Override
     public ItemStack craft(CraftingInventory craftingInventory) {
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
+        for (int i = 0; i < craftingInventory.size(); ++i) {
             int j;
-            ItemStack itemStack = craftingInventory.getInvStack(i);
+            ItemStack itemStack = craftingInventory.getStack(i);
             if (itemStack.isEmpty() || (j = BannerBlockEntity.getPatternCount(itemStack)) <= 0 || j > 6) continue;
             ItemStack itemStack2 = itemStack.copy();
             itemStack2.setCount(1);
@@ -73,9 +73,9 @@ extends SpecialCraftingRecipe {
 
     @Override
     public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.getInvSize(), ItemStack.EMPTY);
+        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
         for (int i = 0; i < defaultedList.size(); ++i) {
-            ItemStack itemStack = craftingInventory.getInvStack(i);
+            ItemStack itemStack = craftingInventory.getStack(i);
             if (itemStack.isEmpty()) continue;
             if (itemStack.getItem().hasRecipeRemainder()) {
                 defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));

@@ -23,7 +23,7 @@ extends CuttingRecipe {
 
     @Override
     public boolean matches(Inventory inv, World world) {
-        return this.input.test(inv.getInvStack(0));
+        return this.input.test(inv.getStack(0));
     }
 
     @Override

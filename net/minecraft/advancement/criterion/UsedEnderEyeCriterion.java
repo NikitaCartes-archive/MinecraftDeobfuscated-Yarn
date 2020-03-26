@@ -44,9 +44,9 @@ extends AbstractCriterion<Conditions> {
     extends AbstractCriterionConditions {
         private final NumberRange.FloatRange distance;
 
-        public Conditions(NumberRange.FloatRange floatRange) {
+        public Conditions(NumberRange.FloatRange distance) {
             super(id);
-            this.distance = floatRange;
+            this.distance = distance;
         }
 
         public boolean matches(double distance) {

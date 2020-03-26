@@ -16,16 +16,16 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity>
 extends BlockEntityRenderer<T> {
-    public static final Identifier SKY_TEX = new Identifier("textures/environment/end_sky.png");
-    public static final Identifier PORTAL_TEX = new Identifier("textures/entity/end_portal.png");
+    public static final Identifier SKY_TEXTURE = new Identifier("textures/environment/end_sky.png");
+    public static final Identifier PORTAL_TEXTURE = new Identifier("textures/entity/end_portal.png");
     private static final Random RANDOM = new Random(31100L);
     private static final List<RenderLayer> field_21732 = IntStream.range(0, 16).mapToObj(i -> RenderLayer.getEndPortal(i + 1)).collect(ImmutableList.toImmutableList());
 

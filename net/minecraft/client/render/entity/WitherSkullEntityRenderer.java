@@ -39,7 +39,7 @@ extends EntityRenderer<WitherSkullEntity> {
         float h = MathHelper.lerpAngle(witherSkullEntity.prevYaw, witherSkullEntity.yaw, g);
         float j = MathHelper.lerp(g, witherSkullEntity.prevPitch, witherSkullEntity.pitch);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(witherSkullEntity)));
-        this.model.render(0.0f, h, j);
+        this.model.method_2821(0.0f, h, j);
         this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
         super.render(witherSkullEntity, f, g, matrixStack, vertexConsumerProvider, i);

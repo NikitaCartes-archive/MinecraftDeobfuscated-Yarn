@@ -4,12 +4,12 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.class_4980;
-import net.minecraft.class_4981;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SaddledComponent;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -43,15 +43,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class PigEntity
 extends AnimalEntity
-implements class_4981 {
+implements ItemSteerable {
     private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Integer> field_6815 = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CARROT, Items.POTATO, Items.BEETROOT);
-    private final class_4980 field_23230;
+    private final SaddledComponent saddledComponent;
 
     public PigEntity(EntityType<? extends PigEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
-        this.field_23230 = new class_4980(this.dataTracker, field_6815, SADDLED);
+        this.saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
     }
 
     @Override
@@ -95,8 +95,8 @@ implements class_4981 {
 
     @Override
     public void onTrackedDataSet(TrackedData<?> data) {
-        if (field_6815.equals(data) && this.world.isClient) {
-            this.field_23230.method_26307();
+        if (BOOST_TIME.equals(data) && this.world.isClient) {
+            this.saddledComponent.boost();
         }
         super.onTrackedDataSet(data);
     }
@@ -105,19 +105,19 @@ implements class_4981 {
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(SADDLED, false);
-        this.dataTracker.startTracking(field_6815, 0);
+        this.dataTracker.startTracking(BOOST_TIME, 0);
     }
 
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
-        this.field_23230.method_26309(tag);
+        this.saddledComponent.toTag(tag);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
-        this.field_23230.method_26312(tag);
+        this.saddledComponent.fromTag(tag);
     }
 
     @Override
@@ -143,7 +143,7 @@ implements class_4981 {
     @Override
     public boolean interactMob(PlayerEntity player, Hand hand) {
         if (!super.interactMob(player, hand)) {
-            return this.method_26314(this, player, hand, true);
+            return this.interactMob(this, player, hand, true);
         }
         return true;
     }
@@ -158,12 +158,12 @@ implements class_4981 {
 
     @Override
     public boolean isSaddled() {
-        return this.field_23230.method_26311();
+        return this.saddledComponent.isSaddled();
     }
 
     @Override
-    public void setSaddled(boolean bl) {
-        this.field_23230.method_26310(bl);
+    public void setSaddled(boolean saddled) {
+        this.saddledComponent.setSaddled(saddled);
     }
 
     @Override
@@ -183,7 +183,7 @@ implements class_4981 {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.method_26313(this, this.field_23230, movementInput)) {
+        if (this.travel(this, this.saddledComponent, movementInput)) {
             double e;
             this.lastLimbDistance = this.limbDistance;
             double d = this.getX() - this.prevX;
@@ -197,18 +197,18 @@ implements class_4981 {
     }
 
     @Override
-    public float method_26316() {
+    public float getSaddledSpeed() {
         return (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225f;
     }
 
     @Override
-    public void method_26315(Vec3d vec3d) {
-        super.travel(vec3d);
+    public void setMovementInput(Vec3d movementInput) {
+        super.travel(movementInput);
     }
 
     @Override
-    public boolean method_6577() {
-        return this.field_23230.method_26308(this.getRandom());
+    public boolean consumeOnAStickItem() {
+        return this.saddledComponent.boost(this.getRandom());
     }
 
     @Override

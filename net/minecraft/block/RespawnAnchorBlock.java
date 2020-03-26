@@ -49,7 +49,7 @@ extends Block {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack itemStack = player.getStackInHand(hand);
         if (itemStack.getItem() == Items.GLOWSTONE && state.get(CHARGES) < 4) {
-            RespawnAnchorBlock.method_26382(world, pos, state);
+            RespawnAnchorBlock.charge(world, pos, state);
             if (!player.abilities.creativeMode) {
                 itemStack.decrement(1);
             }
@@ -72,9 +72,9 @@ extends Block {
         return ActionResult.SUCCESS;
     }
 
-    public static void method_26382(World world, BlockPos blockPos, BlockState blockState) {
-        world.setBlockState(blockPos, (BlockState)blockState.with(CHARGES, blockState.get(CHARGES) + 1), 3);
-        world.playSound(null, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+    public static void charge(World world, BlockPos pos, BlockState state) {
+        world.setBlockState(pos, (BlockState)state.with(CHARGES, state.get(CHARGES) + 1), 3);
+        world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
 
     @Override
@@ -112,9 +112,9 @@ extends Block {
         return RespawnAnchorBlock.getLightLevel(state, 15);
     }
 
-    public static Optional<Vec3d> findRespawnPosition(EntityType<?> entityType, WorldView worldView, BlockPos blockPos) {
-        for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-1, -1, -1), blockPos.add(1, 1, 1))) {
-            Optional<Vec3d> optional = BedBlock.canWakeUpAt(entityType, worldView, blockPos2);
+    public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, WorldView world, BlockPos pos) {
+        for (BlockPos blockPos : BlockPos.iterate(pos.add(-1, -1, -1), pos.add(1, 1, 1))) {
+            Optional<Vec3d> optional = BedBlock.canWakeUpAt(entity, world, blockPos);
             if (!optional.isPresent()) continue;
             return optional;
         }

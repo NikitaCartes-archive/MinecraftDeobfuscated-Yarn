@@ -103,8 +103,8 @@ StructureHolder {
 
     public void removeBlockEntity(BlockPos var1);
 
-    default public void markBlockForPostProcessing(BlockPos blockPos) {
-        LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", (Object)blockPos);
+    default public void markBlockForPostProcessing(BlockPos pos) {
+        LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", (Object)pos);
     }
 
     public ShortList[] getPostProcessingLists();
@@ -113,7 +113,7 @@ StructureHolder {
         Chunk.getList(this.getPostProcessingLists(), i).add(s);
     }
 
-    default public void addPendingBlockEntityTag(CompoundTag compoundTag) {
+    default public void addPendingBlockEntityTag(CompoundTag tag) {
         LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
     }
 

@@ -112,8 +112,8 @@ extends LivingEntity {
 
     protected MobEntity(EntityType<? extends MobEntity> entityType, World world) {
         super((EntityType<? extends LivingEntity>)entityType, world);
-        this.goalSelector = new GoalSelector(world.method_24367());
-        this.targetSelector = new GoalSelector(world.method_24367());
+        this.goalSelector = new GoalSelector(world.getProfilerSupplier());
+        this.targetSelector = new GoalSelector(world.getProfilerSupplier());
         this.lookControl = new LookControl(this);
         this.moveControl = new MoveControl(this);
         this.jumpControl = new JumpControl(this);
@@ -1004,7 +1004,7 @@ extends LivingEntity {
         return super.interact(player, hand);
     }
 
-    protected void onPlayerSpawnedChild(PlayerEntity playerEntity, MobEntity mobEntity) {
+    protected void onPlayerSpawnedChild(PlayerEntity player, MobEntity child) {
     }
 
     protected boolean interactMob(PlayerEntity player, Hand hand) {
@@ -1012,7 +1012,7 @@ extends LivingEntity {
         Item item = itemStack.getItem();
         if (!this.world.isClient && item instanceof SpawnEggItem) {
             SpawnEggItem spawnEggItem = (SpawnEggItem)item;
-            Optional<MobEntity> optional = spawnEggItem.method_24793(player, this.getType(), this.world, this.getPos(), itemStack);
+            Optional<MobEntity> optional = spawnEggItem.spawnBaby(player, this.getType(), this.world, this.getPos(), itemStack);
             optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(player, (MobEntity)mobEntity));
         }
         return false;
@@ -1181,9 +1181,9 @@ extends LivingEntity {
         return super.canMoveVoluntarily() && !this.isAiDisabled();
     }
 
-    public void setAiDisabled(boolean bl) {
+    public void setAiDisabled(boolean aiDisabled) {
         byte b = this.dataTracker.get(MOB_FLAGS);
-        this.dataTracker.set(MOB_FLAGS, bl ? (byte)(b | 1) : (byte)(b & 0xFFFFFFFE));
+        this.dataTracker.set(MOB_FLAGS, aiDisabled ? (byte)(b | 1) : (byte)(b & 0xFFFFFFFE));
     }
 
     public void setLeftHanded(boolean leftHanded) {

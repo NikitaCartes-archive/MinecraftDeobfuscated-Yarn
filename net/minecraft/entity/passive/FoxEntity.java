@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -485,8 +485,8 @@ extends AnimalEntity {
     }
 
     @Override
-    protected void onPlayerSpawnedChild(PlayerEntity playerEntity, MobEntity mobEntity) {
-        ((FoxEntity)mobEntity).addTrustedUuid(playerEntity.getUuid());
+    protected void onPlayerSpawnedChild(PlayerEntity player, MobEntity child) {
+        ((FoxEntity)child).addTrustedUuid(player.getUuid());
     }
 
     public boolean isChasing() {
@@ -1203,7 +1203,7 @@ extends AnimalEntity {
             }
             if (serverPlayerEntity3 != null) {
                 serverPlayerEntity3.incrementStat(Stats.ANIMALS_BRED);
-                Criterions.BRED_ANIMALS.trigger(serverPlayerEntity3, this.animal, this.mate, foxEntity);
+                Criteria.BRED_ANIMALS.trigger(serverPlayerEntity3, this.animal, this.mate, foxEntity);
             }
             this.animal.setBreedingAge(6000);
             this.mate.setBreedingAge(6000);

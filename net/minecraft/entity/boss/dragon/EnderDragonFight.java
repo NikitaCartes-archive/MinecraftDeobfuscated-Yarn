@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndPortalBlockEntity;
@@ -217,7 +217,7 @@ public class EnderDragonFight {
             this.dragonKilled = false;
             EnderDragonEntity enderDragonEntity = this.createDragon();
             for (ServerPlayerEntity serverPlayerEntity : this.bossBar.getPlayers()) {
-                Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, enderDragonEntity);
+                Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, enderDragonEntity);
             }
         } else {
             this.dragonSpawnState = enderDragonSpawnState;

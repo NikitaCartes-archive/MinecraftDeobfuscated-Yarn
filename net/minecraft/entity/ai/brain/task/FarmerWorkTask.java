@@ -18,7 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.GlobalPos;
+import net.minecraft.util.dynamic.GlobalPos;
 
 public class FarmerWorkTask
 extends VillagerWorkTask {
@@ -47,10 +47,10 @@ extends VillagerWorkTask {
         int j = 10;
         int[] is = new int[COMPOSTABLES.size()];
         BasicInventory basicInventory = entity.getInventory();
-        int k = basicInventory.getInvSize();
+        int k = basicInventory.size();
         for (int l = k - 1; l >= 0 && i > 0; --l) {
             int o;
-            ItemStack itemStack = basicInventory.getInvStack(l);
+            ItemStack itemStack = basicInventory.getStack(l);
             int m = COMPOSTABLES.indexOf(itemStack.getItem());
             if (m == -1) continue;
             int n = itemStack.getCount();
@@ -67,10 +67,10 @@ extends VillagerWorkTask {
 
     private void craftAndDropBread(VillagerEntity entity) {
         BasicInventory basicInventory = entity.getInventory();
-        if (basicInventory.countInInv(Items.BREAD) > 36) {
+        if (basicInventory.count(Items.BREAD) > 36) {
             return;
         }
-        int i = basicInventory.countInInv(Items.WHEAT);
+        int i = basicInventory.count(Items.WHEAT);
         int j = 3;
         int k = 3;
         int l = Math.min(3, i / 3);
@@ -78,8 +78,8 @@ extends VillagerWorkTask {
             return;
         }
         int m = l * 3;
-        basicInventory.poll(Items.WHEAT, m);
-        ItemStack itemStack = basicInventory.add(new ItemStack(Items.BREAD, l));
+        basicInventory.removeItem(Items.WHEAT, m);
+        ItemStack itemStack = basicInventory.addStack(new ItemStack(Items.BREAD, l));
         if (!itemStack.isEmpty()) {
             entity.dropStack(itemStack, 0.5f);
         }

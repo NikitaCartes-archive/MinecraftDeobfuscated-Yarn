@@ -11,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 public interface Clearable {
     public void clear();
 
-    public static void clear(@Nullable Object object) {
-        if (object instanceof Clearable) {
-            ((Clearable)object).clear();
+    public static void clear(@Nullable Object o) {
+        if (o instanceof Clearable) {
+            ((Clearable)o).clear();
         }
     }
 }

@@ -70,7 +70,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
         if (optional.isPresent() && resultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe = optional.get())) {
             itemStack = craftingRecipe.craft(craftingInventory);
         }
-        resultInventory.setInvStack(0, itemStack);
+        resultInventory.setStack(0, itemStack);
         serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, 0, itemStack));
     }
 

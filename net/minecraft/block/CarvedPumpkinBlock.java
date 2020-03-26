@@ -4,7 +4,7 @@
 package net.minecraft.block;
 
 import java.util.function.Predicate;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -75,7 +75,7 @@ extends HorizontalFacingBlock {
                 snowGolemEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.05, (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
                 world.spawnEntity(snowGolemEntity);
                 for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
-                    Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, snowGolemEntity);
+                    Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, snowGolemEntity);
                 }
                 for (int j = 0; j < this.getSnowGolemPattern().getHeight(); ++j) {
                     CachedBlockPosition cachedBlockPosition2 = result.translate(0, j, 0);
@@ -98,7 +98,7 @@ extends HorizontalFacingBlock {
             ironGolemEntity.refreshPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0f, 0.0f);
             world.spawnEntity(ironGolemEntity);
             for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
-                Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, ironGolemEntity);
+                Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, ironGolemEntity);
             }
             for (int j = 0; j < this.getIronGolemPattern().getWidth(); ++j) {
                 for (int l = 0; l < this.getIronGolemPattern().getHeight(); ++l) {

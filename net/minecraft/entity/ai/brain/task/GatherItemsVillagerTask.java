@@ -57,10 +57,10 @@ extends Task<VillagerEntity> {
         if (villagerEntity.wantsToStartBreeding() && (villagerEntity.getVillagerData().getProfession() == VillagerProfession.FARMER || villagerEntity2.canBreed())) {
             GatherItemsVillagerTask.giveHalfOfStack(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet(), villagerEntity2);
         }
-        if (villagerEntity2.getVillagerData().getProfession() == VillagerProfession.FARMER && villagerEntity.getInventory().countInInv(Items.WHEAT) > Items.WHEAT.getMaxCount() / 2) {
+        if (villagerEntity2.getVillagerData().getProfession() == VillagerProfession.FARMER && villagerEntity.getInventory().count(Items.WHEAT) > Items.WHEAT.getMaxCount() / 2) {
             GatherItemsVillagerTask.giveHalfOfStack(villagerEntity, ImmutableSet.of(Items.WHEAT), villagerEntity2);
         }
-        if (!this.items.isEmpty() && villagerEntity.getInventory().containsAnyInInv(this.items)) {
+        if (!this.items.isEmpty() && villagerEntity.getInventory().containsAny(this.items)) {
             GatherItemsVillagerTask.giveHalfOfStack(villagerEntity, this.items, villagerEntity2);
         }
     }
@@ -79,10 +79,10 @@ extends Task<VillagerEntity> {
     private static void giveHalfOfStack(VillagerEntity villager, Set<Item> validItems, LivingEntity target) {
         BasicInventory basicInventory = villager.getInventory();
         ItemStack itemStack = ItemStack.EMPTY;
-        for (int i = 0; i < basicInventory.getInvSize(); ++i) {
+        for (int i = 0; i < basicInventory.size(); ++i) {
             int j;
             Item item;
-            ItemStack itemStack2 = basicInventory.getInvStack(i);
+            ItemStack itemStack2 = basicInventory.getStack(i);
             if (itemStack2.isEmpty() || !validItems.contains(item = itemStack2.getItem())) continue;
             if (itemStack2.getCount() > itemStack2.getMaxCount() / 2) {
                 j = itemStack2.getCount() / 2;

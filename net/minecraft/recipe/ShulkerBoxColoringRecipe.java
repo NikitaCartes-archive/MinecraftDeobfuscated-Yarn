@@ -27,8 +27,8 @@ extends SpecialCraftingRecipe {
     public boolean matches(CraftingInventory craftingInventory, World world) {
         int i = 0;
         int j = 0;
-        for (int k = 0; k < craftingInventory.getInvSize(); ++k) {
-            ItemStack itemStack = craftingInventory.getInvStack(k);
+        for (int k = 0; k < craftingInventory.size(); ++k) {
+            ItemStack itemStack = craftingInventory.getStack(k);
             if (itemStack.isEmpty()) continue;
             if (Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock) {
                 ++i;
@@ -47,8 +47,8 @@ extends SpecialCraftingRecipe {
     public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack = ItemStack.EMPTY;
         DyeItem dyeItem = (DyeItem)Items.WHITE_DYE;
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
-            ItemStack itemStack2 = craftingInventory.getInvStack(i);
+        for (int i = 0; i < craftingInventory.size(); ++i) {
+            ItemStack itemStack2 = craftingInventory.getStack(i);
             if (itemStack2.isEmpty()) continue;
             Item item = itemStack2.getItem();
             if (Block.getBlockFromItem(item) instanceof ShulkerBoxBlock) {

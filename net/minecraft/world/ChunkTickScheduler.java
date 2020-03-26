@@ -21,13 +21,13 @@ implements TickScheduler<T> {
     private final ChunkPos pos;
     private final ShortList[] scheduledPositions = new ShortList[16];
 
-    public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos chunkPos) {
-        this(shouldExclude, chunkPos, new ListTag());
+    public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos) {
+        this(shouldExclude, pos, new ListTag());
     }
 
-    public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos chunkPos, ListTag listTag) {
+    public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, ListTag listTag) {
         this.shouldExclude = shouldExclude;
-        this.pos = chunkPos;
+        this.pos = pos;
         for (int i = 0; i < listTag.size(); ++i) {
             ListTag listTag2 = listTag.getList(i);
             for (int j = 0; j < listTag2.size(); ++j) {

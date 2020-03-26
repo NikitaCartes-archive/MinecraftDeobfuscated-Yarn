@@ -52,10 +52,10 @@ extends AbstractCriterion<Conditions> {
         private final EntityPredicate[] victims;
         private final NumberRange.IntRange uniqueEntityTypes;
 
-        public Conditions(EntityPredicate[] victims, NumberRange.IntRange intRange) {
+        public Conditions(EntityPredicate[] victims, NumberRange.IntRange uniqueEntityTypes) {
             super(ID);
             this.victims = victims;
-            this.uniqueEntityTypes = intRange;
+            this.uniqueEntityTypes = uniqueEntityTypes;
         }
 
         public static Conditions create(EntityPredicate.Builder ... builders) {
@@ -67,9 +67,9 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(entityPredicates, NumberRange.IntRange.ANY);
         }
 
-        public static Conditions create(NumberRange.IntRange intRange) {
+        public static Conditions create(NumberRange.IntRange uniqueEntityTypes) {
             EntityPredicate[] entityPredicates = new EntityPredicate[]{};
-            return new Conditions(entityPredicates, intRange);
+            return new Conditions(entityPredicates, uniqueEntityTypes);
         }
 
         public boolean matches(ServerPlayerEntity player, Collection<Entity> victims, int amount) {

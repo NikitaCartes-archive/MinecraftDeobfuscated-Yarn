@@ -43,18 +43,18 @@ public enum DyeColor implements StringIdentifiable
     private final int fireworkColor;
     private final int signColor;
 
-    private DyeColor(int woolId, String name, int color, MaterialColor materialColor, int j, int k) {
+    private DyeColor(int woolId, String name, int color, MaterialColor materialColor, int fireworkColor, int signColor) {
         this.id = woolId;
         this.name = name;
         this.color = color;
         this.materialColor = materialColor;
-        this.signColor = k;
-        int l = (color & 0xFF0000) >> 16;
-        int m = (color & 0xFF00) >> 8;
-        int n = (color & 0xFF) >> 0;
-        this.colorSwapped = n << 16 | m << 8 | l << 0;
-        this.colorComponents = new float[]{(float)l / 255.0f, (float)m / 255.0f, (float)n / 255.0f};
-        this.fireworkColor = j;
+        this.signColor = signColor;
+        int j = (color & 0xFF0000) >> 16;
+        int k = (color & 0xFF00) >> 8;
+        int l = (color & 0xFF) >> 0;
+        this.colorSwapped = l << 16 | k << 8 | j << 0;
+        this.colorComponents = new float[]{(float)j / 255.0f, (float)k / 255.0f, (float)l / 255.0f};
+        this.fireworkColor = fireworkColor;
     }
 
     public int getId() {
@@ -89,18 +89,18 @@ public enum DyeColor implements StringIdentifiable
         return VALUES[id];
     }
 
-    public static DyeColor byName(String string, DyeColor dyeColor) {
-        for (DyeColor dyeColor2 : DyeColor.values()) {
-            if (!dyeColor2.name.equals(string)) continue;
-            return dyeColor2;
+    public static DyeColor byName(String name, DyeColor defaultColor) {
+        for (DyeColor dyeColor : DyeColor.values()) {
+            if (!dyeColor.name.equals(name)) continue;
+            return dyeColor;
         }
-        return dyeColor;
+        return defaultColor;
     }
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public static DyeColor byFireworkColor(int i) {
-        return BY_FIREWORK_COLOR.get(i);
+    public static DyeColor byFireworkColor(int color) {
+        return BY_FIREWORK_COLOR.get(color);
     }
 
     public String toString() {

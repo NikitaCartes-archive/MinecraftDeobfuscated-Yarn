@@ -3,7 +3,7 @@
  */
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -79,7 +79,7 @@ extends Item {
             eyeOfEnderEntity.moveTowards(blockPos);
             world.spawnEntity(eyeOfEnderEntity);
             if (user instanceof ServerPlayerEntity) {
-                Criterions.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);
+                Criteria.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);
             }
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5f, 0.4f / (RANDOM.nextFloat() * 0.4f + 0.8f));
             world.playLevelEvent(null, 1003, user.getBlockPos(), 0);

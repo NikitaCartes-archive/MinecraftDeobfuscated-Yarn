@@ -1,16 +1,16 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.entity.passive;
 
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_4980;
-import net.minecraft.class_4981;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemSteerable;
+import net.minecraft.entity.SaddledComponent;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -54,21 +54,21 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-public class class_4985
+public class StriderEntity
 extends AnimalEntity
-implements class_4981 {
-    private static final Ingredient field_23243 = Ingredient.ofItems(Items.WARPED_FUNGUS);
-    private static final Ingredient field_23244 = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
-    private static final TrackedData<Integer> field_23245 = DataTracker.registerData(class_4985.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Boolean> field_23246 = DataTracker.registerData(class_4985.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> field_23247 = DataTracker.registerData(class_4985.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private final class_4980 field_23240;
-    private TemptGoal field_23241;
-    private EscapeDangerGoal field_23242;
+implements ItemSteerable {
+    private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS);
+    private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
+    private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> COLD = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private final SaddledComponent saddledComponent;
+    private TemptGoal temptGoal;
+    private EscapeDangerGoal escapeDangerGoal;
 
-    public class_4985(EntityType<? extends class_4985> entityType, World world) {
+    public StriderEntity(EntityType<? extends StriderEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
-        this.field_23240 = new class_4980(this.dataTracker, field_23245, field_23247);
+        this.saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
         this.inanimate = true;
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
         this.setPathfindingPenalty(PathNodeType.LAVA, 0.0f);
@@ -76,14 +76,14 @@ implements class_4981 {
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0f);
     }
 
-    public static boolean method_26344(EntityType<class_4985> entityType, IWorld iWorld, SpawnType spawnType, BlockPos blockPos, Random random) {
-        return blockPos.getY() <= 31;
+    public static boolean canSpawn(EntityType<StriderEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+        return pos.getY() <= 31;
     }
 
     @Override
     public void onTrackedDataSet(TrackedData<?> data) {
-        if (field_23245.equals(data) && this.world.isClient) {
-            this.field_23240.method_26307();
+        if (BOOST_TIME.equals(data) && this.world.isClient) {
+            this.saddledComponent.boost();
         }
         super.onTrackedDataSet(data);
     }
@@ -91,53 +91,53 @@ implements class_4981 {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(field_23245, 0);
-        this.dataTracker.startTracking(field_23246, false);
-        this.dataTracker.startTracking(field_23247, false);
+        this.dataTracker.startTracking(BOOST_TIME, 0);
+        this.dataTracker.startTracking(COLD, false);
+        this.dataTracker.startTracking(SADDLED, false);
     }
 
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
-        this.field_23240.method_26309(tag);
+        this.saddledComponent.toTag(tag);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
-        this.field_23240.method_26312(tag);
+        this.saddledComponent.fromTag(tag);
     }
 
     @Override
     public boolean isSaddled() {
-        return this.field_23240.method_26311();
+        return this.saddledComponent.isSaddled();
     }
 
     @Override
-    public void setSaddled(boolean bl) {
-        this.field_23240.method_26310(bl);
+    public void setSaddled(boolean saddled) {
+        this.saddledComponent.setSaddled(saddled);
     }
 
     @Override
     protected void initGoals() {
-        this.field_23242 = new EscapeDangerGoal(this, 1.65);
-        this.goalSelector.add(1, this.field_23242);
+        this.escapeDangerGoal = new EscapeDangerGoal(this, 1.65);
+        this.goalSelector.add(1, this.escapeDangerGoal);
         this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
-        this.field_23241 = new TemptGoal((MobEntityWithAi)this, 1.4, false, field_23244);
-        this.goalSelector.add(4, this.field_23241);
+        this.temptGoal = new TemptGoal((MobEntityWithAi)this, 1.4, false, ATTRACTING_INGREDIENT);
+        this.goalSelector.add(4, this.temptGoal);
         this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
         this.goalSelector.add(7, new WanderAroundGoal(this, 1.0, 60));
         this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0f));
         this.goalSelector.add(8, new LookAroundGoal(this));
-        this.goalSelector.add(9, new LookAtEntityGoal(this, class_4985.class, 8.0f));
+        this.goalSelector.add(9, new LookAtEntityGoal(this, StriderEntity.class, 8.0f));
     }
 
-    public void method_26349(boolean bl) {
-        this.dataTracker.set(field_23246, bl);
+    public void setCold(boolean cold) {
+        this.dataTracker.set(COLD, cold);
     }
 
-    public boolean method_26348() {
-        return this.dataTracker.get(field_23246);
+    public boolean isCold() {
+        return this.dataTracker.get(COLD);
     }
 
     @Override
@@ -192,22 +192,22 @@ implements class_4981 {
 
     @Override
     public void travel(Vec3d movementInput) {
-        this.setMovementSpeed(this.method_26345());
-        this.method_26313(this, this.field_23240, movementInput);
+        this.setMovementSpeed(this.getSpeed());
+        this.travel(this, this.saddledComponent, movementInput);
     }
 
-    public float method_26345() {
-        return this.method_26348() ? 0.1f : (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
-    }
-
-    @Override
-    public float method_26316() {
-        return this.method_26345() * 0.35f;
+    public float getSpeed() {
+        return this.isCold() ? 0.1f : (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
     }
 
     @Override
-    public void method_26315(Vec3d vec3d) {
-        super.travel(vec3d);
+    public float getSaddledSpeed() {
+        return this.getSpeed() * 0.35f;
+    }
+
+    @Override
+    public void setMovementInput(Vec3d movementInput) {
+        super.travel(movementInput);
     }
 
     @Override
@@ -221,22 +221,22 @@ implements class_4981 {
     }
 
     @Override
-    public boolean method_6577() {
-        return this.field_23240.method_26308(this.getRandom());
+    public boolean consumeOnAStickItem() {
+        return this.saddledComponent.boost(this.getRandom());
     }
 
     @Override
     public void tick() {
-        if (this.field_23241 != null && this.field_23241.isActive() && this.random.nextInt(100) == 0) {
+        if (this.temptGoal != null && this.temptGoal.isActive() && this.random.nextInt(100) == 0) {
             this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0f, this.getSoundPitch());
         }
-        if (this.field_23242 != null && this.field_23242.method_26337() && this.random.nextInt(60) == 0) {
+        if (this.escapeDangerGoal != null && this.escapeDangerGoal.method_26337() && this.random.nextInt(60) == 0) {
             this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0f, this.getSoundPitch());
         }
         BlockState blockState = this.world.getBlockState(this.getBlockPos());
-        BlockState blockState2 = this.method_25936();
+        BlockState blockState2 = this.getLandingBlockState();
         boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS);
-        this.method_26349(!bl && !this.hasVehicle());
+        this.setCold(!bl && !this.hasVehicle());
         if (this.isInLava()) {
             this.onGround = true;
         }
@@ -321,7 +321,7 @@ implements class_4981 {
 
     @Override
     protected EntityNavigation createNavigation(World world) {
-        return new class_4988(this, world);
+        return new Navigation(this, world);
     }
 
     @Override
@@ -333,13 +333,13 @@ implements class_4981 {
     }
 
     @Override
-    public class_4985 createChild(PassiveEntity passiveEntity) {
+    public StriderEntity createChild(PassiveEntity passiveEntity) {
         return EntityType.STRIDER.create(this.world);
     }
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        return field_23243.test(stack);
+        return BREEDING_INGREDIENT.test(stack);
     }
 
     @Override
@@ -354,7 +354,7 @@ implements class_4981 {
     public boolean interactMob(PlayerEntity player, Hand hand) {
         boolean bl = this.isBreedingItem(player.getStackInHand(hand));
         if (!super.interactMob(player, hand)) {
-            return this.method_26314(this, player, hand, false);
+            return this.interactMob(this, player, hand, false);
         }
         if (bl && !this.isSilent()) {
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_STRIDER_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
@@ -366,22 +366,22 @@ implements class_4981 {
     @Nullable
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         ZombifiedPiglinEntity zombifiedPiglinEntity;
-        class_4986.class_4987 lv;
-        if (entityData instanceof class_4986) {
-            lv = ((class_4986)entityData).field_23248;
+        StriderData.RiderType riderType;
+        if (entityData instanceof StriderData) {
+            riderType = ((StriderData)entityData).type;
         } else {
-            lv = this.random.nextInt(30) == 0 ? class_4986.class_4987.field_23251 : (this.random.nextInt(10) == 0 ? class_4986.class_4987.field_23250 : class_4986.class_4987.field_23249);
-            entityData = new class_4986(lv);
-            ((PassiveEntity.PassiveData)entityData).setBabyChance(lv == class_4986.class_4987.field_23249 ? 0.5f : 0.0f);
+            riderType = this.random.nextInt(30) == 0 ? StriderData.RiderType.PIGLIN_RIDER : (this.random.nextInt(10) == 0 ? StriderData.RiderType.BABY_RIDER : StriderData.RiderType.NO_RIDER);
+            entityData = new StriderData(riderType);
+            ((PassiveEntity.PassiveData)entityData).setBabyChance(riderType == StriderData.RiderType.NO_RIDER ? 0.5f : 0.0f);
         }
         MobEntityWithAi mobEntity = null;
-        if (lv == class_4986.class_4987.field_23250) {
-            class_4985 lv2 = EntityType.STRIDER.create(this.world);
-            if (lv2 != null) {
-                mobEntity = lv2;
-                lv2.setBreedingAge(-24000);
+        if (riderType == StriderData.RiderType.BABY_RIDER) {
+            StriderEntity striderEntity = EntityType.STRIDER.create(this.world);
+            if (striderEntity != null) {
+                mobEntity = striderEntity;
+                striderEntity.setBreedingAge(-24000);
             }
-        } else if (lv == class_4986.class_4987.field_23251 && (zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world)) != null) {
+        } else if (riderType == StriderData.RiderType.PIGLIN_RIDER && (zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world)) != null) {
             mobEntity = zombifiedPiglinEntity;
             this.setSaddled(true);
         }
@@ -399,10 +399,10 @@ implements class_4981 {
         return this.createChild(mate);
     }
 
-    static class class_4988
+    static class Navigation
     extends MobNavigation {
-        class_4988(class_4985 arg, World world) {
-            super(arg, world);
+        Navigation(StriderEntity entity, World world) {
+            super(entity, world);
         }
 
         @Override
@@ -425,18 +425,18 @@ implements class_4981 {
         }
     }
 
-    public static class class_4986
+    public static class StriderData
     extends PassiveEntity.PassiveData {
-        public final class_4987 field_23248;
+        public final RiderType type;
 
-        public class_4986(class_4987 arg) {
-            this.field_23248 = arg;
+        public StriderData(RiderType type) {
+            this.type = type;
         }
 
-        public static enum class_4987 {
-            field_23249,
-            field_23250,
-            field_23251;
+        public static enum RiderType {
+            NO_RIDER,
+            BABY_RIDER,
+            PIGLIN_RIDER;
 
         }
     }

@@ -24,13 +24,13 @@ implements Inventory {
     }
 
     @Override
-    public int getInvSize() {
-        return this.first.getInvSize() + this.second.getInvSize();
+    public int size() {
+        return this.first.size() + this.second.size();
     }
 
     @Override
-    public boolean isInvEmpty() {
-        return this.first.isInvEmpty() && this.second.isInvEmpty();
+    public boolean isEmpty() {
+        return this.first.isEmpty() && this.second.isEmpty();
     }
 
     public boolean isPart(Inventory inventory) {
@@ -38,41 +38,41 @@ implements Inventory {
     }
 
     @Override
-    public ItemStack getInvStack(int slot) {
-        if (slot >= this.first.getInvSize()) {
-            return this.second.getInvStack(slot - this.first.getInvSize());
+    public ItemStack getStack(int slot) {
+        if (slot >= this.first.size()) {
+            return this.second.getStack(slot - this.first.size());
         }
-        return this.first.getInvStack(slot);
+        return this.first.getStack(slot);
     }
 
     @Override
-    public ItemStack takeInvStack(int slot, int amount) {
-        if (slot >= this.first.getInvSize()) {
-            return this.second.takeInvStack(slot - this.first.getInvSize(), amount);
+    public ItemStack removeStack(int slot, int amount) {
+        if (slot >= this.first.size()) {
+            return this.second.removeStack(slot - this.first.size(), amount);
         }
-        return this.first.takeInvStack(slot, amount);
+        return this.first.removeStack(slot, amount);
     }
 
     @Override
-    public ItemStack removeInvStack(int slot) {
-        if (slot >= this.first.getInvSize()) {
-            return this.second.removeInvStack(slot - this.first.getInvSize());
+    public ItemStack removeStack(int slot) {
+        if (slot >= this.first.size()) {
+            return this.second.removeStack(slot - this.first.size());
         }
-        return this.first.removeInvStack(slot);
+        return this.first.removeStack(slot);
     }
 
     @Override
-    public void setInvStack(int slot, ItemStack stack) {
-        if (slot >= this.first.getInvSize()) {
-            this.second.setInvStack(slot - this.first.getInvSize(), stack);
+    public void setStack(int slot, ItemStack stack) {
+        if (slot >= this.first.size()) {
+            this.second.setStack(slot - this.first.size(), stack);
         } else {
-            this.first.setInvStack(slot, stack);
+            this.first.setStack(slot, stack);
         }
     }
 
     @Override
-    public int getInvMaxStackAmount() {
-        return this.first.getInvMaxStackAmount();
+    public int getMaxCountPerStack() {
+        return this.first.getMaxCountPerStack();
     }
 
     @Override
@@ -82,28 +82,28 @@ implements Inventory {
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity player) {
-        return this.first.canPlayerUseInv(player) && this.second.canPlayerUseInv(player);
+    public boolean canPlayerUse(PlayerEntity player) {
+        return this.first.canPlayerUse(player) && this.second.canPlayerUse(player);
     }
 
     @Override
-    public void onInvOpen(PlayerEntity player) {
-        this.first.onInvOpen(player);
-        this.second.onInvOpen(player);
+    public void onOpen(PlayerEntity player) {
+        this.first.onOpen(player);
+        this.second.onOpen(player);
     }
 
     @Override
-    public void onInvClose(PlayerEntity player) {
-        this.first.onInvClose(player);
-        this.second.onInvClose(player);
+    public void onClose(PlayerEntity player) {
+        this.first.onClose(player);
+        this.second.onClose(player);
     }
 
     @Override
-    public boolean isValidInvStack(int slot, ItemStack stack) {
-        if (slot >= this.first.getInvSize()) {
-            return this.second.isValidInvStack(slot - this.first.getInvSize(), stack);
+    public boolean isValid(int slot, ItemStack stack) {
+        if (slot >= this.first.size()) {
+            return this.second.isValid(slot - this.first.size(), stack);
         }
-        return this.first.isValidInvStack(slot, stack);
+        return this.first.isValid(slot, stack);
     }
 
     @Override

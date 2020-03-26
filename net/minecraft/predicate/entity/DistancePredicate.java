@@ -19,12 +19,12 @@ public class DistancePredicate {
     private final NumberRange.FloatRange horizontal;
     private final NumberRange.FloatRange absolute;
 
-    public DistancePredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, NumberRange.FloatRange horizontal, NumberRange.FloatRange floatRange) {
+    public DistancePredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, NumberRange.FloatRange horizontal, NumberRange.FloatRange absolute) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.horizontal = horizontal;
-        this.absolute = floatRange;
+        this.absolute = absolute;
     }
 
     public static DistancePredicate horizontal(NumberRange.FloatRange horizontal) {

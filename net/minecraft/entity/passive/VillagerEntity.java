@@ -66,8 +66,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Hand;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.dynamic.Timestamp;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -539,14 +539,14 @@ VillagerDataContainer {
         if (!this.lacksFood() || this.getAvailableFood() == 0) {
             return;
         }
-        for (int i = 0; i < this.getInventory().getInvSize(); ++i) {
+        for (int i = 0; i < this.getInventory().size(); ++i) {
             int j;
             Integer integer;
-            ItemStack itemStack = this.getInventory().getInvStack(i);
+            ItemStack itemStack = this.getInventory().getStack(i);
             if (itemStack.isEmpty() || (integer = ITEM_FOOD_VALUES.get(itemStack.getItem())) == null) continue;
             for (int k = j = itemStack.getCount(); k > 0; --k) {
                 this.foodLevel = (byte)(this.foodLevel + integer);
-                this.getInventory().takeInvStack(i, 1);
+                this.getInventory().removeStack(i, 1);
                 if (this.lacksFood()) continue;
                 return;
             }
@@ -645,8 +645,8 @@ VillagerDataContainer {
             Item item2 = itemStack.getItem();
             BasicInventory basicInventory = this.getInventory();
             boolean bl = false;
-            for (i = 0; i < basicInventory.getInvSize(); ++i) {
-                itemStack2 = basicInventory.getInvStack(i);
+            for (i = 0; i < basicInventory.size(); ++i) {
+                itemStack2 = basicInventory.getStack(i);
                 if (!itemStack2.isEmpty() && (itemStack2.getItem() != item2 || itemStack2.getCount() >= itemStack2.getMaxCount())) continue;
                 bl = true;
                 break;
@@ -654,16 +654,16 @@ VillagerDataContainer {
             if (!bl) {
                 return;
             }
-            i = basicInventory.countInInv(item2);
+            i = basicInventory.count(item2);
             if (i == 256) {
                 return;
             }
             if (i > 256) {
-                basicInventory.poll(item2, i - 256);
+                basicInventory.removeItem(item2, i - 256);
                 return;
             }
             this.sendPickup(item, itemStack.getCount());
-            itemStack2 = basicInventory.add(itemStack);
+            itemStack2 = basicInventory.addStack(itemStack);
             if (itemStack2.isEmpty()) {
                 item.remove();
             } else {
@@ -687,12 +687,12 @@ VillagerDataContainer {
 
     private int getAvailableFood() {
         BasicInventory basicInventory = this.getInventory();
-        return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.countInInv((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
+        return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.count((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
     }
 
     public boolean hasSeedToPlant() {
         BasicInventory basicInventory = this.getInventory();
-        return basicInventory.containsAnyInInv(ImmutableSet.of(Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS));
+        return basicInventory.containsAny(ImmutableSet.of(Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS));
     }
 
     @Override
@@ -827,7 +827,7 @@ VillagerDataContainer {
         this.restocksToday = 0;
     }
 
-    public VillagerGossips method_21651() {
+    public VillagerGossips getGossip() {
         return this.gossip;
     }
 

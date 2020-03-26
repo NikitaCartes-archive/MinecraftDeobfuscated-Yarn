@@ -24,12 +24,12 @@ public class EntityFlagsPredicate {
     @Nullable
     private final Boolean isBaby;
 
-    public EntityFlagsPredicate(@Nullable Boolean isOnFire, @Nullable Boolean isSneaking, @Nullable Boolean isSprinting, @Nullable Boolean isSwimming, @Nullable Boolean boolean_) {
+    public EntityFlagsPredicate(@Nullable Boolean isOnFire, @Nullable Boolean isSneaking, @Nullable Boolean isSprinting, @Nullable Boolean isSwimming, @Nullable Boolean isBaby) {
         this.isOnFire = isOnFire;
         this.isSneaking = isSneaking;
         this.isSprinting = isSprinting;
         this.isSwimming = isSwimming;
-        this.isBaby = boolean_;
+        this.isBaby = isBaby;
     }
 
     public boolean test(Entity entity) {
@@ -66,9 +66,9 @@ public class EntityFlagsPredicate {
         return new EntityFlagsPredicate(boolean_, boolean2, boolean3, boolean4, boolean5);
     }
 
-    private void serializeBoolean(JsonObject json, String key, @Nullable Boolean boolean_) {
-        if (boolean_ != null) {
-            json.addProperty(key, boolean_);
+    private void serializeBoolean(JsonObject json, String key, @Nullable Boolean value) {
+        if (value != null) {
+            json.addProperty(key, value);
         }
     }
 
@@ -101,8 +101,8 @@ public class EntityFlagsPredicate {
             return new Builder();
         }
 
-        public Builder onFire(@Nullable Boolean boolean_) {
-            this.isOnFire = boolean_;
+        public Builder onFire(@Nullable Boolean onFire) {
+            this.isOnFire = onFire;
             return this;
         }
 

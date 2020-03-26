@@ -74,7 +74,7 @@ public abstract class ScreenHandler {
      * @throws IllegalArgumentException if the inventory size is smaller than {@code exceptedSize}
      */
     protected static void checkSize(Inventory inventory, int expectedSize) {
-        int i = inventory.getInvSize();
+        int i = inventory.size();
         if (i < expectedSize) {
             throw new IllegalArgumentException("Container size " + i + " is smaller than expected " + expectedSize);
         }
@@ -319,12 +319,12 @@ public abstract class ScreenHandler {
             }
         } else if (actionType == SlotActionType.SWAP && clickData >= 0 && clickData < 9) {
             Slot slot3 = this.slots.get(slotId);
-            ItemStack itemStack3 = playerInventory.getInvStack(clickData);
+            ItemStack itemStack3 = playerInventory.getStack(clickData);
             ItemStack itemStack2 = slot3.getStack();
             if (!itemStack3.isEmpty() || !itemStack2.isEmpty()) {
                 if (itemStack3.isEmpty()) {
                     if (slot3.canTakeItems(player)) {
-                        playerInventory.setInvStack(clickData, itemStack2);
+                        playerInventory.setStack(clickData, itemStack2);
                         slot3.onTake(itemStack2.getCount());
                         slot3.setStack(ItemStack.EMPTY);
                         slot3.onTakeItem(player, itemStack2);
@@ -336,7 +336,7 @@ public abstract class ScreenHandler {
                             slot3.setStack(itemStack3.split(m));
                         } else {
                             slot3.setStack(itemStack3);
-                            playerInventory.setInvStack(clickData, ItemStack.EMPTY);
+                            playerInventory.setStack(clickData, ItemStack.EMPTY);
                         }
                     }
                 } else if (slot3.canTakeItems(player) && slot3.canInsert(itemStack3)) {
@@ -349,7 +349,7 @@ public abstract class ScreenHandler {
                         }
                     } else {
                         slot3.setStack(itemStack3);
-                        playerInventory.setInvStack(clickData, itemStack2);
+                        playerInventory.setStack(clickData, itemStack2);
                         slot3.onTakeItem(player, itemStack2);
                     }
                 }
@@ -413,13 +413,13 @@ public abstract class ScreenHandler {
 
     protected void dropInventory(PlayerEntity player, World world, Inventory inventory) {
         if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).method_14239()) {
-            for (int i = 0; i < inventory.getInvSize(); ++i) {
-                player.dropItem(inventory.removeInvStack(i), false);
+            for (int i = 0; i < inventory.size(); ++i) {
+                player.dropItem(inventory.removeStack(i), false);
             }
             return;
         }
-        for (int i = 0; i < inventory.getInvSize(); ++i) {
-            player.inventory.offerOrDrop(world, inventory.removeInvStack(i));
+        for (int i = 0; i < inventory.size(); ++i) {
+            player.inventory.offerOrDrop(world, inventory.removeStack(i));
         }
     }
 
@@ -591,13 +591,13 @@ public abstract class ScreenHandler {
         }
         int i = 0;
         float f = 0.0f;
-        for (int j = 0; j < inventory.getInvSize(); ++j) {
-            ItemStack itemStack = inventory.getInvStack(j);
+        for (int j = 0; j < inventory.size(); ++j) {
+            ItemStack itemStack = inventory.getStack(j);
             if (itemStack.isEmpty()) continue;
-            f += (float)itemStack.getCount() / (float)Math.min(inventory.getInvMaxStackAmount(), itemStack.getMaxCount());
+            f += (float)itemStack.getCount() / (float)Math.min(inventory.getMaxCountPerStack(), itemStack.getMaxCount());
             ++i;
         }
-        return MathHelper.floor((f /= (float)inventory.getInvSize()) * 14.0f) + (i > 0 ? 1 : 0);
+        return MathHelper.floor((f /= (float)inventory.size()) * 14.0f) + (i > 0 ? 1 : 0);
     }
 }
 

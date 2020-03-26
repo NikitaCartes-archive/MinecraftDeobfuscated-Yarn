@@ -57,9 +57,9 @@ implements Tickable {
     }
 
     @Override
-    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-        super.fromTag(blockState, compoundTag);
-        this.targetUuid = compoundTag.containsUuidNew("Target") ? compoundTag.getUuidNew("Target") : null;
+    public void fromTag(BlockState state, CompoundTag tag) {
+        super.fromTag(state, tag);
+        this.targetUuid = tag.containsUuidNew("Target") ? tag.getUuidNew("Target") : null;
     }
 
     @Override

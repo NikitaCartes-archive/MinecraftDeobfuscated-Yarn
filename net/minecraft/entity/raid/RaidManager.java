@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -122,7 +122,7 @@ extends PersistentState {
             player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, 43));
             if (!raid.hasSpawned()) {
                 player.incrementStat(Stats.RAID_TRIGGER);
-                Criterions.VOLUNTARY_EXILE.trigger(player);
+                Criteria.VOLUNTARY_EXILE.trigger(player);
             }
         }
         this.markDirty();

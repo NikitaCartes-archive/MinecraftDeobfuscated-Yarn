@@ -854,7 +854,7 @@ Runnable {
                 LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
                 return;
             }
-            CrashReport.method_24305();
+            CrashReport.initCrashReport();
             Bootstrap.initialize();
             Bootstrap.logMissingTranslations();
             String string = optionSet.valueOf(optionSpec9);

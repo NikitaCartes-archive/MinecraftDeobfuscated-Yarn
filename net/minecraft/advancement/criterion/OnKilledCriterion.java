@@ -8,8 +8,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
@@ -56,19 +56,19 @@ extends AbstractCriterion<Conditions> {
         }
 
         public static Conditions createPlayerKilledEntity(EntityPredicate.Builder builder) {
-            return new Conditions(Criterions.PLAYER_KILLED_ENTITY.id, builder.build(), DamageSourcePredicate.EMPTY);
+            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, builder.build(), DamageSourcePredicate.EMPTY);
         }
 
         public static Conditions createPlayerKilledEntity() {
-            return new Conditions(Criterions.PLAYER_KILLED_ENTITY.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
+            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
         }
 
         public static Conditions createPlayerKilledEntity(EntityPredicate.Builder builder, DamageSourcePredicate.Builder builder2) {
-            return new Conditions(Criterions.PLAYER_KILLED_ENTITY.id, builder.build(), builder2.build());
+            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, builder.build(), builder2.build());
         }
 
         public static Conditions createEntityKilledPlayer() {
-            return new Conditions(Criterions.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
+            return new Conditions(Criteria.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
         }
 
         public boolean test(ServerPlayerEntity player, Entity entity, DamageSource killingBlow) {

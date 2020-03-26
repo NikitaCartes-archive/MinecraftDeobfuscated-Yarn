@@ -54,7 +54,7 @@ extends HandledScreen<LoomScreenHandler> {
 
     public LoomScreen(LoomScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.bannerField = BannerBlockEntityRenderer.createField();
+        this.bannerField = BannerBlockEntityRenderer.createBanner();
         handler.setInventoryChangeListener(this::onInventoryChanged);
     }
 
@@ -103,7 +103,7 @@ extends HandledScreen<LoomScreenHandler> {
             matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
             this.bannerField.pitch = 0.0f;
             this.bannerField.pivotY = -32.0f;
-            BannerBlockEntityRenderer.method_23802(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.field_21841);
+            BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.field_21841);
             immediate.draw();
         } else if (this.hasTooManyPatterns) {
             this.drawTexture(i + slot4.x - 2, j + slot4.y - 2, this.backgroundWidth, 17, 17, 16);
@@ -153,8 +153,8 @@ extends HandledScreen<LoomScreenHandler> {
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
         this.bannerField.pitch = 0.0f;
         this.bannerField.pivotY = -32.0f;
-        List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.method_24281(itemStack));
-        BannerBlockEntityRenderer.method_23802(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
+        List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.getPatternListTag(itemStack));
+        BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
         matrixStack.pop();
         immediate.draw();
     }
@@ -220,7 +220,7 @@ extends HandledScreen<LoomScreenHandler> {
 
     private void onInventoryChanged() {
         ItemStack itemStack = ((LoomScreenHandler)this.handler).getOutputSlot().getStack();
-        this.field_21841 = itemStack.isEmpty() ? null : BannerBlockEntity.method_24280(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.method_24281(itemStack));
+        this.field_21841 = itemStack.isEmpty() ? null : BannerBlockEntity.method_24280(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListTag(itemStack));
         ItemStack itemStack2 = ((LoomScreenHandler)this.handler).getBannerSlot().getStack();
         ItemStack itemStack3 = ((LoomScreenHandler)this.handler).getDyeSlot().getStack();
         ItemStack itemStack4 = ((LoomScreenHandler)this.handler).getPatternSlot().getStack();

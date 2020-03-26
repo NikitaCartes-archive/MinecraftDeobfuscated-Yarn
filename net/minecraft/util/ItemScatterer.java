@@ -25,8 +25,8 @@ public class ItemScatterer {
     }
 
     private static void spawn(World world, double x, double y, double z, Inventory inventory) {
-        for (int i = 0; i < inventory.getInvSize(); ++i) {
-            ItemScatterer.spawn(world, x, y, z, inventory.getInvStack(i));
+        for (int i = 0; i < inventory.size(); ++i) {
+            ItemScatterer.spawn(world, x, y, z, inventory.getStack(i));
         }
     }
 

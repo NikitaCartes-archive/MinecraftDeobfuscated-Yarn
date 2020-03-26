@@ -36,7 +36,7 @@ extends StorageMinecartEntity {
     }
 
     @Override
-    public int getInvSize() {
+    public int size() {
         return 27;
     }
 

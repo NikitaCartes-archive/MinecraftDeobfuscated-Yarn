@@ -12,35 +12,35 @@ import net.minecraft.nbt.ListTag;
 
 public class EnderChestInventory
 extends BasicInventory {
-    private EnderChestBlockEntity currentBlockEntity;
+    private EnderChestBlockEntity activeBlockEntity;
 
     public EnderChestInventory() {
         super(27);
     }
 
-    public void setCurrentBlockEntity(EnderChestBlockEntity enderChestBlockEntity) {
-        this.currentBlockEntity = enderChestBlockEntity;
+    public void setActiveBlockEntity(EnderChestBlockEntity blockEntity) {
+        this.activeBlockEntity = blockEntity;
     }
 
     @Override
-    public void readTags(ListTag listTag) {
+    public void readTags(ListTag tags) {
         int i;
-        for (i = 0; i < this.getInvSize(); ++i) {
-            this.setInvStack(i, ItemStack.EMPTY);
+        for (i = 0; i < this.size(); ++i) {
+            this.setStack(i, ItemStack.EMPTY);
         }
-        for (i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
+        for (i = 0; i < tags.size(); ++i) {
+            CompoundTag compoundTag = tags.getCompound(i);
             int j = compoundTag.getByte("Slot") & 0xFF;
-            if (j < 0 || j >= this.getInvSize()) continue;
-            this.setInvStack(j, ItemStack.fromTag(compoundTag));
+            if (j < 0 || j >= this.size()) continue;
+            this.setStack(j, ItemStack.fromTag(compoundTag));
         }
     }
 
     @Override
     public ListTag getTags() {
         ListTag listTag = new ListTag();
-        for (int i = 0; i < this.getInvSize(); ++i) {
-            ItemStack itemStack = this.getInvStack(i);
+        for (int i = 0; i < this.size(); ++i) {
+            ItemStack itemStack = this.getStack(i);
             if (itemStack.isEmpty()) continue;
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.putByte("Slot", (byte)i);
@@ -51,28 +51,28 @@ extends BasicInventory {
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity player) {
-        if (this.currentBlockEntity != null && !this.currentBlockEntity.canPlayerUse(player)) {
+    public boolean canPlayerUse(PlayerEntity player) {
+        if (this.activeBlockEntity != null && !this.activeBlockEntity.canPlayerUse(player)) {
             return false;
         }
-        return super.canPlayerUseInv(player);
+        return super.canPlayerUse(player);
     }
 
     @Override
-    public void onInvOpen(PlayerEntity player) {
-        if (this.currentBlockEntity != null) {
-            this.currentBlockEntity.onOpen();
+    public void onOpen(PlayerEntity player) {
+        if (this.activeBlockEntity != null) {
+            this.activeBlockEntity.onOpen();
         }
-        super.onInvOpen(player);
+        super.onOpen(player);
     }
 
     @Override
-    public void onInvClose(PlayerEntity player) {
-        if (this.currentBlockEntity != null) {
-            this.currentBlockEntity.onClose();
+    public void onClose(PlayerEntity player) {
+        if (this.activeBlockEntity != null) {
+            this.activeBlockEntity.onClose();
         }
-        super.onInvClose(player);
-        this.currentBlockEntity = null;
+        super.onClose(player);
+        this.activeBlockEntity = null;
     }
 }
 

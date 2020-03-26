@@ -54,7 +54,7 @@ implements Hopper {
     }
 
     @Override
-    public int getInvSize() {
+    public int size() {
         return 5;
     }
 

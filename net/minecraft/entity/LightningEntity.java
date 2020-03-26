@@ -6,7 +6,7 @@ package net.minecraft.entity;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -84,7 +84,7 @@ extends Entity {
                     entity.onStruckByLightning(this);
                 }
                 if (this.channeller != null) {
-                    Criterions.CHANNELED_LIGHTNING.trigger(this.channeller, list);
+                    Criteria.CHANNELED_LIGHTNING.trigger(this.channeller, list);
                 }
             }
         }

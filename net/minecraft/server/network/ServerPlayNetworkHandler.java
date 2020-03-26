@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Set;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
@@ -491,8 +491,8 @@ implements ServerPlayPacketListener {
     public void onPickFromInventory(PickFromInventoryC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         this.player.inventory.swapSlotWithHotbar(packet.getSlot());
-        this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.player.inventory.selectedSlot, this.player.inventory.getInvStack(this.player.inventory.selectedSlot)));
-        this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, packet.getSlot(), this.player.inventory.getInvStack(packet.getSlot())));
+        this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.player.inventory.selectedSlot, this.player.inventory.getStack(this.player.inventory.selectedSlot)));
+        this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, packet.getSlot(), this.player.inventory.getStack(packet.getSlot())));
         this.player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(this.player.inventory.selectedSlot));
     }
 
@@ -583,9 +583,9 @@ implements ServerPlayPacketListener {
             JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
             jigsawBlockEntity.setAttachmentType(packet.getAttachmentType());
             jigsawBlockEntity.setTargetPool(packet.getTargetPool());
-            jigsawBlockEntity.method_26398(packet.method_26435());
+            jigsawBlockEntity.setPool(packet.method_26435());
             jigsawBlockEntity.setFinalState(packet.getFinalState());
-            jigsawBlockEntity.method_26396(packet.method_26436());
+            jigsawBlockEntity.setJoint(packet.method_26436());
             jigsawBlockEntity.markDirty();
             this.player.world.updateListeners(blockPos, blockState, blockState, 3);
         }
@@ -1084,7 +1084,7 @@ implements ServerPlayPacketListener {
                 if (this.player.notInAnyWorld) {
                     this.player.notInAnyWorld = false;
                     this.player = this.server.getPlayerManager().respawnPlayer(this.player, true);
-                    Criterions.CHANGED_DIMENSION.trigger(this.player, DimensionType.THE_END, DimensionType.OVERWORLD);
+                    Criteria.CHANGED_DIMENSION.trigger(this.player, DimensionType.THE_END, DimensionType.OVERWORLD);
                     break;
                 }
                 if (this.player.getHealth() > 0.0f) {

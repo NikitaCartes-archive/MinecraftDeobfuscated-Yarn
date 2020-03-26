@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -168,7 +168,7 @@ extends LivingEntity {
         this.field_6215 = 180.0f;
     }
 
-    public boolean canMine(World world, BlockPos blockPos, GameMode gameMode) {
+    public boolean canMine(World world, BlockPos pos, GameMode gameMode) {
         if (!gameMode.shouldLimitWorldModification()) {
             return false;
         }
@@ -179,7 +179,7 @@ extends LivingEntity {
             return false;
         }
         ItemStack itemStack = this.getMainHandStack();
-        return itemStack.isEmpty() || !itemStack.canDestroy(world.getTagManager(), new CachedBlockPosition(world, blockPos, false));
+        return itemStack.isEmpty() || !itemStack.canDestroy(world.getTagManager(), new CachedBlockPosition(world, pos, false));
     }
 
     @Override
@@ -547,10 +547,10 @@ extends LivingEntity {
     }
 
     protected void vanishCursedItems() {
-        for (int i = 0; i < this.inventory.getInvSize(); ++i) {
-            ItemStack itemStack = this.inventory.getInvStack(i);
+        for (int i = 0; i < this.inventory.size(); ++i) {
+            ItemStack itemStack = this.inventory.getStack(i);
             if (itemStack.isEmpty() || !EnchantmentHelper.hasVanishingCurse(itemStack)) continue;
-            this.inventory.removeInvStack(i);
+            this.inventory.removeStack(i);
         }
     }
 
@@ -574,7 +574,7 @@ extends LivingEntity {
     }
 
     public boolean dropSelectedItem(boolean dropEntireStack) {
-        return this.dropItem(this.inventory.takeInvStack(this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1), false, true) != null;
+        return this.dropItem(this.inventory.removeStack(this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1), false, true) != null;
     }
 
     @Nullable
@@ -678,7 +678,7 @@ extends LivingEntity {
             this.enchantmentTableSeed = this.random.nextInt();
         }
         this.setScore(tag.getInt("Score"));
-        this.hungerManager.deserialize(tag);
+        this.hungerManager.fromTag(tag);
         this.abilities.deserialize(tag);
         if (tag.contains("EnderItems", 9)) {
             this.enderChestInventory.readTags(tag.getList("EnderItems", 10));
@@ -703,7 +703,7 @@ extends LivingEntity {
         tag.putInt("XpTotal", this.totalExperience);
         tag.putInt("XpSeed", this.enchantmentTableSeed);
         tag.putInt("Score", this.getScore());
-        this.hungerManager.serialize(tag);
+        this.hungerManager.toTag(tag);
         this.abilities.serialize(tag);
         tag.put("EnderItems", this.enderChestInventory.getTags());
         if (!this.getShoulderEntityLeft().isEmpty()) {
@@ -829,22 +829,22 @@ extends LivingEntity {
         }
     }
 
-    public void openEditSignScreen(SignBlockEntity signBlockEntity) {
+    public void openEditSignScreen(SignBlockEntity sign) {
     }
 
     public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
     }
 
-    public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
+    public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
     }
 
-    public void openStructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
+    public void openStructureBlockScreen(StructureBlockBlockEntity structureBlock) {
     }
 
-    public void openJigsawScreen(JigsawBlockEntity jigsawBlockEntity) {
+    public void openJigsawScreen(JigsawBlockEntity jigsaw) {
     }
 
-    public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
+    public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
     }
 
     public OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory) {
@@ -1691,7 +1691,7 @@ extends LivingEntity {
     @Override
     public boolean equip(int slot, ItemStack item) {
         if (slot >= 0 && slot < this.inventory.main.size()) {
-            this.inventory.setInvStack(slot, item);
+            this.inventory.setStack(slot, item);
             return true;
         }
         EquipmentSlot equipmentSlot = slot == 100 + EquipmentSlot.HEAD.getEntitySlotId() ? EquipmentSlot.HEAD : (slot == 100 + EquipmentSlot.CHEST.getEntitySlotId() ? EquipmentSlot.CHEST : (slot == 100 + EquipmentSlot.LEGS.getEntitySlotId() ? EquipmentSlot.LEGS : (slot == 100 + EquipmentSlot.FEET.getEntitySlotId() ? EquipmentSlot.FEET : null)));
@@ -1707,12 +1707,12 @@ extends LivingEntity {
             if (!item.isEmpty() && (item.getItem() instanceof ArmorItem || item.getItem() instanceof ElytraItem ? MobEntity.getPreferredEquipmentSlot(item) != equipmentSlot : equipmentSlot != EquipmentSlot.HEAD)) {
                 return false;
             }
-            this.inventory.setInvStack(equipmentSlot.getEntitySlotId() + this.inventory.main.size(), item);
+            this.inventory.setStack(equipmentSlot.getEntitySlotId() + this.inventory.main.size(), item);
             return true;
         }
         int i = slot - 200;
-        if (i >= 0 && i < this.enderChestInventory.getInvSize()) {
-            this.enderChestInventory.setInvStack(i, item);
+        if (i >= 0 && i < this.enderChestInventory.size()) {
+            this.enderChestInventory.setStack(i, item);
             return true;
         }
         return false;
@@ -1809,8 +1809,8 @@ extends LivingEntity {
             return itemStack;
         }
         predicate = ((RangedWeaponItem)stack.getItem()).getProjectiles();
-        for (int i = 0; i < this.inventory.getInvSize(); ++i) {
-            ItemStack itemStack2 = this.inventory.getInvStack(i);
+        for (int i = 0; i < this.inventory.size(); ++i) {
+            ItemStack itemStack2 = this.inventory.getStack(i);
             if (!predicate.test(itemStack2)) continue;
             return itemStack2;
         }
@@ -1823,7 +1823,7 @@ extends LivingEntity {
         this.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
         world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5f, world.random.nextFloat() * 0.1f + 0.9f);
         if (this instanceof ServerPlayerEntity) {
-            Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)this, stack);
+            Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)this, stack);
         }
         return super.eatFood(world, stack);
     }

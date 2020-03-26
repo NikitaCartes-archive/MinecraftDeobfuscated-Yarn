@@ -44,10 +44,10 @@ public class ReplaceItemCommand {
             throw BLOCK_FAILED_EXCEPTION.create();
         }
         Inventory inventory = (Inventory)((Object)blockEntity);
-        if (slot < 0 || slot >= inventory.getInvSize()) {
+        if (slot < 0 || slot >= inventory.size()) {
             throw SLOT_INAPPLICABLE_EXCEPTION.create(slot);
         }
-        inventory.setInvStack(slot, item);
+        inventory.setStack(slot, item);
         source.sendFeedback(new TranslatableText("commands.replaceitem.block.success", pos.getX(), pos.getY(), pos.getZ(), item.toHoverableText()), true);
         return 1;
     }

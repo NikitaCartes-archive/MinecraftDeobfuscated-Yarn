@@ -62,7 +62,7 @@ extends ScreenHandler {
         GenericContainerScreenHandler.checkSize(inventory, rows * 9);
         this.inventory = inventory;
         this.rows = rows;
-        inventory.onInvOpen(playerInventory.player);
+        inventory.onOpen(playerInventory.player);
         int i = (this.rows - 4) * 18;
         for (j = 0; j < this.rows; ++j) {
             for (k = 0; k < 9; ++k) {
@@ -81,7 +81,7 @@ extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUseInv(player);
+        return this.inventory.canPlayerUse(player);
     }
 
     @Override
@@ -106,7 +106,7 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.inventory.onInvClose(player);
+        this.inventory.onClose(player);
     }
 
     public Inventory getInventory() {

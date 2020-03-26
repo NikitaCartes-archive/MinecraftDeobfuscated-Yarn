@@ -35,7 +35,7 @@ public class PortalForcer {
         this.random = new Random(world.getSeed());
     }
 
-    public boolean usePortal(Entity entity, float f) {
+    public boolean usePortal(Entity entity, float yawOffset) {
         Vec3d vec3d = entity.getLastNetherPortalDirectionVector();
         Direction direction = entity.getLastNetherPortalDirection();
         BlockPattern.TeleportTarget teleportTarget = this.getPortal(entity.getBlockPos(), entity.getVelocity(), direction, vec3d.x, vec3d.y, entity instanceof PlayerEntity);
@@ -45,17 +45,17 @@ public class PortalForcer {
         Vec3d vec3d2 = teleportTarget.pos;
         Vec3d vec3d3 = teleportTarget.velocity;
         entity.setVelocity(vec3d3);
-        entity.yaw = f + (float)teleportTarget.yaw;
+        entity.yaw = yawOffset + (float)teleportTarget.yaw;
         entity.positAfterTeleport(vec3d2.x, vec3d2.y, vec3d2.z);
         return true;
     }
 
     @Nullable
-    public BlockPattern.TeleportTarget getPortal(BlockPos blockPos, Vec3d vec3d, Direction direction, double x, double y, boolean canActivate) {
+    public BlockPattern.TeleportTarget getPortal(BlockPos pos, Vec3d vec3d, Direction direction, double x, double y, boolean canActivate) {
         PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
-        pointOfInterestStorage.preloadChunks(this.world, blockPos, 128);
-        List list = pointOfInterestStorage.getInSquare(pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, 128, PointOfInterestStorage.OccupationStatus.ANY).collect(Collectors.toList());
-        Optional<PointOfInterest> optional = list.stream().min(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos)).thenComparingInt(pointOfInterest -> pointOfInterest.getPos().getY()));
+        pointOfInterestStorage.preloadChunks(this.world, pos, 128);
+        List list = pointOfInterestStorage.getInSquare(pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, pos, 128, PointOfInterestStorage.OccupationStatus.ANY).collect(Collectors.toList());
+        Optional<PointOfInterest> optional = list.stream().min(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(pos)).thenComparingInt(pointOfInterest -> pointOfInterest.getPos().getY()));
         return optional.map(pointOfInterest -> {
             BlockPos blockPos = pointOfInterest.getPos();
             this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
@@ -92,7 +92,7 @@ public class PortalForcer {
             e = (double)r + 0.5 - entity.getX();
             for (s = l - 16; s <= l + 16; ++s) {
                 f = (double)s + 0.5 - entity.getZ();
-                block2: for (t = this.world.method_24853() - 1; t >= 0; --t) {
+                block2: for (t = this.world.getDimensionHeight() - 1; t >= 0; --t) {
                     if (!this.world.isAir(mutable.set(r, t, s))) continue;
                     while (t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
                         --t;
@@ -132,7 +132,7 @@ public class PortalForcer {
                 e = (double)r + 0.5 - entity.getX();
                 for (s = l - 16; s <= l + 16; ++s) {
                     f = (double)s + 0.5 - entity.getZ();
-                    block10: for (t = this.world.method_24853() - 1; t >= 0; --t) {
+                    block10: for (t = this.world.getDimensionHeight() - 1; t >= 0; --t) {
                         if (!this.world.isAir(mutable.set(r, t, s))) continue;
                         while (t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
                             --t;
@@ -173,7 +173,7 @@ public class PortalForcer {
             ag = -ag;
         }
         if (d < 0.0) {
-            ae = n = MathHelper.clamp(n, 70, this.world.method_24853() - 10);
+            ae = n = MathHelper.clamp(n, 70, this.world.getDimensionHeight() - 10);
             for (t = -1; t <= 1; ++t) {
                 for (u = 1; u < 3; ++u) {
                     for (v = -1; v < 3; ++v) {

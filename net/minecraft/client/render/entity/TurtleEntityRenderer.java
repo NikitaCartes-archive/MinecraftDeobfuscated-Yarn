@@ -25,7 +25,7 @@ extends MobEntityRenderer<TurtleEntity, TurtleEntityModel<TurtleEntity>> {
     @Override
     public void render(TurtleEntity turtleEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (turtleEntity.isBaby()) {
-            this.shadowSize *= 0.5f;
+            this.shadowRadius *= 0.5f;
         }
         super.render(turtleEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }

@@ -87,7 +87,7 @@ public class PiglinBrain {
     private static final IntRange RIDE_TARGET_MEMORY_DURATION = Durations.betweenSeconds(10, 30);
     private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
     private static final Set FOOD = ImmutableSet.of(Items.PORKCHOP, Items.COOKED_PORKCHOP);
-    private static final Set<Item> GOLDEN_ITEMS = ImmutableSet.of(Items.GOLD_INGOT, Items.GOLDEN_APPLE, Items.GOLDEN_HORSE_ARMOR, Items.GOLDEN_CARROT, Items.GOLD_BLOCK, Items.GOLD_ORE, new Item[]{Items.ENCHANTED_GOLDEN_APPLE, Items.GOLDEN_HORSE_ARMOR, Items.LIGHT_WEIGHTED_PRESSURE_PLATE, Items.BELL, Items.GLISTERING_MELON_SLICE, Items.CLOCK, Items.field_23140});
+    private static final Set<Item> GOLDEN_ITEMS = ImmutableSet.of(Items.GOLD_INGOT, Items.GOLDEN_APPLE, Items.GOLDEN_HORSE_ARMOR, Items.GOLDEN_CARROT, Items.GOLD_BLOCK, Items.GOLD_ORE, new Item[]{Items.ENCHANTED_GOLDEN_APPLE, Items.GOLDEN_HORSE_ARMOR, Items.LIGHT_WEIGHTED_PRESSURE_PLATE, Items.BELL, Items.GLISTERING_MELON_SLICE, Items.CLOCK, Items.NETHER_GOLD_ORE});
 
     protected static Brain<?> create(PiglinEntity piglin, Dynamic<?> data) {
         Brain<PiglinEntity> brain = new Brain<PiglinEntity>(PiglinEntity.MEMORY_MODULE_TYPES, PiglinEntity.SENSOR_TYPES, data);
@@ -418,15 +418,15 @@ public class PiglinBrain {
     }
 
     protected static boolean haveHuntedHoglinsRecently(PiglinEntity piglin) {
-        return piglin.getBrain().hasMemoryModule(MemoryModuleType.HUNTED_RECENTLY) || PiglinBrain.getNearbyPiglins(piglin).stream().anyMatch(piglinEntity -> piglinEntity.getBrain().hasMemoryModule(MemoryModuleType.HUNTED_RECENTLY));
+        return piglin.getBrain().hasMemoryModule(MemoryModuleType.HUNTED_RECENTLY) || PiglinBrain.getNearbyVisiblePiglins(piglin).stream().anyMatch(piglinEntity -> piglinEntity.getBrain().hasMemoryModule(MemoryModuleType.HUNTED_RECENTLY));
     }
 
-    private static List<PiglinEntity> getNearbyPiglins(PiglinEntity piglin) {
+    private static List<PiglinEntity> getNearbyVisiblePiglins(PiglinEntity piglin) {
         return piglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS).orElse(ImmutableList.of());
     }
 
-    private static List<PiglinEntity> method_26350(PiglinEntity piglinEntity) {
-        return piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ADULT_PIGLINS).orElse(ImmutableList.of());
+    private static List<PiglinEntity> getNearbyPiglins(PiglinEntity piglin) {
+        return piglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ADULT_PIGLINS).orElse(ImmutableList.of());
     }
 
     public static boolean wearsGoldArmor(LivingEntity entity) {
@@ -449,11 +449,11 @@ public class PiglinBrain {
     }
 
     protected static void angerAtCloserTargets(PiglinEntity piglin2, LivingEntity target) {
-        PiglinBrain.method_26350(piglin2).forEach(piglin -> PiglinBrain.angerAtIfCloser(piglin, target));
+        PiglinBrain.getNearbyPiglins(piglin2).forEach(piglin -> PiglinBrain.angerAtIfCloser(piglin, target));
     }
 
     protected static void rememberGroupHunting(PiglinEntity piglin) {
-        PiglinBrain.getNearbyPiglins(piglin).forEach(PiglinBrain::rememberHunting);
+        PiglinBrain.getNearbyVisiblePiglins(piglin).forEach(PiglinBrain::rememberHunting);
     }
 
     protected static void angerAt(PiglinEntity piglin, LivingEntity target) {
@@ -478,7 +478,7 @@ public class PiglinBrain {
     }
 
     private static void groupRunAwayFrom(PiglinEntity piglin2, LivingEntity target) {
-        PiglinBrain.getNearbyPiglins(piglin2).forEach(piglin -> PiglinBrain.runAwayFromClosestTarget(piglin, target));
+        PiglinBrain.getNearbyVisiblePiglins(piglin2).forEach(piglin -> PiglinBrain.runAwayFromClosestTarget(piglin, target));
     }
 
     private static void runAwayFromClosestTarget(PiglinEntity piglin, LivingEntity target) {

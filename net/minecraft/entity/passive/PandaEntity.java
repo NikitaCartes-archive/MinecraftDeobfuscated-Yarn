@@ -84,7 +84,7 @@ extends AnimalEntity {
     private float lastLieOnBackAnimationProgress;
     private float rollOverAnimationProgress;
     private float lastRollOverAnimationProgress;
-    private LookAtEntityGoal field_21804;
+    private LookAtEntityGoal lookAtPlayerGoal;
     private static final Predicate<ItemEntity> IS_FOOD = itemEntity -> {
         Item item = itemEntity.getStack().getItem();
         return (item == Blocks.BAMBOO.asItem() || item == Blocks.CAKE.asItem()) && itemEntity.isAlive() && !itemEntity.cannotPickup();
@@ -257,8 +257,8 @@ extends AnimalEntity {
         this.goalSelector.add(7, new PickUpFoodGoal());
         this.goalSelector.add(8, new LieOnBackGoal(this));
         this.goalSelector.add(8, new SneezeGoal(this));
-        this.field_21804 = new LookAtEntityGoal(this, PlayerEntity.class, 6.0f);
-        this.goalSelector.add(9, this.field_21804);
+        this.lookAtPlayerGoal = new LookAtEntityGoal(this, PlayerEntity.class, 6.0f);
+        this.goalSelector.add(9, this.lookAtPlayerGoal);
         this.goalSelector.add(10, new LookAroundGoal(this));
         this.goalSelector.add(12, new PlayGoal(this));
         this.goalSelector.add(13, new FollowParentGoal(this, 1.25));
@@ -458,7 +458,7 @@ extends AnimalEntity {
         this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0f, 1.0f);
         List<PandaEntity> list = this.world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0));
         for (PandaEntity pandaEntity : list) {
-            if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isTouchingWater() || !pandaEntity.method_18442()) continue;
+            if (pandaEntity.isBaby() || !pandaEntity.onGround || pandaEntity.isTouchingWater() || !pandaEntity.isIdle()) continue;
             pandaEntity.jump();
         }
         if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
@@ -623,7 +623,7 @@ extends AnimalEntity {
         return SoundEvents.ENTITY_PANDA_HURT;
     }
 
-    public boolean method_18442() {
+    public boolean isIdle() {
         return !this.isLyingOnBack() && !this.isScaredByThunderstorm() && !this.isEating() && !this.isPlaying() && !this.isScared();
     }
 
@@ -698,7 +698,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return this.nextLieOnBackAge < this.panda.age && this.panda.isLazy() && this.panda.method_18442() && this.panda.random.nextInt(400) == 1;
+            return this.nextLieOnBackAge < this.panda.age && this.panda.isLazy() && this.panda.isIdle() && this.panda.random.nextInt(400) == 1;
         }
 
         @Override
@@ -732,7 +732,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            if (this.startAge > PandaEntity.this.age || PandaEntity.this.isBaby() || PandaEntity.this.isTouchingWater() || !PandaEntity.this.method_18442() || PandaEntity.this.getAskForBambooTicks() > 0) {
+            if (this.startAge > PandaEntity.this.age || PandaEntity.this.isBaby() || PandaEntity.this.isTouchingWater() || !PandaEntity.this.isIdle() || PandaEntity.this.getAskForBambooTicks() > 0) {
                 return false;
             }
             List<ItemEntity> list = PandaEntity.this.world.getEntities(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), IS_FOOD);
@@ -789,7 +789,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            return this.panda.isWorried() && this.panda.method_18442() && super.canStart();
+            return this.panda.isWorried() && this.panda.isIdle() && super.canStart();
         }
     }
 
@@ -812,7 +812,7 @@ extends AnimalEntity {
                         this.nextAskPlayerForBambooAge = this.panda.age + 600;
                         if (this.panda.canMoveVoluntarily()) {
                             PlayerEntity playerEntity = this.world.getClosestPlayer(field_21803, this.panda);
-                            this.panda.field_21804.method_24217(playerEntity);
+                            this.panda.lookAtPlayerGoal.setTarget(playerEntity);
                         }
                     }
                     return false;
@@ -856,7 +856,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
-            if (!this.panda.isBaby() || !this.panda.method_18442()) {
+            if (!this.panda.isBaby() || !this.panda.isIdle()) {
                 return false;
             }
             if (this.panda.isWeak() && this.panda.random.nextInt(500) == 1) {
@@ -890,7 +890,7 @@ extends AnimalEntity {
             if (!this.panda.isBaby() && !this.panda.isPlayful() || !this.panda.onGround) {
                 return false;
             }
-            if (!this.panda.method_18442()) {
+            if (!this.panda.isIdle()) {
                 return false;
             }
             float f = this.panda.yaw * ((float)Math.PI / 180);
@@ -938,8 +938,8 @@ extends AnimalEntity {
             this.panda = panda;
         }
 
-        public void method_24217(LivingEntity livingEntity) {
-            this.target = livingEntity;
+        public void setTarget(LivingEntity target) {
+            this.target = target;
         }
 
         @Override
@@ -955,7 +955,7 @@ extends AnimalEntity {
             if (this.target == null) {
                 this.target = this.targetType == PlayerEntity.class ? this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ()) : this.mob.world.getClosestEntityIncludingUngeneratedChunks(this.targetType, this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.mob.getBoundingBox().expand(this.range, 3.0, this.range));
             }
-            return this.panda.method_18442() && this.target != null;
+            return this.panda.isIdle() && this.target != null;
         }
 
         @Override
@@ -970,14 +970,14 @@ extends AnimalEntity {
     extends MeleeAttackGoal {
         private final PandaEntity panda;
 
-        public AttackGoal(PandaEntity panda, double speed, boolean bl) {
-            super(panda, speed, bl);
+        public AttackGoal(PandaEntity panda, double speed, boolean pauseWhenMobIdle) {
+            super(panda, speed, pauseWhenMobIdle);
             this.panda = panda;
         }
 
         @Override
         public boolean canStart() {
-            return this.panda.method_18442() && super.canStart();
+            return this.panda.isIdle() && super.canStart();
         }
     }
 
@@ -985,14 +985,14 @@ extends AnimalEntity {
     extends MoveControl {
         private final PandaEntity panda;
 
-        public PandaMoveControl(PandaEntity pandaEntity) {
-            super(pandaEntity);
-            this.panda = pandaEntity;
+        public PandaMoveControl(PandaEntity panda) {
+            super(panda);
+            this.panda = panda;
         }
 
         @Override
         public void tick() {
-            if (!this.panda.method_18442()) {
+            if (!this.panda.isIdle()) {
                 return;
             }
             super.tick();

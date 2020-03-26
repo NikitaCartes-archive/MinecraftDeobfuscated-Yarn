@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -89,7 +89,7 @@ extends BlockWithEntity {
                 world.updateComparators(pos, this);
                 this.angerNearbyBees(world, pos);
             }
-            Criterions.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state.getBlock(), stack, beehiveBlockEntity.getBeeCount());
+            Criteria.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state.getBlock(), stack, beehiveBlockEntity.getBeeCount());
         }
     }
 
@@ -141,7 +141,7 @@ extends BlockWithEntity {
             } else {
                 this.takeHoney(world, state, pos);
                 if (player2 instanceof ServerPlayerEntity) {
-                    Criterions.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)player2, pos, itemStack2);
+                    Criteria.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)player2, pos, itemStack2);
                 }
             }
             return ActionResult.SUCCESS;

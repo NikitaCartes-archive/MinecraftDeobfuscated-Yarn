@@ -43,7 +43,7 @@ public class FireworkRocketEntity
 extends ProjectileEntity
 implements FlyingItemEntity {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-    private static final TrackedData<OptionalInt> SHOOTER_ENTITY_ID = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.field_17910);
+    private static final TrackedData<OptionalInt> SHOOTER_ENTITY_ID = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.FIREWORK_DATA);
     private static final TrackedData<Boolean> SHOT_AT_ANGLE = DataTracker.registerData(FireworkRocketEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int life;
     private int lifeTime;
@@ -82,8 +82,8 @@ implements FlyingItemEntity {
         this.dataTracker.set(SHOT_AT_ANGLE, shotAtAngle);
     }
 
-    public FireworkRocketEntity(World world, ItemStack itemStack, Entity entity, double d, double e, double f, boolean bl) {
-        this(world, itemStack, d, e, f, bl);
+    public FireworkRocketEntity(World world, ItemStack stack, Entity entity, double x, double y, double z, boolean shotAtAngle) {
+        this(world, stack, x, y, z, shotAtAngle);
         this.setOwner(entity);
     }
 
@@ -187,13 +187,13 @@ implements FlyingItemEntity {
     }
 
     @Override
-    protected void method_24920(BlockHitResult blockHitResult) {
+    protected void onBlockHit(BlockHitResult blockHitResult) {
         BlockPos blockPos = new BlockPos(blockHitResult.getBlockPos());
         this.world.getBlockState(blockPos).onEntityCollision(this.world, blockPos, this);
         if (this.hasExplosionEffects()) {
             this.explodeAndRemove();
         }
-        super.method_24920(blockHitResult);
+        super.onBlockHit(blockHitResult);
     }
 
     private boolean hasExplosionEffects() {
@@ -214,7 +214,7 @@ implements FlyingItemEntity {
         }
         if (f > 0.0f) {
             if (this.shooter != null) {
-                this.shooter.damage(DamageSource.method_24907(this, this.getOwner()), 5.0f + (float)(listTag.size() * 2));
+                this.shooter.damage(DamageSource.firework(this, this.getOwner()), 5.0f + (float)(listTag.size() * 2));
             }
             double d = 5.0;
             Vec3d vec3d = this.getPos();
@@ -231,7 +231,7 @@ implements FlyingItemEntity {
                 }
                 if (!bl) continue;
                 float g = f * (float)Math.sqrt((5.0 - (double)this.distanceTo(livingEntity)) / 5.0);
-                livingEntity.damage(DamageSource.method_24907(this, this.getOwner()), g);
+                livingEntity.damage(DamageSource.firework(this, this.getOwner()), g);
             }
         }
     }

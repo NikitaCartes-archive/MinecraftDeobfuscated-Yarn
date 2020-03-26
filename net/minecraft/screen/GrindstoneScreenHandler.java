@@ -77,15 +77,15 @@ extends ScreenHandler {
                     }
                     world.playLevelEvent(1042, (BlockPos)blockPos, 0);
                 });
-                GrindstoneScreenHandler.this.input.setInvStack(0, ItemStack.EMPTY);
-                GrindstoneScreenHandler.this.input.setInvStack(1, ItemStack.EMPTY);
+                GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
+                GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);
                 return stack;
             }
 
             private int getExperience(World world) {
                 int i = 0;
-                i += this.getExperience(GrindstoneScreenHandler.this.input.getInvStack(0));
-                if ((i += this.getExperience(GrindstoneScreenHandler.this.input.getInvStack(1))) > 0) {
+                i += this.getExperience(GrindstoneScreenHandler.this.input.getStack(0));
+                if ((i += this.getExperience(GrindstoneScreenHandler.this.input.getStack(1))) > 0) {
                     int j = (int)Math.ceil((double)i / 2.0);
                     return j + world.random.nextInt(j);
                 }
@@ -127,8 +127,8 @@ extends ScreenHandler {
      */
     private void updateResult() {
         boolean bl2;
-        ItemStack itemStack = this.input.getInvStack(0);
-        ItemStack itemStack2 = this.input.getInvStack(1);
+        ItemStack itemStack = this.input.getStack(0);
+        ItemStack itemStack2 = this.input.getStack(1);
         boolean bl = !itemStack.isEmpty() || !itemStack2.isEmpty();
         boolean bl3 = bl2 = !itemStack.isEmpty() && !itemStack2.isEmpty();
         if (bl) {
@@ -137,14 +137,14 @@ extends ScreenHandler {
             boolean bl32;
             boolean bl4 = bl32 = !itemStack.isEmpty() && itemStack.getItem() != Items.ENCHANTED_BOOK && !itemStack.hasEnchantments() || !itemStack2.isEmpty() && itemStack2.getItem() != Items.ENCHANTED_BOOK && !itemStack2.hasEnchantments();
             if (itemStack.getCount() > 1 || itemStack2.getCount() > 1 || !bl2 && bl32) {
-                this.result.setInvStack(0, ItemStack.EMPTY);
+                this.result.setStack(0, ItemStack.EMPTY);
                 this.sendContentUpdates();
                 return;
             }
             int i = 1;
             if (bl2) {
                 if (itemStack.getItem() != itemStack2.getItem()) {
-                    this.result.setInvStack(0, ItemStack.EMPTY);
+                    this.result.setStack(0, ItemStack.EMPTY);
                     this.sendContentUpdates();
                     return;
                 }
@@ -156,7 +156,7 @@ extends ScreenHandler {
                 itemStack3 = this.transferEnchantments(itemStack, itemStack2);
                 if (!itemStack3.isDamageable()) {
                     if (!ItemStack.areEqual(itemStack, itemStack2)) {
-                        this.result.setInvStack(0, ItemStack.EMPTY);
+                        this.result.setStack(0, ItemStack.EMPTY);
                         this.sendContentUpdates();
                         return;
                     }
@@ -167,9 +167,9 @@ extends ScreenHandler {
                 m = bl42 ? itemStack.getDamage() : itemStack2.getDamage();
                 itemStack3 = bl42 ? itemStack : itemStack2;
             }
-            this.result.setInvStack(0, this.grind(itemStack3, m, i));
+            this.result.setStack(0, this.grind(itemStack3, m, i));
         } else {
-            this.result.setInvStack(0, ItemStack.EMPTY);
+            this.result.setStack(0, ItemStack.EMPTY);
         }
         this.sendContentUpdates();
     }
@@ -228,8 +228,8 @@ extends ScreenHandler {
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
             itemStack = itemStack2.copy();
-            ItemStack itemStack3 = this.input.getInvStack(0);
-            ItemStack itemStack4 = this.input.getInvStack(1);
+            ItemStack itemStack3 = this.input.getStack(0);
+            ItemStack itemStack4 = this.input.getStack(1);
             if (index == 2) {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;

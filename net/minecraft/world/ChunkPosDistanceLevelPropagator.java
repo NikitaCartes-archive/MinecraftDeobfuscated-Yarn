@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.util;
+package net.minecraft.world;
 
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.light.LevelPropagator;

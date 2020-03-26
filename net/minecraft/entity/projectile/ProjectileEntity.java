@@ -77,14 +77,14 @@ extends Entity {
         if (type == HitResult.Type.ENTITY) {
             this.onEntityHit((EntityHitResult)hitResult);
         } else if (type == HitResult.Type.BLOCK) {
-            this.method_24920((BlockHitResult)hitResult);
+            this.onBlockHit((BlockHitResult)hitResult);
         }
     }
 
     protected void onEntityHit(EntityHitResult entityHitResult) {
     }
 
-    protected void method_24920(BlockHitResult blockHitResult) {
+    protected void onBlockHit(BlockHitResult blockHitResult) {
         BlockHitResult blockHitResult2 = blockHitResult;
         BlockState blockState = this.world.getBlockState(blockHitResult2.getBlockPos());
         blockState.onProjectileHit(this.world, blockState, blockHitResult2, this);

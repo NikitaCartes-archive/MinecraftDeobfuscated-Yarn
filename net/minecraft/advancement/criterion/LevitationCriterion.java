@@ -45,10 +45,10 @@ extends AbstractCriterion<Conditions> {
         private final DistancePredicate distance;
         private final NumberRange.IntRange duration;
 
-        public Conditions(DistancePredicate distance, NumberRange.IntRange intRange) {
+        public Conditions(DistancePredicate distance, NumberRange.IntRange duration) {
             super(ID);
             this.distance = distance;
-            this.duration = intRange;
+            this.duration = duration;
         }
 
         public static Conditions create(DistancePredicate distance) {

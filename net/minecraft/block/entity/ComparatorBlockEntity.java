@@ -24,9 +24,9 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-        super.fromTag(blockState, compoundTag);
-        this.outputSignal = compoundTag.getInt("OutputSignal");
+    public void fromTag(BlockState state, CompoundTag tag) {
+        super.fromTag(state, tag);
+        this.outputSignal = tag.getInt("OutputSignal");
     }
 
     public int getOutputSignal() {

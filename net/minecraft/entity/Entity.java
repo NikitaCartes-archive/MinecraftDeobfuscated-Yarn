@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -970,7 +970,7 @@ CommandOutput {
         }
     }
 
-    protected BlockState method_25936() {
+    protected BlockState getLandingBlockState() {
         return this.world.getBlockState(this.getLandingPos());
     }
 
@@ -1221,7 +1221,7 @@ CommandOutput {
 
     public void updateKilledAdvancementCriterion(Entity killer, int score, DamageSource damageSource) {
         if (killer instanceof ServerPlayerEntity) {
-            Criterions.ENTITY_KILLED_PLAYER.trigger((ServerPlayerEntity)killer, this, damageSource);
+            Criteria.ENTITY_KILLED_PLAYER.trigger((ServerPlayerEntity)killer, this, damageSource);
         }
     }
 

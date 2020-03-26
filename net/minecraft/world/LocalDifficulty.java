@@ -39,16 +39,16 @@ public class LocalDifficulty {
         return (this.localDifficulty - 2.0f) / 2.0f;
     }
 
-    private float setLocalDifficulty(Difficulty difficulty, long l, long m, float f) {
+    private float setLocalDifficulty(Difficulty difficulty, long timeOfDay, long l, float f) {
         if (difficulty == Difficulty.PEACEFUL) {
             return 0.0f;
         }
         boolean bl = difficulty == Difficulty.HARD;
         float g = 0.75f;
-        float h = MathHelper.clamp(((float)l + -72000.0f) / 1440000.0f, 0.0f, 1.0f) * 0.25f;
+        float h = MathHelper.clamp(((float)timeOfDay + -72000.0f) / 1440000.0f, 0.0f, 1.0f) * 0.25f;
         g += h;
         float i = 0.0f;
-        i += MathHelper.clamp((float)m / 3600000.0f, 0.0f, 1.0f) * (bl ? 1.0f : 0.75f);
+        i += MathHelper.clamp((float)l / 3600000.0f, 0.0f, 1.0f) * (bl ? 1.0f : 0.75f);
         i += MathHelper.clamp(f * 0.25f, 0.0f, h);
         if (difficulty == Difficulty.EASY) {
             i *= 0.5f;

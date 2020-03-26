@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -245,7 +245,7 @@ public final class ItemStack {
             }
         }
         if (player != null && amount != 0) {
-            Criterions.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
+            Criteria.ITEM_DURABILITY_CHANGED.trigger(player, this, this.getDamage() + amount);
         }
         i = this.getDamage() + amount;
         this.setDamage(i);

@@ -24,6 +24,7 @@ import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.ComparatorMode;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.enums.SlabType;
@@ -31,7 +32,6 @@ import net.minecraft.block.enums.StairShape;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
-import net.minecraft.class_5000;
 import net.minecraft.data.client.model.BlockStateSupplier;
 import net.minecraft.data.client.model.BlockStateVariant;
 import net.minecraft.data.client.model.BlockStateVariantMap;
@@ -1029,56 +1029,56 @@ public class BlockStateModelGenerator {
         this.registerParentedItemModel(Items.RESPAWN_ANCHOR, identifiers[0]);
     }
 
-    private BlockStateVariant method_26433(class_5000 arg, BlockStateVariant blockStateVariant) {
-        switch (arg) {
-            case field_23382: {
-                return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R90);
+    private BlockStateVariant addJigsawOrientationToVariant(JigsawOrientation orientation, BlockStateVariant variant) {
+        switch (orientation) {
+            case DOWN_NORTH: {
+                return variant.put(VariantSettings.X, VariantSettings.Rotation.R90);
             }
-            case field_23383: {
-                return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R180);
+            case DOWN_SOUTH: {
+                return variant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R180);
             }
-            case field_23384: {
-                return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R270);
+            case DOWN_WEST: {
+                return variant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R270);
             }
-            case field_23381: {
-                return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+            case DOWN_EAST: {
+                return variant.put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R90);
             }
-            case field_23386: {
-                return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R180);
+            case UP_NORTH: {
+                return variant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R180);
             }
-            case field_23387: {
-                return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R270);
+            case UP_SOUTH: {
+                return variant.put(VariantSettings.X, VariantSettings.Rotation.R270);
             }
-            case field_23388: {
-                return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+            case UP_WEST: {
+                return variant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R90);
             }
-            case field_23385: {
-                return blockStateVariant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R270);
+            case UP_EAST: {
+                return variant.put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.Y, VariantSettings.Rotation.R270);
             }
-            case field_23391: {
-                return blockStateVariant;
+            case NORTH_UP: {
+                return variant;
             }
-            case field_23392: {
-                return blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R180);
+            case SOUTH_UP: {
+                return variant.put(VariantSettings.Y, VariantSettings.Rotation.R180);
             }
-            case field_23389: {
-                return blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R270);
+            case WEST_UP: {
+                return variant.put(VariantSettings.Y, VariantSettings.Rotation.R270);
             }
-            case field_23390: {
-                return blockStateVariant.put(VariantSettings.Y, VariantSettings.Rotation.R90);
+            case EAST_UP: {
+                return variant.put(VariantSettings.Y, VariantSettings.Rotation.R90);
             }
         }
-        throw new UnsupportedOperationException("Rotation " + arg + " can't be expressed with existing x and y values");
+        throw new UnsupportedOperationException("Rotation " + orientation + " can't be expressed with existing x and y values");
     }
 
-    private void method_26434() {
+    private void registerJigsaw() {
         Identifier identifier = Texture.getSubId(Blocks.JIGSAW, "_top");
         Identifier identifier2 = Texture.getSubId(Blocks.JIGSAW, "_bottom");
         Identifier identifier3 = Texture.getSubId(Blocks.JIGSAW, "_side");
         Identifier identifier4 = Texture.getSubId(Blocks.JIGSAW, "_lock");
         Texture texture = new Texture().put(TextureKey.DOWN, identifier3).put(TextureKey.WEST, identifier3).put(TextureKey.EAST, identifier3).put(TextureKey.PARTICLE, identifier).put(TextureKey.NORTH, identifier).put(TextureKey.SOUTH, identifier2).put(TextureKey.UP, identifier4);
         Identifier identifier5 = Models.CUBE_DIRECTIONAL.upload(Blocks.JIGSAW, texture, this.modelCollector);
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.JIGSAW, BlockStateVariant.create().put(VariantSettings.MODEL, identifier5)).coordinate(BlockStateVariantMap.create(Properties.field_23333).register(arg -> this.method_26433((class_5000)arg, BlockStateVariant.create()))));
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.JIGSAW, BlockStateVariant.create().put(VariantSettings.MODEL, identifier5)).coordinate(BlockStateVariantMap.create(Properties.ORIENTATION).register(jigsawOrientation -> this.addJigsawOrientationToVariant((JigsawOrientation)jigsawOrientation, BlockStateVariant.create()))));
     }
 
     public void register() {
@@ -1201,7 +1201,7 @@ public class BlockStateModelGenerator {
         this.registerTurtleEgg();
         this.registerVine();
         this.registerMagmaBlock();
-        this.method_26434();
+        this.registerJigsaw();
         this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
         this.registerItemModel(Blocks.LADDER);
         this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);

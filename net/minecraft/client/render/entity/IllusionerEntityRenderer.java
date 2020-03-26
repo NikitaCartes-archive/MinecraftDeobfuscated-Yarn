@@ -59,13 +59,13 @@ extends IllagerEntityRenderer<IllusionerEntity> {
     }
 
     @Override
-    protected boolean isFullyVisible(IllusionerEntity illusionerEntity) {
+    protected boolean isVisible(IllusionerEntity illusionerEntity) {
         return true;
     }
 
     @Override
-    protected /* synthetic */ boolean isFullyVisible(LivingEntity entity) {
-        return this.isFullyVisible((IllusionerEntity)entity);
+    protected /* synthetic */ boolean isVisible(LivingEntity entity) {
+        return this.isVisible((IllusionerEntity)entity);
     }
 }
 

@@ -10,12 +10,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelPart {
@@ -106,11 +106,11 @@ public class ModelPart {
         this.pivotZ = z;
     }
 
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
-        this.render(matrices, vertexConsumer, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
+        this.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
         if (!this.visible) {
             return;
         }
@@ -119,9 +119,9 @@ public class ModelPart {
         }
         matrices.push();
         this.rotate(matrices);
-        this.renderCuboids(matrices.peek(), vertexConsumer, light, overlay, red, green, blue, alpha);
+        this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
         for (ModelPart modelPart : this.children) {
-            modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+            modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha);
         }
         matrices.pop();
     }
@@ -186,8 +186,8 @@ public class ModelPart {
             return new Vertex(this.pos, u, v);
         }
 
-        public Vertex(Vector3f vector3f, float u, float v) {
-            this.pos = vector3f;
+        public Vertex(Vector3f pos, float u, float v) {
+            this.pos = pos;
             this.u = u;
             this.v = v;
         }

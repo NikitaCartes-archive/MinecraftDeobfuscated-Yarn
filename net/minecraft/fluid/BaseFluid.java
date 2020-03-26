@@ -263,7 +263,7 @@ extends Fluid {
             if (bl) {
                 return i2;
             }
-            if (i2 >= this.method_15733(world) || (k = this.method_15742(world, blockPos3, i2 + 1, direction2.getOpposite(), blockState2, blockPos2, short2ObjectMap, short2BooleanMap)) >= j) continue;
+            if (i2 >= this.getFlowSpeed(world) || (k = this.method_15742(world, blockPos3, i2 + 1, direction2.getOpposite(), blockState2, blockPos2, short2ObjectMap, short2BooleanMap)) >= j) continue;
             j = k;
         }
         return j;
@@ -287,7 +287,7 @@ extends Fluid {
         return state.getFluid().matchesType(this) && state.isStill();
     }
 
-    protected abstract int method_15733(WorldView var1);
+    protected abstract int getFlowSpeed(WorldView var1);
 
     private int method_15740(WorldView world, BlockPos pos) {
         int i = 0;
@@ -348,7 +348,7 @@ extends Fluid {
     }
 
     protected boolean canFlow(BlockView world, BlockPos fluidPos, BlockState fluidBlockState, Direction flowDirection, BlockPos flowTo, BlockState flowToBlockState, FluidState fluidState, Fluid fluid) {
-        return fluidState.method_15764(world, flowTo, fluid, flowDirection) && this.receivesFlow(flowDirection, world, fluidPos, fluidBlockState, flowTo, flowToBlockState) && this.canFill(world, flowTo, flowToBlockState, fluid);
+        return fluidState.canBeReplacedWith(world, flowTo, fluid, flowDirection) && this.receivesFlow(flowDirection, world, fluidPos, fluidBlockState, flowTo, flowToBlockState) && this.canFill(world, flowTo, flowToBlockState, fluid);
     }
 
     protected abstract int getLevelDecreasePerBlock(WorldView var1);

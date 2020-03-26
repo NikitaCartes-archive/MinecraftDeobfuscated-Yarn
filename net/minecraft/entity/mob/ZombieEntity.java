@@ -412,7 +412,7 @@ extends HostileEntity {
             villagerEntity.remove();
             zombieVillagerEntity.initialize(this.world, this.world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnType.CONVERSION, new ZombieData(false), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-            zombieVillagerEntity.setGossipData(villagerEntity.method_21651().serialize(NbtOps.INSTANCE).getValue());
+            zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
             zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
             zombieVillagerEntity.setXp(villagerEntity.getExperience());
             zombieVillagerEntity.setBaby(villagerEntity.isBaby());
@@ -553,8 +553,8 @@ extends HostileEntity {
     implements EntityData {
         public final boolean baby;
 
-        public ZombieData(boolean bl) {
-            this.baby = bl;
+        public ZombieData(boolean baby) {
+            this.baby = baby;
         }
     }
 }

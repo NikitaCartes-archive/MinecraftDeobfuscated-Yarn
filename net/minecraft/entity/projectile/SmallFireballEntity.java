@@ -52,10 +52,10 @@ extends AbstractFireballEntity {
     }
 
     @Override
-    protected void method_24920(BlockHitResult blockHitResult) {
+    protected void onBlockHit(BlockHitResult blockHitResult) {
         BlockHitResult blockHitResult2;
         BlockPos blockPos;
-        super.method_24920(blockHitResult);
+        super.onBlockHit(blockHitResult);
         if (this.world.isClient) {
             return;
         }

@@ -646,8 +646,8 @@ implements Flutterer {
 
     class StingGoal
     extends MeleeAttackGoal {
-        StingGoal(MobEntityWithAi mob, double speed, boolean bl) {
-            super(mob, speed, bl);
+        StingGoal(MobEntityWithAi mob, double speed, boolean pauseWhenMobIdle) {
+            super(mob, speed, pauseWhenMobIdle);
         }
 
         @Override

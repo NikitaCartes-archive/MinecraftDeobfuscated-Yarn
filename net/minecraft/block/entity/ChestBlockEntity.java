@@ -60,7 +60,7 @@ Tickable {
     }
 
     @Override
-    public int getInvSize() {
+    public int size() {
         return 27;
     }
 
@@ -70,11 +70,11 @@ Tickable {
     }
 
     @Override
-    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-        super.fromTag(blockState, compoundTag);
-        this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(compoundTag)) {
-            Inventories.fromTag(compoundTag, this.inventory);
+    public void fromTag(BlockState state, CompoundTag tag) {
+        super.fromTag(state, tag);
+        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+        if (!this.deserializeLootTable(tag)) {
+            Inventories.fromTag(tag, this.inventory);
         }
     }
 
@@ -160,7 +160,7 @@ Tickable {
     }
 
     @Override
-    public void onInvOpen(PlayerEntity player) {
+    public void onOpen(PlayerEntity player) {
         if (!player.isSpectator()) {
             if (this.viewerCount < 0) {
                 this.viewerCount = 0;
@@ -171,7 +171,7 @@ Tickable {
     }
 
     @Override
-    public void onInvClose(PlayerEntity player) {
+    public void onClose(PlayerEntity player) {
         if (!player.isSpectator()) {
             --this.viewerCount;
             this.onInvOpenOrClose();

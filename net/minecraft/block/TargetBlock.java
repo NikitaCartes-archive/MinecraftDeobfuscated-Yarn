@@ -4,7 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -42,7 +42,7 @@ extends Block {
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
             serverPlayerEntity.incrementStat(Stats.TARGET_HIT);
-            Criterions.TARGET_HIT.trigger(serverPlayerEntity, projectile, hit.getPos(), i);
+            Criteria.TARGET_HIT.trigger(serverPlayerEntity, projectile, hit.getPos(), i);
         }
     }
 

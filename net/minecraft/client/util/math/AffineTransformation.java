@@ -7,16 +7,16 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public final class Rotation3 {
+public final class AffineTransformation {
     private final Matrix4f matrix;
     private boolean initialized;
     @Nullable
@@ -27,20 +27,20 @@ public final class Rotation3 {
     private Vector3f scale;
     @Nullable
     private Quaternion rotation1;
-    private static final Rotation3 IDENTITY = Util.make(() -> {
+    private static final AffineTransformation IDENTITY = Util.make(() -> {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.loadIdentity();
-        Rotation3 rotation3 = new Rotation3(matrix4f);
-        rotation3.getRotation2();
-        return rotation3;
+        AffineTransformation affineTransformation = new AffineTransformation(matrix4f);
+        affineTransformation.getRotation2();
+        return affineTransformation;
     });
 
-    public Rotation3(@Nullable Matrix4f transformation) {
-        this.matrix = transformation == null ? Rotation3.IDENTITY.matrix : transformation;
+    public AffineTransformation(@Nullable Matrix4f matrix) {
+        this.matrix = matrix == null ? AffineTransformation.IDENTITY.matrix : matrix;
     }
 
-    public Rotation3(@Nullable Vector3f translation, @Nullable Quaternion rotation2, @Nullable Vector3f scale, @Nullable Quaternion rotation1) {
-        this.matrix = Rotation3.setup(translation, rotation2, scale, rotation1);
+    public AffineTransformation(@Nullable Vector3f translation, @Nullable Quaternion rotation2, @Nullable Vector3f scale, @Nullable Quaternion rotation1) {
+        this.matrix = AffineTransformation.setup(translation, rotation2, scale, rotation1);
         this.translation = translation != null ? translation : new Vector3f();
         this.rotation2 = rotation2 != null ? rotation2 : Quaternion.IDENTITY.copy();
         this.scale = scale != null ? scale : new Vector3f(1.0f, 1.0f, 1.0f);
@@ -48,31 +48,31 @@ public final class Rotation3 {
         this.initialized = true;
     }
 
-    public static Rotation3 identity() {
+    public static AffineTransformation identity() {
         return IDENTITY;
     }
 
-    public Rotation3 multiply(Rotation3 other) {
+    public AffineTransformation multiply(AffineTransformation other) {
         Matrix4f matrix4f = this.getMatrix();
         matrix4f.multiply(other.getMatrix());
-        return new Rotation3(matrix4f);
+        return new AffineTransformation(matrix4f);
     }
 
     @Nullable
-    public Rotation3 invert() {
+    public AffineTransformation invert() {
         if (this == IDENTITY) {
             return this;
         }
         Matrix4f matrix4f = this.getMatrix();
         if (matrix4f.invert()) {
-            return new Rotation3(matrix4f);
+            return new AffineTransformation(matrix4f);
         }
         return null;
     }
 
     private void init() {
         if (!this.initialized) {
-            Pair<Matrix3f, Vector3f> pair = Rotation3.getLinearTransformationAndTranslationFromAffine(this.matrix);
+            Pair<Matrix3f, Vector3f> pair = AffineTransformation.getLinearTransformationAndTranslationFromAffine(this.matrix);
             Triple<Quaternion, Vector3f, Quaternion> triple = pair.getFirst().decomposeLinearTransformation();
             this.translation = pair.getSecond();
             this.rotation2 = triple.getLeft();
@@ -125,8 +125,8 @@ public final class Rotation3 {
         if (object == null || this.getClass() != object.getClass()) {
             return false;
         }
-        Rotation3 rotation3 = (Rotation3)object;
-        return Objects.equals(this.matrix, rotation3.matrix);
+        AffineTransformation affineTransformation = (AffineTransformation)object;
+        return Objects.equals(this.matrix, affineTransformation.matrix);
     }
 
     public int hashCode() {

@@ -95,7 +95,7 @@ extends BlockEntityRenderer<SkullBlockEntity> {
         }
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(SkullBlockEntityRenderer.method_3578(skullType, gameProfile));
-        skullEntityModel.render(g, f, 0.0f);
+        skullEntityModel.method_2821(g, f, 0.0f);
         skullEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }

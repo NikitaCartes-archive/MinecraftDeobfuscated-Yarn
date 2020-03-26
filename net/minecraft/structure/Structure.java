@@ -244,7 +244,7 @@ public class Structure {
                 if (!structurePlacementData.shouldUpdateNeighbors()) {
                     BlockState blockState2;
                     BlockState blockState3 = world.getBlockState(blockPos4);
-                    if (blockState3 != (blockState2 = Block.getRenderingState(blockState3, world, blockPos4))) {
+                    if (blockState3 != (blockState2 = Block.postProcessState(blockState3, world, blockPos4))) {
                         world.setBlockState(blockPos4, blockState2, i & 0xFFFFFFFE | 0x10);
                     }
                     world.updateNeighbors(blockPos4, blockState2.getBlock());

@@ -29,8 +29,8 @@ public interface WorldBorderListener {
         }
 
         @Override
-        public void onSizeChange(WorldBorder worldBorder, double d) {
-            this.border.setSize(d);
+        public void onSizeChange(WorldBorder border, double size) {
+            this.border.setSize(size);
         }
 
         @Override
@@ -39,28 +39,28 @@ public interface WorldBorderListener {
         }
 
         @Override
-        public void onCenterChanged(WorldBorder centerX, double centerZ, double d) {
-            this.border.setCenter(centerZ, d);
+        public void onCenterChanged(WorldBorder border, double centerX, double centerZ) {
+            this.border.setCenter(centerX, centerZ);
         }
 
         @Override
-        public void onWarningTimeChanged(WorldBorder warningTime, int i) {
-            this.border.setWarningTime(i);
+        public void onWarningTimeChanged(WorldBorder border, int warningTime) {
+            this.border.setWarningTime(warningTime);
         }
 
         @Override
-        public void onWarningBlocksChanged(WorldBorder warningBlocks, int i) {
-            this.border.setWarningBlocks(i);
+        public void onWarningBlocksChanged(WorldBorder border, int warningBlockDistance) {
+            this.border.setWarningBlocks(warningBlockDistance);
         }
 
         @Override
-        public void onDamagePerBlockChanged(WorldBorder damagePerBlock, double d) {
-            this.border.setDamagePerBlock(d);
+        public void onDamagePerBlockChanged(WorldBorder border, double damagePerBlock) {
+            this.border.setDamagePerBlock(damagePerBlock);
         }
 
         @Override
-        public void onSafeZoneChanged(WorldBorder safeZoneRadius, double d) {
-            this.border.setBuffer(d);
+        public void onSafeZoneChanged(WorldBorder border, double safeZoneRadius) {
+            this.border.setBuffer(safeZoneRadius);
         }
     }
 }

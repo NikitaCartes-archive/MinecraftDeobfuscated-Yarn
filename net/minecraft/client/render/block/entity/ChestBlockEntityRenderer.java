@@ -42,13 +42,13 @@ extends BlockEntityRenderer<T> {
     private final ModelPart field_21479;
     private final ModelPart field_21480;
     private final ModelPart field_21481;
-    private boolean isChristmas;
+    private boolean christmas;
 
     public ChestBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
         super(blockEntityRenderDispatcher);
         Calendar calendar = Calendar.getInstance();
         if (calendar.get(2) + 1 == 12 && calendar.get(5) >= 24 && calendar.get(5) <= 26) {
-            this.isChristmas = true;
+            this.christmas = true;
         }
         this.field_20818 = new ModelPart(64, 64, 0, 19);
         this.field_20818.addCuboid(1.0f, 0.0f, 1.0f, 14.0f, 10.0f, 14.0f, 0.0f);
@@ -80,10 +80,10 @@ extends BlockEntityRenderer<T> {
     }
 
     @Override
-    public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        World world = ((BlockEntity)blockEntity).getWorld();
+    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        World world = ((BlockEntity)entity).getWorld();
         boolean bl = world != null;
-        BlockState blockState = bl ? ((BlockEntity)blockEntity).getCachedState() : (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+        BlockState blockState = bl ? ((BlockEntity)entity).getCachedState() : (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
         ChestType chestType = blockState.contains(ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
         Block block = blockState.getBlock();
         if (!(block instanceof AbstractChestBlock)) {
@@ -96,12 +96,12 @@ extends BlockEntityRenderer<T> {
         matrices.translate(0.5, 0.5, 0.5);
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
         matrices.translate(-0.5, -0.5, -0.5);
-        DoubleBlockProperties.PropertySource<Object> propertySource = bl ? abstractChestBlock.getBlockEntitySource(blockState, world, ((BlockEntity)blockEntity).getPos(), true) : DoubleBlockProperties.PropertyRetriever::getFallback;
-        float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever((ChestAnimationProgress)blockEntity)).get(tickDelta);
+        DoubleBlockProperties.PropertySource<Object> propertySource = bl ? abstractChestBlock.getBlockEntitySource(blockState, world, ((BlockEntity)entity).getPos(), true) : DoubleBlockProperties.PropertyRetriever::getFallback;
+        float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever((ChestAnimationProgress)entity)).get(tickDelta);
         g = 1.0f - g;
         g = 1.0f - g * g * g;
         int i = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).applyAsInt(light);
-        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(blockEntity, chestType, this.isChristmas);
+        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(entity, chestType, this.christmas);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
         if (bl2) {
             if (chestType == ChestType.LEFT) {
@@ -115,11 +115,11 @@ extends BlockEntityRenderer<T> {
         matrices.pop();
     }
 
-    private void method_22749(MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j) {
+    private void method_22749(MatrixStack matrices, VertexConsumer vertices, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int light, int overlay) {
         modelPart2.pitch = modelPart.pitch = -(f * 1.5707964f);
-        modelPart.render(matrixStack, vertexConsumer, i, j);
-        modelPart2.render(matrixStack, vertexConsumer, i, j);
-        modelPart3.render(matrixStack, vertexConsumer, i, j);
+        modelPart.render(matrices, vertices, light, overlay);
+        modelPart2.render(matrices, vertices, light, overlay);
+        modelPart3.render(matrices, vertices, light, overlay);
     }
 }
 

@@ -268,8 +268,8 @@ extends HostileEntity {
         }
     }
 
-    public void setCarriedBlock(@Nullable BlockState blockState) {
-        this.dataTracker.set(CARRIED_BLOCK, Optional.ofNullable(blockState));
+    public void setCarriedBlock(@Nullable BlockState state) {
+        this.dataTracker.set(CARRIED_BLOCK, Optional.ofNullable(state));
     }
 
     @Nullable

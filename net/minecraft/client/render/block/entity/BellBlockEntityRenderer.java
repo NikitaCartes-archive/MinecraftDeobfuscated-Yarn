@@ -40,7 +40,7 @@ extends BlockEntityRenderer<BellBlockEntity> {
         float g = (float)bellBlockEntity.ringTicks + f;
         float h = 0.0f;
         float k = 0.0f;
-        if (bellBlockEntity.isRinging) {
+        if (bellBlockEntity.ringing) {
             float l = MathHelper.sin(g / (float)Math.PI) / (4.0f + g / 3.0f);
             if (bellBlockEntity.lastSideHit == Direction.NORTH) {
                 h = -l;

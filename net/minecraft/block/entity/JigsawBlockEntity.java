@@ -19,10 +19,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class JigsawBlockEntity
 extends BlockEntity {
-    private Identifier attachmentType = new Identifier("empty");
-    private Identifier targetPool = new Identifier("empty");
-    private Identifier field_23327 = new Identifier("empty");
-    private class_4991 field_23328 = class_4991.field_23329;
+    private Identifier name = new Identifier("empty");
+    private Identifier target = new Identifier("empty");
+    private Identifier pool = new Identifier("empty");
+    private Joint joint = Joint.ROLLABLE;
     private String finalState = "minecraft:air";
 
     public JigsawBlockEntity(BlockEntityType<?> blockEntityType) {
@@ -34,18 +34,18 @@ extends BlockEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Identifier getAttachmentType() {
-        return this.attachmentType;
+    public Identifier getName() {
+        return this.name;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Identifier method_26399() {
-        return this.targetPool;
+    public Identifier getTarget() {
+        return this.target;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Identifier getTargetPool() {
-        return this.field_23327;
+    public Identifier getPool() {
+        return this.pool;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -54,49 +54,49 @@ extends BlockEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public class_4991 method_26400() {
-        return this.field_23328;
+    public Joint getJoint() {
+        return this.joint;
     }
 
     public void setAttachmentType(Identifier value) {
-        this.attachmentType = value;
+        this.name = value;
     }
 
-    public void setTargetPool(Identifier value) {
-        this.targetPool = value;
+    public void setTargetPool(Identifier target) {
+        this.target = target;
     }
 
-    public void method_26398(Identifier identifier) {
-        this.field_23327 = identifier;
+    public void setPool(Identifier pool) {
+        this.pool = pool;
     }
 
-    public void setFinalState(String value) {
-        this.finalState = value;
+    public void setFinalState(String finalState) {
+        this.finalState = finalState;
     }
 
-    public void method_26396(class_4991 arg) {
-        this.field_23328 = arg;
+    public void setJoint(Joint joint) {
+        this.joint = joint;
     }
 
     @Override
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
-        tag.putString("name", this.attachmentType.toString());
-        tag.putString("target", this.targetPool.toString());
-        tag.putString("pool", this.field_23327.toString());
+        tag.putString("name", this.name.toString());
+        tag.putString("target", this.target.toString());
+        tag.putString("pool", this.pool.toString());
         tag.putString("final_state", this.finalState);
-        tag.putString("joint", this.field_23328.asString());
+        tag.putString("joint", this.joint.asString());
         return tag;
     }
 
     @Override
-    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-        super.fromTag(blockState, compoundTag);
-        this.attachmentType = new Identifier(compoundTag.getString("name"));
-        this.targetPool = new Identifier(compoundTag.getString("target"));
-        this.field_23327 = new Identifier(compoundTag.getString("pool"));
-        this.finalState = compoundTag.getString("final_state");
-        this.field_23328 = class_4991.method_26401(compoundTag.getString("joint")).orElseGet(() -> JigsawBlock.method_26378(blockState).getAxis().isHorizontal() ? class_4991.field_23330 : class_4991.field_23329);
+    public void fromTag(BlockState state, CompoundTag tag) {
+        super.fromTag(state, tag);
+        this.name = new Identifier(tag.getString("name"));
+        this.target = new Identifier(tag.getString("target"));
+        this.pool = new Identifier(tag.getString("pool"));
+        this.finalState = tag.getString("final_state");
+        this.joint = Joint.byName(tag.getString("joint")).orElseGet(() -> JigsawBlock.method_26378(state).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
     }
 
     @Override
@@ -110,24 +110,24 @@ extends BlockEntity {
         return this.toTag(new CompoundTag());
     }
 
-    public static enum class_4991 implements StringIdentifiable
+    public static enum Joint implements StringIdentifiable
     {
-        field_23329("rollable"),
-        field_23330("aligned");
+        ROLLABLE("rollable"),
+        ALIGNED("aligned");
 
-        private final String field_23331;
+        private final String name;
 
-        private class_4991(String string2) {
-            this.field_23331 = string2;
+        private Joint(String name) {
+            this.name = name;
         }
 
         @Override
         public String asString() {
-            return this.field_23331;
+            return this.name;
         }
 
-        public static Optional<class_4991> method_26401(String string) {
-            return Arrays.stream(class_4991.values()).filter(arg -> arg.asString().equals(string)).findFirst();
+        public static Optional<Joint> byName(String name) {
+            return Arrays.stream(Joint.values()).filter(joint -> joint.asString().equals(name)).findFirst();
         }
     }
 }

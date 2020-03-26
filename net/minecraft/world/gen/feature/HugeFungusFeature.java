@@ -47,7 +47,7 @@ extends Feature<HugeFungusFeatureConfig> {
             i *= 2;
         }
         if (!hugeFungusFeatureConfig.planted) {
-            int j = iWorld.method_24853();
+            int j = iWorld.getDimensionHeight();
             if (blockPos2.getY() + i + 1 >= j) {
                 return false;
             }

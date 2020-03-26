@@ -30,8 +30,8 @@ extends SpecialCraftingRecipe {
     public boolean matches(CraftingInventory craftingInventory, World world) {
         boolean bl = false;
         int i = 0;
-        for (int j = 0; j < craftingInventory.getInvSize(); ++j) {
-            ItemStack itemStack = craftingInventory.getInvStack(j);
+        for (int j = 0; j < craftingInventory.size(); ++j) {
+            ItemStack itemStack = craftingInventory.getStack(j);
             if (itemStack.isEmpty()) continue;
             if (PAPER.test(itemStack)) {
                 if (bl) {
@@ -52,9 +52,9 @@ extends SpecialCraftingRecipe {
         CompoundTag compoundTag = itemStack.getOrCreateSubTag("Fireworks");
         ListTag listTag = new ListTag();
         int i = 0;
-        for (int j = 0; j < craftingInventory.getInvSize(); ++j) {
+        for (int j = 0; j < craftingInventory.size(); ++j) {
             CompoundTag compoundTag2;
-            ItemStack itemStack2 = craftingInventory.getInvStack(j);
+            ItemStack itemStack2 = craftingInventory.getStack(j);
             if (itemStack2.isEmpty()) continue;
             if (DURATION_MODIFIER.test(itemStack2)) {
                 ++i;

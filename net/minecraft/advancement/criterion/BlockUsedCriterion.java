@@ -8,8 +8,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.BlockPredicate;
@@ -65,7 +65,7 @@ extends AbstractCriterion<Conditions> {
         }
 
         public static Conditions create(BlockPredicate.Builder blockPredicateBuilder, ItemPredicate.Builder itemPredicateBuilder) {
-            return new Conditions(Criterions.SAFELY_HARVEST_HONEY.id, blockPredicateBuilder.build(), StatePredicate.ANY, itemPredicateBuilder.build());
+            return new Conditions(Criteria.SAFELY_HARVEST_HONEY.id, blockPredicateBuilder.build(), StatePredicate.ANY, itemPredicateBuilder.build());
         }
 
         public boolean test(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {

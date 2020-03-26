@@ -12,15 +12,15 @@ import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.render.model.json.ModelRotation;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Rotation3;
-import net.minecraft.client.util.math.Rotation3Helper;
+import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.AffineTransformations;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3i;
 import org.jetbrains.annotations.Nullable;
@@ -53,12 +53,12 @@ public class BakedQuadFactory {
         return new BakedQuad(is, face.tintIndex, direction, texture, shade);
     }
 
-    public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, Rotation3 rotation, Identifier modelId) {
+    public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, AffineTransformation rotation, Identifier modelId) {
         float q;
         float p;
         float o;
         float n;
-        Matrix4f matrix4f = Rotation3Helper.uvLock(rotation, orientation, () -> "Unable to resolve UVLock for model: " + modelId).getMatrix();
+        Matrix4f matrix4f = AffineTransformations.uvLock(rotation, orientation, () -> "Unable to resolve UVLock for model: " + modelId).getMatrix();
         float f = texture.getU(texture.getDirectionIndex(0));
         float g = texture.getV(texture.getDirectionIndex(0));
         Vector4f vector4f = new Vector4f(f / 16.0f, g / 16.0f, 0.0f, 1.0f);
@@ -93,7 +93,7 @@ public class BakedQuadFactory {
         return new ModelElementTexture(new float[]{n, p, o, q}, s);
     }
 
-    private int[] packVertexData(ModelElementTexture texture, Sprite sprite, Direction direction, float[] positionMatrix, Rotation3 orientation, @Nullable ModelRotation rotation, boolean shaded) {
+    private int[] packVertexData(ModelElementTexture texture, Sprite sprite, Direction direction, float[] positionMatrix, AffineTransformation orientation, @Nullable ModelRotation rotation, boolean shaded) {
         int[] is = new int[32];
         for (int i = 0; i < 4; ++i) {
             this.packVertexData(is, i, direction, texture, positionMatrix, sprite, orientation, rotation, shaded);
@@ -112,7 +112,7 @@ public class BakedQuadFactory {
         return fs;
     }
 
-    private void packVertexData(int[] vertices, int cornerIndex, Direction direction, ModelElementTexture texture, float[] positionMatrix, Sprite sprite, Rotation3 orientation, @Nullable ModelRotation rotation, boolean shaded) {
+    private void packVertexData(int[] vertices, int cornerIndex, Direction direction, ModelElementTexture texture, float[] positionMatrix, Sprite sprite, AffineTransformation orientation, @Nullable ModelRotation rotation, boolean shaded) {
         CubeFace.Corner corner = CubeFace.getFace(direction).getCorner(cornerIndex);
         Vector3f vector3f = new Vector3f(positionMatrix[corner.xSide], positionMatrix[corner.ySide], positionMatrix[corner.zSide]);
         this.rotateVertex(vector3f, rotation);
@@ -170,8 +170,8 @@ public class BakedQuadFactory {
         this.transformVertex(vector, rotation.origin.copy(), new Matrix4f(quaternion), vector3f2);
     }
 
-    public void transformVertex(Vector3f vertex, Rotation3 transformation) {
-        if (transformation == Rotation3.identity()) {
+    public void transformVertex(Vector3f vertex, AffineTransformation transformation) {
+        if (transformation == AffineTransformation.identity()) {
             return;
         }
         this.transformVertex(vertex, new Vector3f(0.5f, 0.5f, 0.5f), transformation.getMatrix(), new Vector3f(1.0f, 1.0f, 1.0f));

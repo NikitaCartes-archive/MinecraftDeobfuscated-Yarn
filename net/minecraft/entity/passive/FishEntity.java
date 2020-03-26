@@ -4,7 +4,7 @@
 package net.minecraft.entity.passive;
 
 import java.util.Random;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -87,8 +87,8 @@ extends WaterCreatureEntity {
         return this.dataTracker.get(FROM_BUCKET);
     }
 
-    public void setFromBucket(boolean bl) {
-        this.dataTracker.set(FROM_BUCKET, bl);
+    public void setFromBucket(boolean fromBucket) {
+        this.dataTracker.set(FROM_BUCKET, fromBucket);
     }
 
     @Override
@@ -150,7 +150,7 @@ extends WaterCreatureEntity {
             ItemStack itemStack2 = this.getFishBucketItem();
             this.copyDataToStack(itemStack2);
             if (!this.world.isClient) {
-                Criterions.FILLED_BUCKET.trigger((ServerPlayerEntity)player, itemStack2);
+                Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)player, itemStack2);
             }
             if (itemStack.isEmpty()) {
                 player.setStackInHand(hand, itemStack2);

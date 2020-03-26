@@ -13,13 +13,13 @@ public class ChatUtil {
     private static final Pattern PATTERN = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
 
     @Environment(value=EnvType.CLIENT)
-    public static String ticksToString(int i) {
-        int j = i / 20;
-        int k = j / 60;
-        if ((j %= 60) < 10) {
-            return k + ":0" + j;
+    public static String ticksToString(int ticks) {
+        int i = ticks / 20;
+        int j = i / 60;
+        if ((i %= 60) < 10) {
+            return j + ":0" + i;
         }
-        return k + ":" + j;
+        return j + ":" + i;
     }
 
     @Environment(value=EnvType.CLIENT)

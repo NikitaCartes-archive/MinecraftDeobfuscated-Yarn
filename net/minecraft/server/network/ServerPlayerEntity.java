@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -326,7 +326,7 @@ implements ScreenHandlerListener {
 
     @Override
     protected void onBlockCollision(BlockState state) {
-        Criterions.ENTER_BLOCK.trigger(this, state);
+        Criteria.ENTER_BLOCK.trigger(this, state);
     }
 
     @Override
@@ -369,9 +369,9 @@ implements ScreenHandlerListener {
                 this.setCameraEntity(this);
             }
         }
-        Criterions.TICK.trigger(this);
+        Criteria.TICK.trigger(this);
         if (this.levitationStartPos != null) {
-            Criterions.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
+            Criteria.LEVITATION.trigger(this, this.levitationStartPos, this.age - this.levitationStartTick);
         }
         this.advancementTracker.sendUpdate(this);
     }
@@ -381,9 +381,9 @@ implements ScreenHandlerListener {
             if (!this.isSpectator() || this.world.isChunkLoaded(this.getBlockPos())) {
                 super.tick();
             }
-            for (int i = 0; i < this.inventory.getInvSize(); ++i) {
+            for (int i = 0; i < this.inventory.size(); ++i) {
                 Packet<?> packet;
-                ItemStack itemStack = this.inventory.getInvStack(i);
+                ItemStack itemStack = this.inventory.getStack(i);
                 if (!itemStack.getItem().isNetworkSynced() || (packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, this)) == null) continue;
                 this.networkHandler.sendPacket(packet);
             }
@@ -422,7 +422,7 @@ implements ScreenHandlerListener {
                 this.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(this.experienceProgress, this.totalExperience, this.experienceLevel));
             }
             if (this.age % 20 == 0) {
-                Criterions.LOCATION.trigger(this);
+                Criteria.LOCATION.trigger(this);
             }
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Ticking player");
@@ -499,7 +499,7 @@ implements ScreenHandlerListener {
         }
         this.updateScoreboardScore(string, string2, ScoreboardCriterion.TEAM_KILLS);
         this.updateScoreboardScore(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
-        Criterions.PLAYER_KILLED_ENTITY.trigger(this, killer, damageSource);
+        Criteria.PLAYER_KILLED_ENTITY.trigger(this, killer, damageSource);
     }
 
     private void updateScoreboardScore(String playerName, String team, ScoreboardCriterion[] scoreboardCriterions) {
@@ -649,9 +649,9 @@ implements ScreenHandlerListener {
     private void dimensionChanged(ServerWorld targetWorld) {
         DimensionType dimensionType = targetWorld.dimension.getType();
         DimensionType dimensionType2 = this.world.dimension.getType();
-        Criterions.CHANGED_DIMENSION.trigger(this, dimensionType, dimensionType2);
+        Criteria.CHANGED_DIMENSION.trigger(this, dimensionType, dimensionType2);
         if (dimensionType == DimensionType.THE_NETHER && dimensionType2 == DimensionType.OVERWORLD && this.enteredNetherPos != null) {
-            Criterions.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
+            Criteria.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
         }
         if (dimensionType2 != DimensionType.THE_NETHER) {
             this.enteredNetherPos = null;
@@ -712,7 +712,7 @@ implements ScreenHandlerListener {
         }
         Either<PlayerEntity.SleepFailureReason, Unit> either = super.trySleep(pos).ifRight(unit -> {
             this.incrementStat(Stats.SLEEP_IN_BED);
-            Criterions.SLEPT_IN_BED.trigger(this);
+            Criteria.SLEPT_IN_BED.trigger(this);
         });
         ((ServerWorld)this.world).updateSleepingPlayers();
         return either;
@@ -798,9 +798,9 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void openEditSignScreen(SignBlockEntity signBlockEntity) {
-        signBlockEntity.setEditor(this);
-        this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.getPos()));
+    public void openEditSignScreen(SignBlockEntity sign) {
+        sign.setEditor(this);
+        this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos()));
     }
 
     private void incrementScreenHandlerSyncId() {
@@ -835,13 +835,13 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
+    public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
         if (this.currentScreenHandler != this.playerScreenHandler) {
             this.closeHandledScreen();
         }
         this.incrementScreenHandlerSyncId();
-        this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
-        this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.inventory, inventory, horseBaseEntity);
+        this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getEntityId()));
+        this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.inventory, inventory, horse);
         this.currentScreenHandler.addListener(this);
     }
 
@@ -857,9 +857,9 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
-        commandBlockBlockEntity.setNeedsUpdatePacket(true);
-        this.sendBlockEntityUpdate(commandBlockBlockEntity);
+    public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
+        commandBlock.setNeedsUpdatePacket(true);
+        this.sendBlockEntityUpdate(commandBlock);
     }
 
     @Override
@@ -868,7 +868,7 @@ implements ScreenHandlerListener {
             return;
         }
         if (handler == this.playerScreenHandler) {
-            Criterions.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
+            Criteria.INVENTORY_CHANGED.trigger(this, this.inventory, stack);
         }
         if (this.field_13991) {
             return;
@@ -1041,14 +1041,14 @@ implements ScreenHandlerListener {
             this.levitationStartTick = this.age;
             this.levitationStartPos = this.getPos();
         }
-        Criterions.EFFECTS_CHANGED.trigger(this);
+        Criteria.EFFECTS_CHANGED.trigger(this);
     }
 
     @Override
     protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect) {
         super.onStatusEffectUpgraded(effect, reapplyEffect);
         this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), effect));
-        Criterions.EFFECTS_CHANGED.trigger(this);
+        Criteria.EFFECTS_CHANGED.trigger(this);
     }
 
     @Override
@@ -1058,7 +1058,7 @@ implements ScreenHandlerListener {
         if (effect.getEffectType() == StatusEffects.LEVITATION) {
             this.levitationStartPos = null;
         }
-        Criterions.EFFECTS_CHANGED.trigger(this);
+        Criteria.EFFECTS_CHANGED.trigger(this);
     }
 
     @Override
@@ -1278,6 +1278,7 @@ implements ScreenHandlerListener {
         }
     }
 
+    @Nullable
     public BlockPos getSpawnPointPosition() {
         return this.spawnPointPosition;
     }

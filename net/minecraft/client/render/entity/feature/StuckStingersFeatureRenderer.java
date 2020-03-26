@@ -12,14 +12,14 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.StuckObjectsFeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
@@ -36,25 +36,25 @@ extends StuckObjectsFeatureRenderer<T, M> {
     }
 
     @Override
-    protected void renderObject(MatrixStack matrix, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta) {
+    protected void renderObject(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta) {
         float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
         float g = (float)(Math.atan2(directionX, directionZ) * 57.2957763671875);
         float h = (float)(Math.atan2(directionY, f) * 57.2957763671875);
-        matrix.translate(0.0, 0.0, 0.0);
-        matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g - 90.0f));
-        matrix.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(h));
+        matrices.translate(0.0, 0.0, 0.0);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g - 90.0f));
+        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(h));
         float i = 0.0f;
         float j = 0.125f;
         float k = 0.0f;
         float l = 0.0625f;
         float m = 0.03125f;
-        matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0f));
-        matrix.scale(0.03125f, 0.03125f, 0.03125f);
-        matrix.translate(2.5, 0.0, 0.0);
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(45.0f));
+        matrices.scale(0.03125f, 0.03125f, 0.03125f);
+        matrices.translate(2.5, 0.0, 0.0);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
         for (int n = 0; n < 4; ++n) {
-            matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
-            MatrixStack.Entry entry = matrix.peek();
+            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+            MatrixStack.Entry entry = matrices.peek();
             Matrix4f matrix4f = entry.getModel();
             Matrix3f matrix3f = entry.getNormal();
             StuckStingersFeatureRenderer.produceVertex(vertexConsumer, matrix4f, matrix3f, -4.5f, -1, 0.0f, 0.0f, light);

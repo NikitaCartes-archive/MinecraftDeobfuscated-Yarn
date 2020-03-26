@@ -158,7 +158,7 @@ public class RealmsTextureManager {
             RenderSystem.deleteTexture(realmsTexture.textureId);
             i = realmsTexture.textureId;
         } else {
-            i = GlStateManager.getTexLevelParameter();
+            i = GlStateManager.genTextures();
         }
         IntBuffer intBuffer = null;
         int j = 0;

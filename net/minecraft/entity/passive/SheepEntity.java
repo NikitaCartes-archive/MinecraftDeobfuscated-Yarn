@@ -82,7 +82,7 @@ extends AnimalEntity {
         enumMap.put(DyeColor.BLACK, Blocks.BLACK_WOOL);
     });
     private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::getDyedColor)));
-    private int field_6865;
+    private int eatGrassTimer;
     private EatGrassGoal eatGrassGoal;
 
     private static float[] getDyedColor(DyeColor color) {
@@ -119,14 +119,14 @@ extends AnimalEntity {
 
     @Override
     protected void mobTick() {
-        this.field_6865 = this.eatGrassGoal.getTimer();
+        this.eatGrassTimer = this.eatGrassGoal.getTimer();
         super.mobTick();
     }
 
     @Override
     public void tickMovement() {
         if (this.world.isClient) {
-            this.field_6865 = Math.max(0, this.field_6865 - 1);
+            this.eatGrassTimer = Math.max(0, this.eatGrassTimer - 1);
         }
         super.tickMovement();
     }
@@ -204,7 +204,7 @@ extends AnimalEntity {
     @Environment(value=EnvType.CLIENT)
     public void handleStatus(byte status) {
         if (status == 10) {
-            this.field_6865 = 40;
+            this.eatGrassTimer = 40;
         } else {
             super.handleStatus(status);
         }
@@ -212,25 +212,25 @@ extends AnimalEntity {
 
     @Environment(value=EnvType.CLIENT)
     public float method_6628(float f) {
-        if (this.field_6865 <= 0) {
+        if (this.eatGrassTimer <= 0) {
             return 0.0f;
         }
-        if (this.field_6865 >= 4 && this.field_6865 <= 36) {
+        if (this.eatGrassTimer >= 4 && this.eatGrassTimer <= 36) {
             return 1.0f;
         }
-        if (this.field_6865 < 4) {
-            return ((float)this.field_6865 - f) / 4.0f;
+        if (this.eatGrassTimer < 4) {
+            return ((float)this.eatGrassTimer - f) / 4.0f;
         }
-        return -((float)(this.field_6865 - 40) - f) / 4.0f;
+        return -((float)(this.eatGrassTimer - 40) - f) / 4.0f;
     }
 
     @Environment(value=EnvType.CLIENT)
     public float method_6641(float f) {
-        if (this.field_6865 > 4 && this.field_6865 <= 36) {
-            float g = ((float)(this.field_6865 - 4) - f) / 32.0f;
+        if (this.eatGrassTimer > 4 && this.eatGrassTimer <= 36) {
+            float g = ((float)(this.eatGrassTimer - 4) - f) / 32.0f;
             return 0.62831855f + 0.21991149f * MathHelper.sin(g * 28.7f);
         }
-        if (this.field_6865 > 0) {
+        if (this.eatGrassTimer > 0) {
             return 0.62831855f;
         }
         return this.pitch * ((float)Math.PI / 180);
@@ -300,18 +300,18 @@ extends AnimalEntity {
         return DyeColor.byId(this.dataTracker.get(COLOR) & 0xF);
     }
 
-    public void setColor(DyeColor dyeColor) {
+    public void setColor(DyeColor color) {
         byte b = this.dataTracker.get(COLOR);
-        this.dataTracker.set(COLOR, (byte)(b & 0xF0 | dyeColor.getId() & 0xF));
+        this.dataTracker.set(COLOR, (byte)(b & 0xF0 | color.getId() & 0xF));
     }
 
     public boolean isSheared() {
         return (this.dataTracker.get(COLOR) & 0x10) != 0;
     }
 
-    public void setSheared(boolean bl) {
+    public void setSheared(boolean sheared) {
         byte b = this.dataTracker.get(COLOR);
-        if (bl) {
+        if (sheared) {
             this.dataTracker.set(COLOR, (byte)(b | 0x10));
         } else {
             this.dataTracker.set(COLOR, (byte)(b & 0xFFFFFFEF));
@@ -376,8 +376,8 @@ extends AnimalEntity {
                 return false;
             }
         }, 2, 1);
-        craftingInventory.setInvStack(0, new ItemStack(DyeItem.byColor(dyeColor)));
-        craftingInventory.setInvStack(1, new ItemStack(DyeItem.byColor(dyeColor2)));
+        craftingInventory.setStack(0, new ItemStack(DyeItem.byColor(dyeColor)));
+        craftingInventory.setStack(1, new ItemStack(DyeItem.byColor(dyeColor2)));
         return craftingInventory;
     }
 

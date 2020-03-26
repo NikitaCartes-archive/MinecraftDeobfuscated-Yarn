@@ -209,8 +209,8 @@ public class ItemPredicate {
             return new Builder();
         }
 
-        public Builder item(ItemConvertible itemConvertible) {
-            this.item = itemConvertible.asItem();
+        public Builder item(ItemConvertible item) {
+            this.item = item.asItem();
             return this;
         }
 

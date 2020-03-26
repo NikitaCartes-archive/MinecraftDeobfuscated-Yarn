@@ -305,8 +305,8 @@ implements RangedAttackMob {
     extends ZombieAttackGoal {
         private final DrownedEntity drowned;
 
-        public DrownedAttackGoal(DrownedEntity drowned, double speed, boolean bl) {
-            super(drowned, speed, bl);
+        public DrownedAttackGoal(DrownedEntity drowned, double speed, boolean pauseWhenMobIdle) {
+            super(drowned, speed, pauseWhenMobIdle);
             this.drowned = drowned;
         }
 

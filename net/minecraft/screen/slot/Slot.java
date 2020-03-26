@@ -52,7 +52,7 @@ public class Slot {
     }
 
     public ItemStack getStack() {
-        return this.inventory.getInvStack(this.index);
+        return this.inventory.getStack(this.index);
     }
 
     public boolean hasStack() {
@@ -60,7 +60,7 @@ public class Slot {
     }
 
     public void setStack(ItemStack stack) {
-        this.inventory.setInvStack(this.index, stack);
+        this.inventory.setStack(this.index, stack);
         this.markDirty();
     }
 
@@ -69,7 +69,7 @@ public class Slot {
     }
 
     public int getMaxStackAmount() {
-        return this.inventory.getInvMaxStackAmount();
+        return this.inventory.getMaxCountPerStack();
     }
 
     public int getMaxStackAmount(ItemStack stack) {
@@ -83,7 +83,7 @@ public class Slot {
     }
 
     public ItemStack takeStack(int amount) {
-        return this.inventory.takeInvStack(this.index, amount);
+        return this.inventory.removeStack(this.index, amount);
     }
 
     public boolean canTakeItems(PlayerEntity playerEntity) {

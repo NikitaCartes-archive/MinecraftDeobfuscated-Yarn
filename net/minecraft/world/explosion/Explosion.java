@@ -47,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class Explosion {
     private final boolean createFire;
-    private final DestructionType blockDestructionType;
+    private final DestructionType destructionType;
     private final Random random = new Random();
     private final World world;
     private final double x;
@@ -71,7 +71,7 @@ public class Explosion {
         this.affectedBlocks.addAll(affectedBlocks);
     }
 
-    public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType blockDestructionType) {
+    public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType destructionType) {
         this.world = world;
         this.entity = entity;
         this.power = power;
@@ -79,7 +79,7 @@ public class Explosion {
         this.y = y;
         this.z = z;
         this.createFire = createFire;
-        this.blockDestructionType = blockDestructionType;
+        this.destructionType = destructionType;
         this.damageSource = DamageSource.explosion(this);
     }
 
@@ -199,7 +199,7 @@ public class Explosion {
         if (this.world.isClient) {
             this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0f, (1.0f + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2f) * 0.7f, false);
         }
-        boolean bl3 = bl2 = this.blockDestructionType != DestructionType.NONE;
+        boolean bl3 = bl2 = this.destructionType != DestructionType.NONE;
         if (bl) {
             if (this.power < 2.0f || !bl2) {
                 this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
@@ -219,7 +219,7 @@ public class Explosion {
                 if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
                     BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
                     LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).setRandom(this.world.random).put(LootContextParameters.POSITION, blockPos).put(LootContextParameters.TOOL, ItemStack.EMPTY).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity).putNullable(LootContextParameters.THIS_ENTITY, this.entity);
-                    if (this.blockDestructionType == DestructionType.DESTROY) {
+                    if (this.destructionType == DestructionType.DESTROY) {
                         builder.put(LootContextParameters.EXPLOSION_RADIUS, Float.valueOf(this.power));
                     }
                     blockState.getDroppedStacks(builder).forEach(itemStack -> Explosion.method_24023(objectArrayList, itemStack, blockPos2));

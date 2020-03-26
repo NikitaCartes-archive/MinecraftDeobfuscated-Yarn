@@ -434,7 +434,7 @@ public class TrackedDataHandlerRegistry {
             return this.read(packetByteBuf);
         }
     };
-    public static final TrackedDataHandler<OptionalInt> field_17910 = new TrackedDataHandler<OptionalInt>(){
+    public static final TrackedDataHandler<OptionalInt> FIREWORK_DATA = new TrackedDataHandler<OptionalInt>(){
 
         @Override
         public void write(PacketByteBuf packetByteBuf, OptionalInt optionalInt) {
@@ -511,7 +511,7 @@ public class TrackedDataHandlerRegistry {
         TrackedDataHandlerRegistry.register(TAG_COMPOUND);
         TrackedDataHandlerRegistry.register(PARTICLE);
         TrackedDataHandlerRegistry.register(VILLAGER_DATA);
-        TrackedDataHandlerRegistry.register(field_17910);
+        TrackedDataHandlerRegistry.register(FIREWORK_DATA);
         TrackedDataHandlerRegistry.register(ENTITY_POSE);
     }
 }

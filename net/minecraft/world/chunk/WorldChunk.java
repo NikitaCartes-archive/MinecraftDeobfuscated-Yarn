@@ -382,8 +382,8 @@ implements Chunk {
     }
 
     @Override
-    public void addPendingBlockEntityTag(CompoundTag compoundTag) {
-        this.pendingBlockEntityTags.put(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), compoundTag);
+    public void addPendingBlockEntityTag(CompoundTag tag) {
+        this.pendingBlockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
     }
 
     @Override
@@ -404,9 +404,9 @@ implements Chunk {
     }
 
     @Override
-    public void removeBlockEntity(BlockPos blockPos) {
+    public void removeBlockEntity(BlockPos pos) {
         BlockEntity blockEntity;
-        if ((this.loadedToWorld || this.world.isClient()) && (blockEntity = this.blockEntities.remove(blockPos)) != null) {
+        if ((this.loadedToWorld || this.world.isClient()) && (blockEntity = this.blockEntities.remove(pos)) != null) {
             blockEntity.markRemoved();
         }
     }
@@ -635,7 +635,7 @@ implements Chunk {
             for (Short short_ : this.postProcessingLists[i]) {
                 BlockPos blockPos = ProtoChunk.joinBlockPos(short_, i, chunkPos);
                 BlockState blockState = this.getBlockState(blockPos);
-                BlockState blockState2 = Block.getRenderingState(blockState, this.world, blockPos);
+                BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
                 this.world.setBlockState(blockPos, blockState2, 20);
             }
             this.postProcessingLists[i].clear();

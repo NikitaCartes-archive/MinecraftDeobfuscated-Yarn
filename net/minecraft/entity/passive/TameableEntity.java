@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -150,7 +150,7 @@ extends AnimalEntity {
         this.setTamed(true);
         this.setOwnerUuid(player.getUuid());
         if (player instanceof ServerPlayerEntity) {
-            Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
+            Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
         }
     }
 

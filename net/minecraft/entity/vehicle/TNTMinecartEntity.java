@@ -32,8 +32,8 @@ extends AbstractMinecartEntity {
         super(entityType, world);
     }
 
-    public TntMinecartEntity(World world, double d, double e, double f) {
-        super(EntityType.TNT_MINECART, world, d, e, f);
+    public TntMinecartEntity(World world, double x, double y, double z) {
+        super(EntityType.TNT_MINECART, world, x, y, z);
     }
 
     @Override

@@ -29,14 +29,14 @@ extends Model {
         this.skull.setPivot(0.0f, 0.0f, 0.0f);
     }
 
-    public void render(float f, float g, float h) {
+    public void method_2821(float f, float g, float h) {
         this.skull.yaw = g * ((float)Math.PI / 180);
         this.skull.pitch = h * ((float)Math.PI / 180);
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        this.skull.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+        this.skull.render(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 }
 

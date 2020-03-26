@@ -21,12 +21,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.sound.ListenerSoundInstance;
 import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundContainer;
 import net.minecraft.client.sound.SoundEntry;
 import net.minecraft.client.sound.SoundEntryDeserializer;
 import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.sound.SoundInstanceListener;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
@@ -178,12 +178,12 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         return this.soundSystem.isPlaying(soundInstance);
     }
 
-    public void registerListener(ListenerSoundInstance listenerSoundInstance) {
-        this.soundSystem.registerListener(listenerSoundInstance);
+    public void registerListener(SoundInstanceListener soundInstanceListener) {
+        this.soundSystem.registerListener(soundInstanceListener);
     }
 
-    public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
-        this.soundSystem.unregisterListener(listenerSoundInstance);
+    public void unregisterListener(SoundInstanceListener soundInstanceListener) {
+        this.soundSystem.unregisterListener(soundInstanceListener);
     }
 
     public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {

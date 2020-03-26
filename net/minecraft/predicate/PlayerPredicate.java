@@ -55,8 +55,8 @@ public class PlayerPredicate {
         return new AdvancementCriteriaPredicate(object2BooleanMap);
     }
 
-    private PlayerPredicate(NumberRange.IntRange intRange, GameMode gamemode, Map<Stat<?>, NumberRange.IntRange> stats, Object2BooleanMap<Identifier> recipes, Map<Identifier, AdvancementPredicate> advancements) {
-        this.experienceLevel = intRange;
+    private PlayerPredicate(NumberRange.IntRange experienceLevel, GameMode gamemode, Map<Stat<?>, NumberRange.IntRange> stats, Object2BooleanMap<Identifier> recipes, Map<Identifier, AdvancementPredicate> advancements) {
+        this.experienceLevel = experienceLevel;
         this.gamemode = gamemode;
         this.stats = stats;
         this.recipes = recipes;

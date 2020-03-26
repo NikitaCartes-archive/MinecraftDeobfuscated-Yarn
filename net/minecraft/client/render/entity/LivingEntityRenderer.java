@@ -43,10 +43,10 @@ implements FeatureRendererContext<T, M> {
     protected M model;
     protected final List<FeatureRenderer<T, M>> features = Lists.newArrayList();
 
-    public LivingEntityRenderer(EntityRenderDispatcher dispatcher, M model, float shadowSize) {
+    public LivingEntityRenderer(EntityRenderDispatcher dispatcher, M model, float shadowRadius) {
         super(dispatcher);
         this.model = model;
-        this.shadowSize = shadowSize;
+        this.shadowRadius = shadowRadius;
     }
 
     protected final boolean addFeature(FeatureRenderer<T, M> feature) {
@@ -110,12 +110,12 @@ implements FeatureRendererContext<T, M> {
         }
         ((EntityModel)this.model).animateModel(livingEntity, o, n, g);
         ((EntityModel)this.model).setAngles(livingEntity, o, n, l, k, m);
-        boolean bl = this.isFullyVisible(livingEntity);
+        boolean bl = this.isVisible(livingEntity);
         boolean bl2 = !bl && !((Entity)livingEntity).isInvisibleTo(MinecraftClient.getInstance().player);
         RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2);
         if (renderLayer != null) {
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
-            int p = LivingEntityRenderer.getOverlay(livingEntity, this.getWhiteOverlayProgress(livingEntity, g));
+            int p = LivingEntityRenderer.getOverlay(livingEntity, this.getAnimationCounter(livingEntity, g));
             ((Model)this.model).render(matrixStack, vertexConsumer, i, p, 1.0f, 1.0f, 1.0f, bl2 ? 0.15f : 1.0f);
         }
         if (!((Entity)livingEntity).isSpectator()) {
@@ -152,7 +152,7 @@ implements FeatureRendererContext<T, M> {
         return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
     }
 
-    protected boolean isFullyVisible(T entity) {
+    protected boolean isVisible(T entity) {
         return !((Entity)entity).isInvisible();
     }
 
@@ -175,8 +175,9 @@ implements FeatureRendererContext<T, M> {
     }
 
     /**
-     * Returns if this entity is shaking, as if a zombie villager, zombie,
-     * husk, or piglin undergoing conversion.
+     * Returns if this entity is shaking in the way a zombie villager,
+     * zombie, husk, or piglin undergoing conversion shakes.
+     * husk, or piglin are undergoing conversion.
      */
     protected boolean isShaking(T entity) {
         return false;
@@ -228,7 +229,7 @@ implements FeatureRendererContext<T, M> {
         return 90.0f;
     }
 
-    protected float getWhiteOverlayProgress(T entity, float tickDelta) {
+    protected float getAnimationCounter(T entity, float tickDelta) {
         return 0.0f;
     }
 

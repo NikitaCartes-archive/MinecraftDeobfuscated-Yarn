@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public class TridentEntity
 extends PersistentProjectileEntity {
     private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Boolean> field_21514 = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> ENCHANTED = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private ItemStack tridentStack = new ItemStack(Items.TRIDENT);
     private boolean dealtDamage;
     public int returnTimer;
@@ -45,7 +45,7 @@ extends PersistentProjectileEntity {
         super(EntityType.TRIDENT, owner, world);
         this.tridentStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
-        this.dataTracker.set(field_21514, stack.hasEnchantmentGlint());
+        this.dataTracker.set(ENCHANTED, stack.hasEnchantmentGlint());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -57,7 +57,7 @@ extends PersistentProjectileEntity {
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(LOYALTY, (byte)0);
-        this.dataTracker.startTracking(field_21514, false);
+        this.dataTracker.startTracking(ENCHANTED, false);
     }
 
     @Override
@@ -105,8 +105,8 @@ extends PersistentProjectileEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_23751() {
-        return this.dataTracker.get(field_21514);
+    public boolean isEnchanted() {
+        return this.dataTracker.get(ENCHANTED);
     }
 
     @Override

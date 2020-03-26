@@ -15,17 +15,17 @@ import org.jetbrains.annotations.Nullable;
 public class CraftingResultInventory
 implements Inventory,
 RecipeUnlocker {
-    private final DefaultedList<ItemStack> stack = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> stacks = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private Recipe<?> lastRecipe;
 
     @Override
-    public int getInvSize() {
+    public int size() {
         return 1;
     }
 
     @Override
-    public boolean isInvEmpty() {
-        for (ItemStack itemStack : this.stack) {
+    public boolean isEmpty() {
+        for (ItemStack itemStack : this.stacks) {
             if (itemStack.isEmpty()) continue;
             return false;
         }
@@ -33,23 +33,23 @@ RecipeUnlocker {
     }
 
     @Override
-    public ItemStack getInvStack(int slot) {
-        return this.stack.get(0);
+    public ItemStack getStack(int slot) {
+        return this.stacks.get(0);
     }
 
     @Override
-    public ItemStack takeInvStack(int slot, int amount) {
-        return Inventories.removeStack(this.stack, 0);
+    public ItemStack removeStack(int slot, int amount) {
+        return Inventories.removeStack(this.stacks, 0);
     }
 
     @Override
-    public ItemStack removeInvStack(int slot) {
-        return Inventories.removeStack(this.stack, 0);
+    public ItemStack removeStack(int slot) {
+        return Inventories.removeStack(this.stacks, 0);
     }
 
     @Override
-    public void setInvStack(int slot, ItemStack stack) {
-        this.stack.set(0, stack);
+    public void setStack(int slot, ItemStack stack) {
+        this.stacks.set(0, stack);
     }
 
     @Override
@@ -57,13 +57,13 @@ RecipeUnlocker {
     }
 
     @Override
-    public boolean canPlayerUseInv(PlayerEntity player) {
+    public boolean canPlayerUse(PlayerEntity player) {
         return true;
     }
 
     @Override
     public void clear() {
-        this.stack.clear();
+        this.stacks.clear();
     }
 
     @Override

@@ -864,8 +864,8 @@ extends World {
     }
 
     @Override
-    public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
-        this.server.getPlayerManager().sendToAround(playerEntity, entity.getX(), entity.getY(), entity.getZ(), volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.dimension.getType(), new PlaySoundFromEntityS2CPacket(soundEvent, soundCategory, entity, volume, pitch));
+    public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+        this.server.getPlayerManager().sendToAround(player, entity.getX(), entity.getY(), entity.getZ(), volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.dimension.getType(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch));
     }
 
     @Override
@@ -874,8 +874,8 @@ extends World {
     }
 
     @Override
-    public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
-        this.server.getPlayerManager().sendToAround(player, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 64.0, this.dimension.getType(), new WorldEventS2CPacket(eventId, blockPos, data, false));
+    public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
+        this.server.getPlayerManager().sendToAround(player, pos.getX(), pos.getY(), pos.getZ(), 64.0, this.dimension.getType(), new WorldEventS2CPacket(eventId, pos, data, false));
     }
 
     @Override

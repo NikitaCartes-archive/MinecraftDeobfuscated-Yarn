@@ -12,9 +12,9 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class DrawableHelper {
@@ -54,7 +54,7 @@ public abstract class DrawableHelper {
     }
 
     public static void fill(int x1, int y1, int x2, int y2, int color) {
-        DrawableHelper.fill(Rotation3.identity().getMatrix(), x1, y1, x2, y2, color);
+        DrawableHelper.fill(AffineTransformation.identity().getMatrix(), x1, y1, x2, y2, color);
     }
 
     public static void fill(Matrix4f matrix, int x1, int y1, int x2, int y2, int color) {

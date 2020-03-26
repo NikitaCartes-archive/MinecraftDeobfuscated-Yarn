@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4990;
 import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.DirectionTransformation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 
@@ -36,8 +36,8 @@ public enum ModelRotation implements ModelBakeSettings
     X270_Y270(270, 270);
 
     private static final Map<Integer, ModelRotation> BY_INDEX;
-    private final Rotation3 field_23373;
-    private final class_4990 field_23374;
+    private final AffineTransformation rotation;
+    private final DirectionTransformation directionTransformation;
     private final int index;
 
     private static int getIndex(int x, int y) {
@@ -49,20 +49,20 @@ public enum ModelRotation implements ModelBakeSettings
         this.index = ModelRotation.getIndex(x, y);
         Quaternion quaternion = new Quaternion(new Vector3f(0.0f, 1.0f, 0.0f), -y, true);
         quaternion.hamiltonProduct(new Quaternion(new Vector3f(1.0f, 0.0f, 0.0f), -x, true));
-        class_4990 lv = class_4990.field_23292;
+        DirectionTransformation directionTransformation = DirectionTransformation.IDENTITY;
         for (j = 0; j < y; j += 90) {
-            lv = lv.method_26385(class_4990.field_23318);
+            directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_Y_NEG);
         }
         for (j = 0; j < x; j += 90) {
-            lv = lv.method_26385(class_4990.field_23316);
+            directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_X_NEG);
         }
-        this.field_23373 = new Rotation3(null, quaternion, null, null);
-        this.field_23374 = lv;
+        this.rotation = new AffineTransformation(null, quaternion, null, null);
+        this.directionTransformation = directionTransformation;
     }
 
     @Override
-    public Rotation3 getRotation() {
-        return this.field_23373;
+    public AffineTransformation getRotation() {
+        return this.rotation;
     }
 
     public static ModelRotation get(int x, int y) {

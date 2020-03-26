@@ -33,8 +33,8 @@ extends RaiderEntity {
 
     public class LongDoorInteractGoal
     extends net.minecraft.entity.ai.goal.LongDoorInteractGoal {
-        public LongDoorInteractGoal(RaiderEntity raiderEntity) {
-            super(raiderEntity, false);
+        public LongDoorInteractGoal(RaiderEntity raider) {
+            super(raider, false);
         }
 
         @Override

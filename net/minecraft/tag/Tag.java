@@ -137,8 +137,8 @@ public class Tag<T> {
     implements Entry<T> {
         private final Collection<T> values;
 
-        public CollectionEntry(Collection<T> collection) {
-            this.values = collection;
+        public CollectionEntry(Collection<T> values) {
+            this.values = values;
         }
 
         @Override

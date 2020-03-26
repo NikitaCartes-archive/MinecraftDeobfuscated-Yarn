@@ -10,9 +10,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -34,7 +34,7 @@ public class AdvancementCriterion {
 
     public static AdvancementCriterion deserialize(JsonObject obj, JsonDeserializationContext context) {
         Identifier identifier = new Identifier(JsonHelper.getString(obj, "trigger"));
-        Criterion criterion = Criterions.getById(identifier);
+        Criterion criterion = Criteria.getById(identifier);
         if (criterion == null) {
             throw new JsonSyntaxException("Invalid criterion trigger: " + identifier);
         }

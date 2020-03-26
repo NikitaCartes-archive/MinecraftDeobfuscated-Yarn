@@ -145,14 +145,14 @@ implements RecipeGridAligner<Integer> {
         if (i == -1) {
             return;
         }
-        ItemStack itemStack2 = this.inventory.getInvStack(i).copy();
+        ItemStack itemStack2 = this.inventory.getStack(i).copy();
         if (itemStack2.isEmpty()) {
             return;
         }
         if (itemStack2.getCount() > 1) {
-            this.inventory.takeInvStack(i, 1);
+            this.inventory.removeStack(i, 1);
         } else {
-            this.inventory.removeInvStack(i);
+            this.inventory.removeStack(i);
         }
         itemStack2.setCount(1);
         if (slot.getStack().isEmpty()) {

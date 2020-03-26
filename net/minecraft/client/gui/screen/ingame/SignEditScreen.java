@@ -27,12 +27,12 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.Texts;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class SignEditScreen

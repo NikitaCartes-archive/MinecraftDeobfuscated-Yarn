@@ -8,8 +8,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.CriterionConditions;
-import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -53,15 +53,15 @@ extends AbstractCriterion<Conditions> {
         }
 
         public static Conditions create(LocationPredicate location) {
-            return new Conditions(Criterions.LOCATION.id, location);
+            return new Conditions(Criteria.LOCATION.id, location);
         }
 
         public static Conditions createSleptInBed() {
-            return new Conditions(Criterions.SLEPT_IN_BED.id, LocationPredicate.ANY);
+            return new Conditions(Criteria.SLEPT_IN_BED.id, LocationPredicate.ANY);
         }
 
         public static Conditions createHeroOfTheVillage() {
-            return new Conditions(Criterions.HERO_OF_THE_VILLAGE.id, LocationPredicate.ANY);
+            return new Conditions(Criteria.HERO_OF_THE_VILLAGE.id, LocationPredicate.ANY);
         }
 
         public boolean matches(ServerWorld world, double x, double y, double z) {

@@ -9,7 +9,7 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
 
 @Environment(value=EnvType.CLIENT)
-public interface ListenerSoundInstance {
+public interface SoundInstanceListener {
     public void onSoundPlayed(SoundInstance var1, WeightedSoundSet var2);
 }
 

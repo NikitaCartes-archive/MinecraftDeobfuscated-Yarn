@@ -122,8 +122,8 @@ implements CrossbowUser {
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
         ListTag listTag = new ListTag();
-        for (int i = 0; i < this.inventory.getInvSize(); ++i) {
-            ItemStack itemStack = this.inventory.getInvStack(i);
+        for (int i = 0; i < this.inventory.size(); ++i) {
+            ItemStack itemStack = this.inventory.getStack(i);
             if (itemStack.isEmpty()) continue;
             listTag.add(itemStack.toTag(new CompoundTag()));
         }
@@ -152,7 +152,7 @@ implements CrossbowUser {
         for (int i = 0; i < listTag.size(); ++i) {
             ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
             if (itemStack.isEmpty()) continue;
-            this.inventory.add(itemStack);
+            this.inventory.addStack(itemStack);
         }
         this.setCanPickUpLoot(true);
     }
@@ -234,7 +234,7 @@ implements CrossbowUser {
         } else {
             Item item2 = itemStack.getItem();
             if (this.method_7111(item2)) {
-                ItemStack itemStack2 = this.inventory.add(itemStack);
+                ItemStack itemStack2 = this.inventory.addStack(itemStack);
                 if (itemStack2.isEmpty()) {
                     item.remove();
                 } else {
@@ -254,8 +254,8 @@ implements CrossbowUser {
             return true;
         }
         int i = slot - 300;
-        if (i >= 0 && i < this.inventory.getInvSize()) {
-            this.inventory.setInvStack(i, item);
+        if (i >= 0 && i < this.inventory.size()) {
+            this.inventory.setStack(i, item);
             return true;
         }
         return false;

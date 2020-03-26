@@ -27,7 +27,7 @@ extends BlockEntity
 implements Tickable {
     private long field_19155;
     public int ringTicks;
-    public boolean isRinging;
+    public boolean ringing;
     public Direction lastSideHit;
     private List<LivingEntity> field_19156;
     private boolean field_19157;
@@ -44,7 +44,7 @@ implements Tickable {
             this.field_19158 = 0;
             this.lastSideHit = Direction.byId(j);
             this.ringTicks = 0;
-            this.isRinging = true;
+            this.ringing = true;
             return true;
         }
         return super.onBlockAction(i, j);
@@ -52,11 +52,11 @@ implements Tickable {
 
     @Override
     public void tick() {
-        if (this.isRinging) {
+        if (this.ringing) {
             ++this.ringTicks;
         }
         if (this.ringTicks >= 50) {
-            this.isRinging = false;
+            this.ringing = false;
             this.ringTicks = 0;
         }
         if (this.ringTicks >= 5 && this.field_19158 == 0 && this.method_20523()) {
@@ -81,10 +81,10 @@ implements Tickable {
     public void activate(Direction direction) {
         BlockPos blockPos = this.getPos();
         this.lastSideHit = direction;
-        if (this.isRinging) {
+        if (this.ringing) {
             this.ringTicks = 0;
         } else {
-            this.isRinging = true;
+            this.ringing = true;
         }
         this.world.addBlockAction(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
     }
@@ -117,7 +117,7 @@ implements Tickable {
         if (world.isClient) {
             return;
         }
-        this.field_19156.stream().filter(this::method_20518).forEach(this::method_20520);
+        this.field_19156.stream().filter(this::isRaiderEntity).forEach(this::glowEntity);
     }
 
     private void method_20218(World world) {
@@ -127,7 +127,7 @@ implements Tickable {
         BlockPos blockPos = this.getPos();
         AtomicInteger atomicInteger = new AtomicInteger(16700985);
         int i = (int)this.field_19156.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
-        this.field_19156.stream().filter(this::method_20518).forEach(livingEntity -> {
+        this.field_19156.stream().filter(this::isRaiderEntity).forEach(livingEntity -> {
             float f = 1.0f;
             float g = MathHelper.sqrt((livingEntity.getX() - (double)blockPos.getX()) * (livingEntity.getX() - (double)blockPos.getX()) + (livingEntity.getZ() - (double)blockPos.getZ()) * (livingEntity.getZ() - (double)blockPos.getZ()));
             double d = (double)((float)blockPos.getX() + 0.5f) + (double)(1.0f / g) * (livingEntity.getX() - (double)blockPos.getX());
@@ -143,12 +143,12 @@ implements Tickable {
         });
     }
 
-    private boolean method_20518(LivingEntity livingEntity) {
-        return livingEntity.isAlive() && !livingEntity.removed && this.getPos().isWithinDistance(livingEntity.getPos(), 48.0) && livingEntity.getType().isIn(EntityTypeTags.RAIDERS);
+    private boolean isRaiderEntity(LivingEntity entity) {
+        return entity.isAlive() && !entity.removed && this.getPos().isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
     }
 
-    private void method_20520(LivingEntity livingEntity) {
-        livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
+    private void glowEntity(LivingEntity entity) {
+        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
     }
 }
 

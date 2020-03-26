@@ -22,7 +22,7 @@ public class TntEntityRenderer
 extends EntityRenderer<TntEntity> {
     public TntEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher);
-        this.shadowSize = 0.5f;
+        this.shadowRadius = 0.5f;
     }
 
     @Override

@@ -140,9 +140,9 @@ extends HostileEntity {
         return (this.dataTracker.get(BLAZE_FLAGS) & 1) != 0;
     }
 
-    private void setFireActive(boolean bl) {
+    private void setFireActive(boolean fireActive) {
         byte b = this.dataTracker.get(BLAZE_FLAGS);
-        b = bl ? (byte)(b | 1) : (byte)(b & 0xFFFFFFFE);
+        b = fireActive ? (byte)(b | 1) : (byte)(b & 0xFFFFFFFE);
         this.dataTracker.set(BLAZE_FLAGS, b);
     }
 

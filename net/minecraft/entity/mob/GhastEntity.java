@@ -281,9 +281,9 @@ implements Monster {
         private final GhastEntity ghast;
         private int field_7276;
 
-        public GhastMoveControl(GhastEntity ghastEntity) {
-            super(ghastEntity);
-            this.ghast = ghastEntity;
+        public GhastMoveControl(GhastEntity ghast) {
+            super(ghast);
+            this.ghast = ghast;
         }
 
         @Override

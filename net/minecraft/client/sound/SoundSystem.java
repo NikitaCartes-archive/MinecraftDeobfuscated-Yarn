@@ -20,11 +20,11 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.sound.AudioStream;
 import net.minecraft.client.sound.Channel;
 import net.minecraft.client.sound.Listener;
-import net.minecraft.client.sound.ListenerSoundInstance;
 import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundEngine;
 import net.minecraft.client.sound.SoundExecutor;
 import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.client.sound.SoundInstanceListener;
 import net.minecraft.client.sound.SoundLoader;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.Source;
@@ -64,7 +64,7 @@ public class SoundSystem {
     private final List<TickableSoundInstance> tickingSounds = Lists.newArrayList();
     private final Map<SoundInstance, Integer> startTicks = Maps.newHashMap();
     private final Map<SoundInstance, Integer> soundEndTicks = Maps.newHashMap();
-    private final List<ListenerSoundInstance> listeners = Lists.newArrayList();
+    private final List<SoundInstanceListener> listeners = Lists.newArrayList();
     private final List<TickableSoundInstance> soundsToPlayNextTick = Lists.newArrayList();
     private final List<Sound> preloadedSounds = Lists.newArrayList();
 
@@ -159,12 +159,12 @@ public class SoundSystem {
         }
     }
 
-    public void registerListener(ListenerSoundInstance listenerSoundInstance) {
-        this.listeners.add(listenerSoundInstance);
+    public void registerListener(SoundInstanceListener soundInstanceListener) {
+        this.listeners.add(soundInstanceListener);
     }
 
-    public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
-        this.listeners.remove(listenerSoundInstance);
+    public void unregisterListener(SoundInstanceListener soundInstanceListener) {
+        this.listeners.remove(soundInstanceListener);
     }
 
     public void tick(boolean bl) {
@@ -276,8 +276,8 @@ public class SoundSystem {
             return;
         }
         if (!this.listeners.isEmpty()) {
-            for (ListenerSoundInstance listenerSoundInstance : this.listeners) {
-                listenerSoundInstance.onSoundPlayed(soundInstance, weightedSoundSet);
+            for (SoundInstanceListener soundInstanceListener : this.listeners) {
+                soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);
             }
         }
         if (this.listener.getVolume() <= 0.0f) {

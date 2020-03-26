@@ -136,8 +136,8 @@ extends HostileEntity {
         return this.patrolling;
     }
 
-    protected void method_22332(boolean bl) {
-        this.patrolling = bl;
+    protected void setPatrolling(boolean patrolling) {
+        this.patrolling = patrolling;
     }
 
     public static class PatrolGoal<T extends PatrolEntity>
@@ -176,7 +176,7 @@ extends HostileEntity {
             if (entityNavigation.isIdle()) {
                 List<PatrolEntity> list = this.method_22333();
                 if (((PatrolEntity)this.actor).isRaidCenterSet() && list.isEmpty()) {
-                    ((PatrolEntity)this.actor).method_22332(false);
+                    ((PatrolEntity)this.actor).setPatrolling(false);
                 } else if (!bl || !((PatrolEntity)this.actor).getPatrolTarget().isWithinDistance(((Entity)this.actor).getPos(), 10.0)) {
                     Vec3d vec3d = Vec3d.method_24955(((PatrolEntity)this.actor).getPatrolTarget());
                     Vec3d vec3d2 = ((Entity)this.actor).getPos();

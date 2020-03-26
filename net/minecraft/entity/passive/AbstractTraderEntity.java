@@ -7,7 +7,7 @@ import com.google.common.collect.Sets;
 import java.util.HashSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -123,12 +123,12 @@ Trader {
     }
 
     @Override
-    public void trade(TradeOffer tradeOffer) {
-        tradeOffer.use();
+    public void trade(TradeOffer offer) {
+        offer.use();
         this.ambientSoundChance = -this.getMinAmbientSoundDelay();
-        this.afterUsing(tradeOffer);
+        this.afterUsing(offer);
         if (this.customer instanceof ServerPlayerEntity) {
-            Criterions.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, tradeOffer.getMutableSellItem());
+            Criteria.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, offer.getMutableSellItem());
         }
     }
 
@@ -140,10 +140,10 @@ Trader {
     }
 
     @Override
-    public void onSellingItem(ItemStack itemStack) {
+    public void onSellingItem(ItemStack stack) {
         if (!this.world.isClient && this.ambientSoundChance > -this.getMinAmbientSoundDelay() + 20) {
             this.ambientSoundChance = -this.getMinAmbientSoundDelay();
-            this.playSound(this.getTradingSound(!itemStack.isEmpty()), this.getSoundVolume(), this.getSoundPitch());
+            this.playSound(this.getTradingSound(!stack.isEmpty()), this.getSoundVolume(), this.getSoundPitch());
         }
     }
 
@@ -221,8 +221,8 @@ Trader {
             return true;
         }
         int i = slot - 300;
-        if (i >= 0 && i < this.inventory.getInvSize()) {
-            this.inventory.setInvStack(i, item);
+        if (i >= 0 && i < this.inventory.size()) {
+            this.inventory.setStack(i, item);
             return true;
         }
         return false;

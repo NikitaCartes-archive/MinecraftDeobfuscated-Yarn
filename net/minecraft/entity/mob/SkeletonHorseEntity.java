@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SkeletonHorseEntity
 extends HorseBaseEntity {
-    private final SkeletonHorseTrapTriggerGoal field_7003 = new SkeletonHorseTrapTriggerGoal(this);
+    private final SkeletonHorseTrapTriggerGoal trapTriggerGoal = new SkeletonHorseTrapTriggerGoal(this);
     private boolean trapped;
     private int trapTime;
 
@@ -153,9 +153,9 @@ extends HorseBaseEntity {
         }
         this.trapped = trapped;
         if (trapped) {
-            this.goalSelector.add(1, this.field_7003);
+            this.goalSelector.add(1, this.trapTriggerGoal);
         } else {
-            this.goalSelector.remove(this.field_7003);
+            this.goalSelector.remove(this.trapTriggerGoal);
         }
     }
 

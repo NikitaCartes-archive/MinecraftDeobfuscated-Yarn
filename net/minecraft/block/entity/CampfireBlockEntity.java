@@ -107,17 +107,17 @@ Tickable {
     }
 
     @Override
-    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+    public void fromTag(BlockState state, CompoundTag tag) {
         int[] is;
-        super.fromTag(blockState, compoundTag);
+        super.fromTag(state, tag);
         this.itemsBeingCooked.clear();
-        Inventories.fromTag(compoundTag, this.itemsBeingCooked);
-        if (compoundTag.contains("CookingTimes", 11)) {
-            is = compoundTag.getIntArray("CookingTimes");
+        Inventories.fromTag(tag, this.itemsBeingCooked);
+        if (tag.contains("CookingTimes", 11)) {
+            is = tag.getIntArray("CookingTimes");
             System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
-        if (compoundTag.contains("CookingTotalTimes", 11)) {
-            is = compoundTag.getIntArray("CookingTotalTimes");
+        if (tag.contains("CookingTotalTimes", 11)) {
+            is = tag.getIntArray("CookingTotalTimes");
             System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
     }

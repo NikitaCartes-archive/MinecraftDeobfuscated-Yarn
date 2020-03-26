@@ -35,8 +35,8 @@ implements Consumer<ModelPart> {
     public abstract void render(MatrixStack var1, VertexConsumer var2, int var3, int var4, float var5, float var6, float var7, float var8);
 
     @Override
-    public /* synthetic */ void accept(Object object) {
-        this.accept((ModelPart)object);
+    public /* synthetic */ void accept(Object part) {
+        this.accept((ModelPart)part);
     }
 }
 

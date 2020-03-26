@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.util;
+package net.minecraft.util.dynamic;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
@@ -16,13 +16,13 @@ implements DynamicSerializable {
     private final DimensionType dimension;
     private final BlockPos pos;
 
-    private GlobalPos(DimensionType dimensionType, BlockPos blockPos) {
-        this.dimension = dimensionType;
-        this.pos = blockPos;
+    private GlobalPos(DimensionType dimension, BlockPos pos) {
+        this.dimension = dimension;
+        this.pos = pos;
     }
 
-    public static GlobalPos create(DimensionType dimensionType, BlockPos blockPos) {
-        return new GlobalPos(dimensionType, blockPos);
+    public static GlobalPos create(DimensionType dimension, BlockPos pos) {
+        return new GlobalPos(dimension, pos);
     }
 
     public static GlobalPos deserialize(Dynamic<?> dynamic) {

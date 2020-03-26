@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -182,7 +182,7 @@ Tickable {
                 if (!bl && bl2) {
                     this.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE);
                     for (ServerPlayerEntity serverPlayerEntity : this.world.getNonSpectatingEntities(ServerPlayerEntity.class, new Box(i, j, k, i, j - 4, k).expand(10.0, 5.0, 10.0))) {
-                        Criterions.CONSTRUCT_BEACON.trigger(serverPlayerEntity, this);
+                        Criteria.CONSTRUCT_BEACON.trigger(serverPlayerEntity, this);
                     }
                 } else if (bl && !bl2) {
                     this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
@@ -274,14 +274,14 @@ Tickable {
     }
 
     @Override
-    public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-        super.fromTag(blockState, compoundTag);
-        this.primary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Primary"));
-        this.secondary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Secondary"));
-        if (compoundTag.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+    public void fromTag(BlockState state, CompoundTag tag) {
+        super.fromTag(state, tag);
+        this.primary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Primary"));
+        this.secondary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Secondary"));
+        if (tag.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
-        this.lock = ContainerLock.fromTag(compoundTag);
+        this.lock = ContainerLock.fromTag(tag);
     }
 
     @Override

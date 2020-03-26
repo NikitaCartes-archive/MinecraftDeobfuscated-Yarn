@@ -42,9 +42,9 @@ extends AbstractCriterion<Conditions> {
     extends AbstractCriterionConditions {
         private final NumberRange.IntRange level;
 
-        public Conditions(NumberRange.IntRange intRange) {
+        public Conditions(NumberRange.IntRange level) {
             super(ID);
-            this.level = intRange;
+            this.level = level;
         }
 
         public static Conditions level(NumberRange.IntRange intRange) {

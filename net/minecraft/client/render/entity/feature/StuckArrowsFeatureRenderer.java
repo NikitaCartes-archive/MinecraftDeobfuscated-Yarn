@@ -33,14 +33,14 @@ extends StuckObjectsFeatureRenderer<T, M> {
     }
 
     @Override
-    protected void renderObject(MatrixStack matrix, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta) {
+    protected void renderObject(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta) {
         float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
         this.arrow = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
         this.arrow.yaw = (float)(Math.atan2(directionX, directionZ) * 57.2957763671875);
         this.arrow.pitch = (float)(Math.atan2(directionY, f) * 57.2957763671875);
         this.arrow.prevYaw = this.arrow.yaw;
         this.arrow.prevPitch = this.arrow.pitch;
-        this.dispatcher.render(this.arrow, 0.0, 0.0, 0.0, 0.0f, tickDelta, matrix, vertexConsumers, light);
+        this.dispatcher.render(this.arrow, 0.0, 0.0, 0.0, 0.0f, tickDelta, matrices, vertexConsumers, light);
     }
 }
 

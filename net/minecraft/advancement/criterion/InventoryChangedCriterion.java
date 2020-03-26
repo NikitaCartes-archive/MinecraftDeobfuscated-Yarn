@@ -45,8 +45,8 @@ extends AbstractCriterion<Conditions> {
         int i = 0;
         int j = 0;
         int k = 0;
-        for (int l = 0; l < playerInventory.getInvSize(); ++l) {
-            ItemStack itemStack2 = playerInventory.getInvStack(l);
+        for (int l = 0; l < playerInventory.size(); ++l) {
+            ItemStack itemStack2 = playerInventory.getStack(l);
             if (itemStack2.isEmpty()) {
                 ++j;
                 continue;
@@ -132,12 +132,12 @@ extends AbstractCriterion<Conditions> {
                 return !itemStack.isEmpty() && this.items[0].test(itemStack);
             }
             ObjectArrayList<ItemPredicate> list = new ObjectArrayList<ItemPredicate>(this.items);
-            int m = playerInventory.getInvSize();
+            int m = playerInventory.size();
             for (int n = 0; n < m; ++n) {
                 if (list.isEmpty()) {
                     return true;
                 }
-                ItemStack itemStack2 = playerInventory.getInvStack(n);
+                ItemStack itemStack2 = playerInventory.getStack(n);
                 if (itemStack2.isEmpty()) continue;
                 list.removeIf(itemPredicate -> itemPredicate.test(itemStack2));
             }

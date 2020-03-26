@@ -79,14 +79,14 @@ extends ScreenHandler {
                 ItemStack itemStack = super.takeStack(amount);
                 ItemStack itemStack2 = context.run((world, blockPos) -> {
                     ItemStack itemStack2;
-                    if (!CartographyTableScreenHandler.this.currentlyTakingItem && CartographyTableScreenHandler.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE && (itemStack2 = FilledMapItem.copyMap(world, CartographyTableScreenHandler.this.inventory.getInvStack(0))) != null) {
+                    if (!CartographyTableScreenHandler.this.currentlyTakingItem && CartographyTableScreenHandler.this.inventory.getStack(1).getItem() == Items.GLASS_PANE && (itemStack2 = FilledMapItem.copyMap(world, CartographyTableScreenHandler.this.inventory.getStack(0))) != null) {
                         itemStack2.setCount(1);
                         return itemStack2;
                     }
                     return itemStack;
                 }).orElse(itemStack);
-                CartographyTableScreenHandler.this.inventory.takeInvStack(0, 1);
-                CartographyTableScreenHandler.this.inventory.takeInvStack(1, 1);
+                CartographyTableScreenHandler.this.inventory.removeStack(0, 1);
+                CartographyTableScreenHandler.this.inventory.removeStack(1, 1);
                 return itemStack2;
             }
 
@@ -126,11 +126,11 @@ extends ScreenHandler {
 
     @Override
     public void onContentChanged(Inventory inventory) {
-        ItemStack itemStack = this.inventory.getInvStack(0);
-        ItemStack itemStack2 = this.inventory.getInvStack(1);
-        ItemStack itemStack3 = this.resultSlot.getInvStack(2);
+        ItemStack itemStack = this.inventory.getStack(0);
+        ItemStack itemStack2 = this.inventory.getStack(1);
+        ItemStack itemStack3 = this.resultSlot.getStack(2);
         if (!itemStack3.isEmpty() && (itemStack.isEmpty() || itemStack2.isEmpty())) {
-            this.resultSlot.removeInvStack(2);
+            this.resultSlot.removeStack(2);
         } else if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
             this.updateResult(itemStack, itemStack2, itemStack3);
         }
@@ -158,12 +158,12 @@ extends ScreenHandler {
                 itemStack4.setCount(2);
                 this.sendContentUpdates();
             } else {
-                this.resultSlot.removeInvStack(2);
+                this.resultSlot.removeStack(2);
                 this.sendContentUpdates();
                 return;
             }
             if (!ItemStack.areEqual(itemStack4, oldResult)) {
-                this.resultSlot.setInvStack(2, itemStack4);
+                this.resultSlot.setStack(2, itemStack4);
                 this.sendContentUpdates();
             }
         });
@@ -184,9 +184,9 @@ extends ScreenHandler {
             Item item = itemStack3.getItem();
             itemStack = itemStack3.copy();
             if (index == 2) {
-                if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
+                if (this.inventory.getStack(1).getItem() == Items.GLASS_PANE) {
                     itemStack3 = this.context.run((world, blockPos) -> {
-                        ItemStack itemStack2 = FilledMapItem.copyMap(world, this.inventory.getInvStack(0));
+                        ItemStack itemStack2 = FilledMapItem.copyMap(world, this.inventory.getStack(0));
                         if (itemStack2 != null) {
                             itemStack2.setCount(1);
                             return itemStack2;
@@ -220,7 +220,7 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.resultSlot.removeInvStack(2);
+        this.resultSlot.removeStack(2);
         this.context.run((world, blockPos) -> this.dropInventory(player, playerEntity.world, this.inventory));
     }
 }

@@ -77,8 +77,8 @@ implements DynamicSerializable {
     }
 
     @Nullable
-    public static DimensionType byRawId(int i) {
-        return (DimensionType)Registry.DIMENSION_TYPE.get(i - -1);
+    public static DimensionType byRawId(int id) {
+        return (DimensionType)Registry.DIMENSION_TYPE.get(id - -1);
     }
 
     @Nullable
@@ -87,8 +87,8 @@ implements DynamicSerializable {
     }
 
     @Nullable
-    public static Identifier getId(DimensionType dimensionType) {
-        return Registry.DIMENSION_TYPE.getId(dimensionType);
+    public static Identifier getId(DimensionType type) {
+        return Registry.DIMENSION_TYPE.getId(type);
     }
 
     public boolean hasSkyLight() {

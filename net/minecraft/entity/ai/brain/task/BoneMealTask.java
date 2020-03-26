@@ -39,7 +39,7 @@ extends Task<VillagerEntity> {
         if (villagerEntity.age % 10 != 0 || this.lastEndEntityAge != 0L && this.lastEndEntityAge + 160L > (long)villagerEntity.age) {
             return false;
         }
-        if (villagerEntity.getInventory().countInInv(Items.BONE_MEAL) <= 0) {
+        if (villagerEntity.getInventory().count(Items.BONE_MEAL) <= 0) {
             return false;
         }
         this.pos = this.findBoneMealPos(serverWorld, villagerEntity);
@@ -103,9 +103,9 @@ extends Task<VillagerEntity> {
         }
         ItemStack itemStack = ItemStack.EMPTY;
         BasicInventory basicInventory = villagerEntity.getInventory();
-        int i = basicInventory.getInvSize();
+        int i = basicInventory.size();
         for (int j = 0; j < i; ++j) {
-            ItemStack itemStack2 = basicInventory.getInvStack(j);
+            ItemStack itemStack2 = basicInventory.getStack(j);
             if (itemStack2.getItem() != Items.BONE_MEAL) continue;
             itemStack = itemStack2;
             break;

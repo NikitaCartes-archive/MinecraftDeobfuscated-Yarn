@@ -85,28 +85,28 @@ extends EntityModel<T> {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
         if (this.child) {
             float f = 2.0f;
             matrices.push();
             float g = 0.7f;
             matrices.scale(0.71428573f, 0.64935064f, 0.7936508f);
             matrices.translate(0.0, 1.3125, 0.22f);
-            this.head.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+            this.head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
             matrices.pop();
             matrices.push();
             float h = 1.1f;
             matrices.scale(0.625f, 0.45454544f, 0.45454544f);
             matrices.translate(0.0, 2.0625, 0.0);
-            this.torso.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+            this.torso.render(matrices, vertices, light, overlay, red, green, blue, alpha);
             matrices.pop();
             matrices.push();
             matrices.scale(0.45454544f, 0.41322312f, 0.45454544f);
             matrices.translate(0.0, 2.0625, 0.0);
-            ImmutableList.of(this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {
-            ImmutableList.of(this.head, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.head, this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
         }
     }
 }

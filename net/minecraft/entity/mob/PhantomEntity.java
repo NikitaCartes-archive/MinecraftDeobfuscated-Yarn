@@ -85,8 +85,8 @@ implements Monster {
         this.dataTracker.startTracking(SIZE, 0);
     }
 
-    public void setPhantomSize(int i) {
-        this.dataTracker.set(SIZE, MathHelper.clamp(i, 0, 64));
+    public void setPhantomSize(int size) {
+        this.dataTracker.set(SIZE, MathHelper.clamp(size, 0, 64));
     }
 
     private void onSizeChanged() {

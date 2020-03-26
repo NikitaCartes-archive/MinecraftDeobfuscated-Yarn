@@ -5,7 +5,7 @@ package net.minecraft.inventory;
 
 import net.minecraft.inventory.Inventory;
 
-public interface InventoryListener {
-    public void onInvChange(Inventory var1);
+public interface InventoryChangedListener {
+    public void onInventoryChanged(Inventory var1);
 }
 

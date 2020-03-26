@@ -18,9 +18,9 @@ public class MeleeAttackTask
 extends Task<MobEntity> {
     private final int interval;
 
-    public MeleeAttackTask(int i) {
+    public MeleeAttackTask(int interval) {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT));
-        this.interval = i;
+        this.interval = interval;
     }
 
     @Override

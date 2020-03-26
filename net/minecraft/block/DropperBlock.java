@@ -47,7 +47,7 @@ extends DispenserBlock {
             world.playLevelEvent(1001, pos, 0);
             return;
         }
-        ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
+        ItemStack itemStack = dispenserBlockEntity.getStack(i);
         if (itemStack.isEmpty()) {
             return;
         }
@@ -64,7 +64,7 @@ extends DispenserBlock {
                 itemStack2 = itemStack.copy();
             }
         }
-        dispenserBlockEntity.setInvStack(i, itemStack2);
+        dispenserBlockEntity.setStack(i, itemStack2);
     }
 }
 

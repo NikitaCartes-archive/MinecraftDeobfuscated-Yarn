@@ -151,15 +151,15 @@ extends ZombieEntity {
         }
         Entity entity = source.getAttacker();
         if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative() && this.canSee(entity)) {
-            this.method_20804((LivingEntity)entity);
+            this.getAngryAt((LivingEntity)entity);
         }
         return super.damage(source, amount);
     }
 
-    private boolean method_20804(LivingEntity livingEntity) {
+    private boolean getAngryAt(LivingEntity entity) {
         this.anger = this.getNewAngerDuration();
         this.angrySoundDelay = this.random.nextInt(40);
-        this.setAttacker(livingEntity);
+        this.setAttacker(entity);
         return true;
     }
 
@@ -222,7 +222,7 @@ extends ZombieEntity {
 
         @Override
         protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
-            if (mob instanceof ZombifiedPiglinEntity && this.mob.canSee(target) && ((ZombifiedPiglinEntity)mob).method_20804(target)) {
+            if (mob instanceof ZombifiedPiglinEntity && this.mob.canSee(target) && ((ZombifiedPiglinEntity)mob).getAngryAt(target)) {
                 mob.setTarget(target);
             }
         }

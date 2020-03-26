@@ -30,8 +30,8 @@ extends SpecialCraftingRecipe {
     @Override
     public boolean matches(CraftingInventory craftingInventory, World world) {
         ArrayList<ItemStack> list = Lists.newArrayList();
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
-            ItemStack itemStack = craftingInventory.getInvStack(i);
+        for (int i = 0; i < craftingInventory.size(); ++i) {
+            ItemStack itemStack = craftingInventory.getStack(i);
             if (itemStack.isEmpty()) continue;
             list.add(itemStack);
             if (list.size() <= 1) continue;
@@ -46,8 +46,8 @@ extends SpecialCraftingRecipe {
     public ItemStack craft(CraftingInventory craftingInventory) {
         ItemStack itemStack;
         ArrayList<ItemStack> list = Lists.newArrayList();
-        for (int i = 0; i < craftingInventory.getInvSize(); ++i) {
-            itemStack = craftingInventory.getInvStack(i);
+        for (int i = 0; i < craftingInventory.size(); ++i) {
+            itemStack = craftingInventory.getStack(i);
             if (itemStack.isEmpty()) continue;
             list.add(itemStack);
             if (list.size() <= 1) continue;

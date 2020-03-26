@@ -88,8 +88,8 @@ extends HorseBaseEntity {
         tag.putBoolean("ChestedHorse", this.hasChest());
         if (this.hasChest()) {
             ListTag listTag = new ListTag();
-            for (int i = 2; i < this.items.getInvSize(); ++i) {
-                ItemStack itemStack = this.items.getInvStack(i);
+            for (int i = 2; i < this.items.size(); ++i) {
+                ItemStack itemStack = this.items.getStack(i);
                 if (itemStack.isEmpty()) continue;
                 CompoundTag compoundTag = new CompoundTag();
                 compoundTag.putByte("Slot", (byte)i);
@@ -110,8 +110,8 @@ extends HorseBaseEntity {
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag = listTag.getCompound(i);
                 int j = compoundTag.getByte("Slot") & 0xFF;
-                if (j < 2 || j >= this.items.getInvSize()) continue;
-                this.items.setInvStack(j, ItemStack.fromTag(compoundTag));
+                if (j < 2 || j >= this.items.size()) continue;
+                this.items.setStack(j, ItemStack.fromTag(compoundTag));
             }
         }
         this.updateSaddle();

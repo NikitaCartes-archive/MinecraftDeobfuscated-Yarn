@@ -3,7 +3,7 @@
  */
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
@@ -66,7 +66,7 @@ extends Item {
                     user.playSound(fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL, 1.0f, 1.0f);
                     ItemStack itemStack2 = this.getFilledStack(itemStack, user, fluid.getBucketItem());
                     if (!world.isClient) {
-                        Criterions.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
+                        Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, new ItemStack(fluid.getBucketItem()));
                     }
                     return TypedActionResult.success(itemStack2);
                 }
@@ -77,7 +77,7 @@ extends Item {
             if (this.placeFluid(user, world, blockPos3, blockHitResult)) {
                 this.onEmptied(world, itemStack, blockPos3);
                 if (user instanceof ServerPlayerEntity) {
-                    Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, itemStack);
+                    Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, itemStack);
                 }
                 user.incrementStat(Stats.USED.getOrCreateStat(this));
                 return TypedActionResult.success(this.getEmptiedStack(itemStack, user));

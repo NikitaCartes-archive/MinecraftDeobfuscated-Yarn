@@ -361,9 +361,9 @@ implements Chunk {
     }
 
     @Override
-    public void markBlockForPostProcessing(BlockPos blockPos) {
-        if (!World.isHeightInvalid(blockPos)) {
-            Chunk.getList(this.postProcessingLists, blockPos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(blockPos));
+    public void markBlockForPostProcessing(BlockPos pos) {
+        if (!World.isHeightInvalid(pos)) {
+            Chunk.getList(this.postProcessingLists, pos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(pos));
         }
     }
 
@@ -401,8 +401,8 @@ implements Chunk {
     }
 
     @Override
-    public void addPendingBlockEntityTag(CompoundTag compoundTag) {
-        this.blockEntityTags.put(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), compoundTag);
+    public void addPendingBlockEntityTag(CompoundTag tag) {
+        this.blockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
     }
 
     public Map<BlockPos, CompoundTag> getBlockEntityTags() {
@@ -425,9 +425,9 @@ implements Chunk {
     }
 
     @Override
-    public void removeBlockEntity(BlockPos blockPos) {
-        this.blockEntities.remove(blockPos);
-        this.blockEntityTags.remove(blockPos);
+    public void removeBlockEntity(BlockPos pos) {
+        this.blockEntities.remove(pos);
+        this.blockEntityTags.remove(pos);
     }
 
     @Override

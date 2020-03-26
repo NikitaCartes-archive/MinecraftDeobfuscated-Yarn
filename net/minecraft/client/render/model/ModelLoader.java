@@ -63,7 +63,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -100,13 +100,13 @@ public class ModelLoader {
         hashSet.add(FIRE_0);
         hashSet.add(FIRE_1);
         hashSet.add(BellBlockEntityRenderer.BELL_BODY_TEXTURE);
-        hashSet.add(ConduitBlockEntityRenderer.BASE_TEX);
-        hashSet.add(ConduitBlockEntityRenderer.CAGE_TEX);
-        hashSet.add(ConduitBlockEntityRenderer.WIND_TEX);
-        hashSet.add(ConduitBlockEntityRenderer.WIND_VERTICAL_TEX);
-        hashSet.add(ConduitBlockEntityRenderer.OPEN_EYE_TEX);
-        hashSet.add(ConduitBlockEntityRenderer.CLOSED_EYE_TEX);
-        hashSet.add(EnchantingTableBlockEntityRenderer.BOOK_TEX);
+        hashSet.add(ConduitBlockEntityRenderer.BASE_TEXTURE);
+        hashSet.add(ConduitBlockEntityRenderer.CAGE_TEXTURE);
+        hashSet.add(ConduitBlockEntityRenderer.WIND_TEXTURE);
+        hashSet.add(ConduitBlockEntityRenderer.WIND_VERTICAL_TEXTURE);
+        hashSet.add(ConduitBlockEntityRenderer.OPEN_EYE_TEXTURE);
+        hashSet.add(ConduitBlockEntityRenderer.CLOSED_EYE_TEXTURE);
+        hashSet.add(EnchantingTableBlockEntityRenderer.BOOK_TEXTURE);
         hashSet.add(BANNER_BASE);
         hashSet.add(SHIELD_BASE);
         hashSet.add(SHIELD_BASE_NO_PATTERN);
@@ -144,7 +144,7 @@ public class ModelLoader {
     private final Set<Identifier> modelsToLoad = Sets.newHashSet();
     private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
     private final Map<Identifier, UnbakedModel> unbakedModels = Maps.newHashMap();
-    private final Map<Triple<Identifier, Rotation3, Boolean>, BakedModel> bakedModelCache = Maps.newHashMap();
+    private final Map<Triple<Identifier, AffineTransformation, Boolean>, BakedModel> bakedModelCache = Maps.newHashMap();
     private final Map<Identifier, UnbakedModel> modelsToBake = Maps.newHashMap();
     private final Map<Identifier, BakedModel> bakedModels = Maps.newHashMap();
     private final Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData;
@@ -430,7 +430,7 @@ public class ModelLoader {
     @Nullable
     public BakedModel bake(Identifier identifier, ModelBakeSettings settings) {
         JsonUnbakedModel jsonUnbakedModel;
-        Triple<Identifier, Rotation3, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isShaded());
+        Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isShaded());
         if (this.bakedModelCache.containsKey(triple)) {
             return this.bakedModelCache.get(triple);
         }

@@ -20,8 +20,8 @@ public enum RailShape implements StringIdentifiable
 
     private final String name;
 
-    private RailShape(String string2) {
-        this.name = string2;
+    private RailShape(String name) {
+        this.name = name;
     }
 
     public String toString() {

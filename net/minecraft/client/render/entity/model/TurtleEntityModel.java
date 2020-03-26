@@ -85,13 +85,13 @@ extends QuadrupedEntityModel<T> {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
         boolean bl = this.tail.visible;
         if (bl) {
             matrices.push();
             matrices.translate(0.0, -0.08f, 0.0);
         }
-        super.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        super.render(matrices, vertices, light, overlay, red, green, blue, alpha);
         if (bl) {
             matrices.pop();
         }

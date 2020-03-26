@@ -38,12 +38,12 @@ public class RayTraceContext {
         return this.start;
     }
 
-    public VoxelShape getBlockShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-        return this.shapeType.get(blockState, blockView, blockPos, this.entityPosition);
+    public VoxelShape getBlockShape(BlockState state, BlockView world, BlockPos pos) {
+        return this.shapeType.get(state, world, pos, this.entityPosition);
     }
 
-    public VoxelShape getFluidShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-        return this.fluid.handled(fluidState) ? fluidState.getShape(blockView, blockPos) : VoxelShapes.empty();
+    public VoxelShape getFluidShape(FluidState state, BlockView world, BlockPos pos) {
+        return this.fluid.handled(state) ? state.getShape(world, pos) : VoxelShapes.empty();
     }
 
     public static enum FluidHandling {
@@ -57,8 +57,8 @@ public class RayTraceContext {
             this.predicate = predicate;
         }
 
-        public boolean handled(FluidState fluidState) {
-            return this.predicate.test(fluidState);
+        public boolean handled(FluidState state) {
+            return this.predicate.test(state);
         }
     }
 
@@ -74,8 +74,8 @@ public class RayTraceContext {
 
         private final ShapeProvider provider;
 
-        private ShapeType(ShapeProvider shapeProvider) {
-            this.provider = shapeProvider;
+        private ShapeType(ShapeProvider provider) {
+            this.provider = provider;
         }
 
         @Override

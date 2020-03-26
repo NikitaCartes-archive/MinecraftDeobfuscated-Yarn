@@ -47,7 +47,7 @@ extends EntityModel<E> {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
         if (this.child) {
             float f;
             matrices.push();
@@ -56,17 +56,17 @@ extends EntityModel<E> {
                 matrices.scale(f, f, f);
             }
             matrices.translate(0.0, this.childHeadYOffset / 16.0f, this.childHeadZOffset / 16.0f);
-            this.getHeadParts().forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            this.getHeadParts().forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
             matrices.push();
             f = 1.0f / this.invertedChildBodyScale;
             matrices.scale(f, f, f);
             matrices.translate(0.0, this.childBodyYOffset / 16.0f, 0.0);
-            this.getBodyParts().forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            this.getBodyParts().forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {
-            this.getHeadParts().forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
-            this.getBodyParts().forEach(modelPart -> modelPart.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha));
+            this.getHeadParts().forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            this.getBodyParts().forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
         }
     }
 
