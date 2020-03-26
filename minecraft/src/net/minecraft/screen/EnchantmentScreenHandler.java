@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -91,7 +91,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 	@Override
 	public void onContentChanged(Inventory inventory) {
 		if (inventory == this.inventory) {
-			ItemStack itemStack = inventory.getInvStack(0);
+			ItemStack itemStack = inventory.getStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
 				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					int ix = 0;
@@ -164,8 +164,8 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean onButtonClick(PlayerEntity player, int id) {
-		ItemStack itemStack = this.inventory.getInvStack(0);
-		ItemStack itemStack2 = this.inventory.getInvStack(1);
+		ItemStack itemStack = this.inventory.getStack(0);
+		ItemStack itemStack2 = this.inventory.getStack(1);
 		int i = id + 1;
 		if ((itemStack2.isEmpty() || itemStack2.getCount() < i) && !player.abilities.creativeMode) {
 			return false;
@@ -187,7 +187,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 							itemStack3.setTag(compoundTag.copy());
 						}
 
-						this.inventory.setInvStack(0, itemStack3);
+						this.inventory.setStack(0, itemStack3);
 					}
 
 					for (int k = 0; k < list.size(); k++) {
@@ -202,13 +202,13 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					if (!player.abilities.creativeMode) {
 						itemStack2.decrement(i);
 						if (itemStack2.isEmpty()) {
-							this.inventory.setInvStack(1, ItemStack.EMPTY);
+							this.inventory.setStack(1, ItemStack.EMPTY);
 						}
 					}
 
 					player.incrementStat(Stats.ENCHANT_ITEM);
 					if (player instanceof ServerPlayerEntity) {
-						Criterions.ENCHANTED_ITEM.trigger((ServerPlayerEntity)player, itemStack3, i);
+						Criteria.ENCHANTED_ITEM.trigger((ServerPlayerEntity)player, itemStack3, i);
 					}
 
 					this.inventory.markDirty();
@@ -233,7 +233,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 
 	@Environment(EnvType.CLIENT)
 	public int getLapisCount() {
-		ItemStack itemStack = this.inventory.getInvStack(1);
+		ItemStack itemStack = this.inventory.getStack(1);
 		return itemStack.isEmpty() ? 0 : itemStack.getCount();
 	}
 

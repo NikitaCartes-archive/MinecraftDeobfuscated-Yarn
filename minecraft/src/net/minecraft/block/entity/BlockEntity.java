@@ -46,30 +46,30 @@ public abstract class BlockEntity {
 		return this.world != null;
 	}
 
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		this.pos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+	public void fromTag(BlockState state, CompoundTag tag) {
+		this.pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
 	}
 
 	public CompoundTag toTag(CompoundTag tag) {
 		return this.writeIdentifyingData(tag);
 	}
 
-	private CompoundTag writeIdentifyingData(CompoundTag compoundTag) {
+	private CompoundTag writeIdentifyingData(CompoundTag tag) {
 		Identifier identifier = BlockEntityType.getId(this.getType());
 		if (identifier == null) {
 			throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
 		} else {
-			compoundTag.putString("id", identifier.toString());
-			compoundTag.putInt("x", this.pos.getX());
-			compoundTag.putInt("y", this.pos.getY());
-			compoundTag.putInt("z", this.pos.getZ());
-			return compoundTag;
+			tag.putString("id", identifier.toString());
+			tag.putInt("x", this.pos.getX());
+			tag.putInt("y", this.pos.getY());
+			tag.putInt("z", this.pos.getZ());
+			return tag;
 		}
 	}
 
 	@Nullable
-	public static BlockEntity createFromTag(BlockState blockState, CompoundTag compoundTag) {
-		String string = compoundTag.getString("id");
+	public static BlockEntity createFromTag(BlockState state, CompoundTag tag) {
+		String string = tag.getString("id");
 		return (BlockEntity)Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
 			try {
 				return blockEntityType.instantiate();
@@ -79,7 +79,7 @@ public abstract class BlockEntity {
 			}
 		}).map(blockEntity -> {
 			try {
-				blockEntity.fromTag(blockState, compoundTag);
+				blockEntity.fromTag(state, tag);
 				return blockEntity;
 			} catch (Throwable var5) {
 				LOGGER.error("Failed to load data for block entity {}", string, var5);
@@ -163,8 +163,8 @@ public abstract class BlockEntity {
 		}
 	}
 
-	public void setPos(BlockPos blockPos) {
-		this.pos = blockPos.toImmutable();
+	public void setPos(BlockPos pos) {
+		this.pos = pos.toImmutable();
 	}
 
 	public boolean shouldNotCopyTagFromItem() {

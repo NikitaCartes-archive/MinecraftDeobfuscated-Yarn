@@ -31,10 +31,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.CriterionProgress;
-import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
@@ -77,14 +77,14 @@ public class PlayerAdvancementTracker {
 		this.owner = owner;
 	}
 
-	public void clearCriterions() {
-		for (Criterion<?> criterion : Criterions.getAllCriterions()) {
+	public void clearCriteria() {
+		for (Criterion<?> criterion : Criteria.getCriteria()) {
 			criterion.endTracking(this);
 		}
 	}
 
 	public void reload() {
-		this.clearCriterions();
+		this.clearCriteria();
 		this.advancementToProgress.clear();
 		this.visibleAdvancements.clear();
 		this.visibilityUpdates.clear();
@@ -301,7 +301,7 @@ public class PlayerAdvancementTracker {
 				if (criterionProgress != null && !criterionProgress.isObtained()) {
 					CriterionConditions criterionConditions = ((AdvancementCriterion)entry.getValue()).getConditions();
 					if (criterionConditions != null) {
-						Criterion<CriterionConditions> criterion = Criterions.getById(criterionConditions.getId());
+						Criterion<CriterionConditions> criterion = Criteria.getById(criterionConditions.getId());
 						if (criterion != null) {
 							criterion.beginTrackingCondition(this, new Criterion.ConditionsContainer<>(criterionConditions, advancement, (String)entry.getKey()));
 						}
@@ -319,7 +319,7 @@ public class PlayerAdvancementTracker {
 			if (criterionProgress != null && (criterionProgress.isObtained() || advancementProgress.isDone())) {
 				CriterionConditions criterionConditions = ((AdvancementCriterion)entry.getValue()).getConditions();
 				if (criterionConditions != null) {
-					Criterion<CriterionConditions> criterion = Criterions.getById(criterionConditions.getId());
+					Criterion<CriterionConditions> criterion = Criteria.getById(criterionConditions.getId());
 					if (criterion != null) {
 						criterion.endTrackingCondition(this, new Criterion.ConditionsContainer<>(criterionConditions, advancement, (String)entry.getKey()));
 					}
@@ -381,9 +381,9 @@ public class PlayerAdvancementTracker {
 		return advancementProgress;
 	}
 
-	private void initProgress(Advancement advancement, AdvancementProgress advancementProgress) {
-		advancementProgress.init(advancement.getCriteria(), advancement.getRequirements());
-		this.advancementToProgress.put(advancement, advancementProgress);
+	private void initProgress(Advancement advancement, AdvancementProgress progress) {
+		progress.init(advancement.getCriteria(), advancement.getRequirements());
+		this.advancementToProgress.put(advancement, progress);
 	}
 
 	private void updateDisplay(Advancement advancement) {

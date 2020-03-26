@@ -256,13 +256,13 @@ public class CatEntity extends TameableEntity {
 		super.eat(player, stack);
 	}
 
-	private float method_22327() {
+	private float getAttackDamage() {
 		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
 	}
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		return target.damage(DamageSource.mob(this), this.method_22327());
+		return target.damage(DamageSource.mob(this), this.getAttackDamage());
 	}
 
 	@Override

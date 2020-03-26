@@ -23,8 +23,8 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	private int viewerCount;
 
-	private BarrelBlockEntity(BlockEntityType<?> blockEntityType) {
-		super(blockEntityType);
+	private BarrelBlockEntity(BlockEntityType<?> type) {
+		super(type);
 	}
 
 	public BarrelBlockEntity() {
@@ -42,16 +42,16 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag)) {
-			Inventories.fromTag(compoundTag, this.inventory);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+		if (!this.deserializeLootTable(tag)) {
+			Inventories.fromTag(tag, this.inventory);
 		}
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return 27;
 	}
 
@@ -76,7 +76,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity player) {
+	public void onOpen(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
@@ -121,7 +121,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity player) {
+	public void onClose(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			this.viewerCount--;
 		}

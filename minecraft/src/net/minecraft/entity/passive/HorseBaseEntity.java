@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -40,7 +40,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.InventoryListener;
+import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -63,7 +63,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
-public abstract class HorseBaseEntity extends AnimalEntity implements InventoryListener, JumpingMount {
+public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, JumpingMount {
 	private static final Predicate<LivingEntity> IS_BRED_HORSE = livingEntity -> livingEntity instanceof HorseBaseEntity
 			&& ((HorseBaseEntity)livingEntity).isBred();
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = new TargetPredicate()
@@ -182,12 +182,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		return this.getHorseFlag(8);
 	}
 
-	public void setBred(boolean bl) {
-		this.setHorseFlag(8, bl);
+	public void setBred(boolean bred) {
+		this.setHorseFlag(8, bred);
 	}
 
-	public void setSaddled(boolean bl) {
-		this.setHorseFlag(4, bl);
+	public void setSaddled(boolean saddled) {
+		this.setHorseFlag(4, saddled);
 	}
 
 	public int getTemper() {
@@ -268,12 +268,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		this.items = new BasicInventory(this.getInventorySize());
 		if (basicInventory != null) {
 			basicInventory.removeListener(this);
-			int i = Math.min(basicInventory.getInvSize(), this.items.getInvSize());
+			int i = Math.min(basicInventory.size(), this.items.size());
 
 			for (int j = 0; j < i; j++) {
-				ItemStack itemStack = basicInventory.getInvStack(j);
+				ItemStack itemStack = basicInventory.getStack(j);
 				if (!itemStack.isEmpty()) {
-					this.items.setInvStack(j, itemStack.copy());
+					this.items.setStack(j, itemStack.copy());
 				}
 			}
 		}
@@ -284,12 +284,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 
 	protected void updateSaddle() {
 		if (!this.world.isClient) {
-			this.setSaddled(!this.items.getInvStack(0).isEmpty() && this.canBeSaddled());
+			this.setSaddled(!this.items.getStack(0).isEmpty() && this.canBeSaddled());
 		}
 	}
 
 	@Override
-	public void onInvChange(Inventory inventory) {
+	public void onInventoryChanged(Inventory sender) {
 		boolean bl = this.isSaddled();
 		this.updateSaddle();
 		if (this.age > 20 && !bl && this.isSaddled()) {
@@ -497,8 +497,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	protected void dropInventory() {
 		super.dropInventory();
 		if (this.items != null) {
-			for (int i = 0; i < this.items.getInvSize(); i++) {
-				ItemStack itemStack = this.items.getInvStack(i);
+			for (int i = 0; i < this.items.size(); i++) {
+				ItemStack itemStack = this.items.getStack(i);
 				if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack)) {
 					this.dropStack(itemStack);
 				}
@@ -656,7 +656,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		this.setOwnerUuid(player.getUuid());
 		this.setTame(true);
 		if (player instanceof ServerPlayerEntity) {
-			Criterions.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
+			Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
 		}
 
 		this.world.sendEntityStatus(this, (byte)7);
@@ -754,8 +754,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			tag.putUuidNew("Owner", this.getOwnerUuid());
 		}
 
-		if (!this.items.getInvStack(0).isEmpty()) {
-			tag.put("SaddleItem", this.items.getInvStack(0).toTag(new CompoundTag()));
+		if (!this.items.getStack(0).isEmpty()) {
+			tag.put("SaddleItem", this.items.getStack(0).toTag(new CompoundTag()));
 		}
 	}
 
@@ -786,7 +786,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		if (tag.contains("SaddleItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"));
 			if (itemStack.getItem() == Items.SADDLE) {
-				this.items.setInvStack(0, itemStack);
+				this.items.setStack(0, itemStack);
 			}
 		}
 
@@ -956,11 +956,11 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	@Override
 	public boolean equip(int slot, ItemStack item) {
 		int i = slot - 400;
-		if (i >= 0 && i < 2 && i < this.items.getInvSize()) {
+		if (i >= 0 && i < 2 && i < this.items.size()) {
 			if (i == 0 && item.getItem() != Items.SADDLE) {
 				return false;
 			} else if (i != 1 || this.canEquip() && this.canEquip(item)) {
-				this.items.setInvStack(i, item);
+				this.items.setStack(i, item);
 				this.updateSaddle();
 				return true;
 			} else {
@@ -968,8 +968,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 			}
 		} else {
 			int j = slot - 500 + 2;
-			if (j >= 2 && j < this.items.getInvSize()) {
-				this.items.setInvStack(j, item);
+			if (j >= 2 && j < this.items.size()) {
+				this.items.setStack(j, item);
 				return true;
 			} else {
 				return false;

@@ -270,7 +270,7 @@ public class TrackedDataHandlerRegistry {
 			return villagerData;
 		}
 	};
-	public static final TrackedDataHandler<OptionalInt> field_17910 = new TrackedDataHandler<OptionalInt>() {
+	public static final TrackedDataHandler<OptionalInt> FIREWORK_DATA = new TrackedDataHandler<OptionalInt>() {
 		public void write(PacketByteBuf packetByteBuf, OptionalInt optionalInt) {
 			packetByteBuf.writeVarInt(optionalInt.orElse(-1) + 1);
 		}
@@ -329,7 +329,7 @@ public class TrackedDataHandlerRegistry {
 		register(TAG_COMPOUND);
 		register(PARTICLE);
 		register(VILLAGER_DATA);
-		register(field_17910);
+		register(FIREWORK_DATA);
 		register(ENTITY_POSE);
 	}
 }

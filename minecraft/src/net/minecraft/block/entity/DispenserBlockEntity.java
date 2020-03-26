@@ -25,7 +25,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return 9;
 	}
 
@@ -46,7 +46,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	public int addToFirstFreeSlot(ItemStack stack) {
 		for (int i = 0; i < this.inventory.size(); i++) {
 			if (this.inventory.get(i).isEmpty()) {
-				this.setInvStack(i, stack);
+				this.setStack(i, stack);
 				return i;
 			}
 		}
@@ -60,11 +60,11 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag)) {
-			Inventories.fromTag(compoundTag, this.inventory);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+		if (!this.deserializeLootTable(tag)) {
+			Inventories.fromTag(tag, this.inventory);
 		}
 	}
 

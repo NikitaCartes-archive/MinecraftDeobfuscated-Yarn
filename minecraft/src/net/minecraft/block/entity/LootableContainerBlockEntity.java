@@ -57,15 +57,15 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		}
 	}
 
-	public void checkLootInteraction(@Nullable PlayerEntity playerEntity) {
+	public void checkLootInteraction(@Nullable PlayerEntity player) {
 		if (this.lootTableId != null && this.world.getServer() != null) {
 			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 				.put(LootContextParameters.POSITION, new BlockPos(this.pos))
 				.setRandom(this.lootTableSeed);
-			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
+			if (player != null) {
+				builder.setLuck(player.getLuck()).put(LootContextParameters.THIS_ENTITY, player);
 			}
 
 			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
@@ -78,19 +78,19 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public boolean isInvEmpty() {
+	public boolean isEmpty() {
 		this.checkLootInteraction(null);
 		return this.getInvStackList().stream().allMatch(ItemStack::isEmpty);
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
+	public ItemStack getStack(int slot) {
 		this.checkLootInteraction(null);
 		return this.getInvStackList().get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
+	public ItemStack removeStack(int slot, int amount) {
 		this.checkLootInteraction(null);
 		ItemStack itemStack = Inventories.splitStack(this.getInvStackList(), slot, amount);
 		if (!itemStack.isEmpty()) {
@@ -101,24 +101,24 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
+	public ItemStack removeStack(int slot) {
 		this.checkLootInteraction(null);
 		return Inventories.removeStack(this.getInvStackList(), slot);
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
+	public void setStack(int slot, ItemStack stack) {
 		this.checkLootInteraction(null);
 		this.getInvStackList().set(slot, stack);
-		if (stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
+		if (stack.getCount() > this.getMaxCountPerStack()) {
+			stack.setCount(this.getMaxCountPerStack());
 		}
 
 		this.markDirty();
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return this.world.getBlockEntity(this.pos) != this
 			? false
 			: !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);

@@ -24,11 +24,11 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		this.lock = ContainerLock.fromTag(compoundTag);
-		if (compoundTag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.lock = ContainerLock.fromTag(tag);
+		if (tag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 	}
 

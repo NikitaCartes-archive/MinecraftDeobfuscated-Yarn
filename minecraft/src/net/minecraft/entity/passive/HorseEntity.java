@@ -68,8 +68,8 @@ public class HorseEntity extends HorseBaseEntity {
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
 		tag.putInt("Variant", this.getVariant());
-		if (!this.items.getInvStack(1).isEmpty()) {
-			tag.put("ArmorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
+		if (!this.items.getStack(1).isEmpty()) {
+			tag.put("ArmorItem", this.items.getStack(1).toTag(new CompoundTag()));
 		}
 	}
 
@@ -89,7 +89,7 @@ public class HorseEntity extends HorseBaseEntity {
 		if (tag.contains("ArmorItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(tag.getCompound("ArmorItem"));
 			if (!itemStack.isEmpty() && this.canEquip(itemStack)) {
-				this.items.setInvStack(1, itemStack);
+				this.items.setStack(1, itemStack);
 			}
 		}
 
@@ -140,7 +140,7 @@ public class HorseEntity extends HorseBaseEntity {
 	@Override
 	protected void updateSaddle() {
 		super.updateSaddle();
-		this.setArmorTypeFromStack(this.items.getInvStack(1));
+		this.setArmorTypeFromStack(this.items.getStack(1));
 		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
 	}
 
@@ -161,9 +161,9 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void onInvChange(Inventory inventory) {
+	public void onInventoryChanged(Inventory sender) {
 		ItemStack itemStack = this.getArmorType();
-		super.onInvChange(inventory);
+		super.onInventoryChanged(sender);
 		ItemStack itemStack2 = this.getArmorType();
 		if (this.age > 20 && this.canEquip(itemStack2) && itemStack != itemStack2) {
 			this.playSound(SoundEvents.ENTITY_HORSE_ARMOR, 0.5F, 1.0F);
@@ -342,8 +342,8 @@ public class HorseEntity extends HorseBaseEntity {
 	public static class HorseData extends PassiveEntity.PassiveData {
 		public final int variant;
 
-		public HorseData(int i) {
-			this.variant = i;
+		public HorseData(int variant) {
+			this.variant = variant;
 		}
 	}
 }

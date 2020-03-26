@@ -133,7 +133,7 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15733(WorldView world) {
+	public int getFlowSpeed(WorldView world) {
 		return world.getDimension().doesWaterVaporize() ? 4 : 2;
 	}
 

@@ -14,48 +14,48 @@ import net.minecraft.util.collection.DefaultedList;
 
 public class BasicInventory implements Inventory, RecipeInputProvider {
 	private final int size;
-	private final DefaultedList<ItemStack> stackList;
-	private List<InventoryListener> listeners;
+	private final DefaultedList<ItemStack> stacks;
+	private List<InventoryChangedListener> listeners;
 
 	public BasicInventory(int size) {
 		this.size = size;
-		this.stackList = DefaultedList.ofSize(size, ItemStack.EMPTY);
+		this.stacks = DefaultedList.ofSize(size, ItemStack.EMPTY);
 	}
 
 	public BasicInventory(ItemStack... items) {
 		this.size = items.length;
-		this.stackList = DefaultedList.copyOf(ItemStack.EMPTY, items);
+		this.stacks = DefaultedList.copyOf(ItemStack.EMPTY, items);
 	}
 
-	public void addListener(InventoryListener listener) {
+	public void addListener(InventoryChangedListener listener) {
 		if (this.listeners == null) {
-			this.listeners = Lists.<InventoryListener>newArrayList();
+			this.listeners = Lists.<InventoryChangedListener>newArrayList();
 		}
 
 		this.listeners.add(listener);
 	}
 
-	public void removeListener(InventoryListener listener) {
+	public void removeListener(InventoryChangedListener listener) {
 		this.listeners.remove(listener);
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
-		return slot >= 0 && slot < this.stackList.size() ? this.stackList.get(slot) : ItemStack.EMPTY;
+	public ItemStack getStack(int slot) {
+		return slot >= 0 && slot < this.stacks.size() ? this.stacks.get(slot) : ItemStack.EMPTY;
 	}
 
 	/**
 	 * Clears this inventory and return all the non-empty stacks in a list.
 	 */
 	public List<ItemStack> clearToList() {
-		List<ItemStack> list = (List<ItemStack>)this.stackList.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList());
+		List<ItemStack> list = (List<ItemStack>)this.stacks.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList());
 		this.clear();
 		return list;
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
-		ItemStack itemStack = Inventories.splitStack(this.stackList, slot, amount);
+	public ItemStack removeStack(int slot, int amount) {
+		ItemStack itemStack = Inventories.splitStack(this.stacks, slot, amount);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
@@ -63,11 +63,16 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return itemStack;
 	}
 
-	public ItemStack poll(Item item, int count) {
+	/**
+	 * Searches this inventory for the specified item and removes the given amount from this inventory.
+	 * 
+	 * @return the stack of removed items
+	 */
+	public ItemStack removeItem(Item item, int count) {
 		ItemStack itemStack = new ItemStack(item, 0);
 
 		for (int i = this.size - 1; i >= 0; i--) {
-			ItemStack itemStack2 = this.getInvStack(i);
+			ItemStack itemStack2 = this.getStack(i);
 			if (itemStack2.getItem().equals(item)) {
 				int j = count - itemStack.getCount();
 				ItemStack itemStack3 = itemStack2.split(j);
@@ -85,7 +90,7 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return itemStack;
 	}
 
-	public ItemStack add(ItemStack stack) {
+	public ItemStack addStack(ItemStack stack) {
 		ItemStack itemStack = stack.copy();
 		this.addToExistingSlot(itemStack);
 		if (itemStack.isEmpty()) {
@@ -97,34 +102,34 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
-		ItemStack itemStack = this.stackList.get(slot);
+	public ItemStack removeStack(int slot) {
+		ItemStack itemStack = this.stacks.get(slot);
 		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.stackList.set(slot, ItemStack.EMPTY);
+			this.stacks.set(slot, ItemStack.EMPTY);
 			return itemStack;
 		}
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
-		this.stackList.set(slot, stack);
-		if (!stack.isEmpty() && stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
+	public void setStack(int slot, ItemStack stack) {
+		this.stacks.set(slot, stack);
+		if (!stack.isEmpty() && stack.getCount() > this.getMaxCountPerStack()) {
+			stack.setCount(this.getMaxCountPerStack());
 		}
 
 		this.markDirty();
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return this.size;
 	}
 
 	@Override
-	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.stackList) {
+	public boolean isEmpty() {
+		for (ItemStack itemStack : this.stacks) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -136,39 +141,39 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	@Override
 	public void markDirty() {
 		if (this.listeners != null) {
-			for (InventoryListener inventoryListener : this.listeners) {
-				inventoryListener.onInvChange(this);
+			for (InventoryChangedListener inventoryChangedListener : this.listeners) {
+				inventoryChangedListener.onInventoryChanged(this);
 			}
 		}
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return true;
 	}
 
 	@Override
 	public void clear() {
-		this.stackList.clear();
+		this.stacks.clear();
 		this.markDirty();
 	}
 
 	@Override
 	public void provideRecipeInputs(RecipeFinder finder) {
-		for (ItemStack itemStack : this.stackList) {
+		for (ItemStack itemStack : this.stacks) {
 			finder.addItem(itemStack);
 		}
 	}
 
 	public String toString() {
-		return ((List)this.stackList.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList())).toString();
+		return ((List)this.stacks.stream().filter(itemStack -> !itemStack.isEmpty()).collect(Collectors.toList())).toString();
 	}
 
 	private void addToNewSlot(ItemStack stack) {
 		for (int i = 0; i < this.size; i++) {
-			ItemStack itemStack = this.getInvStack(i);
+			ItemStack itemStack = this.getStack(i);
 			if (itemStack.isEmpty()) {
-				this.setInvStack(i, stack.copy());
+				this.setStack(i, stack.copy());
 				stack.setCount(0);
 				return;
 			}
@@ -177,8 +182,8 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 
 	private void addToExistingSlot(ItemStack stack) {
 		for (int i = 0; i < this.size; i++) {
-			ItemStack itemStack = this.getInvStack(i);
-			if (this.method_24825(itemStack, stack)) {
+			ItemStack itemStack = this.getStack(i);
+			if (this.canCombine(itemStack, stack)) {
 				this.transfer(stack, itemStack);
 				if (stack.isEmpty()) {
 					return;
@@ -187,12 +192,12 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	private boolean method_24825(ItemStack itemStack, ItemStack itemStack2) {
-		return itemStack.getItem() == itemStack2.getItem() && ItemStack.areTagsEqual(itemStack, itemStack2);
+	private boolean canCombine(ItemStack one, ItemStack two) {
+		return one.getItem() == two.getItem() && ItemStack.areTagsEqual(one, two);
 	}
 
 	private void transfer(ItemStack source, ItemStack target) {
-		int i = Math.min(this.getInvMaxStackAmount(), target.getMaxCount());
+		int i = Math.min(this.getMaxCountPerStack(), target.getMaxCount());
 		int j = Math.min(source.getCount(), i - target.getCount());
 		if (j > 0) {
 			target.increment(j);
@@ -201,11 +206,11 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	public void readTags(ListTag listTag) {
-		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
+	public void readTags(ListTag tags) {
+		for (int i = 0; i < tags.size(); i++) {
+			ItemStack itemStack = ItemStack.fromTag(tags.getCompound(i));
 			if (!itemStack.isEmpty()) {
-				this.add(itemStack);
+				this.addStack(itemStack);
 			}
 		}
 	}
@@ -213,8 +218,8 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	public ListTag getTags() {
 		ListTag listTag = new ListTag();
 
-		for (int i = 0; i < this.getInvSize(); i++) {
-			ItemStack itemStack = this.getInvStack(i);
+		for (int i = 0; i < this.size(); i++) {
+			ItemStack itemStack = this.getStack(i);
 			if (!itemStack.isEmpty()) {
 				listTag.add(itemStack.toTag(new CompoundTag()));
 			}

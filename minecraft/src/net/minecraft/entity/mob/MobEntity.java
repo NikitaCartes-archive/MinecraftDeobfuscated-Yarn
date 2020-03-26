@@ -105,8 +105,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	protected MobEntity(EntityType<? extends MobEntity> entityType, World world) {
 		super(entityType, world);
-		this.goalSelector = new GoalSelector(world.method_24367());
-		this.targetSelector = new GoalSelector(world.method_24367());
+		this.goalSelector = new GoalSelector(world.getProfilerSupplier());
+		this.targetSelector = new GoalSelector(world.getProfilerSupplier());
 		this.lookControl = new LookControl(this);
 		this.moveControl = new MoveControl(this);
 		this.jumpControl = new JumpControl(this);
@@ -1035,7 +1035,7 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	protected void onPlayerSpawnedChild(PlayerEntity playerEntity, MobEntity mobEntity) {
+	protected void onPlayerSpawnedChild(PlayerEntity player, MobEntity child) {
 	}
 
 	protected boolean interactMob(PlayerEntity player, Hand hand) {
@@ -1043,7 +1043,7 @@ public abstract class MobEntity extends LivingEntity {
 		Item item = itemStack.getItem();
 		if (!this.world.isClient && item instanceof SpawnEggItem) {
 			SpawnEggItem spawnEggItem = (SpawnEggItem)item;
-			Optional<MobEntity> optional = spawnEggItem.method_24793(player, (EntityType<? extends MobEntity>)this.getType(), this.world, this.getPos(), itemStack);
+			Optional<MobEntity> optional = spawnEggItem.spawnBaby(player, (EntityType<? extends MobEntity>)this.getType(), this.world, this.getPos(), itemStack);
 			optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(player, mobEntity));
 		}
 
@@ -1223,9 +1223,9 @@ public abstract class MobEntity extends LivingEntity {
 		return super.canMoveVoluntarily() && !this.isAiDisabled();
 	}
 
-	public void setAiDisabled(boolean bl) {
+	public void setAiDisabled(boolean aiDisabled) {
 		byte b = this.dataTracker.get(MOB_FLAGS);
-		this.dataTracker.set(MOB_FLAGS, bl ? (byte)(b | 1) : (byte)(b & -2));
+		this.dataTracker.set(MOB_FLAGS, aiDisabled ? (byte)(b | 1) : (byte)(b & -2));
 	}
 
 	public void setLeftHanded(boolean leftHanded) {

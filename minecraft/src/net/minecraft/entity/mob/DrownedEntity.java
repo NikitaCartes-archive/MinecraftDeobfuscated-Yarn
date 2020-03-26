@@ -245,8 +245,8 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	static class DrownedAttackGoal extends ZombieAttackGoal {
 		private final DrownedEntity drowned;
 
-		public DrownedAttackGoal(DrownedEntity drowned, double speed, boolean bl) {
-			super(drowned, speed, bl);
+		public DrownedAttackGoal(DrownedEntity drowned, double speed, boolean pauseWhenMobIdle) {
+			super(drowned, speed, pauseWhenMobIdle);
 			this.drowned = drowned;
 		}
 

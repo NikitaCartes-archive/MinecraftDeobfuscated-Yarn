@@ -79,10 +79,10 @@ public class DispenserBlock extends BlockWithEntity {
 		if (i < 0) {
 			world.playLevelEvent(1001, pos, 0);
 		} else {
-			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
+			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);
 			if (dispenserBehavior != DispenserBehavior.NOOP) {
-				dispenserBlockEntity.setInvStack(i, dispenserBehavior.dispense(blockPointerImpl, itemStack));
+				dispenserBlockEntity.setStack(i, dispenserBehavior.dispense(blockPointerImpl, itemStack));
 			}
 		}
 	}

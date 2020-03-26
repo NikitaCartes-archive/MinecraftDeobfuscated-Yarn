@@ -85,8 +85,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		super.writeCustomDataToTag(tag);
 		tag.putInt("Variant", this.getVariant());
 		tag.putInt("Strength", this.getStrength());
-		if (!this.items.getInvStack(1).isEmpty()) {
-			tag.put("DecorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
+		if (!this.items.getStack(1).isEmpty()) {
+			tag.put("DecorItem", this.items.getStack(1).toTag(new CompoundTag()));
 		}
 	}
 
@@ -96,7 +96,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		super.readCustomDataFromTag(tag);
 		this.setVariant(tag.getInt("Variant"));
 		if (tag.contains("DecorItem", 10)) {
-			this.items.setInvStack(1, ItemStack.fromTag(tag.getCompound("DecorItem")));
+			this.items.setStack(1, ItemStack.fromTag(tag.getCompound("DecorItem")));
 		}
 
 		this.updateSaddle();
@@ -307,9 +307,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	public void onInvChange(Inventory inventory) {
+	public void onInventoryChanged(Inventory sender) {
 		DyeColor dyeColor = this.getCarpetColor();
-		super.onInvChange(inventory);
+		super.onInventoryChanged(sender);
 		DyeColor dyeColor2 = this.getCarpetColor();
 		if (this.age > 20 && dyeColor2 != null && dyeColor2 != dyeColor) {
 			this.playSound(SoundEvents.ENTITY_LLAMA_SWAG, 0.5F, 1.0F);
@@ -320,7 +320,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	protected void updateSaddle() {
 		if (!this.world.isClient) {
 			super.updateSaddle();
-			this.setCarpetColor(getColorFromCarpet(this.items.getInvStack(1)));
+			this.setCarpetColor(getColorFromCarpet(this.items.getStack(1)));
 		}
 	}
 
@@ -425,8 +425,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		this.following = null;
 	}
 
-	public void follow(LlamaEntity llamaEntity) {
-		this.following = llamaEntity;
+	public void follow(LlamaEntity llama) {
+		this.following = llama;
 		this.following.follower = this;
 	}
 
@@ -485,8 +485,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	static class SpitRevengeGoal extends RevengeGoal {
-		public SpitRevengeGoal(LlamaEntity llamaEntity) {
-			super(llamaEntity);
+		public SpitRevengeGoal(LlamaEntity llama) {
+			super(llama);
 		}
 
 		@Override

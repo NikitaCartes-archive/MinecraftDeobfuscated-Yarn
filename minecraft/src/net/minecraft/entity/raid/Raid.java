@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.Entity;
@@ -323,7 +323,7 @@ public class Raid {
 								if (livingEntity instanceof ServerPlayerEntity) {
 									ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 									serverPlayerEntity.incrementStat(Stats.RAID_WIN);
-									Criterions.HERO_OF_THE_VILLAGE.trigger(serverPlayerEntity);
+									Criteria.HERO_OF_THE_VILLAGE.trigger(serverPlayerEntity);
 								}
 							}
 						}
@@ -357,7 +357,7 @@ public class Raid {
 		stream.filter(this.world::isNearOccupiedPointOfInterest)
 			.map(ChunkSectionPos::getCenterPos)
 			.min(Comparator.comparingDouble(blockPos -> blockPos.getSquaredDistance(this.center)))
-			.ifPresent(this::method_20509);
+			.ifPresent(this::setCenter);
 	}
 
 	private Optional<BlockPos> preCalculateRavagerSpawnLocation(int proximity) {
@@ -644,8 +644,8 @@ public class Raid {
 		return this.center;
 	}
 
-	private void method_20509(BlockPos blockPos) {
-		this.center = blockPos;
+	private void setCenter(BlockPos center) {
+		this.center = center;
 	}
 
 	public int getRaidId() {

@@ -42,12 +42,12 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public void trade(TradeOffer tradeOffer) {
-		tradeOffer.use();
+	public void trade(TradeOffer offer) {
+		offer.use();
 	}
 
 	@Override
-	public void onSellingItem(ItemStack itemStack) {
+	public void onSellingItem(ItemStack stack) {
 	}
 
 	@Override

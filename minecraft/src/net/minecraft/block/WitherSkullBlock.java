@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.pattern.BlockPattern;
@@ -69,7 +69,7 @@ public class WitherSkullBlock extends SkullBlock {
 					witherEntity.method_6885();
 
 					for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
-						Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
+						Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
 					}
 
 					world.spawnEntity(witherEntity);

@@ -82,7 +82,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 				return ActionResult.SUCCESS;
 			} else {
 				EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
-				enderChestInventory.setCurrentBlockEntity(enderChestBlockEntity);
+				enderChestInventory.setActiveBlockEntity(enderChestBlockEntity);
 				player.openHandledScreen(
 					new SimpleNamedScreenHandlerFactory(
 						(i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME

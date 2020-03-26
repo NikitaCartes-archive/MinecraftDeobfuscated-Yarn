@@ -448,11 +448,9 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playSoundFromEntity(
-		@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch
-	) {
-		if (playerEntity == this.client.player) {
-			this.client.getSoundManager().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
+	public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		if (player == this.client.player) {
+			this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, entity));
 		}
 	}
 
@@ -461,9 +459,9 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory soundCategory, float f, float g, boolean bl) {
+	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float f, float g, boolean bl) {
 		double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
-		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, soundCategory, f, g, (float)x, (float)y, (float)z);
+		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, f, g, (float)x, (float)y, (float)z);
 		if (bl && d > 100.0) {
 			double e = Math.sqrt(d) / 40.0;
 			this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));
@@ -570,13 +568,13 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
+	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
 		try {
-			this.worldRenderer.playLevelEvent(player, eventId, blockPos, data);
+			this.worldRenderer.playLevelEvent(player, eventId, pos, data);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Playing level event");
 			CrashReportSection crashReportSection = crashReport.addElement("Level event being played");
-			crashReportSection.add("Block coordinates", CrashReportSection.createPositionString(blockPos));
+			crashReportSection.add("Block coordinates", CrashReportSection.createPositionString(pos));
 			crashReportSection.add("Event source", player);
 			crashReportSection.add("Event type", eventId);
 			crashReportSection.add("Event data", data);

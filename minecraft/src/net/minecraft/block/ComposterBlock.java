@@ -318,33 +318,33 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 
 		@Override
-		public int getInvMaxStackAmount() {
+		public int getMaxCountPerStack() {
 			return 1;
 		}
 
 		@Override
-		public int[] getInvAvailableSlots(Direction side) {
+		public int[] getAvailableSlots(Direction side) {
 			return side == Direction.UP ? new int[]{0} : new int[0];
 		}
 
 		@Override
-		public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+		public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
 			return !this.dirty && dir == Direction.UP && ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem());
 		}
 
 		@Override
-		public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+		public boolean canExtract(int slot, ItemStack stack, Direction dir) {
 			return false;
 		}
 
 		@Override
 		public void markDirty() {
-			ItemStack itemStack = this.getInvStack(0);
+			ItemStack itemStack = this.getStack(0);
 			if (!itemStack.isEmpty()) {
 				this.dirty = true;
 				BlockState blockState = ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack);
 				this.world.playLevelEvent(1500, this.pos, blockState != this.state ? 1 : 0);
-				this.removeInvStack(0);
+				this.removeStack(0);
 			}
 		}
 	}
@@ -355,17 +355,17 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 
 		@Override
-		public int[] getInvAvailableSlots(Direction side) {
+		public int[] getAvailableSlots(Direction side) {
 			return new int[0];
 		}
 
 		@Override
-		public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+		public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
 			return false;
 		}
 
 		@Override
-		public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+		public boolean canExtract(int slot, ItemStack stack, Direction dir) {
 			return false;
 		}
 	}
@@ -384,22 +384,22 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 
 		@Override
-		public int getInvMaxStackAmount() {
+		public int getMaxCountPerStack() {
 			return 1;
 		}
 
 		@Override
-		public int[] getInvAvailableSlots(Direction side) {
+		public int[] getAvailableSlots(Direction side) {
 			return side == Direction.DOWN ? new int[]{0} : new int[0];
 		}
 
 		@Override
-		public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+		public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
 			return false;
 		}
 
 		@Override
-		public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+		public boolean canExtract(int slot, ItemStack stack, Direction dir) {
 			return !this.dirty && dir == Direction.DOWN && stack.getItem() == Items.BONE_MEAL;
 		}
 

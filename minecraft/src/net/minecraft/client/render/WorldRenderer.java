@@ -54,7 +54,6 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3d;
 import net.minecraft.client.util.math.Vector3f;
@@ -92,6 +91,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
@@ -1119,21 +1119,21 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		BackgroundRenderer.method_23792();
 	}
 
-	private void checkEmpty(MatrixStack matrix) {
-		if (!matrix.isEmpty()) {
+	private void checkEmpty(MatrixStack matrices) {
+		if (!matrices.isEmpty()) {
 			throw new IllegalStateException("Pose stack not empty");
 		}
 	}
 
 	private void renderEntity(
-		Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumers
+		Entity entity, double cameraX, double cameraY, double cameraZ, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers
 	) {
 		double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
 		double e = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
 		double f = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
 		float g = MathHelper.lerp(tickDelta, entity.prevYaw, entity.yaw);
 		this.entityRenderDispatcher
-			.render(entity, d - cameraX, e - cameraY, f - cameraZ, g, tickDelta, matrix, vertexConsumers, this.entityRenderDispatcher.getLight(entity, tickDelta));
+			.render(entity, d - cameraX, e - cameraY, f - cameraZ, g, tickDelta, matrices, vertexConsumers, this.entityRenderDispatcher.getLight(entity, tickDelta));
 	}
 
 	private void renderLayer(RenderLayer renderLayer, MatrixStack matrixStack, double d, double e, double f) {
@@ -2062,7 +2062,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public static void drawBox(
-		MatrixStack matrix,
+		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		double x1,
 		double y1,
@@ -2078,7 +2078,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		float green,
 		float blue
 	) {
-		Matrix4f matrix4f = matrix.peek().getModel();
+		Matrix4f matrix4f = matrices.peek().getModel();
 		float i = (float)x1;
 		float j = (float)y1;
 		float k = (float)z1;
@@ -2709,7 +2709,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public static int getLightmapCoordinates(BlockRenderView world, BlockState state, BlockPos pos) {
-		if (state.hasInWallOverlay(world, pos)) {
+		if (state.hasEmissiveLighting(world, pos)) {
 			return 15728880;
 		} else {
 			int i = world.getLightLevel(LightType.SKY, pos);

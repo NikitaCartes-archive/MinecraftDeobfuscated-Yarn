@@ -57,11 +57,11 @@ public class BoatEntity extends Entity {
 	private float ticksUnderwater;
 	private float yawVelocity;
 	private int field_7708;
-	private double field_7686;
-	private double field_7700;
-	private double field_7685;
-	private double field_7699;
-	private double field_7684;
+	private double x;
+	private double y;
+	private double z;
+	private double boatYaw;
+	private double boatPitch;
 	private boolean pressingLeft;
 	private boolean pressingRight;
 	private boolean pressingForward;
@@ -220,11 +220,11 @@ public class BoatEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-		this.field_7686 = x;
-		this.field_7700 = y;
-		this.field_7685 = z;
-		this.field_7699 = (double)yaw;
-		this.field_7684 = (double)pitch;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.boatYaw = (double)yaw;
+		this.boatPitch = (double)pitch;
 		this.field_7708 = 10;
 	}
 
@@ -379,12 +379,12 @@ public class BoatEntity extends Entity {
 		}
 
 		if (this.field_7708 > 0) {
-			double d = this.getX() + (this.field_7686 - this.getX()) / (double)this.field_7708;
-			double e = this.getY() + (this.field_7700 - this.getY()) / (double)this.field_7708;
-			double f = this.getZ() + (this.field_7685 - this.getZ()) / (double)this.field_7708;
-			double g = MathHelper.wrapDegrees(this.field_7699 - (double)this.yaw);
+			double d = this.getX() + (this.x - this.getX()) / (double)this.field_7708;
+			double e = this.getY() + (this.y - this.getY()) / (double)this.field_7708;
+			double f = this.getZ() + (this.z - this.getZ()) / (double)this.field_7708;
+			double g = MathHelper.wrapDegrees(this.boatYaw - (double)this.yaw);
 			this.yaw = (float)((double)this.yaw + g / (double)this.field_7708);
-			this.pitch = (float)((double)this.pitch + (this.field_7684 - (double)this.pitch) / (double)this.field_7708);
+			this.pitch = (float)((double)this.pitch + (this.boatPitch - (double)this.pitch) / (double)this.field_7708);
 			this.field_7708--;
 			this.updatePosition(d, e, f);
 			this.setRotation(this.yaw, this.pitch);
@@ -851,9 +851,9 @@ public class BoatEntity extends Entity {
 		private final String name;
 		private final Block baseBlock;
 
-		private Type(Block block, String string2) {
-			this.name = string2;
-			this.baseBlock = block;
+		private Type(Block baseBlock, String name) {
+			this.name = name;
+			this.baseBlock = baseBlock;
 		}
 
 		public String getName() {

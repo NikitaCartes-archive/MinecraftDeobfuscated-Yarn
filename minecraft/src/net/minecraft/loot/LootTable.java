@@ -114,9 +114,9 @@ public class LootTable {
 			}
 
 			if (itemStack.isEmpty()) {
-				inventory.setInvStack((Integer)list2.remove(list2.size() - 1), ItemStack.EMPTY);
+				inventory.setStack((Integer)list2.remove(list2.size() - 1), ItemStack.EMPTY);
 			} else {
-				inventory.setInvStack((Integer)list2.remove(list2.size() - 1), itemStack);
+				inventory.setStack((Integer)list2.remove(list2.size() - 1), itemStack);
 			}
 		}
 	}
@@ -159,8 +159,8 @@ public class LootTable {
 	private List<Integer> getFreeSlots(Inventory inventory, Random random) {
 		List<Integer> list = Lists.<Integer>newArrayList();
 
-		for (int i = 0; i < inventory.getInvSize(); i++) {
-			if (inventory.getInvStack(i).isEmpty()) {
+		for (int i = 0; i < inventory.size(); i++) {
+			if (inventory.getStack(i).isEmpty()) {
 				list.add(i);
 			}
 		}

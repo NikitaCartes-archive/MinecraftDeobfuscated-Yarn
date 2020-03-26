@@ -23,8 +23,8 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		boolean bl = false;
 		int i = 0;
 
-		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack = craftingInventory.getInvStack(j);
+		for (int j = 0; j < craftingInventory.size(); j++) {
+			ItemStack itemStack = craftingInventory.getStack(j);
 			if (!itemStack.isEmpty()) {
 				if (PAPER.test(itemStack)) {
 					if (bl) {
@@ -51,8 +51,8 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		ListTag listTag = new ListTag();
 		int i = 0;
 
-		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(j);
+		for (int j = 0; j < craftingInventory.size(); j++) {
+			ItemStack itemStack2 = craftingInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (DURATION_MODIFIER.test(itemStack2)) {
 					i++;

@@ -31,8 +31,8 @@ public class DataTracker {
 	private boolean empty = true;
 	private boolean dirty;
 
-	public DataTracker(Entity entity) {
-		this.trackedEntity = entity;
+	public DataTracker(Entity trackedEntity) {
+		this.trackedEntity = trackedEntity;
 	}
 
 	public static <T> TrackedData<T> registerData(Class<? extends Entity> entityClass, TrackedDataHandler<T> dataHandler) {

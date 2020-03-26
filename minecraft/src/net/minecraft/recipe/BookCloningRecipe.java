@@ -20,8 +20,8 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(j);
+		for (int j = 0; j < craftingInventory.size(); j++) {
+			ItemStack itemStack2 = craftingInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() == Items.WRITTEN_BOOK) {
 					if (!itemStack.isEmpty()) {
@@ -46,8 +46,8 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(j);
+		for (int j = 0; j < craftingInventory.size(); j++) {
+			ItemStack itemStack2 = craftingInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() == Items.WRITTEN_BOOK) {
 					if (!itemStack.isEmpty()) {
@@ -77,10 +77,10 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 	}
 
 	public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.getInvSize(), ItemStack.EMPTY);
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (itemStack.getItem().hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 			} else if (itemStack.getItem() instanceof WrittenBookItem) {

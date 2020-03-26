@@ -15,24 +15,24 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ItemPickupParticle extends Particle {
-	private final BufferBuilderStorage bufferBuilderStorage;
-	private final Entity item;
-	private final Entity picker;
-	private int existingTicks;
-	private final EntityRenderDispatcher entityRenderDispatcher;
+	private final BufferBuilderStorage bufferStorage;
+	private final Entity itemEntity;
+	private final Entity interactingEntity;
+	private int ticksExisted;
+	private final EntityRenderDispatcher dispatcher;
 
-	public ItemPickupParticle(EntityRenderDispatcher entityRenderDispatcher, BufferBuilderStorage bufferBuilderStorage, World world, Entity entity, Entity entity2) {
-		this(entityRenderDispatcher, bufferBuilderStorage, world, entity, entity2, entity.getVelocity());
+	public ItemPickupParticle(EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, World world, Entity itemEntity, Entity interactingEntity) {
+		this(dispatcher, bufferStorage, world, itemEntity, interactingEntity, itemEntity.getVelocity());
 	}
 
 	private ItemPickupParticle(
-		EntityRenderDispatcher entityRenderDispatcher, BufferBuilderStorage bufferBuilderStorage, World world, Entity entity, Entity entity2, Vec3d vec3d
+		EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, World world, Entity itemEntity, Entity interactingEntity, Vec3d velocity
 	) {
-		super(world, entity.getX(), entity.getY(), entity.getZ(), vec3d.x, vec3d.y, vec3d.z);
-		this.bufferBuilderStorage = bufferBuilderStorage;
-		this.item = entity;
-		this.picker = entity2;
-		this.entityRenderDispatcher = entityRenderDispatcher;
+		super(world, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), velocity.x, velocity.y, velocity.z);
+		this.bufferStorage = bufferStorage;
+		this.itemEntity = itemEntity;
+		this.interactingEntity = interactingEntity;
+		this.dispatcher = dispatcher;
 	}
 
 	@Override
@@ -42,35 +42,35 @@ public class ItemPickupParticle extends Particle {
 
 	@Override
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-		float f = ((float)this.existingTicks + tickDelta) / 3.0F;
+		float f = ((float)this.ticksExisted + tickDelta) / 3.0F;
 		f *= f;
-		double d = MathHelper.lerp((double)tickDelta, this.picker.lastRenderX, this.picker.getX());
-		double e = MathHelper.lerp((double)tickDelta, this.picker.lastRenderY, this.picker.getY()) + 0.5;
-		double g = MathHelper.lerp((double)tickDelta, this.picker.lastRenderZ, this.picker.getZ());
-		double h = MathHelper.lerp((double)f, this.item.getX(), d);
-		double i = MathHelper.lerp((double)f, this.item.getY(), e);
-		double j = MathHelper.lerp((double)f, this.item.getZ(), g);
-		VertexConsumerProvider.Immediate immediate = this.bufferBuilderStorage.getEntityVertexConsumers();
+		double d = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderX, this.interactingEntity.getX());
+		double e = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderY, this.interactingEntity.getY()) + 0.5;
+		double g = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderZ, this.interactingEntity.getZ());
+		double h = MathHelper.lerp((double)f, this.itemEntity.getX(), d);
+		double i = MathHelper.lerp((double)f, this.itemEntity.getY(), e);
+		double j = MathHelper.lerp((double)f, this.itemEntity.getZ(), g);
+		VertexConsumerProvider.Immediate immediate = this.bufferStorage.getEntityVertexConsumers();
 		Vec3d vec3d = camera.getPos();
-		this.entityRenderDispatcher
+		this.dispatcher
 			.render(
-				this.item,
+				this.itemEntity,
 				h - vec3d.getX(),
 				i - vec3d.getY(),
 				j - vec3d.getZ(),
-				this.item.yaw,
+				this.itemEntity.yaw,
 				tickDelta,
 				new MatrixStack(),
 				immediate,
-				this.entityRenderDispatcher.getLight(this.item, tickDelta)
+				this.dispatcher.getLight(this.itemEntity, tickDelta)
 			);
 		immediate.draw();
 	}
 
 	@Override
 	public void tick() {
-		this.existingTicks++;
-		if (this.existingTicks == 3) {
+		this.ticksExisted++;
+		if (this.ticksExisted == 3) {
 			this.markDead();
 		}
 	}

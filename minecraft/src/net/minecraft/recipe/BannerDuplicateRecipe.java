@@ -22,8 +22,8 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = null;
 		ItemStack itemStack2 = null;
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack3 = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack3 = craftingInventory.getStack(i);
 			Item item = itemStack3.getItem();
 			if (item instanceof BannerItem) {
 				BannerItem bannerItem = (BannerItem)item;
@@ -58,8 +58,8 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack craft(CraftingInventory craftingInventory) {
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				int j = BannerBlockEntity.getPatternCount(itemStack);
 				if (j > 0 && j <= 6) {
@@ -74,10 +74,10 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 	}
 
 	public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.getInvSize(), ItemStack.EMPTY);
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem().hasRecipeRemainder()) {
 					defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));

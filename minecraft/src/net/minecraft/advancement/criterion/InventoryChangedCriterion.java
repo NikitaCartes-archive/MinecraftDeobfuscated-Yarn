@@ -39,8 +39,8 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		int j = 0;
 		int k = 0;
 
-		for (int l = 0; l < playerInventory.getInvSize(); l++) {
-			ItemStack itemStack2 = playerInventory.getInvStack(l);
+		for (int l = 0; l < playerInventory.size(); l++) {
+			ItemStack itemStack2 = playerInventory.getStack(l);
 			if (itemStack2.isEmpty()) {
 				j++;
 			} else {
@@ -132,14 +132,14 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 					return true;
 				} else if (l != 1) {
 					List<ItemPredicate> list = new ObjectArrayList<>(this.items);
-					int m = playerInventory.getInvSize();
+					int m = playerInventory.size();
 
 					for (int n = 0; n < m; n++) {
 						if (list.isEmpty()) {
 							return true;
 						}
 
-						ItemStack itemStack2 = playerInventory.getInvStack(n);
+						ItemStack itemStack2 = playerInventory.getStack(n);
 						if (!itemStack2.isEmpty()) {
 							list.removeIf(itemPredicate -> itemPredicate.test(itemStack2));
 						}

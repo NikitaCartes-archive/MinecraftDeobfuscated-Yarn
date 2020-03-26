@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -168,7 +168,7 @@ public abstract class LivingEntity extends Entity {
 	public float sidewaysSpeed;
 	public float upwardSpeed;
 	public float forwardSpeed;
-	public int bodyTrackingIncrements;
+	protected int bodyTrackingIncrements;
 	protected double serverX;
 	protected double serverY;
 	protected double serverZ;
@@ -388,7 +388,7 @@ public abstract class LivingEntity extends Entity {
 		super.attemptSprintingParticles();
 		if (!this.isSpectator()
 			&& EnchantmentHelper.hasSoulSpeed(this)
-			&& this.method_25936().isIn(BlockTags.SOUL_SPEED_BLOCKS)
+			&& this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS)
 			&& this.getVelocity().x != 0.0
 			&& this.getVelocity().z != 0.0
 			&& this.age % 5 == 0) {
@@ -415,7 +415,7 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	protected float getVelocityMultiplier() {
 		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this);
-		return this.method_25936().isIn(BlockTags.SOUL_SPEED_BLOCKS) && i > 0 ? 1.0F : super.getVelocityMultiplier();
+		return this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS) && i > 0 ? 1.0F : super.getVelocityMultiplier();
 	}
 
 	protected void applyFrostWalker(BlockPos pos) {
@@ -424,14 +424,14 @@ public abstract class LivingEntity extends Entity {
 			FrostWalkerEnchantment.freezeWater(this, this.world, pos, i);
 		}
 
-		if (!this.method_25936().isAir()) {
+		if (!this.getLandingBlockState().isAir()) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 			if (entityAttributeInstance.getModifier(field_23128) != null) {
 				entityAttributeInstance.removeModifier(field_23128);
 			}
 
 			int j = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this);
-			if (j > 0 && this.method_25936().isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
+			if (j > 0 && this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
 				entityAttributeInstance.addModifier(
 					new EntityAttributeModifier(field_23128, "Soul speed boost", (double)(0.03F * (1.0F + (float)j * 0.35F)), EntityAttributeModifier.Operation.ADDITION)
 						.setSerialize(false)
@@ -1033,14 +1033,14 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			if (this instanceof ServerPlayerEntity) {
-				Criterions.ENTITY_HURT_PLAYER.trigger((ServerPlayerEntity)this, source, f, amount, bl);
+				Criteria.ENTITY_HURT_PLAYER.trigger((ServerPlayerEntity)this, source, f, amount, bl);
 				if (g > 0.0F && g < 3.4028235E37F) {
 					((ServerPlayerEntity)this).increaseStat(Stats.DAMAGE_BLOCKED_BY_SHIELD, Math.round(g * 10.0F));
 				}
 			}
 
 			if (entity2 instanceof ServerPlayerEntity) {
-				Criterions.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
+				Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
 			}
 
 			return bl3;
@@ -1074,7 +1074,7 @@ public abstract class LivingEntity extends Entity {
 				if (this instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this;
 					serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(Items.TOTEM_OF_UNDYING));
-					Criterions.USED_TOTEM.trigger(serverPlayerEntity, itemStack);
+					Criteria.USED_TOTEM.trigger(serverPlayerEntity, itemStack);
 				}
 
 				this.setHealth(1.0F);

@@ -78,7 +78,7 @@ public class SheepEntity extends AnimalEntity {
 	private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(
 		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::getDyedColor))
 	);
-	private int field_6865;
+	private int eatGrassTimer;
 	private EatGrassGoal eatGrassGoal;
 
 	private static float[] getDyedColor(DyeColor color) {
@@ -116,14 +116,14 @@ public class SheepEntity extends AnimalEntity {
 
 	@Override
 	protected void mobTick() {
-		this.field_6865 = this.eatGrassGoal.getTimer();
+		this.eatGrassTimer = this.eatGrassGoal.getTimer();
 		super.mobTick();
 	}
 
 	@Override
 	public void tickMovement() {
 		if (this.world.isClient) {
-			this.field_6865 = Math.max(0, this.field_6865 - 1);
+			this.eatGrassTimer = Math.max(0, this.eatGrassTimer - 1);
 		}
 
 		super.tickMovement();
@@ -189,7 +189,7 @@ public class SheepEntity extends AnimalEntity {
 	@Override
 	public void handleStatus(byte status) {
 		if (status == 10) {
-			this.field_6865 = 40;
+			this.eatGrassTimer = 40;
 		} else {
 			super.handleStatus(status);
 		}
@@ -197,22 +197,22 @@ public class SheepEntity extends AnimalEntity {
 
 	@Environment(EnvType.CLIENT)
 	public float method_6628(float f) {
-		if (this.field_6865 <= 0) {
+		if (this.eatGrassTimer <= 0) {
 			return 0.0F;
-		} else if (this.field_6865 >= 4 && this.field_6865 <= 36) {
+		} else if (this.eatGrassTimer >= 4 && this.eatGrassTimer <= 36) {
 			return 1.0F;
 		} else {
-			return this.field_6865 < 4 ? ((float)this.field_6865 - f) / 4.0F : -((float)(this.field_6865 - 40) - f) / 4.0F;
+			return this.eatGrassTimer < 4 ? ((float)this.eatGrassTimer - f) / 4.0F : -((float)(this.eatGrassTimer - 40) - f) / 4.0F;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public float method_6641(float f) {
-		if (this.field_6865 > 4 && this.field_6865 <= 36) {
-			float g = ((float)(this.field_6865 - 4) - f) / 32.0F;
+		if (this.eatGrassTimer > 4 && this.eatGrassTimer <= 36) {
+			float g = ((float)(this.eatGrassTimer - 4) - f) / 32.0F;
 			return (float) (Math.PI / 5) + 0.21991149F * MathHelper.sin(g * 28.7F);
 		} else {
-			return this.field_6865 > 0 ? (float) (Math.PI / 5) : this.pitch * (float) (Math.PI / 180.0);
+			return this.eatGrassTimer > 0 ? (float) (Math.PI / 5) : this.pitch * (float) (Math.PI / 180.0);
 		}
 	}
 
@@ -291,18 +291,18 @@ public class SheepEntity extends AnimalEntity {
 		return DyeColor.byId(this.dataTracker.get(COLOR) & 15);
 	}
 
-	public void setColor(DyeColor dyeColor) {
+	public void setColor(DyeColor color) {
 		byte b = this.dataTracker.get(COLOR);
-		this.dataTracker.set(COLOR, (byte)(b & 240 | dyeColor.getId() & 15));
+		this.dataTracker.set(COLOR, (byte)(b & 240 | color.getId() & 15));
 	}
 
 	public boolean isSheared() {
 		return (this.dataTracker.get(COLOR) & 16) != 0;
 	}
 
-	public void setSheared(boolean bl) {
+	public void setSheared(boolean sheared) {
 		byte b = this.dataTracker.get(COLOR);
-		if (bl) {
+		if (sheared) {
 			this.dataTracker.set(COLOR, (byte)(b | 16));
 		} else {
 			this.dataTracker.set(COLOR, (byte)(b & -17));
@@ -368,8 +368,8 @@ public class SheepEntity extends AnimalEntity {
 				return false;
 			}
 		}, 2, 1);
-		craftingInventory.setInvStack(0, new ItemStack(DyeItem.byColor(dyeColor)));
-		craftingInventory.setInvStack(1, new ItemStack(DyeItem.byColor(dyeColor2)));
+		craftingInventory.setStack(0, new ItemStack(DyeItem.byColor(dyeColor)));
+		craftingInventory.setStack(1, new ItemStack(DyeItem.byColor(dyeColor2)));
 		return craftingInventory;
 	}
 

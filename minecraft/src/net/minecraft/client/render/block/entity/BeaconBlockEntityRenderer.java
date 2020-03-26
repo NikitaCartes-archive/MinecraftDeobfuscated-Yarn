@@ -8,16 +8,16 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEntity> {
-	public static final Identifier BEAM_TEX = new Identifier("textures/entity/beacon_beam.png");
+	public static final Identifier BEAM_TEXTURE = new Identifier("textures/entity/beacon_beam.png");
 
 	public BeaconBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
 		super(blockEntityRenderDispatcher);
@@ -36,7 +36,7 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 	}
 
 	private static void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, float f, long l, int i, int j, float[] fs) {
-		renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEX, f, 1.0F, l, i, j, fs, 0.2F, 0.25F);
+		renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, 1.0F, l, i, j, fs, 0.2F, 0.25F);
 	}
 
 	public static void renderLightBeam(

@@ -22,9 +22,9 @@ public final class EntityPredicates {
 			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative() && entity.world.getDifficulty() != Difficulty.PEACEFUL;
 	public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
 
-	public static Predicate<Entity> maximumDistance(double x, double d, double e, double f) {
-		double g = f * f;
-		return entity -> entity != null && entity.squaredDistanceTo(x, d, e) <= g;
+	public static Predicate<Entity> maximumDistance(double x, double y, double z, double d) {
+		double e = d * d;
+		return entity -> entity != null && entity.squaredDistanceTo(x, y, z) <= e;
 	}
 
 	public static Predicate<Entity> canBePushedBy(Entity entity) {
@@ -68,10 +68,10 @@ public final class EntityPredicates {
 	}
 
 	public static class CanPickup implements Predicate<Entity> {
-		private final ItemStack itemstack;
+		private final ItemStack stack;
 
-		public CanPickup(ItemStack itemStack) {
-			this.itemstack = itemStack;
+		public CanPickup(ItemStack stack) {
+			this.stack = stack;
 		}
 
 		public boolean test(@Nullable Entity entity) {
@@ -81,7 +81,7 @@ public final class EntityPredicates {
 				return false;
 			} else {
 				LivingEntity livingEntity = (LivingEntity)entity;
-				return livingEntity.canPickUp(this.itemstack);
+				return livingEntity.canPickUp(this.stack);
 			}
 		}
 	}

@@ -5,7 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -189,23 +189,23 @@ public abstract class AnimalEntity extends PassiveEntity {
 		}
 	}
 
-	public void breed(World world, AnimalEntity animalEntity) {
-		PassiveEntity passiveEntity = this.createChild(animalEntity);
+	public void breed(World world, AnimalEntity other) {
+		PassiveEntity passiveEntity = this.createChild(other);
 		if (passiveEntity != null) {
 			ServerPlayerEntity serverPlayerEntity = this.getLovingPlayer();
-			if (serverPlayerEntity == null && animalEntity.getLovingPlayer() != null) {
-				serverPlayerEntity = animalEntity.getLovingPlayer();
+			if (serverPlayerEntity == null && other.getLovingPlayer() != null) {
+				serverPlayerEntity = other.getLovingPlayer();
 			}
 
 			if (serverPlayerEntity != null) {
 				serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-				Criterions.BRED_ANIMALS.trigger(serverPlayerEntity, this, animalEntity, passiveEntity);
+				Criteria.BRED_ANIMALS.trigger(serverPlayerEntity, this, other, passiveEntity);
 			}
 
 			this.setBreedingAge(6000);
-			animalEntity.setBreedingAge(6000);
+			other.setBreedingAge(6000);
 			this.resetLoveTicks();
-			animalEntity.resetLoveTicks();
+			other.resetLoveTicks();
 			passiveEntity.setBreedingAge(-24000);
 			passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
 			world.spawnEntity(passiveEntity);

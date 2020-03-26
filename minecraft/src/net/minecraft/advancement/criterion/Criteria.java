@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 
-public class Criterions {
+public class Criteria {
 	private static final Map<Identifier, Criterion<?>> VALUES = Maps.<Identifier, Criterion<?>>newHashMap();
 	public static final ImpossibleCriterion IMPOSSIBLE = register(new ImpossibleCriterion());
 	public static final OnKilledCriterion PLAYER_KILLED_ENTITY = register(new OnKilledCriterion(new Identifier("player_killed_entity")));
@@ -61,7 +61,7 @@ public class Criterions {
 		return (Criterion<T>)VALUES.get(id);
 	}
 
-	public static Iterable<? extends Criterion<?>> getAllCriterions() {
+	public static Iterable<? extends Criterion<?>> getCriteria() {
 		return VALUES.values();
 	}
 }

@@ -30,7 +30,7 @@ public class BoneMealTask extends Task<VillagerEntity> {
 
 	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		if (villagerEntity.age % 10 == 0 && (this.lastEndEntityAge == 0L || this.lastEndEntityAge + 160L <= (long)villagerEntity.age)) {
-			if (villagerEntity.getInventory().countInInv(Items.BONE_MEAL) <= 0) {
+			if (villagerEntity.getInventory().count(Items.BONE_MEAL) <= 0) {
 				return false;
 			} else {
 				this.pos = this.findBoneMealPos(serverWorld, villagerEntity);
@@ -97,10 +97,10 @@ public class BoneMealTask extends Task<VillagerEntity> {
 		if (l >= this.startTime && blockPos.isWithinDistance(villagerEntity.getPos(), 1.0)) {
 			ItemStack itemStack = ItemStack.EMPTY;
 			BasicInventory basicInventory = villagerEntity.getInventory();
-			int i = basicInventory.getInvSize();
+			int i = basicInventory.size();
 
 			for (int j = 0; j < i; j++) {
-				ItemStack itemStack2 = basicInventory.getInvStack(j);
+				ItemStack itemStack2 = basicInventory.getStack(j);
 				if (itemStack2.getItem() == Items.BONE_MEAL) {
 					itemStack = itemStack2;
 					break;

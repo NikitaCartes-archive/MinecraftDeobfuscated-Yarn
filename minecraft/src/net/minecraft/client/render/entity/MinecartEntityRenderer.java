@@ -24,7 +24,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 	public MinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.shadowSize = 0.7F;
+		this.shadowRadius = 0.7F;
 	}
 
 	public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

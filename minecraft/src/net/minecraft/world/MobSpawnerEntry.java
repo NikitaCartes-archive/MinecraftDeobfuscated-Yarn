@@ -13,8 +13,8 @@ public class MobSpawnerEntry extends WeightedPicker.Entry {
 		this.entityTag.putString("id", "minecraft:pig");
 	}
 
-	public MobSpawnerEntry(CompoundTag compoundTag) {
-		this(compoundTag.contains("Weight", 99) ? compoundTag.getInt("Weight") : 1, compoundTag.getCompound("Entity"));
+	public MobSpawnerEntry(CompoundTag tag) {
+		this(tag.contains("Weight", 99) ? tag.getInt("Weight") : 1, tag.getCompound("Entity"));
 	}
 
 	public MobSpawnerEntry(int weight, CompoundTag entityTag) {

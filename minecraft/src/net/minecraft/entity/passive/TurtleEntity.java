@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -528,7 +528,7 @@ public class TurtleEntity extends AnimalEntity {
 
 			if (serverPlayerEntity != null) {
 				serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-				Criterions.BRED_ANIMALS.trigger(serverPlayerEntity, this.animal, this.mate, null);
+				Criteria.BRED_ANIMALS.trigger(serverPlayerEntity, this.animal, this.mate, null);
 			}
 
 			this.turtle.setHasEgg(true);

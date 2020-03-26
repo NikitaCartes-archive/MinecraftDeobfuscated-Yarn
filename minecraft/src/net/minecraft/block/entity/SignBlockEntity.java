@@ -47,13 +47,13 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
+	public void fromTag(BlockState state, CompoundTag tag) {
 		this.editable = false;
-		super.fromTag(blockState, compoundTag);
-		this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
+		super.fromTag(state, tag);
+		this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
 
 		for (int i = 0; i < 4; i++) {
-			String string = compoundTag.getString("Text" + (i + 1));
+			String string = tag.getString("Text" + (i + 1));
 			Text text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
 			if (this.world instanceof ServerWorld) {
 				try {
@@ -117,21 +117,21 @@ public class SignBlockEntity extends BlockEntity {
 		}
 	}
 
-	public void setEditor(PlayerEntity playerEntity) {
-		this.editor = playerEntity;
+	public void setEditor(PlayerEntity player) {
+		this.editor = player;
 	}
 
 	public PlayerEntity getEditor() {
 		return this.editor;
 	}
 
-	public boolean onActivate(PlayerEntity playerEntity) {
+	public boolean onActivate(PlayerEntity player) {
 		for (Text text : this.text) {
 			Style style = text == null ? null : text.getStyle();
 			if (style != null && style.getClickEvent() != null) {
 				ClickEvent clickEvent = style.getClickEvent();
 				if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-					playerEntity.getServer().getCommandManager().execute(this.getCommandSource((ServerPlayerEntity)playerEntity), clickEvent.getValue());
+					player.getServer().getCommandManager().execute(this.getCommandSource((ServerPlayerEntity)player), clickEvent.getValue());
 				}
 			}
 		}

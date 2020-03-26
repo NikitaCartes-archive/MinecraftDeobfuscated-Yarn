@@ -21,12 +21,12 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return this.stacks.size();
 	}
 
 	@Override
-	public boolean isInvEmpty() {
+	public boolean isEmpty() {
 		for (ItemStack itemStack : this.stacks) {
 			if (!itemStack.isEmpty()) {
 				return false;
@@ -37,17 +37,17 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
-		return slot >= this.getInvSize() ? ItemStack.EMPTY : this.stacks.get(slot);
+	public ItemStack getStack(int slot) {
+		return slot >= this.size() ? ItemStack.EMPTY : this.stacks.get(slot);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
+	public ItemStack removeStack(int slot) {
 		return Inventories.removeStack(this.stacks, slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
+	public ItemStack removeStack(int slot, int amount) {
 		ItemStack itemStack = Inventories.splitStack(this.stacks, slot, amount);
 		if (!itemStack.isEmpty()) {
 			this.handler.onContentChanged(this);
@@ -57,7 +57,7 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
+	public void setStack(int slot, ItemStack stack) {
 		this.stacks.set(slot, stack);
 		this.handler.onContentChanged(this);
 	}
@@ -67,7 +67,7 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return true;
 	}
 

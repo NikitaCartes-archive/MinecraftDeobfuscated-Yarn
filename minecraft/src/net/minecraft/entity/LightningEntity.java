@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
@@ -98,7 +98,7 @@ public class LightningEntity extends Entity {
 				}
 
 				if (this.channeller != null) {
-					Criterions.CHANNELED_LIGHTNING.trigger(this.channeller, list);
+					Criteria.CHANNELED_LIGHTNING.trigger(this.channeller, list);
 				}
 			}
 		}

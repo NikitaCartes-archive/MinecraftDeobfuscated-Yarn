@@ -78,7 +78,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 		private final int height;
 		private GlyphAtlasTexture.Slot subSlot1;
 		private GlyphAtlasTexture.Slot subSlot2;
-		private boolean isOccupied;
+		private boolean occupied;
 
 		private Slot(int x, int y, int width, int height) {
 			this.x = x;
@@ -96,7 +96,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 				}
 
 				return slot;
-			} else if (this.isOccupied) {
+			} else if (this.occupied) {
 				return null;
 			} else {
 				int i = glyph.getWidth();
@@ -104,7 +104,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 				if (i > this.width || j > this.height) {
 					return null;
 				} else if (i == this.width && j == this.height) {
-					this.isOccupied = true;
+					this.occupied = true;
 					return this;
 				} else {
 					int k = this.width - i;

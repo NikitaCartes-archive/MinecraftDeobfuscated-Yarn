@@ -18,7 +18,7 @@ public class Generic3x3ContainerScreenHandler extends ScreenHandler {
 		super(ScreenHandlerType.GENERIC_3X3, syncId);
 		checkSize(inventory, 9);
 		this.inventory = inventory;
-		inventory.onInvOpen(playerInventory.player);
+		inventory.onOpen(playerInventory.player);
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -39,7 +39,7 @@ public class Generic3x3ContainerScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUseInv(player);
+		return this.inventory.canPlayerUse(player);
 	}
 
 	@Override
@@ -76,6 +76,6 @@ public class Generic3x3ContainerScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.inventory.onInvClose(player);
+		this.inventory.onClose(player);
 	}
 }

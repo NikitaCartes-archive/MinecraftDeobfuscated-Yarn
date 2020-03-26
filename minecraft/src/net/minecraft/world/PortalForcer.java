@@ -32,7 +32,7 @@ public class PortalForcer {
 		this.random = new Random(world.getSeed());
 	}
 
-	public boolean usePortal(Entity entity, float f) {
+	public boolean usePortal(Entity entity, float yawOffset) {
 		Vec3d vec3d = entity.getLastNetherPortalDirectionVector();
 		Direction direction = entity.getLastNetherPortalDirection();
 		BlockPattern.TeleportTarget teleportTarget = this.getPortal(
@@ -44,30 +44,30 @@ public class PortalForcer {
 			Vec3d vec3d2 = teleportTarget.pos;
 			Vec3d vec3d3 = teleportTarget.velocity;
 			entity.setVelocity(vec3d3);
-			entity.yaw = f + (float)teleportTarget.yaw;
+			entity.yaw = yawOffset + (float)teleportTarget.yaw;
 			entity.positAfterTeleport(vec3d2.x, vec3d2.y, vec3d2.z);
 			return true;
 		}
 	}
 
 	@Nullable
-	public BlockPattern.TeleportTarget getPortal(BlockPos blockPos, Vec3d vec3d, Direction direction, double x, double y, boolean canActivate) {
+	public BlockPattern.TeleportTarget getPortal(BlockPos pos, Vec3d vec3d, Direction direction, double x, double y, boolean canActivate) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
-		pointOfInterestStorage.preloadChunks(this.world, blockPos, 128);
+		pointOfInterestStorage.preloadChunks(this.world, pos, 128);
 		List<PointOfInterest> list = (List<PointOfInterest>)pointOfInterestStorage.getInSquare(
-				pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, blockPos, 128, PointOfInterestStorage.OccupationStatus.ANY
+				pointOfInterestType -> pointOfInterestType == PointOfInterestType.NETHER_PORTAL, pos, 128, PointOfInterestStorage.OccupationStatus.ANY
 			)
 			.collect(Collectors.toList());
 		Optional<PointOfInterest> optional = list.stream()
 			.min(
-				Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos))
+				Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(pos))
 					.thenComparingInt(pointOfInterest -> pointOfInterest.getPos().getY())
 			);
 		return (BlockPattern.TeleportTarget)optional.map(pointOfInterest -> {
-			BlockPos blockPosx = pointOfInterest.getPos();
-			this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPosx), 3, blockPosx);
-			BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, blockPosx);
-			return result.getTeleportTarget(direction, blockPosx, y, vec3d, x);
+			BlockPos blockPos = pointOfInterest.getPos();
+			this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
+			BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, blockPos);
+			return result.getTeleportTarget(direction, blockPos, y, vec3d, x);
 		}).orElse(null);
 	}
 
@@ -91,7 +91,7 @@ public class PortalForcer {
 				double f = (double)s + 0.5 - entity.getZ();
 
 				label279:
-				for (int t = this.world.method_24853() - 1; t >= 0; t--) {
+				for (int t = this.world.getDimensionHeight() - 1; t >= 0; t--) {
 					if (this.world.isAir(mutable.set(r, t, s))) {
 						while (t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
 							t--;
@@ -142,7 +142,7 @@ public class PortalForcer {
 					double f = (double)s + 0.5 - entity.getZ();
 
 					label216:
-					for (int tx = this.world.method_24853() - 1; tx >= 0; tx--) {
+					for (int tx = this.world.getDimensionHeight() - 1; tx >= 0; tx--) {
 						if (this.world.isAir(mutable.set(r, tx, s))) {
 							while (tx > 0 && this.world.isAir(mutable.set(r, tx - 1, s))) {
 								tx--;
@@ -191,7 +191,7 @@ public class PortalForcer {
 		}
 
 		if (d < 0.0) {
-			n = MathHelper.clamp(n, 70, this.world.method_24853() - 10);
+			n = MathHelper.clamp(n, 70, this.world.getDimensionHeight() - 10);
 			ae = n;
 
 			for (int txx = -1; txx <= 1; txx++) {

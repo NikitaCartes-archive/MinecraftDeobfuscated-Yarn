@@ -7,7 +7,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -384,9 +384,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				if (!this.world.isClient && entity2 instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity2;
 					if (this.piercingKilledEntities != null && this.isShotFromCrossbow()) {
-						Criterions.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, this.piercingKilledEntities, this.piercingKilledEntities.size());
+						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, this.piercingKilledEntities, this.piercingKilledEntities.size());
 					} else if (!entity.isAlive() && this.isShotFromCrossbow()) {
-						Criterions.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, Arrays.asList(entity), 0);
+						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, Arrays.asList(entity), 0);
 					}
 				}
 			}
@@ -412,9 +412,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void method_24920(BlockHitResult blockHitResult) {
+	protected void onBlockHit(BlockHitResult blockHitResult) {
 		this.inBlockState = this.world.getBlockState(blockHitResult.getBlockPos());
-		super.method_24920(blockHitResult);
+		super.onBlockHit(blockHitResult);
 		Vec3d vec3d = blockHitResult.getPos().subtract(this.getX(), this.getY(), this.getZ());
 		this.setVelocity(vec3d);
 		Vec3d vec3d2 = vec3d.normalize().multiply(0.05F);

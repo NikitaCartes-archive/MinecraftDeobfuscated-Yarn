@@ -52,17 +52,17 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			player.addExperienceLevels(-this.levelCost.get());
 		}
 
-		this.input.setInvStack(0, ItemStack.EMPTY);
+		this.input.setStack(0, ItemStack.EMPTY);
 		if (this.repairItemUsage > 0) {
-			ItemStack itemStack = this.input.getInvStack(1);
+			ItemStack itemStack = this.input.getStack(1);
 			if (!itemStack.isEmpty() && itemStack.getCount() > this.repairItemUsage) {
 				itemStack.decrement(this.repairItemUsage);
-				this.input.setInvStack(1, itemStack);
+				this.input.setStack(1, itemStack);
 			} else {
-				this.input.setInvStack(1, ItemStack.EMPTY);
+				this.input.setStack(1, ItemStack.EMPTY);
 			}
 		} else {
-			this.input.setInvStack(1, ItemStack.EMPTY);
+			this.input.setStack(1, ItemStack.EMPTY);
 		}
 
 		this.levelCost.set(0);
@@ -86,17 +86,17 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	public void updateResult() {
-		ItemStack itemStack = this.input.getInvStack(0);
+		ItemStack itemStack = this.input.getStack(0);
 		this.levelCost.set(1);
 		int i = 0;
 		int j = 0;
 		int k = 0;
 		if (itemStack.isEmpty()) {
-			this.output.setInvStack(0, ItemStack.EMPTY);
+			this.output.setStack(0, ItemStack.EMPTY);
 			this.levelCost.set(0);
 		} else {
 			ItemStack itemStack2 = itemStack.copy();
-			ItemStack itemStack3 = this.input.getInvStack(1);
+			ItemStack itemStack3 = this.input.getStack(1);
 			Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack2);
 			j += itemStack.getRepairCost() + (itemStack3.isEmpty() ? 0 : itemStack3.getRepairCost());
 			this.repairItemUsage = 0;
@@ -105,7 +105,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
 					int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					if (l <= 0) {
-						this.output.setInvStack(0, ItemStack.EMPTY);
+						this.output.setStack(0, ItemStack.EMPTY);
 						this.levelCost.set(0);
 						return;
 					}
@@ -121,7 +121,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 					this.repairItemUsage = m;
 				} else {
 					if (!bl && (itemStack2.getItem() != itemStack3.getItem() || !itemStack2.isDamageable())) {
-						this.output.setInvStack(0, ItemStack.EMPTY);
+						this.output.setStack(0, ItemStack.EMPTY);
 						this.levelCost.set(0);
 						return;
 					}
@@ -200,7 +200,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 					}
 
 					if (bl3 && !bl2) {
-						this.output.setInvStack(0, ItemStack.EMPTY);
+						this.output.setStack(0, ItemStack.EMPTY);
 						this.levelCost.set(0);
 						return;
 					}
@@ -246,7 +246,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 				EnchantmentHelper.set(map, itemStack2);
 			}
 
-			this.output.setInvStack(0, itemStack2);
+			this.output.setStack(0, itemStack2);
 			this.sendContentUpdates();
 		}
 	}

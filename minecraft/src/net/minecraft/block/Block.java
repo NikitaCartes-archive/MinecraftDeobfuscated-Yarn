@@ -120,7 +120,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return tag.contains(this);
 	}
 
-	public static BlockState getRenderingState(BlockState state, IWorld world, BlockPos pos) {
+	public static BlockState postProcessState(BlockState state, IWorld world, BlockPos pos) {
 		BlockState blockState = state;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 

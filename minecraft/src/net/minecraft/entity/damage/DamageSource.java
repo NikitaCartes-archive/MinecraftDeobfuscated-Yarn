@@ -65,12 +65,12 @@ public class DamageSource {
 		return new ProjectileDamageSource("arrow", projectile, attacker).setProjectile();
 	}
 
-	public static DamageSource trident(Entity entity, @Nullable Entity entity2) {
-		return new ProjectileDamageSource("trident", entity, entity2).setProjectile();
+	public static DamageSource trident(Entity trident, @Nullable Entity attacker) {
+		return new ProjectileDamageSource("trident", trident, attacker).setProjectile();
 	}
 
-	public static DamageSource method_24907(FireworkRocketEntity fireworkRocketEntity, @Nullable Entity entity) {
-		return new ProjectileDamageSource("fireworks", fireworkRocketEntity, entity).setExplosive();
+	public static DamageSource firework(FireworkRocketEntity firework, @Nullable Entity attacker) {
+		return new ProjectileDamageSource("fireworks", firework, attacker).setExplosive();
 	}
 
 	public static DamageSource explosiveProjectile(ExplosiveProjectileEntity projectile, @Nullable Entity attacker) {
@@ -181,13 +181,13 @@ public class DamageSource {
 		return this;
 	}
 
-	public Text getDeathMessage(LivingEntity livingEntity) {
-		LivingEntity livingEntity2 = livingEntity.getPrimeAdversary();
+	public Text getDeathMessage(LivingEntity entity) {
+		LivingEntity livingEntity = entity.getPrimeAdversary();
 		String string = "death.attack." + this.name;
 		String string2 = string + ".player";
-		return livingEntity2 != null
-			? new TranslatableText(string2, livingEntity.getDisplayName(), livingEntity2.getDisplayName())
-			: new TranslatableText(string, livingEntity.getDisplayName());
+		return livingEntity != null
+			? new TranslatableText(string2, entity.getDisplayName(), livingEntity.getDisplayName())
+			: new TranslatableText(string, entity.getDisplayName());
 	}
 
 	public boolean isFire() {

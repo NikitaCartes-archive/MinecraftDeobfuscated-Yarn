@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -255,8 +254,8 @@ public abstract class PlayerManager {
 		this.saveHandler = world.getSaveHandler();
 		world.getWorldBorder().addListener(new WorldBorderListener() {
 			@Override
-			public void onSizeChange(WorldBorder worldBorder, double d) {
-				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.SET_SIZE));
+			public void onSizeChange(WorldBorder border, double size) {
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.SET_SIZE));
 			}
 
 			@Override
@@ -265,26 +264,26 @@ public abstract class PlayerManager {
 			}
 
 			@Override
-			public void onCenterChanged(WorldBorder centerX, double centerZ, double d) {
-				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(centerX, WorldBorderS2CPacket.Type.SET_CENTER));
+			public void onCenterChanged(WorldBorder border, double centerX, double centerZ) {
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.SET_CENTER));
 			}
 
 			@Override
-			public void onWarningTimeChanged(WorldBorder warningTime, int i) {
-				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(warningTime, WorldBorderS2CPacket.Type.SET_WARNING_TIME));
+			public void onWarningTimeChanged(WorldBorder border, int warningTime) {
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.SET_WARNING_TIME));
 			}
 
 			@Override
-			public void onWarningBlocksChanged(WorldBorder warningBlocks, int i) {
-				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(warningBlocks, WorldBorderS2CPacket.Type.SET_WARNING_BLOCKS));
+			public void onWarningBlocksChanged(WorldBorder border, int warningBlockDistance) {
+				PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.SET_WARNING_BLOCKS));
 			}
 
 			@Override
-			public void onDamagePerBlockChanged(WorldBorder damagePerBlock, double d) {
+			public void onDamagePerBlockChanged(WorldBorder border, double damagePerBlock) {
 			}
 
 			@Override
-			public void onSafeZoneChanged(WorldBorder safeZoneRadius, double d) {
+			public void onSafeZoneChanged(WorldBorder border, double safeZoneRadius) {
 			}
 		});
 	}
@@ -340,7 +339,7 @@ public abstract class PlayerManager {
 
 		player.detach();
 		serverWorld.removePlayer(player);
-		player.getAdvancementTracker().clearCriterions();
+		player.getAdvancementTracker().clearCriteria();
 		this.players.remove(player);
 		this.server.getBossBarManager().onPlayerDisconnenct(player);
 		UUID uUID = player.getUuid();
@@ -414,7 +413,14 @@ public abstract class PlayerManager {
 		player.getServerWorld().removePlayer(player);
 		BlockPos blockPos = player.getSpawnPointPosition();
 		boolean bl2 = player.isSpawnPointSet();
-		player.dimension = player.getSpawnPointDimension();
+		Optional<Vec3d> optional;
+		if (blockPos != null) {
+			optional = PlayerEntity.findRespawnPosition(this.server.getWorld(player.getSpawnPointDimension()), blockPos, bl2, bl);
+		} else {
+			optional = Optional.empty();
+		}
+
+		player.dimension = optional.isPresent() ? player.getSpawnPointDimension() : DimensionType.OVERWORLD;
 		ServerPlayerInteractionManager serverPlayerInteractionManager;
 		if (this.server.isDemo()) {
 			serverPlayerInteractionManager = new DemoServerPlayerInteractionManager(this.server.getWorld(player.dimension));
@@ -437,19 +443,13 @@ public abstract class PlayerManager {
 		ServerWorld serverWorld = this.server.getWorld(player.dimension);
 		this.setGameMode(serverPlayerEntity, player, serverWorld);
 		boolean bl3 = false;
-		if (blockPos != null) {
-			Optional<Vec3d> optional = PlayerEntity.findRespawnPosition(this.server.getWorld(player.dimension), blockPos, bl2, bl);
-			if (optional.isPresent()) {
-				Vec3d vec3d = (Vec3d)optional.get();
-				serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0F, 0.0F);
-				serverPlayerEntity.setSpawnPoint(player.dimension, blockPos, bl2, false);
-				bl3 = !bl;
-			} else {
-				serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0F));
-				serverPlayerEntity.dimension = DimensionType.OVERWORLD;
-				serverWorld = this.server.getWorld(DimensionType.OVERWORLD);
-				serverPlayerEntity.world = serverWorld;
-			}
+		if (optional.isPresent()) {
+			Vec3d vec3d = (Vec3d)optional.get();
+			serverPlayerEntity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, 0.0F, 0.0F);
+			serverPlayerEntity.setSpawnPoint(player.dimension, blockPos, bl2, false);
+			bl3 = !bl && serverWorld.getBlockState(blockPos).getBlock() instanceof RespawnAnchorBlock;
+		} else if (blockPos != null) {
+			serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(0, 0.0F));
 		}
 
 		while (!serverWorld.doesNotCollide(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
@@ -479,8 +479,7 @@ public abstract class PlayerManager {
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
 		serverPlayerEntity.onSpawn();
 		serverPlayerEntity.setHealth(serverPlayerEntity.getHealth());
-		BlockState blockState = serverWorld.getBlockState(blockPos);
-		if (bl3 && blockState.getBlock() instanceof RespawnAnchorBlock) {
+		if (bl3) {
 			serverPlayerEntity.networkHandler
 				.sendPacket(
 					new PlaySoundS2CPacket(

@@ -14,11 +14,11 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Rotation3;
+import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class TextRenderer implements AutoCloseable {
@@ -43,12 +43,12 @@ public class TextRenderer implements AutoCloseable {
 
 	public int drawWithShadow(String text, float x, float y, int color) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(text, x, y, color, Rotation3.identity().getMatrix(), true);
+		return this.draw(text, x, y, color, AffineTransformation.identity().getMatrix(), true);
 	}
 
 	public int draw(String text, float x, float y, int color) {
 		RenderSystem.enableAlphaTest();
-		return this.draw(text, x, y, color, Rotation3.identity().getMatrix(), false);
+		return this.draw(text, x, y, color, AffineTransformation.identity().getMatrix(), false);
 	}
 
 	public String mirror(String text) {
@@ -334,7 +334,7 @@ public class TextRenderer implements AutoCloseable {
 
 	private void drawWrapped(String text, int x, int y, int maxWidth, int color) {
 		List<String> list = this.wrapStringToWidthAsList(text, maxWidth);
-		Matrix4f matrix4f = Rotation3.identity().getMatrix();
+		Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
 
 		for (String string : list) {
 			float f = (float)x;

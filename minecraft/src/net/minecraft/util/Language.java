@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Language {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern field_11489 = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
+	private static final Pattern TOKEN_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
 	private static final Language INSTANCE = new Language();
 	private final Map<String, String> translations = Maps.<String, String>newHashMap();
 	private long timeLoaded;
@@ -34,7 +34,7 @@ public class Language {
 				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "strings");
 
 				for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-					String string = field_11489.matcher(JsonHelper.asString((JsonElement)entry.getValue(), (String)entry.getKey())).replaceAll("%$1s");
+					String string = TOKEN_PATTERN.matcher(JsonHelper.asString((JsonElement)entry.getValue(), (String)entry.getKey())).replaceAll("%$1s");
 					this.translations.put(entry.getKey(), string);
 				}
 
@@ -71,17 +71,17 @@ public class Language {
 		INSTANCE.timeLoaded = Util.getMeasuringTimeMs();
 	}
 
-	public synchronized String translate(String string) {
-		return this.getTranslation(string);
+	public synchronized String translate(String key) {
+		return this.getTranslation(key);
 	}
 
-	private String getTranslation(String string) {
-		String string2 = (String)this.translations.get(string);
-		return string2 == null ? string : string2;
+	private String getTranslation(String key) {
+		String string = (String)this.translations.get(key);
+		return string == null ? key : string;
 	}
 
-	public synchronized boolean hasTranslation(String string) {
-		return this.translations.containsKey(string);
+	public synchronized boolean hasTranslation(String key) {
+		return this.translations.containsKey(key);
 	}
 
 	public long getTimeLoaded() {

@@ -55,10 +55,10 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 			this.ableToPlant = villagerEntity.hasSeedToPlant();
 			this.ableToPickUpSeed = false;
 			BasicInventory basicInventory = villagerEntity.getInventory();
-			int i = basicInventory.getInvSize();
+			int i = basicInventory.size();
 
 			for (int j = 0; j < i; j++) {
-				ItemStack itemStack = basicInventory.getInvStack(j);
+				ItemStack itemStack = basicInventory.getStack(j);
 				if (itemStack.isEmpty()) {
 					this.ableToPickUpSeed = true;
 					break;
@@ -124,8 +124,8 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				if (blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant) {
 					BasicInventory basicInventory = villagerEntity.getInventory();
 
-					for (int i = 0; i < basicInventory.getInvSize(); i++) {
-						ItemStack itemStack = basicInventory.getInvStack(i);
+					for (int i = 0; i < basicInventory.size(); i++) {
+						ItemStack itemStack = basicInventory.getStack(i);
 						boolean bl = false;
 						if (!itemStack.isEmpty()) {
 							if (itemStack.getItem() == Items.WHEAT_SEEDS) {
@@ -156,7 +156,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 							);
 							itemStack.decrement(1);
 							if (itemStack.isEmpty()) {
-								basicInventory.setInvStack(i, ItemStack.EMPTY);
+								basicInventory.setStack(i, ItemStack.EMPTY);
 							}
 							break;
 						}

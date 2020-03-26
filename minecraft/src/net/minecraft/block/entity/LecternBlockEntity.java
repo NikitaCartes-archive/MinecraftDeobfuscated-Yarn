@@ -29,22 +29,22 @@ import net.minecraft.util.math.Vec3d;
 public class LecternBlockEntity extends BlockEntity implements Clearable, NamedScreenHandlerFactory {
 	private final Inventory inventory = new Inventory() {
 		@Override
-		public int getInvSize() {
+		public int size() {
 			return 1;
 		}
 
 		@Override
-		public boolean isInvEmpty() {
+		public boolean isEmpty() {
 			return LecternBlockEntity.this.book.isEmpty();
 		}
 
 		@Override
-		public ItemStack getInvStack(int slot) {
+		public ItemStack getStack(int slot) {
 			return slot == 0 ? LecternBlockEntity.this.book : ItemStack.EMPTY;
 		}
 
 		@Override
-		public ItemStack takeInvStack(int slot, int amount) {
+		public ItemStack removeStack(int slot, int amount) {
 			if (slot == 0) {
 				ItemStack itemStack = LecternBlockEntity.this.book.split(amount);
 				if (LecternBlockEntity.this.book.isEmpty()) {
@@ -58,7 +58,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 		}
 
 		@Override
-		public ItemStack removeInvStack(int slot) {
+		public ItemStack removeStack(int slot) {
 			if (slot == 0) {
 				ItemStack itemStack = LecternBlockEntity.this.book;
 				LecternBlockEntity.this.book = ItemStack.EMPTY;
@@ -70,11 +70,11 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 		}
 
 		@Override
-		public void setInvStack(int slot, ItemStack stack) {
+		public void setStack(int slot, ItemStack stack) {
 		}
 
 		@Override
-		public int getInvMaxStackAmount() {
+		public int getMaxCountPerStack() {
 			return 1;
 		}
 
@@ -84,7 +84,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 		}
 
 		@Override
-		public boolean canPlayerUseInv(PlayerEntity player) {
+		public boolean canPlayerUse(PlayerEntity player) {
 			if (LecternBlockEntity.this.world.getBlockEntity(LecternBlockEntity.this.pos) != LecternBlockEntity.this) {
 				return false;
 			} else {
@@ -98,7 +98,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 		}
 
 		@Override
-		public boolean isValidInvStack(int slot, ItemStack stack) {
+		public boolean isValid(int slot, ItemStack stack) {
 			return false;
 		}
 
@@ -205,16 +205,16 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		if (compoundTag.contains("Book", 10)) {
-			this.book = this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		if (tag.contains("Book", 10)) {
+			this.book = this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
 
 		this.pageCount = WrittenBookItem.getPageCount(this.book);
-		this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
+		this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
 	}
 
 	@Override

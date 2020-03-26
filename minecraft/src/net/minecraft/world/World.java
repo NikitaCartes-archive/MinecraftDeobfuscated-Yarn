@@ -98,10 +98,10 @@ public abstract class World implements IWorld, AutoCloseable {
 		LevelProperties levelProperties,
 		DimensionType dimensionType,
 		BiFunction<World, Dimension, ChunkManager> chunkManagerProvider,
-		Supplier<Profiler> supplier,
+		Supplier<Profiler> profiler,
 		boolean isClient
 	) {
-		this.profiler = supplier;
+		this.profiler = profiler;
 		this.properties = levelProperties;
 		this.dimension = dimensionType.create(this);
 		this.chunkManager = (ChunkManager)chunkManagerProvider.apply(this, this.dimension);
@@ -123,14 +123,14 @@ public abstract class World implements IWorld, AutoCloseable {
 		return null;
 	}
 
-	public BlockState getTopNonAirState(BlockPos blockPos) {
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), this.getSeaLevel(), blockPos.getZ());
+	public BlockState getTopNonAirState(BlockPos pos) {
+		BlockPos blockPos = new BlockPos(pos.getX(), this.getSeaLevel(), pos.getZ());
 
-		while (!this.isAir(blockPos2.up())) {
-			blockPos2 = blockPos2.up();
+		while (!this.isAir(blockPos.up())) {
+			blockPos = blockPos.up();
 		}
 
-		return this.getBlockState(blockPos2);
+		return this.getBlockState(blockPos);
 	}
 
 	public static boolean method_24794(BlockPos blockPos) {
@@ -299,8 +299,8 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	public boolean setBlockState(BlockPos pos, BlockState blockState) {
-		return this.setBlockState(pos, blockState, 3);
+	public boolean setBlockState(BlockPos pos, BlockState state) {
+		return this.setBlockState(pos, state, 3);
 	}
 
 	public abstract void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags);
@@ -415,19 +415,17 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity player, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch) {
-		this.playSound(player, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, soundEvent, soundCategory, volume, pitch);
+	public void playSound(@Nullable PlayerEntity player, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSound(player, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch);
 	}
 
 	public abstract void playSound(
 		@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch
 	);
 
-	public abstract void playSoundFromEntity(
-		@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch
-	);
+	public abstract void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory soundCategory, float f, float g, boolean bl) {
+	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float f, float g, boolean bl) {
 	}
 
 	@Override
@@ -470,11 +468,11 @@ public abstract class World implements IWorld, AutoCloseable {
 		return bl;
 	}
 
-	public void addBlockEntities(Collection<BlockEntity> collection) {
+	public void addBlockEntities(Collection<BlockEntity> blockEntities) {
 		if (this.iteratingTickingBlockEntities) {
-			this.pendingBlockEntities.addAll(collection);
+			this.pendingBlockEntities.addAll(blockEntities);
 		} else {
-			for (BlockEntity blockEntity : collection) {
+			for (BlockEntity blockEntity : blockEntities) {
 				this.addBlockEntity(blockEntity);
 			}
 		}
@@ -707,10 +705,10 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Nullable
-	private BlockEntity getPendingBlockEntity(BlockPos blockPos) {
+	private BlockEntity getPendingBlockEntity(BlockPos pos) {
 		for (int i = 0; i < this.pendingBlockEntities.size(); i++) {
 			BlockEntity blockEntity = (BlockEntity)this.pendingBlockEntities.get(i);
-			if (!blockEntity.isRemoved() && blockEntity.getPos().equals(blockPos)) {
+			if (!blockEntity.isRemoved() && blockEntity.getPos().equals(pos)) {
 				return blockEntity;
 			}
 		}
@@ -742,8 +740,8 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	public void removeBlockEntity(BlockPos blockPos) {
-		BlockEntity blockEntity = this.getBlockEntity(blockPos);
+	public void removeBlockEntity(BlockPos pos) {
+		BlockEntity blockEntity = this.getBlockEntity(pos);
 		if (blockEntity != null && this.iteratingTickingBlockEntities) {
 			blockEntity.markRemoved();
 			this.pendingBlockEntities.remove(blockEntity);
@@ -754,7 +752,7 @@ public abstract class World implements IWorld, AutoCloseable {
 				this.tickingBlockEntities.remove(blockEntity);
 			}
 
-			this.getWorldChunk(blockPos).removeBlockEntity(blockPos);
+			this.getWorldChunk(pos).removeBlockEntity(pos);
 		}
 	}
 
@@ -762,17 +760,17 @@ public abstract class World implements IWorld, AutoCloseable {
 		return isHeightInvalid(pos) ? false : this.chunkManager.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
 	}
 
-	public boolean method_24368(BlockPos blockPos, Entity entity, Direction direction) {
-		if (isHeightInvalid(blockPos)) {
+	public boolean isDirectionSolid(BlockPos pos, Entity entity, Direction direction) {
+		if (isHeightInvalid(pos)) {
 			return false;
 		} else {
-			Chunk chunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
-			return chunk == null ? false : chunk.getBlockState(blockPos).hasSolidTopSurface(this, blockPos, entity, direction);
+			Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
+			return chunk == null ? false : chunk.getBlockState(pos).hasSolidTopSurface(this, pos, entity, direction);
 		}
 	}
 
 	public boolean isTopSolid(BlockPos pos, Entity entity) {
-		return this.method_24368(pos, entity, Direction.UP);
+		return this.isDirectionSolid(pos, entity, Direction.UP);
 	}
 
 	public void calculateAmbientDarkness() {
@@ -913,29 +911,29 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this.properties.getGeneratorType();
 	}
 
-	public int getReceivedStrongRedstonePower(BlockPos blockPos) {
+	public int getReceivedStrongRedstonePower(BlockPos pos) {
 		int i = 0;
-		i = Math.max(i, this.getStrongRedstonePower(blockPos.down(), Direction.DOWN));
+		i = Math.max(i, this.getStrongRedstonePower(pos.down(), Direction.DOWN));
 		if (i >= 15) {
 			return i;
 		} else {
-			i = Math.max(i, this.getStrongRedstonePower(blockPos.up(), Direction.UP));
+			i = Math.max(i, this.getStrongRedstonePower(pos.up(), Direction.UP));
 			if (i >= 15) {
 				return i;
 			} else {
-				i = Math.max(i, this.getStrongRedstonePower(blockPos.north(), Direction.NORTH));
+				i = Math.max(i, this.getStrongRedstonePower(pos.north(), Direction.NORTH));
 				if (i >= 15) {
 					return i;
 				} else {
-					i = Math.max(i, this.getStrongRedstonePower(blockPos.south(), Direction.SOUTH));
+					i = Math.max(i, this.getStrongRedstonePower(pos.south(), Direction.SOUTH));
 					if (i >= 15) {
 						return i;
 					} else {
-						i = Math.max(i, this.getStrongRedstonePower(blockPos.west(), Direction.WEST));
+						i = Math.max(i, this.getStrongRedstonePower(pos.west(), Direction.WEST));
 						if (i >= 15) {
 							return i;
 						} else {
-							i = Math.max(i, this.getStrongRedstonePower(blockPos.east(), Direction.EAST));
+							i = Math.max(i, this.getStrongRedstonePower(pos.east(), Direction.EAST));
 							return i >= 15 ? i : i;
 						}
 					}
@@ -953,25 +951,25 @@ public abstract class World implements IWorld, AutoCloseable {
 		return blockState.isSolidBlock(this, pos) ? this.getReceivedStrongRedstonePower(pos) : blockState.getWeakRedstonePower(this, pos, direction);
 	}
 
-	public boolean isReceivingRedstonePower(BlockPos blockPos) {
-		if (this.getEmittedRedstonePower(blockPos.down(), Direction.DOWN) > 0) {
+	public boolean isReceivingRedstonePower(BlockPos pos) {
+		if (this.getEmittedRedstonePower(pos.down(), Direction.DOWN) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(blockPos.up(), Direction.UP) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.up(), Direction.UP) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(blockPos.north(), Direction.NORTH) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.north(), Direction.NORTH) > 0) {
 			return true;
-		} else if (this.getEmittedRedstonePower(blockPos.south(), Direction.SOUTH) > 0) {
+		} else if (this.getEmittedRedstonePower(pos.south(), Direction.SOUTH) > 0) {
 			return true;
 		} else {
-			return this.getEmittedRedstonePower(blockPos.west(), Direction.WEST) > 0 ? true : this.getEmittedRedstonePower(blockPos.east(), Direction.EAST) > 0;
+			return this.getEmittedRedstonePower(pos.west(), Direction.WEST) > 0 ? true : this.getEmittedRedstonePower(pos.east(), Direction.EAST) > 0;
 		}
 	}
 
-	public int getReceivedRedstonePower(BlockPos blockPos) {
+	public int getReceivedRedstonePower(BlockPos pos) {
 		int i = 0;
 
 		for (Direction direction : DIRECTIONS) {
-			int j = this.getEmittedRedstonePower(blockPos.offset(direction), direction);
+			int j = this.getEmittedRedstonePower(pos.offset(direction), direction);
 			if (j >= 15) {
 				return 15;
 			}
@@ -1095,8 +1093,8 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	public boolean hasHighHumidity(BlockPos blockPos) {
-		Biome biome = this.getBiome(blockPos);
+	public boolean hasHighHumidity(BlockPos pos) {
+		Biome biome = this.getBiome(pos);
 		return biome.hasHighHumidity();
 	}
 
@@ -1191,8 +1189,8 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Override
-	public boolean testBlockState(BlockPos blockPos, Predicate<BlockState> state) {
-		return state.test(this.getBlockState(blockPos));
+	public boolean testBlockState(BlockPos pos, Predicate<BlockState> state) {
+		return state.test(this.getBlockState(pos));
 	}
 
 	public abstract RecipeManager getRecipeManager();
@@ -1213,7 +1211,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		return (Profiler)this.profiler.get();
 	}
 
-	public Supplier<Profiler> method_24367() {
+	public Supplier<Profiler> getProfilerSupplier() {
 		return this.profiler;
 	}
 

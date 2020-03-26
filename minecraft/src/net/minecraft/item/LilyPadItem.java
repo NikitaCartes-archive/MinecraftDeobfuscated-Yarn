@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -54,7 +54,7 @@ public class LilyPadItem extends BlockItem {
 				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.isAir(blockPos2)) {
 					world.setBlockState(blockPos2, Blocks.LILY_PAD.getDefaultState(), 11);
 					if (user instanceof ServerPlayerEntity) {
-						Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos2, itemStack);
+						Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos2, itemStack);
 					}
 
 					if (!user.abilities.creativeMode) {

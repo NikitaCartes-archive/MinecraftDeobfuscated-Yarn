@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4981;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -10,10 +9,11 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemSteerable;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class PigSaddleFeatureRenderer<T extends Entity & class_4981, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
+public class PigSaddleFeatureRenderer<T extends Entity & ItemSteerable, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
 	private final Identifier SKIN;
 	private final M model;
 

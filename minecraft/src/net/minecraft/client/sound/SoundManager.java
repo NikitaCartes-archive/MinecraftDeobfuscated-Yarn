@@ -220,12 +220,12 @@ public class SoundManager extends SinglePreparationResourceReloadListener<SoundM
 		return this.soundSystem.isPlaying(soundInstance);
 	}
 
-	public void registerListener(ListenerSoundInstance listenerSoundInstance) {
-		this.soundSystem.registerListener(listenerSoundInstance);
+	public void registerListener(SoundInstanceListener soundInstanceListener) {
+		this.soundSystem.registerListener(soundInstanceListener);
 	}
 
-	public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
-		this.soundSystem.unregisterListener(listenerSoundInstance);
+	public void unregisterListener(SoundInstanceListener soundInstanceListener) {
+		this.soundSystem.unregisterListener(soundInstanceListener);
 	}
 
 	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {

@@ -50,7 +50,7 @@ public class BlockUsedCriterion extends AbstractCriterion<BlockUsedCriterion.Con
 		}
 
 		public static BlockUsedCriterion.Conditions create(BlockPredicate.Builder blockPredicateBuilder, ItemPredicate.Builder itemPredicateBuilder) {
-			return new BlockUsedCriterion.Conditions(Criterions.SAFELY_HARVEST_HONEY.id, blockPredicateBuilder.build(), StatePredicate.ANY, itemPredicateBuilder.build());
+			return new BlockUsedCriterion.Conditions(Criteria.SAFELY_HARVEST_HONEY.id, blockPredicateBuilder.build(), StatePredicate.ANY, itemPredicateBuilder.build());
 		}
 
 		public boolean test(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {

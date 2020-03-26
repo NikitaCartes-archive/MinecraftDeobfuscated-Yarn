@@ -4,11 +4,11 @@ public class CuboidBlockIterator {
 	private int startX;
 	private int startY;
 	private int startZ;
-	private int endX;
-	private int endY;
-	private int endZ;
-	private int field_23112;
-	private int field_23113;
+	private int sizeX;
+	private int sizeY;
+	private int sizeZ;
+	private int totalSize;
+	private int blocksIterated;
 	private int x;
 	private int y;
 	private int z;
@@ -17,21 +17,21 @@ public class CuboidBlockIterator {
 		this.startX = startX;
 		this.startY = startY;
 		this.startZ = startZ;
-		this.endX = endX - startX + 1;
-		this.endY = endY - startY + 1;
-		this.endZ = endZ - startZ + 1;
-		this.field_23112 = this.endX * this.endY * this.endZ;
+		this.sizeX = endX - startX + 1;
+		this.sizeY = endY - startY + 1;
+		this.sizeZ = endZ - startZ + 1;
+		this.totalSize = this.sizeX * this.sizeY * this.sizeZ;
 	}
 
 	public boolean step() {
-		if (this.field_23113 == this.field_23112) {
+		if (this.blocksIterated == this.totalSize) {
 			return false;
 		} else {
-			this.x = this.field_23113 % this.endX;
-			int i = this.field_23113 / this.endX;
-			this.y = i % this.endY;
-			this.z = i / this.endY;
-			this.field_23113++;
+			this.x = this.blocksIterated % this.sizeX;
+			int i = this.blocksIterated / this.sizeX;
+			this.y = i % this.sizeY;
+			this.z = i / this.sizeY;
+			this.blocksIterated++;
 			return true;
 		}
 	}
@@ -50,15 +50,15 @@ public class CuboidBlockIterator {
 
 	public int getEdgeCoordinatesCount() {
 		int i = 0;
-		if (this.x == 0 || this.x == this.endX - 1) {
+		if (this.x == 0 || this.x == this.sizeX - 1) {
 			i++;
 		}
 
-		if (this.y == 0 || this.y == this.endY - 1) {
+		if (this.y == 0 || this.y == this.sizeY - 1) {
 			i++;
 		}
 
-		if (this.z == 0 || this.z == this.endZ - 1) {
+		if (this.z == 0 || this.z == this.sizeZ - 1) {
 			i++;
 		}
 

@@ -91,9 +91,9 @@ public class BatEntity extends AmbientEntity {
 		return (this.dataTracker.get(BAT_FLAGS) & 1) != 0;
 	}
 
-	public void setRoosting(boolean bl) {
+	public void setRoosting(boolean roosting) {
 		byte b = this.dataTracker.get(BAT_FLAGS);
-		if (bl) {
+		if (roosting) {
 			this.dataTracker.set(BAT_FLAGS, (byte)(b | 1));
 		} else {
 			this.dataTracker.set(BAT_FLAGS, (byte)(b & -2));

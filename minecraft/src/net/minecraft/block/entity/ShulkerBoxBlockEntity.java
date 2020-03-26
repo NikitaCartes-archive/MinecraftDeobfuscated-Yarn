@@ -43,9 +43,9 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	private DyeColor cachedColor;
 	private boolean cachedColorUpdateNeeded;
 
-	public ShulkerBoxBlockEntity(@Nullable DyeColor dyeColor) {
+	public ShulkerBoxBlockEntity(@Nullable DyeColor color) {
 		super(BlockEntityType.SHULKER_BOX);
-		this.cachedColor = dyeColor;
+		this.cachedColor = color;
 	}
 
 	public ShulkerBoxBlockEntity() {
@@ -166,7 +166,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return this.inventory.size();
 	}
 
@@ -195,7 +195,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void onInvOpen(PlayerEntity player) {
+	public void onOpen(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
@@ -210,7 +210,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void onInvClose(PlayerEntity player) {
+	public void onClose(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			this.viewerCount--;
 			this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
@@ -226,9 +226,9 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		this.deserializeInventory(compoundTag);
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.deserializeInventory(tag);
 	}
 
 	@Override
@@ -238,7 +238,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	public void deserializeInventory(CompoundTag tag) {
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(tag) && tag.contains("Items", 9)) {
 			Inventories.fromTag(tag, this.inventory);
 		}
@@ -263,17 +263,17 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public int[] getInvAvailableSlots(Direction side) {
+	public int[] getAvailableSlots(Direction side) {
 		return AVAILABLE_SLOTS;
 	}
 
 	@Override
-	public boolean canInsertInvStack(int slot, ItemStack stack, @Nullable Direction dir) {
+	public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
 		return !(Block.getBlockFromItem(stack.getItem()) instanceof ShulkerBoxBlock);
 	}
 
 	@Override
-	public boolean canExtractInvStack(int slot, ItemStack stack, Direction dir) {
+	public boolean canExtract(int slot, ItemStack stack, Direction dir) {
 		return true;
 	}
 

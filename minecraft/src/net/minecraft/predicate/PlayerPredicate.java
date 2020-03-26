@@ -53,13 +53,13 @@ public class PlayerPredicate {
 	}
 
 	private PlayerPredicate(
-		NumberRange.IntRange intRange,
+		NumberRange.IntRange experienceLevel,
 		GameMode gamemode,
 		Map<Stat<?>, NumberRange.IntRange> stats,
 		Object2BooleanMap<Identifier> recipes,
 		Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements
 	) {
-		this.experienceLevel = intRange;
+		this.experienceLevel = experienceLevel;
 		this.gamemode = gamemode;
 		this.stats = stats;
 		this.recipes = recipes;

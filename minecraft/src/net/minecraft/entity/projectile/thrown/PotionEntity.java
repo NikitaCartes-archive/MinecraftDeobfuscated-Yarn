@@ -66,8 +66,8 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 	}
 
 	@Override
-	protected void method_24920(BlockHitResult blockHitResult) {
-		super.method_24920(blockHitResult);
+	protected void onBlockHit(BlockHitResult blockHitResult) {
+		super.onBlockHit(blockHitResult);
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.getStack();
 			Potion potion = PotionUtil.getPotion(itemStack);
@@ -124,11 +124,11 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void applySplashPotion(List<StatusEffectInstance> list, @Nullable Entity entity) {
+	private void applySplashPotion(List<StatusEffectInstance> statusEffects, @Nullable Entity entity) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list2 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
-		if (!list2.isEmpty()) {
-			for (LivingEntity livingEntity : list2) {
+		List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, box);
+		if (!list.isEmpty()) {
+			for (LivingEntity livingEntity : list) {
 				if (livingEntity.isAffectedBySplashPotions()) {
 					double d = this.squaredDistanceTo(livingEntity);
 					if (d < 16.0) {
@@ -137,7 +137,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 							e = 1.0;
 						}
 
-						for (StatusEffectInstance statusEffectInstance : list) {
+						for (StatusEffectInstance statusEffectInstance : statusEffects) {
 							StatusEffect statusEffect = statusEffectInstance.getEffectType();
 							if (statusEffect.isInstant()) {
 								statusEffect.applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
@@ -158,7 +158,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void applyLingeringPotion(ItemStack itemStack, Potion potion) {
+	private void applyLingeringPotion(ItemStack stack, Potion potion) {
 		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
 		Entity entity = this.getOwner();
 		if (entity instanceof LivingEntity) {
@@ -171,11 +171,11 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
 		areaEffectCloudEntity.setPotion(potion);
 
-		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(itemStack)) {
+		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(stack)) {
 			areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
 		}
 
-		CompoundTag compoundTag = itemStack.getTag();
+		CompoundTag compoundTag = stack.getTag();
 		if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
 			areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
 		}
@@ -187,14 +187,14 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		return this.getStack().getItem() == Items.LINGERING_POTION;
 	}
 
-	private void extinguishFire(BlockPos blockPos, Direction direction) {
-		BlockState blockState = this.world.getBlockState(blockPos);
+	private void extinguishFire(BlockPos pos, Direction direction) {
+		BlockState blockState = this.world.getBlockState(pos);
 		Block block = blockState.getBlock();
 		if (blockState.isIn(BlockTags.FIRE)) {
-			this.world.removeBlock(blockPos, false);
+			this.world.removeBlock(pos, false);
 		} else if (block == Blocks.CAMPFIRE && (Boolean)blockState.get(CampfireBlock.LIT)) {
-			this.world.playLevelEvent(null, 1009, blockPos, 0);
-			this.world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
+			this.world.playLevelEvent(null, 1009, pos, 0);
+			this.world.setBlockState(pos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
 	}
 

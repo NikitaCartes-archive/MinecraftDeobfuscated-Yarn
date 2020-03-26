@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndPortalBlockEntity;
@@ -241,7 +241,7 @@ public class EnderDragonFight {
 				EnderDragonEntity enderDragonEntity = this.createDragon();
 
 				for (ServerPlayerEntity serverPlayerEntity : this.bossBar.getPlayers()) {
-					Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, enderDragonEntity);
+					Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, enderDragonEntity);
 				}
 			} else {
 				this.dragonSpawnState = enderDragonSpawnState;

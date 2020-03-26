@@ -55,8 +55,8 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		boolean bl4 = false;
 		boolean bl5 = false;
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				if (TYPE_MODIFIER.test(itemStack)) {
 					if (bl3) {
@@ -101,8 +101,8 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		FireworkItem.Type type = FireworkItem.Type.SMALL_BALL;
 		List<Integer> list = Lists.<Integer>newArrayList();
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack2 = craftingInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
 				if (TYPE_MODIFIER.test(itemStack2)) {
 					type = (FireworkItem.Type)TYPE_MODIFIER_MAP.get(itemStack2.getItem());

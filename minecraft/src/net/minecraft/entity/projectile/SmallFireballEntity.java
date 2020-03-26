@@ -46,8 +46,8 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	protected void method_24920(BlockHitResult blockHitResult) {
-		super.method_24920(blockHitResult);
+	protected void onBlockHit(BlockHitResult blockHitResult) {
+		super.onBlockHit(blockHitResult);
 		if (!this.world.isClient) {
 			Entity entity = this.getOwner();
 			if (entity == null || !(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {

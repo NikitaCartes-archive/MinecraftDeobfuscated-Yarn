@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -37,7 +37,7 @@ public class ServerRecipeBook extends RecipeBook {
 				this.add(identifier);
 				this.display(identifier);
 				list.add(identifier);
-				Criterions.RECIPE_UNLOCKED.trigger(player, recipe);
+				Criteria.RECIPE_UNLOCKED.trigger(player, recipe);
 				i++;
 			}
 		}

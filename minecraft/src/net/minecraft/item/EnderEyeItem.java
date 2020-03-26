@@ -1,6 +1,6 @@
 package net.minecraft.item;
 
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -76,7 +76,7 @@ public class EnderEyeItem extends Item {
 					eyeOfEnderEntity.moveTowards(blockPos);
 					world.spawnEntity(eyeOfEnderEntity);
 					if (user instanceof ServerPlayerEntity) {
-						Criterions.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);
+						Criteria.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);
 					}
 
 					world.playSound(

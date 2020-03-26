@@ -116,8 +116,8 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		super.writeCustomDataToTag(tag);
 		ListTag listTag = new ListTag();
 
-		for (int i = 0; i < this.inventory.getInvSize(); i++) {
-			ItemStack itemStack = this.inventory.getInvStack(i);
+		for (int i = 0; i < this.inventory.size(); i++) {
+			ItemStack itemStack = this.inventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				listTag.add(itemStack.toTag(new CompoundTag()));
 			}
@@ -146,7 +146,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		for (int i = 0; i < listTag.size(); i++) {
 			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
 			if (!itemStack.isEmpty()) {
-				this.inventory.add(itemStack);
+				this.inventory.addStack(itemStack);
 			}
 		}
 
@@ -228,7 +228,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 		} else {
 			Item item2 = itemStack.getItem();
 			if (this.method_7111(item2)) {
-				ItemStack itemStack2 = this.inventory.add(itemStack);
+				ItemStack itemStack2 = this.inventory.addStack(itemStack);
 				if (itemStack2.isEmpty()) {
 					item.remove();
 				} else {
@@ -248,8 +248,8 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 			return true;
 		} else {
 			int i = slot - 300;
-			if (i >= 0 && i < this.inventory.getInvSize()) {
-				this.inventory.setInvStack(i, item);
+			if (i >= 0 && i < this.inventory.size()) {
+				this.inventory.setStack(i, item);
 				return true;
 			} else {
 				return false;

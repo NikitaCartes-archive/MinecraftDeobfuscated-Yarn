@@ -29,7 +29,7 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 
 	@Override
 	protected void renderObject(
-		MatrixStack matrix, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta
 	) {
 		float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
 		this.arrow = new ArrowEntity(entity.world, entity.getX(), entity.getY(), entity.getZ());
@@ -37,6 +37,6 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Player
 		this.arrow.pitch = (float)(Math.atan2((double)directionY, (double)f) * 180.0F / (float)Math.PI);
 		this.arrow.prevYaw = this.arrow.yaw;
 		this.arrow.prevPitch = this.arrow.pitch;
-		this.dispatcher.render(this.arrow, 0.0, 0.0, 0.0, 0.0F, tickDelta, matrix, vertexConsumers, light);
+		this.dispatcher.render(this.arrow, 0.0, 0.0, 0.0, 0.0F, tickDelta, matrices, vertexConsumers, light);
 	}
 }

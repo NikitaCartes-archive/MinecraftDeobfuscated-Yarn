@@ -295,11 +295,11 @@ public class LootCommand {
 	private static boolean insert(Inventory inventory, ItemStack stack) {
 		boolean bl = false;
 
-		for (int i = 0; i < inventory.getInvSize() && !stack.isEmpty(); i++) {
-			ItemStack itemStack = inventory.getInvStack(i);
-			if (inventory.isValidInvStack(i, stack)) {
+		for (int i = 0; i < inventory.size() && !stack.isEmpty(); i++) {
+			ItemStack itemStack = inventory.getStack(i);
+			if (inventory.isValid(i, stack)) {
 				if (itemStack.isEmpty()) {
-					inventory.setInvStack(i, stack);
+					inventory.setStack(i, stack);
 					bl = true;
 					break;
 				}
@@ -321,15 +321,15 @@ public class LootCommand {
 		ServerCommandSource source, BlockPos targetPos, int slot, int stackCount, List<ItemStack> stacks, LootCommand.FeedbackMessage messageSender
 	) throws CommandSyntaxException {
 		Inventory inventory = getBlockInventory(source, targetPos);
-		int i = inventory.getInvSize();
+		int i = inventory.size();
 		if (slot >= 0 && slot < i) {
 			List<ItemStack> list = Lists.<ItemStack>newArrayListWithCapacity(stacks.size());
 
 			for (int j = 0; j < stackCount; j++) {
 				int k = slot + j;
 				ItemStack itemStack = j < stacks.size() ? (ItemStack)stacks.get(j) : ItemStack.EMPTY;
-				if (inventory.isValidInvStack(k, itemStack)) {
-					inventory.setInvStack(k, itemStack);
+				if (inventory.isValid(k, itemStack)) {
+					inventory.setStack(k, itemStack);
 					list.add(itemStack);
 				}
 			}

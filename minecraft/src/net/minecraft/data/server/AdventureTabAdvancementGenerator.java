@@ -376,7 +376,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"voluntary_exile",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
-					EntityPredicate.Builder.create().type(EntityTypeTags.RAIDERS).equipment(EntityEquipmentPredicate.field_19240)
+					EntityPredicate.Builder.create().type(EntityTypeTags.RAIDERS).equipment(EntityEquipmentPredicate.OMINOUS_BANNER_ON_HEAD)
 				)
 			)
 			.build(consumer, "adventure/voluntary_exile");

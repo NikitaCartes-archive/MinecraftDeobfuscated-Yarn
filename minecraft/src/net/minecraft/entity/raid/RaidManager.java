@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -129,7 +129,7 @@ public class RaidManager extends PersistentState {
 					player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, (byte)43));
 					if (!raid.hasSpawned()) {
 						player.incrementStat(Stats.RAID_TRIGGER);
-						Criterions.VOLUNTARY_EXILE.trigger(player);
+						Criteria.VOLUNTARY_EXILE.trigger(player);
 					}
 				}
 

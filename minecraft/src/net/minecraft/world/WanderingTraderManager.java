@@ -20,13 +20,13 @@ import net.minecraft.world.poi.PointOfInterestType;
 public class WanderingTraderManager {
 	private final Random random = new Random();
 	private final ServerWorld world;
-	private int field_17728;
+	private int spawnTimer;
 	private int spawnDelay;
 	private int spawnChance;
 
 	public WanderingTraderManager(ServerWorld world) {
 		this.world = world;
-		this.field_17728 = 1200;
+		this.spawnTimer = 1200;
 		LevelProperties levelProperties = world.getLevelProperties();
 		this.spawnDelay = levelProperties.getWanderingTraderSpawnDelay();
 		this.spawnChance = levelProperties.getWanderingTraderSpawnChance();
@@ -40,8 +40,8 @@ public class WanderingTraderManager {
 
 	public void tick() {
 		if (this.world.getGameRules().getBoolean(GameRules.DO_TRADER_SPAWNING)) {
-			if (--this.field_17728 <= 0) {
-				this.field_17728 = 1200;
+			if (--this.spawnTimer <= 0) {
+				this.spawnTimer = 1200;
 				LevelProperties levelProperties = this.world.getLevelProperties();
 				this.spawnDelay -= 1200;
 				levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
@@ -76,8 +76,8 @@ public class WanderingTraderManager {
 				PointOfInterestType.MEETING.getCompletionCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
-			BlockPos blockPos3 = this.method_18017(blockPos2, 48);
-			if (blockPos3 != null && this.method_23279(blockPos3)) {
+			BlockPos blockPos3 = this.getNearbySpawnPos(blockPos2, 48);
+			if (blockPos3 != null && this.wontSuffocateAt(blockPos3)) {
 				if (this.world.getBiome(blockPos3) == Biomes.THE_VOID) {
 					return false;
 				}
@@ -85,7 +85,7 @@ public class WanderingTraderManager {
 				WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(this.world, null, null, null, blockPos3, SpawnType.EVENT, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {
-						this.method_18016(wanderingTraderEntity, 4);
+						this.spawnLlama(wanderingTraderEntity, 4);
 					}
 
 					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
@@ -100,37 +100,37 @@ public class WanderingTraderManager {
 		}
 	}
 
-	private void method_18016(WanderingTraderEntity wanderingTraderEntity, int i) {
-		BlockPos blockPos = this.method_18017(wanderingTraderEntity.getBlockPos(), i);
+	private void spawnLlama(WanderingTraderEntity wanderingTrader, int range) {
+		BlockPos blockPos = this.getNearbySpawnPos(wanderingTrader.getBlockPos(), range);
 		if (blockPos != null) {
 			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(this.world, null, null, null, blockPos, SpawnType.EVENT, false, false);
 			if (traderLlamaEntity != null) {
-				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
+				traderLlamaEntity.attachLeash(wanderingTrader, true);
 			}
 		}
 	}
 
 	@Nullable
-	private BlockPos method_18017(BlockPos blockPos, int i) {
-		BlockPos blockPos2 = null;
+	private BlockPos getNearbySpawnPos(BlockPos pos, int range) {
+		BlockPos blockPos = null;
 
-		for (int j = 0; j < 10; j++) {
-			int k = blockPos.getX() + this.random.nextInt(i * 2) - i;
-			int l = blockPos.getZ() + this.random.nextInt(i * 2) - i;
-			int m = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, k, l);
-			BlockPos blockPos3 = new BlockPos(k, m, l);
-			if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, blockPos3, EntityType.WANDERING_TRADER)) {
-				blockPos2 = blockPos3;
+		for (int i = 0; i < 10; i++) {
+			int j = pos.getX() + this.random.nextInt(range * 2) - range;
+			int k = pos.getZ() + this.random.nextInt(range * 2) - range;
+			int l = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, j, k);
+			BlockPos blockPos2 = new BlockPos(j, l, k);
+			if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, blockPos2, EntityType.WANDERING_TRADER)) {
+				blockPos = blockPos2;
 				break;
 			}
 		}
 
-		return blockPos2;
+		return blockPos;
 	}
 
-	private boolean method_23279(BlockPos blockPos) {
-		for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(1, 2, 1))) {
-			if (!this.world.getBlockState(blockPos2).getCollisionShape(this.world, blockPos2).isEmpty()) {
+	private boolean wontSuffocateAt(BlockPos pos) {
+		for (BlockPos blockPos : BlockPos.iterate(pos, pos.add(1, 2, 1))) {
+			if (!this.world.getBlockState(blockPos).getCollisionShape(this.world, blockPos).isEmpty()) {
 				return false;
 			}
 		}

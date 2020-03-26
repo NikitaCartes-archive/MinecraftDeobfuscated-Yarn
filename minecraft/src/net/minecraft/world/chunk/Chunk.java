@@ -101,10 +101,10 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	ChunkStatus getStatus();
 
-	void removeBlockEntity(BlockPos blockPos);
+	void removeBlockEntity(BlockPos pos);
 
-	default void markBlockForPostProcessing(BlockPos blockPos) {
-		LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", blockPos);
+	default void markBlockForPostProcessing(BlockPos pos) {
+		LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", pos);
 	}
 
 	ShortList[] getPostProcessingLists();
@@ -113,7 +113,7 @@ public interface Chunk extends BlockView, StructureHolder {
 		getList(this.getPostProcessingLists(), i).add(s);
 	}
 
-	default void addPendingBlockEntityTag(CompoundTag compoundTag) {
+	default void addPendingBlockEntityTag(CompoundTag tag) {
 		LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
 	}
 

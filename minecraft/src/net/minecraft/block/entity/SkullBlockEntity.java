@@ -20,7 +20,7 @@ import net.minecraft.util.UserCache;
 public class SkullBlockEntity extends BlockEntity implements Tickable {
 	private GameProfile owner;
 	private int ticksPowered;
-	private boolean isPowered;
+	private boolean powered;
 	private static UserCache userCache;
 	private static MinecraftSessionService sessionService;
 
@@ -49,12 +49,12 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		if (compoundTag.contains("SkullOwner", 10)) {
-			this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner")));
-		} else if (compoundTag.contains("ExtraType", 8)) {
-			String string = compoundTag.getString("ExtraType");
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		if (tag.contains("SkullOwner", 10)) {
+			this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
+		} else if (tag.contains("ExtraType", 8)) {
+			String string = tag.getString("ExtraType");
 			if (!ChatUtil.isEmpty(string)) {
 				this.setOwnerAndType(new GameProfile(null, string));
 			}
@@ -66,17 +66,17 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 		Block block = this.getCachedState().getBlock();
 		if (block == Blocks.DRAGON_HEAD || block == Blocks.DRAGON_WALL_HEAD) {
 			if (this.world.isReceivingRedstonePower(this.pos)) {
-				this.isPowered = true;
+				this.powered = true;
 				this.ticksPowered++;
 			} else {
-				this.isPowered = false;
+				this.powered = false;
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public float getTicksPowered(float tickDelta) {
-		return this.isPowered ? (float)this.ticksPowered + tickDelta : (float)this.ticksPowered;
+		return this.powered ? (float)this.ticksPowered + tickDelta : (float)this.ticksPowered;
 	}
 
 	@Nullable

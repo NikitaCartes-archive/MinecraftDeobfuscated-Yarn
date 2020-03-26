@@ -5,7 +5,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -78,7 +78,7 @@ public class BeehiveBlock extends BlockWithEntity {
 				this.angerNearbyBees(world, pos);
 			}
 
-			Criterions.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state.getBlock(), stack, beehiveBlockEntity.getBeeCount());
+			Criteria.BEE_NEST_DESTROYED.test((ServerPlayerEntity)player, state.getBlock(), stack, beehiveBlockEntity.getBeeCount());
 		}
 	}
 
@@ -135,7 +135,7 @@ public class BeehiveBlock extends BlockWithEntity {
 			} else {
 				this.takeHoney(world, state, pos);
 				if (player instanceof ServerPlayerEntity) {
-					Criterions.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)player, pos, itemStack2);
+					Criteria.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)player, pos, itemStack2);
 				}
 			}
 

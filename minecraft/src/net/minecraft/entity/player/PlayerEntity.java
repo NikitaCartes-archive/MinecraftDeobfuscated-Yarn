@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -168,7 +168,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.field_6215 = 180.0F;
 	}
 
-	public boolean canMine(World world, BlockPos blockPos, GameMode gameMode) {
+	public boolean canMine(World world, BlockPos pos, GameMode gameMode) {
 		if (!gameMode.shouldLimitWorldModification()) {
 			return false;
 		} else if (gameMode == GameMode.SPECTATOR) {
@@ -177,7 +177,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			return false;
 		} else {
 			ItemStack itemStack = this.getMainHandStack();
-			return itemStack.isEmpty() || !itemStack.canDestroy(world.getTagManager(), new CachedBlockPosition(world, blockPos, false));
+			return itemStack.isEmpty() || !itemStack.canDestroy(world.getTagManager(), new CachedBlockPosition(world, pos, false));
 		}
 	}
 
@@ -631,10 +631,10 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	protected void vanishCursedItems() {
-		for (int i = 0; i < this.inventory.getInvSize(); i++) {
-			ItemStack itemStack = this.inventory.getInvStack(i);
+		for (int i = 0; i < this.inventory.size(); i++) {
+			ItemStack itemStack = this.inventory.getStack(i);
 			if (!itemStack.isEmpty() && EnchantmentHelper.hasVanishingCurse(itemStack)) {
-				this.inventory.removeInvStack(i);
+				this.inventory.removeStack(i);
 			}
 		}
 	}
@@ -658,7 +658,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public boolean dropSelectedItem(boolean dropEntireStack) {
 		return this.dropItem(
 				this.inventory
-					.takeInvStack(
+					.removeStack(
 						this.inventory.selectedSlot, dropEntireStack && !this.inventory.getMainHandStack().isEmpty() ? this.inventory.getMainHandStack().getCount() : 1
 					),
 				false,
@@ -780,7 +780,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.setScore(tag.getInt("Score"));
-		this.hungerManager.deserialize(tag);
+		this.hungerManager.fromTag(tag);
 		this.abilities.deserialize(tag);
 		if (tag.contains("EnderItems", 9)) {
 			this.enderChestInventory.readTags(tag.getList("EnderItems", 10));
@@ -807,7 +807,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		tag.putInt("XpTotal", this.totalExperience);
 		tag.putInt("XpSeed", this.enchantmentTableSeed);
 		tag.putInt("Score", this.getScore());
-		this.hungerManager.serialize(tag);
+		this.hungerManager.toTag(tag);
 		this.abilities.serialize(tag);
 		tag.put("EnderItems", this.enderChestInventory.getTags());
 		if (!this.getShoulderEntityLeft().isEmpty()) {
@@ -929,22 +929,22 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
+	public void openEditSignScreen(SignBlockEntity sign) {
 	}
 
 	public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {
 	}
 
-	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlock) {
 	}
 
-	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
+	public void openStructureBlockScreen(StructureBlockBlockEntity structureBlock) {
 	}
 
-	public void openJigsawScreen(JigsawBlockEntity jigsawBlockEntity) {
+	public void openJigsawScreen(JigsawBlockEntity jigsaw) {
 	}
 
-	public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
+	public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
 	}
 
 	public OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory) {
@@ -1853,7 +1853,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public boolean equip(int slot, ItemStack item) {
 		if (slot >= 0 && slot < this.inventory.main.size()) {
-			this.inventory.setInvStack(slot, item);
+			this.inventory.setStack(slot, item);
 			return true;
 		} else {
 			EquipmentSlot equipmentSlot;
@@ -1877,8 +1877,8 @@ public abstract class PlayerEntity extends LivingEntity {
 				return true;
 			} else if (equipmentSlot == null) {
 				int i = slot - 200;
-				if (i >= 0 && i < this.enderChestInventory.getInvSize()) {
-					this.enderChestInventory.setInvStack(i, item);
+				if (i >= 0 && i < this.enderChestInventory.size()) {
+					this.enderChestInventory.setStack(i, item);
 					return true;
 				} else {
 					return false;
@@ -1894,7 +1894,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					}
 				}
 
-				this.inventory.setInvStack(equipmentSlot.getEntitySlotId() + this.inventory.main.size(), item);
+				this.inventory.setStack(equipmentSlot.getEntitySlotId() + this.inventory.main.size(), item);
 				return true;
 			}
 		}
@@ -1992,8 +1992,8 @@ public abstract class PlayerEntity extends LivingEntity {
 			} else {
 				predicate = ((RangedWeaponItem)stack.getItem()).getProjectiles();
 
-				for (int i = 0; i < this.inventory.getInvSize(); i++) {
-					ItemStack itemStack2 = this.inventory.getInvStack(i);
+				for (int i = 0; i < this.inventory.size(); i++) {
+					ItemStack itemStack2 = this.inventory.getStack(i);
 					if (predicate.test(itemStack2)) {
 						return itemStack2;
 					}
@@ -2012,7 +2012,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F
 		);
 		if (this instanceof ServerPlayerEntity) {
-			Criterions.CONSUME_ITEM.trigger((ServerPlayerEntity)this, stack);
+			Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)this, stack);
 		}
 
 		return super.eatFood(world, stack);

@@ -107,8 +107,8 @@ public class ReplaceItemCommand {
 			throw BLOCK_FAILED_EXCEPTION.create();
 		} else {
 			Inventory inventory = (Inventory)blockEntity;
-			if (slot >= 0 && slot < inventory.getInvSize()) {
-				inventory.setInvStack(slot, item);
+			if (slot >= 0 && slot < inventory.size()) {
+				inventory.setStack(slot, item);
 				source.sendFeedback(new TranslatableText("commands.replaceitem.block.success", pos.getX(), pos.getY(), pos.getZ(), item.toHoverableText()), true);
 				return 1;
 			} else {

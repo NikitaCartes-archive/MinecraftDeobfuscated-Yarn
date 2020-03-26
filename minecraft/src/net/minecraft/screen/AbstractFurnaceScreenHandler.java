@@ -109,7 +109,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUseInv(player);
+		return this.inventory.canPlayerUse(player);
 	}
 
 	@Override

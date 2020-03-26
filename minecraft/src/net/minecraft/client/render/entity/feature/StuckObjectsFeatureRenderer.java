@@ -21,7 +21,7 @@ public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M exte
 	protected abstract int getObjectCount(T entity);
 
 	protected abstract void renderObject(
-		MatrixStack matrix, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Entity entity, float directionX, float directionY, float directionZ, float tickDelta
 	);
 
 	public void render(

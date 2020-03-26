@@ -36,13 +36,13 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	private final ModelPart field_21479;
 	private final ModelPart field_21480;
 	private final ModelPart field_21481;
-	private boolean isChristmas;
+	private boolean christmas;
 
 	public ChestBlockEntityRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher) {
 		super(blockEntityRenderDispatcher);
 		Calendar calendar = Calendar.getInstance();
 		if (calendar.get(2) + 1 == 12 && calendar.get(5) >= 24 && calendar.get(5) <= 26) {
-			this.isChristmas = true;
+			this.christmas = true;
 		}
 
 		this.field_20818 = new ModelPart(64, 64, 0, 19);
@@ -75,10 +75,10 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	}
 
 	@Override
-	public void render(T blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-		World world = blockEntity.getWorld();
+	public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+		World world = entity.getWorld();
 		boolean bl = world != null;
-		BlockState blockState = bl ? blockEntity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+		BlockState blockState = bl ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.SINGLE;
 		Block block = blockState.getBlock();
 		if (block instanceof AbstractChestBlock) {
@@ -91,16 +91,16 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 			matrices.translate(-0.5, -0.5, -0.5);
 			DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> propertySource;
 			if (bl) {
-				propertySource = abstractChestBlock.getBlockEntitySource(blockState, world, blockEntity.getPos(), true);
+				propertySource = abstractChestBlock.getBlockEntitySource(blockState, world, entity.getPos(), true);
 			} else {
 				propertySource = DoubleBlockProperties.PropertyRetriever::getFallback;
 			}
 
-			float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever(blockEntity)).get(tickDelta);
+			float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever(entity)).get(tickDelta);
 			g = 1.0F - g;
 			g = 1.0F - g * g * g;
 			int i = propertySource.apply(new LightmapCoordinatesRetriever<>()).applyAsInt(light);
-			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(blockEntity, chestType, this.isChristmas);
+			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(entity, chestType, this.christmas);
 			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
 			if (bl2) {
 				if (chestType == ChestType.LEFT) {
@@ -117,12 +117,12 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	}
 
 	private void method_22749(
-		MatrixStack matrixStack, VertexConsumer vertexConsumer, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int i, int j
+		MatrixStack matrices, VertexConsumer vertices, ModelPart modelPart, ModelPart modelPart2, ModelPart modelPart3, float f, int light, int overlay
 	) {
 		modelPart.pitch = -(f * (float) (Math.PI / 2));
 		modelPart2.pitch = modelPart.pitch;
-		modelPart.render(matrixStack, vertexConsumer, i, j);
-		modelPart2.render(matrixStack, vertexConsumer, i, j);
-		modelPart3.render(matrixStack, vertexConsumer, i, j);
+		modelPart.render(matrices, vertices, light, overlay);
+		modelPart2.render(matrices, vertices, light, overlay);
+		modelPart3.render(matrices, vertices, light, overlay);
 	}
 }

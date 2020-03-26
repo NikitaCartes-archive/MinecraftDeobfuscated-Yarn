@@ -26,5 +26,5 @@ public abstract class Model implements Consumer<ModelPart> {
 		return (RenderLayer)this.layerFactory.apply(texture);
 	}
 
-	public abstract void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha);
+	public abstract void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha);
 }

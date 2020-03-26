@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.entity.Entity;
@@ -238,8 +237,8 @@ public enum Direction implements StringIdentifiable {
 		return values()[random.nextInt(values().length)];
 	}
 
-	public static Direction getFacing(double x, double d, double e) {
-		return getFacing((float)x, (float)d, (float)e);
+	public static Direction getFacing(double x, double y, double z) {
+		return getFacing((float)x, (float)y, (float)z);
 	}
 
 	public static Direction getFacing(float x, float y, float z) {
@@ -394,7 +393,7 @@ public enum Direction implements StringIdentifiable {
 			return this.desc;
 		}
 
-		public Direction.AxisDirection method_26424() {
+		public Direction.AxisDirection getOpposite() {
 			return this == POSITIVE ? NEGATIVE : POSITIVE;
 		}
 	}

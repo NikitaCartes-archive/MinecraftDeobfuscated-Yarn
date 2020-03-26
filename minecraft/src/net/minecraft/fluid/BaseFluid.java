@@ -286,7 +286,7 @@ public abstract class BaseFluid extends Fluid {
 						return i;
 					}
 
-					if (i < this.method_15733(world)) {
+					if (i < this.getFlowSpeed(world)) {
 						int k = this.method_15742(world, blockPos3, i + 1, direction2.getOpposite(), blockState2, blockPos2, short2ObjectMap, short2BooleanMap);
 						if (k < j) {
 							j = k;
@@ -319,7 +319,7 @@ public abstract class BaseFluid extends Fluid {
 		return state.getFluid().matchesType(this) && state.isStill();
 	}
 
-	protected abstract int method_15733(WorldView world);
+	protected abstract int getFlowSpeed(WorldView world);
 
 	private int method_15740(WorldView world, BlockPos pos) {
 		int i = 0;
@@ -406,7 +406,7 @@ public abstract class BaseFluid extends Fluid {
 		FluidState fluidState,
 		Fluid fluid
 	) {
-		return fluidState.method_15764(world, flowTo, fluid, flowDirection)
+		return fluidState.canBeReplacedWith(world, flowTo, fluid, flowDirection)
 			&& this.receivesFlow(flowDirection, world, fluidPos, fluidBlockState, flowTo, flowToBlockState)
 			&& this.canFill(world, flowTo, flowToBlockState, fluid);
 	}

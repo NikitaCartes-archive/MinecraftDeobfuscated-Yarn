@@ -23,9 +23,9 @@ public interface Trader {
 	@Environment(EnvType.CLIENT)
 	void setOffersFromServer(@Nullable TraderOfferList traderOfferList);
 
-	void trade(TradeOffer tradeOffer);
+	void trade(TradeOffer offer);
 
-	void onSellingItem(ItemStack itemStack);
+	void onSellingItem(ItemStack stack);
 
 	World getTraderWorld();
 

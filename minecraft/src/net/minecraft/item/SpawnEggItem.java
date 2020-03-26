@@ -150,11 +150,11 @@ public class SpawnEggItem extends Item {
 		return this.type;
 	}
 
-	public Optional<MobEntity> method_24793(PlayerEntity playerEntity, EntityType<? extends MobEntity> entityType, World world, Vec3d vec3d, ItemStack itemStack) {
-		if (!this.isOfSameEntityType(itemStack.getTag(), entityType)) {
+	public Optional<MobEntity> spawnBaby(PlayerEntity user, EntityType<? extends MobEntity> type, World world, Vec3d pos, ItemStack stack) {
+		if (!this.isOfSameEntityType(stack.getTag(), type)) {
 			return Optional.empty();
 		} else {
-			MobEntity mobEntity = entityType.create(world);
+			MobEntity mobEntity = type.create(world);
 			if (mobEntity == null) {
 				return Optional.empty();
 			} else {
@@ -162,14 +162,14 @@ public class SpawnEggItem extends Item {
 				if (!mobEntity.isBaby()) {
 					return Optional.empty();
 				} else {
-					mobEntity.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
+					mobEntity.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
 					world.spawnEntity(mobEntity);
-					if (itemStack.hasCustomName()) {
-						mobEntity.setCustomName(itemStack.getName());
+					if (stack.hasCustomName()) {
+						mobEntity.setCustomName(stack.getName());
 					}
 
-					if (!playerEntity.abilities.creativeMode) {
-						itemStack.decrement(1);
+					if (!user.abilities.creativeMode) {
+						stack.decrement(1);
 					}
 
 					return Optional.of(mobEntity);

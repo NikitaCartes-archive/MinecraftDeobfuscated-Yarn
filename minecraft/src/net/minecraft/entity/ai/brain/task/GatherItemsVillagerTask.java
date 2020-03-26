@@ -47,11 +47,11 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 			}
 
 			if (villagerEntity2.getVillagerData().getProfession() == VillagerProfession.FARMER
-				&& villagerEntity.getInventory().countInInv(Items.WHEAT) > Items.WHEAT.getMaxCount() / 2) {
+				&& villagerEntity.getInventory().count(Items.WHEAT) > Items.WHEAT.getMaxCount() / 2) {
 				giveHalfOfStack(villagerEntity, ImmutableSet.of(Items.WHEAT), villagerEntity2);
 			}
 
-			if (!this.items.isEmpty() && villagerEntity.getInventory().containsAnyInInv(this.items)) {
+			if (!this.items.isEmpty() && villagerEntity.getInventory().containsAny(this.items)) {
 				giveHalfOfStack(villagerEntity, this.items, villagerEntity2);
 			}
 		}
@@ -72,12 +72,12 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		ItemStack itemStack = ItemStack.EMPTY;
 		int i = 0;
 
-		while (i < basicInventory.getInvSize()) {
+		while (i < basicInventory.size()) {
 			ItemStack itemStack2;
 			Item item;
 			int j;
 			label28: {
-				itemStack2 = basicInventory.getInvStack(i);
+				itemStack2 = basicInventory.getStack(i);
 				if (!itemStack2.isEmpty()) {
 					item = itemStack2.getItem();
 					if (validItems.contains(item)) {

@@ -6,10 +6,10 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.class_5000;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
+import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -50,7 +50,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		compoundTag.putString("final_state", "minecraft:air");
 		compoundTag.putString("pool", "minecraft:empty");
 		compoundTag.putString("target", "minecraft:empty");
-		compoundTag.putString("joint", JigsawBlockEntity.class_4991.field_23329.asString());
+		compoundTag.putString("joint", JigsawBlockEntity.Joint.ROLLABLE.asString());
 		return compoundTag;
 	}
 
@@ -63,7 +63,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 		list.add(
 			new Structure.StructureBlockInfo(
-				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.field_23262, class_5000.method_26425(Direction.DOWN, Direction.SOUTH)), this.tag
+				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.tag
 			)
 		);
 		return list;

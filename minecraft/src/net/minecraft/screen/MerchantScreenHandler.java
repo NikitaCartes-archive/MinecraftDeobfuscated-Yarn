@@ -165,43 +165,43 @@ public class MerchantScreenHandler extends ScreenHandler {
 		this.trader.setCurrentCustomer(null);
 		if (!this.trader.getTraderWorld().isClient) {
 			if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).method_14239()) {
-				ItemStack itemStack = this.traderInventory.removeInvStack(0);
+				ItemStack itemStack = this.traderInventory.removeStack(0);
 				if (!itemStack.isEmpty()) {
 					player.dropItem(itemStack, false);
 				}
 
-				itemStack = this.traderInventory.removeInvStack(1);
+				itemStack = this.traderInventory.removeStack(1);
 				if (!itemStack.isEmpty()) {
 					player.dropItem(itemStack, false);
 				}
 			} else {
-				player.inventory.offerOrDrop(player.world, this.traderInventory.removeInvStack(0));
-				player.inventory.offerOrDrop(player.world, this.traderInventory.removeInvStack(1));
+				player.inventory.offerOrDrop(player.world, this.traderInventory.removeStack(0));
+				player.inventory.offerOrDrop(player.world, this.traderInventory.removeStack(1));
 			}
 		}
 	}
 
 	public void switchTo(int recipeIndex) {
 		if (this.getRecipes().size() > recipeIndex) {
-			ItemStack itemStack = this.traderInventory.getInvStack(0);
+			ItemStack itemStack = this.traderInventory.getStack(0);
 			if (!itemStack.isEmpty()) {
 				if (!this.insertItem(itemStack, 3, 39, true)) {
 					return;
 				}
 
-				this.traderInventory.setInvStack(0, itemStack);
+				this.traderInventory.setStack(0, itemStack);
 			}
 
-			ItemStack itemStack2 = this.traderInventory.getInvStack(1);
+			ItemStack itemStack2 = this.traderInventory.getStack(1);
 			if (!itemStack2.isEmpty()) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return;
 				}
 
-				this.traderInventory.setInvStack(1, itemStack2);
+				this.traderInventory.setStack(1, itemStack2);
 			}
 
-			if (this.traderInventory.getInvStack(0).isEmpty() && this.traderInventory.getInvStack(1).isEmpty()) {
+			if (this.traderInventory.getStack(0).isEmpty() && this.traderInventory.getStack(1).isEmpty()) {
 				ItemStack itemStack3 = ((TradeOffer)this.getRecipes().get(recipeIndex)).getAdjustedFirstBuyItem();
 				this.autofill(0, itemStack3);
 				ItemStack itemStack4 = ((TradeOffer)this.getRecipes().get(recipeIndex)).getSecondBuyItem();
@@ -215,14 +215,14 @@ public class MerchantScreenHandler extends ScreenHandler {
 			for (int i = 3; i < 39; i++) {
 				ItemStack itemStack = ((Slot)this.slots.get(i)).getStack();
 				if (!itemStack.isEmpty() && this.equals(stack, itemStack)) {
-					ItemStack itemStack2 = this.traderInventory.getInvStack(slot);
+					ItemStack itemStack2 = this.traderInventory.getStack(slot);
 					int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
 					int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());
 					ItemStack itemStack3 = itemStack.copy();
 					int l = j + k;
 					itemStack.decrement(k);
 					itemStack3.setCount(l);
-					this.traderInventory.setInvStack(slot, itemStack3);
+					this.traderInventory.setStack(slot, itemStack3);
 					if (l >= stack.getMaxCount()) {
 						break;
 					}

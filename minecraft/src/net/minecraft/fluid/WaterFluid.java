@@ -88,7 +88,7 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15733(WorldView world) {
+	public int getFlowSpeed(WorldView world) {
 		return 4;
 	}
 

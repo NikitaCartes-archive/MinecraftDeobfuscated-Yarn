@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -174,7 +174,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 						.getNonSpectatingEntities(
 							ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0)
 						)) {
-						Criterions.CONSTRUCT_BEACON.trigger(serverPlayerEntity, this);
+						Criteria.CONSTRUCT_BEACON.trigger(serverPlayerEntity, this);
 					}
 				} else if (bl && !bl2) {
 					this.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE);
@@ -276,15 +276,15 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
-		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
-		if (compoundTag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		this.primary = getPotionEffectById(tag.getInt("Primary"));
+		this.secondary = getPotionEffectById(tag.getInt("Secondary"));
+		if (tag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
-		this.lock = ContainerLock.fromTag(compoundTag);
+		this.lock = ContainerLock.fromTag(tag);
 	}
 
 	@Override

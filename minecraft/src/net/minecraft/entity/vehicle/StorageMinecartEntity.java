@@ -49,7 +49,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean isInvEmpty() {
+	public boolean isEmpty() {
 		for (ItemStack itemStack : this.inventory) {
 			if (!itemStack.isEmpty()) {
 				return false;
@@ -60,20 +60,20 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
-		this.method_7563(null);
+	public ItemStack getStack(int slot) {
+		this.generateLoot(null);
 		return this.inventory.get(slot);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
-		this.method_7563(null);
+	public ItemStack removeStack(int slot, int amount) {
+		this.generateLoot(null);
 		return Inventories.splitStack(this.inventory, slot, amount);
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
-		this.method_7563(null);
+	public ItemStack removeStack(int slot) {
+		this.generateLoot(null);
 		ItemStack itemStack = this.inventory.get(slot);
 		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
@@ -84,18 +84,18 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
-		this.method_7563(null);
+	public void setStack(int slot, ItemStack stack) {
+		this.generateLoot(null);
 		this.inventory.set(slot, stack);
-		if (!stack.isEmpty() && stack.getCount() > this.getInvMaxStackAmount()) {
-			stack.setCount(this.getInvMaxStackAmount());
+		if (!stack.isEmpty() && stack.getCount() > this.getMaxCountPerStack()) {
+			stack.setCount(this.getMaxCountPerStack());
 		}
 	}
 
 	@Override
 	public boolean equip(int slot, ItemStack item) {
-		if (slot >= 0 && slot < this.getInvSize()) {
-			this.setInvStack(slot, item);
+		if (slot >= 0 && slot < this.size()) {
+			this.setStack(slot, item);
 			return true;
 		} else {
 			return false;
@@ -107,7 +107,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return this.removed ? false : !(player.squaredDistanceTo(this) > 64.0);
 	}
 
@@ -143,7 +143,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	protected void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		this.inventory = DefaultedList.ofSize(this.getInvSize(), ItemStack.EMPTY);
+		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (tag.contains("LootTable", 8)) {
 			this.lootTableId = new Identifier(tag.getString("LootTable"));
 			this.lootSeed = tag.getLong("LootTableSeed");
@@ -169,15 +169,15 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		this.setVelocity(this.getVelocity().multiply((double)f, 0.0, (double)f));
 	}
 
-	public void method_7563(@Nullable PlayerEntity playerEntity) {
+	public void generateLoot(@Nullable PlayerEntity player) {
 		if (this.lootTableId != null && this.world.getServer() != null) {
 			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 				.put(LootContextParameters.POSITION, this.getBlockPos())
 				.setRandom(this.lootSeed);
-			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.THIS_ENTITY, playerEntity);
+			if (player != null) {
+				builder.setLuck(player.getLuck()).put(LootContextParameters.THIS_ENTITY, player);
 			}
 
 			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
@@ -186,13 +186,13 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Override
 	public void clear() {
-		this.method_7563(null);
+		this.generateLoot(null);
 		this.inventory.clear();
 	}
 
-	public void setLootTable(Identifier id, long l) {
+	public void setLootTable(Identifier id, long lootSeed) {
 		this.lootTableId = id;
-		this.lootSeed = l;
+		this.lootSeed = lootSeed;
 	}
 
 	@Nullable
@@ -201,7 +201,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 		if (this.lootTableId != null && playerEntity.isSpectator()) {
 			return null;
 		} else {
-			this.method_7563(playerInventory.player);
+			this.generateLoot(playerInventory.player);
 			return this.getScreenHandler(i, playerInventory);
 		}
 	}

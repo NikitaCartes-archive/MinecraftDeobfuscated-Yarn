@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -35,7 +35,7 @@ public class TargetBlock extends Block {
 		if (entity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 			serverPlayerEntity.incrementStat(Stats.TARGET_HIT);
-			Criterions.TARGET_HIT.trigger(serverPlayerEntity, projectile, hit.getPos(), i);
+			Criteria.TARGET_HIT.trigger(serverPlayerEntity, projectile, hit.getPos(), i);
 		}
 	}
 

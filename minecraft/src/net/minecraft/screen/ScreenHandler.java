@@ -66,7 +66,7 @@ public abstract class ScreenHandler {
 	 * @throws IllegalArgumentException if the inventory size is smaller than {@code exceptedSize}
 	 */
 	protected static void checkSize(Inventory inventory, int expectedSize) {
-		int i = inventory.getInvSize();
+		int i = inventory.size();
 		if (i < expectedSize) {
 			throw new IllegalArgumentException("Container size " + i + " is smaller than expected " + expectedSize);
 		}
@@ -337,12 +337,12 @@ public abstract class ScreenHandler {
 			}
 		} else if (actionType == SlotActionType.SWAP && clickData >= 0 && clickData < 9) {
 			Slot slot3 = (Slot)this.slots.get(slotId);
-			ItemStack itemStack3x = playerInventory.getInvStack(clickData);
+			ItemStack itemStack3x = playerInventory.getStack(clickData);
 			ItemStack itemStack2x = slot3.getStack();
 			if (!itemStack3x.isEmpty() || !itemStack2x.isEmpty()) {
 				if (itemStack3x.isEmpty()) {
 					if (slot3.canTakeItems(player)) {
-						playerInventory.setInvStack(clickData, itemStack2x);
+						playerInventory.setStack(clickData, itemStack2x);
 						slot3.onTake(itemStack2x.getCount());
 						slot3.setStack(ItemStack.EMPTY);
 						slot3.onTakeItem(player, itemStack2x);
@@ -354,7 +354,7 @@ public abstract class ScreenHandler {
 							slot3.setStack(itemStack3x.split(mx));
 						} else {
 							slot3.setStack(itemStack3x);
-							playerInventory.setInvStack(clickData, ItemStack.EMPTY);
+							playerInventory.setStack(clickData, ItemStack.EMPTY);
 						}
 					}
 				} else if (slot3.canTakeItems(player) && slot3.canInsert(itemStack3x)) {
@@ -367,7 +367,7 @@ public abstract class ScreenHandler {
 						}
 					} else {
 						slot3.setStack(itemStack3x);
-						playerInventory.setInvStack(clickData, itemStack2x);
+						playerInventory.setStack(clickData, itemStack2x);
 						slot3.onTakeItem(player, itemStack2x);
 					}
 				}
@@ -437,12 +437,12 @@ public abstract class ScreenHandler {
 
 	protected void dropInventory(PlayerEntity player, World world, Inventory inventory) {
 		if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).method_14239()) {
-			for (int i = 0; i < inventory.getInvSize(); i++) {
-				player.dropItem(inventory.removeInvStack(i), false);
+			for (int i = 0; i < inventory.size(); i++) {
+				player.dropItem(inventory.removeStack(i), false);
 			}
 		} else {
-			for (int i = 0; i < inventory.getInvSize(); i++) {
-				player.inventory.offerOrDrop(world, inventory.removeInvStack(i));
+			for (int i = 0; i < inventory.size(); i++) {
+				player.inventory.offerOrDrop(world, inventory.removeStack(i));
 			}
 		}
 	}
@@ -616,15 +616,15 @@ public abstract class ScreenHandler {
 			int i = 0;
 			float f = 0.0F;
 
-			for (int j = 0; j < inventory.getInvSize(); j++) {
-				ItemStack itemStack = inventory.getInvStack(j);
+			for (int j = 0; j < inventory.size(); j++) {
+				ItemStack itemStack = inventory.getStack(j);
 				if (!itemStack.isEmpty()) {
-					f += (float)itemStack.getCount() / (float)Math.min(inventory.getInvMaxStackAmount(), itemStack.getMaxCount());
+					f += (float)itemStack.getCount() / (float)Math.min(inventory.getMaxCountPerStack(), itemStack.getMaxCount());
 					i++;
 				}
 			}
 
-			f /= (float)inventory.getInvSize();
+			f /= (float)inventory.size();
 			return MathHelper.floor(f * 14.0F) + (i > 0 ? 1 : 0);
 		}
 	}

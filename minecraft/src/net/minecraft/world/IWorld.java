@@ -62,18 +62,18 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	default void updateNeighbors(BlockPos pos, Block block) {
 	}
 
-	void playSound(@Nullable PlayerEntity player, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch);
+	void playSound(@Nullable PlayerEntity player, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
 	void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 
-	void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data);
+	void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data);
 
-	default int method_24853() {
+	default int getDimensionHeight() {
 		return this.getDimension().isNether() ? 128 : 256;
 	}
 
-	default void playLevelEvent(int eventId, BlockPos blockPos, int data) {
-		this.playLevelEvent(null, eventId, blockPos, data);
+	default void playLevelEvent(int eventId, BlockPos pos, int data) {
+		this.playLevelEvent(null, eventId, pos, data);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	}
 
 	@Override
-	default BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos) {
-		return WorldView.super.getTopPosition(type, blockPos);
+	default BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
+		return WorldView.super.getTopPosition(type, pos);
 	}
 }

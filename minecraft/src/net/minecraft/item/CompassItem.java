@@ -47,13 +47,13 @@ public class CompassItem extends Item {
 					}
 
 					CompoundTag compoundTag = itemStack.getOrCreateTag();
-					boolean bl2 = CompassItem.method_26363(compoundTag);
-					BlockPos blockPos = bl2 ? CompassItem.this.method_26358(world, compoundTag) : CompassItem.this.method_26357(world);
+					boolean bl2 = CompassItem.hasLodestone(compoundTag);
+					BlockPos blockPos = bl2 ? CompassItem.this.getLodestonePos(world, compoundTag) : CompassItem.this.getSpawnPos(world);
 					double f;
 					if (blockPos != null) {
-						double d = bl ? (double)entity.yaw : CompassItem.method_26361((ItemFrameEntity)entity);
+						double d = bl ? (double)entity.yaw : CompassItem.getItemFrameAngleOffset((ItemFrameEntity)entity);
 						d = MathHelper.floorMod(d / 360.0, 1.0);
-						double e = CompassItem.method_26362(Vec3d.method_24953(blockPos), entity) / (float) (Math.PI * 2);
+						double e = CompassItem.getAngleToPos(Vec3d.method_24953(blockPos), entity) / (float) (Math.PI * 2);
 						f = 0.5 - (d - 0.25 - e);
 					} else {
 						f = Math.random();
@@ -83,39 +83,39 @@ public class CompassItem extends Item {
 		});
 	}
 
-	private static boolean method_26363(CompoundTag compoundTag) {
-		return compoundTag.contains("LodestoneDimension") || compoundTag.contains("LodestonePos");
+	private static boolean hasLodestone(CompoundTag tag) {
+		return tag.contains("LodestoneDimension") || tag.contains("LodestonePos");
 	}
 
-	private static boolean method_26365(ItemStack itemStack) {
-		return method_26363(itemStack.getOrCreateTag());
+	private static boolean hasLodestone(ItemStack stack) {
+		return hasLodestone(stack.getOrCreateTag());
 	}
 
 	@Override
 	public boolean hasEnchantmentGlint(ItemStack stack) {
-		return method_26365(stack);
+		return hasLodestone(stack);
 	}
 
-	private static Optional<DimensionType> method_26364(CompoundTag compoundTag) {
-		Identifier identifier = Identifier.tryParse(compoundTag.getString("LodestoneDimension"));
+	private static Optional<DimensionType> getLodestoneDimension(CompoundTag tag) {
+		Identifier identifier = Identifier.tryParse(tag.getString("LodestoneDimension"));
 		return identifier != null ? Registry.DIMENSION_TYPE.getOrEmpty(identifier) : Optional.empty();
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private BlockPos method_26357(World world) {
+	private BlockPos getSpawnPos(World world) {
 		return world.dimension.hasVisibleSky() ? world.getSpawnPos() : null;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private BlockPos method_26358(World world, CompoundTag compoundTag) {
-		boolean bl = compoundTag.contains("LodestonePos");
-		boolean bl2 = compoundTag.contains("LodestonePos");
+	private BlockPos getLodestonePos(World world, CompoundTag tag) {
+		boolean bl = tag.contains("LodestonePos");
+		boolean bl2 = tag.contains("LodestonePos");
 		if (bl && bl2) {
-			Optional<DimensionType> optional = method_26364(compoundTag);
+			Optional<DimensionType> optional = getLodestoneDimension(tag);
 			if (optional.isPresent() && world.dimension.getType().equals(optional.get())) {
-				return NbtHelper.toBlockPos((CompoundTag)compoundTag.get("LodestonePos"));
+				return NbtHelper.toBlockPos((CompoundTag)tag.get("LodestonePos"));
 			}
 		}
 
@@ -123,21 +123,21 @@ public class CompassItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static double method_26361(ItemFrameEntity itemFrameEntity) {
-		return (double)MathHelper.wrapDegrees(180 + itemFrameEntity.getHorizontalFacing().getHorizontal() * 90);
+	private static double getItemFrameAngleOffset(ItemFrameEntity itemFrame) {
+		return (double)MathHelper.wrapDegrees(180 + itemFrame.getHorizontalFacing().getHorizontal() * 90);
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static double method_26362(Vec3d vec3d, Entity entity) {
-		return Math.atan2(vec3d.getZ() - entity.getZ(), vec3d.getX() - entity.getX());
+	private static double getAngleToPos(Vec3d pos, Entity entity) {
+		return Math.atan2(pos.getZ() - entity.getZ(), pos.getX() - entity.getX());
 	}
 
 	@Override
 	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 		if (!world.isClient) {
 			CompoundTag compoundTag = stack.getOrCreateTag();
-			if (method_26363(compoundTag)) {
-				Optional<DimensionType> optional = method_26364(compoundTag);
+			if (hasLodestone(compoundTag)) {
+				Optional<DimensionType> optional = getLodestoneDimension(compoundTag);
 				if (optional.isPresent()
 					&& ((DimensionType)optional.get()).equals(world.dimension.getType())
 					&& compoundTag.contains("LodestonePos")
@@ -165,6 +165,6 @@ public class CompassItem extends Item {
 
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		return method_26365(stack) ? "item.minecraft.lodestone_compass" : super.getTranslationKey(stack);
+		return hasLodestone(stack) ? "item.minecraft.lodestone_compass" : super.getTranslationKey(stack);
 	}
 }

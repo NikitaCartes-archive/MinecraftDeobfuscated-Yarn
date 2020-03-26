@@ -13,9 +13,9 @@ public class BedBlockEntity extends BlockEntity {
 		super(BlockEntityType.BED);
 	}
 
-	public BedBlockEntity(DyeColor dyeColor) {
+	public BedBlockEntity(DyeColor color) {
 		this();
-		this.setColor(dyeColor);
+		this.setColor(color);
 	}
 
 	@Override

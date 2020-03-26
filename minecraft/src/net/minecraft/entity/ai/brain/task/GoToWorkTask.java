@@ -6,7 +6,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.GlobalPos;
+import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 

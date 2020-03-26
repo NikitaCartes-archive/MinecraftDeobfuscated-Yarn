@@ -31,10 +31,10 @@ public class EnchantedItemCriterion extends AbstractCriterion<EnchantedItemCrite
 		private final ItemPredicate item;
 		private final NumberRange.IntRange levels;
 
-		public Conditions(ItemPredicate item, NumberRange.IntRange intRange) {
+		public Conditions(ItemPredicate item, NumberRange.IntRange levels) {
 			super(EnchantedItemCriterion.ID);
 			this.item = item;
-			this.levels = intRange;
+			this.levels = levels;
 		}
 
 		public static EnchantedItemCriterion.Conditions any() {

@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class BellBlockEntity extends BlockEntity implements Tickable {
 	private long field_19155;
 	public int ringTicks;
-	public boolean isRinging;
+	public boolean ringing;
 	public Direction lastSideHit;
 	private List<LivingEntity> field_19156;
 	private boolean field_19157;
@@ -37,7 +37,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			this.field_19158 = 0;
 			this.lastSideHit = Direction.byId(j);
 			this.ringTicks = 0;
-			this.isRinging = true;
+			this.ringing = true;
 			return true;
 		} else {
 			return super.onBlockAction(i, j);
@@ -46,12 +46,12 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 
 	@Override
 	public void tick() {
-		if (this.isRinging) {
+		if (this.ringing) {
 			this.ringTicks++;
 		}
 
 		if (this.ringTicks >= 50) {
-			this.isRinging = false;
+			this.ringing = false;
 			this.ringTicks = 0;
 		}
 
@@ -78,10 +78,10 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	public void activate(Direction direction) {
 		BlockPos blockPos = this.getPos();
 		this.lastSideHit = direction;
-		if (this.isRinging) {
+		if (this.ringing) {
 			this.ringTicks = 0;
 		} else {
-			this.isRinging = true;
+			this.ringing = true;
 		}
 
 		this.world.addBlockAction(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
@@ -121,7 +121,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 
 	private void method_20521(World world) {
 		if (!world.isClient) {
-			this.field_19156.stream().filter(this::method_20518).forEach(this::method_20520);
+			this.field_19156.stream().filter(this::isRaiderEntity).forEach(this::glowEntity);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 			int i = (int)this.field_19156.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
 			this.field_19156
 				.stream()
-				.filter(this::method_20518)
+				.filter(this::isRaiderEntity)
 				.forEach(
 					livingEntity -> {
 						float f = 1.0F;
@@ -156,14 +156,11 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	private boolean method_20518(LivingEntity livingEntity) {
-		return livingEntity.isAlive()
-			&& !livingEntity.removed
-			&& this.getPos().isWithinDistance(livingEntity.getPos(), 48.0)
-			&& livingEntity.getType().isIn(EntityTypeTags.RAIDERS);
+	private boolean isRaiderEntity(LivingEntity entity) {
+		return entity.isAlive() && !entity.removed && this.getPos().isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
 	}
 
-	private void method_20520(LivingEntity livingEntity) {
-		livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
+	private void glowEntity(LivingEntity entity) {
+		entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
 	}
 }

@@ -22,13 +22,13 @@ public class EntityFlagsPredicate {
 	private final Boolean isBaby;
 
 	public EntityFlagsPredicate(
-		@Nullable Boolean isOnFire, @Nullable Boolean isSneaking, @Nullable Boolean isSprinting, @Nullable Boolean isSwimming, @Nullable Boolean boolean_
+		@Nullable Boolean isOnFire, @Nullable Boolean isSneaking, @Nullable Boolean isSprinting, @Nullable Boolean isSwimming, @Nullable Boolean isBaby
 	) {
 		this.isOnFire = isOnFire;
 		this.isSneaking = isSneaking;
 		this.isSprinting = isSprinting;
 		this.isSwimming = isSwimming;
-		this.isBaby = boolean_;
+		this.isBaby = isBaby;
 	}
 
 	public boolean test(Entity entity) {
@@ -64,9 +64,9 @@ public class EntityFlagsPredicate {
 		}
 	}
 
-	private void serializeBoolean(JsonObject json, String key, @Nullable Boolean boolean_) {
-		if (boolean_ != null) {
-			json.addProperty(key, boolean_);
+	private void serializeBoolean(JsonObject json, String key, @Nullable Boolean value) {
+		if (value != null) {
+			json.addProperty(key, value);
 		}
 	}
 
@@ -100,8 +100,8 @@ public class EntityFlagsPredicate {
 			return new EntityFlagsPredicate.Builder();
 		}
 
-		public EntityFlagsPredicate.Builder onFire(@Nullable Boolean boolean_) {
-			this.isOnFire = boolean_;
+		public EntityFlagsPredicate.Builder onFire(@Nullable Boolean onFire) {
+			this.isOnFire = onFire;
 			return this;
 		}
 

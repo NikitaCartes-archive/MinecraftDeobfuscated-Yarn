@@ -82,7 +82,7 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void removeBlockEntity(BlockPos blockPos) {
+	public void removeBlockEntity(BlockPos pos) {
 	}
 
 	@Override

@@ -16,8 +16,8 @@ import net.minecraft.world.timer.Timer;
 public class UnmodifiableLevelProperties extends LevelProperties {
 	private final LevelProperties properties;
 
-	public UnmodifiableLevelProperties(LevelProperties levelProperties) {
-		this.properties = levelProperties;
+	public UnmodifiableLevelProperties(LevelProperties properties) {
+		this.properties = properties;
 	}
 
 	@Override

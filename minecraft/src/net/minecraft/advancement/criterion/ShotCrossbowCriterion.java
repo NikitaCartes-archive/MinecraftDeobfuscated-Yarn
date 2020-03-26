@@ -34,8 +34,8 @@ public class ShotCrossbowCriterion extends AbstractCriterion<ShotCrossbowCriteri
 			this.item = item;
 		}
 
-		public static ShotCrossbowCriterion.Conditions create(ItemConvertible itemConvertible) {
-			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().item(itemConvertible).build());
+		public static ShotCrossbowCriterion.Conditions create(ItemConvertible item) {
+			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().item(item).build());
 		}
 
 		public boolean matches(ItemStack stack) {

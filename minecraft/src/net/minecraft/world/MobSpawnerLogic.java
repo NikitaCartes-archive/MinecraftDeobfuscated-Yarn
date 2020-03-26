@@ -56,8 +56,8 @@ public abstract class MobSpawnerLogic {
 		}
 	}
 
-	public void setEntityId(EntityType<?> entityType) {
-		this.spawnEntry.getEntityTag().putString("id", Registry.ENTITY_TYPE.getId(entityType).toString());
+	public void setEntityId(EntityType<?> type) {
+		this.spawnEntry.getEntityTag().putString("id", Registry.ENTITY_TYPE.getId(type).toString());
 	}
 
 	private boolean isPlayerInRange() {
@@ -193,36 +193,36 @@ public abstract class MobSpawnerLogic {
 		this.sendStatus(1);
 	}
 
-	public void deserialize(CompoundTag compoundTag) {
-		this.spawnDelay = compoundTag.getShort("Delay");
+	public void fromTag(CompoundTag tag) {
+		this.spawnDelay = tag.getShort("Delay");
 		this.spawnPotentials.clear();
-		if (compoundTag.contains("SpawnPotentials", 9)) {
-			ListTag listTag = compoundTag.getList("SpawnPotentials", 10);
+		if (tag.contains("SpawnPotentials", 9)) {
+			ListTag listTag = tag.getList("SpawnPotentials", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				this.spawnPotentials.add(new MobSpawnerEntry(listTag.getCompound(i)));
 			}
 		}
 
-		if (compoundTag.contains("SpawnData", 10)) {
-			this.setSpawnEntry(new MobSpawnerEntry(1, compoundTag.getCompound("SpawnData")));
+		if (tag.contains("SpawnData", 10)) {
+			this.setSpawnEntry(new MobSpawnerEntry(1, tag.getCompound("SpawnData")));
 		} else if (!this.spawnPotentials.isEmpty()) {
 			this.setSpawnEntry(WeightedPicker.getRandom(this.getWorld().random, this.spawnPotentials));
 		}
 
-		if (compoundTag.contains("MinSpawnDelay", 99)) {
-			this.minSpawnDelay = compoundTag.getShort("MinSpawnDelay");
-			this.maxSpawnDelay = compoundTag.getShort("MaxSpawnDelay");
-			this.spawnCount = compoundTag.getShort("SpawnCount");
+		if (tag.contains("MinSpawnDelay", 99)) {
+			this.minSpawnDelay = tag.getShort("MinSpawnDelay");
+			this.maxSpawnDelay = tag.getShort("MaxSpawnDelay");
+			this.spawnCount = tag.getShort("SpawnCount");
 		}
 
-		if (compoundTag.contains("MaxNearbyEntities", 99)) {
-			this.maxNearbyEntities = compoundTag.getShort("MaxNearbyEntities");
-			this.requiredPlayerRange = compoundTag.getShort("RequiredPlayerRange");
+		if (tag.contains("MaxNearbyEntities", 99)) {
+			this.maxNearbyEntities = tag.getShort("MaxNearbyEntities");
+			this.requiredPlayerRange = tag.getShort("RequiredPlayerRange");
 		}
 
-		if (compoundTag.contains("SpawnRange", 99)) {
-			this.spawnRange = compoundTag.getShort("SpawnRange");
+		if (tag.contains("SpawnRange", 99)) {
+			this.spawnRange = tag.getShort("SpawnRange");
 		}
 
 		if (this.getWorld() != null) {
@@ -230,19 +230,19 @@ public abstract class MobSpawnerLogic {
 		}
 	}
 
-	public CompoundTag serialize(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag tag) {
 		Identifier identifier = this.getEntityId();
 		if (identifier == null) {
-			return compoundTag;
+			return tag;
 		} else {
-			compoundTag.putShort("Delay", (short)this.spawnDelay);
-			compoundTag.putShort("MinSpawnDelay", (short)this.minSpawnDelay);
-			compoundTag.putShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
-			compoundTag.putShort("SpawnCount", (short)this.spawnCount);
-			compoundTag.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
-			compoundTag.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
-			compoundTag.putShort("SpawnRange", (short)this.spawnRange);
-			compoundTag.put("SpawnData", this.spawnEntry.getEntityTag().copy());
+			tag.putShort("Delay", (short)this.spawnDelay);
+			tag.putShort("MinSpawnDelay", (short)this.minSpawnDelay);
+			tag.putShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
+			tag.putShort("SpawnCount", (short)this.spawnCount);
+			tag.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
+			tag.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
+			tag.putShort("SpawnRange", (short)this.spawnRange);
+			tag.put("SpawnData", this.spawnEntry.getEntityTag().copy());
 			ListTag listTag = new ListTag();
 			if (this.spawnPotentials.isEmpty()) {
 				listTag.add(this.spawnEntry.serialize());
@@ -252,8 +252,8 @@ public abstract class MobSpawnerLogic {
 				}
 			}
 
-			compoundTag.put("SpawnPotentials", listTag);
-			return compoundTag;
+			tag.put("SpawnPotentials", listTag);
+			return tag;
 		}
 	}
 

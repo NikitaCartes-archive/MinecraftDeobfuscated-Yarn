@@ -23,8 +23,8 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 	public boolean matches(CraftingInventory craftingInventory, World world) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				list.add(itemStack);
 				if (list.size() > 1) {
@@ -42,8 +42,8 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 	public ItemStack craft(CraftingInventory craftingInventory) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				list.add(itemStack);
 				if (list.size() > 1) {

@@ -68,8 +68,8 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 			public ItemStack takeStack(int amount) {
 				ItemStack itemStack = super.takeStack(amount);
 				ItemStack itemStack2 = (ItemStack)context.run((BiFunction)((world, blockPos) -> {
-					if (!CartographyTableScreenHandler.this.currentlyTakingItem && CartographyTableScreenHandler.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
-						ItemStack itemStack2x = FilledMapItem.copyMap(world, CartographyTableScreenHandler.this.inventory.getInvStack(0));
+					if (!CartographyTableScreenHandler.this.currentlyTakingItem && CartographyTableScreenHandler.this.inventory.getStack(1).getItem() == Items.GLASS_PANE) {
+						ItemStack itemStack2x = FilledMapItem.copyMap(world, CartographyTableScreenHandler.this.inventory.getStack(0));
 						if (itemStack2x != null) {
 							itemStack2x.setCount(1);
 							return itemStack2x;
@@ -78,8 +78,8 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 
 					return itemStack;
 				})).orElse(itemStack);
-				CartographyTableScreenHandler.this.inventory.takeInvStack(0, 1);
-				CartographyTableScreenHandler.this.inventory.takeInvStack(1, 1);
+				CartographyTableScreenHandler.this.inventory.removeStack(0, 1);
+				CartographyTableScreenHandler.this.inventory.removeStack(1, 1);
 				return itemStack2;
 			}
 
@@ -121,15 +121,15 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		ItemStack itemStack = this.inventory.getInvStack(0);
-		ItemStack itemStack2 = this.inventory.getInvStack(1);
-		ItemStack itemStack3 = this.resultSlot.getInvStack(2);
+		ItemStack itemStack = this.inventory.getStack(0);
+		ItemStack itemStack2 = this.inventory.getStack(1);
+		ItemStack itemStack3 = this.resultSlot.getStack(2);
 		if (itemStack3.isEmpty() || !itemStack.isEmpty() && !itemStack2.isEmpty()) {
 			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 				this.updateResult(itemStack, itemStack2, itemStack3);
 			}
 		} else {
-			this.resultSlot.removeInvStack(2);
+			this.resultSlot.removeStack(2);
 		}
 	}
 
@@ -150,7 +150,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 					this.sendContentUpdates();
 				} else {
 					if (itemx != Items.MAP) {
-						this.resultSlot.removeInvStack(2);
+						this.resultSlot.removeStack(2);
 						this.sendContentUpdates();
 						return;
 					}
@@ -161,7 +161,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				}
 
 				if (!ItemStack.areEqual(itemStack4, oldResult)) {
-					this.resultSlot.setInvStack(2, itemStack4);
+					this.resultSlot.setStack(2, itemStack4);
 					this.sendContentUpdates();
 				}
 			}
@@ -183,9 +183,9 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 			Item item = itemStack2.getItem();
 			itemStack = itemStack2.copy();
 			if (index == 2) {
-				if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
+				if (this.inventory.getStack(1).getItem() == Items.GLASS_PANE) {
 					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
-						ItemStack itemStack2x = FilledMapItem.copyMap(world, this.inventory.getInvStack(0));
+						ItemStack itemStack2x = FilledMapItem.copyMap(world, this.inventory.getStack(0));
 						if (itemStack2x != null) {
 							itemStack2x.setCount(1);
 							return itemStack2x;
@@ -242,7 +242,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.resultSlot.removeInvStack(2);
+		this.resultSlot.removeStack(2);
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.inventory)));
 	}
 }

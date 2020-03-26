@@ -46,17 +46,17 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 		this.writeSessionLock();
 	}
 
-	public void saveWorld(LevelProperties levelProperties, @Nullable CompoundTag compoundTag) {
+	public void saveWorld(LevelProperties levelProperties, @Nullable CompoundTag tag) {
 		levelProperties.setVersion(19133);
-		CompoundTag compoundTag2 = levelProperties.cloneWorldTag(compoundTag);
-		CompoundTag compoundTag3 = new CompoundTag();
-		compoundTag3.put("Data", compoundTag2);
+		CompoundTag compoundTag = levelProperties.cloneWorldTag(tag);
+		CompoundTag compoundTag2 = new CompoundTag();
+		compoundTag2.put("Data", compoundTag);
 
 		try {
 			File file = new File(this.worldDir, "level.dat_new");
 			File file2 = new File(this.worldDir, "level.dat_old");
 			File file3 = new File(this.worldDir, "level.dat");
-			NbtIo.writeCompressed(compoundTag3, new FileOutputStream(file));
+			NbtIo.writeCompressed(compoundTag2, new FileOutputStream(file));
 			if (file2.exists()) {
 				file2.delete();
 			}
@@ -131,11 +131,11 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 	}
 
 	@Override
-	public void savePlayerData(PlayerEntity playerEntity) {
+	public void savePlayerData(PlayerEntity player) {
 		try {
-			CompoundTag compoundTag = playerEntity.toTag(new CompoundTag());
-			File file = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat.tmp");
-			File file2 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
+			CompoundTag compoundTag = player.toTag(new CompoundTag());
+			File file = new File(this.playerDataDir, player.getUuidAsString() + ".dat.tmp");
+			File file2 = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
 			NbtIo.writeCompressed(compoundTag, new FileOutputStream(file));
 			if (file2.exists()) {
 				file2.delete();
@@ -143,27 +143,27 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 
 			file.renameTo(file2);
 		} catch (Exception var5) {
-			LOGGER.warn("Failed to save player data for {}", playerEntity.getName().getString());
+			LOGGER.warn("Failed to save player data for {}", player.getName().getString());
 		}
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag loadPlayerData(PlayerEntity playerEntity) {
+	public CompoundTag loadPlayerData(PlayerEntity player) {
 		CompoundTag compoundTag = null;
 
 		try {
-			File file = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
+			File file = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
 			if (file.exists() && file.isFile()) {
 				compoundTag = NbtIo.readCompressed(new FileInputStream(file));
 			}
 		} catch (Exception var4) {
-			LOGGER.warn("Failed to load player data for {}", playerEntity.getName().getString());
+			LOGGER.warn("Failed to load player data for {}", player.getName().getString());
 		}
 
 		if (compoundTag != null) {
 			int i = compoundTag.contains("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-			playerEntity.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
+			player.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
 		}
 
 		return compoundTag;

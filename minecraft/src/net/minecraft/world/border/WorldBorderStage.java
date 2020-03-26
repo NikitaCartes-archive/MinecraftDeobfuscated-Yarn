@@ -11,8 +11,8 @@ public enum WorldBorderStage {
 
 	private final int color;
 
-	private WorldBorderStage(int j) {
-		this.color = j;
+	private WorldBorderStage(int color) {
+		this.color = color;
 	}
 
 	public int getColor() {

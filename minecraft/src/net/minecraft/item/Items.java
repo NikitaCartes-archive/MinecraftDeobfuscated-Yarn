@@ -51,7 +51,7 @@ public class Items {
 	public static final Item GOLD_ORE = register(Blocks.GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item IRON_ORE = register(Blocks.IRON_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item COAL_ORE = register(Blocks.COAL_ORE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_23140 = register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item NETHER_GOLD_ORE = register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_LOG = register(Blocks.OAK_LOG, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_LOG = register(Blocks.SPRUCE_LOG, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BIRCH_LOG = register(Blocks.BIRCH_LOG, ItemGroup.BUILDING_BLOCKS);
@@ -74,16 +74,16 @@ public class Items {
 	public static final Item STRIPPED_JUNGLE_WOOD = register(Blocks.STRIPPED_JUNGLE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item STRIPPED_ACACIA_WOOD = register(Blocks.STRIPPED_ACACIA_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item STRIPPED_DARK_OAK_WOOD = register(Blocks.STRIPPED_DARK_OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_22487 = register(Blocks.STRIPPED_CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_22488 = register(Blocks.STRIPPED_WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item STRIPPED_CRIMSON_HYPHAE = register(Blocks.STRIPPED_CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item STRIPPED_WARPED_HYPHAE = register(Blocks.STRIPPED_WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_WOOD = register(Blocks.OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_WOOD = register(Blocks.SPRUCE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BIRCH_WOOD = register(Blocks.BIRCH_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item JUNGLE_WOOD = register(Blocks.JUNGLE_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item ACACIA_WOOD = register(Blocks.ACACIA_WOOD, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DARK_OAK_WOOD = register(Blocks.DARK_OAK_WOOD, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_22489 = register(Blocks.CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_22490 = register(Blocks.WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item CRIMSON_HYPHAE = register(Blocks.CRIMSON_HYPHAE, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WARPED_HYPHAE = register(Blocks.WARPED_HYPHAE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OAK_LEAVES = register(Blocks.OAK_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item SPRUCE_LEAVES = register(Blocks.SPRUCE_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item BIRCH_LEAVES = register(Blocks.BIRCH_LEAVES, ItemGroup.DECORATIONS);
@@ -147,7 +147,7 @@ public class Items {
 	public static final Item WARPED_ROOTS = register(Blocks.WARPED_ROOTS, ItemGroup.DECORATIONS);
 	public static final Item NETHER_SPROUTS = register(Blocks.NETHER_SPROUTS, ItemGroup.DECORATIONS);
 	public static final Item WEEPING_VINES = register(Blocks.WEEPING_VINES, ItemGroup.DECORATIONS);
-	public static final Item field_23070 = register(Blocks.TWISTING_VINES, ItemGroup.DECORATIONS);
+	public static final Item TWISTING_VINES = register(Blocks.TWISTING_VINES, ItemGroup.DECORATIONS);
 	public static final Item SUGAR_CANE = register(Blocks.SUGAR_CANE, ItemGroup.DECORATIONS);
 	public static final Item KELP = register(Blocks.KELP, ItemGroup.DECORATIONS);
 	public static final Item BAMBOO = register(Blocks.BAMBOO, ItemGroup.DECORATIONS);
@@ -239,7 +239,7 @@ public class Items {
 	public static final Item SOUL_SAND = register(Blocks.SOUL_SAND, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SOUL_SOIL = register(Blocks.SOUL_SOIL, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BASALT = register(Blocks.BASALT, ItemGroup.BUILDING_BLOCKS);
-	public static final Item field_23069 = register(Blocks.POLISHED_BASALT, ItemGroup.BUILDING_BLOCKS);
+	public static final Item POLISHED_BASALT = register(Blocks.POLISHED_BASALT, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SOUL_FIRE_TORCH = register(
 		new WallStandingBlockItem(Blocks.SOUL_FIRE_TORCH, Blocks.SOUL_FIRE_WALL_TORCH, new Item.Settings().group(ItemGroup.DECORATIONS))
 	);
@@ -1130,10 +1130,10 @@ public class Items {
 		new WallStandingBlockItem(Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON))
 	);
 	public static final Item CARROT_ON_A_STICK = register(
-		"carrot_on_a_stick", new CarrotOnAStickItem<>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.PIG)
+		"carrot_on_a_stick", new OnAStickItem<>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.PIG)
 	);
 	public static final Item WARPED_FUNGUS_ON_A_STICK = register(
-		"warped_fungus_on_a_stick", new CarrotOnAStickItem<>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.STRIDER)
+		"warped_fungus_on_a_stick", new OnAStickItem<>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.STRIDER)
 	);
 	public static final Item NETHER_STAR = register("nether_star", new NetherStarItem(new Item.Settings().group(ItemGroup.MATERIALS).rarity(Rarity.UNCOMMON)));
 	public static final Item PUMPKIN_PIE = register("pumpkin_pie", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.PUMPKIN_PIE)));
@@ -1352,7 +1352,7 @@ public class Items {
 	);
 	public static final Item HONEY_BLOCK = register(Blocks.HONEY_BLOCK, ItemGroup.DECORATIONS);
 	public static final Item HONEYCOMB_BLOCK = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
-	public static final Item field_23256 = register(Blocks.LODESTONE, ItemGroup.DECORATIONS);
+	public static final Item LODESTONE = register(Blocks.LODESTONE, ItemGroup.DECORATIONS);
 	public static final Item NETHERITE_BLOCK = register(new BlockItem(Blocks.NETHERITE_BLOCK, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
 	public static final Item ANCIENT_DEBRIS = register(new BlockItem(Blocks.ANCIENT_DEBRIS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
 	public static final Item NETHERITE_INGOT = register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
@@ -1373,8 +1373,8 @@ public class Items {
 		return register(item.getBlock(), item);
 	}
 
-	protected static Item register(Block block, Item iem) {
-		return register(Registry.BLOCK.getId(block), iem);
+	protected static Item register(Block block, Item item) {
+		return register(Registry.BLOCK.getId(block), item);
 	}
 
 	private static Item register(String id, Item item) {

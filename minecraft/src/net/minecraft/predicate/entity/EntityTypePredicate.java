@@ -16,7 +16,7 @@ import net.minecraft.util.registry.Registry;
 public abstract class EntityTypePredicate {
 	public static final EntityTypePredicate ANY = new EntityTypePredicate() {
 		@Override
-		public boolean matches(EntityType<?> entityType) {
+		public boolean matches(EntityType<?> type) {
 			return true;
 		}
 
@@ -27,7 +27,7 @@ public abstract class EntityTypePredicate {
 	};
 	private static final Joiner COMMA_JOINER = Joiner.on(", ");
 
-	public abstract boolean matches(EntityType<?> entityType);
+	public abstract boolean matches(EntityType<?> type);
 
 	public abstract JsonElement toJson();
 
@@ -63,13 +63,13 @@ public abstract class EntityTypePredicate {
 	static class Single extends EntityTypePredicate {
 		private final EntityType<?> type;
 
-		public Single(EntityType<?> entityType) {
-			this.type = entityType;
+		public Single(EntityType<?> type) {
+			this.type = type;
 		}
 
 		@Override
-		public boolean matches(EntityType<?> entityType) {
-			return this.type == entityType;
+		public boolean matches(EntityType<?> type) {
+			return this.type == type;
 		}
 
 		@Override
@@ -86,8 +86,8 @@ public abstract class EntityTypePredicate {
 		}
 
 		@Override
-		public boolean matches(EntityType<?> entityType) {
-			return this.tag.contains(entityType);
+		public boolean matches(EntityType<?> type) {
+			return this.tag.contains(type);
 		}
 
 		@Override

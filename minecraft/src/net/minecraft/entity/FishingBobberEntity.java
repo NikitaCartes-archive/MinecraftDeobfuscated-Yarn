@@ -6,7 +6,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -451,7 +451,7 @@ public class FishingBobberEntity extends Entity {
 			int i = 0;
 			if (this.hookedEntity != null) {
 				this.pullHookedEntity();
-				Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, usedItem, this, Collections.emptyList());
+				Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, usedItem, this, Collections.emptyList());
 				this.world.sendEntityStatus(this, (byte)31);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.hookCountdown > 0) {
@@ -463,7 +463,7 @@ public class FishingBobberEntity extends Entity {
 					.setLuck((float)this.luckOfTheSeaLevel + this.owner.getLuck());
 				LootTable lootTable = this.world.getServer().getLootManager().getTable(LootTables.FISHING_GAMEPLAY);
 				List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.FISHING));
-				Criterions.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, usedItem, this, list);
+				Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)this.owner, usedItem, this, list);
 
 				for (ItemStack itemStack : list) {
 					ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack);

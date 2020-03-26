@@ -142,7 +142,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					if (!itemStack3.isEmpty() && clickData >= 0 && clickData < 9) {
 						ItemStack itemStack4 = itemStack3.copy();
 						itemStack4.setCount(itemStack4.getMaxCount());
-						this.client.player.inventory.setInvStack(clickData, itemStack4);
+						this.client.player.inventory.setStack(clickData, itemStack4);
 						this.client.player.playerScreenHandler.sendContentUpdates();
 					}
 
@@ -765,14 +765,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (restore) {
 			for (int i = 0; i < PlayerInventory.getHotbarSize(); i++) {
 				ItemStack itemStack = hotbarStorageEntry.get(i).copy();
-				clientPlayerEntity.inventory.setInvStack(i, itemStack);
+				clientPlayerEntity.inventory.setStack(i, itemStack);
 				client.interactionManager.clickCreativeStack(itemStack, 36 + i);
 			}
 
 			clientPlayerEntity.playerScreenHandler.sendContentUpdates();
 		} else if (save) {
 			for (int i = 0; i < PlayerInventory.getHotbarSize(); i++) {
-				hotbarStorageEntry.set(i, clientPlayerEntity.inventory.getInvStack(i).copy());
+				hotbarStorageEntry.set(i, clientPlayerEntity.inventory.getStack(i).copy());
 			}
 
 			String string = client.options.keysHotbar[index].getLocalizedName();
@@ -819,9 +819,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				for (int l = 0; l < 9; l++) {
 					int m = l + (k + j) * 9;
 					if (m >= 0 && m < this.itemList.size()) {
-						CreativeInventoryScreen.inventory.setInvStack(l + k * 9, this.itemList.get(m));
+						CreativeInventoryScreen.inventory.setStack(l + k * 9, this.itemList.get(m));
 					} else {
-						CreativeInventoryScreen.inventory.setInvStack(l + k * 9, ItemStack.EMPTY);
+						CreativeInventoryScreen.inventory.setStack(l + k * 9, ItemStack.EMPTY);
 					}
 				}
 			}

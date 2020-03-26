@@ -6,15 +6,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Matrix4f;
-import net.minecraft.client.util.math.Rotation3;
-import net.minecraft.client.util.math.Rotation3Helper;
+import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.AffineTransformations;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3i;
 
@@ -58,8 +58,8 @@ public class BakedQuadFactory {
 		return new BakedQuad(is, face.tintIndex, direction, texture, shade);
 	}
 
-	public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, Rotation3 rotation, Identifier modelId) {
-		Matrix4f matrix4f = Rotation3Helper.uvLock(rotation, orientation, () -> "Unable to resolve UVLock for model: " + modelId).getMatrix();
+	public static ModelElementTexture uvLock(ModelElementTexture texture, Direction orientation, AffineTransformation rotation, Identifier modelId) {
+		Matrix4f matrix4f = AffineTransformations.uvLock(rotation, orientation, () -> "Unable to resolve UVLock for model: " + modelId).getMatrix();
 		float f = texture.getU(texture.getDirectionIndex(0));
 		float g = texture.getV(texture.getDirectionIndex(0));
 		Vector4f vector4f = new Vector4f(f / 16.0F, g / 16.0F, 0.0F, 1.0F);
@@ -105,7 +105,7 @@ public class BakedQuadFactory {
 		Sprite sprite,
 		Direction direction,
 		float[] positionMatrix,
-		Rotation3 orientation,
+		AffineTransformation orientation,
 		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
 		boolean shaded
 	) {
@@ -136,7 +136,7 @@ public class BakedQuadFactory {
 		ModelElementTexture texture,
 		float[] positionMatrix,
 		Sprite sprite,
-		Rotation3 orientation,
+		AffineTransformation orientation,
 		@Nullable net.minecraft.client.render.model.json.ModelRotation rotation,
 		boolean shaded
 	) {
@@ -195,8 +195,8 @@ public class BakedQuadFactory {
 		}
 	}
 
-	public void transformVertex(Vector3f vertex, Rotation3 transformation) {
-		if (transformation != Rotation3.identity()) {
+	public void transformVertex(Vector3f vertex, AffineTransformation transformation) {
+		if (transformation != AffineTransformation.identity()) {
 			this.transformVertex(vertex, new Vector3f(0.5F, 0.5F, 0.5F), transformation.getMatrix(), new Vector3f(1.0F, 1.0F, 1.0F));
 		}
 	}

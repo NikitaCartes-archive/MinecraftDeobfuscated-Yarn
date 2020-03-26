@@ -49,13 +49,13 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
-		this.logic.deserialize(tag);
+		this.logic.fromTag(tag);
 	}
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		this.logic.serialize(tag);
+		this.logic.toTag(tag);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -19,7 +19,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		if (craftingInventory.getWidth() == 3 && craftingInventory.getHeight() == 3) {
 			for (int i = 0; i < craftingInventory.getWidth(); i++) {
 				for (int j = 0; j < craftingInventory.getHeight(); j++) {
-					ItemStack itemStack = craftingInventory.getInvStack(i + j * craftingInventory.getWidth());
+					ItemStack itemStack = craftingInventory.getStack(i + j * craftingInventory.getWidth());
 					if (itemStack.isEmpty()) {
 						return false;
 					}
@@ -42,7 +42,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack craft(CraftingInventory craftingInventory) {
-		ItemStack itemStack = craftingInventory.getInvStack(1 + craftingInventory.getWidth());
+		ItemStack itemStack = craftingInventory.getStack(1 + craftingInventory.getWidth());
 		if (itemStack.getItem() != Items.LINGERING_POTION) {
 			return ItemStack.EMPTY;
 		} else {

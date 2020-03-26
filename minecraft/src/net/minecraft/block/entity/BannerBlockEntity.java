@@ -41,9 +41,9 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static ListTag method_24281(ItemStack itemStack) {
+	public static ListTag getPatternListTag(ItemStack stack) {
 		ListTag listTag = null;
-		CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
+		CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
 		if (compoundTag != null && compoundTag.contains("Patterns", 9)) {
 			listTag = compoundTag.getList("Patterns", 10).copy();
 		}
@@ -53,7 +53,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Environment(EnvType.CLIENT)
 	public void readFrom(ItemStack stack, DyeColor baseColor) {
-		this.patternListTag = method_24281(stack);
+		this.patternListTag = getPatternListTag(stack);
 		this.baseColor = baseColor;
 		this.patterns = null;
 		this.patternListTagRead = true;
@@ -90,10 +90,10 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag compoundTag) {
-		super.fromTag(blockState, compoundTag);
-		if (compoundTag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+	public void fromTag(BlockState state, CompoundTag tag) {
+		super.fromTag(state, tag);
+		if (tag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
 		if (this.hasWorld()) {
@@ -102,7 +102,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 			this.baseColor = null;
 		}
 
-		this.patternListTag = compoundTag.getList("Patterns", 10);
+		this.patternListTag = tag.getList("Patterns", 10);
 		this.patterns = null;
 		this.patternListTagRead = true;
 	}
@@ -164,8 +164,8 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemStack getPickStack(BlockState blockState) {
-		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> blockState)));
+	public ItemStack getPickStack(BlockState state) {
+		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> state)));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
 			itemStack.getOrCreateSubTag("BlockEntityTag").put("Patterns", this.patternListTag.copy());
 		}

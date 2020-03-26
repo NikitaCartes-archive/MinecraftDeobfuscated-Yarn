@@ -28,9 +28,9 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 	public static class Conditions extends AbstractCriterionConditions {
 		private final NumberRange.IntRange level;
 
-		public Conditions(NumberRange.IntRange intRange) {
+		public Conditions(NumberRange.IntRange level) {
 			super(ConstructBeaconCriterion.ID);
-			this.level = intRange;
+			this.level = level;
 		}
 
 		public static ConstructBeaconCriterion.Conditions level(NumberRange.IntRange intRange) {

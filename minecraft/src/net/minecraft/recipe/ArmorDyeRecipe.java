@@ -21,8 +21,8 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack2 = craftingInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() instanceof DyeableItem) {
 					if (!itemStack.isEmpty()) {
@@ -47,8 +47,8 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		List<DyeItem> list = Lists.<DyeItem>newArrayList();
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(i);
+		for (int i = 0; i < craftingInventory.size(); i++) {
+			ItemStack itemStack2 = craftingInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
 				if (item instanceof DyeableItem) {

@@ -28,7 +28,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 
 	public BoatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.shadowSize = 0.8F;
+		this.shadowRadius = 0.8F;
 	}
 
 	public void render(BoatEntity boatEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

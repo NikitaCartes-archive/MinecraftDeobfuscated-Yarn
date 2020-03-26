@@ -231,8 +231,8 @@ public class ItemPredicate {
 			return new ItemPredicate.Builder();
 		}
 
-		public ItemPredicate.Builder item(ItemConvertible itemConvertible) {
-			this.item = itemConvertible.asItem();
+		public ItemPredicate.Builder item(ItemConvertible item) {
+			this.item = item.asItem();
 			return this;
 		}
 

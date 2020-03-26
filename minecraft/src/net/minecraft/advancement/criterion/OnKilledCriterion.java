@@ -43,19 +43,19 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 		}
 
 		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate.Builder builder) {
-			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, builder.build(), DamageSourcePredicate.EMPTY);
+			return new OnKilledCriterion.Conditions(Criteria.PLAYER_KILLED_ENTITY.id, builder.build(), DamageSourcePredicate.EMPTY);
 		}
 
 		public static OnKilledCriterion.Conditions createPlayerKilledEntity() {
-			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
+			return new OnKilledCriterion.Conditions(Criteria.PLAYER_KILLED_ENTITY.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
 		}
 
 		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate.Builder builder, DamageSourcePredicate.Builder builder2) {
-			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, builder.build(), builder2.build());
+			return new OnKilledCriterion.Conditions(Criteria.PLAYER_KILLED_ENTITY.id, builder.build(), builder2.build());
 		}
 
 		public static OnKilledCriterion.Conditions createEntityKilledPlayer() {
-			return new OnKilledCriterion.Conditions(Criterions.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
+			return new OnKilledCriterion.Conditions(Criteria.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
 		}
 
 		public boolean test(ServerPlayerEntity player, Entity entity, DamageSource killingBlow) {

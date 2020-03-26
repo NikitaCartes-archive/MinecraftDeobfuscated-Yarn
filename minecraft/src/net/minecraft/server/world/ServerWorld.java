@@ -1001,19 +1001,17 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void playSoundFromEntity(
-		@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float volume, float pitch
-	) {
+	public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				playerEntity,
+				player,
 				entity.getX(),
 				entity.getY(),
 				entity.getZ(),
 				volume > 1.0F ? (double)(16.0F * volume) : 16.0,
 				this.dimension.getType(),
-				new PlaySoundFromEntityS2CPacket(soundEvent, soundCategory, entity, volume, pitch)
+				new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch)
 			);
 	}
 
@@ -1023,17 +1021,11 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos blockPos, int data) {
+	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				player,
-				(double)blockPos.getX(),
-				(double)blockPos.getY(),
-				(double)blockPos.getZ(),
-				64.0,
-				this.dimension.getType(),
-				new WorldEventS2CPacket(eventId, blockPos, data, false)
+				player, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), 64.0, this.dimension.getType(), new WorldEventS2CPacket(eventId, pos, data, false)
 			);
 	}
 

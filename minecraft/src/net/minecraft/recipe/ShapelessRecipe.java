@@ -56,8 +56,8 @@ public class ShapelessRecipe implements CraftingRecipe {
 		RecipeFinder recipeFinder = new RecipeFinder();
 		int i = 0;
 
-		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack = craftingInventory.getInvStack(j);
+		for (int j = 0; j < craftingInventory.size(); j++) {
+			ItemStack itemStack = craftingInventory.getStack(j);
 			if (!itemStack.isEmpty()) {
 				i++;
 				recipeFinder.method_20478(itemStack, 1);

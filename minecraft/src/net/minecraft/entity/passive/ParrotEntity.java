@@ -411,8 +411,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		return MathHelper.clamp(this.dataTracker.get(ATTR_VARIANT), 0, 4);
 	}
 
-	public void setVariant(int i) {
-		this.dataTracker.set(ATTR_VARIANT, i);
+	public void setVariant(int variant) {
+		this.dataTracker.set(ATTR_VARIANT, variant);
 	}
 
 	@Override

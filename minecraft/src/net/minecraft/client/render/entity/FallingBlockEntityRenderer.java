@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntity> {
 	public FallingBlockEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.shadowSize = 0.5F;
+		this.shadowRadius = 0.5F;
 	}
 
 	public void render(FallingBlockEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

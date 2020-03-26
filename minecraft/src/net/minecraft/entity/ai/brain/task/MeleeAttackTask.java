@@ -12,7 +12,7 @@ import net.minecraft.util.Hand;
 public class MeleeAttackTask extends Task<MobEntity> {
 	private final int interval;
 
-	public MeleeAttackTask(int i) {
+	public MeleeAttackTask(int interval) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.LOOK_TARGET,
@@ -23,7 +23,7 @@ public class MeleeAttackTask extends Task<MobEntity> {
 				MemoryModuleState.VALUE_ABSENT
 			)
 		);
-		this.interval = i;
+		this.interval = interval;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {

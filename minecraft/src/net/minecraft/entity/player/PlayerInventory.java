@@ -56,7 +56,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			&& this.areItemsEqual(existingStack, stack)
 			&& existingStack.isStackable()
 			&& existingStack.getCount() < existingStack.getMaxCount()
-			&& existingStack.getCount() < this.getInvMaxStackAmount();
+			&& existingStack.getCount() < this.getMaxCountPerStack();
 	}
 
 	private boolean areItemsEqual(ItemStack stack1, ItemStack stack2) {
@@ -74,8 +74,8 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void addPickBlock(ItemStack itemStack) {
-		int i = this.getSlotWithStack(itemStack);
+	public void addPickBlock(ItemStack stack) {
+		int i = this.getSlotWithStack(stack);
 		if (isValidHotbarIndex(i)) {
 			this.selectedSlot = i;
 		} else {
@@ -88,7 +88,7 @@ public class PlayerInventory implements Inventory, Nameable {
 					}
 				}
 
-				this.main.set(this.selectedSlot, itemStack);
+				this.main.set(this.selectedSlot, stack);
 			} else {
 				this.swapSlotWithHotbar(i);
 			}
@@ -174,15 +174,15 @@ public class PlayerInventory implements Inventory, Nameable {
 	public int method_7369(Predicate<ItemStack> predicate, int i) {
 		int j = 0;
 
-		for (int k = 0; k < this.getInvSize(); k++) {
-			ItemStack itemStack = this.getInvStack(k);
+		for (int k = 0; k < this.size(); k++) {
+			ItemStack itemStack = this.getStack(k);
 			if (!itemStack.isEmpty() && predicate.test(itemStack)) {
 				int l = i <= 0 ? itemStack.getCount() : Math.min(i - j, itemStack.getCount());
 				j += l;
 				if (i != 0) {
 					itemStack.decrement(l);
 					if (itemStack.isEmpty()) {
-						this.setInvStack(k, ItemStack.EMPTY);
+						this.setStack(k, ItemStack.EMPTY);
 					}
 
 					if (i > 0 && j >= i) {
@@ -222,14 +222,14 @@ public class PlayerInventory implements Inventory, Nameable {
 	private int addStack(int slot, ItemStack stack) {
 		Item item = stack.getItem();
 		int i = stack.getCount();
-		ItemStack itemStack = this.getInvStack(slot);
+		ItemStack itemStack = this.getStack(slot);
 		if (itemStack.isEmpty()) {
 			itemStack = new ItemStack(item, 0);
 			if (stack.hasTag()) {
 				itemStack.setTag(stack.getTag().copy());
 			}
 
-			this.setInvStack(slot, itemStack);
+			this.setStack(slot, itemStack);
 		}
 
 		int j = i;
@@ -237,8 +237,8 @@ public class PlayerInventory implements Inventory, Nameable {
 			j = itemStack.getMaxCount() - itemStack.getCount();
 		}
 
-		if (j > this.getInvMaxStackAmount() - itemStack.getCount()) {
-			j = this.getInvMaxStackAmount() - itemStack.getCount();
+		if (j > this.getMaxCountPerStack() - itemStack.getCount()) {
+			j = this.getMaxCountPerStack() - itemStack.getCount();
 		}
 
 		if (j == 0) {
@@ -252,9 +252,9 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public int getOccupiedSlotWithRoomForStack(ItemStack stack) {
-		if (this.canStackAddMore(this.getInvStack(this.selectedSlot), stack)) {
+		if (this.canStackAddMore(this.getStack(this.selectedSlot), stack)) {
 			return this.selectedSlot;
-		} else if (this.canStackAddMore(this.getInvStack(40), stack)) {
+		} else if (this.canStackAddMore(this.getStack(40), stack)) {
 			return 40;
 		} else {
 			for (int i = 0; i < this.main.size(); i++) {
@@ -344,16 +344,16 @@ public class PlayerInventory implements Inventory, Nameable {
 					break;
 				}
 
-				int j = stack.getMaxCount() - this.getInvStack(i).getCount();
+				int j = stack.getMaxCount() - this.getStack(i).getCount();
 				if (this.insertStack(i, stack.split(j))) {
-					((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, i, this.getInvStack(i)));
+					((ServerPlayerEntity)this.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, i, this.getStack(i)));
 				}
 			}
 		}
 	}
 
 	@Override
-	public ItemStack takeInvStack(int slot, int amount) {
+	public ItemStack removeStack(int slot, int amount) {
 		List<ItemStack> list = null;
 
 		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
@@ -380,7 +380,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public ItemStack removeInvStack(int slot) {
+	public ItemStack removeStack(int slot) {
 		DefaultedList<ItemStack> defaultedList = null;
 
 		for (DefaultedList<ItemStack> defaultedList2 : this.combinedInventory) {
@@ -402,7 +402,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public void setInvStack(int slot, ItemStack stack) {
+	public void setStack(int slot, ItemStack stack) {
 		DefaultedList<ItemStack> defaultedList = null;
 
 		for (DefaultedList<ItemStack> defaultedList2 : this.combinedInventory) {
@@ -476,12 +476,12 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public int getInvSize() {
+	public int size() {
 		return this.main.size() + this.armor.size() + this.offHand.size();
 	}
 
 	@Override
-	public boolean isInvEmpty() {
+	public boolean isEmpty() {
 		for (ItemStack itemStack : this.main) {
 			if (!itemStack.isEmpty()) {
 				return false;
@@ -504,7 +504,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public ItemStack getInvStack(int slot) {
+	public ItemStack getStack(int slot) {
 		List<ItemStack> list = null;
 
 		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
@@ -524,8 +524,8 @@ public class PlayerInventory implements Inventory, Nameable {
 		return new TranslatableText("container.inventory");
 	}
 
-	public boolean isUsingEffectiveTool(BlockState blockState) {
-		return this.getInvStack(this.selectedSlot).isEffectiveOn(blockState);
+	public boolean isUsingEffectiveTool(BlockState state) {
+		return this.getStack(this.selectedSlot).isEffectiveOn(state);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -581,7 +581,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity player) {
+	public boolean canPlayerUse(PlayerEntity player) {
 		return this.player.removed ? false : !(player.squaredDistanceTo(this.player) > 64.0);
 	}
 
@@ -611,8 +611,8 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public void clone(PlayerInventory other) {
-		for (int i = 0; i < this.getInvSize(); i++) {
-			this.setInvStack(i, other.getInvStack(i));
+		for (int i = 0; i < this.size(); i++) {
+			this.setStack(i, other.getStack(i));
 		}
 
 		this.selectedSlot = other.selectedSlot;

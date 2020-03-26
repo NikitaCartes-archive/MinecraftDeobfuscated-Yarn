@@ -24,27 +24,27 @@ public class DamageSourcePredicate {
 	private final EntityPredicate sourceEntity;
 
 	public DamageSourcePredicate(
-		@Nullable Boolean boolean_,
-		@Nullable Boolean boolean2,
-		@Nullable Boolean boolean3,
-		@Nullable Boolean boolean4,
-		@Nullable Boolean boolean5,
-		@Nullable Boolean boolean6,
-		@Nullable Boolean boolean7,
-		@Nullable Boolean boolean8,
-		EntityPredicate entityPredicate,
-		EntityPredicate entityPredicate2
+		@Nullable Boolean isProjectile,
+		@Nullable Boolean isExplosion,
+		@Nullable Boolean bypassesArmor,
+		@Nullable Boolean bypassesInvulnerability,
+		@Nullable Boolean bypassesMagic,
+		@Nullable Boolean isFire,
+		@Nullable Boolean isMagic,
+		@Nullable Boolean isLightning,
+		EntityPredicate directEntity,
+		EntityPredicate sourceEntity
 	) {
-		this.isProjectile = boolean_;
-		this.isExplosion = boolean2;
-		this.bypassesArmor = boolean3;
-		this.bypassesInvulnerability = boolean4;
-		this.bypassesMagic = boolean5;
-		this.isFire = boolean6;
-		this.isMagic = boolean7;
-		this.isLightning = boolean8;
-		this.directEntity = entityPredicate;
-		this.sourceEntity = entityPredicate2;
+		this.isProjectile = isProjectile;
+		this.isExplosion = isExplosion;
+		this.bypassesArmor = bypassesArmor;
+		this.bypassesInvulnerability = bypassesInvulnerability;
+		this.bypassesMagic = bypassesMagic;
+		this.isFire = isFire;
+		this.isMagic = isMagic;
+		this.isLightning = isLightning;
+		this.directEntity = directEntity;
+		this.sourceEntity = sourceEntity;
 	}
 
 	public boolean test(ServerPlayerEntity player, DamageSource damageSource) {
@@ -118,9 +118,9 @@ public class DamageSourcePredicate {
 		}
 	}
 
-	private void addProperty(JsonObject json, String key, @Nullable Boolean boolean_) {
-		if (boolean_ != null) {
-			json.addProperty(key, boolean_);
+	private void addProperty(JsonObject json, String key, @Nullable Boolean value) {
+		if (value != null) {
+			json.addProperty(key, value);
 		}
 	}
 
@@ -140,13 +140,13 @@ public class DamageSourcePredicate {
 			return new DamageSourcePredicate.Builder();
 		}
 
-		public DamageSourcePredicate.Builder projectile(Boolean boolean_) {
-			this.isProjectile = boolean_;
+		public DamageSourcePredicate.Builder projectile(Boolean projectile) {
+			this.isProjectile = projectile;
 			return this;
 		}
 
-		public DamageSourcePredicate.Builder lightning(Boolean boolean_) {
-			this.isLightning = boolean_;
+		public DamageSourcePredicate.Builder lightning(Boolean lightning) {
+			this.isLightning = lightning;
 			return this;
 		}
 

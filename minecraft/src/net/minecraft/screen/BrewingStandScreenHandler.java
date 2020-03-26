@@ -2,7 +2,7 @@ package net.minecraft.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.BasicInventory;
@@ -51,7 +51,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
-		return this.inventory.canPlayerUseInv(player);
+		return this.inventory.canPlayerUse(player);
 	}
 
 	@Override
@@ -174,7 +174,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
 			Potion potion = PotionUtil.getPotion(stack);
 			if (player instanceof ServerPlayerEntity) {
-				Criterions.BREWED_POTION.trigger((ServerPlayerEntity)player, potion);
+				Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, potion);
 			}
 
 			super.onTakeItem(player, stack);

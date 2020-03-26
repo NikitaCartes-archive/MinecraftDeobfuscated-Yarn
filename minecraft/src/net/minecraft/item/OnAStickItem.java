@@ -1,20 +1,20 @@
 package net.minecraft.item;
 
-import net.minecraft.class_4981;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class CarrotOnAStickItem<T extends Entity & class_4981> extends Item {
-	private final EntityType<T> field_23253;
+public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
+	private final EntityType<T> target;
 
-	public CarrotOnAStickItem(Item.Settings settings, EntityType<T> entityType) {
+	public OnAStickItem(Item.Settings settings, EntityType<T> target) {
 		super(settings);
-		this.field_23253 = entityType;
+		this.target = target;
 	}
 
 	@Override
@@ -24,9 +24,9 @@ public class CarrotOnAStickItem<T extends Entity & class_4981> extends Item {
 			return TypedActionResult.pass(itemStack);
 		} else {
 			Entity entity = user.getVehicle();
-			if (user.hasVehicle() && entity instanceof class_4981 && entity.getType() == this.field_23253) {
-				class_4981 lv = (class_4981)entity;
-				if (lv.method_6577()) {
+			if (user.hasVehicle() && entity instanceof ItemSteerable && entity.getType() == this.target) {
+				ItemSteerable itemSteerable = (ItemSteerable)entity;
+				if (itemSteerable.consumeOnAStickItem()) {
 					itemStack.damage(7, user, p -> p.sendToolBreakStatus(hand));
 					user.swingHand(hand, true);
 					if (itemStack.isEmpty()) {

@@ -10,10 +10,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.client.util.Untracker;
-import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
@@ -675,7 +675,7 @@ public class GlStateManager {
 		popMatrix();
 	}
 
-	public static void method_24221() {
+	public static void setupGuiFlatDiffuseLighting() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
@@ -685,7 +685,7 @@ public class GlStateManager {
 		setupLevelDiffuseLighting(matrix4f);
 	}
 
-	public static void method_24222() {
+	public static void setupGui3dDiffuseLighting() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
@@ -723,9 +723,9 @@ public class GlStateManager {
 	}
 
 	public static void mulTextureByProjModelView() {
-		texEnv(2983, MATRIX_BUFFER);
+		getFloat(2983, MATRIX_BUFFER);
 		multMatrix(MATRIX_BUFFER);
-		texEnv(2982, MATRIX_BUFFER);
+		getFloat(2982, MATRIX_BUFFER);
 		multMatrix(MATRIX_BUFFER);
 	}
 
@@ -935,7 +935,7 @@ public class GlStateManager {
 		return GL11.glGetTexLevelParameteri(target, level, pname);
 	}
 
-	public static int getTexLevelParameter() {
+	public static int genTextures() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		return GL11.glGenTextures();
 	}
@@ -1103,7 +1103,7 @@ public class GlStateManager {
 	}
 
 	@Deprecated
-	public static void texEnv(int pname, FloatBuffer params) {
+	public static void getFloat(int pname, FloatBuffer params) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GL11.glGetFloatv(pname, params);
 	}

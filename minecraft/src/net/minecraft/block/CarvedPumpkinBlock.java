@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -64,7 +64,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 			world.spawnEntity(snowGolemEntity);
 
 			for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
-				Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, snowGolemEntity);
+				Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, snowGolemEntity);
 			}
 
 			for (int j = 0; j < this.getSnowGolemPattern().getHeight(); j++) {
@@ -89,7 +89,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				world.spawnEntity(ironGolemEntity);
 
 				for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
-					Criterions.SUMMONED_ENTITY.trigger(serverPlayerEntity, ironGolemEntity);
+					Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, ironGolemEntity);
 				}
 
 				for (int j = 0; j < this.getIronGolemPattern().getWidth(); j++) {

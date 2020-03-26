@@ -48,7 +48,7 @@ public class SoundSystem {
 	private final List<TickableSoundInstance> tickingSounds = Lists.<TickableSoundInstance>newArrayList();
 	private final Map<SoundInstance, Integer> startTicks = Maps.<SoundInstance, Integer>newHashMap();
 	private final Map<SoundInstance, Integer> soundEndTicks = Maps.<SoundInstance, Integer>newHashMap();
-	private final List<ListenerSoundInstance> listeners = Lists.<ListenerSoundInstance>newArrayList();
+	private final List<SoundInstanceListener> listeners = Lists.<SoundInstanceListener>newArrayList();
 	private final List<TickableSoundInstance> soundsToPlayNextTick = Lists.<TickableSoundInstance>newArrayList();
 	private final List<Sound> preloadedSounds = Lists.<Sound>newArrayList();
 
@@ -143,12 +143,12 @@ public class SoundSystem {
 		}
 	}
 
-	public void registerListener(ListenerSoundInstance listenerSoundInstance) {
-		this.listeners.add(listenerSoundInstance);
+	public void registerListener(SoundInstanceListener soundInstanceListener) {
+		this.listeners.add(soundInstanceListener);
 	}
 
-	public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
-		this.listeners.remove(listenerSoundInstance);
+	public void unregisterListener(SoundInstanceListener soundInstanceListener) {
+		this.listeners.remove(soundInstanceListener);
 	}
 
 	public void tick(boolean bl) {
@@ -267,8 +267,8 @@ public class SoundSystem {
 					}
 				} else {
 					if (!this.listeners.isEmpty()) {
-						for (ListenerSoundInstance listenerSoundInstance : this.listeners) {
-							listenerSoundInstance.onSoundPlayed(soundInstance, weightedSoundSet);
+						for (SoundInstanceListener soundInstanceListener : this.listeners) {
+							soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);
 						}
 					}
 

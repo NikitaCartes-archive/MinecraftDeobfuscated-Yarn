@@ -15,12 +15,12 @@ import net.minecraft.tag.ItemTags;
 public class BeaconScreenHandler extends ScreenHandler {
 	private final Inventory payment = new BasicInventory(1) {
 		@Override
-		public boolean isValidInvStack(int slot, ItemStack stack) {
+		public boolean isValid(int slot, ItemStack stack) {
 			return stack.getItem().isIn(ItemTags.BEACON_PAYMENT_ITEMS);
 		}
 
 		@Override
-		public int getInvMaxStackAmount() {
+		public int getMaxCountPerStack() {
 			return 1;
 		}
 	};
@@ -148,7 +148,7 @@ public class BeaconScreenHandler extends ScreenHandler {
 
 	@Environment(EnvType.CLIENT)
 	public boolean hasPayment() {
-		return !this.payment.getInvStack(0).isEmpty();
+		return !this.payment.getStack(0).isEmpty();
 	}
 
 	class PaymentSlot extends Slot {

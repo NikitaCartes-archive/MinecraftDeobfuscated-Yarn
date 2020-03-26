@@ -433,8 +433,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void addPendingBlockEntityTag(CompoundTag compoundTag) {
-		this.pendingBlockEntityTags.put(new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")), compoundTag);
+	public void addPendingBlockEntityTag(CompoundTag tag) {
+		this.pendingBlockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
 	}
 
 	@Nullable
@@ -457,9 +457,9 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public void removeBlockEntity(BlockPos blockPos) {
+	public void removeBlockEntity(BlockPos pos) {
 		if (this.loadedToWorld || this.world.isClient()) {
-			BlockEntity blockEntity = (BlockEntity)this.blockEntities.remove(blockPos);
+			BlockEntity blockEntity = (BlockEntity)this.blockEntities.remove(pos);
 			if (blockEntity != null) {
 				blockEntity.markRemoved();
 			}
@@ -708,7 +708,7 @@ public class WorldChunk implements Chunk {
 				for (Short short_ : this.postProcessingLists[i]) {
 					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, i, chunkPos);
 					BlockState blockState = this.getBlockState(blockPos);
-					BlockState blockState2 = Block.getRenderingState(blockState, this.world, blockPos);
+					BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
 					this.world.setBlockState(blockPos, blockState2, 20);
 				}
 
