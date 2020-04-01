@@ -1,6 +1,9 @@
 package net.minecraft.world.biome.source;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
 import java.util.Set;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
@@ -65,5 +68,15 @@ public class TheEndBiomeSource extends BiomeSource {
 		}
 
 		return f;
+	}
+
+	@Override
+	public BiomeSourceType<?, ?> method_26467() {
+		return BiomeSourceType.THE_END;
+	}
+
+	@Override
+	public <T> Dynamic<T> method_26466(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of()));
 	}
 }

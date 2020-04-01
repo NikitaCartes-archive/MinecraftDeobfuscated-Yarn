@@ -11,8 +11,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class MagmaDecorator extends Decorator<CountDecoratorConfig> {
-	public MagmaDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function) {
-		super(function);
+	public MagmaDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function, Function<Random, ? extends CountDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

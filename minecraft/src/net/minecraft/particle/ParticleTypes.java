@@ -1,12 +1,16 @@
 package net.minecraft.particle;
 
+import java.util.Random;
+import java.util.function.BiFunction;
 import net.minecraft.util.registry.Registry;
 
 public class ParticleTypes {
 	public static final DefaultParticleType AMBIENT_ENTITY_EFFECT = register("ambient_entity_effect", false);
 	public static final DefaultParticleType ANGRY_VILLAGER = register("angry_villager", false);
 	public static final DefaultParticleType BARRIER = register("barrier", false);
-	public static final ParticleType<BlockStateParticleEffect> BLOCK = register("block", BlockStateParticleEffect.PARAMETERS_FACTORY);
+	public static final ParticleType<BlockStateParticleEffect> BLOCK = register(
+		"block", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect.field_23633
+	);
 	public static final DefaultParticleType BUBBLE = register("bubble", false);
 	public static final DefaultParticleType CLOUD = register("cloud", false);
 	public static final DefaultParticleType CRIT = register("crit", false);
@@ -17,7 +21,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType LANDING_LAVA = register("landing_lava", false);
 	public static final DefaultParticleType DRIPPING_WATER = register("dripping_water", false);
 	public static final DefaultParticleType FALLING_WATER = register("falling_water", false);
-	public static final ParticleType<DustParticleEffect> DUST = register("dust", DustParticleEffect.PARAMETERS_FACTORY);
+	public static final ParticleType<DustParticleEffect> DUST = register("dust", DustParticleEffect.PARAMETERS_FACTORY, DustParticleEffect.field_23634);
 	public static final DefaultParticleType EFFECT = register("effect", false);
 	public static final DefaultParticleType ELDER_GUARDIAN = register("elder_guardian", true);
 	public static final DefaultParticleType ENCHANTED_HIT = register("enchanted_hit", false);
@@ -26,7 +30,9 @@ public class ParticleTypes {
 	public static final DefaultParticleType ENTITY_EFFECT = register("entity_effect", false);
 	public static final DefaultParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final DefaultParticleType EXPLOSION = register("explosion", true);
-	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = register("falling_dust", BlockStateParticleEffect.PARAMETERS_FACTORY);
+	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = register(
+		"falling_dust", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect.field_23633
+	);
 	public static final DefaultParticleType FIREWORK = register("firework", false);
 	public static final DefaultParticleType FISHING = register("fishing", false);
 	public static final DefaultParticleType FLAME = register("flame", false);
@@ -37,7 +43,9 @@ public class ParticleTypes {
 	public static final DefaultParticleType COMPOSTER = register("composter", false);
 	public static final DefaultParticleType HEART = register("heart", false);
 	public static final DefaultParticleType INSTANT_EFFECT = register("instant_effect", false);
-	public static final ParticleType<ItemStackParticleEffect> ITEM = register("item", ItemStackParticleEffect.PARAMETERS_FACTORY);
+	public static final ParticleType<ItemStackParticleEffect> ITEM = register(
+		"item", ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect.field_23635
+	);
 	public static final DefaultParticleType ITEM_SLIME = register("item_slime", false);
 	public static final DefaultParticleType ITEM_SNOWBALL = register("item_snowball", false);
 	public static final DefaultParticleType LARGE_SMOKE = register("large_smoke", false);
@@ -79,7 +87,9 @@ public class ParticleTypes {
 		return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));
 	}
 
-	private static <T extends ParticleEffect> ParticleType<T> register(String name, ParticleEffect.Factory<T> factory) {
-		return Registry.register(Registry.PARTICLE_TYPE, name, new ParticleType<>(false, factory));
+	private static <T extends ParticleEffect> ParticleType<T> register(
+		String name, ParticleEffect.Factory<T> factory, BiFunction<Random, ParticleType<T>, T> biFunction
+	) {
+		return Registry.register(Registry.PARTICLE_TYPE, name, new ParticleType<>(false, factory, biFunction));
 	}
 }

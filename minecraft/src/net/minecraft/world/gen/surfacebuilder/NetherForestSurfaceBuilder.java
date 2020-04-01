@@ -17,8 +17,8 @@ public class NetherForestSurfaceBuilder extends SurfaceBuilder<TernarySurfaceCon
 	protected long seed;
 	private OctavePerlinNoiseSampler field_22203;
 
-	public NetherForestSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public NetherForestSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function, Function<Random, ? extends TernarySurfaceConfig> function2) {
+		super(function, function2);
 	}
 
 	public void generate(

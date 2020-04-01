@@ -132,7 +132,7 @@ public class LevelStorage {
 		if (!file.exists()) {
 			return null;
 		} else {
-			File file2 = new File(file, "level.dat");
+			File file2 = new File(file, "special_level.dat");
 			if (file2.exists()) {
 				LevelProperties levelProperties = readLevelProperties(file2, dataFixer);
 				if (levelProperties != null) {
@@ -140,7 +140,7 @@ public class LevelStorage {
 				}
 			}
 
-			file2 = new File(file, "level.dat_old");
+			file2 = new File(file, "special_level.dat_old");
 			return file2.exists() ? readLevelProperties(file2, dataFixer) : null;
 		}
 	}
@@ -164,7 +164,7 @@ public class LevelStorage {
 	public void renameLevel(String name, String newName) {
 		File file = new File(this.savesDirectory.toFile(), name);
 		if (file.exists()) {
-			File file2 = new File(file, "level.dat");
+			File file2 = new File(file, "special_level.dat");
 			if (file2.exists()) {
 				try {
 					CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file2));

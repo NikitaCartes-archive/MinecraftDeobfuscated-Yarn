@@ -91,4 +91,9 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 	public int getHeight(int x, int z, Heightmap.Type heightmapType) {
 		return this.getMaxY() / 2;
 	}
+
+	@Override
+	public ChunkGeneratorType<?, ?> method_26490() {
+		return ChunkGeneratorType.CAVES;
+	}
 }

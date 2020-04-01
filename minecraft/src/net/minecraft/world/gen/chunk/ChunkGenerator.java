@@ -1,5 +1,8 @@
 package net.minecraft.world.gen.chunk;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
 import java.util.BitSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -208,5 +211,26 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
 	public int getHeightInGround(int x, int z, Heightmap.Type heightmapType) {
 		return this.getHeight(x, z, heightmapType) - 1;
+	}
+
+	public abstract ChunkGeneratorType<?, ?> method_26490();
+
+	public <T> Dynamic<T> method_26489(DynamicOps<T> dynamicOps) {
+		BiomeSource biomeSource = this.getBiomeSource();
+		Dynamic<T> dynamic = biomeSource.method_26466(dynamicOps);
+		dynamic = dynamic.merge(dynamic.createString("type"), dynamic.createString(Registry.BIOME_SOURCE_TYPE.getId(biomeSource.method_26467()).toString()));
+		return new Dynamic<>(
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(
+					dynamicOps.createString("type"),
+					dynamicOps.createString(Registry.CHUNK_GENERATOR_TYPE.getId(this.method_26490()).toString()),
+					dynamicOps.createString("settings"),
+					this.getConfig().method_26574(dynamicOps).getValue(),
+					dynamicOps.createString("biome_source"),
+					dynamic.getValue()
+				)
+			)
+		);
 	}
 }

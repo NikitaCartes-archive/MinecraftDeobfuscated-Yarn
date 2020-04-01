@@ -50,6 +50,11 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		int i = this.getRedstoneOutput(state);
 		if (i > 0) {

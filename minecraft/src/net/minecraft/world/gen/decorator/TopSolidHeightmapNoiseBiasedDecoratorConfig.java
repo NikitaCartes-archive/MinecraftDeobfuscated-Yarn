@@ -3,6 +3,7 @@ package net.minecraft.world.gen.decorator;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 import net.minecraft.world.Heightmap;
 
 public class TopSolidHeightmapNoiseBiasedDecoratorConfig implements DecoratorConfig {
@@ -43,5 +44,14 @@ public class TopSolidHeightmapNoiseBiasedDecoratorConfig implements DecoratorCon
 		double e = dynamic.get("noise_offset").asDouble(0.0);
 		Heightmap.Type type = Heightmap.Type.byName(dynamic.get("heightmap").asString("OCEAN_FLOOR_WG"));
 		return new TopSolidHeightmapNoiseBiasedDecoratorConfig(i, d, e, type);
+	}
+
+	public static TopSolidHeightmapNoiseBiasedDecoratorConfig method_26676(Random random) {
+		return new TopSolidHeightmapNoiseBiasedDecoratorConfig(
+			random.nextInt(80),
+			(double)random.nextInt(80),
+			(double)(random.nextFloat() / 4.0F),
+			random.nextBoolean() ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG
+		);
 	}
 }

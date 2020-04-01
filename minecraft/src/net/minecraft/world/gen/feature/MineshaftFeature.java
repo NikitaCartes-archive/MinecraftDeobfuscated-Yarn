@@ -17,8 +17,8 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
-	public MineshaftFeature(Function<Dynamic<?>, ? extends MineshaftFeatureConfig> function) {
-		super(function);
+	public MineshaftFeature(Function<Dynamic<?>, ? extends MineshaftFeatureConfig> function, Function<Random, ? extends MineshaftFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

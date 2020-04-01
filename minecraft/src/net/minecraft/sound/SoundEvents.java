@@ -951,6 +951,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_DEATH = register("entity.zombie_villager.death");
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_HURT = register("entity.zombie_villager.hurt");
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP = register("entity.zombie_villager.step");
+	public static final SoundEvent AWESOME_INTRO = register("nothingtoseeheremovealong:awesome_intro");
 
 	private static SoundEvent register(String id) {
 		return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(new Identifier(id)));

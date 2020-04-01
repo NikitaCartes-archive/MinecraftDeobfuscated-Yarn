@@ -74,6 +74,11 @@ public class DeadCoralWallFanBlock extends DeadCoralFanBlock {
 		return blockState.isSideSolidFullSquare(world, blockPos, direction);
 	}
 
+	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {

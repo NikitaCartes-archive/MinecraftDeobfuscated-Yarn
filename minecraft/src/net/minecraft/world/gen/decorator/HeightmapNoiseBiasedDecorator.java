@@ -12,8 +12,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class HeightmapNoiseBiasedDecorator extends Decorator<TopSolidHeightmapNoiseBiasedDecoratorConfig> {
-	public HeightmapNoiseBiasedDecorator(Function<Dynamic<?>, ? extends TopSolidHeightmapNoiseBiasedDecoratorConfig> function) {
-		super(function);
+	public HeightmapNoiseBiasedDecorator(
+		Function<Dynamic<?>, ? extends TopSolidHeightmapNoiseBiasedDecoratorConfig> function,
+		Function<Random, ? extends TopSolidHeightmapNoiseBiasedDecoratorConfig> function2
+	) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

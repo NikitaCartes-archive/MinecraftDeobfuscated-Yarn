@@ -3,8 +3,10 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.registry.Registry;
 
 public class HugeFungusFeatureConfig implements FeatureConfig {
 	public static final HugeFungusFeatureConfig CRIMSON_FUNGUS_CONFIG = new HugeFungusFeatureConfig(
@@ -65,6 +67,16 @@ public class HugeFungusFeatureConfig implements FeatureConfig {
 		BlockState blockState4 = (BlockState)dynamic.get("decor_state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
 		boolean bl = dynamic.get("planted").asBoolean(false);
 		return new HugeFungusFeatureConfig(blockState, blockState2, blockState3, blockState4, bl);
+	}
+
+	public static <T> HugeFungusFeatureConfig method_26589(Random random) {
+		return new HugeFungusFeatureConfig(
+			Registry.BLOCK.getRandom(random).getDefaultState(),
+			Registry.BLOCK.getRandom(random).getDefaultState(),
+			Registry.BLOCK.getRandom(random).getDefaultState(),
+			Registry.BLOCK.getRandom(random).getDefaultState(),
+			false
+		);
 	}
 
 	static {

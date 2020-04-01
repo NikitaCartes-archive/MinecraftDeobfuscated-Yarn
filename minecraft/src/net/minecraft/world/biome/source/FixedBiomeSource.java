@@ -1,12 +1,16 @@
 package net.minecraft.world.biome.source;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 public class FixedBiomeSource extends BiomeSource {
@@ -35,5 +39,17 @@ public class FixedBiomeSource extends BiomeSource {
 	@Override
 	public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
 		return Sets.<Biome>newHashSet(this.biome);
+	}
+
+	@Override
+	public BiomeSourceType<?, ?> method_26467() {
+		return BiomeSourceType.FIXED;
+	}
+
+	@Override
+	public <T> Dynamic<T> method_26466(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(
+			dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("biome"), dynamicOps.createString(Registry.BIOME.getId(this.biome).toString())))
+		);
 	}
 }

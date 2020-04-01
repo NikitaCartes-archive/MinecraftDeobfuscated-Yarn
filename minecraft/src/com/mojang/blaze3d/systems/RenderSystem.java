@@ -702,12 +702,12 @@ public class RenderSystem {
 
 	public static void setupGuiFlatDiffuseLighting() {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.setupGuiFlatDiffuseLighting();
+		GlStateManager.method_24221();
 	}
 
 	public static void setupGui3DDiffuseLighting() {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.setupGui3dDiffuseLighting();
+		GlStateManager.method_24222();
 	}
 
 	public static void mulTextureByProjModelView() {

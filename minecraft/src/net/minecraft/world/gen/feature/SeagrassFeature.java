@@ -14,8 +14,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class SeagrassFeature extends Feature<SeagrassFeatureConfig> {
-	public SeagrassFeature(Function<Dynamic<?>, ? extends SeagrassFeatureConfig> function) {
-		super(function);
+	public SeagrassFeature(Function<Dynamic<?>, ? extends SeagrassFeatureConfig> function, Function<Random, ? extends SeagrassFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

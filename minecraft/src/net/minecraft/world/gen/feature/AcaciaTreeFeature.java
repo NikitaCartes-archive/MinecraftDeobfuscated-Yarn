@@ -11,8 +11,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class AcaciaTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
-	public AcaciaTreeFeature(Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig> function) {
-		super(function);
+	public AcaciaTreeFeature(Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig> function, Function<Random, ? extends BranchedTreeFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

@@ -186,6 +186,11 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			: super.locateStructure(world, id, center, radius, skipExistingChunks);
 	}
 
+	@Override
+	public ChunkGeneratorType<?, ?> method_26490() {
+		return ChunkGeneratorType.FLAT;
+	}
+
 	class FlatChunkGeneratorBiome extends Biome {
 		protected FlatChunkGeneratorBiome(
 			ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder,

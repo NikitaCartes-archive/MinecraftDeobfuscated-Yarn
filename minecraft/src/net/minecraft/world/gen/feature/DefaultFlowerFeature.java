@@ -8,8 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 public class DefaultFlowerFeature extends FlowerFeature<RandomPatchFeatureConfig> {
-	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function) {
-		super(function);
+	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function, Function<Random, ? extends RandomPatchFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean isPosValid(IWorld iWorld, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {

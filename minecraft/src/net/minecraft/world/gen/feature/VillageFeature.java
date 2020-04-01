@@ -15,8 +15,8 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class VillageFeature extends StructureFeature<VillageFeatureConfig> {
-	public VillageFeature(Function<Dynamic<?>, ? extends VillageFeatureConfig> function) {
-		super(function);
+	public VillageFeature(Function<Dynamic<?>, ? extends VillageFeatureConfig> function, Function<Random, ? extends VillageFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

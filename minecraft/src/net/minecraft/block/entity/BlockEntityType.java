@@ -202,6 +202,9 @@ public class BlockEntityType<T extends BlockEntity> {
 	public static final BlockEntityType<BeehiveBlockEntity> BEEHIVE = create(
 		"beehive", BlockEntityType.Builder.create(BeehiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE)
 	);
+	public static final BlockEntityType<NetherPortalBlockEntity> NEITHER = create(
+		"neither", BlockEntityType.Builder.create(NetherPortalBlockEntity::new, Blocks.NEITHER_PORTAL)
+	);
 	private final Supplier<? extends T> supplier;
 	private final Set<Block> blocks;
 	private final Type<?> type;

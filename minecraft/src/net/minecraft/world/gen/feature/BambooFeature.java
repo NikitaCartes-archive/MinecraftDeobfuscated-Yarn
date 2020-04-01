@@ -25,8 +25,8 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 	private static final BlockState BAMBOO_TOP_2 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.LARGE);
 	private static final BlockState BAMBOO_TOP_3 = BAMBOO.with(BambooBlock.LEAVES, BambooLeaves.SMALL);
 
-	public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> function) {
-		super(function);
+	public BambooFeature(Function<Dynamic<?>, ? extends ProbabilityConfig> function, Function<Random, ? extends ProbabilityConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

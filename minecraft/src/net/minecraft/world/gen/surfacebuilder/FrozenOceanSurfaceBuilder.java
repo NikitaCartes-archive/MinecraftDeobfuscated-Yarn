@@ -24,8 +24,8 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	private OctaveSimplexNoiseSampler field_15642;
 	private long seed;
 
-	public FrozenOceanSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public FrozenOceanSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function, Function<Random, ? extends TernarySurfaceConfig> function2) {
+		super(function, function2);
 	}
 
 	public void generate(

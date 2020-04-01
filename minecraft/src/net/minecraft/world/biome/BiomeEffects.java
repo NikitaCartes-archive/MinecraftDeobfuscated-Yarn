@@ -2,11 +2,13 @@ package net.minecraft.world.biome;
 
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.registry.Registry;
 
 public class BiomeEffects {
 	private final int fogColor;
@@ -90,6 +92,23 @@ public class BiomeEffects {
 	@Environment(EnvType.CLIENT)
 	public Optional<BiomeAdditionsSound> getAdditionsSound() {
 		return this.additionsSound;
+	}
+
+	public static BiomeEffects method_26469(Random random) {
+		BiomeEffects.Builder builder = new BiomeEffects.Builder().fogColor(random.nextInt()).waterColor(random.nextInt()).waterFogColor(random.nextInt());
+		if (random.nextInt(5) == 0) {
+			builder.particleConfig(BiomeParticleConfig.method_26445(random));
+		}
+
+		if (random.nextInt(10) == 0) {
+			builder.additionsSound(new BiomeAdditionsSound(Registry.SOUND_EVENT.getRandom(random), (double)(random.nextFloat() / 3.0F)));
+		}
+
+		if (random.nextInt(10) == 0) {
+			builder.additionsSound(new BiomeAdditionsSound(Registry.SOUND_EVENT.getRandom(random), (double)(random.nextFloat() / 2.0F)));
+		}
+
+		return builder.build();
 	}
 
 	public static class Builder {

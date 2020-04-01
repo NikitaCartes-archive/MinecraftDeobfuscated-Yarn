@@ -10,8 +10,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class MegaPineTreeFeature extends MegaTreeFeature<MegaTreeFeatureConfig> {
-	public MegaPineTreeFeature(Function<Dynamic<?>, ? extends MegaTreeFeatureConfig> function) {
-		super(function);
+	public MegaPineTreeFeature(Function<Dynamic<?>, ? extends MegaTreeFeatureConfig> function, Function<Random, ? extends MegaTreeFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

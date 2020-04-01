@@ -24,8 +24,8 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		new Biome.SpawnEntry(EntityType.MAGMA_CUBE, 3, 4, 4)
 	);
 
-	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public NetherFortressFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

@@ -14,8 +14,10 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatureConfig> {
-	public BuriedTreasureFeature(Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig> function) {
-		super(function);
+	public BuriedTreasureFeature(
+		Function<Dynamic<?>, ? extends BuriedTreasureFeatureConfig> function, Function<Random, ? extends BuriedTreasureFeatureConfig> function2
+	) {
+		super(function, function2);
 	}
 
 	@Override

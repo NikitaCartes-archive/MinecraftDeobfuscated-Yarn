@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -52,6 +53,15 @@ public class LootContext {
 
 	public boolean hasParameter(LootContextParameter<?> parameter) {
 		return this.parameters.containsKey(parameter);
+	}
+
+	public <T> T method_26683(LootContextParameter<T> lootContextParameter) {
+		T object = (T)this.parameters.get(lootContextParameter);
+		if (object == null) {
+			throw new NoSuchElementException(lootContextParameter.getIdentifier().toString());
+		} else {
+			return object;
+		}
 	}
 
 	public void drop(Identifier id, Consumer<ItemStack> itemDropper) {

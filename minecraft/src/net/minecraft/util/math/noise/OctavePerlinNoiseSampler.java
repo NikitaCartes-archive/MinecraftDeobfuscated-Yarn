@@ -13,6 +13,7 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 	private final PerlinNoiseSampler[] octaveSamplers;
 	private final double field_20659;
 	private final double field_20660;
+	private final List<Integer> field_23599;
 
 	public OctavePerlinNoiseSampler(ChunkRandom random, IntStream octaves) {
 		this(random, (List<Integer>)octaves.boxed().collect(ImmutableList.toImmutableList()));
@@ -26,6 +27,7 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 		if (octaves.isEmpty()) {
 			throw new IllegalArgumentException("Need some octaves!");
 		} else {
+			this.field_23599 = ImmutableList.copyOf(octaves);
 			int i = -octaves.firstInt();
 			int j = octaves.lastInt();
 			int k = i + j + 1;
@@ -102,5 +104,9 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 	@Override
 	public double sample(double x, double y, double d, double e) {
 		return this.sample(x, y, 0.0, d, e, false);
+	}
+
+	public List<Integer> method_26682() {
+		return this.field_23599;
 	}
 }

@@ -35,4 +35,9 @@ public class CarpetBlock extends Block {
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		return !world.isAir(pos.down());
 	}
+
+	@Override
+	public boolean method_26477() {
+		return true;
+	}
 }

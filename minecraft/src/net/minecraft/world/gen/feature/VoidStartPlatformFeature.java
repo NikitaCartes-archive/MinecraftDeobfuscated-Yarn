@@ -14,8 +14,8 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	private static final BlockPos START_BLOCK = new BlockPos(8, 3, 8);
 	private static final ChunkPos START_CHUNK = new ChunkPos(START_BLOCK);
 
-	public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	private static int getDistance(int x1, int z1, int x2, int z2) {

@@ -101,7 +101,7 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 
 	private void updatePageProvider() {
 		ItemStack itemStack = this.container.getBookItem();
-		this.setPageProvider(BookScreen.Contents.create(itemStack));
+		this.setPageProvider(BookContent.fromStack(itemStack));
 	}
 
 	private void updatePage() {

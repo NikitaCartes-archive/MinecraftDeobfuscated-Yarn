@@ -44,6 +44,11 @@ public class FallingBlock extends Block {
 	protected void configureFallingBlockEntity(FallingBlockEntity entity) {
 	}
 
+	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
 	protected int method_26154() {
 		return 2;
 	}

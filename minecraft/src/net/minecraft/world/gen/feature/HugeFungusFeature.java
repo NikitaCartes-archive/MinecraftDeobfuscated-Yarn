@@ -16,8 +16,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
-	public HugeFungusFeature(Function<Dynamic<?>, ? extends HugeFungusFeatureConfig> function) {
-		super(function);
+	public HugeFungusFeature(Function<Dynamic<?>, ? extends HugeFungusFeatureConfig> function, Function<Random, ? extends HugeFungusFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

@@ -249,6 +249,11 @@ public class PlayerPredicate {
 		private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<>();
 		private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements = Maps.<Identifier, PlayerPredicate.AdvancementPredicate>newHashMap();
 
+		public PlayerPredicate.Builder method_26486(Stat<?> stat, NumberRange.IntRange intRange) {
+			this.stats.put(stat, intRange);
+			return this;
+		}
+
 		public PlayerPredicate build() {
 			return new PlayerPredicate(this.experienceLevel, this.gamemode, this.stats, this.recipes, this.advancements);
 		}

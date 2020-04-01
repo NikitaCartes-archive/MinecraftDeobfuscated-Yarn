@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
+import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.structure.IglooGenerator;
 import net.minecraft.structure.StructureManager;
@@ -12,8 +13,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class IglooFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
-	public IglooFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public IglooFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

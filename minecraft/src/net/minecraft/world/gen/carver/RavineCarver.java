@@ -4,13 +4,14 @@ import com.mojang.datafixers.Dynamic;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_5101;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
-public class RavineCarver extends Carver<ProbabilityConfig> {
+public class RavineCarver extends class_5101 {
 	private final float[] heightToHorizontalStretchFactor = new float[1024];
 
 	public RavineCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> configDeserializer) {

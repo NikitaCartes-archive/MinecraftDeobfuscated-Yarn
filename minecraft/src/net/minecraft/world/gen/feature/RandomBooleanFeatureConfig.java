@@ -3,6 +3,8 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
+import net.minecraft.util.registry.Registry;
 
 public class RandomBooleanFeatureConfig implements FeatureConfig {
 	public final ConfiguredFeature<?, ?> featureTrue;
@@ -32,5 +34,9 @@ public class RandomBooleanFeatureConfig implements FeatureConfig {
 		ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(dynamic.get("feature_true").orElseEmptyMap());
 		ConfiguredFeature<?, ?> configuredFeature2 = ConfiguredFeature.deserialize(dynamic.get("feature_false").orElseEmptyMap());
 		return new RandomBooleanFeatureConfig(configuredFeature, configuredFeature2);
+	}
+
+	public static RandomBooleanFeatureConfig method_26624(Random random) {
+		return new RandomBooleanFeatureConfig(Registry.FEATURE.getRandom(random).method_26588(random), Registry.FEATURE.getRandom(random).method_26588(random));
 	}
 }

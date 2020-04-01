@@ -39,6 +39,11 @@ public class TorchBlock extends Block {
 		return sideCoversSmallSquare(world, pos.down(), Direction.UP);
 	}
 
+	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {

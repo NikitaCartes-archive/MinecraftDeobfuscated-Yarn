@@ -62,4 +62,8 @@ public class CocoaBeansTreeDecorator extends TreeDecorator {
 			)
 			.getValue();
 	}
+
+	public static CocoaBeansTreeDecorator method_26665(Random random) {
+		return new CocoaBeansTreeDecorator(random.nextFloat() / 2.0F);
+	}
 }

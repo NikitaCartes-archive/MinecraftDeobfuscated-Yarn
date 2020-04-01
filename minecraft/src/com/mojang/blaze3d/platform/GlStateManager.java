@@ -675,7 +675,7 @@ public class GlStateManager {
 		popMatrix();
 	}
 
-	public static void setupGuiFlatDiffuseLighting() {
+	public static void method_24221() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
@@ -685,7 +685,7 @@ public class GlStateManager {
 		setupLevelDiffuseLighting(matrix4f);
 	}
 
-	public static void setupGui3dDiffuseLighting() {
+	public static void method_24222() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
@@ -723,9 +723,9 @@ public class GlStateManager {
 	}
 
 	public static void mulTextureByProjModelView() {
-		getFloat(2983, MATRIX_BUFFER);
+		texEnv(2983, MATRIX_BUFFER);
 		multMatrix(MATRIX_BUFFER);
-		getFloat(2982, MATRIX_BUFFER);
+		texEnv(2982, MATRIX_BUFFER);
 		multMatrix(MATRIX_BUFFER);
 	}
 
@@ -935,7 +935,7 @@ public class GlStateManager {
 		return GL11.glGetTexLevelParameteri(target, level, pname);
 	}
 
-	public static int genTextures() {
+	public static int getTexLevelParameter() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
 		return GL11.glGenTextures();
 	}
@@ -1103,7 +1103,7 @@ public class GlStateManager {
 	}
 
 	@Deprecated
-	public static void getFloat(int pname, FloatBuffer params) {
+	public static void texEnv(int pname, FloatBuffer params) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		GL11.glGetFloatv(pname, params);
 	}

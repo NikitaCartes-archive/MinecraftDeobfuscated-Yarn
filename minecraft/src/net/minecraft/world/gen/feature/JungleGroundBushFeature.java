@@ -10,8 +10,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class JungleGroundBushFeature extends AbstractTreeFeature<TreeFeatureConfig> {
-	public JungleGroundBushFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> function) {
-		super(function);
+	public JungleGroundBushFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> function, Function<Random, ? extends TreeFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

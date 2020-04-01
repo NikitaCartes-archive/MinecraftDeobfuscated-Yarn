@@ -1,8 +1,9 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import java.util.Set;
+import com.google.common.collect.ImmutableMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 import net.minecraft.world.biome.Biome;
 
@@ -12,18 +13,18 @@ public class MultiNoiseBiomeSourceConfig implements BiomeSourceConfig {
 	private ImmutableList<Integer> humidityOctaves = (ImmutableList<Integer>)IntStream.rangeClosed(-8, -1).boxed().collect(ImmutableList.toImmutableList());
 	private ImmutableList<Integer> hillinessOctaves = (ImmutableList<Integer>)IntStream.rangeClosed(-9, -1).boxed().collect(ImmutableList.toImmutableList());
 	private ImmutableList<Integer> styleOctaves = (ImmutableList<Integer>)IntStream.rangeClosed(-8, -1).boxed().collect(ImmutableList.toImmutableList());
-	private Set<Biome> biomes = ImmutableSet.of();
+	private Map<Biome, List<Biome.MixedNoisePoint>> biomes = ImmutableMap.of();
 
 	public MultiNoiseBiomeSourceConfig(long seed) {
 		this.seed = seed;
 	}
 
-	public MultiNoiseBiomeSourceConfig withBiomes(Set<Biome> biomes) {
-		this.biomes = biomes;
+	public MultiNoiseBiomeSourceConfig withBiomes(Map<Biome, List<Biome.MixedNoisePoint>> map) {
+		this.biomes = map;
 		return this;
 	}
 
-	public Set<Biome> getBiomes() {
+	public Map<Biome, List<Biome.MixedNoisePoint>> getBiomes() {
 		return this.biomes;
 	}
 

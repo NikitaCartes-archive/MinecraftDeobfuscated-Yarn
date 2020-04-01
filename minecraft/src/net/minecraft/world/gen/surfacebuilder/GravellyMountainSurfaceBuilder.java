@@ -8,8 +8,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class GravellyMountainSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	public GravellyMountainSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public GravellyMountainSurfaceBuilder(
+		Function<Dynamic<?>, ? extends TernarySurfaceConfig> function, Function<Random, ? extends TernarySurfaceConfig> function2
+	) {
+		super(function, function2);
 	}
 
 	public void generate(

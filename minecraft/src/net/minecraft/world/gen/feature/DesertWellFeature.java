@@ -18,8 +18,8 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 	private final BlockState wall = Blocks.SANDSTONE.getDefaultState();
 	private final BlockState fluidInside = Blocks.WATER.getDefaultState();
 
-	public DesertWellFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public DesertWellFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

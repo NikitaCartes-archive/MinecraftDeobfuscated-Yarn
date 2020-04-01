@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.block.AbstractBlock;
@@ -90,6 +91,22 @@ public class RandomPatchFeatureConfig implements FeatureConfig {
 			dynamic.get("can_replace").asBoolean(false),
 			dynamic.get("project").asBoolean(true),
 			dynamic.get("need_water").asBoolean(false)
+		);
+	}
+
+	public static RandomPatchFeatureConfig method_26627(Random random) {
+		return new RandomPatchFeatureConfig(
+			BlockStateProvider.method_26659(random),
+			BlockPlacer.method_26594(random),
+			ImmutableSet.of(),
+			ImmutableSet.of(),
+			random.nextInt(50),
+			1 + random.nextInt(20),
+			1 + random.nextInt(20),
+			1 + random.nextInt(20),
+			random.nextBoolean(),
+			random.nextBoolean(),
+			random.nextInt(7) == 0
 		);
 	}
 

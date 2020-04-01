@@ -11,8 +11,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndGatewayDecorator extends Decorator<NopeDecoratorConfig> {
-	public EndGatewayDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {
-		super(function);
+	public EndGatewayDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function, Function<Random, ? extends NopeDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

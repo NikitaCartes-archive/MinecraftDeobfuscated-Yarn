@@ -32,8 +32,8 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		.expireAfterWrite(5L, TimeUnit.MINUTES)
 		.build(new EndSpikeFeature.SpikeCache());
 
-	public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> function) {
-		super(function);
+	public EndSpikeFeature(Function<Dynamic<?>, ? extends EndSpikeFeatureConfig> function, Function<Random, ? extends EndSpikeFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public static List<EndSpikeFeature.Spike> getSpikes(IWorld world) {

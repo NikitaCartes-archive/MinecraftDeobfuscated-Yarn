@@ -3,6 +3,7 @@ package net.minecraft.world.gen.decorator;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 
 public class ChanceRangeDecoratorConfig implements DecoratorConfig {
 	public final float chance;
@@ -42,5 +43,11 @@ public class ChanceRangeDecoratorConfig implements DecoratorConfig {
 		int j = dynamic.get("top_offset").asInt(0);
 		int k = dynamic.get("top").asInt(0);
 		return new ChanceRangeDecoratorConfig(f, i, j, k);
+	}
+
+	public static ChanceRangeDecoratorConfig method_26599(Random random) {
+		int i = random.nextInt(11);
+		int j = random.nextInt(11);
+		return new ChanceRangeDecoratorConfig(random.nextFloat(), i, j, i + j + random.nextInt(70));
 	}
 }

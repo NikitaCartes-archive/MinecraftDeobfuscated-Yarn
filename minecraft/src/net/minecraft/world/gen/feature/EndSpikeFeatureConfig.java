@@ -1,9 +1,11 @@
 package net.minecraft.world.gen.feature;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -66,5 +68,9 @@ public class EndSpikeFeatureConfig implements FeatureConfig {
 	@Nullable
 	public BlockPos getPos() {
 		return this.crystalBeamTarget;
+	}
+
+	public static EndSpikeFeatureConfig method_26647(Random random) {
+		return new EndSpikeFeatureConfig(false, ImmutableList.of(), null);
 	}
 }

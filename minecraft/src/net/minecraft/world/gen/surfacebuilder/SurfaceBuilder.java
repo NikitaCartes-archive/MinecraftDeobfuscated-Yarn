@@ -45,44 +45,62 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	public static final TernarySurfaceConfig END_CONFIG = new TernarySurfaceConfig(END_STONE, END_STONE, END_STONE);
 	public static final TernarySurfaceConfig CRIMSON_NYLIUM_CONFIG = new TernarySurfaceConfig(CRIMSON_NYLIUM, NETHERRACK, NETHER_WART_BLOCK);
 	public static final TernarySurfaceConfig WARPED_NYLIUM_CONFIG = new TernarySurfaceConfig(WARPED_NYLIUM, NETHERRACK, WARPED_WART_BLOCK);
-	public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = register("default", new DefaultSurfaceBuilder(TernarySurfaceConfig::deserialize));
-	public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = register("mountain", new MountainSurfaceBuilder(TernarySurfaceConfig::deserialize));
+	public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = register(
+		"default", new DefaultSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
+	);
+	public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = register(
+		"mountain", new MountainSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
+	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> SHATTERED_SAVANNA = register(
-		"shattered_savanna", new ShatteredSavannaSurfaceBuilder(TernarySurfaceConfig::deserialize)
+		"shattered_savanna", new ShatteredSavannaSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
 	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> GRAVELLY_MOUNTAIN = register(
-		"gravelly_mountain", new GravellyMountainSurfaceBuilder(TernarySurfaceConfig::deserialize)
+		"gravelly_mountain", new GravellyMountainSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
 	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> GIANT_TREE_TAIGA = register(
-		"giant_tree_taiga", new GiantTreeTaigaSurfaceBuilder(TernarySurfaceConfig::deserialize)
+		"giant_tree_taiga", new GiantTreeTaigaSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> SWAMP = register("swamp", new SwampSurfaceBuilder(TernarySurfaceConfig::deserialize));
-	public static final SurfaceBuilder<TernarySurfaceConfig> BADLANDS = register("badlands", new BadlandsSurfaceBuilder(TernarySurfaceConfig::deserialize));
+	public static final SurfaceBuilder<TernarySurfaceConfig> SWAMP = register(
+		"swamp", new SwampSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
+	);
+	public static final SurfaceBuilder<TernarySurfaceConfig> BADLANDS = register(
+		"badlands", new BadlandsSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
+	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> WOODED_BADLANDS = register(
-		"wooded_badlands", new WoodedBadlandsSurfaceBuilder(TernarySurfaceConfig::deserialize)
+		"wooded_badlands", new WoodedBadlandsSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
 	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> ERODED_BADLANDS = register(
-		"eroded_badlands", new ErodedBadlandsSurfaceBuilder(TernarySurfaceConfig::deserialize)
+		"eroded_badlands", new ErodedBadlandsSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
 	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> FROZEN_OCEAN = register(
-		"frozen_ocean", new FrozenOceanSurfaceBuilder(TernarySurfaceConfig::deserialize)
+		"frozen_ocean", new FrozenOceanSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> NETHER = register("nether", new NetherSurfaceBuilder(TernarySurfaceConfig::deserialize));
+	public static final SurfaceBuilder<TernarySurfaceConfig> NETHER = register(
+		"nether", new NetherSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
+	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> NETHER_FOREST = register(
-		"nether_forest", new NetherForestSurfaceBuilder(TernarySurfaceConfig::deserialize)
+		"nether_forest", new NetherForestSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
 	);
 	public static final SurfaceBuilder<TernarySurfaceConfig> SOUL_SAND_VALLEY = register(
-		"soul_sand_valley", new SoulSandValleySurfaceBuilder(TernarySurfaceConfig::deserialize)
+		"soul_sand_valley", new SoulSandValleySurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
 	);
-	public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = register("nope", new NopeSurfaceBuilder(TernarySurfaceConfig::deserialize));
+	public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = register(
+		"nope", new NopeSurfaceBuilder(TernarySurfaceConfig::deserialize, TernarySurfaceConfig::method_26680)
+	);
 	private final Function<Dynamic<?>, ? extends C> factory;
+	private final Function<Random, ? extends C> field_23598;
 
 	private static <C extends SurfaceConfig, F extends SurfaceBuilder<C>> F register(String string, F surfaceBuilder) {
 		return Registry.register(Registry.SURFACE_BUILDER, string, surfaceBuilder);
 	}
 
-	public SurfaceBuilder(Function<Dynamic<?>, ? extends C> function) {
+	public SurfaceBuilder(Function<Dynamic<?>, ? extends C> function, Function<Random, ? extends C> function2) {
 		this.factory = function;
+		this.field_23598 = function2;
+	}
+
+	public C method_26679(Random random) {
+		return (C)this.field_23598.apply(random);
 	}
 
 	public abstract void generate(

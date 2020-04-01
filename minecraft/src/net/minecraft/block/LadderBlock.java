@@ -57,6 +57,11 @@ public class LadderBlock extends Block implements Waterloggable {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if (direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();

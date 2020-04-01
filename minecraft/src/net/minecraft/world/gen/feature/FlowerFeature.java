@@ -10,8 +10,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class FlowerFeature<U extends FeatureConfig> extends Feature<U> {
-	public FlowerFeature(Function<Dynamic<?>, ? extends U> function) {
-		super(function);
+	public FlowerFeature(Function<Dynamic<?>, ? extends U> function, Function<Random, ? extends U> function2) {
+		super(function, function2);
 	}
 
 	@Override

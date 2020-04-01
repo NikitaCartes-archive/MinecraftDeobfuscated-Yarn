@@ -26,8 +26,8 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	private final List<StructureStart> starts = Lists.<StructureStart>newArrayList();
 	private long lastSeed;
 
-	public StrongholdFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public StrongholdFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

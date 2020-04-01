@@ -87,7 +87,7 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	}
 
 	@Override
-	default BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
-		return WorldView.super.getTopPosition(type, pos);
+	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+		return WorldView.super.getTopPosition(heightmap, pos);
 	}
 }

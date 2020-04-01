@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -177,5 +178,11 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		} else {
 			return false;
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	default Vector3f method_26443(BlockState blockState, BlockPos blockPos) {
+		return this.getDimension().method_26495(blockState, blockPos);
 	}
 }

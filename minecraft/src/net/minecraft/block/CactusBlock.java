@@ -92,6 +92,11 @@ public class CactusBlock extends Block {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		entity.damage(DamageSource.CACTUS, 1.0F);
 	}

@@ -12,6 +12,7 @@ import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.function.BiFunction;
+import net.minecraft.class_5108;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
@@ -96,6 +97,7 @@ public class LootFunctions {
 		register(new FillPlayerHeadLootFunction.Factory());
 		register(new CopyNbtLootFunction.Factory());
 		register(new CopyStateFunction.Factory());
+		register(new class_5108.class_5110());
 	}
 
 	public static class Factory implements JsonDeserializer<LootFunction>, JsonSerializer<LootFunction> {

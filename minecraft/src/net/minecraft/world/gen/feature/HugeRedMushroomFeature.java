@@ -8,8 +8,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 
 public class HugeRedMushroomFeature extends HugeMushroomFeature {
-	public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
-		super(function);
+	public HugeRedMushroomFeature(
+		Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function, Function<Random, ? extends HugeMushroomFeatureConfig> function2
+	) {
+		super(function, function2);
 	}
 
 	@Override

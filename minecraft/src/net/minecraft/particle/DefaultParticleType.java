@@ -2,6 +2,7 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.util.Random;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
@@ -17,7 +18,7 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 	};
 
 	protected DefaultParticleType(boolean bl) {
-		super(bl, PARAMETER_FACTORY);
+		super(bl, PARAMETER_FACTORY, (random, particleType) -> (DefaultParticleType)particleType);
 	}
 
 	@Override

@@ -33,7 +33,6 @@ public class WarmOceanBiome extends Biome {
 				.downfall(0.5F)
 				.effects(new BiomeEffects.Builder().waterColor(4445678).waterFogColor(270131).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
-				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.0F, -0.25F, 0.0F, 1.0F)))
 		);
 		this.addStructureFeature(Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3F, 0.9F)));
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));

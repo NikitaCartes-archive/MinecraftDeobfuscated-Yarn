@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.DirectionTransformation;
 import net.minecraft.util.math.MathHelper;
@@ -32,7 +32,7 @@ public enum ModelRotation implements ModelBakeSettings {
 
 	private static final Map<Integer, ModelRotation> BY_INDEX = (Map<Integer, ModelRotation>)Arrays.stream(values())
 		.collect(Collectors.toMap(modelRotation -> modelRotation.index, modelRotation -> modelRotation));
-	private final AffineTransformation rotation;
+	private final Rotation3 rotation;
 	private final DirectionTransformation directionTransformation;
 	private final int index;
 
@@ -54,12 +54,12 @@ public enum ModelRotation implements ModelBakeSettings {
 			directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_X_NEG);
 		}
 
-		this.rotation = new AffineTransformation(null, quaternion, null, null);
+		this.rotation = new Rotation3(null, quaternion, null, null);
 		this.directionTransformation = directionTransformation;
 	}
 
 	@Override
-	public AffineTransformation getRotation() {
+	public Rotation3 getRotation() {
 		return this.rotation;
 	}
 

@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -2469,14 +2470,14 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createBlockStateWithRandomHorizontalRotations(Blocks.LILY_PAD, ModelIds.getBlockModelId(Blocks.LILY_PAD)));
 	}
 
-	private void registerNetherPortal() {
+	private void registerNetherPortal(Block block) {
 		this.blockStateCollector
 			.accept(
-				VariantsBlockStateSupplier.create(Blocks.NETHER_PORTAL)
+				VariantsBlockStateSupplier.create(block)
 					.coordinate(
 						BlockStateVariantMap.create(Properties.HORIZONTAL_AXIS)
-							.register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.NETHER_PORTAL, "_ns")))
-							.register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.NETHER_PORTAL, "_ew")))
+							.register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_ns")))
+							.register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_ew")))
 					)
 			);
 	}
@@ -3411,6 +3412,7 @@ public class BlockStateModelGenerator {
 		this.registerSimpleState(Blocks.POTTED_BAMBOO);
 		this.registerSimpleState(Blocks.POTTED_CACTUS);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
+		this.registerBuiltinWithParticle(Blocks.ZONE, Items.BARRIER);
 		this.registerItemModel(Items.BARRIER);
 		this.registerBuiltinWithParticle(Blocks.STRUCTURE_VOID, Items.STRUCTURE_VOID);
 		this.registerItemModel(Items.STRUCTURE_VOID);
@@ -3427,7 +3429,6 @@ public class BlockStateModelGenerator {
 		this.registerSingleton(Blocks.IRON_ORE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.IRON_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.ANCIENT_DEBRIS, TexturedModel.CUBE_COLUMN);
-		this.registerSingleton(Blocks.NETHERITE_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.LAPIS_ORE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.LAPIS_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.NETHER_QUARTZ_ORE, TexturedModel.CUBE_ALL);
@@ -3462,6 +3463,7 @@ public class BlockStateModelGenerator {
 		this.registerSingleton(Blocks.TARGET, TexturedModel.CUBE_COLUMN);
 		this.registerSingleton(Blocks.WARPED_WART_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.WET_SPONGE, TexturedModel.CUBE_ALL);
+		this.registerSingleton(Blocks.CURSOR, TexturedModel.CUBE_ALL);
 		this.registerSingleton(
 			Blocks.CHISELED_QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN.withTexture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_QUARTZ_BLOCK)))
 		);
@@ -3494,7 +3496,8 @@ public class BlockStateModelGenerator {
 		this.registerIronBars();
 		this.registerLever();
 		this.registerLilyPad();
-		this.registerNetherPortal();
+		this.registerNetherPortal(Blocks.NETHER_PORTAL);
+		this.registerNetherPortal(Blocks.NEITHER_PORTAL);
 		this.registerNetherrack();
 		this.registerObserver();
 		this.registerPistons();
@@ -3539,6 +3542,7 @@ public class BlockStateModelGenerator {
 		this.registerAxisRotated(Blocks.PURPUR_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.QUARTZ_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
 		this.registerNorthDefaultHorizontalRotated(Blocks.LOOM, TexturedModel.ORIENTABLE_WITH_BOTTOM);
+		this.registerNorthDefaultHorizontalRotated(Blocks.ANT, TexturedModel.field_23637);
 		this.registerPumpkins();
 		this.registerBeehive(Blocks.BEE_NEST, Texture::sideFrontTopBottom);
 		this.registerBeehive(Blocks.BEEHIVE, Texture::sideFrontEnd);
@@ -3865,6 +3869,7 @@ public class BlockStateModelGenerator {
 		this.registerLog(Blocks.STRIPPED_ACACIA_LOG).log(Blocks.STRIPPED_ACACIA_LOG).wood(Blocks.STRIPPED_ACACIA_WOOD);
 		this.registerFlowerPotPlant(Blocks.ACACIA_SAPLING, Blocks.POTTED_ACACIA_SAPLING, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerSingleton(Blocks.ACACIA_LEAVES, TexturedModel.LEAVES);
+		this.registerCubeAllModelTexturePool(Blocks.NETHERITE_BLOCK).stairs(Blocks.NETHERITE_STAIRS);
 		this.registerCubeAllModelTexturePool(Blocks.BIRCH_PLANKS)
 			.button(Blocks.BIRCH_BUTTON)
 			.fence(Blocks.BIRCH_FENCE)
@@ -4061,6 +4066,20 @@ public class BlockStateModelGenerator {
 		this.registerInfestedStone();
 		this.registerInfested(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
 		SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel(spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
+		this.method_26706();
+	}
+
+	private void method_26706() {
+		List<Identifier> list = (List)Stream.of("_a", "_b", "_c", "_d").map(string -> {
+			Texture texture = Texture.all(Blocks.OAK_PLANKS).put(TextureKey.FRONT, Texture.getSubId(Blocks.BOOK_BOX, string));
+			return Models.TEMPLATE_COMMAND_BLOCK.upload(Blocks.BOOK_BOX, string, texture, this.modelCollector);
+		}).collect(Collectors.toList());
+		BlockStateVariant[] blockStateVariants = (BlockStateVariant[])list.stream()
+			.map(identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
+			.toArray(i -> new BlockStateVariant[i]);
+		this.blockStateCollector
+			.accept(VariantsBlockStateSupplier.create(Blocks.BOOK_BOX, blockStateVariants).coordinate(createNorthDefaultHorizontalRotationStates()));
+		this.registerParentedItemModel(Blocks.BOOK_BOX, (Identifier)list.get(1));
 	}
 
 	class BlockTexturePool {

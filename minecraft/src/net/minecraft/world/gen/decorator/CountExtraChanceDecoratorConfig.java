@@ -3,6 +3,7 @@ package net.minecraft.world.gen.decorator;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 
 public class CountExtraChanceDecoratorConfig implements DecoratorConfig {
 	public final int count;
@@ -37,5 +38,9 @@ public class CountExtraChanceDecoratorConfig implements DecoratorConfig {
 		float f = dynamic.get("extra_chance").asFloat(0.0F);
 		int j = dynamic.get("extra_count").asInt(0);
 		return new CountExtraChanceDecoratorConfig(i, f, j);
+	}
+
+	public static CountExtraChanceDecoratorConfig method_26675(Random random) {
+		return new CountExtraChanceDecoratorConfig(random.nextInt(20) + 1, random.nextFloat() / 20.0F, random.nextInt(10));
 	}
 }

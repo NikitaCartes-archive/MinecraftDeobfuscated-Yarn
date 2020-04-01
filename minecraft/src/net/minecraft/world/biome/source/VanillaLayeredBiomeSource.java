@@ -1,6 +1,9 @@
 package net.minecraft.world.biome.source;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
 import java.util.Set;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -85,5 +88,15 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		return this.biomeSampler.sample(biomeX, biomeZ);
+	}
+
+	@Override
+	public BiomeSourceType<?, ?> method_26467() {
+		return BiomeSourceType.VANILLA_LAYERED;
+	}
+
+	@Override
+	public <T> Dynamic<T> method_26466(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(dynamicOps, dynamicOps.createMap(ImmutableMap.of()));
 	}
 }

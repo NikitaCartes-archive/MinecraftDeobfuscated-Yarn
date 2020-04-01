@@ -5,8 +5,13 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.Util;
+import net.minecraft.util.registry.Registry;
 
 public class SimpleBlockFeatureConfig implements FeatureConfig {
 	public final BlockState toPlace;
@@ -54,5 +59,14 @@ public class SimpleBlockFeatureConfig implements FeatureConfig {
 		List<BlockState> list2 = dynamic.get("place_in").asList(BlockState::deserialize);
 		List<BlockState> list3 = dynamic.get("place_under").asList(BlockState::deserialize);
 		return new SimpleBlockFeatureConfig(blockState, list, list2, list3);
+	}
+
+	public static SimpleBlockFeatureConfig method_26642(Random random) {
+		return new SimpleBlockFeatureConfig(
+			Registry.BLOCK.getRandom(random).getDefaultState(),
+			(List<BlockState>)Util.method_26718(random, 20, Registry.BLOCK).map(Block::getDefaultState).collect(Collectors.toList()),
+			(List<BlockState>)Util.method_26718(random, 20, Registry.BLOCK).map(Block::getDefaultState).collect(Collectors.toList()),
+			(List<BlockState>)Util.method_26718(random, 20, Registry.BLOCK).map(Block::getDefaultState).collect(Collectors.toList())
+		);
 	}
 }

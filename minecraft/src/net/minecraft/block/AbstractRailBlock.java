@@ -46,6 +46,11 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (oldState.getBlock() != state.getBlock()) {
 			this.method_24417(state, world, pos, notify);

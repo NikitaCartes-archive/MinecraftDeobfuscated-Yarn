@@ -34,7 +34,7 @@ public class DimensionType implements DynamicSerializable {
 		return Registry.register(Registry.DIMENSION_TYPE, dimension.id, id, dimension);
 	}
 
-	protected DimensionType(
+	public DimensionType(
 		int dimensionId,
 		String suffix,
 		String saveDir,
@@ -104,5 +104,9 @@ public class DimensionType implements DynamicSerializable {
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
 		return ops.createString(Registry.DIMENSION_TYPE.getId(this).toString());
+	}
+
+	public boolean method_26523() {
+		return false;
 	}
 }

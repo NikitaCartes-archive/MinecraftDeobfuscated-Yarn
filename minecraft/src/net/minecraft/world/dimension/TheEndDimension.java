@@ -103,11 +103,6 @@ public class TheEndDimension extends Dimension {
 	}
 
 	@Override
-	public DimensionType getType() {
-		return DimensionType.THE_END;
-	}
-
-	@Override
 	public void saveWorldData() {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.enderDragonFight != null) {
@@ -127,5 +122,11 @@ public class TheEndDimension extends Dimension {
 	@Nullable
 	public EnderDragonFight getEnderDragonFight() {
 		return this.enderDragonFight;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public boolean method_26499() {
+		return true;
 	}
 }

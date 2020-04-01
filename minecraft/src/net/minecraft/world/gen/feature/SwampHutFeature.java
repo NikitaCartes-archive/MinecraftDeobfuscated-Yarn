@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.StructureManager;
@@ -19,8 +20,8 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.WITCH, 1, 1, 1));
 	private static final List<Biome.SpawnEntry> CREATURE_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.CAT, 1, 1, 1));
 
-	public SwampHutFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public SwampHutFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

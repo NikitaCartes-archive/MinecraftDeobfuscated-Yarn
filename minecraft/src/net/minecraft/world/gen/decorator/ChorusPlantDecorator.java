@@ -13,8 +13,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ChorusPlantDecorator extends Decorator<NopeDecoratorConfig> {
-	public ChorusPlantDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {
-		super(function);
+	public ChorusPlantDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function, Function<Random, ? extends NopeDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

@@ -1,6 +1,7 @@
 package net.minecraft.structure;
 
 import java.util.Locale;
+import net.minecraft.class_5021;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.registry.Registry;
 
@@ -61,6 +62,7 @@ public interface StructurePieceType {
 	StructurePieceType BURIED_TREASURE = register(BuriedTreasureGenerator.Piece::new, "BTP");
 	StructurePieceType SHIPWRECK = register(ShipwreckGenerator.Piece::new, "Shipwreck");
 	StructurePieceType NE_FOS = register(NetherFossilGenerator.Piece::new, "NeFos");
+	StructurePieceType FP = register(class_5021.class_5025::new, "FP");
 
 	StructurePiece load(StructureManager structureManager, CompoundTag tag);
 

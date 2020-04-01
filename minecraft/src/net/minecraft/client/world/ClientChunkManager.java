@@ -82,14 +82,16 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k) {
+	public WorldChunk loadChunkFromPacket(int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
 		if (!this.chunks.isInRadius(i, j)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", i, j);
 			return null;
 		} else {
 			int l = this.chunks.getIndex(i, j);
 			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
-			if (!positionEquals(worldChunk, i, j)) {
+			if (!bl && positionEquals(worldChunk, i, j)) {
+				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
+			} else {
 				if (biomeArray == null) {
 					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", i, j);
 					return null;
@@ -98,8 +100,6 @@ public class ClientChunkManager extends ChunkManager {
 				worldChunk = new WorldChunk(this.world, new ChunkPos(i, j), biomeArray);
 				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
 				this.chunks.set(l, worldChunk);
-			} else {
-				worldChunk.loadFromPacket(biomeArray, packetByteBuf, compoundTag, k);
 			}
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();
