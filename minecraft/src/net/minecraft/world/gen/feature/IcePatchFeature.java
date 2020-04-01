@@ -13,8 +13,8 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 	private final Block ICE = Blocks.PACKED_ICE;
 
-	public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> function) {
-		super(function);
+	public IcePatchFeature(Function<Dynamic<?>, ? extends IcePatchFeatureConfig> function, Function<Random, ? extends IcePatchFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

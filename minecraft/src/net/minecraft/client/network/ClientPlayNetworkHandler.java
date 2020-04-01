@@ -50,6 +50,7 @@ import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.StatsListener;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.ingame.BookContent;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
@@ -725,7 +726,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int j = packet.getZ();
 		WorldChunk worldChunk = this.world
 			.getChunkManager()
-			.loadChunkFromPacket(i, j, packet.getBiomeArray(), packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
+			.loadChunkFromPacket(i, j, packet.getBiomeArray(), packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask(), packet.isFullChunk());
 		if (worldChunk != null && packet.isFullChunk()) {
 			this.world.addEntitiesToChunk(worldChunk);
 		}
@@ -1775,7 +1776,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ItemStack itemStack = this.client.player.getStackInHand(packet.getHand());
 		if (itemStack.getItem() == Items.WRITTEN_BOOK) {
-			this.client.openScreen(new BookScreen(new BookScreen.WrittenBookContents(itemStack)));
+			this.client.openScreen(new BookScreen(new BookContent.WrittenBookContents(itemStack)));
 		}
 	}
 

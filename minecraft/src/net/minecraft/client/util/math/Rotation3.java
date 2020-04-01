@@ -12,7 +12,7 @@ import net.minecraft.util.math.Quaternion;
 import org.apache.commons.lang3.tuple.Triple;
 
 @Environment(EnvType.CLIENT)
-public final class AffineTransformation {
+public final class Rotation3 {
 	private final Matrix4f matrix;
 	private boolean initialized;
 	@Nullable
@@ -23,23 +23,23 @@ public final class AffineTransformation {
 	private Vector3f scale;
 	@Nullable
 	private Quaternion rotation1;
-	private static final AffineTransformation IDENTITY = Util.make(() -> {
+	private static final Rotation3 IDENTITY = Util.make(() -> {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
-		AffineTransformation affineTransformation = new AffineTransformation(matrix4f);
-		affineTransformation.getRotation2();
-		return affineTransformation;
+		Rotation3 rotation3 = new Rotation3(matrix4f);
+		rotation3.getRotation2();
+		return rotation3;
 	});
 
-	public AffineTransformation(@Nullable Matrix4f matrix) {
-		if (matrix == null) {
+	public Rotation3(@Nullable Matrix4f transformation) {
+		if (transformation == null) {
 			this.matrix = IDENTITY.matrix;
 		} else {
-			this.matrix = matrix;
+			this.matrix = transformation;
 		}
 	}
 
-	public AffineTransformation(@Nullable Vector3f translation, @Nullable Quaternion rotation2, @Nullable Vector3f scale, @Nullable Quaternion rotation1) {
+	public Rotation3(@Nullable Vector3f translation, @Nullable Quaternion rotation2, @Nullable Vector3f scale, @Nullable Quaternion rotation1) {
 		this.matrix = setup(translation, rotation2, scale, rotation1);
 		this.translation = translation != null ? translation : new Vector3f();
 		this.rotation2 = rotation2 != null ? rotation2 : Quaternion.IDENTITY.copy();
@@ -48,23 +48,23 @@ public final class AffineTransformation {
 		this.initialized = true;
 	}
 
-	public static AffineTransformation identity() {
+	public static Rotation3 identity() {
 		return IDENTITY;
 	}
 
-	public AffineTransformation multiply(AffineTransformation other) {
+	public Rotation3 multiply(Rotation3 other) {
 		Matrix4f matrix4f = this.getMatrix();
 		matrix4f.multiply(other.getMatrix());
-		return new AffineTransformation(matrix4f);
+		return new Rotation3(matrix4f);
 	}
 
 	@Nullable
-	public AffineTransformation invert() {
+	public Rotation3 invert() {
 		if (this == IDENTITY) {
 			return this;
 		} else {
 			Matrix4f matrix4f = this.getMatrix();
-			return matrix4f.invert() ? new AffineTransformation(matrix4f) : null;
+			return matrix4f.invert() ? new Rotation3(matrix4f) : null;
 		}
 	}
 
@@ -124,8 +124,8 @@ public final class AffineTransformation {
 		if (this == object) {
 			return true;
 		} else if (object != null && this.getClass() == object.getClass()) {
-			AffineTransformation affineTransformation = (AffineTransformation)object;
-			return Objects.equals(this.matrix, affineTransformation.matrix);
+			Rotation3 rotation3 = (Rotation3)object;
+			return Objects.equals(this.matrix, rotation3.matrix);
 		} else {
 			return false;
 		}

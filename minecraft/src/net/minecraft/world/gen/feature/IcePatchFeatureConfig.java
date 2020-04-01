@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 
 public class IcePatchFeatureConfig implements FeatureConfig {
 	public final int radius;
@@ -19,5 +20,9 @@ public class IcePatchFeatureConfig implements FeatureConfig {
 	public static <T> IcePatchFeatureConfig deserialize(Dynamic<T> dynamic) {
 		int i = dynamic.get("radius").asInt(0);
 		return new IcePatchFeatureConfig(i);
+	}
+
+	public static IcePatchFeatureConfig method_26611(Random random) {
+		return new IcePatchFeatureConfig(random.nextInt(20) + 1);
 	}
 }

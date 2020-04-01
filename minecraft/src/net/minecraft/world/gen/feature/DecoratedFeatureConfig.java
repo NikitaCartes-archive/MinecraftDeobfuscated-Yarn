@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 
@@ -37,5 +38,9 @@ public class DecoratedFeatureConfig implements FeatureConfig {
 		ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(dynamic.get("feature").orElseEmptyMap());
 		ConfiguredDecorator<?> configuredDecorator = ConfiguredDecorator.deserialize(dynamic.get("decorator").orElseEmptyMap());
 		return new DecoratedFeatureConfig(configuredFeature, configuredDecorator);
+	}
+
+	public static DecoratedFeatureConfig method_26608(Random random) {
+		return new DecoratedFeatureConfig(Registry.FEATURE.getRandom(random).method_26588(random), Registry.DECORATOR.getRandom(random).method_26672(random));
 	}
 }

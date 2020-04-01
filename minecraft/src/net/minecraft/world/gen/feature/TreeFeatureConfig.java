@@ -5,7 +5,10 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
@@ -23,6 +26,17 @@ public class TreeFeatureConfig implements FeatureConfig {
 		this.leavesProvider = leavesProvider;
 		this.decorators = decorators;
 		this.baseHeight = baseHeight;
+	}
+
+	public static TreeFeatureConfig method_26650(Random random) {
+		return new TreeFeatureConfig(
+			BlockStateProvider.method_26659(random),
+			BlockStateProvider.method_26659(random),
+			(List<TreeDecorator>)Util.method_26718(random, 4, Registry.TREE_DECORATOR_TYPE)
+				.map(treeDecoratorType -> treeDecoratorType.method_26667(random))
+				.collect(Collectors.toList()),
+			random.nextInt(30) + 1
+		);
 	}
 
 	public void ignoreFluidCheck() {

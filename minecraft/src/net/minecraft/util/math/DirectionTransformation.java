@@ -1,12 +1,15 @@
 package net.minecraft.util.math;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.util.StringIdentifiable;
@@ -70,6 +73,8 @@ public enum DirectionTransformation implements StringIdentifiable {
 	private final boolean flipY;
 	private final boolean flipZ;
 	private final AxisTransformation axisTransformation;
+	private static final Map<String, DirectionTransformation> field_23441 = (Map<String, DirectionTransformation>)Stream.of(values())
+		.collect(ImmutableMap.toImmutableMap(DirectionTransformation::asString, directionTransformation -> directionTransformation));
 	private static final DirectionTransformation[][] COMBINATIONS = Util.make(
 		new DirectionTransformation[values().length][values().length],
 		directionTransformations -> {
@@ -109,6 +114,10 @@ public enum DirectionTransformation implements StringIdentifiable {
 					.get()
 		)
 		.toArray(DirectionTransformation[]::new);
+
+	public static Optional<DirectionTransformation> method_26484(String string) {
+		return Optional.ofNullable(field_23441.get(string));
+	}
 
 	private DirectionTransformation(String name, AxisTransformation axisTransformation, boolean flipX, boolean flipY, boolean flipZ) {
 		this.name = name;

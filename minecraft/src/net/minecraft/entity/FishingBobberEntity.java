@@ -448,6 +448,51 @@ public class FishingBobberEntity extends Entity {
 
 	public int use(ItemStack usedItem) {
 		if (!this.world.isClient && this.owner != null) {
+			if (this.hookCountdown > 0 && this.random.nextInt(5) == 0) {
+				EntityType[] entityTypes = new EntityType[]{
+					EntityType.SALMON,
+					EntityType.COD,
+					EntityType.SALMON,
+					EntityType.COD,
+					EntityType.SALMON,
+					EntityType.COD,
+					EntityType.SALMON,
+					EntityType.COD,
+					EntityType.SALMON,
+					EntityType.COD,
+					EntityType.SALMON,
+					EntityType.COD,
+					EntityType.SALMON,
+					EntityType.COD,
+					EntityType.TROPICAL_FISH,
+					EntityType.SQUID,
+					EntityType.PUFFERFISH,
+					EntityType.PUFFERFISH,
+					EntityType.GUARDIAN,
+					EntityType.BOAT,
+					EntityType.TROPICAL_FISH,
+					EntityType.SQUID,
+					EntityType.PUFFERFISH,
+					EntityType.PUFFERFISH,
+					EntityType.GUARDIAN,
+					EntityType.BOAT,
+					EntityType.ELDER_GUARDIAN
+				};
+				Entity entity = entityTypes[this.random.nextInt(entityTypes.length)].create(this.world, null, null, null, this.getBlockPos(), null, false, false);
+				if (entity != null) {
+					this.updatePosition(this.getX(), this.getY() + 1.0, this.getZ());
+					entity.updatePosition(this.getX(), this.getY(), this.getZ());
+					entity.yaw = 0.0F;
+					if (this.owner != null) {
+						entity.pitch = (this.owner.pitch + 180.0F) % 180.0F;
+					}
+
+					entity.updatePosition(this.getX(), this.getY(), this.getZ());
+					this.world.spawnEntity(entity);
+					this.hookedEntity = entity;
+				}
+			}
+
 			int i = 0;
 			if (this.hookedEntity != null) {
 				this.pullHookedEntity();
@@ -507,7 +552,10 @@ public class FishingBobberEntity extends Entity {
 
 	protected void pullHookedEntity() {
 		if (this.owner != null) {
-			Vec3d vec3d = new Vec3d(this.owner.getX() - this.getX(), this.owner.getY() - this.getY(), this.owner.getZ() - this.getZ()).multiply(0.1);
+			Vec3d vec3d = new Vec3d(
+					this.owner.getX() - this.getX(), this.owner.getY() - this.getY() + (double)this.owner.getStandingEyeHeight() + 1.0, this.owner.getZ() - this.getZ()
+				)
+				.multiply(0.15);
 			this.hookedEntity.setVelocity(this.hookedEntity.getVelocity().add(vec3d));
 		}
 	}

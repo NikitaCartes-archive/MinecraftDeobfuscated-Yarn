@@ -843,7 +843,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.CRIMSON_BUTTON);
 		this.registerForSelfDrop(Blocks.CRIMSON_SIGN);
 		this.registerForSelfDrop(Blocks.NETHERITE_BLOCK);
+		this.registerForSelfDrop(Blocks.NETHERITE_STAIRS);
 		this.registerForSelfDrop(Blocks.ANCIENT_DEBRIS);
+		this.registerForSelfDrop(Blocks.BOOK_BOX);
+		this.registerForSelfDrop(Blocks.CURSOR);
 		this.register(Blocks.FARMLAND, Blocks.DIRT);
 		this.register(Blocks.TRIPWIRE, Items.STRING);
 		this.register(Blocks.GRASS_PATH, Blocks.DIRT);

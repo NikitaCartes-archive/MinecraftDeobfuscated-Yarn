@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
@@ -990,11 +991,20 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public ServerWorld getWorld(DimensionType dimensionType) {
-		return (ServerWorld)this.worlds.get(dimensionType);
+		return (ServerWorld)this.worlds
+			.computeIfAbsent(
+				dimensionType,
+				dimensionType2 -> {
+					ServerWorld serverWorld = this.getWorld(DimensionType.OVERWORLD);
+					return new SecondaryServerWorld(
+						serverWorld, this, this.workerExecutor, serverWorld.getSaveHandler(), dimensionType, WorldGenerationProgressListener.field_23642
+					);
+				}
+			);
 	}
 
 	public Iterable<ServerWorld> getWorlds() {
-		return this.worlds.values();
+		return ImmutableList.<ServerWorld>copyOf(this.worlds.values());
 	}
 
 	public String getVersion() {

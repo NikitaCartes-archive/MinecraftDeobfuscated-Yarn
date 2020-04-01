@@ -15,8 +15,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class LargeOakTreeFeature extends AbstractTreeFeature<BranchedTreeFeatureConfig> {
-	public LargeOakTreeFeature(Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig> function) {
-		super(function);
+	public LargeOakTreeFeature(Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig> function, Function<Random, ? extends BranchedTreeFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	private void makeLeafLayer(

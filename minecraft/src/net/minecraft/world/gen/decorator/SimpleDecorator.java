@@ -10,8 +10,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class SimpleDecorator<DC extends DecoratorConfig> extends Decorator<DC> {
-	public SimpleDecorator(Function<Dynamic<?>, ? extends DC> function) {
-		super(function);
+	public SimpleDecorator(Function<Dynamic<?>, ? extends DC> function, Function<Random, ? extends DC> function2) {
+		super(function, function2);
 	}
 
 	@Override

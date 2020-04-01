@@ -4,11 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class SpringFeatureConfig implements FeatureConfig {
@@ -54,6 +57,16 @@ public class SpringFeatureConfig implements FeatureConfig {
 			dynamic.get("rock_count").asInt(4),
 			dynamic.get("hole_count").asInt(1),
 			ImmutableSet.copyOf(dynamic.get("valid_blocks").asList(dynamicx -> Registry.BLOCK.get(new Identifier(dynamicx.asString("minecraft:air")))))
+		);
+	}
+
+	public static SpringFeatureConfig method_26648(Random random) {
+		return new SpringFeatureConfig(
+			Registry.FLUID.getRandom(random).getDefaultState(),
+			random.nextInt(5) == 0,
+			random.nextInt(5),
+			random.nextInt(5),
+			(Set<Block>)Util.method_26718(random, 10, Registry.BLOCK).collect(Collectors.toSet())
 		);
 	}
 }

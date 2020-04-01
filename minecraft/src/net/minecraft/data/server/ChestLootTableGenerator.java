@@ -2,6 +2,7 @@ package net.minecraft.data.server;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import net.minecraft.class_5108;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
@@ -210,6 +211,11 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 								.withFunction(EnchantWithLevelsLootFunction.builder(UniformLootTableRange.between(20.0F, 39.0F)).allowTreasureEnchantments())
 						)
 				)
+		);
+		biConsumer.accept(
+			LootTables.FLEET_ORDERS_CHEST,
+			LootTable.builder()
+				.withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.WRITTEN_BOOK).withFunction(class_5108.method_26684(class_5108.class_5109.ORDERS))))
 		);
 		biConsumer.accept(
 			LootTables.IGLOO_CHEST_CHEST,

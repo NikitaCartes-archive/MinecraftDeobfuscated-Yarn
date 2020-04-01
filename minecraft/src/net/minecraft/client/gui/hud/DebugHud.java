@@ -29,7 +29,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
@@ -503,7 +503,7 @@ public class DebugHud extends DrawableHelper {
 		RenderSystem.defaultBlendFunc();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 
-		for (Matrix4f matrix4f = AffineTransformation.identity().getMatrix(); m != l; m = metricsData.wrapIndex(m + 1)) {
+		for (Matrix4f matrix4f = Rotation3.identity().getMatrix(); m != l; m = metricsData.wrapIndex(m + 1)) {
 			int v = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
 			int w = bl ? 100 : 60;
 			int x = this.getMetricsLineColor(MathHelper.clamp(v, 0, w), 0, w / 2, w);

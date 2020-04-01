@@ -3,6 +3,7 @@ package net.minecraft.world.gen.decorator;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 
 public class RangeDecoratorConfig implements DecoratorConfig {
 	public final int count;
@@ -42,5 +43,11 @@ public class RangeDecoratorConfig implements DecoratorConfig {
 		int k = dynamic.get("top_offset").asInt(0);
 		int l = dynamic.get("maximum").asInt(0);
 		return new RangeDecoratorConfig(i, j, k, l);
+	}
+
+	public static RangeDecoratorConfig method_26607(Random random) {
+		int i = random.nextInt(11) + 1;
+		int j = random.nextInt(11) + 1;
+		return new RangeDecoratorConfig(random.nextInt(16) + 1, i, j, i + j + random.nextInt(70) + 1);
 	}
 }

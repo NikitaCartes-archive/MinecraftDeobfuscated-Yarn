@@ -3,6 +3,8 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Locale;
+import java.util.Random;
+import java.util.function.BiFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
@@ -32,6 +34,9 @@ public class DustParticleEffect implements ParticleEffect {
 	private final float green;
 	private final float blue;
 	private final float scale;
+	public static final BiFunction<Random, ParticleType<DustParticleEffect>, DustParticleEffect> field_23634 = (random, particleType) -> new DustParticleEffect(
+			random.nextFloat(), random.nextFloat(), random.nextFloat(), random.nextFloat() * 2.0F
+		);
 
 	public DustParticleEffect(float red, float green, float blue, float scale) {
 		this.red = red;

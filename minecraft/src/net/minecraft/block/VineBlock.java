@@ -79,6 +79,11 @@ public class VineBlock extends Block {
 		return this.hasAdjacentBlocks(this.getPlacementShape(state, world, pos));
 	}
 
+	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
 	private boolean hasAdjacentBlocks(BlockState state) {
 		return this.getAdjacentBlockCount(state) > 0;
 	}

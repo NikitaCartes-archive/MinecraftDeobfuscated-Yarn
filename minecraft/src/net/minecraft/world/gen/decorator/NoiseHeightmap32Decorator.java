@@ -14,8 +14,10 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NoiseHeightmap32Decorator extends Decorator<NoiseHeightmapDecoratorConfig> {
-	public NoiseHeightmap32Decorator(Function<Dynamic<?>, ? extends NoiseHeightmapDecoratorConfig> function) {
-		super(function);
+	public NoiseHeightmap32Decorator(
+		Function<Dynamic<?>, ? extends NoiseHeightmapDecoratorConfig> function, Function<Random, ? extends NoiseHeightmapDecoratorConfig> function2
+	) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

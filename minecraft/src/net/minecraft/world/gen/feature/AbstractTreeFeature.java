@@ -30,8 +30,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends Feature<T> {
-	public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> function) {
-		super(function);
+	public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> function, Function<Random, ? extends T> function2) {
+		super(function, function2);
 	}
 
 	protected static boolean canTreeReplace(TestableWorld world, BlockPos pos) {

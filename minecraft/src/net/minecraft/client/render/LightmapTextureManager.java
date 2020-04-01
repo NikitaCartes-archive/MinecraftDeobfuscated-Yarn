@@ -140,6 +140,7 @@ public class LightmapTextureManager implements AutoCloseable {
 						vector3f5.modify(this::method_23795);
 						vector3f2.lerp(vector3f5, s);
 						vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
+						clientWorld.dimension.method_26493(l, k, vector3f2);
 						vector3f2.clamp(0.0F, 1.0F);
 						vector3f2.scale(255.0F);
 						int t = 255;

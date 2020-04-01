@@ -2,6 +2,8 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.util.Random;
+import java.util.function.BiFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -23,6 +25,9 @@ public class BlockStateParticleEffect implements ParticleEffect {
 	};
 	private final ParticleType<BlockStateParticleEffect> type;
 	private final BlockState blockState;
+	public static final BiFunction<Random, ParticleType<BlockStateParticleEffect>, BlockStateParticleEffect> field_23633 = (random, particleType) -> new BlockStateParticleEffect(
+			particleType, Registry.BLOCK.getRandom(random).getDefaultState()
+		);
 
 	public BlockStateParticleEffect(ParticleType<BlockStateParticleEffect> type, BlockState blockState) {
 		this.type = type;

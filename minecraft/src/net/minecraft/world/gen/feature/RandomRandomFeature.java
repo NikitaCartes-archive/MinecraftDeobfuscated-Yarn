@@ -9,8 +9,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomRandomFeature extends Feature<RandomRandomFeatureConfig> {
-	public RandomRandomFeature(Function<Dynamic<?>, ? extends RandomRandomFeatureConfig> function) {
-		super(function);
+	public RandomRandomFeature(Function<Dynamic<?>, ? extends RandomRandomFeatureConfig> function, Function<Random, ? extends RandomRandomFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

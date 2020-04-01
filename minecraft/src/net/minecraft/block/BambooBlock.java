@@ -123,6 +123,11 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);

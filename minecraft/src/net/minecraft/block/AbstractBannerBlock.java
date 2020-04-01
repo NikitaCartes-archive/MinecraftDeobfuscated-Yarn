@@ -31,6 +31,11 @@ public abstract class AbstractBannerBlock extends BlockWithEntity {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 		if (itemStack.hasCustomName()) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);

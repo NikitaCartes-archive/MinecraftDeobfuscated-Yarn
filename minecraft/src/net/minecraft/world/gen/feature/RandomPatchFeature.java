@@ -12,8 +12,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
-	public RandomPatchFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function) {
-		super(function);
+	public RandomPatchFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function, Function<Random, ? extends RandomPatchFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

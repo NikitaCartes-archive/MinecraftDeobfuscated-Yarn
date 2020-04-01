@@ -10,8 +10,8 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class AbstractTempleFeature<C extends FeatureConfig> extends StructureFeature<C> {
-	public AbstractTempleFeature(Function<Dynamic<?>, ? extends C> function) {
-		super(function);
+	public AbstractTempleFeature(Function<Dynamic<?>, ? extends C> function, Function<Random, ? extends C> function2) {
+		super(function, function2);
 	}
 
 	@Override

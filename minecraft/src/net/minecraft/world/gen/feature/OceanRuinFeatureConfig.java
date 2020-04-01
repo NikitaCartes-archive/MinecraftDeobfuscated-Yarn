@@ -3,6 +3,8 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
+import net.minecraft.util.Util;
 
 public class OceanRuinFeatureConfig implements FeatureConfig {
 	public final OceanRuinFeature.BiomeType biomeType;
@@ -37,5 +39,9 @@ public class OceanRuinFeatureConfig implements FeatureConfig {
 		float f = dynamic.get("large_probability").asFloat(0.0F);
 		float g = dynamic.get("cluster_probability").asFloat(0.0F);
 		return new OceanRuinFeatureConfig(biomeType, f, g);
+	}
+
+	public static OceanRuinFeatureConfig method_26620(Random random) {
+		return new OceanRuinFeatureConfig(Util.method_26715(OceanRuinFeature.BiomeType.class, random), random.nextFloat() / 5.0F, random.nextFloat() / 10.0F);
 	}
 }

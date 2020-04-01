@@ -68,7 +68,7 @@ public class PointOfInterestType {
 	public static final PointOfInterestType MEETING = register("meeting", getAllStatesOf(Blocks.BELL), 32, 6);
 	public static final PointOfInterestType BEEHIVE = register("beehive", getAllStatesOf(Blocks.BEEHIVE), 0, 1);
 	public static final PointOfInterestType BEE_NEST = register("bee_nest", getAllStatesOf(Blocks.BEE_NEST), 0, 1);
-	public static final PointOfInterestType NETHER_PORTAL = register("nether_portal", getAllStatesOf(Blocks.NETHER_PORTAL), 0, 1);
+	public static final PointOfInterestType NETHER_PORTAL = register("nether_portal", getAllStatesOf(Blocks.NETHER_PORTAL, Blocks.NEITHER_PORTAL), 0, 1);
 	public static final PointOfInterestType LODESTONE = register("lodestone", getAllStatesOf(Blocks.LODESTONE), 0, 1);
 	private final String id;
 	private final Set<BlockState> blockStates;
@@ -76,8 +76,8 @@ public class PointOfInterestType {
 	private final Predicate<PointOfInterestType> completionCondition;
 	private final int searchDistance;
 
-	private static Set<BlockState> getAllStatesOf(Block block) {
-		return ImmutableSet.copyOf(block.getStateManager().getStates());
+	private static Set<BlockState> getAllStatesOf(Block... blocks) {
+		return (Set<BlockState>)Stream.of(blocks).flatMap(block -> block.getStateManager().getStates().stream()).collect(ImmutableSet.toImmutableSet());
 	}
 
 	private PointOfInterestType(String id, Set<BlockState> blockStates, int ticketCount, Predicate<PointOfInterestType> completionCondition, int searchDistance) {
@@ -136,6 +136,10 @@ public class PointOfInterestType {
 
 	public static Optional<PointOfInterestType> from(BlockState state) {
 		return Optional.ofNullable(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.get(state));
+	}
+
+	public static boolean method_26442(BlockState blockState) {
+		return BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.containsKey(blockState);
 	}
 
 	public static Stream<BlockState> getAllAssociatedStates() {

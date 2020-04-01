@@ -137,7 +137,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		return IntTag.of(j);
 	}
 
-	public void method_10531(int i, IntTag intTag) {
+	public void add(int i, IntTag intTag) {
 		this.value = ArrayUtils.add(this.value, i, intTag.getInt());
 	}
 

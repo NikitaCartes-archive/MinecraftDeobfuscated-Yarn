@@ -14,6 +14,8 @@ import net.minecraft.block.MaterialColor;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.ReplaceableTallPlantBlock;
 import net.minecraft.block.StemBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.NetherPortalBlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.FoliageColors;
@@ -80,6 +82,17 @@ public class BlockColors {
 		}, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
 		blockColors.registerColorProperty(StemBlock.AGE, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> world != null && pos != null ? 2129968 : 7455580, Blocks.LILY_PAD);
+		blockColors.registerColorProvider((blockState, blockRenderView, blockPos, i) -> {
+			if (blockRenderView != null && blockPos != null) {
+				BlockEntity blockEntity = blockRenderView.getBlockEntity(blockPos);
+				if (blockEntity instanceof NetherPortalBlockEntity) {
+					int j = ((NetherPortalBlockEntity)blockEntity).getDimension();
+					return j & 16777215;
+				}
+			}
+
+			return 16777215;
+		}, Blocks.NEITHER_PORTAL);
 		return blockColors;
 	}
 

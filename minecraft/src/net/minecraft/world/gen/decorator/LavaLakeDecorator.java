@@ -10,8 +10,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class LavaLakeDecorator extends Decorator<ChanceDecoratorConfig> {
-	public LavaLakeDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
-		super(function);
+	public LavaLakeDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function, Function<Random, ? extends ChanceDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

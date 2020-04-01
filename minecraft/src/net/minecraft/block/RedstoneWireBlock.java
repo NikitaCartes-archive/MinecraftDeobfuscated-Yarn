@@ -179,6 +179,11 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);

@@ -33,10 +33,12 @@ import net.minecraft.world.storage.SerializingRegionBasedStorage;
 public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointOfInterestSet> {
 	private final PointOfInterestStorage.PointOfInterestDistanceTracker pointOfInterestDistanceTracker;
 	private final LongSet preloadedChunks = new LongOpenHashSet();
+	private final Runnable field_23408;
 
-	public PointOfInterestStorage(File file, DataFixer dataFixer) {
+	public PointOfInterestStorage(File file, DataFixer dataFixer, Runnable runnable) {
 		super(file, PointOfInterestSet::new, PointOfInterestSet::new, dataFixer, DataFixTypes.POI_CHUNK);
 		this.pointOfInterestDistanceTracker = new PointOfInterestStorage.PointOfInterestDistanceTracker();
+		this.field_23408 = runnable;
 	}
 
 	public void add(BlockPos pos, PointOfInterestType type) {
@@ -215,13 +217,21 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	 * 
 	 * @param radius The radius in blocks
 	 */
-	public void preloadChunks(WorldView world, BlockPos pos, int radius) {
+	public void preloadChunks(WorldView worldView, BlockPos pos, int radius) {
 		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16))
 			.map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong())))
 			.filter(pair -> !(Boolean)((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false))
 			.map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos())
 			.filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong()))
-			.forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
+			.forEach(chunkPos -> {
+				if (worldView.getDimension().getType().method_26523()) {
+					worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.FEATURES);
+					worldView.getChunk(chunkPos.x, chunkPos.z);
+					this.field_23408.run();
+				} else {
+					worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY);
+				}
+			});
 	}
 
 	public static enum OccupationStatus {

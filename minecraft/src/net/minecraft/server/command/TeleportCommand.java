@@ -229,7 +229,7 @@ public class TeleportCommand {
 		return targets.size();
 	}
 
-	private static void teleport(
+	public static void teleport(
 		ServerCommandSource source,
 		Entity target,
 		ServerWorld world,

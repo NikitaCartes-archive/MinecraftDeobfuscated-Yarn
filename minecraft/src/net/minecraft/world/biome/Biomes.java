@@ -1,10 +1,18 @@
 package net.minecraft.world.biome;
 
+import com.google.common.collect.Lists;
 import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import net.minecraft.class_5021;
+import net.minecraft.class_5031;
+import net.minecraft.class_5081;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public abstract class Biomes {
+	private static final List<Biome> field_23418 = Lists.<Biome>newArrayList();
 	public static final Biome OCEAN = register(0, "ocean", new OceanBiome());
 	public static final Biome DEFAULT = OCEAN;
 	public static final Biome PLAINS = register(1, "plains", new PlainsBiome());
@@ -84,6 +92,9 @@ public abstract class Biomes {
 	public static final Biome SOUL_SAND_VALLEY = register(170, "soul_sand_valley", new SoulSandValleyBiome());
 	public static final Biome CRIMSON_FOREST = register(171, "crimson_forest", new CrimsonForestBiome());
 	public static final Biome WARPED_FOREST = register(172, "warped_forest", new WarpedForestBiome());
+	public static final Biome BETWEEN = register(173, "between", new class_5021.class_5022());
+	public static final Biome SHAPES = register(174, "shapes", new class_5031.class_5033());
+	public static final Biome BUSY = register(175, "busy", new class_5081.class_5082());
 
 	private static Biome register(int rawId, String id, Biome biome) {
 		Registry.register(Registry.BIOME, rawId, id, biome);
@@ -91,7 +102,12 @@ public abstract class Biomes {
 			Biome.PARENT_BIOME_ID_MAP.set(biome, Registry.BIOME.getRawId(Registry.BIOME.get(new Identifier(biome.parent))));
 		}
 
+		field_23418.add(biome);
 		return biome;
+	}
+
+	public static Biome method_26470(Random random) {
+		return Util.method_26719(random, field_23418);
 	}
 
 	static {

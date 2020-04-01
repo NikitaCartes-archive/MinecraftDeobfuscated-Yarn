@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Optional;
+import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 
 public class EndGatewayFeatureConfig implements FeatureConfig {
@@ -64,5 +65,9 @@ public class EndGatewayFeatureConfig implements FeatureConfig {
 			);
 		boolean bl = dynamic.get("exact").asBoolean(false);
 		return new EndGatewayFeatureConfig(optional, bl);
+	}
+
+	public static EndGatewayFeatureConfig method_26610(Random random) {
+		return new EndGatewayFeatureConfig(Optional.of(new BlockPos(random.nextInt(4096), random.nextInt(4096), random.nextInt(4096))), false);
 	}
 }

@@ -47,4 +47,8 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius, int currentTreeHeight) {
 		return currentTreeHeight == 0 ? 0 : 1;
 	}
+
+	public static BlobFoliagePlacer method_26653(Random random) {
+		return new BlobFoliagePlacer(random.nextInt(10) + 1, random.nextInt(5));
+	}
 }

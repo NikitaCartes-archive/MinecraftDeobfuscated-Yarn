@@ -13,8 +13,10 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class CountChanceHeightmapDoubleDecorator extends Decorator<CountChanceDecoratorConfig> {
-	public CountChanceHeightmapDoubleDecorator(Function<Dynamic<?>, ? extends CountChanceDecoratorConfig> function) {
-		super(function);
+	public CountChanceHeightmapDoubleDecorator(
+		Function<Dynamic<?>, ? extends CountChanceDecoratorConfig> function, Function<Random, ? extends CountChanceDecoratorConfig> function2
+	) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

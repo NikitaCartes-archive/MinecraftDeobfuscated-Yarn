@@ -41,7 +41,7 @@ public class PineFoliagePlacer extends FoliagePlacer {
 
 	@Override
 	public int getRadius(Random random, int baseHeight, int trunkHeight, BranchedTreeFeatureConfig config) {
-		return this.radius + random.nextInt(this.randomRadius + 1) + random.nextInt(trunkHeight - baseHeight + 1);
+		return this.radius + random.nextInt(this.randomRadius + 1) + random.nextInt(Math.max(1, trunkHeight - baseHeight + 1));
 	}
 
 	@Override
@@ -52,5 +52,9 @@ public class PineFoliagePlacer extends FoliagePlacer {
 	@Override
 	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius, int currentTreeHeight) {
 		return currentTreeHeight <= 1 ? 0 : 2;
+	}
+
+	public static PineFoliagePlacer method_26655(Random random) {
+		return new PineFoliagePlacer(random.nextInt(10) + 1, random.nextInt(5) + 1);
 	}
 }

@@ -4,6 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import net.minecraft.util.Util;
+import net.minecraft.util.registry.Registry;
 
 public class RandomFeatureConfig implements FeatureConfig {
 	public final List<RandomFeatureEntry<?>> features;
@@ -25,5 +29,14 @@ public class RandomFeatureConfig implements FeatureConfig {
 		List<RandomFeatureEntry<?>> list = dynamic.get("features").asList(RandomFeatureEntry::deserialize);
 		ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeature.deserialize(dynamic.get("default").orElseEmptyMap());
 		return new RandomFeatureConfig(list, configuredFeature);
+	}
+
+	public static RandomFeatureConfig method_26625(Random random) {
+		return new RandomFeatureConfig(
+			(List<RandomFeatureEntry<?>>)Util.method_26718(random, 10, Registry.FEATURE)
+				.map(feature -> new RandomFeatureEntry(feature.method_26588(random), random.nextFloat()))
+				.collect(Collectors.toList()),
+			Registry.FEATURE.getRandom(random).method_26588(random)
+		);
 	}
 }

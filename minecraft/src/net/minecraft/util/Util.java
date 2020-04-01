@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -35,6 +36,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -44,6 +46,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -145,6 +148,26 @@ public class Util {
 	@Environment(EnvType.CLIENT)
 	public static void throwUnchecked(Throwable throwable) {
 		throw throwable instanceof RuntimeException ? (RuntimeException)throwable : new RuntimeException(throwable);
+	}
+
+	public static <T> Stream<T> method_26718(Random random, int i, Registry<T> registry) {
+		return method_26716(random, 0, i, registry);
+	}
+
+	public static <T> Stream<T> method_26716(Random random, int i, int j, Registry<T> registry) {
+		return IntStream.range(0, i + random.nextInt(j)).mapToObj(ix -> registry.getRandom(random)).distinct();
+	}
+
+	public static <T> Stream<T> method_26717(Random random, int i, int j, List<T> list) {
+		return IntStream.range(0, i + random.nextInt(j)).mapToObj(ix -> method_26719(random, list)).distinct();
+	}
+
+	public static <T> T method_26719(Random random, List<T> list) {
+		return (T)list.get(random.nextInt(list.size()));
+	}
+
+	public static <T> T method_26721(Random random, T[] objects) {
+		return objects[random.nextInt(objects.length)];
 	}
 
 	public static Util.OperatingSystem getOperatingSystem() {
@@ -284,6 +307,11 @@ public class Util {
 		} else {
 			return t.getMessage() != null ? t.getMessage() : t.toString();
 		}
+	}
+
+	public static <T extends Enum<T>> T method_26715(Class<T> class_, Random random) {
+		T[] enums = (T[])class_.getEnumConstants();
+		return enums[random.nextInt(enums.length)];
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

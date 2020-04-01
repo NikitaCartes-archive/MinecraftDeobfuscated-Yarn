@@ -224,6 +224,11 @@ public class BellBlock extends BlockWithEntity {
 		return WallMountedBlock.canPlaceAt(world, pos, getPlacementSide(state).getOpposite());
 	}
 
+	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
 	private static Direction getPlacementSide(BlockState state) {
 		switch ((Attachment)state.get(ATTACHMENT)) {
 			case FLOOR:

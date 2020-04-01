@@ -91,4 +91,9 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 
 		return blockState;
 	}
+
+	@Override
+	public ChunkGeneratorType<?, ?> method_26490() {
+		return ChunkGeneratorType.DEBUG;
+	}
 }

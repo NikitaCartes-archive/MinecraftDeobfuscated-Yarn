@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
+import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StructureManager;
@@ -12,8 +13,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ShipwreckFeature extends AbstractTempleFeature<ShipwreckFeatureConfig> {
-	public ShipwreckFeature(Function<Dynamic<?>, ? extends ShipwreckFeatureConfig> function) {
-		super(function);
+	public ShipwreckFeature(Function<Dynamic<?>, ? extends ShipwreckFeatureConfig> function, Function<Random, ? extends ShipwreckFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

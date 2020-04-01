@@ -1,25 +1,37 @@
 package net.minecraft.world.dimension;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
 
 public abstract class Dimension {
 	public static final float[] MOON_PHASE_TO_SIZE = new float[]{1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
+	public static final Vector3f field_23480 = new Vector3f(1.0F, 1.0F, 1.0F);
 	protected final World world;
 	private final DimensionType type;
 	protected boolean waterVaporizes;
 	protected boolean isNether;
 	protected final float[] lightLevelToBrightness = new float[16];
 	private final float[] backgroundColor = new float[4];
+	private static final Vector3f field_23481 = new Vector3f(1.0F, 1.0F, 1.0F);
 
 	public Dimension(World world, DimensionType type, float f) {
 		this.world = world;
@@ -128,5 +140,85 @@ public abstract class Dimension {
 	@Environment(EnvType.CLIENT)
 	public abstract boolean isFogThick(int x, int z);
 
-	public abstract DimensionType getType();
+	@Environment(EnvType.CLIENT)
+	public void method_26493(int i, int j, Vector3f vector3f) {
+	}
+
+	public float method_26497(Direction direction, boolean bl) {
+		if (!bl) {
+			return 1.0F;
+		} else {
+			switch (direction) {
+				case DOWN:
+					return 0.5F;
+				case UP:
+					return 1.0F;
+				case NORTH:
+				case SOUTH:
+					return 0.8F;
+				case WEST:
+				case EAST:
+					return 0.6F;
+				default:
+					return 1.0F;
+			}
+		}
+	}
+
+	public final DimensionType getType() {
+		return this.type;
+	}
+
+	public <T> Dynamic<T> method_26496(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(
+					dynamicOps.createString("type"),
+					dynamicOps.createString(Registry.DIMENSION_TYPE.getId(this.getType()).toString()),
+					dynamicOps.createString("generator"),
+					this.createChunkGenerator().method_26489(dynamicOps).getValue()
+				)
+			)
+		);
+	}
+
+	public Stream<Biome> method_26498() {
+		return this.createChunkGenerator().getBiomeSource().method_26468();
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Vector3f method_26495(BlockState blockState, BlockPos blockPos) {
+		return field_23480;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public <T extends LivingEntity> Vector3f method_26494(T livingEntity) {
+		return field_23480;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_26499() {
+		return false;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float method_26500() {
+		return 30.0F;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float method_26501() {
+		return 20.0F;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Vector3f method_26502() {
+		return field_23481;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Vector3f method_26503() {
+		return field_23481;
+	}
 }

@@ -12,8 +12,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
-	public AbstractPileFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> function) {
-		super(function);
+	public AbstractPileFeature(Function<Dynamic<?>, ? extends BlockPileFeatureConfig> function, Function<Random, ? extends BlockPileFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

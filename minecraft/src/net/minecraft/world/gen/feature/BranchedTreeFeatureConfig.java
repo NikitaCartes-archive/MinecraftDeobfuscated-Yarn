@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
+import java.util.Random;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.decorator.TreeDecorator;
@@ -94,6 +95,48 @@ public class BranchedTreeFeatureConfig extends TreeFeatureConfig {
 			dynamic.get("foliage_height_random").asInt(0),
 			dynamic.get("max_water_depth").asInt(0),
 			dynamic.get("ignore_vines").asBoolean(false)
+		);
+	}
+
+	public static BranchedTreeFeatureConfig method_26645(Random random) {
+		TreeFeatureConfig treeFeatureConfig = TreeFeatureConfig.method_26650(random);
+		return new BranchedTreeFeatureConfig(
+			treeFeatureConfig.trunkProvider,
+			treeFeatureConfig.leavesProvider,
+			Registry.FOLIAGE_PLACER_TYPE.getRandom(random).method_26654(random),
+			treeFeatureConfig.decorators,
+			treeFeatureConfig.baseHeight,
+			random.nextInt(10) + 1,
+			random.nextInt(10) + 1,
+			Math.max(2, treeFeatureConfig.baseHeight - random.nextInt(20)),
+			random.nextInt(5),
+			random.nextInt(10) + 1,
+			random.nextInt(10) + 1,
+			random.nextInt(10) + 1,
+			random.nextInt(10) + 1,
+			random.nextInt(10),
+			random.nextBoolean()
+		);
+	}
+
+	public static BranchedTreeFeatureConfig method_26646(Random random) {
+		BranchedTreeFeatureConfig branchedTreeFeatureConfig = method_26645(random);
+		return new BranchedTreeFeatureConfig(
+			BlockStateProvider.method_26660(random, BlockStateProvider.field_23592),
+			branchedTreeFeatureConfig.leavesProvider,
+			branchedTreeFeatureConfig.foliagePlacer,
+			branchedTreeFeatureConfig.decorators,
+			branchedTreeFeatureConfig.baseHeight,
+			branchedTreeFeatureConfig.heightRandA,
+			branchedTreeFeatureConfig.heightRandB,
+			branchedTreeFeatureConfig.trunkHeight,
+			branchedTreeFeatureConfig.trunkHeightRandom,
+			branchedTreeFeatureConfig.trunkTopOffset,
+			branchedTreeFeatureConfig.trunkTopOffsetRandom,
+			branchedTreeFeatureConfig.foliageHeight,
+			branchedTreeFeatureConfig.foliageHeightRandom,
+			branchedTreeFeatureConfig.maxFluidDepth,
+			branchedTreeFeatureConfig.noVines
 		);
 	}
 

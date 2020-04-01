@@ -3,7 +3,9 @@ package net.minecraft.util.registry;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -11,6 +13,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5003;
+import net.minecraft.class_5014;
+import net.minecraft.class_5114;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -86,7 +91,7 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = create("surface_builder", () -> SurfaceBuilder.DEFAULT);
 	public static final Registry<Feature<?>> FEATURE = create("feature", () -> Feature.ORE);
 	public static final Registry<Decorator<?>> DECORATOR = create("decorator", () -> Decorator.NOPE);
-	public static final Registry<Biome> BIOME = create("biome", () -> Biomes.DEFAULT);
+	public static final Registry<Biome> BIOME = method_26699("biome", () -> Biomes.DEFAULT, class_5003::method_26461);
 	public static final Registry<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = create(
 		"block_state_provider_type", () -> BlockStateProviderType.SIMPLE_STATE_PROVIDER
 	);
@@ -97,7 +102,7 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<BiomeSourceType<?, ?>> BIOME_SOURCE_TYPE = create("biome_source_type", () -> BiomeSourceType.VANILLA_LAYERED);
 	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = create("block_entity_type", () -> BlockEntityType.FURNACE);
 	public static final Registry<ChunkGeneratorType<?, ?>> CHUNK_GENERATOR_TYPE = create("chunk_generator_type", () -> ChunkGeneratorType.FLAT);
-	public static final Registry<DimensionType> DIMENSION_TYPE = create("dimension_type", () -> DimensionType.OVERWORLD);
+	public static final Registry<DimensionType> DIMENSION_TYPE = method_26699("dimension_type", () -> DimensionType.OVERWORLD, class_5014::method_26504);
 	/**
 	 * The painting motive (theme, motif) registry
 	 */
@@ -127,14 +132,18 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<Activity> ACTIVITY = create("activity", () -> Activity.IDLE);
 
 	private static <T> Registry<T> create(String id, Supplier<T> supplier) {
-		return putDefaultEntry(id, new SimpleRegistry<>(), supplier);
+		return create(id, new SimpleRegistry<>(), supplier);
 	}
 
 	private static <T> DefaultedRegistry<T> create(String string, String string2, Supplier<T> defaultEntry) {
-		return putDefaultEntry(string, new DefaultedRegistry<>(string2), defaultEntry);
+		return create(string, new DefaultedRegistry<>(string2), defaultEntry);
 	}
 
-	private static <T, R extends MutableRegistry<T>> R putDefaultEntry(String id, R mutableRegistry, Supplier<T> supplier) {
+	private static <T> Registry<T> method_26699(String string, Supplier<T> supplier, IntFunction<T> intFunction) {
+		return create(string, new class_5114<>(intFunction), supplier);
+	}
+
+	private static <T, R extends MutableRegistry<T>> R create(String id, R mutableRegistry, Supplier<T> supplier) {
 		Identifier identifier = new Identifier(id);
 		DEFAULT_ENTRIES.put(identifier, supplier);
 		return REGISTRIES.add(identifier, mutableRegistry);
@@ -151,6 +160,9 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public abstract Optional<T> getOrEmpty(@Nullable Identifier id);
 
 	public abstract Set<Identifier> getIds();
+
+	@Nullable
+	public abstract T getRandom(Random random);
 
 	public Stream<T> stream() {
 		return StreamSupport.stream(this.spliterator(), false);

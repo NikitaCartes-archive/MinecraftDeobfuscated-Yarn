@@ -1298,11 +1298,11 @@ public class ServerWorld extends World {
 		Optional<PointOfInterestType> optional2 = PointOfInterestType.from(newBlock);
 		if (!Objects.equals(optional, optional2)) {
 			BlockPos blockPos = pos.toImmutable();
-			optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
+			optional.ifPresent(pointOfInterestType -> this.getChunkManager().method_26728(() -> {
 					this.getPointOfInterestStorage().remove(blockPos);
 					DebugInfoSender.sendPoiRemoval(this, blockPos);
 				}));
-			optional2.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
+			optional2.ifPresent(pointOfInterestType -> this.getChunkManager().method_26728(() -> {
 					this.getPointOfInterestStorage().add(blockPos, pointOfInterestType);
 					DebugInfoSender.sendPoiAddition(this, blockPos);
 				}));

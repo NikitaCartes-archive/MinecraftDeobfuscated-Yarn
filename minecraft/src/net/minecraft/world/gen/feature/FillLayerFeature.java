@@ -9,8 +9,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
-	public FillLayerFeature(Function<Dynamic<?>, ? extends FillLayerFeatureConfig> function) {
-		super(function);
+	public FillLayerFeature(Function<Dynamic<?>, ? extends FillLayerFeatureConfig> function, Function<Random, ? extends FillLayerFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

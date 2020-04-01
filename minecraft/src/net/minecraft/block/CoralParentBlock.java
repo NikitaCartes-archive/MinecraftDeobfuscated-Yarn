@@ -74,6 +74,11 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(WATERLOGGED);
 	}

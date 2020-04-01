@@ -143,7 +143,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 		return LongTag.of(l);
 	}
 
-	public void method_10531(int i, LongTag longTag) {
+	public void add(int i, LongTag longTag) {
 		this.value = ArrayUtils.add(this.value, i, longTag.getLong());
 	}
 

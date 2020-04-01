@@ -4,13 +4,14 @@ import com.mojang.datafixers.Dynamic;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.class_5101;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ProbabilityConfig;
 
-public class CaveCarver extends Carver<ProbabilityConfig> {
+public class CaveCarver extends class_5101 {
 	public CaveCarver(Function<Dynamic<?>, ? extends ProbabilityConfig> function, int i) {
 		super(function, i);
 	}

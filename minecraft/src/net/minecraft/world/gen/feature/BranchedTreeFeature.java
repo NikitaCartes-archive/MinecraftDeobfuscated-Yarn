@@ -11,8 +11,8 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public abstract class BranchedTreeFeature<T extends BranchedTreeFeatureConfig> extends AbstractTreeFeature<T> {
-	public BranchedTreeFeature(Function<Dynamic<?>, ? extends T> function) {
-		super(function);
+	public BranchedTreeFeature(Function<Dynamic<?>, ? extends T> function, Function<Random, ? extends T> function2) {
+		super(function, function2);
 	}
 
 	protected void generate(

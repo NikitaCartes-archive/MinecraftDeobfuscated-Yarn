@@ -51,7 +51,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.Rotation3;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -150,7 +150,7 @@ public class ModelLoader {
 	private final Set<Identifier> modelsToLoad = Sets.<Identifier>newHashSet();
 	private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
 	private final Map<Identifier, UnbakedModel> unbakedModels = Maps.<Identifier, UnbakedModel>newHashMap();
-	private final Map<Triple<Identifier, AffineTransformation, Boolean>, BakedModel> bakedModelCache = Maps.<Triple<Identifier, AffineTransformation, Boolean>, BakedModel>newHashMap();
+	private final Map<Triple<Identifier, Rotation3, Boolean>, BakedModel> bakedModelCache = Maps.<Triple<Identifier, Rotation3, Boolean>, BakedModel>newHashMap();
 	private final Map<Identifier, UnbakedModel> modelsToBake = Maps.<Identifier, UnbakedModel>newHashMap();
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
 	private final Map<Identifier, Pair<SpriteAtlasTexture, SpriteAtlasTexture.Data>> spriteAtlasData;
@@ -513,7 +513,7 @@ public class ModelLoader {
 
 	@Nullable
 	public BakedModel bake(Identifier identifier, ModelBakeSettings settings) {
-		Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isShaded());
+		Triple<Identifier, Rotation3, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isShaded());
 		if (this.bakedModelCache.containsKey(triple)) {
 			return (BakedModel)this.bakedModelCache.get(triple);
 		} else if (this.spriteAtlasManager == null) {

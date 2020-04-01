@@ -9,8 +9,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NoOpFeature extends Feature<DefaultFeatureConfig> {
-	public NoOpFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public NoOpFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

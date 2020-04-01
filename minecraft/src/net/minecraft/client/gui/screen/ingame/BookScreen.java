@@ -1,7 +1,5 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.List;
@@ -14,35 +12,16 @@ import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Texts;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BookScreen extends Screen {
-	public static final BookScreen.Contents EMPTY_PROVIDER = new BookScreen.Contents() {
-		@Override
-		public int getPageCount() {
-			return 0;
-		}
-
-		@Override
-		public Text getPageUnchecked(int index) {
-			return new LiteralText("");
-		}
-	};
 	public static final Identifier BOOK_TEXTURE = new Identifier("textures/gui/book.png");
-	private BookScreen.Contents contents;
+	private BookContent contents;
 	private int pageIndex;
 	private List<Text> cachedPage = Collections.emptyList();
 	private int cachedPageIndex = -1;
@@ -50,21 +29,21 @@ public class BookScreen extends Screen {
 	private PageTurnWidget previousPageButton;
 	private final boolean pageTurnSound;
 
-	public BookScreen(BookScreen.Contents pageProvider) {
+	public BookScreen(BookContent pageProvider) {
 		this(pageProvider, true);
 	}
 
 	public BookScreen() {
-		this(EMPTY_PROVIDER, false);
+		this(BookContent.EMPTY, false);
 	}
 
-	private BookScreen(BookScreen.Contents contents, boolean playPageTurnSound) {
+	private BookScreen(BookContent contents, boolean playPageTurnSound) {
 		super(NarratorManager.EMPTY);
 		this.contents = contents;
 		this.pageTurnSound = playPageTurnSound;
 	}
 
-	public void setPageProvider(BookScreen.Contents pageProvider) {
+	public void setPageProvider(BookContent pageProvider) {
 		this.contents = pageProvider;
 		this.pageIndex = MathHelper.clamp(this.pageIndex, 0, pageProvider.getPageCount());
 		this.updatePageButtons();
@@ -252,97 +231,6 @@ public class BookScreen extends Screen {
 			} else {
 				return null;
 			}
-		}
-	}
-
-	public static List<String> readPages(CompoundTag tag) {
-		ListTag listTag = tag.getList("pages", 8).copy();
-		Builder<String> builder = ImmutableList.builder();
-
-		for (int i = 0; i < listTag.size(); i++) {
-			builder.add(listTag.getString(i));
-		}
-
-		return builder.build();
-	}
-
-	@Environment(EnvType.CLIENT)
-	public interface Contents {
-		int getPageCount();
-
-		Text getPageUnchecked(int index);
-
-		default Text getPage(int index) {
-			return (Text)(index >= 0 && index < this.getPageCount() ? this.getPageUnchecked(index) : new LiteralText(""));
-		}
-
-		static BookScreen.Contents create(ItemStack stack) {
-			Item item = stack.getItem();
-			if (item == Items.WRITTEN_BOOK) {
-				return new BookScreen.WrittenBookContents(stack);
-			} else {
-				return (BookScreen.Contents)(item == Items.WRITABLE_BOOK ? new BookScreen.WritableBookContents(stack) : BookScreen.EMPTY_PROVIDER);
-			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class WritableBookContents implements BookScreen.Contents {
-		private final List<String> pages;
-
-		public WritableBookContents(ItemStack stack) {
-			this.pages = getPages(stack);
-		}
-
-		private static List<String> getPages(ItemStack stack) {
-			CompoundTag compoundTag = stack.getTag();
-			return (List<String>)(compoundTag != null ? BookScreen.readPages(compoundTag) : ImmutableList.of());
-		}
-
-		@Override
-		public int getPageCount() {
-			return this.pages.size();
-		}
-
-		@Override
-		public Text getPageUnchecked(int index) {
-			return new LiteralText((String)this.pages.get(index));
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class WrittenBookContents implements BookScreen.Contents {
-		private final List<String> pages;
-
-		public WrittenBookContents(ItemStack stack) {
-			this.pages = getPages(stack);
-		}
-
-		private static List<String> getPages(ItemStack stack) {
-			CompoundTag compoundTag = stack.getTag();
-			return (List<String>)(compoundTag != null && WrittenBookItem.isValid(compoundTag)
-				? BookScreen.readPages(compoundTag)
-				: ImmutableList.of(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED).asFormattedString()));
-		}
-
-		@Override
-		public int getPageCount() {
-			return this.pages.size();
-		}
-
-		@Override
-		public Text getPageUnchecked(int index) {
-			String string = (String)this.pages.get(index);
-
-			try {
-				Text text = Text.Serializer.fromJson(string);
-				if (text != null) {
-					return text;
-				}
-			} catch (Exception var4) {
-			}
-
-			return new LiteralText(string);
 		}
 	}
 }

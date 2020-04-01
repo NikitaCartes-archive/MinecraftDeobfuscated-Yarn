@@ -133,6 +133,11 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.down());
 		Block block = blockState.getBlock();

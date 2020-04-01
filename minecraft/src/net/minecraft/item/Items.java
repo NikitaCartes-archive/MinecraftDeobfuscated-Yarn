@@ -1354,12 +1354,17 @@ public class Items {
 	public static final Item HONEYCOMB_BLOCK = register(Blocks.HONEYCOMB_BLOCK, ItemGroup.DECORATIONS);
 	public static final Item LODESTONE = register(Blocks.LODESTONE, ItemGroup.DECORATIONS);
 	public static final Item NETHERITE_BLOCK = register(new BlockItem(Blocks.NETHERITE_BLOCK, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
+	public static final Item NETHERITE_STAIRS = register(new BlockItem(Blocks.NETHERITE_STAIRS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
 	public static final Item ANCIENT_DEBRIS = register(new BlockItem(Blocks.ANCIENT_DEBRIS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
 	public static final Item NETHERITE_INGOT = register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
 	public static final Item NETHERITE_SCRAP = register("netherite_scrap", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
 	public static final Item TARGET = register(Blocks.TARGET, ItemGroup.REDSTONE);
 	public static final Item CRYING_OBSIDIAN = register(Blocks.CRYING_OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
+	public static final Item BOOK_BOX = register(Blocks.BOOK_BOX, ItemGroup.BUILDING_BLOCKS);
 	public static final Item RESPAWN_ANCHOR = register(Blocks.RESPAWN_ANCHOR, ItemGroup.DECORATIONS);
+	public static final Item FOOTPRINT = register("footprint", new Item(new Item.Settings()));
+	public static final Item CURSOR = register(Blocks.CURSOR, ItemGroup.DECORATIONS);
+	public static final Item FINE_ITEM = register("fine_item", new Item(new Item.Settings()));
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

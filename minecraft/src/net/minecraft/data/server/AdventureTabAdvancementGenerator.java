@@ -5,6 +5,7 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.ChanneledLightningCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
@@ -22,11 +23,13 @@ import net.minecraft.entity.raid.Raid;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.PlayerPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.stat.Stats;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -423,6 +426,29 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("bullseye", TargetHitCriterion.Conditions.create(NumberRange.IntRange.exactly(15)))
 			.build(consumer, "adventure/bullseye");
+		Advancement advancement21 = Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.FLINT_AND_STEEL,
+				new TranslatableText("advancements.adventure.almost_there.title"),
+				new TranslatableText("advancements.adventure.almost_there.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"count",
+				ChangedDimensionCriterion.Conditions.method_26440(
+					EntityPredicate.Builder.create()
+						.player(
+							new PlayerPredicate.Builder().method_26486(Stats.CUSTOM.getOrCreateStat(Stats.CHANGE_DIMENSION), NumberRange.IntRange.exactly(1000000000)).build()
+						)
+						.build()
+				)
+			)
+			.build(consumer, "adventure/almost_there");
 	}
 
 	private Advancement.Task requireListedMobsKilled(Advancement.Task task) {

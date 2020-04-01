@@ -106,7 +106,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.Dimension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -1448,9 +1448,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public void renderSky(MatrixStack matrixStack, float f) {
-		if (this.client.world.dimension.getType() == DimensionType.THE_END) {
+		Dimension dimension = this.client.world.dimension;
+		if (dimension.method_26499()) {
 			this.renderEndSky(matrixStack);
-		} else if (this.client.world.dimension.hasVisibleSky()) {
+		} else if (dimension.hasVisibleSky()) {
 			RenderSystem.disableTexture();
 			Vec3d vec3d = this.world.method_23777(this.client.gameRenderer.getCamera().getBlockPos(), f);
 			float g = (float)vec3d.x;
@@ -1508,29 +1509,31 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(f) * 360.0F));
 			Matrix4f matrix4f2 = matrixStack.peek().getModel();
-			float l = 30.0F;
+			float l = dimension.method_26500();
+			Vector3f vector3f = dimension.method_26502();
 			this.textureManager.bindTexture(SUN);
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-			bufferBuilder.vertex(matrix4f2, -l, 100.0F, -l).texture(0.0F, 0.0F).next();
-			bufferBuilder.vertex(matrix4f2, l, 100.0F, -l).texture(1.0F, 0.0F).next();
-			bufferBuilder.vertex(matrix4f2, l, 100.0F, l).texture(1.0F, 1.0F).next();
-			bufferBuilder.vertex(matrix4f2, -l, 100.0F, l).texture(0.0F, 1.0F).next();
+			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
+			bufferBuilder.vertex(matrix4f2, -l, 100.0F, -l).color(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0F).texture(0.0F, 0.0F).next();
+			bufferBuilder.vertex(matrix4f2, l, 100.0F, -l).color(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0F).texture(1.0F, 0.0F).next();
+			bufferBuilder.vertex(matrix4f2, l, 100.0F, l).color(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0F).texture(1.0F, 1.0F).next();
+			bufferBuilder.vertex(matrix4f2, -l, 100.0F, l).color(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0F).texture(0.0F, 1.0F).next();
 			bufferBuilder.end();
 			BufferRenderer.draw(bufferBuilder);
-			l = 20.0F;
+			l = dimension.method_26501();
+			Vector3f vector3f2 = dimension.method_26503();
 			this.textureManager.bindTexture(MOON_PHASES);
-			int s = this.world.getMoonPhase();
-			int t = s % 4;
-			int n = s / 4 % 2;
-			float u = (float)(t + 0) / 4.0F;
-			float p = (float)(n + 0) / 2.0F;
-			float q = (float)(t + 1) / 4.0F;
-			float r = (float)(n + 1) / 2.0F;
-			bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-			bufferBuilder.vertex(matrix4f2, -l, -100.0F, l).texture(q, r).next();
-			bufferBuilder.vertex(matrix4f2, l, -100.0F, l).texture(u, r).next();
-			bufferBuilder.vertex(matrix4f2, l, -100.0F, -l).texture(u, p).next();
-			bufferBuilder.vertex(matrix4f2, -l, -100.0F, -l).texture(q, p).next();
+			int n = this.world.getMoonPhase();
+			int o = n % 4;
+			int s = n / 4 % 2;
+			float q = (float)(o + 0) / 4.0F;
+			float r = (float)(s + 0) / 2.0F;
+			float t = (float)(o + 1) / 4.0F;
+			float u = (float)(s + 1) / 2.0F;
+			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
+			bufferBuilder.vertex(matrix4f2, -l, -100.0F, l).color(vector3f2.getX(), vector3f2.getY(), vector3f2.getZ(), 1.0F).texture(t, u).next();
+			bufferBuilder.vertex(matrix4f2, l, -100.0F, l).color(vector3f2.getX(), vector3f2.getY(), vector3f2.getZ(), 1.0F).texture(q, u).next();
+			bufferBuilder.vertex(matrix4f2, l, -100.0F, -l).color(vector3f2.getX(), vector3f2.getY(), vector3f2.getZ(), 1.0F).texture(q, r).next();
+			bufferBuilder.vertex(matrix4f2, -l, -100.0F, -l).color(vector3f2.getX(), vector3f2.getY(), vector3f2.getZ(), 1.0F).texture(t, r).next();
 			bufferBuilder.end();
 			BufferRenderer.draw(bufferBuilder);
 			RenderSystem.disableTexture();
@@ -2709,7 +2712,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public static int getLightmapCoordinates(BlockRenderView world, BlockState state, BlockPos pos) {
-		if (state.hasEmissiveLighting(world, pos)) {
+		if (state.hasInWallOverlay(world, pos)) {
 			return 15728880;
 		} else {
 			int i = world.getLightLevel(LightType.SKY, pos);

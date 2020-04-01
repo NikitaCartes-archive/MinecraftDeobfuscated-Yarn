@@ -92,7 +92,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements MessageListe
 		this.tasks.clear();
 	}
 
-	protected void runTasks() {
+	public void runTasks() {
 		while (this.runTask()) {
 		}
 	}

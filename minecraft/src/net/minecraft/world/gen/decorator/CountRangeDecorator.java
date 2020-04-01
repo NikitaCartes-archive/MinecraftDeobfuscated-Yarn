@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
 public class CountRangeDecorator extends SimpleDecorator<RangeDecoratorConfig> {
-	public CountRangeDecorator(Function<Dynamic<?>, ? extends RangeDecoratorConfig> function) {
-		super(function);
+	public CountRangeDecorator(Function<Dynamic<?>, ? extends RangeDecoratorConfig> function, Function<Random, ? extends RangeDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(Random random, RangeDecoratorConfig rangeDecoratorConfig, BlockPos blockPos) {

@@ -12,6 +12,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
@@ -59,10 +60,11 @@ public class FluidRenderer {
 	public boolean render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, FluidState state) {
 		boolean bl = state.matches(FluidTags.LAVA);
 		Sprite[] sprites = bl ? this.lavaSprites : this.waterSprites;
+		Vector3f vector3f = world.method_26443(Blocks.WATER.getDefaultState(), pos);
 		int i = bl ? 16777215 : BiomeColors.getWaterColor(world, pos);
-		float f = (float)(i >> 16 & 0xFF) / 255.0F;
-		float g = (float)(i >> 8 & 0xFF) / 255.0F;
-		float h = (float)(i & 0xFF) / 255.0F;
+		float f = vector3f.getX() * (float)(i >> 16 & 0xFF) / 255.0F;
+		float g = vector3f.getX() * (float)(i >> 8 & 0xFF) / 255.0F;
+		float h = vector3f.getX() * (float)(i & 0xFF) / 255.0F;
 		boolean bl2 = !isSameFluid(world, pos, Direction.UP, state);
 		boolean bl3 = !isSameFluid(world, pos, Direction.DOWN, state) && !isSideCovered(world, pos, Direction.DOWN, 0.8888889F);
 		boolean bl4 = !isSameFluid(world, pos, Direction.NORTH, state);

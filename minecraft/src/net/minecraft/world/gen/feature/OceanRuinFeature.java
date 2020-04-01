@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.structure.OceanRuinGenerator;
@@ -15,8 +16,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConfig> {
-	public OceanRuinFeature(Function<Dynamic<?>, ? extends OceanRuinFeatureConfig> function) {
-		super(function);
+	public OceanRuinFeature(Function<Dynamic<?>, ? extends OceanRuinFeatureConfig> function, Function<Random, ? extends OceanRuinFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

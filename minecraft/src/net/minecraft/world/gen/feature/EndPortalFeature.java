@@ -14,7 +14,7 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 	private final boolean open;
 
 	public EndPortalFeature(boolean open) {
-		super(DefaultFeatureConfig::deserialize);
+		super(DefaultFeatureConfig::deserialize, DefaultFeatureConfig::method_26619);
 		this.open = open;
 	}
 

@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
+import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,8 +17,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
-	public NetherFossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public NetherFossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

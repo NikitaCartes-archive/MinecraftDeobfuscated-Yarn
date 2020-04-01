@@ -233,6 +233,11 @@ public class DoorBlock extends Block {
 		return state.get(HALF) == DoubleBlockHalf.LOWER ? blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) : blockState.getBlock() == this;
 	}
 
+	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
 	private void playOpenCloseSound(World world, BlockPos pos, boolean open) {
 		world.playLevelEvent(null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
 	}

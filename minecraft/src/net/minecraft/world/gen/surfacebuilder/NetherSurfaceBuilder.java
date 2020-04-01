@@ -19,8 +19,8 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	protected long seed;
 	protected OctavePerlinNoiseSampler noise;
 
-	public NetherSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public NetherSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function, Function<Random, ? extends TernarySurfaceConfig> function2) {
+		super(function, function2);
 	}
 
 	public void generate(

@@ -2,6 +2,8 @@ package net.minecraft.particle;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.util.Random;
+import java.util.function.BiFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.command.arguments.ItemStackArgument;
@@ -25,6 +27,9 @@ public class ItemStackParticleEffect implements ParticleEffect {
 	};
 	private final ParticleType<ItemStackParticleEffect> type;
 	private final ItemStack stack;
+	public static final BiFunction<Random, ParticleType<ItemStackParticleEffect>, ItemStackParticleEffect> field_23635 = (random, particleType) -> new ItemStackParticleEffect(
+			particleType, new ItemStack(Registry.ITEM.getRandom(random))
+		);
 
 	public ItemStackParticleEffect(ParticleType<ItemStackParticleEffect> type, ItemStack stack) {
 		this.type = type;

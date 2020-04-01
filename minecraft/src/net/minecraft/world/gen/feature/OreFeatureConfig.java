@@ -5,12 +5,15 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.predicate.block.BlockPredicate;
+import net.minecraft.util.Util;
+import net.minecraft.util.registry.Registry;
 
 public class OreFeatureConfig implements FeatureConfig {
 	public final OreFeatureConfig.Target target;
@@ -47,6 +50,10 @@ public class OreFeatureConfig implements FeatureConfig {
 		return new OreFeatureConfig(target, blockState, i);
 	}
 
+	public static OreFeatureConfig method_26621(Random random) {
+		return new OreFeatureConfig(Util.method_26715(OreFeatureConfig.Target.class, random), Registry.BLOCK.getRandom(random).getDefaultState(), random.nextInt(15));
+	}
+
 	public static enum Target {
 		NATURAL_STONE("natural_stone", blockState -> {
 			if (blockState == null) {
@@ -56,7 +63,8 @@ public class OreFeatureConfig implements FeatureConfig {
 				return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
 			}
 		}),
-		NETHERRACK("netherrack", new BlockPredicate(Blocks.NETHERRACK));
+		NETHERRACK("netherrack", new BlockPredicate(Blocks.NETHERRACK)),
+		ANY("any", blockState -> true);
 
 		private static final Map<String, OreFeatureConfig.Target> nameMap = (Map<String, OreFeatureConfig.Target>)Arrays.stream(values())
 			.collect(Collectors.toMap(OreFeatureConfig.Target::getName, target -> target));

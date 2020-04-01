@@ -1,30 +1,28 @@
 package net.minecraft.world.biome;
 
 import java.util.Random;
-import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.util.registry.Registry;
 
 public class BiomeParticleConfig {
-	private final DefaultParticleType type;
+	private final ParticleEffect type;
 	private final float chance;
-	private final Function<Random, Double> velocityXFactory;
-	private final Function<Random, Double> velocityYFactory;
-	private final Function<Random, Double> velocityZFactory;
+	private final double velocityXFactory;
+	private final double velocityYFactory;
+	private final double velocityZFactory;
 
-	public BiomeParticleConfig(
-		DefaultParticleType type, float chance, Function<Random, Double> xFactory, Function<Random, Double> yFactory, Function<Random, Double> zFactory
-	) {
-		this.type = type;
+	public BiomeParticleConfig(ParticleEffect particleEffect, float chance, double d, double e, double f) {
+		this.type = particleEffect;
 		this.chance = chance;
-		this.velocityXFactory = xFactory;
-		this.velocityYFactory = yFactory;
-		this.velocityZFactory = zFactory;
+		this.velocityXFactory = d;
+		this.velocityYFactory = e;
+		this.velocityZFactory = f;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public DefaultParticleType getParticleType() {
+	public ParticleEffect getParticleType() {
 		return this.type;
 	}
 
@@ -34,17 +32,23 @@ public class BiomeParticleConfig {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double generateVelocityX(Random random) {
-		return (Double)this.velocityXFactory.apply(random);
+	public double generateVelocityX() {
+		return this.velocityXFactory;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double generateVelocityY(Random random) {
-		return (Double)this.velocityYFactory.apply(random);
+	public double generateVelocityY() {
+		return this.velocityYFactory;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public double generateVelocityZ(Random random) {
-		return (Double)this.velocityZFactory.apply(random);
+	public double generateVelocityZ() {
+		return this.velocityZFactory;
+	}
+
+	public static BiomeParticleConfig method_26445(Random random) {
+		return new BiomeParticleConfig(
+			Registry.PARTICLE_TYPE.getRandom(random).method_26703(random), random.nextFloat() * 0.2F, random.nextDouble(), random.nextDouble(), random.nextDouble()
+		);
 	}
 }

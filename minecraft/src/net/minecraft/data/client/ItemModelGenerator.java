@@ -63,6 +63,7 @@ public class ItemModelGenerator {
 		this.register(Items.CHICKEN, Models.GENERATED);
 		this.register(Items.CHORUS_FRUIT, Models.GENERATED);
 		this.register(Items.CLAY_BALL, Models.GENERATED);
+		this.register(Items.FINE_ITEM, Models.GENERATED);
 
 		for (int i = 1; i < 64; i++) {
 			this.register(Items.CLOCK, String.format("_%02d", i), Models.GENERATED);

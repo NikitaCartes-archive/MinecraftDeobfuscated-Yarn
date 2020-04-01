@@ -10,8 +10,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
-	NoSurfaceOreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> function) {
-		super(function);
+	NoSurfaceOreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> function, Function<Random, ? extends OreFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

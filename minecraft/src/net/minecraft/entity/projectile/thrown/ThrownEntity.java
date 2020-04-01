@@ -3,6 +3,7 @@ package net.minecraft.entity.projectile.thrown;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -91,8 +92,13 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		Predicate<Entity> predicate = entity2x -> !entity2x.isSpectator() && entity2x.collides() && (this.field_21975 || !this.method_24354(entity2x, entity));
 		HitResult hitResult = ProjectileUtil.getCollision(this, box, predicate, RayTraceContext.ShapeType.OUTLINE, true);
 		if (hitResult.getType() != HitResult.Type.MISS) {
-			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.NETHER_PORTAL) {
-				this.setInNetherPortal(((BlockHitResult)hitResult).getBlockPos());
+			if (hitResult.getType() == HitResult.Type.BLOCK) {
+				Block block = this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock();
+				if (block != Blocks.NETHER_PORTAL && block != Blocks.NEITHER_PORTAL) {
+					this.onCollision(hitResult);
+				} else {
+					this.setInNetherPortal(((BlockHitResult)hitResult).getBlockPos(), block);
+				}
 			} else {
 				this.onCollision(hitResult);
 			}

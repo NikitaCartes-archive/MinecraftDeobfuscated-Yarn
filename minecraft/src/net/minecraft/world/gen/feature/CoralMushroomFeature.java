@@ -9,8 +9,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class CoralMushroomFeature extends CoralFeature {
-	public CoralMushroomFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public CoralMushroomFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

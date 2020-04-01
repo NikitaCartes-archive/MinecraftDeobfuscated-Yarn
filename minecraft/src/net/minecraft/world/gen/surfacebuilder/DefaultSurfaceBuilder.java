@@ -10,8 +10,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
-	public DefaultSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public DefaultSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function, Function<Random, ? extends TernarySurfaceConfig> function2) {
+		super(function, function2);
 	}
 
 	public void generate(

@@ -2,6 +2,7 @@ package net.minecraft.world.biome;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.sound.BiomeMoodSound;
@@ -9,7 +10,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class EndIslandsSmallBiome extends Biome {
@@ -28,7 +29,9 @@ public class EndIslandsSmallBiome extends Biome {
 		);
 		this.addFeature(
 			GenerationStep.Feature.RAW_GENERATION,
-			Feature.END_ISLAND.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.END_ISLAND.configure(DecoratorConfig.DEFAULT))
+			Feature.END_ISLAND
+				.configure(new SingleStateFeatureConfig(Blocks.END_STONE.getDefaultState()))
+				.createDecoratedFeature(Decorator.END_ISLAND.configure(DecoratorConfig.DEFAULT))
 		);
 		DefaultBiomeFeatures.addEndCities(this);
 		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));

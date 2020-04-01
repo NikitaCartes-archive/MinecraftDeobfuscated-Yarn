@@ -1,7 +1,12 @@
 package net.minecraft.world.gen.chunk;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.Util;
 
 public class ChunkGeneratorConfig {
 	protected int villageDistance = 32;
@@ -122,5 +127,27 @@ public class ChunkGeneratorConfig {
 	 */
 	public int getBedrockFloorY() {
 		return 256;
+	}
+
+	public <T> Dynamic<T> method_26574(DynamicOps<T> dynamicOps) {
+		return new Dynamic<>(
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.<T, T>builder()
+					.put(dynamicOps.createString("defaultBlock"), BlockState.serialize(dynamicOps, this.defaultBlock).getValue())
+					.put(dynamicOps.createString("defaultFluid"), BlockState.serialize(dynamicOps, this.defaultFluid).getValue())
+					.build()
+			)
+		);
+	}
+
+	public BlockState method_26575(Random random) {
+		return random.nextInt(5) != 2
+			? (random.nextBoolean() ? Blocks.WATER : Blocks.LAVA).getDefaultState()
+			: Util.method_26719(random, OverworldChunkGeneratorConfig.field_23568);
+	}
+
+	public BlockState method_26576(Random random) {
+		return Util.method_26719(random, OverworldChunkGeneratorConfig.field_23568);
 	}
 }

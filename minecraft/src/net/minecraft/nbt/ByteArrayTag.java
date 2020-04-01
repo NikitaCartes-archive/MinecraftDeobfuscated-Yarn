@@ -126,7 +126,7 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		return ByteTag.of(this.value[i]);
 	}
 
-	public ByteTag method_10606(int i, ByteTag byteTag) {
+	public ByteTag set(int i, ByteTag byteTag) {
 		byte b = this.value[i];
 		this.value[i] = byteTag.getByte();
 		return ByteTag.of(b);

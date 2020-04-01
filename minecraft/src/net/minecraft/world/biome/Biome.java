@@ -1,9 +1,14 @@
 package net.minecraft.world.biome;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableMap.Builder;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Arrays;
 import java.util.List;
@@ -93,7 +98,6 @@ public abstract class Biome {
 			long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
 			return long2FloatLinkedOpenHashMap;
 		}));
-	private final List<Biome.MixedNoisePoint> noisePoints;
 
 	@Nullable
 	public static Biome getModifiedBiome(Biome biome) {
@@ -102,6 +106,10 @@ public abstract class Biome {
 
 	public static <C extends CarverConfig> ConfiguredCarver<C> configureCarver(Carver<C> carver, C config) {
 		return new ConfiguredCarver<>(carver, config);
+	}
+
+	public static <C extends CarverConfig> ConfiguredCarver<C> method_26447(Carver<C> carver, Random random) {
+		return new ConfiguredCarver<>(carver, carver.method_26583(random));
 	}
 
 	protected Biome(Biome.Settings settings) {
@@ -122,7 +130,6 @@ public abstract class Biome {
 			this.downfall = settings.downfall;
 			this.skyColor = this.calculateSkyColor();
 			this.parent = settings.parent;
-			this.noisePoints = (List<Biome.MixedNoisePoint>)(settings.noises != null ? settings.noises : ImmutableList.of());
 			this.effects = settings.specialEffects;
 
 			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
@@ -415,17 +422,96 @@ public abstract class Biome {
 		return this.surfaceBuilder.getConfig();
 	}
 
-	public float getNoiseDistance(Biome.MixedNoisePoint from) {
-		return (Float)this.noisePoints
-			.stream()
-			.map(mixedNoisePoint2 -> mixedNoisePoint2.calculateDistanceTo(from))
-			.min(Float::compare)
-			.orElse(Float.POSITIVE_INFINITY);
-	}
-
 	@Nullable
 	public String getParent() {
 		return this.parent;
+	}
+
+	public <T> Dynamic<T> method_26448(DynamicOps<T> dynamicOps) {
+		T object = dynamicOps.createMap(
+			(Map<T, T>)this.carvers
+				.entrySet()
+				.stream()
+				.map(
+					entry -> Pair.of(
+							dynamicOps.createString(((GenerationStep.Carver)entry.getKey()).getName()),
+							dynamicOps.createList(((List)entry.getValue()).stream().map(configuredCarver -> configuredCarver.method_26581(dynamicOps).getValue()))
+						)
+				)
+				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
+		);
+		T object2 = dynamicOps.createMap(
+			(Map<T, T>)this.features
+				.entrySet()
+				.stream()
+				.map(
+					entry -> Pair.of(
+							dynamicOps.createString(((GenerationStep.Feature)entry.getKey()).getName()),
+							dynamicOps.createList(((List)entry.getValue()).stream().map(configuredFeature -> configuredFeature.serialize(dynamicOps).getValue()))
+						)
+				)
+				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
+		);
+		T object3 = dynamicOps.createMap(
+			(Map<T, T>)this.structureFeatures
+				.entrySet()
+				.stream()
+				.map(
+					entry -> Pair.of(
+							dynamicOps.createString(Registry.FEATURE.getId((Feature<?>)entry.getKey()).toString()),
+							((FeatureConfig)entry.getValue()).serialize(dynamicOps).getValue()
+						)
+				)
+				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
+		);
+		T object4 = dynamicOps.createMap(
+			(Map<T, T>)this.spawns
+				.entrySet()
+				.stream()
+				.map(
+					entry -> Pair.of(
+							dynamicOps.createString(((EntityCategory)entry.getKey()).getName()),
+							dynamicOps.createList(((List)entry.getValue()).stream().map(spawnEntry -> spawnEntry.method_26460(dynamicOps).getValue()))
+						)
+				)
+				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
+		);
+		return new Dynamic<>(
+			dynamicOps,
+			dynamicOps.createMap(
+				new Builder<T, T>()
+					.put(dynamicOps.createString("precipitation"), dynamicOps.createString(this.precipitation.getName()))
+					.put(dynamicOps.createString("category"), dynamicOps.createString(this.category.getName()))
+					.put(dynamicOps.createString("depth"), dynamicOps.createFloat(this.depth))
+					.put(dynamicOps.createString("scale"), dynamicOps.createFloat(this.scale))
+					.put(dynamicOps.createString("temperature"), dynamicOps.createFloat(this.temperature))
+					.put(dynamicOps.createString("downfall"), dynamicOps.createFloat(this.downfall))
+					.put(dynamicOps.createString("surface_builder"), this.surfaceBuilder.method_26678(dynamicOps).getValue())
+					.put(dynamicOps.createString("carvers"), object)
+					.put(dynamicOps.createString("features"), object2)
+					.put(dynamicOps.createString("starts"), object3)
+					.put(dynamicOps.createString("spawners"), object4)
+					.build()
+			)
+		);
+	}
+
+	public static Biome.Settings method_26453(Random random) {
+		SurfaceBuilder<? extends SurfaceConfig> surfaceBuilder = random.nextInt(5) != 0
+			? SurfaceBuilder.DEFAULT
+			: (SurfaceBuilder)Registry.SURFACE_BUILDER.getRandom(random);
+		return method_26446(new Biome.Settings(), surfaceBuilder, random)
+			.precipitation(Util.method_26715(Biome.Precipitation.class, random))
+			.category(Util.method_26715(Biome.Category.class, random))
+			.depth(random.nextFloat() * 2.0F - 1.0F)
+			.scale(random.nextFloat())
+			.temperature(random.nextFloat() * 3.0F)
+			.downfall(random.nextFloat() * 2.0F)
+			.effects(BiomeEffects.method_26469(random));
+	}
+
+	private static <T extends SurfaceConfig> Biome.Settings method_26446(Biome.Settings settings, SurfaceBuilder<T> surfaceBuilder, Random random) {
+		return settings.configureSurfaceBuilder(surfaceBuilder, surfaceBuilder.method_26679(random));
 	}
 
 	public static enum Category {
@@ -536,6 +622,46 @@ public abstract class Biome {
 				+ (this.style - other.style) * (this.style - other.style)
 				- (this.rarityPotential - other.rarityPotential) * (this.rarityPotential - other.rarityPotential);
 		}
+
+		public static Biome.MixedNoisePoint method_26458(Random random) {
+			return new Biome.MixedNoisePoint(
+				random.nextFloat() * 2.0F - 1.0F,
+				random.nextFloat() * 2.0F - 1.0F,
+				random.nextFloat() * 2.0F - 1.0F,
+				random.nextFloat() * 2.0F - 1.0F,
+				random.nextFloat() / 2.0F + 0.5F
+			);
+		}
+
+		public static List<Biome.MixedNoisePoint> method_26459(Random random) {
+			List<Biome.MixedNoisePoint> list = Lists.<Biome.MixedNoisePoint>newArrayList();
+
+			do {
+				list.add(method_26458(random));
+			} while (random.nextBoolean());
+
+			return list;
+		}
+
+		public <T> Dynamic<T> method_26457(DynamicOps<T> dynamicOps) {
+			return new Dynamic<>(
+				dynamicOps,
+				dynamicOps.createMap(
+					ImmutableMap.of(
+						dynamicOps.createString("temperature"),
+						dynamicOps.createFloat(this.temperature),
+						dynamicOps.createString("humidity"),
+						dynamicOps.createFloat(this.humidity),
+						dynamicOps.createString("altitude"),
+						dynamicOps.createFloat(this.hilliness),
+						dynamicOps.createString("weirdness"),
+						dynamicOps.createFloat(this.style),
+						dynamicOps.createString("weight"),
+						dynamicOps.createFloat(this.rarityPotential)
+					)
+				)
+			);
+		}
 	}
 
 	public static enum Precipitation {
@@ -573,8 +699,6 @@ public abstract class Biome {
 		private Float downfall;
 		@Nullable
 		private String parent;
-		@Nullable
-		private List<Biome.MixedNoisePoint> noises;
 		@Nullable
 		private BiomeEffects specialEffects;
 
@@ -628,11 +752,6 @@ public abstract class Biome {
 			return this;
 		}
 
-		public Biome.Settings noises(List<Biome.MixedNoisePoint> noises) {
-			this.noises = noises;
-			return this;
-		}
-
 		public Biome.Settings effects(BiomeEffects effects) {
 			this.specialEffects = effects;
 			return this;
@@ -677,6 +796,24 @@ public abstract class Biome {
 
 		public String toString() {
 			return EntityType.getId(this.type) + "*(" + this.minGroupSize + "-" + this.maxGroupSize + "):" + this.weight;
+		}
+
+		public <T> Dynamic<T> method_26460(DynamicOps<T> dynamicOps) {
+			return new Dynamic<>(
+				dynamicOps,
+				dynamicOps.createMap(
+					ImmutableMap.of(
+						dynamicOps.createString("weight"),
+						dynamicOps.createInt(this.weight),
+						dynamicOps.createString("minCount"),
+						dynamicOps.createInt(this.minGroupSize),
+						dynamicOps.createString("maxCount"),
+						dynamicOps.createInt(this.maxGroupSize),
+						dynamicOps.createString("type"),
+						dynamicOps.createString(Registry.ENTITY_TYPE.getId(this.type).toString())
+					)
+				)
+			);
 		}
 	}
 

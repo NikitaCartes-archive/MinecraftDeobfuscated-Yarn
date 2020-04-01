@@ -11,8 +11,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ChanceHeightmapDecorator extends Decorator<ChanceDecoratorConfig> {
-	public ChanceHeightmapDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
-		super(function);
+	public ChanceHeightmapDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function, Function<Random, ? extends ChanceDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

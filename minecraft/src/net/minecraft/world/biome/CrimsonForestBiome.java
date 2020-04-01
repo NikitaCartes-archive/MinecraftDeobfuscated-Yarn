@@ -1,6 +1,5 @@
 package net.minecraft.world.biome;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
@@ -36,22 +35,13 @@ public class CrimsonForestBiome extends Biome {
 						.waterColor(4159204)
 						.waterFogColor(329011)
 						.fogColor(3343107)
-						.particleConfig(
-							new BiomeParticleConfig(
-								ParticleTypes.CRIMSON_SPORE,
-								0.025F,
-								random -> random.nextGaussian() * 1.0E-6F,
-								random -> random.nextGaussian() * 1.0E-4F,
-								random -> random.nextGaussian() * 1.0E-6F
-							)
-						)
+						.particleConfig(new BiomeParticleConfig(ParticleTypes.CRIMSON_SPORE, 0.025F, 1.0E-6F, 1.0E-4F, 1.0E-6F))
 						.loopSound(SoundEvents.AMBIENT_CRIMSON_FOREST_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD, 6000, 8, 2.0))
 						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_CRIMSON_FOREST_ADDITIONS, 0.0111))
 						.build()
 				)
 				.parent(null)
-				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, -0.5F, 0.0F, 0.0F, 1.0F)))
 		);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
 		this.addFeature(
@@ -73,7 +63,7 @@ public class CrimsonForestBiome extends Biome {
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.NETHER_FIRE_CONFIG).createDecoratedFeature(Decorator.FIRE.configure(new CountDecoratorConfig(10)))
+			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.NETHER_FIRE_CONFIG).createDecoratedFeature(Decorator.HELL_FIRE.configure(new CountDecoratorConfig(10)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,

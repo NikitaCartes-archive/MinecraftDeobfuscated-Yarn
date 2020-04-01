@@ -113,6 +113,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if (context.isAbove(VoxelShapes.fullCube(), pos, true) && !context.isDescending()) {
 			return NORMAL_OUTLINE_SHAPE;

@@ -249,4 +249,6 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	protected abstract boolean isPositionExcluded(double scaledRelativeX, double scaledRelativeY, double scaledRelativeZ, int y);
+
+	public abstract C method_26583(Random random);
 }

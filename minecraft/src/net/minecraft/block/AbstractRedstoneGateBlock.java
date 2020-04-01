@@ -35,6 +35,11 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!this.isLocked(world, pos, state)) {
 			boolean bl = (Boolean)state.get(POWERED);

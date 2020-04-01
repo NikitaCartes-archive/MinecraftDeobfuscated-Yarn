@@ -59,4 +59,8 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius, int currentTreeHeight) {
 		return currentTreeHeight == 0 ? 0 : 2;
 	}
+
+	public static AcaciaFoliagePlacer method_26652(Random random) {
+		return new AcaciaFoliagePlacer(random.nextInt(10) + 1, random.nextInt(5));
+	}
 }

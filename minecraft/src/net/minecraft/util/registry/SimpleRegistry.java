@@ -2,6 +2,10 @@ package net.minecraft.util.registry;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -12,21 +16,22 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.Int2ObjectBiMap;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class SimpleRegistry<T> extends MutableRegistry<T> {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	protected final Int2ObjectBiMap<T> indexedEntries = new Int2ObjectBiMap<>(256);
+	protected final Int2ObjectMap<T> indexedEntries = new Int2ObjectOpenHashMap<>(256);
+	protected final Object2IntMap<T> field_23632 = new Object2IntOpenHashMap<>(256);
 	protected final BiMap<Identifier, T> entries = HashBiMap.create();
 	protected Object[] randomEntries;
 	private int nextId;
 
 	@Override
 	public <V extends T> V set(int rawId, Identifier id, V entry) {
-		this.indexedEntries.put((T)entry, rawId);
+		this.indexedEntries.put(rawId, (T)entry);
+		this.field_23632.put((T)entry, rawId);
 		Validate.notNull(id);
 		Validate.notNull(entry);
 		this.randomEntries = null;
@@ -55,7 +60,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 	@Override
 	public int getRawId(@Nullable T entry) {
-		return this.indexedEntries.getId(entry);
+		return this.field_23632.getInt(entry);
 	}
 
 	@Nullable
@@ -65,7 +70,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	public Iterator<T> iterator() {
-		return this.indexedEntries.iterator();
+		return this.indexedEntries.values().iterator();
 	}
 
 	@Nullable
@@ -90,6 +95,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Nullable
+	@Override
 	public T getRandom(Random random) {
 		if (this.randomEntries == null) {
 			Collection<?> collection = this.entries.values();

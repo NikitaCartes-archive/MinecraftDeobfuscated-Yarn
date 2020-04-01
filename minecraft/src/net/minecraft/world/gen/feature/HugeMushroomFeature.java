@@ -13,8 +13,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureConfig> {
-	public HugeMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
-		super(function);
+	public HugeMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function, Function<Random, ? extends HugeMushroomFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	protected void generateStem(IWorld world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutable) {

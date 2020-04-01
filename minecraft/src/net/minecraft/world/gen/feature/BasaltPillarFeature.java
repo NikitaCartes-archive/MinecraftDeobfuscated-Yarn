@@ -8,12 +8,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
-	public BasaltPillarFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public BasaltPillarFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(
@@ -28,6 +29,10 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 			boolean bl4 = true;
 
 			while (iWorld.isAir(mutable)) {
+				if (World.isHeightInvalid(mutable)) {
+					return true;
+				}
+
 				iWorld.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
 				bl = bl && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.NORTH));
 				bl2 = bl2 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.SOUTH));

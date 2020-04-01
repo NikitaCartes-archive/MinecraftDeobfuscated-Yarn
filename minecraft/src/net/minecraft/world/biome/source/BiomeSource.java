@@ -3,10 +3,13 @@ package net.minecraft.world.biome.source;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -121,5 +124,13 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 		}
 
 		return this.topMaterials;
+	}
+
+	public abstract BiomeSourceType<?, ?> method_26467();
+
+	public abstract <T> Dynamic<T> method_26466(DynamicOps<T> dynamicOps);
+
+	public Stream<Biome> method_26468() {
+		return this.biomes.stream();
 	}
 }

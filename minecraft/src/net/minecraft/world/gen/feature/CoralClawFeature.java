@@ -12,8 +12,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 
 public class CoralClawFeature extends CoralFeature {
-	public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

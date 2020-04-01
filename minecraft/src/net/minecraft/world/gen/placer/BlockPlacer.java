@@ -14,4 +14,8 @@ public abstract class BlockPlacer implements DynamicSerializable {
 	}
 
 	public abstract void method_23403(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random);
+
+	public static BlockPlacer method_26594(Random random) {
+		return (BlockPlacer)(random.nextBoolean() ? new SimpleBlockPlacer() : new ColumnPlacer(random.nextInt(10), random.nextInt(5)));
+	}
 }

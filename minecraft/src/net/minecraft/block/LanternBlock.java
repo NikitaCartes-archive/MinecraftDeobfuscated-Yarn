@@ -60,6 +60,11 @@ public class LanternBlock extends Block {
 		return Block.sideCoversSmallSquare(world, pos.offset(direction), direction.getOpposite());
 	}
 
+	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
 	protected static Direction attachedDirection(BlockState state) {
 		return state.get(HANGING) ? Direction.DOWN : Direction.UP;
 	}

@@ -66,6 +66,11 @@ public class SugarCaneBlock extends Block {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		Block block = world.getBlockState(pos.down()).getBlock();
 		if (block == this) {

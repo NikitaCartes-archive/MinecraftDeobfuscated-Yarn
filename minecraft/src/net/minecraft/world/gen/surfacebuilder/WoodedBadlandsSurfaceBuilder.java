@@ -14,8 +14,8 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 	private static final BlockState ORANGE_TERRACOTTA = Blocks.ORANGE_TERRACOTTA.getDefaultState();
 	private static final BlockState TERRACOTTA = Blocks.TERRACOTTA.getDefaultState();
 
-	public WoodedBadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public WoodedBadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function, Function<Random, ? extends TernarySurfaceConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

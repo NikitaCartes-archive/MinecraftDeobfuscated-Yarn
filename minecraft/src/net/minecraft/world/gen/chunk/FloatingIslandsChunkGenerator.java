@@ -52,4 +52,9 @@ public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<Floatin
 	public int getSeaLevel() {
 		return 0;
 	}
+
+	@Override
+	public ChunkGeneratorType<?, ?> method_26490() {
+		return ChunkGeneratorType.FLOATING_ISLANDS;
+	}
 }

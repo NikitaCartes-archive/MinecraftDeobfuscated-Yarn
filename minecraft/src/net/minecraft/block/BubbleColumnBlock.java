@@ -157,6 +157,11 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		return VoxelShapes.empty();
 	}

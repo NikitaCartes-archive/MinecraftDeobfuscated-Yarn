@@ -68,6 +68,11 @@ public class ChorusPlantBlock extends ConnectingBlock {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.down());
 		boolean bl = !world.getBlockState(pos.up()).isAir() && !blockState.isAir();

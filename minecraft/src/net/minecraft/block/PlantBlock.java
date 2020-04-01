@@ -29,6 +29,11 @@ public class PlantBlock extends Block {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
 		return state.getFluidState().isEmpty();
 	}

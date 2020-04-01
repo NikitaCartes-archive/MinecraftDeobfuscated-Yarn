@@ -11,8 +11,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class HeightmapDecorator extends Decorator<NopeDecoratorConfig> {
-	public HeightmapDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {
-		super(function);
+	public HeightmapDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function, Function<Random, ? extends NopeDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

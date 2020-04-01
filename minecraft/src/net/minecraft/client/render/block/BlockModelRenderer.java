@@ -17,6 +17,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -202,6 +203,10 @@ public class BlockModelRenderer {
 			h = 1.0F;
 		}
 
+		Vector3f vector3f = world.method_26443(state, pos);
+		f *= vector3f.getX();
+		g *= vector3f.getY();
+		h *= vector3f.getZ();
 		vertexConsumer.quad(
 			matrixEntry, quad, new float[]{brightness0, brightness1, brightness2, brightness3}, f, g, h, new int[]{light0, light1, light2, light3}, overlay, true
 		);

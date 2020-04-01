@@ -177,4 +177,9 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	public int getSeaLevel() {
 		return 63;
 	}
+
+	@Override
+	public ChunkGeneratorType<?, ?> method_26490() {
+		return ChunkGeneratorType.SURFACE;
+	}
 }

@@ -21,8 +21,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
 
-	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public OceanMonumentFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

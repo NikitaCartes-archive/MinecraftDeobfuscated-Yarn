@@ -12,6 +12,7 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -66,7 +67,8 @@ public class PortalForcer {
 		return (BlockPattern.TeleportTarget)optional.map(pointOfInterest -> {
 			BlockPos blockPos = pointOfInterest.getPos();
 			this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);
-			BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, blockPos);
+			BlockState blockState = this.world.getBlockState(blockPos);
+			BlockPattern.Result result = NetherPortalBlock.method_26482(this.world, blockPos, blockState.getBlock());
 			return result.getTeleportTarget(direction, blockPos, y, vec3d, x);
 		}).orElse(null);
 	}
@@ -223,6 +225,11 @@ public class PortalForcer {
 			for (int vx = 0; vx < 3; vx++) {
 				mutable.set(ad + ux * af, ae + vx, s + ux * ag);
 				this.world.setBlockState(mutable, blockState, 18);
+				Optional<PointOfInterestType> optional = PointOfInterestType.from(this.world.getBlockState(mutable));
+				optional.ifPresent(pointOfInterestType -> {
+					this.world.getPointOfInterestStorage().add(mutable, pointOfInterestType);
+					DebugInfoSender.sendPoiAddition(this.world, mutable);
+				});
 			}
 		}
 

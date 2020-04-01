@@ -11,8 +11,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DungeonsDecorator extends Decorator<ChanceDecoratorConfig> {
-	public DungeonsDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
-		super(function);
+	public DungeonsDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function, Function<Random, ? extends ChanceDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(

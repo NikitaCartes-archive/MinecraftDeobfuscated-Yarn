@@ -113,6 +113,11 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			if (!state.canPlaceAt(world, pos)) {

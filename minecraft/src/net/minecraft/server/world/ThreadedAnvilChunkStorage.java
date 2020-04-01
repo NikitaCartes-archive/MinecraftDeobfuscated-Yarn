@@ -150,7 +150,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(workerExecutor, mainThreadExecutor);
 		this.persistentStateManagerFactory = supplier;
-		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer);
+		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer, mainThreadExecutor::runTasks);
 		this.setViewDistance(i);
 	}
 

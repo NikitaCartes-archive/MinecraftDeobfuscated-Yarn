@@ -18,8 +18,8 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 
-	public LakeFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function) {
-		super(function);
+	public LakeFeature(Function<Dynamic<?>, ? extends SingleStateFeatureConfig> function, Function<Random, ? extends SingleStateFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

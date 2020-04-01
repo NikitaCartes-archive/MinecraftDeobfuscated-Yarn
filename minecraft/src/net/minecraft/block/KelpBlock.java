@@ -41,6 +41,11 @@ public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 	}
 
 	@Override
+	public boolean method_26477() {
+		return true;
+	}
+
+	@Override
 	public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
 		return false;
 	}

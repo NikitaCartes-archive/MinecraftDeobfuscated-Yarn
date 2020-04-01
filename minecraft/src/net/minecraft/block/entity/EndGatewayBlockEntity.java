@@ -28,7 +28,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -187,7 +187,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			this.exitPortalPos = new BlockPos(vec3d2.x + 0.5, 75.0, vec3d2.z + 0.5);
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
 			Feature.END_ISLAND
-				.configure(FeatureConfig.DEFAULT)
+				.configure(new SingleStateFeatureConfig(Blocks.END_STONE.getDefaultState()))
 				.generate(
 					world,
 					(ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(),

@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
+import java.util.Random;
 
 public class ShipwreckFeatureConfig implements FeatureConfig {
 	public final boolean isBeached;
@@ -19,5 +20,9 @@ public class ShipwreckFeatureConfig implements FeatureConfig {
 	public static <T> ShipwreckFeatureConfig deserialize(Dynamic<T> dynamic) {
 		boolean bl = dynamic.get("is_beached").asBoolean(false);
 		return new ShipwreckFeatureConfig(bl);
+	}
+
+	public static ShipwreckFeatureConfig method_26641(Random random) {
+		return new ShipwreckFeatureConfig(random.nextBoolean());
 	}
 }

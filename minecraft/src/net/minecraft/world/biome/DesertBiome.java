@@ -1,6 +1,5 @@
 package net.minecraft.world.biome;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.sound.BiomeMoodSound;
@@ -24,7 +23,6 @@ public final class DesertBiome extends Biome {
 				.downfall(0.0F)
 				.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).moodSound(BiomeMoodSound.CAVE).build())
 				.parent(null)
-				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.5F, -0.5F, 0.0F, 0.0F, 1.0F)))
 		);
 		this.addStructureFeature(Feature.VILLAGE.configure(new VillageFeatureConfig("village/desert/town_centers", 6)));
 		this.addStructureFeature(Feature.PILLAGER_OUTPOST.configure(FeatureConfig.DEFAULT));

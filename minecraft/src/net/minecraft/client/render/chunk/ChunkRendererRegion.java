@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -118,7 +119,7 @@ public class ChunkRendererRegion implements BlockRenderView {
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		return this.getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
+		return this.getBlockEntity(pos, WorldChunk.CreationType.CHECK);
 	}
 
 	@Nullable
@@ -131,5 +132,10 @@ public class ChunkRendererRegion implements BlockRenderView {
 	@Override
 	public int getColor(BlockPos pos, ColorResolver colorResolver) {
 		return this.world.getColor(pos, colorResolver);
+	}
+
+	@Override
+	public Vector3f method_26443(BlockState blockState, BlockPos blockPos) {
+		return this.world.method_26443(blockState, blockPos);
 	}
 }

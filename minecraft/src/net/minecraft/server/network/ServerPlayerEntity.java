@@ -693,8 +693,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 	}
 
-	private void dimensionChanged(ServerWorld targetWorld) {
-		DimensionType dimensionType = targetWorld.dimension.getType();
+	private void dimensionChanged(ServerWorld serverWorld) {
+		this.incrementStat(Stats.CHANGE_DIMENSION);
+		DimensionType dimensionType = serverWorld.dimension.getType();
 		DimensionType dimensionType2 = this.world.dimension.getType();
 		Criteria.CHANGED_DIMENSION.trigger(this, dimensionType, dimensionType2);
 		if (dimensionType == DimensionType.THE_NETHER && dimensionType2 == DimensionType.OVERWORLD && this.enteredNetherPos != null) {

@@ -17,7 +17,7 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 	};
 
 	protected DefaultParticleType(boolean bl) {
-		super(bl, PARAMETER_FACTORY);
+		super(bl, PARAMETER_FACTORY, (random, particleType) -> (DefaultParticleType)particleType);
 	}
 
 	@Override

@@ -259,7 +259,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 				if (this.source) {
 					blockState = Blocks.AIR.getDefaultState();
 				} else {
-					blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
+					blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
 				}
 
 				this.world.setBlockState(this.pos, blockState, 3);
@@ -276,7 +276,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			this.world.removeBlockEntity(this.pos);
 			this.markRemoved();
 			if (this.pushedBlock != null && this.world.getBlockState(this.pos).getBlock() == Blocks.MOVING_PISTON) {
-				BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
+				BlockState blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
 				if (blockState.isAir()) {
 					this.world.setBlockState(this.pos, this.pushedBlock, 84);
 					Block.replaceBlock(this.pushedBlock, blockState, this.world, this.pos, 3);

@@ -219,6 +219,7 @@ public class RenderLayers {
 		RenderLayer renderLayer3 = RenderLayer.getTranslucent();
 		hashMap.put(Blocks.ICE, renderLayer3);
 		hashMap.put(Blocks.NETHER_PORTAL, renderLayer3);
+		hashMap.put(Blocks.NEITHER_PORTAL, renderLayer3);
 		hashMap.put(Blocks.WHITE_STAINED_GLASS, renderLayer3);
 		hashMap.put(Blocks.ORANGE_STAINED_GLASS, renderLayer3);
 		hashMap.put(Blocks.MAGENTA_STAINED_GLASS, renderLayer3);

@@ -511,6 +511,10 @@ public class ServerChunkManager extends ChunkManager {
 		return this.threadedAnvilChunkStorage.getPointOfInterestStorage();
 	}
 
+	public void method_26728(Runnable runnable) {
+		this.mainThreadExecutor.send(runnable);
+	}
+
 	final class MainThreadExecutor extends ThreadExecutor<Runnable> {
 		private MainThreadExecutor(World world) {
 			super("Chunk source main thread executor for " + Registry.DIMENSION_TYPE.getId(world.getDimension().getType()));

@@ -1,6 +1,5 @@
 package net.minecraft.world.biome;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
@@ -36,18 +35,13 @@ public class WarpedForestBiome extends Biome {
 						.waterColor(4159204)
 						.waterFogColor(329011)
 						.fogColor(1705242)
-						.particleConfig(
-							new BiomeParticleConfig(
-								ParticleTypes.WARPED_SPORE, 0.01428F, random -> 0.0, random -> (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1, random -> 0.0
-							)
-						)
+						.particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428F, 0.0, -0.19, 0.0))
 						.loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD, 6000, 8, 2.0))
 						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS, 0.0111))
 						.build()
 				)
 				.parent(null)
-				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.5F, 0.0F, 0.0F, 1.0F)))
 		);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
 		this.addFeature(
@@ -69,11 +63,11 @@ public class WarpedForestBiome extends Biome {
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.NETHER_FIRE_CONFIG).createDecoratedFeature(Decorator.FIRE.configure(new CountDecoratorConfig(10)))
+			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.NETHER_FIRE_CONFIG).createDecoratedFeature(Decorator.HELL_FIRE.configure(new CountDecoratorConfig(10)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.SOUL_FIRE_CONFIG).createDecoratedFeature(Decorator.FIRE.configure(new CountDecoratorConfig(10)))
+			Feature.RANDOM_PATCH.configure(DefaultBiomeFeatures.SOUL_FIRE_CONFIG).createDecoratedFeature(Decorator.HELL_FIRE.configure(new CountDecoratorConfig(10)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,

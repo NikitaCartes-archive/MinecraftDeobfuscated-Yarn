@@ -56,6 +56,7 @@ public class CommandManager {
 		DataCommand.register(this.dispatcher);
 		DatapackCommand.register(this.dispatcher);
 		DebugCommand.register(this.dispatcher);
+		DebugDimCommand.register(this.dispatcher);
 		DefaultGameModeCommand.register(this.dispatcher);
 		DifficultyCommand.register(this.dispatcher);
 		EffectCommand.register(this.dispatcher);
@@ -101,6 +102,7 @@ public class CommandManager {
 		TimeCommand.register(this.dispatcher);
 		TitleCommand.register(this.dispatcher);
 		TriggerCommand.register(this.dispatcher);
+		WarpCommand.register(this.dispatcher);
 		WeatherCommand.register(this.dispatcher);
 		WorldBorderCommand.register(this.dispatcher);
 		if (SharedConstants.isDevelopment) {

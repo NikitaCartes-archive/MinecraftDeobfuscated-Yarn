@@ -113,7 +113,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		if (renderLayer != null) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
 			int p = getOverlay(livingEntity, this.getAnimationCounter(livingEntity, g));
-			this.model.render(matrixStack, vertexConsumer, i, p, 1.0F, 1.0F, 1.0F, bl2 ? 0.15F : 1.0F);
+			Vector3f vector3f = livingEntity.world.getDimension().method_26494(livingEntity);
+			this.model.render(matrixStack, vertexConsumer, i, p, vector3f.getX(), vector3f.getY(), vector3f.getZ(), bl2 ? 0.15F : 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {

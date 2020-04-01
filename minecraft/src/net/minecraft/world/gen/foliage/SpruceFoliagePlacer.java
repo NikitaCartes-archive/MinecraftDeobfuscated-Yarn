@@ -57,4 +57,8 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius, int currentTreeHeight) {
 		return currentTreeHeight <= 1 ? 0 : 2;
 	}
+
+	public static SpruceFoliagePlacer method_26656(Random random) {
+		return new SpruceFoliagePlacer(random.nextInt(10) + 1, random.nextInt(5));
+	}
 }

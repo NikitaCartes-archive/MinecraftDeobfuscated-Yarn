@@ -14,6 +14,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -143,8 +144,10 @@ public abstract class AbstractFireBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (oldState.getBlock() != state.getBlock()) {
-			if (world.dimension.getType() != DimensionType.OVERWORLD && world.dimension.getType() != DimensionType.THE_NETHER
-				|| !NetherPortalBlock.createPortalAt(world, pos)) {
+			if (world.dimension.getType() != DimensionType.OVERWORLD
+					&& world.dimension.getType() != DimensionType.THE_NETHER
+					&& !Registry.DIMENSION_TYPE.getId(world.dimension.getType()).getNamespace().equals("_generated")
+				|| !NetherPortalBlock.tryCreatePortal(world, pos, Blocks.NETHER_PORTAL)) {
 				if (!state.canPlaceAt(world, pos)) {
 					world.removeBlock(pos, false);
 				}

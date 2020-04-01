@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
 public class EmeraldOreDecorator extends SimpleDecorator<NopeDecoratorConfig> {
-	public EmeraldOreDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {
-		super(function);
+	public EmeraldOreDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function, Function<Random, ? extends NopeDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {

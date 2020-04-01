@@ -16,8 +16,8 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 	private static final Direction[] DIRECTIONS = Direction.values();
 
-	public WeepingVinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public WeepingVinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

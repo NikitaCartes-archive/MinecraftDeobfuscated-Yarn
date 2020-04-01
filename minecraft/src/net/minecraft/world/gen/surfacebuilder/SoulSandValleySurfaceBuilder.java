@@ -24,8 +24,8 @@ public class SoulSandValleySurfaceBuilder extends SurfaceBuilder<TernarySurfaceC
 	private OctavePerlinNoiseSampler field_22207;
 	private OctavePerlinNoiseSampler field_22208;
 
-	public SoulSandValleySurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public SoulSandValleySurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function, Function<Random, ? extends TernarySurfaceConfig> function2) {
+		super(function, function2);
 	}
 
 	public void generate(

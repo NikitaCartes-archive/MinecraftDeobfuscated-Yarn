@@ -36,6 +36,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5111;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -464,7 +465,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			if (string != null) {
 				this.openScreen(new ConnectScreen(new TitleScreen(), this, string, i));
 			} else {
-				this.openScreen(new TitleScreen(true));
+				this.openScreen(new TitleScreen());
 			}
 
 			SplashScreen.init(this);
@@ -474,7 +475,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				.map(ResourcePackProfile::createResourcePack)
 				.collect(Collectors.toList());
 			this.setOverlay(
-				new SplashScreen(
+				new class_5111(
 					this,
 					this.resourceManager.beginMonitoredReload(Util.getServerWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 					optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadExecption, () -> {
@@ -482,8 +483,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							if (SharedConstants.isDevelopment) {
 								this.checkGameData();
 							}
-						}),
-					false
+						})
 				)
 			);
 		}
@@ -1413,7 +1413,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.gameRenderer.disableShader();
 		}
 
-		if (!this.paused) {
+		if (!this.paused && !(this.overlay instanceof class_5111)) {
 			this.musicTracker.tick();
 		}
 

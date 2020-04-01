@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
+import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.structure.JungleTempleGenerator;
 import net.minecraft.structure.StructureManager;
@@ -10,8 +11,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JungleTempleFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
-	public JungleTempleFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
-		super(function);
+	public JungleTempleFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, Function<Random, ? extends DefaultFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	@Override

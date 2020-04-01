@@ -367,9 +367,9 @@ public class ClientWorld extends World {
 								(double)((float)pos.getX() + this.random.nextFloat()),
 								(double)((float)pos.getY() + this.random.nextFloat()),
 								(double)((float)pos.getZ() + this.random.nextFloat()),
-								biomeParticleConfig.generateVelocityX(this.random),
-								biomeParticleConfig.generateVelocityY(this.random),
-								biomeParticleConfig.generateVelocityZ(this.random)
+								biomeParticleConfig.generateVelocityX() * this.random.nextGaussian(),
+								biomeParticleConfig.generateVelocityY() * this.random.nextGaussian(),
+								biomeParticleConfig.generateVelocityZ() * this.random.nextGaussian()
 							);
 						}
 					}
@@ -722,25 +722,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {
-		boolean bl = this.dimension.getType() == DimensionType.THE_NETHER;
-		if (!shaded) {
-			return bl ? 0.9F : 1.0F;
-		} else {
-			switch (direction) {
-				case DOWN:
-					return bl ? 0.9F : 0.5F;
-				case UP:
-					return bl ? 0.9F : 1.0F;
-				case NORTH:
-				case SOUTH:
-					return 0.8F;
-				case WEST:
-				case EAST:
-					return 0.6F;
-				default:
-					return 1.0F;
-			}
-		}
+		return this.dimension.method_26497(direction, shaded);
 	}
 
 	@Override

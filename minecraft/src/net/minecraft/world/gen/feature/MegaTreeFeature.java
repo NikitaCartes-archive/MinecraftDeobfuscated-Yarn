@@ -10,8 +10,8 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.TestableWorld;
 
 public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends AbstractTreeFeature<T> {
-	public MegaTreeFeature(Function<Dynamic<?>, ? extends T> function) {
-		super(function);
+	public MegaTreeFeature(Function<Dynamic<?>, ? extends T> function, Function<Random, ? extends T> function2) {
+		super(function, function2);
 	}
 
 	protected int getHeight(Random random, MegaTreeFeatureConfig config) {

@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
 public class ChancePassthroughDecorator extends SimpleDecorator<ChanceDecoratorConfig> {
-	public ChancePassthroughDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
-		super(function);
+	public ChancePassthroughDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function, Function<Random, ? extends ChanceDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {

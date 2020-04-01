@@ -18,7 +18,7 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 	private final ResourceIndex index;
 
 	public DefaultClientResourcePack(ResourceIndex resourceIndex) {
-		super("minecraft", "realms");
+		super("minecraft", "realms", "nothingtoseeheremovealong");
 		this.index = resourceIndex;
 	}
 

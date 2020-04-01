@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
 public class HellFireDecorator extends SimpleDecorator<CountDecoratorConfig> {
-	public HellFireDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function) {
-		super(function);
+	public HellFireDecorator(Function<Dynamic<?>, ? extends CountDecoratorConfig> function, Function<Random, ? extends CountDecoratorConfig> function2) {
+		super(function, function2);
 	}
 
 	public Stream<BlockPos> getPositions(Random random, CountDecoratorConfig countDecoratorConfig, BlockPos blockPos) {

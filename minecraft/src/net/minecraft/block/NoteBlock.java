@@ -1,9 +1,14 @@
 package net.minecraft.block;
 
+import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -41,6 +46,33 @@ public class NoteBlock extends Block {
 		return direction == Direction.DOWN
 			? state.with(INSTRUMENT, Instrument.fromBlockState(newState))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (world.random.nextInt(10) == 0) {
+			this.scheduledTick(state, world, pos, random);
+		}
+	}
+
+	@Override
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		this.playNote(world, pos);
+		if (world.random.nextInt(5) != 0) {
+			List<Direction> list = Lists.<Direction>newArrayList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+			Collections.shuffle(list, world.random);
+
+			for (Direction direction : list) {
+				BlockPos blockPos = pos.offset(direction);
+				if (world.canSetBlock(blockPos)) {
+					BlockState blockState = world.getBlockState(blockPos);
+					if (blockState.getBlock() == this) {
+						world.getBlockTickScheduler().schedule(blockPos, this, 1 + world.random.nextInt(6));
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	@Override

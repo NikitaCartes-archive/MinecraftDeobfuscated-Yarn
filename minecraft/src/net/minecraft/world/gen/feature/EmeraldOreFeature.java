@@ -9,8 +9,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
-	public EmeraldOreFeature(Function<Dynamic<?>, ? extends EmeraldOreFeatureConfig> function) {
-		super(function);
+	public EmeraldOreFeature(Function<Dynamic<?>, ? extends EmeraldOreFeatureConfig> function, Function<Random, ? extends EmeraldOreFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

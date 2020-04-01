@@ -708,7 +708,7 @@ public class WorldChunk implements Chunk {
 				for (Short short_ : this.postProcessingLists[i]) {
 					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, i, chunkPos);
 					BlockState blockState = this.getBlockState(blockPos);
-					BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
+					BlockState blockState2 = Block.getRenderingState(blockState, this.world, blockPos);
 					this.world.setBlockState(blockPos, blockState2, 20);
 				}
 
@@ -736,7 +736,6 @@ public class WorldChunk implements Chunk {
 				blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 			} else {
 				blockEntity = null;
-				LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", pos, blockState);
 			}
 		} else {
 			blockEntity = BlockEntity.createFromTag(blockState, compoundTag);
@@ -745,8 +744,6 @@ public class WorldChunk implements Chunk {
 		if (blockEntity != null) {
 			blockEntity.setLocation(this.world, pos);
 			this.addBlockEntity(blockEntity);
-		} else {
-			LOGGER.warn("Tried to load a block entity for block {} but failed at location {}", blockState, pos);
 		}
 
 		return blockEntity;

@@ -9,6 +9,7 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5002;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
@@ -598,5 +599,7 @@ public class Schemas {
 		builder.addFixer(new JigsawRotationFix(schema110, false));
 		Schema schema111 = builder.addSchema(2519, Schema2519::new);
 		builder.addFixer(new ChoiceTypesFix(schema111, "Added Strider", TypeReferences.ENTITY));
+		Schema schema112 = builder.addSchema(2522, class_5002::new);
+		builder.addFixer(new ChoiceTypesFix(schema112, "Add funkiest of the portals", TypeReferences.BLOCK_ENTITY));
 	}
 }

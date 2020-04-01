@@ -73,6 +73,13 @@ public final class Vector3f {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public void method_26698(Vector3f vector3f) {
+		this.x = this.x * vector3f.x;
+		this.y = this.y * vector3f.y;
+		this.z = this.z * vector3f.z;
+	}
+
+	@Environment(EnvType.CLIENT)
 	public void multiplyComponentwise(float x, float y, float z) {
 		this.x *= x;
 		this.y *= y;

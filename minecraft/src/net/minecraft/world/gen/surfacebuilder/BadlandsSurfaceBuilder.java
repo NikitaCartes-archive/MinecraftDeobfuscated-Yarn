@@ -29,8 +29,8 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 	protected OctaveSimplexNoiseSampler heightNoise;
 	protected OctaveSimplexNoiseSampler layerNoise;
 
-	public BadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
-		super(function);
+	public BadlandsSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function, Function<Random, ? extends TernarySurfaceConfig> function2) {
+		super(function, function2);
 	}
 
 	public void generate(

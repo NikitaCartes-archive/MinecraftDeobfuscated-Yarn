@@ -53,9 +53,9 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 		compoundTag2.put("Data", compoundTag);
 
 		try {
-			File file = new File(this.worldDir, "level.dat_new");
-			File file2 = new File(this.worldDir, "level.dat_old");
-			File file3 = new File(this.worldDir, "level.dat");
+			File file = new File(this.worldDir, "special_level.dat_new");
+			File file2 = new File(this.worldDir, "special_level.dat_old");
+			File file3 = new File(this.worldDir, "special_level.dat");
 			NbtIo.writeCompressed(compoundTag2, new FileOutputStream(file));
 			if (file2.exists()) {
 				file2.delete();
@@ -114,7 +114,7 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 
 	@Nullable
 	public LevelProperties readProperties() {
-		File file = new File(this.worldDir, "level.dat");
+		File file = new File(this.worldDir, "special_level.dat");
 		if (file.exists()) {
 			LevelProperties levelProperties = LevelStorage.readLevelProperties(file, this.dataFixer);
 			if (levelProperties != null) {
@@ -122,7 +122,7 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 			}
 		}
 
-		file = new File(this.worldDir, "level.dat_old");
+		file = new File(this.worldDir, "special_level.dat_old");
 		return file.exists() ? LevelStorage.readLevelProperties(file, this.dataFixer) : null;
 	}
 

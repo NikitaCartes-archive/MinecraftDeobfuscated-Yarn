@@ -9,6 +9,7 @@ public class LootTables {
 	private static final Set<Identifier> LOOT_TABLES = Sets.<Identifier>newHashSet();
 	private static final Set<Identifier> LOOT_TABLES_READ_ONLY = Collections.unmodifiableSet(LOOT_TABLES);
 	public static final Identifier EMPTY = new Identifier("empty");
+	public static final Identifier FLEET_ORDERS_CHEST = register("chests/fleet_orders");
 	public static final Identifier SPAWN_BONUS_CHEST = register("chests/spawn_bonus_chest");
 	public static final Identifier END_CITY_TREASURE_CHEST = register("chests/end_city_treasure");
 	public static final Identifier SIMPLE_DUNGEON_CHEST = register("chests/simple_dungeon");

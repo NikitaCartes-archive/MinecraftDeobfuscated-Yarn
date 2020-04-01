@@ -10,8 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class OakTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
-	public OakTreeFeature(Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig> function) {
-		super(function);
+	public OakTreeFeature(Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig> function, Function<Random, ? extends BranchedTreeFeatureConfig> function2) {
+		super(function, function2);
 	}
 
 	public boolean generate(

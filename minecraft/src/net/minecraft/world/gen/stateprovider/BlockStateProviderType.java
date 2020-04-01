@@ -2,6 +2,7 @@ package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.datafixers.Dynamic;
 import java.util.function.Function;
+import net.minecraft.class_5107;
 import net.minecraft.util.registry.Registry;
 
 public class BlockStateProviderType<P extends BlockStateProvider> {
@@ -15,6 +16,7 @@ public class BlockStateProviderType<P extends BlockStateProvider> {
 	public static final BlockStateProviderType<ForestFlowerBlockStateProvider> FOREST_FLOWER_PROVIDER = register(
 		"forest_flower_provider", ForestFlowerBlockStateProvider::new
 	);
+	public static final BlockStateProviderType<class_5107> RAINBOW_PROVIDER = register("rainbow_provider", class_5107::new);
 	private final Function<Dynamic<?>, P> configDeserializer;
 
 	private static <P extends BlockStateProvider> BlockStateProviderType<P> register(String id, Function<Dynamic<?>, P> configDeserializer) {

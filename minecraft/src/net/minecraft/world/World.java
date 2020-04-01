@@ -66,6 +66,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelProperties;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -93,6 +94,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	protected boolean iteratingTickingBlockEntities;
 	private final WorldBorder border;
 	private final BiomeAccess biomeAccess;
+	private static final ThreadLocal<MutableInt> field_23414 = ThreadLocal.withInitial(MutableInt::new);
 
 	protected World(
 		LevelProperties levelProperties,
@@ -218,54 +220,68 @@ public abstract class World implements IWorld, AutoCloseable {
 		} else if (!this.isClient && this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			return false;
 		} else {
-			WorldChunk worldChunk = this.getWorldChunk(pos);
-			Block block = state.getBlock();
-			BlockState blockState = worldChunk.setBlockState(pos, state, (flags & 64) != 0);
-			if (blockState == null) {
+			MutableInt mutableInt = (MutableInt)field_23414.get();
+			if (mutableInt.getValue() > 64) {
 				return false;
 			} else {
-				BlockState blockState2 = this.getBlockState(pos);
-				if (blockState2 != blockState
-					&& (
-						blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos)
-							|| blockState2.getLuminance() != blockState.getLuminance()
-							|| blockState2.hasSidedTransparency()
-							|| blockState.hasSidedTransparency()
-					)) {
-					this.getProfiler().push("queueCheckLight");
-					this.getChunkManager().getLightingProvider().checkBlock(pos);
-					this.getProfiler().pop();
-				}
+				mutableInt.increment();
 
-				if (blockState2 == state) {
-					if (blockState != blockState2) {
-						this.checkBlockRerender(pos, blockState, blockState2);
+				int i;
+				try {
+					WorldChunk worldChunk = this.getWorldChunk(pos);
+					Block block = state.getBlock();
+					BlockState blockState = worldChunk.setBlockState(pos, state, (flags & 64) != 0);
+					if (blockState == null) {
+						return false;
 					}
 
-					if ((flags & 2) != 0
-						&& (!this.isClient || (flags & 4) == 0)
-						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
-						this.updateListeners(pos, blockState, state, flags);
+					BlockState blockState2 = this.getBlockState(pos);
+					if (blockState2 != blockState
+						&& (
+							blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos)
+								|| blockState2.getLuminance() != blockState.getLuminance()
+								|| blockState2.hasSidedTransparency()
+								|| blockState.hasSidedTransparency()
+						)) {
+						this.getProfiler().push("queueCheckLight");
+						this.getChunkManager().getLightingProvider().checkBlock(pos);
+						this.getProfiler().pop();
 					}
 
-					if ((flags & 1) != 0) {
-						this.updateNeighbors(pos, blockState.getBlock());
-						if (!this.isClient && state.hasComparatorOutput()) {
-							this.updateComparators(pos, block);
+					if (blockState2 == state) {
+						if (blockState != blockState2) {
+							this.checkBlockRerender(pos, blockState, blockState2);
 						}
+
+						if ((flags & 2) != 0
+							&& (!this.isClient || (flags & 4) == 0)
+							&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
+							this.updateListeners(pos, blockState, state, flags);
+						}
+
+						if ((flags & 1) != 0) {
+							this.updateNeighbors(pos, blockState.getBlock());
+							if (!this.isClient && state.hasComparatorOutput()) {
+								this.updateComparators(pos, block);
+							}
+						}
+
+						if ((flags & 16) == 0) {
+							i = flags & -2;
+							blockState.prepare(this, pos, i);
+							state.updateNeighbors(this, pos, i);
+							state.prepare(this, pos, i);
+						}
+
+						this.onBlockChanged(pos, blockState, blockState2);
 					}
 
-					if ((flags & 16) == 0) {
-						int i = flags & -2;
-						blockState.prepare(this, pos, i);
-						state.updateNeighbors(this, pos, i);
-						state.prepare(this, pos, i);
-					}
-
-					this.onBlockChanged(pos, blockState, blockState2);
+					i = 1;
+				} finally {
+					mutableInt.decrement();
 				}
 
-				return true;
+				return (boolean)i;
 			}
 		}
 	}
@@ -450,22 +466,26 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean addBlockEntity(BlockEntity blockEntity) {
-		if (this.iteratingTickingBlockEntities) {
-			LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()), blockEntity::getPos);
-		}
+		if (blockEntity == null) {
+			return false;
+		} else {
+			if (this.iteratingTickingBlockEntities) {
+				LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()), blockEntity::getPos);
+			}
 
-		boolean bl = this.blockEntities.add(blockEntity);
-		if (bl && blockEntity instanceof Tickable) {
-			this.tickingBlockEntities.add(blockEntity);
-		}
+			boolean bl = this.blockEntities.add(blockEntity);
+			if (bl && blockEntity instanceof Tickable) {
+				this.tickingBlockEntities.add(blockEntity);
+			}
 
-		if (this.isClient) {
-			BlockPos blockPos = blockEntity.getPos();
-			BlockState blockState = this.getBlockState(blockPos);
-			this.updateListeners(blockPos, blockState, blockState, 2);
-		}
+			if (this.isClient) {
+				BlockPos blockPos = blockEntity.getPos();
+				BlockState blockState = this.getBlockState(blockPos);
+				this.updateListeners(blockPos, blockState, blockState, 2);
+			}
 
-		return bl;
+			return bl;
+		}
 	}
 
 	public void addBlockEntities(Collection<BlockEntity> blockEntities) {
@@ -492,32 +512,34 @@ public abstract class World implements IWorld, AutoCloseable {
 
 		while (iterator.hasNext()) {
 			BlockEntity blockEntity = (BlockEntity)iterator.next();
-			if (!blockEntity.isRemoved() && blockEntity.hasWorld()) {
-				BlockPos blockPos = blockEntity.getPos();
-				if (this.chunkManager.shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
-					try {
-						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
-						if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
-							((Tickable)blockEntity).tick();
-						} else {
-							blockEntity.markInvalid();
-						}
+			if (blockEntity != null) {
+				if (!blockEntity.isRemoved() && blockEntity.hasWorld()) {
+					BlockPos blockPos = blockEntity.getPos();
+					if (this.chunkManager.shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
+						try {
+							profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
+							if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
+								((Tickable)blockEntity).tick();
+							} else {
+								blockEntity.markInvalid();
+							}
 
-						profiler.pop();
-					} catch (Throwable var8) {
-						CrashReport crashReport = CrashReport.create(var8, "Ticking block entity");
-						CrashReportSection crashReportSection = crashReport.addElement("Block entity being ticked");
-						blockEntity.populateCrashReport(crashReportSection);
-						throw new CrashException(crashReport);
+							profiler.pop();
+						} catch (Throwable var8) {
+							CrashReport crashReport = CrashReport.create(var8, "Ticking block entity");
+							CrashReportSection crashReportSection = crashReport.addElement("Block entity being ticked");
+							blockEntity.populateCrashReport(crashReportSection);
+							throw new CrashException(crashReport);
+						}
 					}
 				}
-			}
 
-			if (blockEntity.isRemoved()) {
-				iterator.remove();
-				this.blockEntities.remove(blockEntity);
-				if (this.isChunkLoaded(blockEntity.getPos())) {
-					this.getWorldChunk(blockEntity.getPos()).removeBlockEntity(blockEntity.getPos());
+				if (blockEntity.isRemoved()) {
+					iterator.remove();
+					this.blockEntities.remove(blockEntity);
+					if (this.isChunkLoaded(blockEntity.getPos())) {
+						this.getWorldChunk(blockEntity.getPos()).removeBlockEntity(blockEntity.getPos());
+					}
 				}
 			}
 		}

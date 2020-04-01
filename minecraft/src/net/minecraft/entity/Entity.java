@@ -27,9 +27,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
-import net.minecraft.block.NetherPortalBlock;
+import net.minecraft.block.PortalBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TrapdoorBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.NetherPortalBlockEntity;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
@@ -92,6 +94,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -181,6 +184,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public int netherPortalCooldown;
 	protected boolean inNetherPortal;
 	protected int netherPortalTime;
+	private int field_23406 = 0;
 	public DimensionType dimension;
 	protected BlockPos lastNetherPortalPosition;
 	protected Vec3d lastNetherPortalDirectionVector;
@@ -1709,13 +1713,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return Vec3d.fromPolar(this.getRotationClient());
 	}
 
-	public void setInNetherPortal(BlockPos pos) {
+	public void setInNetherPortal(BlockPos pos, Block block) {
 		if (this.netherPortalCooldown > 0) {
 			this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
 		} else {
 			if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
 				this.lastNetherPortalPosition = new BlockPos(pos);
-				BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, this.lastNetherPortalPosition);
+				BlockPattern.Result result = PortalBlock.method_26482(this.world, this.lastNetherPortalPosition, block);
 				double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
 				double e = Math.abs(
 					MathHelper.getLerpProgress(
@@ -1730,6 +1734,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 				);
 				this.lastNetherPortalDirectionVector = new Vec3d(e, f, 0.0);
 				this.lastNetherPortalDirection = result.getForwards();
+				this.field_23406 = 0;
+				if (block == Blocks.NEITHER_PORTAL) {
+					BlockEntity blockEntity = this.world.getBlockEntity(pos);
+					if (blockEntity instanceof NetherPortalBlockEntity) {
+						this.field_23406 = ((NetherPortalBlockEntity)blockEntity).getDimension();
+					}
+				}
 			}
 
 			this.inNetherPortal = true;
@@ -1744,7 +1755,19 @@ public abstract class Entity implements Nameable, CommandOutput {
 					this.world.getProfiler().push("portal");
 					this.netherPortalTime = i;
 					this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
-					this.changeDimension(this.world.dimension.getType() == DimensionType.THE_NETHER ? DimensionType.OVERWORLD : DimensionType.THE_NETHER);
+					if (this.field_23406 != 0) {
+						DimensionType dimensionType = Registry.DIMENSION_TYPE.get(this.field_23406);
+						this.changeDimension(dimensionType);
+						this.field_23406 = 0;
+					} else {
+						boolean bl = Registry.DIMENSION_TYPE.getId(this.world.dimension.getType()).getNamespace().equals("_generated");
+						if (bl) {
+							this.changeDimension(DimensionType.OVERWORLD);
+						} else {
+							this.changeDimension(this.world.dimension.getType() == DimensionType.THE_NETHER ? DimensionType.OVERWORLD : DimensionType.THE_NETHER);
+						}
+					}
+
 					this.world.getProfiler().pop();
 				}
 
