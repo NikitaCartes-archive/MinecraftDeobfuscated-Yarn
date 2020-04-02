@@ -19,13 +19,13 @@ implements LookTarget {
     }
 
     @Override
-    public BlockPos getBlockPos() {
-        return this.blockPos;
+    public Vec3d getPos() {
+        return this.pos;
     }
 
     @Override
-    public Vec3d getPos() {
-        return this.pos;
+    public BlockPos getBlockPos() {
+        return this.blockPos;
     }
 
     @Override
@@ -34,7 +34,7 @@ implements LookTarget {
     }
 
     public String toString() {
-        return "BlockPosWrapper{pos=" + this.blockPos + ", lookAt=" + this.pos + '}';
+        return "BlockPosTracker{blockPos=" + this.blockPos + ", centerPosition=" + this.pos + '}';
     }
 }
 

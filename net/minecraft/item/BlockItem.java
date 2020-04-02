@@ -152,7 +152,7 @@ extends Item {
         }
         CompoundTag compoundTag = stack.getSubTag("BlockEntityTag");
         if (compoundTag != null && (blockEntity = world.getBlockEntity(pos)) != null) {
-            if (!(world.isClient || !blockEntity.shouldNotCopyTagFromItem() || player != null && player.isCreativeLevelTwoOp())) {
+            if (!(world.isClient || !blockEntity.copyItemDataRequiresOperator() || player != null && player.isCreativeLevelTwoOp())) {
                 return false;
             }
             CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());

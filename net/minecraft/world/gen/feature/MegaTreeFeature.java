@@ -94,20 +94,20 @@ extends AbstractTreeFeature<T> {
         for (int i = 0; i < height; ++i) {
             mutable.set(pos, 0, i, 0);
             if (MegaTreeFeature.canTreeReplace(world, mutable)) {
-                this.setLogBlockState(world, random, mutable, logs, box, config);
+                MegaTreeFeature.setLogBlockState(world, random, mutable, logs, box, config);
             }
             if (i >= height - 1) continue;
             mutable.set(pos, 1, i, 0);
             if (MegaTreeFeature.canTreeReplace(world, mutable)) {
-                this.setLogBlockState(world, random, mutable, logs, box, config);
+                MegaTreeFeature.setLogBlockState(world, random, mutable, logs, box, config);
             }
             mutable.set(pos, 1, i, 1);
             if (MegaTreeFeature.canTreeReplace(world, mutable)) {
-                this.setLogBlockState(world, random, mutable, logs, box, config);
+                MegaTreeFeature.setLogBlockState(world, random, mutable, logs, box, config);
             }
             mutable.set(pos, 0, i, 1);
             if (!MegaTreeFeature.canTreeReplace(world, mutable)) continue;
-            this.setLogBlockState(world, random, mutable, logs, box, config);
+            MegaTreeFeature.setLogBlockState(world, random, mutable, logs, box, config);
         }
     }
 }

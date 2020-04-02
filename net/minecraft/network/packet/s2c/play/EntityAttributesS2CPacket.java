@@ -11,11 +11,14 @@ import java.util.List;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class EntityAttributesS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -28,7 +31,7 @@ implements Packet<ClientPlayPacketListener> {
     public EntityAttributesS2CPacket(int entityId, Collection<EntityAttributeInstance> attributes) {
         this.entityId = entityId;
         for (EntityAttributeInstance entityAttributeInstance : attributes) {
-            this.entries.add(new Entry(entityAttributeInstance.getAttribute().getId(), entityAttributeInstance.getBaseValue(), entityAttributeInstance.getModifiers()));
+            this.entries.add(new Entry(entityAttributeInstance.getAttribute(), entityAttributeInstance.getBaseValue(), entityAttributeInstance.getModifiers()));
         }
     }
 
@@ -37,7 +40,8 @@ implements Packet<ClientPlayPacketListener> {
         this.entityId = buf.readVarInt();
         int i = buf.readInt();
         for (int j = 0; j < i; ++j) {
-            String string = buf.readString(64);
+            Identifier identifier = buf.readIdentifier();
+            EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(identifier);
             double d = buf.readDouble();
             ArrayList<EntityAttributeModifier> list = Lists.newArrayList();
             int k = buf.readVarInt();
@@ -45,7 +49,7 @@ implements Packet<ClientPlayPacketListener> {
                 UUID uUID = buf.readUuid();
                 list.add(new EntityAttributeModifier(uUID, "Unknown synced attribute modifier", buf.readDouble(), EntityAttributeModifier.Operation.fromId(buf.readByte())));
             }
-            this.entries.add(new Entry(string, d, list));
+            this.entries.add(new Entry(entityAttribute, d, list));
         }
     }
 
@@ -54,7 +58,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.entityId);
         buf.writeInt(this.entries.size());
         for (Entry entry : this.entries) {
-            buf.writeString(entry.getId());
+            buf.writeIdentifier(Registry.ATTRIBUTES.getId(entry.getId()));
             buf.writeDouble(entry.getBaseValue());
             buf.writeVarInt(entry.getModifiers().size());
             for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {
@@ -81,17 +85,17 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public class Entry {
-        private final String id;
+        private final EntityAttribute id;
         private final double baseValue;
         private final Collection<EntityAttributeModifier> modifiers;
 
-        public Entry(String baseValue, double d, Collection<EntityAttributeModifier> collection) {
-            this.id = baseValue;
+        public Entry(EntityAttribute entityAttribute, double d, Collection<EntityAttributeModifier> collection) {
+            this.id = entityAttribute;
             this.baseValue = d;
             this.modifiers = collection;
         }
 
-        public String getId() {
+        public EntityAttribute getId() {
             return this.id;
         }
 

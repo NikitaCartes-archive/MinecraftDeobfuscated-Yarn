@@ -29,10 +29,8 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.ClampedEntityAttribute;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -74,7 +72,6 @@ implements InventoryChangedListener,
 JumpingMount {
     private static final Predicate<LivingEntity> IS_BRED_HORSE = livingEntity -> livingEntity instanceof HorseBaseEntity && ((HorseBaseEntity)livingEntity).isBred();
     private static final TargetPredicate PARENT_HORSE_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().includeTeammates().includeHidden().setPredicate(IS_BRED_HORSE);
-    protected static final EntityAttribute JUMP_STRENGTH = new ClampedEntityAttribute(null, "horse.jumpStrength", 0.7, 0.0, 2.0).setName("Jump Strength").setTracked(true);
     private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private int eatingGrassTicks;
@@ -205,15 +202,6 @@ JumpingMount {
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
-        Entity entity = source.getAttacker();
-        if (this.hasPassengers() && entity != null && this.hasPassengerDeep(entity)) {
-            return false;
-        }
-        return super.damage(source, amount);
-    }
-
-    @Override
     public boolean isPushable() {
         return !this.hasPassengers();
     }
@@ -286,7 +274,7 @@ JumpingMount {
     }
 
     public double getJumpStrength() {
-        return this.getAttributeInstance(JUMP_STRENGTH).getValue();
+        return this.method_26825(Attributes.HORSE_JUMP_STRENGTH);
     }
 
     @Override
@@ -355,12 +343,8 @@ JumpingMount {
         this.playSound(SoundEvents.ENTITY_HORSE_GALLOP, group.getVolume() * 0.15f, group.getPitch());
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributes().register(JUMP_STRENGTH);
-        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(53.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.225f);
+    public static DefaultAttributeContainer.Builder createBaseHorseAttributes() {
+        return MobEntity.createMobAttributes().add(Attributes.HORSE_JUMP_STRENGTH).add(Attributes.GENERIC_MAX_HEALTH, 53.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.225f);
     }
 
     @Override
@@ -668,7 +652,7 @@ JumpingMount {
         }
         this.flyingSpeed = this.getMovementSpeed() * 0.1f;
         if (this.isLogicalSideForUpdatingMovement()) {
-            this.setMovementSpeed((float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+            this.setMovementSpeed((float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
             super.travel(new Vec3d(f, movementInput.y, g));
         } else if (livingEntity instanceof PlayerEntity) {
             this.setVelocity(Vec3d.ZERO);
@@ -709,7 +693,6 @@ JumpingMount {
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         ItemStack itemStack;
-        EntityAttributeInstance entityAttributeInstance;
         UUID uUID;
         super.readCustomDataFromTag(tag);
         this.setEatingGrass(tag.getBoolean("EatingHaystack"));
@@ -724,9 +707,6 @@ JumpingMount {
         }
         if (uUID != null) {
             this.setOwnerUuid(uUID);
-        }
-        if ((entityAttributeInstance = this.getAttributes().get("Speed")) != null) {
-            this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(entityAttributeInstance.getBaseValue() * 0.25);
         }
         if (tag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
             this.items.setStack(0, itemStack);
@@ -750,12 +730,12 @@ JumpingMount {
     }
 
     protected void setChildAttributes(PassiveEntity mate, HorseBaseEntity child) {
-        double d = this.getAttributeInstance(EntityAttributes.MAX_HEALTH).getBaseValue() + mate.getAttributeInstance(EntityAttributes.MAX_HEALTH).getBaseValue() + (double)this.getChildHealthBonus();
-        child.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(d / 3.0);
-        double e = this.getAttributeInstance(JUMP_STRENGTH).getBaseValue() + mate.getAttributeInstance(JUMP_STRENGTH).getBaseValue() + this.getChildJumpStrengthBonus();
-        child.getAttributeInstance(JUMP_STRENGTH).setBaseValue(e / 3.0);
-        double f = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue() + mate.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue() + this.getChildMovementSpeedBonus();
-        child.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(f / 3.0);
+        double d = this.method_26826(Attributes.GENERIC_MAX_HEALTH) + mate.method_26826(Attributes.GENERIC_MAX_HEALTH) + (double)this.getChildHealthBonus();
+        child.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue(d / 3.0);
+        double e = this.method_26826(Attributes.HORSE_JUMP_STRENGTH) + mate.method_26826(Attributes.HORSE_JUMP_STRENGTH) + this.getChildJumpStrengthBonus();
+        child.getAttributeInstance(Attributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
+        double f = this.method_26826(Attributes.GENERIC_MOVEMENT_SPEED) + mate.method_26826(Attributes.GENERIC_MOVEMENT_SPEED) + this.getChildMovementSpeedBonus();
+        child.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
     }
 
     @Override
@@ -932,6 +912,9 @@ JumpingMount {
         return new Vec3d(this.getX(), this.getY(), this.getZ());
     }
 
+    protected void initAttributes() {
+    }
+
     @Override
     @Nullable
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
@@ -939,6 +922,7 @@ JumpingMount {
             entityData = new PassiveEntity.PassiveData();
             ((PassiveEntity.PassiveData)entityData).setBabyChance(0.2f);
         }
+        this.initAttributes();
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 }

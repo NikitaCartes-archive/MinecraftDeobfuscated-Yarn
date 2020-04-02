@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.AbstractTempleFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -60,9 +61,9 @@ extends AbstractTempleFeature<DefaultFeatureConfig> {
         return CREATURE_SPAWNS;
     }
 
-    public boolean method_14029(IWorld world, BlockPos pos) {
-        StructureStart structureStart = this.isInsideStructure(world, pos, true);
-        if (structureStart == StructureStart.DEFAULT || !(structureStart instanceof Start) || structureStart.getChildren().isEmpty()) {
+    public boolean method_14029(IWorld iWorld, StructureAccessor structureAccessor, BlockPos blockPos) {
+        StructureStart structureStart = this.isInsideStructure(iWorld, structureAccessor, blockPos, true);
+        if (!structureStart.hasChildren() || !(structureStart instanceof Start)) {
             return false;
         }
         StructurePiece structurePiece = structureStart.getChildren().get(0);

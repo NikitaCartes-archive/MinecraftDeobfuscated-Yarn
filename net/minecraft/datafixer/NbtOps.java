@@ -223,6 +223,7 @@ implements DynamicOps<Tag> {
             CompoundTag compoundTag3 = new CompoundTag();
             compoundTag.getKeys().forEach(string -> compoundTag3.put((String)string, compoundTag.get((String)string)));
             compoundTag2.getKeys().forEach(string -> compoundTag3.put((String)string, compoundTag2.get((String)string)));
+            return compoundTag3;
         }
         if (tag instanceof AbstractListTag && tag2 instanceof AbstractListTag) {
             ListTag listTag = new ListTag();

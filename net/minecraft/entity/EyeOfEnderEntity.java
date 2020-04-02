@@ -14,6 +14,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -120,22 +121,8 @@ implements FlyingItemEntity {
         double e = this.getY() + vec3d.y;
         double f = this.getZ() + vec3d.z;
         float g = MathHelper.sqrt(EyeOfEnderEntity.squaredHorizontalLength(vec3d));
-        this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875);
-        while (this.pitch - this.prevPitch < -180.0f) {
-            this.prevPitch -= 360.0f;
-        }
-        while (this.pitch - this.prevPitch >= 180.0f) {
-            this.prevPitch += 360.0f;
-        }
-        while (this.yaw - this.prevYaw < -180.0f) {
-            this.prevYaw -= 360.0f;
-        }
-        while (this.yaw - this.prevYaw >= 180.0f) {
-            this.prevYaw += 360.0f;
-        }
-        this.pitch = MathHelper.lerp(0.2f, this.prevPitch, this.pitch);
-        this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
+        this.pitch = ProjectileEntity.method_26960(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, g) * 57.2957763671875));
+        this.yaw = ProjectileEntity.method_26960(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
         if (!this.world.isClient) {
             double h = this.velocityX - d;
             double i = this.velocityZ - f;

@@ -109,6 +109,7 @@ import net.minecraft.client.render.entity.WitherEntityRenderer;
 import net.minecraft.client.render.entity.WitherSkeletonEntityRenderer;
 import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
 import net.minecraft.client.render.entity.WolfEntityRenderer;
+import net.minecraft.client.render.entity.ZoglinEntityRenderer;
 import net.minecraft.client.render.entity.ZombieEntityRenderer;
 import net.minecraft.client.render.entity.ZombieHorseEntityRenderer;
 import net.minecraft.client.render.entity.ZombieVillagerEntityRenderer;
@@ -266,6 +267,7 @@ public class EntityRenderDispatcher {
         this.register(EntityType.WITHER_SKELETON, new WitherSkeletonEntityRenderer(this));
         this.register(EntityType.WITHER_SKULL, new WitherSkullEntityRenderer(this));
         this.register(EntityType.WOLF, new WolfEntityRenderer(this));
+        this.register(EntityType.ZOGLIN, new ZoglinEntityRenderer(this));
         this.register(EntityType.ZOMBIE_HORSE, new ZombieHorseEntityRenderer(this));
         this.register(EntityType.ZOMBIE, new ZombieEntityRenderer(this));
         this.register(EntityType.ZOMBIFIED_PIGLIN, new PiglinEntityRenderer(this, true));
@@ -367,9 +369,9 @@ public class EntityRenderDispatcher {
         float f = entity.getWidth() / 2.0f;
         this.drawBox(matrices, vertices, entity, 1.0f, 1.0f, 1.0f);
         if (entity instanceof EnderDragonEntity) {
-            double d = entity.getX() - MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
-            double e = entity.getY() - MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
-            double g = entity.getZ() - MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+            double d = -MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
+            double e = -MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
+            double g = -MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
             for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
                 matrices.push();
                 double h = d + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderX, enderDragonPart.getX());

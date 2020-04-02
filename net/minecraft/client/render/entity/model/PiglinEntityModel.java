@@ -6,15 +6,15 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.CrossbowPosing;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class PiglinEntityModel<T extends MobEntity>
-extends BipedEntityModel<T> {
+extends PlayerEntityModel<T> {
     /**
      * Maybe the ears are swapped
      */
@@ -22,7 +22,9 @@ extends BipedEntityModel<T> {
     public final ModelPart leftEar;
 
     public PiglinEntityModel(float scale, int textureWidth, int textureHeight) {
-        super(scale, 0.0f, textureWidth, textureHeight);
+        super(scale, false);
+        this.textureWidth = textureWidth;
+        this.textureHeight = textureHeight;
         this.torso = new ModelPart(this, 16, 16);
         this.torso.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, scale);
         this.head = new ModelPart(this);
@@ -32,25 +34,13 @@ extends BipedEntityModel<T> {
         this.head.setTextureOffset(2, 0).addCuboid(-3.0f, -2.0f, -5.0f, 1.0f, 2.0f, 1.0f, scale);
         this.rightEar = new ModelPart(this);
         this.rightEar.setPivot(4.5f, -6.0f, 0.0f);
-        this.rightEar.setTextureOffset(57, 38).addCuboid(0.0f, 0.0f, -2.0f, 1.0f, 5.0f, 4.0f, scale);
+        this.rightEar.setTextureOffset(51, 6).addCuboid(0.0f, 0.0f, -2.0f, 1.0f, 5.0f, 4.0f, scale);
         this.head.addChild(this.rightEar);
         this.leftEar = new ModelPart(this);
         this.leftEar.setPivot(-4.5f, -6.0f, 0.0f);
+        this.leftEar.setTextureOffset(39, 6).addCuboid(-1.0f, 0.0f, -2.0f, 1.0f, 5.0f, 4.0f, scale);
         this.head.addChild(this.leftEar);
-        this.leftEar.setTextureOffset(57, 22).addCuboid(-1.0f, 0.0f, -2.0f, 1.0f, 5.0f, 4.0f, scale);
         this.helmet = new ModelPart(this);
-        this.rightArm = new ModelPart(this);
-        this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
-        this.rightArm.setTextureOffset(40, 16).addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
-        this.leftArm = new ModelPart(this);
-        this.leftArm.setPivot(5.0f, 2.0f, 0.0f);
-        this.leftArm.setTextureOffset(40, 16).addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
-        this.rightLeg = new ModelPart(this);
-        this.rightLeg.setPivot(-1.9f, 12.0f, 0.0f);
-        this.rightLeg.setTextureOffset(0, 16).addCuboid(-2.1f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
-        this.leftLeg = new ModelPart(this);
-        this.leftLeg.setPivot(1.9f, 12.0f, 0.0f);
-        this.leftLeg.setTextureOffset(0, 16).addCuboid(-1.9f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
     }
 
     @Override

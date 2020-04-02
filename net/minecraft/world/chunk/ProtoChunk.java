@@ -70,7 +70,7 @@ implements Chunk {
     private final ChunkTickScheduler<Fluid> fluidTickScheduler;
     private long inhabitedTime;
     private final Map<GenerationStep.Carver, BitSet> carvingMasks = Maps.newHashMap();
-    private volatile boolean isLightOn;
+    private volatile boolean lightOn;
 
     public ProtoChunk(ChunkPos chunkPos, UpgradeData upgradeData) {
         this(chunkPos, upgradeData, null, new ChunkTickScheduler<Block>(block -> block == null || block.getDefaultState().isAir(), chunkPos), new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, chunkPos));
@@ -247,8 +247,8 @@ implements Chunk {
         return this.status;
     }
 
-    public void setStatus(ChunkStatus chunkStatus) {
-        this.status = chunkStatus;
+    public void setStatus(ChunkStatus status) {
+        this.status = status;
         this.setShouldSave(true);
     }
 
@@ -445,12 +445,12 @@ implements Chunk {
 
     @Override
     public boolean isLightOn() {
-        return this.isLightOn;
+        return this.lightOn;
     }
 
     @Override
     public void setLightOn(boolean lightOn) {
-        this.isLightOn = lightOn;
+        this.lightOn = lightOn;
         this.setShouldSave(true);
     }
 

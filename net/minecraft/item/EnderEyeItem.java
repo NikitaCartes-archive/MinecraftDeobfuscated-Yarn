@@ -73,7 +73,7 @@ extends Item {
             return TypedActionResult.pass(itemStack);
         }
         user.setCurrentHand(hand);
-        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure(world, "Stronghold", user.getBlockPos(), 100, false)) != null) {
+        if (world instanceof ServerWorld && (blockPos = ((ServerWorld)world).getChunkManager().getChunkGenerator().locateStructure((ServerWorld)world, "Stronghold", user.getBlockPos(), 100, false)) != null) {
             EyeOfEnderEntity eyeOfEnderEntity = new EyeOfEnderEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
             eyeOfEnderEntity.setItem(itemStack);
             eyeOfEnderEntity.moveTowards(blockPos);

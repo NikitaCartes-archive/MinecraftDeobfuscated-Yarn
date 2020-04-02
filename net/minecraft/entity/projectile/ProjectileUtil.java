@@ -3,9 +3,7 @@
  */
 package net.minecraft.entity.projectile;
 
-import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,11 +16,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
@@ -30,36 +26,18 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public final class ProjectileUtil {
-    public static HitResult getCollision(Entity entity, boolean bl, boolean bl2, @Nullable Entity entity22, RayTraceContext.ShapeType shapeType) {
-        return ProjectileUtil.getCollision(entity, bl, bl2, entity22, shapeType, true, entity2 -> !entity2.isSpectator() && entity2.collides() && (bl2 || !entity2.isPartOf(entity22)) && !entity2.noClip, entity.getBoundingBox().stretch(entity.getVelocity()).expand(1.0));
-    }
-
-    public static HitResult getCollision(Entity entity, Box box, Predicate<Entity> entityCollisionPredicate, RayTraceContext.ShapeType shapeType, boolean bl) {
-        return ProjectileUtil.getCollision(entity, bl, false, null, shapeType, false, entityCollisionPredicate, box);
-    }
-
-    @Nullable
-    public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate) {
-        return ProjectileUtil.getEntityCollision(world, entity, vec3d, vec3d2, box, predicate, Double.MAX_VALUE);
-    }
-
-    private static HitResult getCollision(Entity entity, boolean bl, boolean bl2, @Nullable Entity entity2, RayTraceContext.ShapeType shapeType, boolean bl3, Predicate<Entity> entityCollisionPredicate, Box boz) {
+    public static HitResult getCollision(Entity entity, Predicate<Entity> predicate, RayTraceContext.ShapeType shapeType) {
+        EntityHitResult hitResult2;
+        Vec3d vec3d3;
         Vec3d vec3d = entity.getVelocity();
         World world = entity.world;
         Vec3d vec3d2 = entity.getPos();
-        if (bl3 && !world.doesNotCollide(entity, entity.getBoundingBox(), bl2 || entity2 == null ? ImmutableSet.of() : ProjectileUtil.getEntityAndRidingEntity(entity2))) {
-            return new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), entity.getBlockPos(), false);
+        HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3 = vec3d2.add(vec3d), shapeType, RayTraceContext.FluidHandling.NONE, entity));
+        if (((HitResult)hitResult).getType() != HitResult.Type.MISS) {
+            vec3d3 = hitResult.getPos();
         }
-        Vec3d vec3d3 = vec3d2.add(vec3d);
-        HitResult hitResult = world.rayTrace(new RayTraceContext(vec3d2, vec3d3, shapeType, RayTraceContext.FluidHandling.NONE, entity));
-        if (bl) {
-            EntityHitResult hitResult2;
-            if (((HitResult)hitResult).getType() != HitResult.Type.MISS) {
-                vec3d3 = hitResult.getPos();
-            }
-            if ((hitResult2 = ProjectileUtil.getEntityCollision(world, entity, vec3d2, vec3d3, boz, entityCollisionPredicate)) != null) {
-                hitResult = hitResult2;
-            }
+        if ((hitResult2 = ProjectileUtil.getEntityCollision(world, entity, vec3d2, vec3d3, entity.getBoundingBox().stretch(entity.getVelocity()).expand(1.0), predicate)) != null) {
+            hitResult = hitResult2;
         }
         return hitResult;
     }
@@ -101,26 +79,21 @@ public final class ProjectileUtil {
     }
 
     @Nullable
-    public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate, double d) {
-        double e = d;
+    public static EntityHitResult getEntityCollision(World world, Entity entity, Vec3d vec3d, Vec3d vec3d2, Box box, Predicate<Entity> predicate) {
+        double d = Double.MAX_VALUE;
         Entity entity2 = null;
         for (Entity entity3 : world.getEntities(entity, box, predicate)) {
-            double f;
+            double e;
             Box box2 = entity3.getBoundingBox().expand(0.3f);
             Optional<Vec3d> optional = box2.rayTrace(vec3d, vec3d2);
-            if (!optional.isPresent() || !((f = vec3d.squaredDistanceTo(optional.get())) < e)) continue;
+            if (!optional.isPresent() || !((e = vec3d.squaredDistanceTo(optional.get())) < d)) continue;
             entity2 = entity3;
-            e = f;
+            d = e;
         }
         if (entity2 == null) {
             return null;
         }
         return new EntityHitResult(entity2);
-    }
-
-    private static Set<Entity> getEntityAndRidingEntity(Entity entity) {
-        Entity entity2 = entity.getVehicle();
-        return entity2 != null ? ImmutableSet.of(entity, entity2) : ImmutableSet.of(entity);
     }
 
     public static final void method_7484(Entity entity, float f) {

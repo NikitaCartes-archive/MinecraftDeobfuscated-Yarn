@@ -60,7 +60,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeehiveBlock
 extends BlockWithEntity {
-    public static final Direction[] GENERATE_DIRECTIONS = new Direction[]{Direction.WEST, Direction.EAST, Direction.SOUTH};
+    private static final Direction[] GENERATE_DIRECTIONS = new Direction[]{Direction.WEST, Direction.EAST, Direction.SOUTH};
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final IntProperty HONEY_LEVEL = Properties.HONEY_LEVEL;
 
@@ -282,6 +282,10 @@ extends BlockWithEntity {
             beehiveBlockEntity.angerBees(null, state, BeehiveBlockEntity.BeeState.EMERGENCY);
         }
         return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+    }
+
+    public static Direction method_26978(Random random) {
+        return GENERATE_DIRECTIONS[random.nextInt(GENERATE_DIRECTIONS.length)];
     }
 }
 

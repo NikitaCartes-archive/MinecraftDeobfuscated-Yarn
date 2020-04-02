@@ -89,7 +89,15 @@ implements AutoCloseable {
     public CompletableFuture<Void> completeAll() {
         return this.run(completableFuture -> () -> {
             CompletableFuture<Void> completableFuture2 = CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> ((Result)result).future).toArray(CompletableFuture[]::new));
-            completableFuture2.whenComplete((object, throwable) -> completableFuture.complete(null));
+            completableFuture2.whenComplete((object, throwable) -> {
+                try {
+                    this.storage.method_26982();
+                    completableFuture.complete(null);
+                } catch (Exception exception) {
+                    LOGGER.warn("Failed to synchronized chunks", (Throwable)exception);
+                    completableFuture.completeExceptionally(exception);
+                }
+            });
         });
     }
 

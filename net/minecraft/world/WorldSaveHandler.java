@@ -4,12 +4,9 @@
 package net.minecraft.world;
 
 import com.mojang.datafixers.DataFixer;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -17,9 +14,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.util.Util;
 import net.minecraft.world.PlayerSaveHandler;
-import net.minecraft.world.SessionLockException;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +26,6 @@ implements PlayerSaveHandler {
     private static final Logger LOGGER = LogManager.getLogger();
     private final File worldDir;
     private final File playerDataDir;
-    private final long saveStartTime = Util.getMeasuringTimeMs();
     private final String worldName;
     private final StructureManager structureManager;
     protected final DataFixer dataFixer;
@@ -48,7 +42,6 @@ implements PlayerSaveHandler {
         } else {
             this.structureManager = null;
         }
-        this.writeSessionLock();
     }
 
     public void saveWorld(LevelProperties levelProperties, @Nullable CompoundTag tag) {
@@ -77,33 +70,8 @@ implements PlayerSaveHandler {
         }
     }
 
-    private void writeSessionLock() {
-        try {
-            File file = new File(this.worldDir, "session.lock");
-            try (DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file));){
-                dataOutputStream.writeLong(this.saveStartTime);
-            }
-        } catch (IOException iOException) {
-            iOException.printStackTrace();
-            throw new RuntimeException("Failed to check session lock, aborting");
-        }
-    }
-
     public File getWorldDir() {
         return this.worldDir;
-    }
-
-    public void checkSessionLock() throws SessionLockException {
-        try {
-            File file = new File(this.worldDir, "session.lock");
-            try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));){
-                if (dataInputStream.readLong() != this.saveStartTime) {
-                    throw new SessionLockException("The save is being accessed from another location, aborting");
-                }
-            }
-        } catch (IOException iOException) {
-            throw new SessionLockException("Failed to check session lock, aborting");
-        }
     }
 
     @Nullable

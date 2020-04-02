@@ -909,6 +909,7 @@ public class Items {
     public static final Item WITCH_SPAWN_EGG = Items.register("witch_spawn_egg", (Item)new SpawnEggItem(EntityType.WITCH, 0x340000, 5349438, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item WITHER_SKELETON_SPAWN_EGG = Items.register("wither_skeleton_spawn_egg", (Item)new SpawnEggItem(EntityType.WITHER_SKELETON, 0x141414, 0x474D4D, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item WOLF_SPAWN_EGG = Items.register("wolf_spawn_egg", (Item)new SpawnEggItem(EntityType.WOLF, 0xD7D3D3, 13545366, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item ZOGLIN_SPAWN_EGG = Items.register("zoglin_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOGLIN, 13004373, 0xE6E6E6, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ZOMBIE_SPAWN_EGG = Items.register("zombie_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOMBIE, 44975, 7969893, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ZOMBIE_HORSE_SPAWN_EGG = Items.register("zombie_horse_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOMBIE_HORSE, 3232308, 9945732, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ZOMBIFIED_PIGLIN_SPAWN_EGG = Items.register("zombified_piglin_spawn_egg", (Item)new SpawnEggItem(EntityType.ZOMBIFIED_PIGLIN, 15373203, 5009705, new Item.Settings().group(ItemGroup.MISC)));
@@ -932,8 +933,8 @@ public class Items {
     public static final Item ZOMBIE_HEAD = Items.register(new WallStandingBlockItem(Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON)));
     public static final Item CREEPER_HEAD = Items.register(new WallStandingBlockItem(Blocks.CREEPER_HEAD, Blocks.CREEPER_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON)));
     public static final Item DRAGON_HEAD = Items.register(new WallStandingBlockItem(Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD, new Item.Settings().group(ItemGroup.DECORATIONS).rarity(Rarity.UNCOMMON)));
-    public static final Item CARROT_ON_A_STICK = Items.register("carrot_on_a_stick", new OnAStickItem<PigEntity>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.PIG));
-    public static final Item WARPED_FUNGUS_ON_A_STICK = Items.register("warped_fungus_on_a_stick", new OnAStickItem<StriderEntity>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.STRIDER));
+    public static final Item CARROT_ON_A_STICK = Items.register("carrot_on_a_stick", new OnAStickItem<PigEntity>(new Item.Settings().maxDamage(25).group(ItemGroup.TRANSPORTATION), EntityType.PIG, 7));
+    public static final Item WARPED_FUNGUS_ON_A_STICK = Items.register("warped_fungus_on_a_stick", new OnAStickItem<StriderEntity>(new Item.Settings().maxDamage(100).group(ItemGroup.TRANSPORTATION), EntityType.STRIDER, 1));
     public static final Item NETHER_STAR = Items.register("nether_star", (Item)new NetherStarItem(new Item.Settings().group(ItemGroup.MATERIALS).rarity(Rarity.UNCOMMON)));
     public static final Item PUMPKIN_PIE = Items.register("pumpkin_pie", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.PUMPKIN_PIE)));
     public static final Item FIREWORK_ROCKET = Items.register("firework_rocket", (Item)new FireworkItem(new Item.Settings().group(ItemGroup.MISC)));

@@ -10,6 +10,7 @@ import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -29,8 +30,8 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
         return new Dynamic<T>(dynamic, dynamic.createMap(ImmutableMap.of(dynamic.createString("name"), dynamic.createString(Registry.FEATURE.getId((Feature<?>)this.feature.feature).toString()), dynamic.createString("config"), this.feature.config.serialize(dynamic).getValue(), dynamic.createString("chance"), dynamic.createFloat(this.chance))));
     }
 
-    public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos pos) {
-        return this.feature.generate(world, chunkGenerator, random, pos);
+    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
+        return this.feature.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
     }
 
     public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {

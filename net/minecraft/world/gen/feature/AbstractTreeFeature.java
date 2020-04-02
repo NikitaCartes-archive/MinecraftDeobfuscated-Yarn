@@ -30,6 +30,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.TestableWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -95,10 +96,10 @@ extends Feature<T> {
         }
     }
 
-    protected boolean setLogBlockState(ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, BlockBox box, TreeFeatureConfig config) {
+    public static boolean setLogBlockState(ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> trunkPositions, BlockBox box, TreeFeatureConfig config) {
         if (AbstractTreeFeature.isAirOrLeaves(world, pos) || AbstractTreeFeature.isReplaceablePlant(world, pos) || AbstractTreeFeature.isWater(world, pos)) {
-            this.setBlockState(world, pos, config.trunkProvider.getBlockState(random, pos), box);
-            logPositions.add(pos.toImmutable());
+            AbstractTreeFeature.setBlockState(world, pos, config.trunkProvider.getBlockState(random, pos), box);
+            trunkPositions.add(pos.toImmutable());
             return true;
         }
         return false;
@@ -106,7 +107,7 @@ extends Feature<T> {
 
     protected boolean setLeavesBlockState(ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> leavesPositions, BlockBox box, TreeFeatureConfig config) {
         if (AbstractTreeFeature.isAirOrLeaves(world, pos) || AbstractTreeFeature.isReplaceablePlant(world, pos) || AbstractTreeFeature.isWater(world, pos)) {
-            this.setBlockState(world, pos, config.leavesProvider.getBlockState(random, pos), box);
+            AbstractTreeFeature.setBlockState(world, pos, config.leavesProvider.getBlockState(random, pos), box);
             leavesPositions.add(pos.toImmutable());
             return true;
         }
@@ -115,20 +116,20 @@ extends Feature<T> {
 
     @Override
     protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
-        this.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
+        AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
     }
 
-    protected final void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state, BlockBox box) {
-        this.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
+    protected static final void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state, BlockBox box) {
+        AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
         box.encompass(new BlockBox(pos, pos));
     }
 
-    private void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
+    private static void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
         world.setBlockState(pos, state, 19);
     }
 
     @Override
-    public final boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T treeFeatureConfig) {
+    public final boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T treeFeatureConfig) {
         HashSet<BlockPos> set = Sets.newHashSet();
         HashSet<BlockPos> set2 = Sets.newHashSet();
         HashSet<BlockPos> set3 = Sets.newHashSet();
@@ -170,7 +171,7 @@ extends Feature<T> {
                 mutable.set(blockPos, direction);
                 if (logs.contains(mutable) || !(blockState = world.getBlockState(mutable)).contains(Properties.DISTANCE_1_7)) continue;
                 ((Set)list.get(0)).add(mutable.toImmutable());
-                this.setBlockStateWithoutUpdatingNeighbors(world, mutable, (BlockState)blockState.with(Properties.DISTANCE_1_7, 1));
+                AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(world, mutable, (BlockState)blockState.with(Properties.DISTANCE_1_7, 1));
                 if (!box.contains(mutable)) continue;
                 ((VoxelSet)voxelSet).set(mutable.getX() - box.minX, mutable.getY() - box.minY, mutable.getZ() - box.minZ, true, true);
             }
@@ -188,7 +189,7 @@ extends Feature<T> {
                     mutable.set(blockPos2, direction2);
                     if (set.contains(mutable) || set2.contains(mutable) || !(blockState2 = world.getBlockState(mutable)).contains(Properties.DISTANCE_1_7) || (l = blockState2.get(Properties.DISTANCE_1_7).intValue()) <= k + 1) continue;
                     BlockState blockState3 = (BlockState)blockState2.with(Properties.DISTANCE_1_7, k + 1);
-                    this.setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState3);
+                    AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState3);
                     if (box.contains(mutable)) {
                         ((VoxelSet)voxelSet).set(mutable.getX() - box.minX, mutable.getY() - box.minY, mutable.getZ() - box.minZ, true, true);
                     }

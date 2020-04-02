@@ -24,11 +24,13 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -197,12 +199,12 @@ implements ItemSteerable {
     }
 
     public float getSpeed() {
-        return this.isCold() ? 0.1f : (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
+        return (float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66f : 1.0f);
     }
 
     @Override
     public float getSaddledSpeed() {
-        return this.getSpeed() * 0.35f;
+        return (float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23f : 0.55f);
     }
 
     @Override
@@ -274,11 +276,8 @@ implements ItemSteerable {
         }
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.15f);
-        this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(16.0);
+    public static DefaultAttributeContainer.Builder createStriderAttributes() {
+        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.15f).add(Attributes.GENERIC_FOLLOW_RANGE, 16.0);
     }
 
     @Override

@@ -28,18 +28,18 @@ public class Texture {
     }
 
     public Texture inherit(TextureKey parent, TextureKey child) {
-        this.entries.put(child, this.entries.get((Object)parent));
+        this.entries.put(child, this.entries.get(parent));
         this.inherited.add(child);
         return this;
     }
 
     public Identifier getTexture(TextureKey key) {
         for (TextureKey textureKey = key; textureKey != null; textureKey = textureKey.getParent()) {
-            Identifier identifier = this.entries.get((Object)textureKey);
+            Identifier identifier = this.entries.get(textureKey);
             if (identifier == null) continue;
             return identifier;
         }
-        throw new IllegalStateException("Can't find texture for slot " + (Object)((Object)key));
+        throw new IllegalStateException("Can't find texture for slot " + key);
     }
 
     public Texture copyAndAdd(TextureKey key, Identifier id) {
@@ -101,7 +101,7 @@ public class Texture {
     }
 
     public static Texture stemAndUpper(Block stem, Block upper) {
-        return new Texture().put(TextureKey.STEM, Texture.getId(stem)).put(TextureKey.UPPER_STEM, Texture.getId(upper));
+        return new Texture().put(TextureKey.STEM, Texture.getId(stem)).put(TextureKey.UPPERSTEM, Texture.getId(upper));
     }
 
     public static Texture pattern(Block block) {

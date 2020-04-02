@@ -14,7 +14,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEffects;
 import net.minecraft.world.biome.Biomes;
@@ -24,6 +23,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.CatSpawner;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.PhantomSpawner;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
@@ -115,7 +115,7 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
     }
 
     @Override
-    public void populateNoise(IWorld world, Chunk chunk) {
+    public void populateNoise(IWorld world, StructureAccessor structureAccessor, Chunk chunk) {
         BlockState[] blockStates = ((FlatChunkGeneratorConfig)this.config).getLayerBlocks();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
@@ -168,11 +168,11 @@ extends ChunkGenerator<FlatChunkGeneratorConfig> {
 
     @Override
     @Nullable
-    public BlockPos locateStructure(World world, String id, BlockPos center, int radius, boolean skipExistingChunks) {
+    public BlockPos locateStructure(ServerWorld serverWorld, String id, BlockPos center, int radius, boolean skipExistingChunks) {
         if (!((FlatChunkGeneratorConfig)this.config).getStructures().keySet().contains(id.toLowerCase(Locale.ROOT))) {
             return null;
         }
-        return super.locateStructure(world, id, center, radius, skipExistingChunks);
+        return super.locateStructure(serverWorld, id, center, radius, skipExistingChunks);
     }
 
     class FlatChunkGeneratorBiome

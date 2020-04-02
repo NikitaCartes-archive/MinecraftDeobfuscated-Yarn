@@ -37,7 +37,7 @@ extends MegaTreeFeature<MegaTreeFeatureConfig> {
                 k = blockPos.getX() + (int)(1.5f + MathHelper.cos(f) * (float)m);
                 l = blockPos.getZ() + (int)(1.5f + MathHelper.sin(f) * (float)m);
                 BlockPos blockPos2 = new BlockPos(k, j - 3 + m / 2, l);
-                this.setLogBlockState(modifiableTestableWorld, random, blockPos2, set, blockBox, megaTreeFeatureConfig);
+                MegaJungleTreeFeature.setLogBlockState(modifiableTestableWorld, random, blockPos2, set, blockBox, megaTreeFeatureConfig);
             }
             m = 1 + random.nextInt(2);
             int n = j;

@@ -8,47 +8,47 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.sapling.SaplingGenerator;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class LargeTreeSaplingGenerator
 extends SaplingGenerator {
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
+    public boolean generate(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
         for (int i = 0; i >= -1; --i) {
             for (int j = 0; j >= -1; --j) {
-                if (!LargeTreeSaplingGenerator.canGenerateLargeTree(blockState, iWorld, blockPos, i, j)) continue;
-                return this.generateLargeTree(iWorld, chunkGenerator, blockPos, blockState, random, i, j);
+                if (!LargeTreeSaplingGenerator.canGenerateLargeTree(blockState, serverWorld, blockPos, i, j)) continue;
+                return this.generateLargeTree(serverWorld, chunkGenerator, blockPos, blockState, random, i, j);
             }
         }
-        return super.generate(iWorld, chunkGenerator, blockPos, blockState, random);
+        return super.generate(serverWorld, chunkGenerator, blockPos, blockState, random);
     }
 
     @Nullable
-    protected abstract ConfiguredFeature<MegaTreeFeatureConfig, ?> createLargeTreeFeature(Random var1);
+    protected abstract ConfiguredFeature<? extends TreeFeatureConfig, ?> createLargeTreeFeature(Random var1);
 
-    public boolean generateLargeTree(IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
-        ConfiguredFeature<MegaTreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
+    public boolean generateLargeTree(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
+        ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
         if (configuredFeature == null) {
             return false;
         }
         BlockState blockState2 = Blocks.AIR.getDefaultState();
-        iWorld.setBlockState(blockPos.add(i, 0, j), blockState2, 4);
-        iWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
-        iWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);
-        iWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState2, 4);
-        if (configuredFeature.generate(iWorld, chunkGenerator, random, blockPos.add(i, 0, j))) {
+        serverWorld.setBlockState(blockPos.add(i, 0, j), blockState2, 4);
+        serverWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
+        serverWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);
+        serverWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState2, 4);
+        if (configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), chunkGenerator, random, blockPos.add(i, 0, j))) {
             return true;
         }
-        iWorld.setBlockState(blockPos.add(i, 0, j), blockState, 4);
-        iWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState, 4);
-        iWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState, 4);
-        iWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState, 4);
+        serverWorld.setBlockState(blockPos.add(i, 0, j), blockState, 4);
+        serverWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState, 4);
+        serverWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState, 4);
+        serverWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState, 4);
         return false;
     }
 

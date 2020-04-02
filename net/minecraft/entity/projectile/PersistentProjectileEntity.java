@@ -61,7 +61,6 @@ extends ProjectileEntity {
     public PickupPermission pickupType = PickupPermission.DISALLOWED;
     public int shake;
     private int life;
-    private int flyingTick;
     private double damage = 2.0;
     private int punch;
     private SoundEvent sound = this.getHitSound();
@@ -165,7 +164,6 @@ extends ProjectileEntity {
             return;
         }
         this.inGroundTime = 0;
-        ++this.flyingTick;
         Vec3d vec3d3 = this.getPos();
         HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d3, vec3d2 = vec3d3.add(vec3d), RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
         if (hitResult.getType() != HitResult.Type.MISS) {
@@ -206,20 +204,8 @@ extends ProjectileEntity {
         float l = MathHelper.sqrt(PersistentProjectileEntity.squaredHorizontalLength(vec3d));
         this.yaw = bl ? (float)(MathHelper.atan2(-d, -g) * 57.2957763671875) : (float)(MathHelper.atan2(d, g) * 57.2957763671875);
         this.pitch = (float)(MathHelper.atan2(e, l) * 57.2957763671875);
-        while (this.pitch - this.prevPitch < -180.0f) {
-            this.prevPitch -= 360.0f;
-        }
-        while (this.pitch - this.prevPitch >= 180.0f) {
-            this.prevPitch += 360.0f;
-        }
-        while (this.yaw - this.prevYaw < -180.0f) {
-            this.prevYaw -= 360.0f;
-        }
-        while (this.yaw - this.prevYaw >= 180.0f) {
-            this.prevYaw += 360.0f;
-        }
-        this.pitch = MathHelper.lerp(0.2f, this.prevPitch, this.pitch);
-        this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
+        this.pitch = PersistentProjectileEntity.method_26960(this.prevPitch, this.pitch);
+        this.yaw = PersistentProjectileEntity.method_26960(this.prevYaw, this.yaw);
         float m = 0.99f;
         float n = 0.05f;
         if (this.isTouchingWater()) {
@@ -247,7 +233,6 @@ extends ProjectileEntity {
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(vec3d.multiply(this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f));
         this.life = 0;
-        this.flyingTick = 0;
     }
 
     @Override
@@ -354,7 +339,6 @@ extends ProjectileEntity {
             this.setVelocity(this.getVelocity().multiply(-0.1));
             this.yaw += 180.0f;
             this.prevYaw += 180.0f;
-            this.flyingTick = 0;
             if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
                 if (this.pickupType == PickupPermission.ALLOWED) {
                     this.dropStack(this.asItemStack(), 0.1f);
@@ -395,7 +379,12 @@ extends ProjectileEntity {
 
     @Nullable
     protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
-        return ProjectileUtil.getEntityCollision(this.world, this, currentPosition, nextPosition, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !(entity.isSpectator() || !entity.isAlive() || !entity.collides() || entity == this.getOwner() && this.flyingTick < 5 || this.piercedEntities != null && this.piercedEntities.contains(entity.getEntityId())));
+        return ProjectileUtil.getEntityCollision(this.world, this, currentPosition, nextPosition, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), this::method_26958);
+    }
+
+    @Override
+    protected boolean method_26958(Entity entity) {
+        return super.method_26958(entity) && (this.piercedEntities == null || !this.piercedEntities.contains(entity.getEntityId()));
     }
 
     @Override

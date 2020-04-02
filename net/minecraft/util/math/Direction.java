@@ -254,7 +254,7 @@ public enum Direction implements StringIdentifiable
     }
 
     public static Direction random(Random random) {
-        return Direction.values()[random.nextInt(Direction.values().length)];
+        return ALL[random.nextInt(ALL.length)];
     }
 
     public static Direction getFacing(double x, double y, double z) {
@@ -283,7 +283,7 @@ public enum Direction implements StringIdentifiable
     }
 
     public static Direction get(AxisDirection direction, Axis axis) {
-        for (Direction direction2 : Direction.values()) {
+        for (Direction direction2 : ALL) {
             if (direction2.getDirection() != direction || direction2.getAxis() != axis) continue;
             return direction2;
         }
@@ -420,6 +420,7 @@ public enum Direction implements StringIdentifiable
             }
         };
 
+        private static final Axis[] field_23780;
         private static final Map<String, Axis> BY_NAME;
         private final String name;
 
@@ -449,7 +450,7 @@ public enum Direction implements StringIdentifiable
         }
 
         public static Axis pickRandomAxis(Random random) {
-            return Axis.values()[random.nextInt(Axis.values().length)];
+            return field_23780[random.nextInt(field_23780.length)];
         }
 
         @Override
@@ -485,7 +486,8 @@ public enum Direction implements StringIdentifiable
         }
 
         static {
-            BY_NAME = Arrays.stream(Axis.values()).collect(Collectors.toMap(Axis::getName, axis -> axis));
+            field_23780 = Axis.values();
+            BY_NAME = Arrays.stream(field_23780).collect(Collectors.toMap(Axis::getName, axis -> axis));
         }
     }
 }

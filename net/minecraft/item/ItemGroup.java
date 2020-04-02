@@ -81,7 +81,7 @@ public abstract class ItemGroup {
         public ItemStack createIcon() {
             return new ItemStack(Items.IRON_AXE);
         }
-    }.setEnchantments(EnchantmentTarget.ALL, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE);
+    }.setEnchantments(EnchantmentTarget.VANISHABLE, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE);
     public static final ItemGroup COMBAT = new ItemGroup(9, "combat"){
 
         @Override
@@ -89,7 +89,7 @@ public abstract class ItemGroup {
         public ItemStack createIcon() {
             return new ItemStack(Items.GOLDEN_SWORD);
         }
-    }.setEnchantments(EnchantmentTarget.ALL, EnchantmentTarget.ARMOR, EnchantmentTarget.ARMOR_FEET, EnchantmentTarget.ARMOR_HEAD, EnchantmentTarget.ARMOR_LEGS, EnchantmentTarget.ARMOR_CHEST, EnchantmentTarget.BOW, EnchantmentTarget.WEAPON, EnchantmentTarget.WEARABLE, EnchantmentTarget.BREAKABLE, EnchantmentTarget.TRIDENT, EnchantmentTarget.CROSSBOW);
+    }.setEnchantments(EnchantmentTarget.VANISHABLE, EnchantmentTarget.ARMOR, EnchantmentTarget.ARMOR_FEET, EnchantmentTarget.ARMOR_HEAD, EnchantmentTarget.ARMOR_LEGS, EnchantmentTarget.ARMOR_CHEST, EnchantmentTarget.BOW, EnchantmentTarget.WEAPON, EnchantmentTarget.WEARABLE, EnchantmentTarget.BREAKABLE, EnchantmentTarget.TRIDENT, EnchantmentTarget.CROSSBOW);
     public static final ItemGroup BREWING = new ItemGroup(10, "brewing"){
 
         @Override

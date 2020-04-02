@@ -85,7 +85,7 @@ implements Fertilizable {
             serverWorld.setBlockState(pos, state, 3);
             return false;
         }
-        if (configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
+        if (configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
             return true;
         }
         serverWorld.setBlockState(pos, state, 3);

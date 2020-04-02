@@ -18,7 +18,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
-import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -71,7 +70,7 @@ public class MemoryModuleType<U> {
     public static final MemoryModuleType<DynamicSerializableBoolean> HUNTED_RECENTLY = MemoryModuleType.register("hunted_recently", Optional.of(DynamicSerializableBoolean::of));
     public static final MemoryModuleType<BlockPos> CELEBRATE_LOCATION = MemoryModuleType.register("celebrate_location");
     public static final MemoryModuleType<WitherSkeletonEntity> NEAREST_VISIBLE_WITHER_SKELETON = MemoryModuleType.register("nearest_visible_wither_skeleton");
-    public static final MemoryModuleType<HoglinEntity> NEAREST_VISIBLE_ADULT_HOGLIN = MemoryModuleType.register("nearest_visible_adult_hoglin");
+    public static final MemoryModuleType<HoglinEntity> NEAREST_VISIBLE_HUNTABLE_HOGLIN = MemoryModuleType.register("nearest_visible_huntable_hoglin");
     public static final MemoryModuleType<HoglinEntity> NEAREST_VISIBLE_BABY_HOGLIN = MemoryModuleType.register("nearest_visible_baby_hoglin");
     public static final MemoryModuleType<PiglinEntity> NEAREST_VISIBLE_BABY_PIGLIN = MemoryModuleType.register("nearest_visible_baby_piglin");
     public static final MemoryModuleType<PlayerEntity> NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD = MemoryModuleType.register("nearest_targetable_player_not_wearing_gold");
@@ -79,7 +78,7 @@ public class MemoryModuleType<U> {
     public static final MemoryModuleType<List<PiglinEntity>> NEAREST_VISIBLE_ADULT_PIGLINS = MemoryModuleType.register("nearest_visible_adult_piglins");
     public static final MemoryModuleType<List<HoglinEntity>> NEAREST_VISIBLE_ADULT_HOGLINS = MemoryModuleType.register("nearest_visible_adult_hoglins");
     public static final MemoryModuleType<PiglinEntity> NEAREST_VISIBLE_ADULT_PIGLIN = MemoryModuleType.register("nearest_visible_adult_piglin");
-    public static final MemoryModuleType<ZombifiedPiglinEntity> NEAREST_VISIBLE_ZOMBIFIED_PIGLIN = MemoryModuleType.register("nearest_visible_zombified_piglin");
+    public static final MemoryModuleType<LivingEntity> NEAREST_VISIBLE_ZOMBIFIED = MemoryModuleType.register("nearest_visible_zombified");
     public static final MemoryModuleType<Integer> VISIBLE_ADULT_PIGLIN_COUNT = MemoryModuleType.register("visible_adult_piglin_count");
     public static final MemoryModuleType<Integer> VISIBLE_ADULT_HOGLIN_COUNT = MemoryModuleType.register("visible_adult_hoglin_count");
     public static final MemoryModuleType<PlayerEntity> NEAREST_PLAYER_HOLDING_WANTED_ITEM = MemoryModuleType.register("nearest_player_holding_wanted_item");

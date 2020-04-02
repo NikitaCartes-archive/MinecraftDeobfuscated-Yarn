@@ -26,9 +26,10 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -61,7 +62,7 @@ import org.jetbrains.annotations.Nullable;
 public class EndermanEntity
 extends HostileEntity {
     private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
-    private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", (double)0.15f, EntityAttributeModifier.Operation.ADDITION).setSerialize(false);
+    private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", (double)0.15f, EntityAttributeModifier.Operation.ADDITION);
     private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
     private static final TrackedData<Boolean> ANGRY = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> field_20618 = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -90,19 +91,14 @@ extends HostileEntity {
         this.targetSelector.add(3, new FollowTargetGoal<EndermiteEntity>(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(40.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3f);
-        this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(7.0);
-        this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(64.0);
+    public static DefaultAttributeContainer.Builder createEndermanAttributes() {
+        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MAX_HEALTH, 40.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(Attributes.GENERIC_ATTACK_DAMAGE, 7.0).add(Attributes.GENERIC_FOLLOW_RANGE, 64.0);
     }
 
     @Override
     public void setTarget(@Nullable LivingEntity target) {
         super.setTarget(target);
-        EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+        EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
         if (target == null) {
             this.ageWhenTargetSet = 0;
             this.dataTracker.set(ANGRY, false);
@@ -112,7 +108,7 @@ extends HostileEntity {
             this.ageWhenTargetSet = this.age;
             this.dataTracker.set(ANGRY, true);
             if (!entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
-                entityAttributeInstance.addModifier(ATTACKING_SPEED_BOOST);
+                entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
             }
         }
     }

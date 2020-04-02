@@ -196,7 +196,7 @@ implements ItemConvertible {
         return true;
     }
 
-    public static boolean topCoversMediumSquare(BlockView world, BlockPos pos) {
+    public static boolean hasTopRim(BlockView world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
         return !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
     }

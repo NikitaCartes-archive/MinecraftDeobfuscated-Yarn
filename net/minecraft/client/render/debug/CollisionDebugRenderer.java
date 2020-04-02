@@ -35,8 +35,8 @@ implements DebugRenderer.Renderer {
         double d = Util.getMeasuringTimeNano();
         if (d - this.lastUpdateTime > 1.0E8) {
             this.lastUpdateTime = d;
-            Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
-            this.collisions = entity.world.getCollisions(entity, entity.getBoundingBox().expand(6.0), Collections.emptySet()).collect(Collectors.toList());
+            Entity entity2 = this.client.gameRenderer.getCamera().getFocusedEntity();
+            this.collisions = entity2.world.getCollisions(entity2, entity2.getBoundingBox().expand(6.0), entity -> true).collect(Collectors.toList());
         }
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
         for (VoxelShape voxelShape : this.collisions) {

@@ -61,9 +61,9 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
 
     @Override
     @Nullable
-    protected RenderLayer getRenderLayer(ArmorStandEntity armorStandEntity, boolean bl, boolean bl2) {
+    protected RenderLayer getRenderLayer(ArmorStandEntity armorStandEntity, boolean bl, boolean bl2, boolean bl3) {
         if (!armorStandEntity.isMarker()) {
-            return super.getRenderLayer(armorStandEntity, bl, bl2);
+            return super.getRenderLayer(armorStandEntity, bl, bl2, bl3);
         }
         Identifier identifier = this.getTexture(armorStandEntity);
         if (bl2) {

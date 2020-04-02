@@ -30,6 +30,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,7 +75,7 @@ public abstract class StructurePiece {
     public void placeJigsaw(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
     }
 
-    public abstract boolean generate(IWorld var1, ChunkGenerator<?> var2, Random var3, BlockBox var4, ChunkPos var5, BlockPos var6);
+    public abstract boolean generate(IWorld var1, StructureAccessor var2, ChunkGenerator<?> var3, Random var4, BlockBox var5, ChunkPos var6, BlockPos var7);
 
     public BlockBox getBoundingBox() {
         return this.boundingBox;

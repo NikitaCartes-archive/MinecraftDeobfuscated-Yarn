@@ -18,10 +18,12 @@ import net.minecraft.world.World;
 public class OnAStickItem<T extends Entity>
 extends Item {
     private final EntityType<T> target;
+    private final int damagePerUse;
 
-    public OnAStickItem(Item.Settings settings, EntityType<T> target) {
+    public OnAStickItem(Item.Settings settings, EntityType<T> target, int damagePerUse) {
         super(settings);
         this.target = target;
+        this.damagePerUse = damagePerUse;
     }
 
     @Override
@@ -33,7 +35,7 @@ extends Item {
         }
         Entity entity = user.getVehicle();
         if (user.hasVehicle() && entity instanceof ItemSteerable && entity.getType() == this.target && (itemSteerable = (ItemSteerable)((Object)entity)).consumeOnAStickItem()) {
-            itemStack.damage(7, user, p -> p.sendToolBreakStatus(hand));
+            itemStack.damage(this.damagePerUse, user, p -> p.sendToolBreakStatus(hand));
             user.swingHand(hand, true);
             if (itemStack.isEmpty()) {
                 ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);

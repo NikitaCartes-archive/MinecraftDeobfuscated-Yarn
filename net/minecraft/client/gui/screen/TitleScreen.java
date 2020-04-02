@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen;
 import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -28,6 +29,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
@@ -36,11 +38,14 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TitleScreen
 extends Screen {
+    private static final Logger field_23775 = LogManager.getLogger();
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
     private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
@@ -138,15 +143,24 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, I18n.translate("menu.playdemo", new Object[0]), buttonWidget -> this.client.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.DEMO_LEVEL_INFO)));
         this.buttonResetDemo = this.addButton(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, I18n.translate("menu.resetdemo", new Object[0]), buttonWidget -> {
             LevelStorage levelStorage = this.client.getLevelStorage();
-            LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
-            if (levelProperties != null) {
-                this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion", new Object[0]), new TranslatableText("selectWorld.deleteWarning", levelProperties.getLevelName()), I18n.translate("selectWorld.deleteButton", new Object[0]), I18n.translate("gui.cancel", new Object[0])));
+            try (LevelStorage.Session session = levelStorage.createSession("Demo_World");){
+                LevelProperties levelProperties = session.readLevelProperties();
+                if (levelProperties != null) {
+                    this.client.openScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion", new Object[0]), new TranslatableText("selectWorld.deleteWarning", levelProperties.getLevelName()), I18n.translate("selectWorld.deleteButton", new Object[0]), I18n.translate("gui.cancel", new Object[0])));
+                }
+            } catch (IOException iOException) {
+                SystemToast.method_27023(this.client, "Demo_World");
+                field_23775.warn("Failed to access demo world", (Throwable)iOException);
             }
         }));
-        LevelStorage levelStorage = this.client.getLevelStorage();
-        LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
-        if (levelProperties == null) {
-            this.buttonResetDemo.active = false;
+        try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World");){
+            LevelProperties levelProperties = session.readLevelProperties();
+            if (levelProperties == null) {
+                this.buttonResetDemo.active = false;
+            }
+        } catch (IOException iOException) {
+            SystemToast.method_27023(this.client, "Demo_World");
+            field_23775.warn("Failed to read demo world data", (Throwable)iOException);
         }
     }
 
@@ -242,8 +256,12 @@ extends Screen {
 
     private void onDemoDeletionConfirmed(boolean delete) {
         if (delete) {
-            LevelStorage levelStorage = this.client.getLevelStorage();
-            levelStorage.deleteLevel("Demo_World");
+            try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World");){
+                session.deleteSessionLock();
+            } catch (IOException iOException) {
+                SystemToast.method_27025(this.client, "Demo_World");
+                field_23775.warn("Failed to delete demo world", (Throwable)iOException);
+            }
         }
         this.client.openScreen(this);
     }

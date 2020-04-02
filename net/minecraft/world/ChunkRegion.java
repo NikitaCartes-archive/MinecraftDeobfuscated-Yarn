@@ -67,6 +67,8 @@ implements IWorld {
     private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<Block>(blockPos -> this.getChunk((BlockPos)blockPos).getBlockTickScheduler());
     private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<Fluid>(blockPos -> this.getChunk((BlockPos)blockPos).getFluidTickScheduler());
     private final BiomeAccess biomeAccess;
+    private final ChunkPos field_23788;
+    private final ChunkPos field_23789;
 
     public ChunkRegion(ServerWorld world, List<Chunk> chunks) {
         int i = MathHelper.floor(Math.sqrt(chunks.size()));
@@ -86,6 +88,8 @@ implements IWorld {
         this.random = world.getRandom();
         this.dimension = world.getDimension();
         this.biomeAccess = new BiomeAccess(this, LevelProperties.sha256Hash(this.seed), this.dimension.getType().getBiomeAccessType());
+        this.field_23788 = chunks.get(0).getPos();
+        this.field_23789 = chunks.get(chunks.size() - 1).getPos();
     }
 
     public int getCenterChunkX() {
@@ -106,9 +110,8 @@ implements IWorld {
     public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
         Chunk chunk;
         if (this.isChunkLoaded(chunkX, chunkZ)) {
-            ChunkPos chunkPos = this.chunks.get(0).getPos();
-            int i = chunkX - chunkPos.x;
-            int j = chunkZ - chunkPos.z;
+            int i = chunkX - this.field_23788.x;
+            int j = chunkZ - this.field_23788.z;
             chunk = this.chunks.get(i + j * this.width);
             if (chunk.getStatus().isAtLeast(leastStatus)) {
                 return chunk;
@@ -119,10 +122,8 @@ implements IWorld {
         if (!create) {
             return null;
         }
-        Chunk chunk2 = this.chunks.get(0);
-        Chunk chunk3 = this.chunks.get(this.chunks.size() - 1);
         LOGGER.error("Requested chunk : {} {}", (Object)chunkX, (Object)chunkZ);
-        LOGGER.error("Region bounds : {} {} | {} {}", (Object)chunk2.getPos().x, (Object)chunk2.getPos().z, (Object)chunk3.getPos().x, (Object)chunk3.getPos().z);
+        LOGGER.error("Region bounds : {} {} | {} {}", (Object)this.field_23788.x, (Object)this.field_23788.z, (Object)this.field_23789.x, (Object)this.field_23789.z);
         if (chunk != null) {
             throw Util.throwOrPause(new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, chunk.getStatus(), chunkX, chunkZ)));
         }
@@ -131,9 +132,7 @@ implements IWorld {
 
     @Override
     public boolean isChunkLoaded(int chunkX, int chunkZ) {
-        Chunk chunk = this.chunks.get(0);
-        Chunk chunk2 = this.chunks.get(this.chunks.size() - 1);
-        return chunkX >= chunk.getPos().x && chunkX <= chunk2.getPos().x && chunkZ >= chunk.getPos().z && chunkZ <= chunk2.getPos().z;
+        return chunkX >= this.field_23788.x && chunkX <= this.field_23789.x && chunkZ >= this.field_23788.z && chunkZ <= this.field_23789.z;
     }
 
     @Override

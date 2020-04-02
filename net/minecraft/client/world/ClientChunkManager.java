@@ -90,14 +90,14 @@ extends ChunkManager {
     }
 
     @Nullable
-    public WorldChunk loadChunkFromPacket(int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k) {
+    public WorldChunk loadChunkFromPacket(int i, int j, @Nullable BiomeArray biomeArray, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
         if (!this.chunks.isInRadius(i, j)) {
             LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)i, (Object)j);
             return null;
         }
         int l = this.chunks.getIndex(i, j);
         WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(l);
-        if (!ClientChunkManager.positionEquals(worldChunk, i, j)) {
+        if (bl || !ClientChunkManager.positionEquals(worldChunk, i, j)) {
             if (biomeArray == null) {
                 LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", (Object)i, (Object)j);
                 return null;

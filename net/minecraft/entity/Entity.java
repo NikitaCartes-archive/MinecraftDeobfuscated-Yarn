@@ -5,7 +5,6 @@ package net.minecraft.entity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -648,7 +647,7 @@ CommandOutput {
         ShapeContext shapeContext = ShapeContext.of(this);
         VoxelShape voxelShape = this.world.getWorldBorder().asVoxelShape();
         Stream<Object> stream = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(box.contract(1.0E-7)), BooleanBiFunction.AND) ? Stream.empty() : Stream.of(voxelShape);
-        Stream<VoxelShape> stream2 = this.world.getEntityCollisions(this, box.stretch(movement), ImmutableSet.of());
+        Stream<VoxelShape> stream2 = this.world.getEntityCollisions(this, box.stretch(movement), entity -> true);
         ReusableStream<VoxelShape> reusableStream = new ReusableStream<VoxelShape>(Stream.concat(stream2, stream));
         Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : Entity.adjustMovementForCollisions(this, movement, box, this.world, shapeContext, reusableStream);
         boolean bl = movement.x != vec3d.x;
@@ -1622,8 +1621,8 @@ CommandOutput {
             NetherPortalBlock cfr_ignored_0 = (NetherPortalBlock)Blocks.NETHER_PORTAL;
             BlockPattern.Result result = NetherPortalBlock.findPortal(this.world, this.lastNetherPortalPosition);
             double d = result.getForwards().getAxis() == Direction.Axis.X ? (double)result.getFrontTopLeft().getZ() : (double)result.getFrontTopLeft().getX();
-            double e = Math.abs(MathHelper.getLerpProgress((result.getForwards().getAxis() == Direction.Axis.X ? this.getZ() : this.getX()) - (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0), d, d - (double)result.getWidth()));
-            double f = MathHelper.getLerpProgress(this.getY() - 1.0, result.getFrontTopLeft().getY(), result.getFrontTopLeft().getY() - result.getHeight());
+            double e = MathHelper.clamp(Math.abs(MathHelper.getLerpProgress((result.getForwards().getAxis() == Direction.Axis.X ? this.getZ() : this.getX()) - (double)(result.getForwards().rotateYClockwise().getDirection() == Direction.AxisDirection.NEGATIVE ? 1 : 0), d, d - (double)result.getWidth())), 0.0, 1.0);
+            double f = MathHelper.clamp(MathHelper.getLerpProgress(this.getY() - 1.0, result.getFrontTopLeft().getY(), result.getFrontTopLeft().getY() - result.getHeight()), 0.0, 1.0);
             this.lastNetherPortalDirectionVector = new Vec3d(e, f, 0.0);
             this.lastNetherPortalDirection = result.getForwards();
         }
@@ -2264,7 +2263,7 @@ CommandOutput {
         return false;
     }
 
-    protected void dealDamage(LivingEntity attacker, Entity target) {
+    public void dealDamage(LivingEntity attacker, Entity target) {
         if (target instanceof LivingEntity) {
             EnchantmentHelper.onUserDamaged((LivingEntity)target, attacker);
         }
@@ -2392,6 +2391,7 @@ CommandOutput {
         return this.getRootVehicle() == entity.getRootVehicle();
     }
 
+    @Environment(value=EnvType.CLIENT)
     public boolean hasPassengerDeep(Entity passenger) {
         for (Entity entity : this.getPassengerList()) {
             if (entity.equals(passenger)) {
@@ -2497,7 +2497,7 @@ CommandOutput {
         return 0;
     }
 
-    public boolean allowsPermissionLevel(int permissionLevel) {
+    public boolean hasPermissionLevel(int permissionLevel) {
         return this.getPermissionLevel() >= permissionLevel;
     }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.tag;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ extends TagContainer<T> {
     private final Registry<T> registry;
 
     public RegistryTagContainer(Registry<T> registry, String path, String type) {
-        super(registry::getOrEmpty, path, false, type);
+        super(registry::getOrEmpty, path, type);
         this.registry = registry;
     }
 
@@ -39,11 +40,11 @@ extends TagContainer<T> {
         for (int j = 0; j < i; ++j) {
             Identifier identifier = buf.readIdentifier();
             int k = buf.readVarInt();
-            Tag.Builder builder = Tag.Builder.create();
+            ImmutableSet.Builder builder = ImmutableSet.builder();
             for (int l = 0; l < k; ++l) {
                 builder.add(this.registry.get(buf.readVarInt()));
             }
-            map.put(identifier, builder.build(identifier));
+            map.put(identifier, Tag.of(builder.build()));
         }
         this.setEntries(map);
     }

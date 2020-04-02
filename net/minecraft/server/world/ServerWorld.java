@@ -125,7 +125,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.ScheduledTick;
-import net.minecraft.world.SessionLockException;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.WanderingTraderManager;
 import net.minecraft.world.World;
@@ -139,6 +138,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -161,7 +161,7 @@ extends World {
     private final Map<UUID, Entity> entitiesByUuid = Maps.newHashMap();
     private final Queue<Entity> entitiesToLoad = Queues.newArrayDeque();
     private final List<ServerPlayerEntity> players = Lists.newArrayList();
-    boolean ticking;
+    boolean inEntityTick;
     private final MinecraftServer server;
     private final WorldSaveHandler worldSaveHandler;
     public boolean savingDisabled;
@@ -173,12 +173,13 @@ extends World {
     private final Set<EntityNavigation> entityNavigations = Sets.newHashSet();
     protected final RaidManager raidManager;
     private final ObjectLinkedOpenHashSet<BlockAction> pendingBlockActions = new ObjectLinkedOpenHashSet();
-    private boolean insideTick;
+    private boolean inBlockTick;
     @Nullable
     private final WanderingTraderManager wanderingTraderManager;
+    private final StructureAccessor structureAccessor = new StructureAccessor();
 
     public ServerWorld(MinecraftServer server, Executor workerExecutor, WorldSaveHandler worldSaveHandler, LevelProperties properties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener) {
-        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), server::getProfiler, false);
+        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), server::getProfiler, false);
         this.worldSaveHandler = worldSaveHandler;
         this.server = server;
         this.portalForcer = new PortalForcer(this);
@@ -197,11 +198,15 @@ extends World {
         return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
     }
 
+    public StructureAccessor getStructureAccessor() {
+        return this.structureAccessor;
+    }
+
     public void tick(BooleanSupplier shouldKeepTicking) {
         boolean bl4;
         int j;
         Profiler profiler = this.getProfiler();
-        this.insideTick = true;
+        this.inBlockTick = true;
         profiler.push("world border");
         this.getWorldBorder().tick();
         profiler.swap("weather");
@@ -293,7 +298,7 @@ extends World {
         }
         profiler.swap("blockEvents");
         this.sendBlockActions();
-        this.insideTick = false;
+        this.inBlockTick = false;
         profiler.swap("entities");
         boolean bl2 = bl4 = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
         if (bl4) {
@@ -313,7 +318,7 @@ extends World {
                 this.globalEntities.remove(j--);
             }
             profiler.swap("regular");
-            this.ticking = true;
+            this.inEntityTick = true;
             Iterator objectIterator = this.entitiesById.int2ObjectEntrySet().iterator();
             while (objectIterator.hasNext()) {
                 Int2ObjectMap.Entry entry = (Int2ObjectMap.Entry)objectIterator.next();
@@ -347,7 +352,7 @@ extends World {
                 }
                 profiler.pop();
             }
-            this.ticking = false;
+            this.inEntityTick = false;
             while ((entity2 = this.entitiesToLoad.poll()) != null) {
                 this.loadEntityUnchecked(entity2);
             }
@@ -433,8 +438,8 @@ extends World {
         return blockPos;
     }
 
-    public boolean isInsideTick() {
-        return this.insideTick;
+    public boolean isInBlockTick() {
+        return this.inBlockTick;
     }
 
     public void updateSleepingPlayers() {
@@ -608,7 +613,7 @@ extends World {
 
     protected void placeBonusChest() {
         ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
-        configuredFeature.generate(this, this.getChunkManager().getChunkGenerator(), this.random, new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ()));
+        configuredFeature.generate(this, this.getStructureAccessor(), this.getChunkManager().getChunkGenerator(), this.random, new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ()));
     }
 
     @Nullable
@@ -616,7 +621,7 @@ extends World {
         return this.dimension.getForcedSpawnPoint();
     }
 
-    public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) throws SessionLockException {
+    public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) {
         ServerChunkManager serverChunkManager = this.getChunkManager();
         if (bl) {
             return;
@@ -631,8 +636,7 @@ extends World {
         serverChunkManager.save(flush);
     }
 
-    protected void saveLevel() throws SessionLockException {
-        this.checkSessionLock();
+    protected void saveLevel() {
         this.dimension.saveWorldData();
         this.getChunkManager().getPersistentStateManager().save();
     }
@@ -775,7 +779,7 @@ extends World {
         for (TypeFilterableList<Entity> typeFilterableList : chunk.getEntitySectionArray()) {
             for (Entity entity : typeFilterableList) {
                 if (entity instanceof ServerPlayerEntity) continue;
-                if (this.ticking) {
+                if (this.inEntityTick) {
                     throw Util.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
                 }
                 this.entitiesById.remove(entity.getEntityId());
@@ -803,7 +807,7 @@ extends World {
     }
 
     private void loadEntityUnchecked(Entity entity) {
-        if (this.ticking) {
+        if (this.inEntityTick) {
             this.entitiesToLoad.add(entity);
         } else {
             this.entitiesById.put(entity.getEntityId(), entity);
@@ -821,7 +825,7 @@ extends World {
     }
 
     public void removeEntity(Entity entity) {
-        if (this.ticking) {
+        if (this.inEntityTick) {
             throw Util.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
         }
         this.removeEntityFromChunk(entity);
@@ -1031,10 +1035,6 @@ extends World {
     @Override
     public boolean isSavingDisabled() {
         return this.savingDisabled;
-    }
-
-    public void checkSessionLock() throws SessionLockException {
-        this.worldSaveHandler.checkSessionLock();
     }
 
     public WorldSaveHandler getSaveHandler() {

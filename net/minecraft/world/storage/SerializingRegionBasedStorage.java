@@ -25,33 +25,35 @@ import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.RegionBasedStorage;
 import net.minecraft.world.storage.StorageIoWorker;
+import net.minecraft.world.storage.StorageSerializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-public class SerializingRegionBasedStorage<R extends DynamicSerializable>
+public class SerializingRegionBasedStorage<R>
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private final StorageIoWorker worker;
     private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<Optional<R>>();
     private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();
+    private final StorageSerializer<R> serializer;
     private final BiFunction<Runnable, Dynamic<?>, R> deserializer;
     private final Function<Runnable, R> factory;
     private final DataFixer dataFixer;
     private final DataFixTypes dataFixType;
 
-    public SerializingRegionBasedStorage(File directory, BiFunction<Runnable, Dynamic<?>, R> deserializer, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixType) {
+    public SerializingRegionBasedStorage(File directory, StorageSerializer<R> serializer, BiFunction<Runnable, Dynamic<?>, R> deserializer, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixType, boolean bl) {
+        this.serializer = serializer;
         this.deserializer = deserializer;
         this.factory = factory;
         this.dataFixer = dataFixer;
         this.dataFixType = dataFixType;
-        this.worker = new StorageIoWorker(new RegionBasedStorage(directory), directory.getName());
+        this.worker = new StorageIoWorker(new RegionBasedStorage(directory, bl), directory.getName());
     }
 
     protected void tick(BooleanSupplier shouldKeepTicking) {
@@ -90,44 +92,44 @@ implements AutoCloseable {
     protected R getOrCreate(long pos) {
         Optional<R> optional = this.get(pos);
         if (optional.isPresent()) {
-            return (R)((DynamicSerializable)optional.get());
+            return optional.get();
         }
-        DynamicSerializable dynamicSerializable = (DynamicSerializable)this.factory.apply(() -> this.onUpdate(pos));
-        this.loadedElements.put(pos, (Optional<R>)Optional.of(dynamicSerializable));
-        return (R)dynamicSerializable;
+        R object = this.factory.apply(() -> this.onUpdate(pos));
+        this.loadedElements.put(pos, Optional.of(object));
+        return object;
     }
 
     private void loadDataAt(ChunkPos chunkPos) {
-        this.method_20368(chunkPos, NbtOps.INSTANCE, this.method_20621(chunkPos));
+        this.update(chunkPos, NbtOps.INSTANCE, this.loadNbt(chunkPos));
     }
 
     @Nullable
-    private CompoundTag method_20621(ChunkPos chunkPos) {
+    private CompoundTag loadNbt(ChunkPos pos) {
         try {
-            return this.worker.getNbt(chunkPos);
+            return this.worker.getNbt(pos);
         } catch (IOException iOException) {
-            LOGGER.error("Error reading chunk {} data from disk", (Object)chunkPos, (Object)iOException);
+            LOGGER.error("Error reading chunk {} data from disk", (Object)pos, (Object)iOException);
             return null;
         }
     }
 
-    private <T> void method_20368(ChunkPos chunkPos, DynamicOps<T> dynamicOps, @Nullable T object) {
-        if (object == null) {
+    private <T> void update(ChunkPos pos, DynamicOps<T> ops, @Nullable T data) {
+        if (data == null) {
             for (int i = 0; i < 16; ++i) {
-                this.loadedElements.put(ChunkSectionPos.from(chunkPos, i).asLong(), (Optional<R>)Optional.empty());
+                this.loadedElements.put(ChunkSectionPos.from(pos, i).asLong(), (Optional<R>)Optional.empty());
             }
         } else {
             int k;
-            Dynamic<T> dynamic2 = new Dynamic<T>(dynamicOps, object);
+            Dynamic<T> dynamic2 = new Dynamic<T>(ops, data);
             int j = SerializingRegionBasedStorage.getDataVersion(dynamic2);
             boolean bl = j != (k = SharedConstants.getGameVersion().getWorldVersion());
             Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixType.getTypeReference(), dynamic2, j, k);
             OptionalDynamic<T> optionalDynamic = dynamic22.get("Sections");
             for (int l = 0; l < 16; ++l) {
-                long m = ChunkSectionPos.from(chunkPos, l).asLong();
-                Optional<DynamicSerializable> optional = optionalDynamic.get(Integer.toString(l)).get().map(dynamic -> (DynamicSerializable)this.deserializer.apply(() -> this.onUpdate(m), (Dynamic<?>)dynamic));
+                long m = ChunkSectionPos.from(pos, l).asLong();
+                Optional<Object> optional = optionalDynamic.get(Integer.toString(l)).get().map(dynamic -> this.deserializer.apply(() -> this.onUpdate(m), (Dynamic<?>)dynamic));
                 this.loadedElements.put(m, (Optional<R>)optional);
-                optional.ifPresent(dynamicSerializable -> {
+                optional.ifPresent(object -> {
                     this.onLoad(m);
                     if (bl) {
                         this.onUpdate(m);
@@ -154,7 +156,7 @@ implements AutoCloseable {
             this.unsavedElements.remove(l);
             Optional optional = (Optional)this.loadedElements.get(l);
             if (optional == null || !optional.isPresent()) continue;
-            map.put(dynamicOps.createString(Integer.toString(i)), ((DynamicSerializable)optional.get()).serialize(dynamicOps));
+            map.put(dynamicOps.createString(Integer.toString(i)), this.serializer.serialize(optional.get(), dynamicOps));
         }
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Sections"), dynamicOps.createMap(map), dynamicOps.createString("DataVersion"), dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
     }

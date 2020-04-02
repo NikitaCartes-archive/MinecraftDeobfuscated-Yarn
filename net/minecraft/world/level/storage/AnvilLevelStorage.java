@@ -4,13 +4,11 @@
 package net.minecraft.world.level.storage;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.DataFixer;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,12 +36,12 @@ import org.apache.logging.log4j.Logger;
 public class AnvilLevelStorage {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    static boolean convertLevel(Path path, DataFixer dataFixer, String string, ProgressListener progressListener) {
+    static boolean convertLevel(LevelStorage.Session session, ProgressListener progressListener) {
         progressListener.progressStagePercentage(0);
         ArrayList<File> list = Lists.newArrayList();
         ArrayList<File> list2 = Lists.newArrayList();
         ArrayList<File> list3 = Lists.newArrayList();
-        File file = new File(path.toFile(), string);
+        File file = session.getDirectory().toFile();
         File file2 = DimensionType.THE_NETHER.getSaveDirectory(file);
         File file3 = DimensionType.THE_END.getSaveDirectory(file);
         LOGGER.info("Scanning folders...");
@@ -56,7 +54,7 @@ public class AnvilLevelStorage {
         }
         int i = list.size() + list2.size() + list3.size();
         LOGGER.info("Total conversion count is {}", (Object)i);
-        LevelProperties levelProperties = LevelStorage.getLevelProperties(path, dataFixer, string);
+        LevelProperties levelProperties = session.readLevelProperties();
         long l = levelProperties != null ? levelProperties.getSeed() : 0L;
         BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
         BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
@@ -68,14 +66,13 @@ public class AnvilLevelStorage {
         if (levelProperties.getGeneratorType() == LevelGeneratorType.DEFAULT_1_1) {
             levelProperties.setGeneratorOptions(LevelGeneratorType.DEFAULT.getDefaultOptions());
         }
-        AnvilLevelStorage.makeMcrLevelDatBackup(path, string);
-        WorldSaveHandler worldSaveHandler = LevelStorage.createSaveHandler(path, dataFixer, string, null);
+        AnvilLevelStorage.makeMcrLevelDatBackup(file);
+        WorldSaveHandler worldSaveHandler = session.createSaveHandler(null);
         worldSaveHandler.saveWorld(levelProperties);
         return true;
     }
 
-    private static void makeMcrLevelDatBackup(Path path, String string) {
-        File file = new File(path.toFile(), string);
+    private static void makeMcrLevelDatBackup(File file) {
         if (!file.exists()) {
             LOGGER.warn("Unable to create level.dat_mcr backup");
             return;
@@ -101,8 +98,8 @@ public class AnvilLevelStorage {
 
     private static void convertRegion(File file, File baseFolder, BiomeSource biomeSource, int i, int progressStart, ProgressListener progressListener) {
         String string = baseFolder.getName();
-        try (RegionFile regionFile = new RegionFile(baseFolder, file);
-             RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"), file);){
+        try (RegionFile regionFile = new RegionFile(baseFolder, file, true);
+             RegionFile regionFile2 = new RegionFile(new File(file, string.substring(0, string.length() - ".mcr".length()) + ".mca"), file, true);){
             for (int j = 0; j < 32; ++j) {
                 int k;
                 for (k = 0; k < 32; ++k) {

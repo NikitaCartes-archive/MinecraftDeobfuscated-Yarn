@@ -3,7 +3,7 @@
  */
 package net.minecraft.item;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import java.util.List;
@@ -18,6 +18,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -324,8 +325,8 @@ implements ItemConvertible {
         return false;
     }
 
-    public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
-        return HashMultimap.create();
+    public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
+        return ImmutableMultimap.of();
     }
 
     public boolean isUsedOnRelease(ItemStack stack) {

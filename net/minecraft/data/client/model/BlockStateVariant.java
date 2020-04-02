@@ -17,7 +17,7 @@ import net.minecraft.data.client.model.VariantSetting;
  */
 public class BlockStateVariant
 implements Supplier<JsonElement> {
-    private final Map<VariantSetting<?>, VariantSetting.Value> properties = Maps.newHashMap();
+    private final Map<VariantSetting<?>, VariantSetting.Value> properties = Maps.newLinkedHashMap();
 
     public <T> BlockStateVariant put(VariantSetting<T> key, T value) {
         VariantSetting.Value value2 = this.properties.put(key, key.evaluate(value));

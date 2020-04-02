@@ -14,6 +14,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.command.arguments.FunctionArgumentType;
 import net.minecraft.command.arguments.TimeArgumentType;
 import net.minecraft.server.MinecraftServer;
@@ -38,28 +39,27 @@ public class ScheduleCommand {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("schedule").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.literal("function").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("function", FunctionArgumentType.function()).suggests(FunctionCommand.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("time", TimeArgumentType.time()).executes(commandContext -> ScheduleCommand.execute((ServerCommandSource)commandContext.getSource(), FunctionArgumentType.getFunctionOrTag(commandContext, "function"), IntegerArgumentType.getInteger(commandContext, "time"), true))).then(CommandManager.literal("append").executes(commandContext -> ScheduleCommand.execute((ServerCommandSource)commandContext.getSource(), FunctionArgumentType.getFunctionOrTag(commandContext, "function"), IntegerArgumentType.getInteger(commandContext, "time"), false)))).then(CommandManager.literal("replace").executes(commandContext -> ScheduleCommand.execute((ServerCommandSource)commandContext.getSource(), FunctionArgumentType.getFunctionOrTag(commandContext, "function"), IntegerArgumentType.getInteger(commandContext, "time"), true))))))).then(CommandManager.literal("clear").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("function", StringArgumentType.greedyString()).suggests(field_20854).executes(commandContext -> ScheduleCommand.method_22833((ServerCommandSource)commandContext.getSource(), StringArgumentType.getString(commandContext, "function"))))));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, Either<CommandFunction, Tag<CommandFunction>> either, int time, boolean bl) throws CommandSyntaxException {
-        if (time == 0) {
+    private static int execute(ServerCommandSource serverCommandSource, Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> pair, int i, boolean bl) throws CommandSyntaxException {
+        if (i == 0) {
             throw SAME_TICK_EXCEPTION.create();
         }
-        long l = serverCommandSource.getWorld().getTime() + (long)time;
+        long l = serverCommandSource.getWorld().getTime() + (long)i;
+        Identifier identifier = pair.getFirst();
         Timer<MinecraftServer> timer = serverCommandSource.getWorld().getLevelProperties().getScheduledEvents();
-        either.ifLeft(commandFunction -> {
-            Identifier identifier = commandFunction.getId();
+        pair.getSecond().ifLeft(commandFunction -> {
             String string = identifier.toString();
             if (bl) {
                 timer.method_22593(string);
             }
             timer.setEvent(string, l, new FunctionTimerCallback(identifier));
-            serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, time, l), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, i, l), true);
         }).ifRight(tag -> {
-            Identifier identifier = tag.getId();
             String string = "#" + identifier.toString();
             if (bl) {
                 timer.method_22593(string);
             }
             timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
-            serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, time, l), true);
+            serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, i, l), true);
         });
         return (int)Math.floorMod(l, Integer.MAX_VALUE);
     }

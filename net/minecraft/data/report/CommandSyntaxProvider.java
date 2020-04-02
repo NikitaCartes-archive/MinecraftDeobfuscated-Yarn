@@ -26,6 +26,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.util.UserCache;
+import net.minecraft.world.level.storage.LevelStorage;
 
 public class CommandSyntaxProvider
 implements DataProvider {
@@ -44,7 +45,8 @@ implements DataProvider {
         File file = new File(this.root.getOutput().toFile(), "tmp");
         UserCache userCache = new UserCache(gameProfileRepository, new File(file, MinecraftServer.USER_CACHE_FILE.getName()));
         ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(Paths.get("server.properties", new String[0]));
-        MinecraftDedicatedServer minecraftServer = new MinecraftDedicatedServer(file, serverPropertiesLoader, Schemas.getFixer(), yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new, serverPropertiesLoader.getPropertiesHandler().levelName);
+        LevelStorage.Session session = LevelStorage.create(file.toPath()).createSession("world");
+        MinecraftDedicatedServer minecraftServer = new MinecraftDedicatedServer(session, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
         Path path = this.root.getOutput().resolve("reports/commands.json");
         CommandDispatcher<ServerCommandSource> commandDispatcher = minecraftServer.getCommandManager().getDispatcher();
         DataProvider.writeToPath(GSON, cache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);

@@ -18,11 +18,13 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -67,11 +69,8 @@ implements ItemSteerable {
         this.goalSelector.add(8, new LookAroundGoal(this));
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+    public static DefaultAttributeContainer.Builder createPigAttributes() {
+        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 10.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25);
     }
 
     @Override
@@ -198,7 +197,7 @@ implements ItemSteerable {
 
     @Override
     public float getSaddledSpeed() {
-        return (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225f;
+        return (float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED) * 0.225f;
     }
 
     @Override

@@ -27,7 +27,8 @@ import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -126,10 +127,8 @@ implements RangedAttackMob {
         this.targetSelector.add(2, new ChaseWolvesGoal(this));
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(40.0);
+    public static DefaultAttributeContainer.Builder createLlamaAttributes() {
+        return LlamaEntity.createAbstractDonkeyAttributes().add(Attributes.GENERIC_FOLLOW_RANGE, 40.0);
     }
 
     @Override

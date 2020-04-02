@@ -20,24 +20,26 @@ public abstract class FoliagePlacer
 implements DynamicSerializable {
     protected final int radius;
     protected final int randomRadius;
+    protected final int offset;
+    protected final int randomOffset;
     protected final FoliagePlacerType<?> type;
 
-    public FoliagePlacer(int radius, int randomRadius, FoliagePlacerType<?> type) {
+    public FoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, FoliagePlacerType<?> type) {
         this.radius = radius;
         this.randomRadius = randomRadius;
+        this.offset = offset;
+        this.randomOffset = randomOffset;
         this.type = type;
     }
 
     /**
      * This is the main method used to generate foliage.
-     * 
-     * @param baseHeight the height of the full tree
-     * @param trunkHeight the height of just the trunk, or the part of the tree without leaves
-     * @param radius the radius of the foliage
      */
-    public abstract void generate(ModifiableTestableWorld var1, Random var2, BranchedTreeFeatureConfig var3, int var4, int var5, int var6, BlockPos var7, Set<BlockPos> var8);
+    public abstract void generate(ModifiableTestableWorld var1, Random var2, BranchedTreeFeatureConfig var3, int var4, BlockPos var5, int var6, int var7, Set<BlockPos> var8);
 
-    public abstract int getRadius(Random var1, int var2, int var3, BranchedTreeFeatureConfig var4);
+    public abstract int getHeight(Random var1, int var2);
+
+    public abstract int getRadius(Random var1, int var2, BranchedTreeFeatureConfig var3);
 
     protected abstract boolean isInvalidForLeaves(Random var1, int var2, int var3, int var4, int var5, int var6);
 
@@ -49,16 +51,15 @@ implements DynamicSerializable {
      * @param trunkHeight the height of the trunk
      * @param baseHeight the height of the full tree
      * @param radius the radius of the foliage
-     * @param currentTreeHeight the current y-level of the tree being tested.
      */
-    public abstract int getRadiusForPlacement(int var1, int var2, int var3, int var4);
+    public abstract int getRadiusForPlacement(int var1, int var2, int var3);
 
-    protected void generate(ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, int baseHeight, BlockPos pos, int y, int radius, Set<BlockPos> leaves) {
+    protected void generate(ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, BlockPos pos, int baseHeight, int y, int radius, Set<BlockPos> leaves) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = -radius; i <= radius; ++i) {
             for (int j = -radius; j <= radius; ++j) {
                 if (this.isInvalidForLeaves(random, baseHeight, i, y, j, radius)) continue;
-                mutable.set(i + pos.getX(), y + pos.getY(), j + pos.getZ());
+                mutable.set(i + pos.getX(), y + pos.getY() - baseHeight, j + pos.getZ());
                 this.placeLeaves(world, random, mutable, config, leaves);
             }
         }
@@ -74,7 +75,7 @@ implements DynamicSerializable {
     @Override
     public <T> T serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("type"), ops.createString(Registry.FOLIAGE_PLACER_TYPE.getId(this.type).toString())).put(ops.createString("radius"), ops.createInt(this.radius)).put(ops.createString("radius_random"), ops.createInt(this.randomRadius));
+        builder.put(ops.createString("type"), ops.createString(Registry.FOLIAGE_PLACER_TYPE.getId(this.type).toString())).put(ops.createString("radius"), ops.createInt(this.radius)).put(ops.createString("radius_random"), ops.createInt(this.randomRadius)).put(ops.createString("offset"), ops.createInt(this.offset)).put(ops.createString("offset_random"), ops.createInt(this.randomOffset));
         return new Dynamic<T>(ops, ops.createMap(builder.build())).getValue();
     }
 }

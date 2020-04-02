@@ -37,13 +37,15 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.VillagerTaskListProvider;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -175,11 +177,8 @@ VillagerDataContainer {
         }
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
-        this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(48.0);
+    public static DefaultAttributeContainer.Builder createVillagerAttributes() {
+        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.5).add(Attributes.GENERIC_FOLLOW_RANGE, 48.0);
     }
 
     @Override
@@ -640,13 +639,11 @@ VillagerDataContainer {
     protected void loot(ItemEntity item) {
         ItemStack itemStack = item.getStack();
         if (this.canGather(itemStack)) {
-            ItemStack itemStack2;
-            int i;
             Item item2 = itemStack.getItem();
             BasicInventory basicInventory = this.getInventory();
             boolean bl = false;
-            for (i = 0; i < basicInventory.size(); ++i) {
-                itemStack2 = basicInventory.getStack(i);
+            for (int i = 0; i < basicInventory.size(); ++i) {
+                ItemStack itemStack2 = basicInventory.getStack(i);
                 if (!itemStack2.isEmpty() && (itemStack2.getItem() != item2 || itemStack2.getCount() >= itemStack2.getMaxCount())) continue;
                 bl = true;
                 break;
@@ -654,20 +651,12 @@ VillagerDataContainer {
             if (!bl) {
                 return;
             }
-            i = basicInventory.count(item2);
-            if (i == 256) {
-                return;
-            }
-            if (i > 256) {
-                basicInventory.removeItem(item2, i - 256);
-                return;
-            }
             this.sendPickup(item, itemStack.getCount());
-            itemStack2 = basicInventory.addStack(itemStack);
-            if (itemStack2.isEmpty()) {
+            ItemStack itemStack3 = basicInventory.addStack(itemStack);
+            if (itemStack3.isEmpty()) {
                 item.remove();
             } else {
-                itemStack.setCount(itemStack2.getCount());
+                itemStack.setCount(itemStack3.getCount());
             }
         }
     }

@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -21,10 +22,10 @@ extends Feature<SimpleRandomFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SimpleRandomFeatureConfig simpleRandomFeatureConfig) {
+    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SimpleRandomFeatureConfig simpleRandomFeatureConfig) {
         int i = random.nextInt(simpleRandomFeatureConfig.features.size());
         ConfiguredFeature<?, ?> configuredFeature = simpleRandomFeatureConfig.features.get(i);
-        return configuredFeature.generate(iWorld, chunkGenerator, random, blockPos);
+        return configuredFeature.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
     }
 }
 

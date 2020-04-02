@@ -8,9 +8,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public interface LookTarget {
-    public BlockPos getBlockPos();
-
     public Vec3d getPos();
+
+    public BlockPos getBlockPos();
 
     public boolean isSeenBy(LivingEntity var1);
 }

@@ -126,7 +126,7 @@ extends FacingBlock {
             BlockPos blockPos = pos.offset(direction, 2);
             BlockState blockState = world.getBlockState(blockPos);
             int i = 1;
-            if (blockState.getBlock() == Blocks.MOVING_PISTON && blockState.get(FACING) == direction && (blockEntity = world.getBlockEntity(blockPos)) instanceof PistonBlockEntity && (pistonBlockEntity = (PistonBlockEntity)blockEntity).isExtending() && (pistonBlockEntity.getProgress(0.0f) < 0.5f || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInsideTick())) {
+            if (blockState.getBlock() == Blocks.MOVING_PISTON && blockState.get(FACING) == direction && (blockEntity = world.getBlockEntity(blockPos)) instanceof PistonBlockEntity && (pistonBlockEntity = (PistonBlockEntity)blockEntity).isExtending() && (pistonBlockEntity.getProgress(0.0f) < 0.5f || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInBlockTick())) {
                 i = 2;
             }
             world.addBlockAction(pos, this, i, direction.getId());

@@ -19,6 +19,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -61,19 +62,19 @@ public abstract class StructureStart {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
+    public void generateStructure(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos) {
         List<StructurePiece> list = this.children;
         synchronized (list) {
             if (this.children.isEmpty()) {
                 return;
             }
-            BlockBox blockBox = this.children.get((int)0).boundingBox;
-            Vec3i vec3i = blockBox.getCenter();
-            BlockPos blockPos = new BlockPos(vec3i.getX(), blockBox.minY, vec3i.getZ());
+            BlockBox blockBox2 = this.children.get((int)0).boundingBox;
+            Vec3i vec3i = blockBox2.getCenter();
+            BlockPos blockPos = new BlockPos(vec3i.getX(), blockBox2.minY, vec3i.getZ());
             Iterator<StructurePiece> iterator = this.children.iterator();
             while (iterator.hasNext()) {
                 StructurePiece structurePiece = iterator.next();
-                if (!structurePiece.getBoundingBox().intersects(box) || structurePiece.generate(world, chunkGenerator, random, box, pos, blockPos)) continue;
+                if (!structurePiece.getBoundingBox().intersects(blockBox) || structurePiece.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) continue;
                 iterator.remove();
             }
             this.setBoundingBoxFromChildren();

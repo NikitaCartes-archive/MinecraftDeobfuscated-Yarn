@@ -268,10 +268,10 @@ public class Structure {
             BlockPos blockPos2 = blockPos.offset(direction);
             BlockState blockState = world.getBlockState(blockPos);
             if (blockState != (blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2 = world.getBlockState(blockPos2), world, blockPos, blockPos2))) {
-                world.setBlockState(blockPos, blockState3, flags & 0xFFFFFFFE | 0x10);
+                world.setBlockState(blockPos, blockState3, flags & 0xFFFFFFFE);
             }
             if (blockState2 != (blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, world, blockPos2, blockPos))) {
-                world.setBlockState(blockPos2, blockState4, flags & 0xFFFFFFFE | 0x10);
+                world.setBlockState(blockPos2, blockState4, flags & 0xFFFFFFFE);
             }
         });
     }

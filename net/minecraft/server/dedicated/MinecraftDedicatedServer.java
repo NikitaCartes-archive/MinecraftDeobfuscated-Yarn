@@ -9,12 +9,10 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -66,6 +64,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -84,8 +83,8 @@ implements DedicatedServer {
     @Nullable
     private DedicatedServerGui gui;
 
-    public MinecraftDedicatedServer(File file, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, YggdrasilAuthenticationService yggdrasilAuthenticationService, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory, String string) {
-        super(file, Proxy.NO_PROXY, dataFixer, new CommandManager(true), yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory, string);
+    public MinecraftDedicatedServer(LevelStorage.Session session, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(session, Proxy.NO_PROXY, dataFixer, new CommandManager(true), minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new ServerCommandOutput(this);
         new Thread("Server Infinisleeper"){
@@ -208,7 +207,7 @@ implements DedicatedServer {
         LOGGER.info("Preparing level \"{}\"", (Object)this.getLevelName());
         JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();
         LevelGeneratorOptions levelGeneratorOptions = levelGeneratorType.loadOptions(new Dynamic<JsonObject>(JsonOps.INSTANCE, jsonObject));
-        this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorOptions);
+        this.loadWorld(this.session.getDirectoryName(), m, levelGeneratorOptions);
         long o = Util.getMeasuringTimeNano() - l;
         String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
         LOGGER.info("Done ({})! For help, type \"help\"", (Object)string3);
@@ -416,7 +415,7 @@ implements DedicatedServer {
     }
 
     @Override
-    public boolean isSpawnProtected(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+    public boolean isSpawnProtected(World world, BlockPos pos, PlayerEntity player) {
         int j;
         if (world.dimension.getType() != DimensionType.OVERWORLD) {
             return false;
@@ -424,15 +423,15 @@ implements DedicatedServer {
         if (this.getPlayerManager().getOpList().isEmpty()) {
             return false;
         }
-        if (this.getPlayerManager().isOperator(playerEntity.getGameProfile())) {
+        if (this.getPlayerManager().isOperator(player.getGameProfile())) {
             return false;
         }
         if (this.getSpawnProtectionRadius() <= 0) {
             return false;
         }
-        BlockPos blockPos2 = world.getSpawnPos();
-        int i = MathHelper.abs(blockPos.getX() - blockPos2.getX());
-        int k = Math.max(i, j = MathHelper.abs(blockPos.getZ() - blockPos2.getZ()));
+        BlockPos blockPos = world.getSpawnPos();
+        int i = MathHelper.abs(pos.getX() - blockPos.getX());
+        int k = Math.max(i, j = MathHelper.abs(pos.getZ() - blockPos.getZ()));
         return k <= this.getSpawnProtectionRadius();
     }
 
@@ -552,8 +551,18 @@ implements DedicatedServer {
     }
 
     @Override
-    public boolean isOwner(GameProfile profile) {
+    public boolean isHost(GameProfile profile) {
         return false;
+    }
+
+    @Override
+    public String getLevelName() {
+        return this.session.getDirectoryName();
+    }
+
+    @Override
+    public boolean syncChunkWrites() {
+        return this.propertiesLoader.getPropertiesHandler().syncChunkWrites;
     }
 
     @Override

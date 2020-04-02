@@ -19,8 +19,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.toast.ToastManager;
-import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -28,19 +26,22 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class EditWorldScreen
 extends Screen {
+    private static final Logger field_23776 = LogManager.getLogger();
     private ButtonWidget saveButton;
     private final BooleanConsumer callback;
     private TextFieldWidget levelNameTextField;
-    private final String levelName;
+    private final LevelStorage.Session field_23777;
 
-    public EditWorldScreen(BooleanConsumer callback, String levelName) {
+    public EditWorldScreen(BooleanConsumer callback, LevelStorage.Session session) {
         super(new TranslatableText("selectWorld.edit.title", new Object[0]));
         this.callback = callback;
-        this.levelName = levelName;
+        this.field_23777 = session;
     }
 
     @Override
@@ -52,18 +53,13 @@ extends Screen {
     protected void init() {
         this.client.keyboard.enableRepeatEvents(true);
         ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20, I18n.translate("selectWorld.edit.resetIcon", new Object[0]), buttonWidget -> {
-            LevelStorage levelStorage = this.client.getLevelStorage();
-            FileUtils.deleteQuietly(levelStorage.resolveFile(this.levelName, "icon.png"));
+            FileUtils.deleteQuietly(this.field_23777.getIconFile());
             buttonWidget.active = false;
         }));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, I18n.translate("selectWorld.edit.openFolder", new Object[0]), buttonWidget -> {
-            LevelStorage levelStorage = this.client.getLevelStorage();
-            Util.getOperatingSystem().open(levelStorage.resolveFile(this.levelName, "icon.png").getParentFile());
-        }));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, I18n.translate("selectWorld.edit.openFolder", new Object[0]), buttonWidget -> Util.getOperatingSystem().open(this.field_23777.getDirectory().toFile())));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, I18n.translate("selectWorld.edit.backup", new Object[0]), buttonWidget -> {
-            LevelStorage levelStorage = this.client.getLevelStorage();
-            EditWorldScreen.backupLevel(levelStorage, this.levelName);
-            this.callback.accept(false);
+            boolean bl = EditWorldScreen.backupLevel(this.field_23777);
+            this.callback.accept(!bl);
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20, I18n.translate("selectWorld.edit.backupFolder", new Object[0]), buttonWidget -> {
             LevelStorage levelStorage = this.client.getLevelStorage();
@@ -77,15 +73,14 @@ extends Screen {
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20, I18n.translate("selectWorld.edit.optimize", new Object[0]), buttonWidget -> this.client.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
             if (bl) {
-                EditWorldScreen.backupLevel(this.client.getLevelStorage(), this.levelName);
+                EditWorldScreen.backupLevel(this.field_23777);
             }
-            this.client.openScreen(new OptimizeWorldScreen(this.callback, this.levelName, this.client.getLevelStorage(), bl2));
+            this.client.openScreen(OptimizeWorldScreen.method_27031(this.callback, this.field_23777, bl2));
         }, new TranslatableText("optimizeWorld.confirm.title", new Object[0]), new TranslatableText("optimizeWorld.confirm.description", new Object[0]), true))));
         this.saveButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, I18n.translate("selectWorld.edit.save", new Object[0]), buttonWidget -> this.commit()));
         this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.callback.accept(false)));
-        buttonWidget2.active = this.client.getLevelStorage().resolveFile(this.levelName, "icon.png").isFile();
-        LevelStorage levelStorage = this.client.getLevelStorage();
-        LevelProperties levelProperties = levelStorage.getLevelProperties(this.levelName);
+        buttonWidget2.active = this.field_23777.getIconFile().isFile();
+        LevelProperties levelProperties = this.field_23777.readLevelProperties();
         String string2 = levelProperties == null ? "" : levelProperties.getLevelName();
         this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 53, 200, 20, I18n.translate("selectWorld.enterName", new Object[0]));
         this.levelNameTextField.setText(string2);
@@ -104,35 +99,44 @@ extends Screen {
     }
 
     @Override
+    public void onClose() {
+        this.callback.accept(false);
+    }
+
+    @Override
     public void removed() {
         this.client.keyboard.enableRepeatEvents(false);
     }
 
     private void commit() {
-        LevelStorage levelStorage = this.client.getLevelStorage();
-        levelStorage.renameLevel(this.levelName, this.levelNameTextField.getText().trim());
-        this.callback.accept(true);
+        try {
+            this.field_23777.save(this.levelNameTextField.getText().trim());
+            this.callback.accept(true);
+        } catch (IOException iOException) {
+            field_23776.error("Failed to access world '{}'", (Object)this.field_23777.getDirectoryName(), (Object)iOException);
+            SystemToast.method_27023(this.client, this.field_23777.getDirectoryName());
+            this.callback.accept(true);
+        }
     }
 
-    public static void backupLevel(LevelStorage level, String name) {
-        BaseText text2;
-        TranslatableText text;
-        ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
+    public static boolean backupLevel(LevelStorage.Session session) {
         long l = 0L;
         IOException iOException = null;
         try {
-            l = level.backupLevel(name);
+            l = session.createBackup();
         } catch (IOException iOException2) {
             iOException = iOException2;
         }
         if (iOException != null) {
-            text = new TranslatableText("selectWorld.edit.backupFailed", new Object[0]);
-            text2 = new LiteralText(iOException.getMessage());
-        } else {
-            text = new TranslatableText("selectWorld.edit.backupCreated", name);
-            text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
+            TranslatableText text = new TranslatableText("selectWorld.edit.backupFailed", new Object[0]);
+            LiteralText text2 = new LiteralText(iOException.getMessage());
+            MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
+            return false;
         }
-        toastManager.add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
+        TranslatableText text = new TranslatableText("selectWorld.edit.backupCreated", session.getDirectoryName());
+        TranslatableText text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
+        MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
+        return true;
     }
 
     @Override

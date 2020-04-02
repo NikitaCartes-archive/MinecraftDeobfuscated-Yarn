@@ -47,7 +47,8 @@ import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -205,7 +206,7 @@ implements Flutterer {
 
     @Override
     public boolean tryAttack(Entity target) {
-        boolean bl = target.damage(DamageSource.sting(this), (int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue());
+        boolean bl = target.damage(DamageSource.sting(this), (int)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE));
         if (bl) {
             this.dealDamage(this, target);
             if (target instanceof LivingEntity) {
@@ -471,15 +472,8 @@ implements Flutterer {
         return (this.dataTracker.get(multipleByteTracker) & location) != 0;
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributes().register(EntityAttributes.FLYING_SPEED);
-        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
-        this.getAttributeInstance(EntityAttributes.FLYING_SPEED).setBaseValue(0.6f);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3f);
-        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
-        this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(48.0);
+    public static DefaultAttributeContainer.Builder createBeeAttributes() {
+        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 10.0).add(Attributes.GENERIC_FLYING_SPEED, 0.6f).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(Attributes.GENERIC_ATTACK_DAMAGE, 2.0).add(Attributes.GENERIC_FOLLOW_RANGE, 48.0);
     }
 
     @Override

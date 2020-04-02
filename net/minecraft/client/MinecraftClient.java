@@ -137,6 +137,7 @@ import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -364,7 +365,7 @@ WindowEventHandler {
             i = 0;
         }
         Bootstrap.initialize();
-        Bootstrap.logMissingTranslations();
+        Bootstrap.logMissing();
         KeybindText.i18n = KeyBinding::getLocalizedName;
         this.dataFixer = Schemas.getFixer();
         this.toastManager = new ToastManager(this);
@@ -1400,8 +1401,17 @@ WindowEventHandler {
     }
 
     public void startIntegratedServer(String name, String displayName, @Nullable LevelInfo levelInfo) {
+        LevelStorage.Session session;
         this.disconnect();
-        WorldSaveHandler worldSaveHandler = this.levelStorage.createSaveHandler(name, null);
+        try {
+            session = this.levelStorage.createSession(name);
+        } catch (IOException iOException) {
+            LOGGER.warn("Failed to read level {} data", (Object)name, (Object)iOException);
+            SystemToast.method_27023(this, name);
+            this.openScreen(null);
+            return;
+        }
+        WorldSaveHandler worldSaveHandler = session.createSaveHandler(null);
         LevelProperties levelProperties = worldSaveHandler.readProperties();
         if (levelProperties == null && levelInfo != null) {
             levelProperties = new LevelProperties(levelInfo, name);
@@ -1419,7 +1429,7 @@ WindowEventHandler {
             SkullBlockEntity.setUserCache(userCache);
             SkullBlockEntity.setSessionService(minecraftSessionService);
             UserCache.setUseRemote(false);
-            this.server = new IntegratedServer(this, name, displayName, levelInfo, yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache, i -> {
+            this.server = new IntegratedServer(this, session, displayName, levelInfo, minecraftSessionService, gameProfileRepository, userCache, i -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
                 worldGenerationProgressTracker.start();
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
@@ -1895,6 +1905,10 @@ WindowEventHandler {
     public void setCameraEntity(Entity entity) {
         this.cameraEntity = entity;
         this.gameRenderer.onCameraEntitySet(entity);
+    }
+
+    public boolean method_27022(Entity entity) {
+        return entity.isGlowing() || this.player != null && this.player.isSpectator() && this.options.keySpectatorOutlines.isPressed() && entity.getType() == EntityType.PLAYER;
     }
 
     @Override

@@ -4,7 +4,6 @@
 package net.minecraft.client.network;
 
 import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -137,11 +136,6 @@ extends AbstractClientPlayerEntity {
         this.tickables.add(new AmbientSoundPlayer(this, client.getSoundManager()));
         this.tickables.add(new BubbleColumnSoundPlayer(this));
         this.tickables.add(new BiomeEffectSoundPlayer(this, client.getSoundManager(), clientWorld.getBiomeAccess()));
-    }
-
-    @Override
-    public boolean isGlowing() {
-        return super.isGlowing() || this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed();
     }
 
     @Override
@@ -889,7 +883,7 @@ extends AbstractClientPlayerEntity {
         Vec3d vec3d11 = vec3d7.subtract(vec3d9);
         Vec3d vec3d12 = vec3d6.add(vec3d9);
         Vec3d vec3d13 = vec3d7.add(vec3d9);
-        Iterator iterator = this.world.getCollisions(this, box, Collections.emptySet()).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
+        Iterator iterator = this.world.getCollisions(this, box, entity -> true).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).iterator();
         float r = Float.MIN_VALUE;
         while (iterator.hasNext()) {
             Box box2 = (Box)iterator.next();

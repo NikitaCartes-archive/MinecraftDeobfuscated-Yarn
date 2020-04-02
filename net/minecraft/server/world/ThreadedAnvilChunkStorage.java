@@ -12,6 +12,8 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ByteMap;
+import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
@@ -85,7 +87,6 @@ import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.SessionLockException;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -131,11 +132,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final File saveDir;
     private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
     private final Int2ObjectMap<EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<EntityTracker>();
+    private final Long2ByteMap field_23786 = new Long2ByteOpenHashMap();
     private final Queue<Runnable> field_19343 = Queues.newConcurrentLinkedQueue();
     private int watchDistance;
 
-    public ThreadedAnvilChunkStorage(ServerWorld world, File file, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ThreadExecutor<Runnable> mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator<?> chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier, int i) {
-        super(new File(world.getDimension().getType().getSaveDirectory(file), "region"), dataFixer);
+    public ThreadedAnvilChunkStorage(ServerWorld world, File file, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ThreadExecutor<Runnable> mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator<?> chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, Supplier<PersistentStateManager> supplier, int i, boolean bl) {
+        super(new File(world.getDimension().getType().getSaveDirectory(file), "region"), dataFixer, bl);
         this.structureManager = structureManager;
         this.saveDir = world.getDimension().getType().getSaveDirectory(file);
         this.world = world;
@@ -151,7 +153,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.serverLightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false));
         this.ticketManager = new TicketManager(workerExecutor, mainThreadExecutor);
         this.persistentStateManagerFactory = supplier;
-        this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer);
+        this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer, bl);
         this.setViewDistance(i);
     }
 
@@ -446,6 +448,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                     if (bl) {
                         ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, compoundTag);
                         chunk.setLastSaveTime(this.world.getTime());
+                        this.method_27053(pos, chunk.getStatus().getChunkType());
                         return Either.left(chunk);
                     }
                     LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)pos);
@@ -455,12 +458,22 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 if (throwable instanceof IOException) {
                     LOGGER.error("Couldn't load chunk {}", (Object)pos, (Object)throwable);
                 }
+                this.method_27054(pos);
                 throw crashException;
             } catch (Exception exception) {
                 LOGGER.error("Couldn't load chunk {}", (Object)pos, (Object)exception);
             }
+            this.method_27054(pos);
             return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA));
         }, this.mainThreadExecutor);
+    }
+
+    private void method_27054(ChunkPos chunkPos) {
+        this.field_23786.put(chunkPos.toLong(), (byte)-1);
+    }
+
+    private byte method_27053(ChunkPos chunkPos, ChunkStatus.ChunkType chunkType) {
+        return this.field_23786.put(chunkPos.toLong(), chunkType == ChunkStatus.ChunkType.PROTOCHUNK ? (byte)-1 : 1);
     }
 
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> generateChunk(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
@@ -570,21 +583,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         if (!chunk.needsSaving()) {
             return false;
         }
-        try {
-            this.world.checkSessionLock();
-        } catch (SessionLockException sessionLockException) {
-            LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)sessionLockException);
-            return false;
-        }
         chunk.setLastSaveTime(this.world.getTime());
         chunk.setShouldSave(false);
         ChunkPos chunkPos = chunk.getPos();
         try {
-            CompoundTag compoundTag;
             ChunkStatus chunkStatus = chunk.getStatus();
             if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
-                compoundTag = this.getUpdatedChunkTag(chunkPos);
-                if (compoundTag != null && ChunkSerializer.getChunkType(compoundTag) == ChunkStatus.ChunkType.LEVELCHUNK) {
+                if (this.method_27055(chunkPos)) {
                     return false;
                 }
                 if (chunkStatus == ChunkStatus.EMPTY && chunk.getStructureStarts().values().stream().noneMatch(StructureStart::hasChildren)) {
@@ -592,13 +597,35 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 }
             }
             this.world.getProfiler().visit("chunkSave");
-            compoundTag = ChunkSerializer.serialize(this.world, chunk);
+            CompoundTag compoundTag = ChunkSerializer.serialize(this.world, chunk);
             this.setTagAt(chunkPos, compoundTag);
+            this.method_27053(chunkPos, chunkStatus.getChunkType());
             return true;
         } catch (Exception exception) {
             LOGGER.error("Failed to save chunk {},{}", (Object)chunkPos.x, (Object)chunkPos.z, (Object)exception);
             return false;
         }
+    }
+
+    private boolean method_27055(ChunkPos chunkPos) {
+        CompoundTag compoundTag;
+        byte b = this.field_23786.get(chunkPos.toLong());
+        if (b != 0) {
+            return b == 1;
+        }
+        try {
+            compoundTag = this.getUpdatedChunkTag(chunkPos);
+            if (compoundTag == null) {
+                this.method_27054(chunkPos);
+                return false;
+            }
+        } catch (Exception exception) {
+            LOGGER.error("Failed to read chunk {}", (Object)chunkPos, (Object)exception);
+            this.method_27054(chunkPos);
+            return false;
+        }
+        ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(compoundTag);
+        return this.method_27053(chunkPos, chunkType) == 1;
     }
 
     protected void setViewDistance(int watchDistance) {

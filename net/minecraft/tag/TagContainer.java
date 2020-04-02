@@ -3,7 +3,10 @@
  */
 package net.minecraft.tag;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -20,10 +23,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
@@ -31,7 +36,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,30 +45,41 @@ public class TagContainer<T> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
     private static final int JSON_EXTENSION_LENGTH = ".json".length();
-    private Map<Identifier, Tag<T>> entries = ImmutableMap.of();
+    private final Tag<T> field_23691 = Tag.of(ImmutableSet.of());
+    private BiMap<Identifier, Tag<T>> entries = HashBiMap.create();
     private final Function<Identifier, Optional<T>> getter;
     private final String dataType;
-    private final boolean ordered;
     private final String entryType;
 
-    public TagContainer(Function<Identifier, Optional<T>> getter, String dataType, boolean ordered, String entryType) {
+    public TagContainer(Function<Identifier, Optional<T>> getter, String dataType, String string) {
         this.getter = getter;
         this.dataType = dataType;
-        this.ordered = ordered;
-        this.entryType = entryType;
+        this.entryType = string;
     }
 
     @Nullable
     public Tag<T> get(Identifier id) {
-        return this.entries.get(id);
+        return (Tag)this.entries.get(id);
     }
 
     public Tag<T> getOrCreate(Identifier id) {
-        Tag<T> tag = this.entries.get(id);
-        if (tag == null) {
-            return new Tag(id);
+        return this.entries.getOrDefault(id, this.field_23691);
+    }
+
+    @Nullable
+    public Identifier method_26796(Tag<T> tag) {
+        if (tag instanceof Tag.Identified) {
+            return ((Tag.Identified)tag).getId();
         }
-        return tag;
+        return (Identifier)this.entries.inverse().get(tag);
+    }
+
+    public Identifier method_26798(Tag<T> tag) {
+        Identifier identifier = this.method_26796(tag);
+        if (identifier == null) {
+            throw new IllegalStateException("Unrecognized tag");
+        }
+        return identifier;
     }
 
     public Collection<Identifier> getKeys() {
@@ -74,14 +89,14 @@ public class TagContainer<T> {
     @Environment(value=EnvType.CLIENT)
     public Collection<Identifier> getTagsFor(T object) {
         ArrayList<Identifier> list = Lists.newArrayList();
-        for (Map.Entry<Identifier, Tag<T>> entry : this.entries.entrySet()) {
-            if (!entry.getValue().contains(object)) continue;
-            list.add(entry.getKey());
+        for (Map.Entry entry : this.entries.entrySet()) {
+            if (!((Tag)entry.getValue()).contains(object)) continue;
+            list.add((Identifier)entry.getKey());
         }
         return list;
     }
 
-    public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager manager, Executor executor) {
+    public CompletableFuture<Map<Identifier, Tag.Builder>> prepareReload(ResourceManager manager, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
             HashMap<Identifier, Tag.Builder> map = Maps.newHashMap();
             for (Identifier identifier2 : manager.findResources(this.dataType, string -> string.endsWith(".json"))) {
@@ -98,10 +113,10 @@ public class TagContainer<T> {
                                 try {
                                     JsonObject jsonObject = JsonHelper.deserialize(GSON, (Reader)reader, JsonObject.class);
                                     if (jsonObject == null) {
-                                        LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it's empty or null", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
+                                        LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
                                         continue;
                                     }
-                                    map.computeIfAbsent(identifier22, identifier -> Util.make(Tag.Builder.create(), builder -> builder.ordered(this.ordered))).fromJson(this.getter, jsonObject);
+                                    map.computeIfAbsent(identifier22, identifier -> Tag.Builder.create()).read(jsonObject);
                                 } catch (Throwable throwable3) {
                                     throwable2 = throwable3;
                                     throw throwable3;
@@ -146,30 +161,30 @@ public class TagContainer<T> {
         }, executor);
     }
 
-    public void applyReload(Map<Identifier, Tag.Builder<T>> preparedBuilders) {
-        HashMap map = Maps.newHashMap();
-        while (!preparedBuilders.isEmpty()) {
+    public void applyReload(Map<Identifier, Tag.Builder> map) {
+        HashMap<Identifier, Tag<T>> map2 = Maps.newHashMap();
+        Function function = map2::get;
+        Function<Identifier, Object> function2 = identifier -> this.getter.apply((Identifier)identifier).orElse(null);
+        while (!map.isEmpty()) {
             boolean bl = false;
-            Iterator<Map.Entry<Identifier, Tag.Builder<T>>> iterator = preparedBuilders.entrySet().iterator();
+            Iterator<Map.Entry<Identifier, Tag.Builder>> iterator = map.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<Identifier, Tag.Builder<T>> entry = iterator.next();
-                Tag.Builder builder2 = entry.getValue();
-                if (!builder2.applyTagGetter(map::get)) continue;
-                bl = true;
-                Identifier identifier2 = entry.getKey();
-                map.put(identifier2, builder2.build(identifier2));
+                Map.Entry<Identifier, Tag.Builder> entry = iterator.next();
+                Optional<Tag<Object>> optional = entry.getValue().build(function, function2);
+                if (!optional.isPresent()) continue;
+                map2.put(entry.getKey(), optional.get());
                 iterator.remove();
+                bl = true;
             }
             if (bl) continue;
-            preparedBuilders.forEach((identifier, builder) -> LOGGER.error("Couldn't load {} tag {} as it either references another tag that doesn't exist, or ultimately references itself", (Object)this.entryType, identifier));
             break;
         }
-        preparedBuilders.forEach((identifier, builder) -> map.put((Identifier)identifier, builder.build((Identifier)identifier)));
-        this.setEntries(map);
+        map.forEach((identifier, builder) -> LOGGER.error("Couldn't load {} tag {} as it is missing following references: {}", (Object)this.entryType, identifier, (Object)builder.streamUnresolvedEntries(function, function2).map(Objects::toString).collect(Collectors.joining(","))));
+        this.setEntries(map2);
     }
 
     protected void setEntries(Map<Identifier, Tag<T>> entries) {
-        this.entries = ImmutableMap.copyOf(entries);
+        this.entries = ImmutableBiMap.copyOf(entries);
     }
 
     public Map<Identifier, Tag<T>> getEntries() {

@@ -19,10 +19,20 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.Hoglin;
 import net.minecraft.entity.mob.HoglinBrain;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.mob.ZoglinEntity;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,20 +46,24 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class HoglinEntity
 extends AnimalEntity
-implements Monster {
+implements Monster,
+Hoglin {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final TrackedData<Boolean> BABY = DataTracker.registerData(HoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int movementCooldownTicks;
+    private int timeInOverworld = 0;
+    private boolean cannotBeHunted = false;
     private static int field_22361 = 0;
     private static int field_22362 = 0;
     private static int field_22363 = 0;
@@ -73,62 +87,30 @@ implements Monster {
     }
 
     @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(40.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3f);
-        this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5);
-        this.getAttributeInstance(EntityAttributes.ATTACK_KNOCKBACK).setBaseValue(1.0);
-        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
+    public boolean canBeLeashedBy(PlayerEntity player) {
+        return !this.isLeashed();
     }
 
-    private float getAttackDamage() {
-        return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+    public static DefaultAttributeContainer.Builder createHoglinAttributes() {
+        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MAX_HEALTH, 40.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(Attributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5).add(Attributes.GENERIC_ATTACK_KNOCKBACK, 1.0).add(Attributes.GENERIC_ATTACK_DAMAGE, 6.0);
     }
 
     @Override
     public boolean tryAttack(Entity target) {
-        this.movementCooldownTicks = 10;
-        this.world.sendEntityStatus(this, (byte)4);
         if (!(target instanceof LivingEntity)) {
             return false;
         }
-        LivingEntity livingEntity = (LivingEntity)target;
-        float f = this.getAttackDamage();
-        float g = this.isAdult() && (int)f > 0 ? f / 2.0f + (float)this.random.nextInt((int)f) : f;
-        boolean bl = target.damage(DamageSource.mob(this), g);
-        if (bl) {
-            this.dealDamage(this, target);
-            if (this.isAdult()) {
-                this.stunVelocity(livingEntity);
-            }
-        }
+        this.movementCooldownTicks = 10;
+        this.world.sendEntityStatus(this, (byte)4);
         this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0f, this.getSoundPitch());
-        HoglinBrain.onAttacking(this, livingEntity);
-        return bl;
-    }
-
-    private void stunVelocity(LivingEntity livingEntity) {
-        double e;
-        double d = this.getAttributeInstance(EntityAttributes.ATTACK_KNOCKBACK).getValue();
-        double f = d - (e = livingEntity.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getValue());
-        if (f <= 0.0) {
-            return;
-        }
-        double g = livingEntity.getX() - this.getX();
-        double h = livingEntity.getZ() - this.getZ();
-        float i = this.random.nextInt(21) - 10;
-        double j = f * (double)(this.random.nextFloat() * 0.5f + 0.2f);
-        Vec3d vec3d = new Vec3d(g, 0.0, h).normalize().multiply(j).rotateY(i);
-        double k = f * (double)this.random.nextFloat() * 0.5;
-        livingEntity.addVelocity(vec3d.x, k, vec3d.z);
-        livingEntity.velocityModified = true;
+        HoglinBrain.onAttacking(this, (LivingEntity)target);
+        return Hoglin.tryAttack(this, (LivingEntity)target);
     }
 
     @Override
     protected void knockback(LivingEntity target) {
         if (this.isAdult()) {
-            this.stunVelocity(target);
+            Hoglin.knockback(this, target);
         }
     }
 
@@ -160,6 +142,15 @@ implements Monster {
         this.world.getProfiler().pop();
         HoglinBrain.refreshActivities(this);
         HoglinBrain.playSoundAtChance(this);
+        if (this.canConvert()) {
+            ++this.timeInOverworld;
+            if (this.timeInOverworld > 300) {
+                this.playZombifySound();
+                this.zombify((ServerWorld)this.world);
+            }
+        } else {
+            this.timeInOverworld = 0;
+        }
     }
 
     @Override
@@ -170,7 +161,7 @@ implements Monster {
         super.tickMovement();
     }
 
-    public static boolean canSpawn(EntityType<HoglinEntity> entityType, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<HoglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
         return world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
     }
 
@@ -180,7 +171,7 @@ implements Monster {
         if (world.getRandom().nextFloat() < 0.2f) {
             this.setBaby(true);
             this.experiencePoints = 3;
-            this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(0.5);
+            this.getAttributeInstance(Attributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
         }
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
@@ -221,6 +212,7 @@ implements Monster {
         }
     }
 
+    @Override
     @Environment(value=EnvType.CLIENT)
     public int getMovementCooldownTicks() {
         return this.movementCooldownTicks;
@@ -236,6 +228,27 @@ implements Monster {
         return this.experiencePoints;
     }
 
+    private void zombify(ServerWorld word) {
+        ZoglinEntity zoglinEntity = EntityType.ZOGLIN.create(word);
+        if (zoglinEntity == null) {
+            return;
+        }
+        zoglinEntity.copyPositionAndRotation(this);
+        zoglinEntity.initialize(word, word.getLocalDifficulty(zoglinEntity.getBlockPos()), SpawnType.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null);
+        zoglinEntity.setBaby(this.isBaby());
+        zoglinEntity.setAiDisabled(this.isAiDisabled());
+        if (this.hasCustomName()) {
+            zoglinEntity.setCustomName(this.getCustomName());
+            zoglinEntity.setCustomNameVisible(this.isCustomNameVisible());
+        }
+        if (this.isPersistent()) {
+            zoglinEntity.setPersistent();
+        }
+        this.remove();
+        word.spawnEntity(zoglinEntity);
+        zoglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+    }
+
     @Override
     public boolean isBreedingItem(ItemStack stack) {
         return stack.getItem() == Items.CRIMSON_FUNGUS;
@@ -243,6 +256,52 @@ implements Monster {
 
     public boolean isAdult() {
         return !this.isBaby();
+    }
+
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(BABY, false);
+    }
+
+    @Override
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        if (this.isImmuneToZombification()) {
+            tag.putBoolean("IsImmuneToZombification", true);
+        }
+        tag.putInt("TimeInOverworld", this.timeInOverworld);
+        if (this.cannotBeHunted) {
+            tag.putBoolean("CannotBeHunted", true);
+        }
+    }
+
+    @Override
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
+        this.timeInOverworld = tag.getInt("TimeInOverworld");
+        this.setCannotBeHunted(tag.getBoolean("CannotBeHunted"));
+    }
+
+    private void setImmuneToZombification(boolean immuneToZombification) {
+        this.getDataTracker().set(BABY, immuneToZombification);
+    }
+
+    private boolean isImmuneToZombification() {
+        return this.getDataTracker().get(BABY);
+    }
+
+    public boolean canConvert() {
+        return this.world.getDimension().getType() == DimensionType.OVERWORLD && !this.isImmuneToZombification() && !this.isAiDisabled();
+    }
+
+    private void setCannotBeHunted(boolean cannotBeHunted) {
+        this.cannotBeHunted = cannotBeHunted;
+    }
+
+    public boolean canBeHunted() {
+        return this.isAdult() && !this.cannotBeHunted;
     }
 
     @Override
@@ -308,6 +367,10 @@ implements Monster {
 
     protected void playRetreatSound() {
         this.playSound(SoundEvents.ENTITY_HOGLIN_RETREAT, 1.0f, this.getSoundPitch());
+    }
+
+    private void playZombifySound() {
+        this.playSound(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED, 1.0f, this.getSoundPitch());
     }
 
     @Override

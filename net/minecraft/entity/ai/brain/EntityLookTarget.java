@@ -21,23 +21,26 @@ implements LookTarget {
     }
 
     @Override
+    public Vec3d getPos() {
+        return this.entity.getPos();
+    }
+
+    @Override
     public BlockPos getBlockPos() {
         return this.entity.getBlockPos();
     }
 
     @Override
-    public Vec3d getPos() {
-        return new Vec3d(this.entity.getX(), this.entity.getEyeY(), this.entity.getZ());
-    }
-
-    @Override
     public boolean isSeenBy(LivingEntity entity) {
-        Optional<List<LivingEntity>> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
-        return this.entity.isAlive() && optional.isPresent() && optional.get().contains(this.entity);
+        if (this.entity instanceof LivingEntity) {
+            Optional<List<LivingEntity>> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+            return this.entity.isAlive() && optional.isPresent() && optional.get().contains(this.entity);
+        }
+        return true;
     }
 
     public String toString() {
-        return "EntityPosWrapper for " + this.entity;
+        return "EntityTracker for " + this.entity;
     }
 }
 

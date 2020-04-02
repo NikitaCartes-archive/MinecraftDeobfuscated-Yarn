@@ -55,7 +55,7 @@ extends Block {
 
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return AbstractRailBlock.topCoversMediumSquare(world, pos.down());
+        return AbstractRailBlock.hasTopRim(world, pos.down());
     }
 
     @Override
@@ -82,23 +82,23 @@ extends Block {
         RailShape railShape = state.get(this.getShapeProperty());
         boolean bl = false;
         BlockPos blockPos = pos.down();
-        if (!AbstractRailBlock.topCoversMediumSquare(world, blockPos)) {
+        if (!AbstractRailBlock.hasTopRim(world, blockPos)) {
             bl = true;
         }
         BlockPos blockPos2 = pos.east();
-        if (railShape == RailShape.ASCENDING_EAST && !AbstractRailBlock.topCoversMediumSquare(world, blockPos2)) {
+        if (railShape == RailShape.ASCENDING_EAST && !AbstractRailBlock.hasTopRim(world, blockPos2)) {
             bl = true;
         } else {
             BlockPos blockPos3 = pos.west();
-            if (railShape == RailShape.ASCENDING_WEST && !AbstractRailBlock.topCoversMediumSquare(world, blockPos3)) {
+            if (railShape == RailShape.ASCENDING_WEST && !AbstractRailBlock.hasTopRim(world, blockPos3)) {
                 bl = true;
             } else {
                 BlockPos blockPos4 = pos.north();
-                if (railShape == RailShape.ASCENDING_NORTH && !AbstractRailBlock.topCoversMediumSquare(world, blockPos4)) {
+                if (railShape == RailShape.ASCENDING_NORTH && !AbstractRailBlock.hasTopRim(world, blockPos4)) {
                     bl = true;
                 } else {
                     BlockPos blockPos5 = pos.south();
-                    if (railShape == RailShape.ASCENDING_SOUTH && !AbstractRailBlock.topCoversMediumSquare(world, blockPos5)) {
+                    if (railShape == RailShape.ASCENDING_SOUTH && !AbstractRailBlock.hasTopRim(world, blockPos5)) {
                         bl = true;
                     }
                 }

@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -124,6 +125,10 @@ implements StatsListener {
             this.children.add(0, list);
             this.selectedList = list;
         }
+    }
+
+    private static String method_27027(Stat<Identifier> stat) {
+        return "stat." + stat.getValue().toString().replace(':', '.');
     }
 
     private int getColumnX(int index) {
@@ -436,8 +441,10 @@ implements StatsListener {
     extends AlwaysSelectedEntryListWidget<Entry> {
         public GeneralStatsListWidget(MinecraftClient minecraftClient) {
             super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
-            for (Stat<Identifier> stat : Stats.CUSTOM) {
-                this.addEntry(new Entry(stat));
+            ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<Stat<Identifier>>(Stats.CUSTOM.iterator());
+            objectArrayList.sort(Comparator.comparing(stat -> I18n.translate(StatsScreen.method_27027(stat), new Object[0])));
+            for (Stat stat2 : objectArrayList) {
+                this.addEntry(new Entry(stat2));
             }
         }
 
@@ -457,7 +464,7 @@ implements StatsListener {
 
             @Override
             public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
-                Text text = new TranslatableText("stat." + this.stat.getValue().toString().replace(':', '.'), new Object[0]).formatted(Formatting.GRAY);
+                Text text = new TranslatableText(StatsScreen.method_27027(this.stat), new Object[0]).formatted(Formatting.GRAY);
                 GeneralStatsListWidget.this.drawString(StatsScreen.this.textRenderer, text.getString(), x + 2, y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090);
                 String string = this.stat.format(StatsScreen.this.statHandler.getStat(this.stat));
                 GeneralStatsListWidget.this.drawString(StatsScreen.this.textRenderer, string, x + 2 + 213 - StatsScreen.this.textRenderer.getStringWidth(string), y + 1, index % 2 == 0 ? 0xFFFFFF : 0x909090);

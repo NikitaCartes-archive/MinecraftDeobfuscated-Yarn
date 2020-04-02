@@ -33,7 +33,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
@@ -134,31 +133,16 @@ implements FlyingItemEntity {
             if (!this.wasShotAtAngle()) {
                 this.setVelocity(this.getVelocity().multiply(1.15, 1.0, 1.15).add(0.0, 0.04, 0.0));
             }
-            this.move(MovementType.SELF, this.getVelocity());
+            vec3d = this.getVelocity();
+            this.move(MovementType.SELF, vec3d);
+            this.setVelocity(vec3d);
         }
-        vec3d = this.getVelocity();
-        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, this.getBoundingBox().stretch(vec3d).expand(1.0), entity -> !entity.isSpectator() && entity.isAlive() && entity.collides(), RayTraceContext.ShapeType.COLLIDER, true);
+        HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER);
         if (!this.noClip) {
             this.onCollision(hitResult);
             this.velocityDirty = true;
         }
-        float f = MathHelper.sqrt(FireworkRocketEntity.squaredHorizontalLength(vec3d));
-        this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875);
-        this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
-        while (this.pitch - this.prevPitch < -180.0f) {
-            this.prevPitch -= 360.0f;
-        }
-        while (this.pitch - this.prevPitch >= 180.0f) {
-            this.prevPitch += 360.0f;
-        }
-        while (this.yaw - this.prevYaw < -180.0f) {
-            this.prevYaw -= 360.0f;
-        }
-        while (this.yaw - this.prevYaw >= 180.0f) {
-            this.prevYaw += 360.0f;
-        }
-        this.pitch = MathHelper.lerp(0.2f, this.prevPitch, this.pitch);
-        this.yaw = MathHelper.lerp(0.2f, this.prevYaw, this.yaw);
+        this.method_26962();
         if (this.life == 0 && !this.isSilent()) {
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0f, 1.0f);
         }
@@ -190,7 +174,7 @@ implements FlyingItemEntity {
     protected void onBlockHit(BlockHitResult blockHitResult) {
         BlockPos blockPos = new BlockPos(blockHitResult.getBlockPos());
         this.world.getBlockState(blockPos).onEntityCollision(this.world, blockPos, this);
-        if (this.hasExplosionEffects()) {
+        if (!this.world.isClient() && this.hasExplosionEffects()) {
             this.explodeAndRemove();
         }
         super.onBlockHit(blockHitResult);

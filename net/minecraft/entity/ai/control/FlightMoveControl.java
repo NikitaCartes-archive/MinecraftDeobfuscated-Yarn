@@ -4,7 +4,7 @@
 package net.minecraft.entity.ai.control;
 
 import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -35,7 +35,7 @@ extends MoveControl {
             }
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
             this.entity.yaw = this.changeAngle(this.entity.yaw, h, 90.0f);
-            float i = this.entity.isOnGround() ? (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()) : (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.FLYING_SPEED).getValue());
+            float i = this.entity.isOnGround() ? (float)(this.speed * this.entity.method_26825(Attributes.GENERIC_MOVEMENT_SPEED)) : (float)(this.speed * this.entity.method_26825(Attributes.GENERIC_FLYING_SPEED));
             this.entity.setMovementSpeed(i);
             double j = MathHelper.sqrt(d * d + f * f);
             float k = (float)(-(MathHelper.atan2(e, j) * 57.2957763671875));

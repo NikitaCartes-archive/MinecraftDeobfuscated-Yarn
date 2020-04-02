@@ -4,6 +4,7 @@
 package net.minecraft.potion;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +26,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,7 +146,7 @@ public class PotionUtil {
     @Environment(value=EnvType.CLIENT)
     public static void buildTooltip(ItemStack stack, List<Text> list, float f) {
         List<StatusEffectInstance> list2 = PotionUtil.getPotionEffects(stack);
-        ArrayList<Pair<String, EntityAttributeModifier>> list3 = Lists.newArrayList();
+        ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.newArrayList();
         if (list2.isEmpty()) {
             list.add(new TranslatableText("effect.none", new Object[0]).formatted(Formatting.GRAY));
         } else {
@@ -158,7 +158,7 @@ public class PotionUtil {
                     for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : map.entrySet()) {
                         EntityAttributeModifier entityAttributeModifier = entry.getValue();
                         EntityAttributeModifier entityAttributeModifier2 = new EntityAttributeModifier(entityAttributeModifier.getName(), statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier), entityAttributeModifier.getOperation());
-                        list3.add(new Pair<String, EntityAttributeModifier>(entry.getKey().getId(), entityAttributeModifier2));
+                        list3.add(new Pair<EntityAttribute, EntityAttributeModifier>(entry.getKey(), entityAttributeModifier2));
                     }
                 }
                 if (statusEffectInstance.getAmplifier() > 0) {
@@ -174,15 +174,15 @@ public class PotionUtil {
             list.add(new LiteralText(""));
             list.add(new TranslatableText("potion.whenDrank", new Object[0]).formatted(Formatting.DARK_PURPLE));
             for (Pair pair : list3) {
-                EntityAttributeModifier entityAttributeModifier3 = (EntityAttributeModifier)pair.getRight();
+                EntityAttributeModifier entityAttributeModifier3 = (EntityAttributeModifier)pair.getSecond();
                 double d = entityAttributeModifier3.getAmount();
                 double e = entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? entityAttributeModifier3.getAmount() * 100.0 : entityAttributeModifier3.getAmount();
                 if (d > 0.0) {
-                    list.add(new TranslatableText("attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e), new TranslatableText("attribute.name." + (String)pair.getLeft(), new Object[0])).formatted(Formatting.BLUE));
+                    list.add(new TranslatableText("attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e), new TranslatableText(((EntityAttribute)pair.getFirst()).getTranslationKey(), new Object[0])).formatted(Formatting.BLUE));
                     continue;
                 }
                 if (!(d < 0.0)) continue;
-                list.add(new TranslatableText("attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e *= -1.0), new TranslatableText("attribute.name." + (String)pair.getLeft(), new Object[0])).formatted(Formatting.RED));
+                list.add(new TranslatableText("attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e *= -1.0), new TranslatableText(((EntityAttribute)pair.getFirst()).getTranslationKey(), new Object[0])).formatted(Formatting.RED));
             }
         }
     }

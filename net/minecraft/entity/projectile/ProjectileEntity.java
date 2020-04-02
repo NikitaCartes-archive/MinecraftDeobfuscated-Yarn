@@ -22,19 +22,27 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ProjectileEntity
 extends Entity {
     private UUID ownerUuid;
+    private int field_23739;
+    private boolean field_23740;
 
     ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
         super(entityType, world);
     }
 
     public void setOwner(@Nullable Entity entity) {
-        this.ownerUuid = entity == null ? null : entity.getUuid();
+        if (entity != null) {
+            this.ownerUuid = entity.getUuid();
+            this.field_23739 = entity.getEntityId();
+        }
     }
 
     @Nullable
     public Entity getOwner() {
         if (this.ownerUuid != null && this.world instanceof ServerWorld) {
             return ((ServerWorld)this.world).getEntity(this.ownerUuid);
+        }
+        if (this.field_23739 != 0) {
+            return this.world.getEntityById(this.field_23739);
         }
         return null;
     }
@@ -44,6 +52,9 @@ extends Entity {
         if (this.ownerUuid != null) {
             tag.putUuidNew("Owner", this.ownerUuid);
         }
+        if (this.field_23740) {
+            tag.putBoolean("LeftOwner", true);
+        }
     }
 
     @Override
@@ -51,6 +62,26 @@ extends Entity {
         if (tag.containsUuidNew("Owner")) {
             this.ownerUuid = tag.getUuidNew("Owner");
         }
+        this.field_23740 = tag.getBoolean("LeftOwner");
+    }
+
+    @Override
+    public void tick() {
+        if (!this.field_23740) {
+            this.field_23740 = this.method_26961();
+        }
+        super.tick();
+    }
+
+    private boolean method_26961() {
+        Entity entity2 = this.getOwner();
+        if (entity2 != null) {
+            for (Entity entity22 : this.world.getEntities(this, this.getBoundingBox().expand(1.0), entity -> !entity.isSpectator() && entity.collides())) {
+                if (entity22.getRootVehicle() != entity2.getRootVehicle()) continue;
+                return false;
+            }
+        }
+        return true;
     }
 
     public void setVelocity(double x, double y, double z, float speed, float divergence) {
@@ -102,6 +133,31 @@ extends Entity {
             this.prevYaw = this.yaw;
             this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
         }
+    }
+
+    protected boolean method_26958(Entity entity) {
+        if (entity.isSpectator() || !entity.isAlive() || !entity.collides()) {
+            return false;
+        }
+        Entity entity2 = this.getOwner();
+        return entity2 == null || this.field_23740 || !entity2.isConnectedThroughVehicle(entity);
+    }
+
+    protected void method_26962() {
+        Vec3d vec3d = this.getVelocity();
+        float f = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
+        this.pitch = ProjectileEntity.method_26960(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875));
+        this.yaw = ProjectileEntity.method_26960(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
+    }
+
+    protected static float method_26960(float f, float g) {
+        while (g - f < -180.0f) {
+            f -= 360.0f;
+        }
+        while (g - f >= 180.0f) {
+            f += 360.0f;
+        }
+        return MathHelper.lerp(0.2f, f, g);
     }
 }
 

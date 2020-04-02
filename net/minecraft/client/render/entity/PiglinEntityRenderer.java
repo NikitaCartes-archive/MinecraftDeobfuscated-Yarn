@@ -27,14 +27,14 @@ extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
     }
 
     private static PiglinEntityModel<MobEntity> getPiglinModel(boolean zombified) {
-        PiglinEntityModel<MobEntity> piglinEntityModel = new PiglinEntityModel<MobEntity>(0.0f, 128, 64);
+        PiglinEntityModel<MobEntity> piglinEntityModel = new PiglinEntityModel<MobEntity>(0.0f, 64, 64);
         if (zombified) {
             piglinEntityModel.leftEar.visible = false;
         }
         return piglinEntityModel;
     }
 
-    private static <T extends PiglinEntity> PiglinEntityModel<T> createEarlessPiglinModel() {
+    private static <T extends MobEntity> PiglinEntityModel<T> createEarlessPiglinModel() {
         PiglinEntityModel piglinEntityModel = new PiglinEntityModel(1.0f, 64, 16);
         piglinEntityModel.leftEar.visible = false;
         piglinEntityModel.rightEar.visible = false;

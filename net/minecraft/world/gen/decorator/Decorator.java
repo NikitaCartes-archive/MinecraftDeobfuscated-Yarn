@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.decorator.CarvingMaskDecorator;
@@ -126,10 +127,10 @@ public abstract class Decorator<DC extends DecoratorConfig> {
         return new ConfiguredDecorator<DC>(this, decoratorConfig);
     }
 
-    protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
+    protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos2, DC decoratorConfig, ConfiguredFeature<FC, F> configuredFeature) {
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        this.getPositions(world, generator, random, decoratorConfig, pos).forEach(blockPos -> {
-            boolean bl = configuredFeature.generate(world, (ChunkGenerator<ChunkGeneratorConfig>)generator, random, (BlockPos)blockPos);
+        this.getPositions(world, chunkGenerator, random, decoratorConfig, blockPos2).forEach(blockPos -> {
+            boolean bl = configuredFeature.generate(world, structureAccessor, (ChunkGenerator<ChunkGeneratorConfig>)chunkGenerator, random, (BlockPos)blockPos);
             atomicBoolean.set(atomicBoolean.get() || bl);
         });
         return atomicBoolean.get();

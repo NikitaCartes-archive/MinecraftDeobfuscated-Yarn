@@ -19,6 +19,7 @@ import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.DebugChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
@@ -49,24 +50,24 @@ extends ChunkGenerator<DebugChunkGeneratorConfig> {
     }
 
     @Override
-    public void generateFeatures(ChunkRegion region) {
+    public void generateFeatures(ChunkRegion chunkRegion, StructureAccessor structureAccessor) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int i = region.getCenterChunkX();
-        int j = region.getCenterChunkZ();
+        int i = chunkRegion.getCenterChunkX();
+        int j = chunkRegion.getCenterChunkZ();
         for (int k = 0; k < 16; ++k) {
             for (int l = 0; l < 16; ++l) {
                 int m = (i << 4) + k;
                 int n = (j << 4) + l;
-                region.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
+                chunkRegion.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
                 BlockState blockState = DebugChunkGenerator.getBlockState(m, n);
                 if (blockState == null) continue;
-                region.setBlockState(mutable.set(m, 70, n), blockState, 2);
+                chunkRegion.setBlockState(mutable.set(m, 70, n), blockState, 2);
             }
         }
     }
 
     @Override
-    public void populateNoise(IWorld world, Chunk chunk) {
+    public void populateNoise(IWorld world, StructureAccessor structureAccessor, Chunk chunk) {
     }
 
     @Override

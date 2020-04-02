@@ -9,6 +9,7 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.BoulderFeatureConfig;
@@ -21,7 +22,7 @@ extends Feature<BoulderFeatureConfig> {
     }
 
     @Override
-    public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig) {
+    public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig) {
         Block block;
         while (blockPos.getY() > 3 && (iWorld.isAir(blockPos.down()) || !ForestRockFeature.isDirt(block = iWorld.getBlockState(blockPos.down()).getBlock()) && !ForestRockFeature.isStone(block))) {
             blockPos = blockPos.down();

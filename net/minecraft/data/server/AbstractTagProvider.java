@@ -3,6 +3,7 @@
  */
 package net.minecraft.data.server;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,15 +15,15 @@ import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +35,7 @@ implements DataProvider {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     protected final DataGenerator root;
     protected final Registry<T> registry;
-    protected final Map<Tag<T>, Tag.Builder<T>> tagBuilders = Maps.newLinkedHashMap();
+    protected final Map<Identifier, Tag.ObjectBuilder<T>> tagBuilders = Maps.newLinkedHashMap();
 
     protected AbstractTagProvider(DataGenerator root, Registry<T> registry) {
         this.root = root;
@@ -47,11 +48,15 @@ implements DataProvider {
     public void run(DataCache cache) {
         this.tagBuilders.clear();
         this.configure();
-        TagContainer tagContainer = new TagContainer(identifier -> Optional.empty(), "", false, "generated");
-        Map map = this.tagBuilders.entrySet().stream().collect(Collectors.toMap(entry -> ((Tag)entry.getKey()).getId(), Map.Entry::getValue));
-        tagContainer.applyReload(map);
-        tagContainer.getEntries().forEach((identifier, tag) -> {
-            JsonObject jsonObject = tag.toJson(this.registry::getId);
+        Tag tag = Tag.of(ImmutableSet.of());
+        Function<Identifier, Tag> function = identifier -> this.tagBuilders.containsKey(identifier) ? tag : null;
+        Function<Identifier, Object> function2 = identifier -> this.registry.getOrEmpty((Identifier)identifier).orElse(null);
+        this.tagBuilders.forEach((identifier, objectBuilder) -> {
+            List list = objectBuilder.streamUnresolvedEntries(function, function2).collect(Collectors.toList());
+            if (!list.isEmpty()) {
+                throw new IllegalArgumentException(String.format("Couldn't define tag %s as it is missing following references: %s", identifier, list.stream().map(Objects::toString).collect(Collectors.joining(","))));
+            }
+            JsonObject jsonObject = objectBuilder.toJson();
             Path path = this.getOutput((Identifier)identifier);
             try {
                 String string = GSON.toJson(jsonObject);
@@ -67,15 +72,16 @@ implements DataProvider {
                 LOGGER.error("Couldn't save tags to {}", (Object)path, (Object)iOException);
             }
         });
-        this.setContainer(tagContainer);
     }
-
-    protected abstract void setContainer(TagContainer<T> var1);
 
     protected abstract Path getOutput(Identifier var1);
 
-    protected Tag.Builder<T> getOrCreateTagBuilder(Tag<T> tag2) {
-        return this.tagBuilders.computeIfAbsent(tag2, tag -> Tag.Builder.create());
+    protected Tag.ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> identified) {
+        return this.method_27047(identified.getId());
+    }
+
+    protected Tag.ObjectBuilder<T> method_27047(Identifier identifier2) {
+        return this.tagBuilders.computeIfAbsent(identifier2, identifier -> new Tag.ObjectBuilder<Object>(this.registry::getId));
     }
 }
 

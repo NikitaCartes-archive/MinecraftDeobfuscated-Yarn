@@ -32,11 +32,13 @@ import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -245,12 +247,8 @@ extends TameableEntity {
         return SoundEvents.ENTITY_CAT_DEATH;
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3f);
-        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
+    public static DefaultAttributeContainer.Builder createCatAttributes() {
+        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 10.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(Attributes.GENERIC_ATTACK_DAMAGE, 3.0);
     }
 
     @Override
@@ -267,7 +265,7 @@ extends TameableEntity {
     }
 
     private float getAttackDamage() {
-        return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+        return (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
     }
 
     @Override
@@ -367,7 +365,8 @@ extends TameableEntity {
         } else {
             this.setCatType(this.random.nextInt(10));
         }
-        if (Feature.SWAMP_HUT.isInsideStructure(world, this.getBlockPos())) {
+        World world2 = world.getWorld();
+        if (world2 instanceof ServerWorld && Feature.SWAMP_HUT.isInsideStructure(world, ((ServerWorld)world2).getStructureAccessor(), this.getBlockPos())) {
             this.setCatType(10);
             this.setPersistent();
         }

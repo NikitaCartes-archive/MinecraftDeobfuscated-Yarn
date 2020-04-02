@@ -4,7 +4,7 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 
@@ -15,7 +15,7 @@ extends StatusEffect {
     }
 
     @Override
-    public void onRemoved(LivingEntity entity, AbstractEntityAttributeContainer attributes, int amplifier) {
+    public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         super.onRemoved(entity, attributes, amplifier);
         if (entity.getHealth() > entity.getMaximumHealth()) {
             entity.setHealth(entity.getMaximumHealth());

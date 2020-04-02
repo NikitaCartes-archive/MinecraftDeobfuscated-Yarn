@@ -76,7 +76,7 @@ public class Models {
     public static final Model TEMPLATE_COMMAND_BLOCK = Models.block("template_command_block", TextureKey.FRONT, TextureKey.BACK, TextureKey.SIDE);
     public static final Model TEMPLATE_ANVIL = Models.block("template_anvil", TextureKey.TOP);
     public static final Model[] STEM_GROWTH_STAGES = (Model[])IntStream.range(0, 8).mapToObj(i -> Models.block("stem_growth" + i, "_stage" + i, TextureKey.STEM)).toArray(Model[]::new);
-    public static final Model STEM_FRUIT = Models.block("stem_fruit", TextureKey.STEM, TextureKey.UPPER_STEM);
+    public static final Model STEM_FRUIT = Models.block("stem_fruit", TextureKey.STEM, TextureKey.UPPERSTEM);
     public static final Model CROP = Models.block("crop", TextureKey.CROP);
     public static final Model TEMPLATE_FARMLAND = Models.block("template_farmland", TextureKey.DIRT, TextureKey.TOP);
     public static final Model TEMPLATE_FIRE_FLOOR = Models.block("template_fire_floor", TextureKey.FIRE);

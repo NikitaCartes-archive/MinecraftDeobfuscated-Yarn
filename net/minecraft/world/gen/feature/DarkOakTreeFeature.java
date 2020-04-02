@@ -57,10 +57,10 @@ extends AbstractTreeFeature<MegaTreeFeatureConfig> {
                 --n;
             }
             if (!DarkOakTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos3 = new BlockPos(o, s = k + r, p))) continue;
-            this.setLogBlockState(modifiableTestableWorld, random, blockPos3, set, blockBox, megaTreeFeatureConfig);
-            this.setLogBlockState(modifiableTestableWorld, random, blockPos3.east(), set, blockBox, megaTreeFeatureConfig);
-            this.setLogBlockState(modifiableTestableWorld, random, blockPos3.south(), set, blockBox, megaTreeFeatureConfig);
-            this.setLogBlockState(modifiableTestableWorld, random, blockPos3.east().south(), set, blockBox, megaTreeFeatureConfig);
+            DarkOakTreeFeature.setLogBlockState(modifiableTestableWorld, random, blockPos3, set, blockBox, megaTreeFeatureConfig);
+            DarkOakTreeFeature.setLogBlockState(modifiableTestableWorld, random, blockPos3.east(), set, blockBox, megaTreeFeatureConfig);
+            DarkOakTreeFeature.setLogBlockState(modifiableTestableWorld, random, blockPos3.south(), set, blockBox, megaTreeFeatureConfig);
+            DarkOakTreeFeature.setLogBlockState(modifiableTestableWorld, random, blockPos3.east().south(), set, blockBox, megaTreeFeatureConfig);
         }
         for (r = -2; r <= 0; ++r) {
             for (s = -2; s <= 0; ++s) {
@@ -96,7 +96,7 @@ extends AbstractTreeFeature<MegaTreeFeatureConfig> {
                 if (r >= 0 && r <= 1 && s >= 0 && s <= 1 || random.nextInt(3) > 0) continue;
                 int t = random.nextInt(3) + 2;
                 for (u = 0; u < t; ++u) {
-                    this.setLogBlockState(modifiableTestableWorld, random, new BlockPos(j + r, q - u - 1, l + s), set, blockBox, megaTreeFeatureConfig);
+                    DarkOakTreeFeature.setLogBlockState(modifiableTestableWorld, random, new BlockPos(j + r, q - u - 1, l + s), set, blockBox, megaTreeFeatureConfig);
                 }
                 for (u = -1; u <= 1; ++u) {
                     for (v = -1; v <= 1; ++v) {

@@ -62,7 +62,7 @@ implements ParsableText {
 
     private void parse(ServerCommandSource source) {
         MinecraftServer minecraftServer = source.getMinecraftServer();
-        if (minecraftServer != null && minecraftServer.hasGameDir() && ChatUtil.isEmpty(this.score)) {
+        if (minecraftServer != null && ChatUtil.isEmpty(this.score)) {
             ScoreboardObjective scoreboardObjective;
             ServerScoreboard scoreboard = minecraftServer.getScoreboard();
             if (scoreboard.playerHasObjective(this.name, scoreboardObjective = scoreboard.getNullableObjective(this.objective))) {

@@ -8,7 +8,6 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.server.AbstractTagProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -24,7 +23,7 @@ extends AbstractTagProvider<EntityType<?>> {
         this.getOrCreateTagBuilder(EntityTypeTags.RAIDERS).add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
         this.getOrCreateTagBuilder(EntityTypeTags.BEEHIVE_INHABITORS).add(EntityType.BEE);
         this.getOrCreateTagBuilder(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
-        this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES).add(EntityTypeTags.ARROWS).add(EntityType.SNOWBALL, EntityType.FIREBALL, EntityType.SMALL_FIREBALL, EntityType.EGG, EntityType.TRIDENT, EntityType.DRAGON_FIREBALL, EntityType.WITHER_SKULL);
+        this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES).addTag(EntityTypeTags.ARROWS).add(EntityType.SNOWBALL, EntityType.FIREBALL, EntityType.SMALL_FIREBALL, EntityType.EGG, EntityType.TRIDENT, EntityType.DRAGON_FIREBALL, EntityType.WITHER_SKULL);
     }
 
     @Override
@@ -35,11 +34,6 @@ extends AbstractTagProvider<EntityType<?>> {
     @Override
     public String getName() {
         return "Entity Type Tags";
-    }
-
-    @Override
-    protected void setContainer(TagContainer<EntityType<?>> tagContainer) {
-        EntityTypeTags.setContainer(tagContainer);
     }
 }
 

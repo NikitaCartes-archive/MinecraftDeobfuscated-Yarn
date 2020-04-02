@@ -202,7 +202,7 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public boolean shouldNotCopyTagFromItem() {
+    public boolean copyItemDataRequiresOperator() {
         return true;
     }
 

@@ -49,7 +49,7 @@ extends BlockEntityRenderer<PistonBlockEntity> {
         matrixStack.push();
         matrixStack.translate(pistonBlockEntity.getRenderOffsetX(f), pistonBlockEntity.getRenderOffsetY(f), pistonBlockEntity.getRenderOffsetZ(f));
         if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(f) <= 4.0f) {
-            blockState = (BlockState)blockState.with(PistonHeadBlock.SHORT, true);
+            blockState = (BlockState)blockState.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(f) <= 0.5f);
             this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
         } else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
             PistonType pistonType = blockState.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;

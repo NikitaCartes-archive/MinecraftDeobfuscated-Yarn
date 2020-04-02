@@ -36,7 +36,8 @@ import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -168,13 +169,8 @@ extends WaterCreatureEntity {
         this.targetSelector.add(1, new RevengeGoal(this, GuardianEntity.class).setGroupRevenge(new Class[0]));
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(1.2f);
-        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
-        this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(3.0);
+    public static DefaultAttributeContainer.Builder createDolphinAttributes() {
+        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 10.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 1.2f).add(Attributes.GENERIC_ATTACK_DAMAGE, 3.0);
     }
 
     @Override
@@ -184,7 +180,7 @@ extends WaterCreatureEntity {
 
     @Override
     public boolean tryAttack(Entity target) {
-        boolean bl = target.damage(DamageSource.mob(this), (int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue());
+        boolean bl = target.damage(DamageSource.mob(this), (int)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE));
         if (bl) {
             this.dealDamage(this, target);
             this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0f, 1.0f);
@@ -602,7 +598,7 @@ extends WaterCreatureEntity {
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
             this.dolphin.bodyYaw = this.dolphin.yaw = this.changeAngle(this.dolphin.yaw, h, 10.0f);
             this.dolphin.headYaw = this.dolphin.yaw;
-            float i = (float)(this.speed * this.dolphin.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+            float i = (float)(this.speed * this.dolphin.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
             if (this.dolphin.isTouchingWater()) {
                 this.dolphin.setMovementSpeed(i * 0.02f);
                 float j = -((float)(MathHelper.atan2(e, MathHelper.sqrt(d * d + f * f)) * 57.2957763671875));

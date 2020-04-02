@@ -3,39 +3,27 @@
  */
 package net.minecraft.entity.attribute;
 
-import net.minecraft.entity.attribute.AbstractEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Nullable;
 
 public class ClampedEntityAttribute
-extends AbstractEntityAttribute {
+extends EntityAttribute {
     private final double minValue;
     private final double maxValue;
-    private String name;
 
-    public ClampedEntityAttribute(@Nullable EntityAttribute parent, String id, double defaultValue, double minValue, double maxValue) {
-        super(parent, id, defaultValue);
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-        if (minValue > maxValue) {
+    public ClampedEntityAttribute(String translationKey, double fallback, double min, double max) {
+        super(translationKey, fallback);
+        this.minValue = min;
+        this.maxValue = max;
+        if (min > max) {
             throw new IllegalArgumentException("Minimum value cannot be bigger than maximum value!");
         }
-        if (defaultValue < minValue) {
+        if (fallback < min) {
             throw new IllegalArgumentException("Default value cannot be lower than minimum value!");
         }
-        if (defaultValue > maxValue) {
+        if (fallback > max) {
             throw new IllegalArgumentException("Default value cannot be bigger than maximum value!");
         }
-    }
-
-    public ClampedEntityAttribute setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getName() {
-        return this.name;
     }
 
     @Override

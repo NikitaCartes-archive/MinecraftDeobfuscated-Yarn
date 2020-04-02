@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -194,10 +193,9 @@ public class EntityTrackerEntry {
         }
         boolean bl = this.alwaysUpdateVelocity;
         if (this.entity instanceof LivingEntity) {
-            EquipmentSlot[] entityAttributeContainer = (EquipmentSlot[])((LivingEntity)this.entity).getAttributes();
-            Collection<EntityAttributeInstance> collection = entityAttributeContainer.buildTrackedAttributesCollection();
+            EquipmentSlot[] collection = ((LivingEntity)this.entity).getAttributes().getAttributesToSend();
             if (!collection.isEmpty()) {
-                sender.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), collection));
+                sender.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), (Collection<EntityAttributeInstance>)collection));
             }
             if (((LivingEntity)this.entity).isFallFlying()) {
                 bl = true;
@@ -240,8 +238,7 @@ public class EntityTrackerEntry {
             this.sendSyncPacket(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), dataTracker, false));
         }
         if (this.entity instanceof LivingEntity) {
-            EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).getAttributes();
-            Set<EntityAttributeInstance> set = entityAttributeContainer.getTrackedAttributes();
+            Set<EntityAttributeInstance> set = ((LivingEntity)this.entity).getAttributes().getTracked();
             if (!set.isEmpty()) {
                 this.sendSyncPacket(new EntityAttributesS2CPacket(this.entity.getEntityId(), set));
             }

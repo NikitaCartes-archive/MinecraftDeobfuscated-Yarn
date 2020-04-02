@@ -10,7 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -149,21 +149,21 @@ public class StatusEffect {
         return this.attributeModifiers;
     }
 
-    public void onRemoved(LivingEntity entity, AbstractEntityAttributeContainer attributes, int amplifier) {
+    public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
-            EntityAttributeInstance entityAttributeInstance = attributes.get(entry.getKey());
+            EntityAttributeInstance entityAttributeInstance = attributes.getCustomInstance(entry.getKey());
             if (entityAttributeInstance == null) continue;
             entityAttributeInstance.removeModifier(entry.getValue());
         }
     }
 
-    public void onApplied(LivingEntity entity, AbstractEntityAttributeContainer attributes, int amplifier) {
+    public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
-            EntityAttributeInstance entityAttributeInstance = attributes.get(entry.getKey());
+            EntityAttributeInstance entityAttributeInstance = attributes.getCustomInstance(entry.getKey());
             if (entityAttributeInstance == null) continue;
             EntityAttributeModifier entityAttributeModifier = entry.getValue();
             entityAttributeInstance.removeModifier(entityAttributeModifier);
-            entityAttributeInstance.addModifier(new EntityAttributeModifier(entityAttributeModifier.getId(), this.getTranslationKey() + " " + amplifier, this.adjustModifierAmount(amplifier, entityAttributeModifier), entityAttributeModifier.getOperation()));
+            entityAttributeInstance.addPersistentModifier(new EntityAttributeModifier(entityAttributeModifier.getId(), this.getTranslationKey() + " " + amplifier, this.adjustModifierAmount(amplifier, entityAttributeModifier), entityAttributeModifier.getOperation()));
         }
     }
 

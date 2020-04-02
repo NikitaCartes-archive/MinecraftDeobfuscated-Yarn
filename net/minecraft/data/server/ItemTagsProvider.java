@@ -3,28 +3,25 @@
  */
 package net.minecraft.data.server;
 
-import com.google.common.collect.Lists;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.server.AbstractTagProvider;
+import net.minecraft.data.server.BlockTagsProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ItemTagsProvider
 extends AbstractTagProvider<Item> {
-    private static final Logger LOG = LogManager.getLogger();
+    private final Function<Identifier, Tag.Builder> field_23783 = blockTagsProvider::method_27047;
 
-    public ItemTagsProvider(DataGenerator dataGenerator) {
+    public ItemTagsProvider(DataGenerator dataGenerator, BlockTagsProvider blockTagsProvider) {
         super(dataGenerator, Registry.ITEM);
     }
 
@@ -68,7 +65,6 @@ extends AbstractTagProvider<Item> {
         this.copy(BlockTags.TALL_FLOWERS, ItemTags.TALL_FLOWERS);
         this.copy(BlockTags.FLOWERS, ItemTags.FLOWERS);
         this.copy(BlockTags.GOLD_ORES, ItemTags.GOLD_ORES);
-        this.copy(BlockTags.NON_FLAMMABLE_WOOD, ItemTags.NON_FLAMMABLE_WOOD);
         this.getOrCreateTagBuilder(ItemTags.BANNERS).add((Item[])new Item[]{Items.WHITE_BANNER, Items.ORANGE_BANNER, Items.MAGENTA_BANNER, Items.LIGHT_BLUE_BANNER, Items.YELLOW_BANNER, Items.LIME_BANNER, Items.PINK_BANNER, Items.GRAY_BANNER, Items.LIGHT_GRAY_BANNER, Items.CYAN_BANNER, Items.PURPLE_BANNER, Items.BLUE_BANNER, Items.BROWN_BANNER, Items.GREEN_BANNER, Items.RED_BANNER, Items.BLACK_BANNER});
         this.getOrCreateTagBuilder(ItemTags.BOATS).add((Item[])new Item[]{Items.OAK_BOAT, Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT});
         this.getOrCreateTagBuilder(ItemTags.FISHES).add((Item[])new Item[]{Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH});
@@ -79,33 +75,13 @@ extends AbstractTagProvider<Item> {
         this.getOrCreateTagBuilder(ItemTags.LECTERN_BOOKS).add((Item[])new Item[]{Items.WRITTEN_BOOK, Items.WRITABLE_BOOK});
         this.getOrCreateTagBuilder(ItemTags.BEACON_PAYMENT_ITEMS).add((Item[])new Item[]{Items.NETHERITE_INGOT, Items.EMERALD, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT});
         this.getOrCreateTagBuilder(ItemTags.PIGLIN_REPELLENTS).add(Items.SOUL_FIRE_TORCH).add(Items.SOUL_FIRE_LANTERN);
+        this.getOrCreateTagBuilder(ItemTags.NON_FLAMMABLE_WOOD).add((Item[])new Item[]{Items.WARPED_STEM, Items.STRIPPED_WARPED_STEM, Items.WARPED_HYPHAE, Items.STRIPPED_WARPED_HYPHAE, Items.CRIMSON_STEM, Items.STRIPPED_CRIMSON_STEM, Items.CRIMSON_HYPHAE, Items.STRIPPED_CRIMSON_HYPHAE, Items.CRIMSON_PLANKS, Items.WARPED_PLANKS, Items.CRIMSON_SLAB, Items.WARPED_SLAB, Items.CRIMSON_PRESSURE_PLATE, Items.WARPED_PRESSURE_PLATE, Items.CRIMSON_FENCE, Items.WARPED_FENCE, Items.CRIMSON_TRAPDOOR, Items.WARPED_TRAPDOOR, Items.CRIMSON_FENCE_GATE, Items.WARPED_FENCE_GATE, Items.CRIMSON_STAIRS, Items.WARPED_STAIRS, Items.CRIMSON_BUTTON, Items.WARPED_BUTTON, Items.CRIMSON_DOOR, Items.WARPED_DOOR, Items.CRIMSON_SIGN, Items.WARPED_SIGN});
     }
 
-    protected void copy(Tag<Block> tag, Tag<Item> tag2) {
-        Tag.Builder<Item> builder = this.getOrCreateTagBuilder(tag2);
-        for (Tag.Entry<Block> entry : tag.entries()) {
-            Tag.Entry<Item> entry2 = this.convert(entry);
-            builder.add((Item)((Object)entry2));
-        }
-    }
-
-    private Tag.Entry<Item> convert(Tag.Entry<Block> entry) {
-        if (entry instanceof Tag.TagEntry) {
-            return new Tag.TagEntry<Item>(((Tag.TagEntry)entry).getId());
-        }
-        if (entry instanceof Tag.CollectionEntry) {
-            ArrayList<Item> list = Lists.newArrayList();
-            for (Block block : ((Tag.CollectionEntry)entry).getValues()) {
-                Item item = block.asItem();
-                if (item == Items.AIR) {
-                    LOG.warn("Itemless block copied to item tag: {}", (Object)Registry.BLOCK.getId(block));
-                    continue;
-                }
-                list.add(item);
-            }
-            return new Tag.CollectionEntry<Item>(list);
-        }
-        throw new UnsupportedOperationException("Unknown tag entry " + entry);
+    protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
+        Tag.ObjectBuilder<Item> builder = this.getOrCreateTagBuilder(identified2);
+        Tag.Builder builder2 = this.field_23783.apply(identified.getId());
+        builder2.streamEntries().forEach(builder::add);
     }
 
     @Override
@@ -116,11 +92,6 @@ extends AbstractTagProvider<Item> {
     @Override
     public String getName() {
         return "Item Tags";
-    }
-
-    @Override
-    protected void setContainer(TagContainer<Item> tagContainer) {
-        ItemTags.setContainer(tagContainer);
     }
 }
 

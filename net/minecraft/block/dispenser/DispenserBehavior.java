@@ -27,6 +27,7 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.TntEntity;
@@ -214,14 +215,9 @@ public interface DispenserBehavior {
             @Override
             public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
-                double d = direction.getOffsetX();
-                double e = direction.getOffsetY();
-                double f = direction.getOffsetZ();
-                double g = pointer.getX() + d;
-                double h = (float)pointer.getBlockPos().getY() + 0.2f;
-                double i = pointer.getZ() + f;
-                FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(pointer.getWorld(), stack, g, h, i, true);
-                fireworkRocketEntity.setVelocity(d, e, f, 0.5f, 1.0f);
+                FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(pointer.getWorld(), stack, pointer.getX(), pointer.getY(), pointer.getX(), true);
+                DispenserBehavior.method_27042(pointer, fireworkRocketEntity, direction);
+                fireworkRocketEntity.setVelocity(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ(), 0.5f, 1.0f);
                 pointer.getWorld().spawnEntity(fireworkRocketEntity);
                 stack.decrement(1);
                 return stack;
@@ -504,6 +500,10 @@ public interface DispenserBehavior {
                 return stack;
             }
         });
+    }
+
+    public static void method_27042(BlockPointer blockPointer, Entity entity, Direction direction) {
+        entity.updatePosition(blockPointer.getX() + (double)direction.getOffsetX() * (0.5000099999997474 - (double)entity.getWidth() / 2.0), blockPointer.getY() + (double)direction.getOffsetY() * (0.5000099999997474 - (double)entity.getHeight() / 2.0) - (double)entity.getHeight() / 2.0, blockPointer.getZ() + (double)direction.getOffsetZ() * (0.5000099999997474 - (double)entity.getWidth() / 2.0));
     }
 }
 

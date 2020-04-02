@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -21,18 +22,19 @@ extends BranchedTreeFeature<BranchedTreeFeatureConfig> {
     }
 
     @Override
-    public boolean generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
-        int k;
+    public boolean generate(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos2, Set<BlockPos> set, Set<BlockPos> set2, BlockBox blockBox, BranchedTreeFeatureConfig branchedTreeFeatureConfig) {
         int j;
-        int i = branchedTreeFeatureConfig.baseHeight + random.nextInt(branchedTreeFeatureConfig.heightRandA + 1) + random.nextInt(branchedTreeFeatureConfig.heightRandB + 1);
-        Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, j = branchedTreeFeatureConfig.trunkHeight >= 0 ? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1) : i - (branchedTreeFeatureConfig.foliageHeight + random.nextInt(branchedTreeFeatureConfig.foliageHeightRandom + 1)), k = branchedTreeFeatureConfig.foliagePlacer.getRadius(random, j, i, branchedTreeFeatureConfig), blockPos, branchedTreeFeatureConfig);
+        int k;
+        int l;
+        int i = branchedTreeFeatureConfig.trunkPlacer.getHeight(random, branchedTreeFeatureConfig);
+        Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, l = branchedTreeFeatureConfig.foliagePlacer.getRadius(random, k = i - (j = branchedTreeFeatureConfig.foliagePlacer.getHeight(random, i)), branchedTreeFeatureConfig), blockPos2, branchedTreeFeatureConfig);
         if (!optional.isPresent()) {
             return false;
         }
-        BlockPos blockPos2 = optional.get();
-        this.setToDirt(modifiableTestableWorld, blockPos2.down());
-        branchedTreeFeatureConfig.foliagePlacer.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k, blockPos2, set2);
-        this.generate(modifiableTestableWorld, random, i, blockPos2, branchedTreeFeatureConfig.trunkTopOffset + random.nextInt(branchedTreeFeatureConfig.trunkTopOffsetRandom + 1), set, blockBox, branchedTreeFeatureConfig);
+        BlockPos blockPos22 = optional.get();
+        this.setToDirt(modifiableTestableWorld, blockPos22.down());
+        Map<BlockPos, Integer> map = branchedTreeFeatureConfig.trunkPlacer.generate(modifiableTestableWorld, random, i, blockPos22, l, set, blockBox, branchedTreeFeatureConfig);
+        map.forEach((blockPos, integer) -> branchedTreeFeatureConfig.foliagePlacer.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, (BlockPos)blockPos, j, (int)integer, set2));
         return true;
     }
 }

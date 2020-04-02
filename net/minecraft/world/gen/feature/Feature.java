@@ -22,10 +22,10 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ProbabilityConfig;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.AbstractPileFeature;
-import net.minecraft.world.gen.feature.AcaciaTreeFeature;
 import net.minecraft.world.gen.feature.BambooFeature;
 import net.minecraft.world.gen.feature.BasaltPillarFeature;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
@@ -151,7 +151,6 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = Feature.register("nether_fossil", new NetherFossilFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> NO_OP = Feature.register("no_op", new NoOpFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = Feature.register("normal_tree", new OakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize)));
-    public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = Feature.register("acacia_tree", new AcaciaTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize)));
     public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = Feature.register("fancy_tree", new LargeOakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize)));
     public static final Feature<TreeFeatureConfig> JUNGLE_GROUND_BUSH = Feature.register("jungle_ground_bush", new JungleGroundBushFeature((Function<Dynamic<?>, ? extends TreeFeatureConfig>)((Function<Dynamic<?>, TreeFeatureConfig>)TreeFeatureConfig::deserialize)));
     public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = Feature.register("dark_oak_tree", new DarkOakTreeFeature((Function<Dynamic<?>, ? extends MegaTreeFeatureConfig>)((Function<Dynamic<?>, MegaTreeFeatureConfig>)MegaTreeFeatureConfig::deserialize)));
@@ -246,7 +245,7 @@ public abstract class Feature<FC extends FeatureConfig> {
         world.setBlockState(pos, state, 3);
     }
 
-    public abstract boolean generate(IWorld var1, ChunkGenerator<? extends ChunkGeneratorConfig> var2, Random var3, BlockPos var4, FC var5);
+    public abstract boolean generate(IWorld var1, StructureAccessor var2, ChunkGenerator<? extends ChunkGeneratorConfig> var3, Random var4, BlockPos var5, FC var6);
 
     public List<Biome.SpawnEntry> getMonsterSpawns() {
         return Collections.emptyList();

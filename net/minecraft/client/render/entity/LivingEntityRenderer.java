@@ -110,9 +110,11 @@ implements FeatureRendererContext<T, M> {
         }
         ((EntityModel)this.model).animateModel(livingEntity, o, n, g);
         ((EntityModel)this.model).setAngles(livingEntity, o, n, l, k, m);
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
         boolean bl = this.isVisible(livingEntity);
-        boolean bl2 = !bl && !((Entity)livingEntity).isInvisibleTo(MinecraftClient.getInstance().player);
-        RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2);
+        boolean bl2 = !bl && !((Entity)livingEntity).isInvisibleTo(minecraftClient.player);
+        boolean bl3 = minecraftClient.method_27022((Entity)livingEntity);
+        RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2, bl3);
         if (renderLayer != null) {
             VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
             int p = LivingEntityRenderer.getOverlay(livingEntity, this.getAnimationCounter(livingEntity, g));
@@ -131,7 +133,7 @@ implements FeatureRendererContext<T, M> {
      * Gets the render layer appropriate for rendering the passed entity. Returns null if the entity should not be rendered.
      */
     @Nullable
-    protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent) {
+    protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl) {
         Identifier identifier = this.getTexture(entity);
         if (translucent) {
             return RenderLayer.getEntityTranslucent(identifier);
@@ -139,7 +141,7 @@ implements FeatureRendererContext<T, M> {
         if (showBody) {
             return ((Model)this.model).getLayer(identifier);
         }
-        if (((Entity)entity).isGlowing()) {
+        if (bl) {
             return RenderLayer.getOutline(identifier);
         }
         return null;

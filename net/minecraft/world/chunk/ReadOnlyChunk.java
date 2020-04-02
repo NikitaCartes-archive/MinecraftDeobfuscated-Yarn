@@ -77,7 +77,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public void setStatus(ChunkStatus chunkStatus) {
+    public void setStatus(ChunkStatus status) {
     }
 
     @Override

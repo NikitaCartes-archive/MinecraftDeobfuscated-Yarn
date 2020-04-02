@@ -15,7 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 public class HuntHoglinTask<E extends PiglinEntity>
 extends Task<E> {
     public HuntHoglinTask() {
-        super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLIN, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ANGRY_AT, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleState.REGISTERED));
+        super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ANGRY_AT, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleState.REGISTERED));
     }
 
     @Override
@@ -25,7 +25,7 @@ extends Task<E> {
 
     @Override
     protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-        HoglinEntity hoglinEntity = ((PiglinEntity)piglinEntity).getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLIN).get();
+        HoglinEntity hoglinEntity = ((PiglinEntity)piglinEntity).getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN).get();
         PiglinBrain.angerAt(piglinEntity, hoglinEntity);
         PiglinBrain.rememberHunting(piglinEntity);
         PiglinBrain.angerAtCloserTargets(piglinEntity, hoglinEntity);

@@ -74,7 +74,7 @@ extends LeafEntry {
         @Override
         public void toJson(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, tagEntry, jsonSerializationContext);
-            jsonObject.addProperty("name", tagEntry.name.getId().toString());
+            jsonObject.addProperty("name", ItemTags.getContainer().method_26798(tagEntry.name).toString());
             jsonObject.addProperty("expand", tagEntry.expand);
         }
 

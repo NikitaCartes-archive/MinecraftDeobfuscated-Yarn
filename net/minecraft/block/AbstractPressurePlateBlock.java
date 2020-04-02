@@ -56,7 +56,7 @@ extends Block {
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
-        return AbstractPressurePlateBlock.topCoversMediumSquare(world, blockPos) || AbstractPressurePlateBlock.sideCoversSmallSquare(world, blockPos, Direction.UP);
+        return AbstractPressurePlateBlock.hasTopRim(world, blockPos) || AbstractPressurePlateBlock.sideCoversSmallSquare(world, blockPos, Direction.UP);
     }
 
     @Override

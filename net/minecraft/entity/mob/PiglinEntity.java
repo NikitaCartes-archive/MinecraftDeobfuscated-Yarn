@@ -27,9 +27,10 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.pathing.MobNavigation;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -74,12 +75,13 @@ implements CrossbowUser {
     private static final EntityAttributeModifier BABY_SPEED_BOOST_MODIFIER = new EntityAttributeModifier(BABY_SPEED_BOOST_MODIFIER_ID, "Baby speed boost", (double)0.2f, EntityAttributeModifier.Operation.MULTIPLY_BASE);
     private int conversionTicks = 0;
     private final BasicInventory inventory = new BasicInventory(8);
+    private boolean field_23738 = false;
     private static int field_22372 = 0;
     private static int field_22373 = 0;
     private static int field_22374 = 0;
     private static int field_22375 = 0;
     protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS, SensorType.HURT_BY, SensorType.INTERACTABLE_DOORS, SensorType.PIGLIN_SPECIFIC_SENSOR);
-    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEAREST_ADULT_PIGLINS, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, new MemoryModuleType[]{MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.PATH, MemoryModuleType.ANGRY_AT, MemoryModuleType.AVOID_TARGET, MemoryModuleType.ADMIRING_ITEM, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_BABY_PIGLIN, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN, MemoryModuleType.NEAREST_VISIBLE_WITHER_SKELETON, MemoryModuleType.RIDE_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.NEAREST_REPELLENT});
+    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.INTERACTABLE_DOORS, MemoryModuleType.OPENED_DOORS, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS, MemoryModuleType.NEAREST_ADULT_PIGLINS, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, new MemoryModuleType[]{MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.INTERACTION_TARGET, MemoryModuleType.PATH, MemoryModuleType.ANGRY_AT, MemoryModuleType.AVOID_TARGET, MemoryModuleType.ADMIRING_ITEM, MemoryModuleType.ADMIRING_DISABLED, MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.NEAREST_VISIBLE_BABY_PIGLIN, MemoryModuleType.NEAREST_VISIBLE_WITHER_SKELETON, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.RIDE_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_TARGETABLE_PLAYER_NOT_WEARING_GOLD, MemoryModuleType.NEAREST_PLAYER_HOLDING_WANTED_ITEM, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.NEAREST_REPELLENT});
 
     public PiglinEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -107,6 +109,9 @@ implements CrossbowUser {
         if (this.isImmuneToZombification()) {
             tag.putBoolean("IsImmuneToZombification", true);
         }
+        if (this.field_23738) {
+            tag.putBoolean("CannotHunt", true);
+        }
         tag.putInt("TimeInOverworld", this.conversionTicks);
         tag.put("Inventory", this.inventory.getTags());
     }
@@ -116,6 +121,7 @@ implements CrossbowUser {
         super.readCustomDataFromTag(tag);
         this.setBaby(tag.getBoolean("IsBaby"));
         this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
+        this.setCannotHunt(tag.getBoolean("CannotHunt"));
         this.conversionTicks = tag.getInt("TimeInOverworld");
         this.inventory.readTags(tag.getList("Inventory", 10));
     }
@@ -146,12 +152,8 @@ implements CrossbowUser {
         }
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(16.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.35f);
-        this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
+    public static DefaultAttributeContainer.Builder createPiglinAttributes() {
+        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MAX_HEALTH, 16.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.35f).add(Attributes.GENERIC_ATTACK_DAMAGE, 5.0);
     }
 
     public static boolean canSpawn(EntityType<PiglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
@@ -225,10 +227,10 @@ implements CrossbowUser {
     public void setBaby(boolean baby) {
         this.getDataTracker().set(BABY, baby);
         if (!this.world.isClient) {
-            EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+            EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
             entityAttributeInstance.removeModifier(BABY_SPEED_BOOST_MODIFIER);
             if (baby) {
-                entityAttributeInstance.addModifier(BABY_SPEED_BOOST_MODIFIER);
+                entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST_MODIFIER);
             }
         }
     }
@@ -248,6 +250,14 @@ implements CrossbowUser {
 
     private boolean isImmuneToZombification() {
         return this.getDataTracker().get(IMMUNE_TO_ZOMBIFICATION);
+    }
+
+    private void setCannotHunt(boolean bl) {
+        this.field_23738 = bl;
+    }
+
+    public boolean method_26952() {
+        return !this.field_23738;
     }
 
     public boolean canConvert() {
@@ -273,13 +283,13 @@ implements CrossbowUser {
         return this.experiencePoints;
     }
 
-    private void zombify(ServerWorld serverWorld) {
-        ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(serverWorld);
+    private void zombify(ServerWorld world) {
+        ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
         if (zombifiedPiglinEntity == null) {
             return;
         }
         zombifiedPiglinEntity.copyPositionAndRotation(this);
-        zombifiedPiglinEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(zombifiedPiglinEntity.getBlockPos()), SpawnType.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null);
+        zombifiedPiglinEntity.initialize(world, world.getLocalDifficulty(zombifiedPiglinEntity.getBlockPos()), SpawnType.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null);
         zombifiedPiglinEntity.setBaby(this.isBaby());
         zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
         PiglinBrain.method_25948(this);
@@ -298,7 +308,7 @@ implements CrossbowUser {
             zombifiedPiglinEntity.setPersistent();
         }
         this.remove();
-        serverWorld.spawnEntity(zombifiedPiglinEntity);
+        world.spawnEntity(zombifiedPiglinEntity);
         zombifiedPiglinEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
     }
 

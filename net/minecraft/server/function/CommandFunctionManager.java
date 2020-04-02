@@ -48,7 +48,7 @@ implements SynchronousResourceReloadListener {
     private boolean executing;
     private final ArrayDeque<Entry> chain = new ArrayDeque();
     private final List<Entry> pending = Lists.newArrayList();
-    private final TagContainer<CommandFunction> tags = new TagContainer(this::getFunction, "tags/functions", true, "function");
+    private final TagContainer<CommandFunction> tags = new TagContainer(this::getFunction, "tags/functions", "function");
     private final List<CommandFunction> tickFunctions = Lists.newArrayList();
     private boolean needToRunLoadFunctions;
 
@@ -84,7 +84,7 @@ implements SynchronousResourceReloadListener {
         this.server.getProfiler().pop();
         if (this.needToRunLoadFunctions) {
             this.needToRunLoadFunctions = false;
-            Collection<CommandFunction> collection = this.getTags().getOrCreate(LOAD_FUNCTION).values();
+            List<CommandFunction> collection = this.getTags().getOrCreate(LOAD_FUNCTION).values();
             this.server.getProfiler().push(LOAD_FUNCTION::toString);
             for (CommandFunction commandFunction2 : collection) {
                 this.execute(commandFunction2, this.getTaggedFunctionSource());

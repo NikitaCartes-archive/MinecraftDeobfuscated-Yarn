@@ -53,6 +53,7 @@ import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.ai.brain.task.WantNewItemTask;
+import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.PiglinEntity;
@@ -114,7 +115,7 @@ public class PiglinBrain {
     }
 
     private static void addIdleActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
-        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 14.0f), new UpdateAttackTargetTask<PiglinEntity>(PiglinEntity::isAdult, PiglinBrain::getPreferredTarget), new HuntHoglinTask(), PiglinBrain.makeGoToZombifiedPiglinTask(), PiglinBrain.makeGoToSoulFireTask(), PiglinBrain.makeRememberRideableHoglinTask(), PiglinBrain.makeRandomFollowTask(), PiglinBrain.makeRandomWanderTask(), new FindInteractionTargetTask(EntityType.PLAYER, 4)));
+        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 14.0f), new UpdateAttackTargetTask<PiglinEntity>(PiglinEntity::isAdult, PiglinBrain::getPreferredTarget), new ConditionalTask<PiglinEntity>(PiglinEntity::method_26952, new HuntHoglinTask()), PiglinBrain.makeGoToZombifiedPiglinTask(), PiglinBrain.makeGoToSoulFireTask(), PiglinBrain.makeRememberRideableHoglinTask(), PiglinBrain.makeRandomFollowTask(), PiglinBrain.makeRandomWanderTask(), new FindInteractionTargetTask(EntityType.PLAYER, 4)));
     }
 
     private static void addFightActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
@@ -154,7 +155,7 @@ public class PiglinBrain {
     }
 
     private static GoToRememberedPositionTask<?> makeGoToZombifiedPiglinTask() {
-        return GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN, 1.1f, 10, false);
+        return GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, 1.1f, 10, false);
     }
 
     protected static void tickActivities(PiglinEntity piglin) {
@@ -448,8 +449,13 @@ public class PiglinBrain {
         return new TimeLimitedTask<PiglinEntity>(new MemoryTransferTask<PiglinEntity, Entity>(PiglinEntity::isBaby, MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.RIDE_TARGET, RIDE_TARGET_MEMORY_DURATION), MEMORY_TRANSFER_TASK_DURATION);
     }
 
-    protected static void angerAtCloserTargets(PiglinEntity piglin2, LivingEntity target) {
-        PiglinBrain.getNearbyPiglins(piglin2).forEach(piglin -> PiglinBrain.angerAtIfCloser(piglin, target));
+    protected static void angerAtCloserTargets(PiglinEntity piglin, LivingEntity target) {
+        PiglinBrain.getNearbyPiglins(piglin).forEach(piglinEntity -> {
+            if (!(target.getType() != EntityType.HOGLIN || piglinEntity.method_26952() && ((HoglinEntity)target).canBeHunted())) {
+                return;
+            }
+            PiglinBrain.angerAtIfCloser(piglinEntity, target);
+        });
     }
 
     protected static void rememberGroupHunting(PiglinEntity piglin) {
@@ -564,7 +570,7 @@ public class PiglinBrain {
     }
 
     private static boolean hasZombifiedPiglinNearby(PiglinEntity piglin) {
-        return piglin.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN);
+        return piglin.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED);
     }
 
     private static boolean hasPlayerHoldingWantedItemNearby(LivingEntity entity) {

@@ -4,7 +4,7 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectType;
 
@@ -15,13 +15,13 @@ extends StatusEffect {
     }
 
     @Override
-    public void onRemoved(LivingEntity entity, AbstractEntityAttributeContainer attributes, int amplifier) {
+    public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         entity.setAbsorptionAmount(entity.getAbsorptionAmount() - (float)(4 * (amplifier + 1)));
         super.onRemoved(entity, attributes, amplifier);
     }
 
     @Override
-    public void onApplied(LivingEntity entity, AbstractEntityAttributeContainer attributes, int amplifier) {
+    public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         entity.setAbsorptionAmount(entity.getAbsorptionAmount() + (float)(4 * (amplifier + 1)));
         super.onApplied(entity, attributes, amplifier);
     }

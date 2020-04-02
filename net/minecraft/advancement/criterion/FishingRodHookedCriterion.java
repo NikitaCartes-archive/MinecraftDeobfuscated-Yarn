@@ -10,6 +10,7 @@ import java.util.Collection;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -61,17 +62,18 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(rod, bobber, item);
         }
 
-        public boolean matches(ServerPlayerEntity player, ItemStack rodStack, FishingBobberEntity bobber, Collection<ItemStack> fishingLoots) {
+        public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack rodStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> fishingLoots) {
             if (!this.rod.test(rodStack)) {
                 return false;
             }
-            if (!this.hookedEntity.test(player, bobber.hookedEntity)) {
+            Entity entity = fishingBobberEntity.method_26957();
+            if (!this.hookedEntity.test(serverPlayerEntity, entity)) {
                 return false;
             }
             if (this.caughtItem != ItemPredicate.ANY) {
                 ItemEntity itemEntity;
                 boolean bl = false;
-                if (bobber.hookedEntity instanceof ItemEntity && this.caughtItem.test((itemEntity = (ItemEntity)bobber.hookedEntity).getStack())) {
+                if (entity instanceof ItemEntity && this.caughtItem.test((itemEntity = (ItemEntity)entity).getStack())) {
                     bl = true;
                 }
                 for (ItemStack itemStack : fishingLoots) {

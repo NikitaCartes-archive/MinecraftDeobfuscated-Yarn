@@ -57,7 +57,7 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        this.field_22135.get().generate(world, world.getChunkManager().getChunkGenerator(), random, pos);
+        this.field_22135.get().generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), random, pos);
     }
 }
 

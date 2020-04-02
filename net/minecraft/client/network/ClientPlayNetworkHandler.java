@@ -25,6 +25,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
@@ -104,8 +105,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ShulkerBulletEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.attribute.AbstractEntityAttributeContainer;
-import net.minecraft.entity.attribute.ClampedEntityAttribute;
+import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -294,6 +294,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
@@ -666,7 +667,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         int i = packet.getX();
         int j = packet.getZ();
-        WorldChunk worldChunk = this.world.getChunkManager().loadChunkFromPacket(i, j, packet.getBiomeArray(), packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
+        WorldChunk worldChunk = this.world.getChunkManager().loadChunkFromPacket(i, j, packet.getBiomeArray(), packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask(), packet.isFullChunk());
         if (worldChunk != null && packet.isFullChunk()) {
             this.world.addEntitiesToChunk(worldChunk);
         }
@@ -930,7 +931,7 @@ implements ClientPlayPacketListener {
         this.client.player = clientPlayerEntity2;
         this.client.cameraEntity = clientPlayerEntity2;
         clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getAllEntries());
-        clientPlayerEntity2.getAttributes().copyFrom(clientPlayerEntity.getAttributes());
+        clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
         clientPlayerEntity2.afterSpawn();
         clientPlayerEntity2.setServerBrand(string);
         this.world.addPlayer(i, clientPlayerEntity2);
@@ -1322,6 +1323,7 @@ implements ClientPlayPacketListener {
             ItemTags.setContainer(this.tagManager.items());
             FluidTags.setContainer(this.tagManager.fluids());
             EntityTypeTags.setContainer(this.tagManager.entityTypes());
+            Blocks.method_26979();
         }
         this.client.getSearchableContainer(SearchManager.ITEM_TAG).reload();
     }
@@ -1912,16 +1914,17 @@ implements ClientPlayPacketListener {
         if (!(entity instanceof LivingEntity)) {
             throw new IllegalStateException("Server tried to update attributes of a non-living entity (actually: " + entity + ")");
         }
-        AbstractEntityAttributeContainer abstractEntityAttributeContainer = ((LivingEntity)entity).getAttributes();
+        AttributeContainer attributeContainer = ((LivingEntity)entity).getAttributes();
         for (EntityAttributesS2CPacket.Entry entry : packet.getEntries()) {
-            EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(entry.getId());
+            EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(entry.getId());
             if (entityAttributeInstance == null) {
-                entityAttributeInstance = abstractEntityAttributeContainer.register(new ClampedEntityAttribute(null, entry.getId(), 0.0, Double.MIN_NORMAL, Double.MAX_VALUE));
+                LOGGER.warn("Entity {} does not have attribute {}", (Object)entity, (Object)Registry.ATTRIBUTES.getId(entry.getId()));
+                continue;
             }
             entityAttributeInstance.setBaseValue(entry.getBaseValue());
             entityAttributeInstance.clearModifiers();
             for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {
-                entityAttributeInstance.addModifier(entityAttributeModifier);
+                entityAttributeInstance.addTemporaryModifier(entityAttributeModifier);
             }
         }
     }

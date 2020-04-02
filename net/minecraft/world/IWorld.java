@@ -4,7 +4,7 @@
 package net.minecraft.world;
 
 import java.util.Random;
-import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -91,8 +91,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> excluded) {
-        return EntityView.super.getEntityCollisions(entity, box, excluded);
+    default public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+        return EntityView.super.getEntityCollisions(entity, box, predicate);
     }
 
     @Override
@@ -101,8 +101,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
-        return WorldView.super.getTopPosition(type, pos);
+    default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+        return WorldView.super.getTopPosition(heightmap, pos);
     }
 }
 

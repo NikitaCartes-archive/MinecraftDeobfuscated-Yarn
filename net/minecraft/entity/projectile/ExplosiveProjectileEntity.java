@@ -25,7 +25,6 @@ import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity
 extends ProjectileEntity {
-    private int ticks;
     public double posX;
     public double posY;
     public double posZ;
@@ -68,6 +67,7 @@ extends ProjectileEntity {
 
     @Override
     public void tick() {
+        HitResult hitResult;
         Entity entity = this.getOwner();
         if (!this.world.isClient && (entity != null && entity.removed || !this.world.isChunkLoaded(this.getBlockPos()))) {
             this.remove();
@@ -77,9 +77,7 @@ extends ProjectileEntity {
         if (this.isBurning()) {
             this.setOnFireFor(1);
         }
-        ++this.ticks;
-        HitResult hitResult = ProjectileUtil.getCollision((Entity)this, true, this.ticks >= 25, entity, RayTraceContext.ShapeType.COLLIDER);
-        if (hitResult.getType() != HitResult.Type.MISS) {
+        if ((hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER)).getType() != HitResult.Type.MISS) {
             this.onCollision(hitResult);
         }
         Vec3d vec3d = this.getVelocity();
@@ -98,6 +96,11 @@ extends ProjectileEntity {
         this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply(g));
         this.world.addParticle(this.getParticleType(), d, e + 0.5, f, 0.0, 0.0, 0.0);
         this.updatePosition(d, e, f);
+    }
+
+    @Override
+    protected boolean method_26958(Entity entity) {
+        return super.method_26958(entity) && !entity.noClip;
     }
 
     protected boolean isBurning() {

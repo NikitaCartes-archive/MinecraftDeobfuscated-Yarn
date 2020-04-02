@@ -7,8 +7,10 @@ import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
@@ -114,10 +116,8 @@ implements Monster {
         return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.canMobSpawn(type, world, spawnType, pos, random);
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
+    public static DefaultAttributeContainer.Builder createHostileAttributes() {
+        return MobEntity.createMobAttributes().add(Attributes.GENERIC_ATTACK_DAMAGE);
     }
 
     @Override

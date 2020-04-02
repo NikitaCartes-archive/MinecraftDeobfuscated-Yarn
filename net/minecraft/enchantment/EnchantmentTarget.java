@@ -3,6 +3,7 @@
  */
 package net.minecraft.enchantment;
 
+import java.util.stream.Stream;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.CarvedPumpkinBlock;
@@ -13,23 +14,12 @@ import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.TridentItem;
 
 public enum EnchantmentTarget {
-    ALL{
-
-        @Override
-        public boolean isAcceptableItem(Item item) {
-            for (EnchantmentTarget enchantmentTarget : EnchantmentTarget.values()) {
-                if (enchantmentTarget == ALL || !enchantmentTarget.isAcceptableItem(item)) continue;
-                return true;
-            }
-            return false;
-        }
-    }
-    ,
     ARMOR{
 
         @Override
@@ -132,6 +122,14 @@ public enum EnchantmentTarget {
         @Override
         public boolean isAcceptableItem(Item item) {
             return item instanceof CrossbowItem;
+        }
+    }
+    ,
+    VANISHABLE{
+
+        @Override
+        public boolean isAcceptableItem(Item item) {
+            return Stream.of(EnchantmentTarget.values()).filter(enchantmentTarget -> enchantmentTarget != VANISHABLE).anyMatch(enchantmentTarget -> enchantmentTarget.isAcceptableItem(item) || item == Items.COMPASS);
         }
     };
 

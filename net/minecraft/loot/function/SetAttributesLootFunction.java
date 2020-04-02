@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.UniformLootTableRange;
@@ -25,6 +26,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class SetAttributesLootFunction
@@ -52,16 +54,16 @@ extends ConditionalLootFunction {
 
     static class Attribute {
         private final String name;
-        private final String attribute;
+        private final EntityAttribute attribute;
         private final EntityAttributeModifier.Operation operation;
         private final UniformLootTableRange amountRange;
         @Nullable
         private final UUID id;
         private final EquipmentSlot[] slots;
 
-        private Attribute(String name, String attribute, EntityAttributeModifier.Operation operation, UniformLootTableRange amountRange, EquipmentSlot[] slots, @Nullable UUID id) {
+        private Attribute(String name, EntityAttribute entityAttribute, EntityAttributeModifier.Operation operation, UniformLootTableRange amountRange, EquipmentSlot[] slots, @Nullable UUID id) {
             this.name = name;
-            this.attribute = attribute;
+            this.attribute = entityAttribute;
             this.operation = operation;
             this.amountRange = amountRange;
             this.id = id;
@@ -71,7 +73,7 @@ extends ConditionalLootFunction {
         public JsonObject serialize(JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", this.name);
-            jsonObject.addProperty("attribute", this.attribute);
+            jsonObject.addProperty("attribute", Registry.ATTRIBUTES.getId(this.attribute).toString());
             jsonObject.addProperty("operation", Attribute.getName(this.operation));
             jsonObject.add("amount", context.serialize(this.amountRange));
             if (this.id != null) {
@@ -92,7 +94,7 @@ extends ConditionalLootFunction {
         public static Attribute deserialize(JsonObject json, JsonDeserializationContext context) {
             EquipmentSlot[] equipmentSlots;
             String string = JsonHelper.getString(json, "name");
-            String string2 = JsonHelper.getString(json, "attribute");
+            EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(new Identifier(JsonHelper.getString(json, "attribute")));
             EntityAttributeModifier.Operation operation = Attribute.fromName(JsonHelper.getString(json, "operation"));
             UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(json, "amount", context, UniformLootTableRange.class);
             UUID uUID = null;
@@ -112,14 +114,14 @@ extends ConditionalLootFunction {
                 throw new JsonSyntaxException("Invalid or missing attribute modifier slot; must be either string or array of strings.");
             }
             if (json.has("id")) {
-                String string3 = JsonHelper.getString(json, "id");
+                String string2 = JsonHelper.getString(json, "id");
                 try {
-                    uUID = UUID.fromString(string3);
+                    uUID = UUID.fromString(string2);
                 } catch (IllegalArgumentException illegalArgumentException) {
-                    throw new JsonSyntaxException("Invalid attribute modifier id '" + string3 + "' (must be UUID format, with dashes)");
+                    throw new JsonSyntaxException("Invalid attribute modifier id '" + string2 + "' (must be UUID format, with dashes)");
                 }
             }
-            return new Attribute(string, string2, operation, uniformLootTableRange, equipmentSlots, uUID);
+            return new Attribute(string, entityAttribute, operation, uniformLootTableRange, equipmentSlots, uUID);
         }
 
         private static String getName(EntityAttributeModifier.Operation operation) {

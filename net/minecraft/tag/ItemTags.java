@@ -3,166 +3,73 @@
  */
 package net.minecraft.tag;
 
-import java.util.Collection;
-import java.util.Optional;
 import net.minecraft.item.Item;
+import net.minecraft.tag.GlobalTagAccessor;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagContainer;
-import net.minecraft.util.Identifier;
 
 public class ItemTags {
-    private static TagContainer<Item> container = new TagContainer(identifier -> Optional.empty(), "", false, "");
-    private static int latestVersion;
-    public static final Tag<Item> WOOL;
-    public static final Tag<Item> PLANKS;
-    public static final Tag<Item> STONE_BRICKS;
-    public static final Tag<Item> WOODEN_BUTTONS;
-    public static final Tag<Item> BUTTONS;
-    public static final Tag<Item> CARPETS;
-    public static final Tag<Item> WOODEN_DOORS;
-    public static final Tag<Item> WOODEN_STAIRS;
-    public static final Tag<Item> WOODEN_SLABS;
-    public static final Tag<Item> WOODEN_FENCES;
-    public static final Tag<Item> WOODEN_PRESSURE_PLATES;
-    public static final Tag<Item> WOODEN_TRAPDOORS;
-    public static final Tag<Item> DOORS;
-    public static final Tag<Item> SAPLINGS;
-    public static final Tag<Item> LOGS_THAT_BURN;
-    public static final Tag<Item> LOGS;
-    public static final Tag<Item> DARK_OAK_LOGS;
-    public static final Tag<Item> OAK_LOGS;
-    public static final Tag<Item> BIRCH_LOGS;
-    public static final Tag<Item> ACACIA_LOGS;
-    public static final Tag<Item> JUNGLE_LOGS;
-    public static final Tag<Item> SPRUCE_LOGS;
-    public static final Tag<Item> CRIMSON_STEMS;
-    public static final Tag<Item> WARPED_STEMS;
-    public static final Tag<Item> BANNERS;
-    public static final Tag<Item> SAND;
-    public static final Tag<Item> STAIRS;
-    public static final Tag<Item> SLABS;
-    public static final Tag<Item> WALLS;
-    public static final Tag<Item> ANVIL;
-    public static final Tag<Item> RAILS;
-    public static final Tag<Item> LEAVES;
-    public static final Tag<Item> TRAPDOORS;
-    public static final Tag<Item> SMALL_FLOWERS;
-    public static final Tag<Item> BEDS;
-    public static final Tag<Item> FENCES;
-    public static final Tag<Item> TALL_FLOWERS;
-    public static final Tag<Item> FLOWERS;
-    public static final Tag<Item> PIGLIN_REPELLENTS;
-    public static final Tag<Item> GOLD_ORES;
-    public static final Tag<Item> NON_FLAMMABLE_WOOD;
-    public static final Tag<Item> BOATS;
-    public static final Tag<Item> FISHES;
-    public static final Tag<Item> SIGNS;
-    public static final Tag<Item> MUSIC_DISCS;
-    public static final Tag<Item> COALS;
-    public static final Tag<Item> ARROWS;
-    public static final Tag<Item> LECTERN_BOOKS;
-    public static final Tag<Item> BEACON_PAYMENT_ITEMS;
+    private static final GlobalTagAccessor<Item> ACCESSOR = new GlobalTagAccessor();
+    public static final Tag.Identified<Item> WOOL = ItemTags.register("wool");
+    public static final Tag.Identified<Item> PLANKS = ItemTags.register("planks");
+    public static final Tag.Identified<Item> STONE_BRICKS = ItemTags.register("stone_bricks");
+    public static final Tag.Identified<Item> WOODEN_BUTTONS = ItemTags.register("wooden_buttons");
+    public static final Tag.Identified<Item> BUTTONS = ItemTags.register("buttons");
+    public static final Tag.Identified<Item> CARPETS = ItemTags.register("carpets");
+    public static final Tag.Identified<Item> WOODEN_DOORS = ItemTags.register("wooden_doors");
+    public static final Tag.Identified<Item> WOODEN_STAIRS = ItemTags.register("wooden_stairs");
+    public static final Tag.Identified<Item> WOODEN_SLABS = ItemTags.register("wooden_slabs");
+    public static final Tag.Identified<Item> WOODEN_FENCES = ItemTags.register("wooden_fences");
+    public static final Tag.Identified<Item> WOODEN_PRESSURE_PLATES = ItemTags.register("wooden_pressure_plates");
+    public static final Tag.Identified<Item> WOODEN_TRAPDOORS = ItemTags.register("wooden_trapdoors");
+    public static final Tag.Identified<Item> DOORS = ItemTags.register("doors");
+    public static final Tag.Identified<Item> SAPLINGS = ItemTags.register("saplings");
+    public static final Tag.Identified<Item> LOGS_THAT_BURN = ItemTags.register("logs_that_burn");
+    public static final Tag.Identified<Item> LOGS = ItemTags.register("logs");
+    public static final Tag.Identified<Item> DARK_OAK_LOGS = ItemTags.register("dark_oak_logs");
+    public static final Tag.Identified<Item> OAK_LOGS = ItemTags.register("oak_logs");
+    public static final Tag.Identified<Item> BIRCH_LOGS = ItemTags.register("birch_logs");
+    public static final Tag.Identified<Item> ACACIA_LOGS = ItemTags.register("acacia_logs");
+    public static final Tag.Identified<Item> JUNGLE_LOGS = ItemTags.register("jungle_logs");
+    public static final Tag.Identified<Item> SPRUCE_LOGS = ItemTags.register("spruce_logs");
+    public static final Tag.Identified<Item> CRIMSON_STEMS = ItemTags.register("crimson_stems");
+    public static final Tag.Identified<Item> WARPED_STEMS = ItemTags.register("warped_stems");
+    public static final Tag.Identified<Item> BANNERS = ItemTags.register("banners");
+    public static final Tag.Identified<Item> SAND = ItemTags.register("sand");
+    public static final Tag.Identified<Item> STAIRS = ItemTags.register("stairs");
+    public static final Tag.Identified<Item> SLABS = ItemTags.register("slabs");
+    public static final Tag.Identified<Item> WALLS = ItemTags.register("walls");
+    public static final Tag.Identified<Item> ANVIL = ItemTags.register("anvil");
+    public static final Tag.Identified<Item> RAILS = ItemTags.register("rails");
+    public static final Tag.Identified<Item> LEAVES = ItemTags.register("leaves");
+    public static final Tag.Identified<Item> TRAPDOORS = ItemTags.register("trapdoors");
+    public static final Tag.Identified<Item> SMALL_FLOWERS = ItemTags.register("small_flowers");
+    public static final Tag.Identified<Item> BEDS = ItemTags.register("beds");
+    public static final Tag.Identified<Item> FENCES = ItemTags.register("fences");
+    public static final Tag.Identified<Item> TALL_FLOWERS = ItemTags.register("tall_flowers");
+    public static final Tag.Identified<Item> FLOWERS = ItemTags.register("flowers");
+    public static final Tag.Identified<Item> PIGLIN_REPELLENTS = ItemTags.register("piglin_repellents");
+    public static final Tag.Identified<Item> GOLD_ORES = ItemTags.register("gold_ores");
+    public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = ItemTags.register("non_flammable_wood");
+    public static final Tag.Identified<Item> BOATS = ItemTags.register("boats");
+    public static final Tag.Identified<Item> FISHES = ItemTags.register("fishes");
+    public static final Tag.Identified<Item> SIGNS = ItemTags.register("signs");
+    public static final Tag.Identified<Item> MUSIC_DISCS = ItemTags.register("music_discs");
+    public static final Tag.Identified<Item> COALS = ItemTags.register("coals");
+    public static final Tag.Identified<Item> ARROWS = ItemTags.register("arrows");
+    public static final Tag.Identified<Item> LECTERN_BOOKS = ItemTags.register("lectern_books");
+    public static final Tag.Identified<Item> BEACON_PAYMENT_ITEMS = ItemTags.register("beacon_payment_items");
+
+    private static Tag.Identified<Item> register(String id) {
+        return ACCESSOR.get(id);
+    }
 
     public static void setContainer(TagContainer<Item> container) {
-        ItemTags.container = container;
-        ++latestVersion;
+        ACCESSOR.setContainer(container);
     }
 
     public static TagContainer<Item> getContainer() {
-        return container;
-    }
-
-    private static Tag<Item> register(String id) {
-        return new CachingTag(new Identifier(id));
-    }
-
-    static {
-        WOOL = ItemTags.register("wool");
-        PLANKS = ItemTags.register("planks");
-        STONE_BRICKS = ItemTags.register("stone_bricks");
-        WOODEN_BUTTONS = ItemTags.register("wooden_buttons");
-        BUTTONS = ItemTags.register("buttons");
-        CARPETS = ItemTags.register("carpets");
-        WOODEN_DOORS = ItemTags.register("wooden_doors");
-        WOODEN_STAIRS = ItemTags.register("wooden_stairs");
-        WOODEN_SLABS = ItemTags.register("wooden_slabs");
-        WOODEN_FENCES = ItemTags.register("wooden_fences");
-        WOODEN_PRESSURE_PLATES = ItemTags.register("wooden_pressure_plates");
-        WOODEN_TRAPDOORS = ItemTags.register("wooden_trapdoors");
-        DOORS = ItemTags.register("doors");
-        SAPLINGS = ItemTags.register("saplings");
-        LOGS_THAT_BURN = ItemTags.register("logs_that_burn");
-        LOGS = ItemTags.register("logs");
-        DARK_OAK_LOGS = ItemTags.register("dark_oak_logs");
-        OAK_LOGS = ItemTags.register("oak_logs");
-        BIRCH_LOGS = ItemTags.register("birch_logs");
-        ACACIA_LOGS = ItemTags.register("acacia_logs");
-        JUNGLE_LOGS = ItemTags.register("jungle_logs");
-        SPRUCE_LOGS = ItemTags.register("spruce_logs");
-        CRIMSON_STEMS = ItemTags.register("crimson_stems");
-        WARPED_STEMS = ItemTags.register("warped_stems");
-        BANNERS = ItemTags.register("banners");
-        SAND = ItemTags.register("sand");
-        STAIRS = ItemTags.register("stairs");
-        SLABS = ItemTags.register("slabs");
-        WALLS = ItemTags.register("walls");
-        ANVIL = ItemTags.register("anvil");
-        RAILS = ItemTags.register("rails");
-        LEAVES = ItemTags.register("leaves");
-        TRAPDOORS = ItemTags.register("trapdoors");
-        SMALL_FLOWERS = ItemTags.register("small_flowers");
-        BEDS = ItemTags.register("beds");
-        FENCES = ItemTags.register("fences");
-        TALL_FLOWERS = ItemTags.register("tall_flowers");
-        FLOWERS = ItemTags.register("flowers");
-        PIGLIN_REPELLENTS = ItemTags.register("piglin_repellents");
-        GOLD_ORES = ItemTags.register("gold_ores");
-        NON_FLAMMABLE_WOOD = ItemTags.register("non_flammable_wood");
-        BOATS = ItemTags.register("boats");
-        FISHES = ItemTags.register("fishes");
-        SIGNS = ItemTags.register("signs");
-        MUSIC_DISCS = ItemTags.register("music_discs");
-        COALS = ItemTags.register("coals");
-        ARROWS = ItemTags.register("arrows");
-        LECTERN_BOOKS = ItemTags.register("lectern_books");
-        BEACON_PAYMENT_ITEMS = ItemTags.register("beacon_payment_items");
-    }
-
-    public static class CachingTag
-    extends Tag<Item> {
-        private int version = -1;
-        private Tag<Item> delegate;
-
-        public CachingTag(Identifier identifier) {
-            super(identifier);
-        }
-
-        @Override
-        public boolean contains(Item item) {
-            if (this.version != latestVersion) {
-                this.delegate = container.getOrCreate(this.getId());
-                this.version = latestVersion;
-            }
-            return this.delegate.contains(item);
-        }
-
-        @Override
-        public Collection<Item> values() {
-            if (this.version != latestVersion) {
-                this.delegate = container.getOrCreate(this.getId());
-                this.version = latestVersion;
-            }
-            return this.delegate.values();
-        }
-
-        @Override
-        public Collection<Tag.Entry<Item>> entries() {
-            if (this.version != latestVersion) {
-                this.delegate = container.getOrCreate(this.getId());
-                this.version = latestVersion;
-            }
-            return this.delegate.entries();
-        }
+        return ACCESSOR.getContainer();
     }
 }
 

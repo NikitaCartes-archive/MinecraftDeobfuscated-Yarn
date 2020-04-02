@@ -14,7 +14,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -57,12 +58,8 @@ extends HostileEntity {
         this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
     }
 
-    @Override
-    protected void initAttributes() {
-        super.initAttributes();
-        this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
-        this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23f);
-        this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(48.0);
+    public static DefaultAttributeContainer.Builder createBlazeAttributes() {
+        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_ATTACK_DAMAGE, 6.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.23f).add(Attributes.GENERIC_FOLLOW_RANGE, 48.0);
     }
 
     @Override
@@ -230,7 +227,7 @@ extends HostileEntity {
         }
 
         private double method_6995() {
-            return this.blaze.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).getValue();
+            return this.blaze.method_26825(Attributes.GENERIC_FOLLOW_RANGE);
         }
     }
 }

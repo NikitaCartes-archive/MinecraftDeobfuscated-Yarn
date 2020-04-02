@@ -506,7 +506,7 @@ public abstract class PlayerManager {
     }
 
     public boolean isOperator(GameProfile profile) {
-        return this.ops.contains(profile) || this.server.isOwner(profile) && this.server.getWorld(DimensionType.OVERWORLD).getLevelProperties().areCommandsAllowed() || this.cheatsAllowed;
+        return this.ops.contains(profile) || this.server.isHost(profile) && this.server.getWorld(DimensionType.OVERWORLD).getLevelProperties().areCommandsAllowed() || this.cheatsAllowed;
     }
 
     @Nullable
