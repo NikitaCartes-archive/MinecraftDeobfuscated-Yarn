@@ -306,12 +306,12 @@ public class Structure {
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2, world, blockPos, blockPos2);
 			if (blockState != blockState3) {
-				world.setBlockState(blockPos, blockState3, flags & -2 | 16);
+				world.setBlockState(blockPos, blockState3, flags & -2);
 			}
 
 			BlockState blockState4 = blockState2.getStateForNeighborUpdate(direction.getOpposite(), blockState3, world, blockPos2, blockPos);
 			if (blockState2 != blockState4) {
-				world.setBlockState(blockPos2, blockState4, flags & -2 | 16);
+				world.setBlockState(blockPos2, blockState4, flags & -2);
 			}
 		});
 	}

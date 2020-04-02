@@ -45,6 +45,6 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		((ConfiguredFeature)this.field_22135.get()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos);
+		((ConfiguredFeature)this.field_22135.get()).generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), random, pos);
 	}
 }

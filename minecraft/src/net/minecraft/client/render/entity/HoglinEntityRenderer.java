@@ -7,14 +7,18 @@ import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class HoglinEntityRenderer extends MobEntityRenderer<HoglinEntity, HoglinEntityModel> {
+public class HoglinEntityRenderer extends MobEntityRenderer<HoglinEntity, HoglinEntityModel<HoglinEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/hoglin/hoglin.png");
 
 	public HoglinEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new HoglinEntityModel(), 0.7F);
+		super(entityRenderDispatcher, new HoglinEntityModel<>(), 0.7F);
 	}
 
 	public Identifier getTexture(HoglinEntity hoglinEntity) {
 		return TEXTURE;
+	}
+
+	protected boolean isShaking(HoglinEntity hoglinEntity) {
+		return hoglinEntity.canConvert();
 	}
 }

@@ -39,8 +39,9 @@ import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -182,13 +183,12 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.1F);
-		this.getAttributes().register(EntityAttributes.ATTACK_SPEED);
-		this.getAttributes().register(EntityAttributes.LUCK);
+	public static DefaultAttributeContainer.Builder createPlayerAttributes() {
+		return LivingEntity.createLivingAttributes()
+			.add(Attributes.GENERIC_ATTACK_DAMAGE, 1.0)
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.1F)
+			.add(Attributes.GENERIC_ATTACK_SPEED)
+			.add(Attributes.GENERIC_LUCK);
 	}
 
 	@Override
@@ -511,7 +511,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.inventory.updateItems();
 		this.prevStrideDistance = this.strideDistance;
 		super.tickMovement();
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
 		if (!this.world.isClient) {
 			entityAttributeInstance.setBaseValue((double)this.abilities.getWalkSpeed());
 		}
@@ -1066,7 +1066,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void attack(Entity target) {
 		if (target.isAttackable()) {
 			if (!target.handleAttack(this)) {
-				float f = (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+				float f = (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
 				float g;
 				if (target instanceof LivingEntity) {
 					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
@@ -1422,7 +1422,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public float getMovementSpeed() {
-		return (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
+		return (float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED);
 	}
 
 	public void increaseTravelMotionStats(double dx, double dy, double dz) {
@@ -1939,7 +1939,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public float getAttackCooldownProgressPerTick() {
-		return (float)(1.0 / this.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getValue() * 20.0);
+		return (float)(1.0 / this.method_26825(Attributes.GENERIC_ATTACK_SPEED) * 20.0);
 	}
 
 	public float getAttackCooldownProgress(float baseTime) {
@@ -1960,7 +1960,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public float getLuck() {
-		return (float)this.getAttributeInstance(EntityAttributes.LUCK).getValue();
+		return (float)this.method_26825(Attributes.GENERIC_LUCK);
 	}
 
 	public boolean isCreativeLevelTwoOp() {

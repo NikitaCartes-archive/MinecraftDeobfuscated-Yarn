@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class StructurePoolElement {
@@ -35,6 +36,7 @@ public abstract class StructurePoolElement {
 	public abstract boolean generate(
 		StructureManager structureManager,
 		IWorld world,
+		StructureAccessor structureAccessor,
 		ChunkGenerator<?> chunkGenerator,
 		BlockPos blockPos,
 		BlockPos blockPos2,

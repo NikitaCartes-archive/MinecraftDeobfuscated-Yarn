@@ -6,12 +6,10 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -57,6 +55,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,27 +72,23 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private DedicatedServerGui gui;
 
 	public MinecraftDedicatedServer(
-		File file,
+		LevelStorage.Session session,
 		ServerPropertiesLoader serverPropertiesLoader,
 		DataFixer dataFixer,
-		YggdrasilAuthenticationService yggdrasilAuthenticationService,
 		MinecraftSessionService minecraftSessionService,
 		GameProfileRepository gameProfileRepository,
 		UserCache userCache,
-		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory,
-		String string
+		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
-			file,
+			session,
 			Proxy.NO_PROXY,
 			dataFixer,
 			new CommandManager(true),
-			yggdrasilAuthenticationService,
 			minecraftSessionService,
 			gameProfileRepository,
 			userCache,
-			worldGenerationProgressListenerFactory,
-			string
+			worldGenerationProgressListenerFactory
 		);
 		this.propertiesLoader = serverPropertiesLoader;
 		this.rconCommandOutput = new ServerCommandOutput(this);
@@ -222,7 +217,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			LOGGER.info("Preparing level \"{}\"", this.getLevelName());
 			JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();
 			LevelGeneratorOptions levelGeneratorOptions = levelGeneratorType.loadOptions(new Dynamic<>(JsonOps.INSTANCE, jsonObject));
-			this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorOptions);
+			this.loadWorld(this.session.getDirectoryName(), m, levelGeneratorOptions);
 			long o = Util.getMeasuringTimeNano() - l;
 			String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
 			LOGGER.info("Done ({})! For help, type \"help\"", string3);
@@ -436,19 +431,19 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean isSpawnProtected(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean isSpawnProtected(World world, BlockPos pos, PlayerEntity player) {
 		if (world.dimension.getType() != DimensionType.OVERWORLD) {
 			return false;
 		} else if (this.getPlayerManager().getOpList().isEmpty()) {
 			return false;
-		} else if (this.getPlayerManager().isOperator(playerEntity.getGameProfile())) {
+		} else if (this.getPlayerManager().isOperator(player.getGameProfile())) {
 			return false;
 		} else if (this.getSpawnProtectionRadius() <= 0) {
 			return false;
 		} else {
-			BlockPos blockPos2 = world.getSpawnPos();
-			int i = MathHelper.abs(blockPos.getX() - blockPos2.getX());
-			int j = MathHelper.abs(blockPos.getZ() - blockPos2.getZ());
+			BlockPos blockPos = world.getSpawnPos();
+			int i = MathHelper.abs(pos.getX() - blockPos.getX());
+			int j = MathHelper.abs(pos.getZ() - blockPos.getZ());
 			int k = Math.max(i, j);
 			return k <= this.getSpawnProtectionRadius();
 		}
@@ -583,7 +578,17 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean isOwner(GameProfile profile) {
+	public boolean isHost(GameProfile profile) {
 		return false;
+	}
+
+	@Override
+	public String getLevelName() {
+		return this.session.getDirectoryName();
+	}
+
+	@Override
+	public boolean syncChunkWrites() {
+		return this.propertiesLoader.getPropertiesHandler().syncChunkWrites;
 	}
 }

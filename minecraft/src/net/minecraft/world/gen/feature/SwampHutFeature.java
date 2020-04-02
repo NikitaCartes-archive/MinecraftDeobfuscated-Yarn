@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
@@ -53,9 +54,9 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 		return CREATURE_SPAWNS;
 	}
 
-	public boolean method_14029(IWorld world, BlockPos pos) {
-		StructureStart structureStart = this.isInsideStructure(world, pos, true);
-		if (structureStart != StructureStart.DEFAULT && structureStart instanceof SwampHutFeature.Start && !structureStart.getChildren().isEmpty()) {
+	public boolean method_14029(IWorld iWorld, StructureAccessor structureAccessor, BlockPos blockPos) {
+		StructureStart structureStart = this.isInsideStructure(iWorld, structureAccessor, blockPos, true);
+		if (structureStart.hasChildren() && structureStart instanceof SwampHutFeature.Start) {
 			StructurePiece structurePiece = (StructurePiece)structureStart.getChildren().get(0);
 			return structurePiece instanceof SwampHutGenerator;
 		} else {

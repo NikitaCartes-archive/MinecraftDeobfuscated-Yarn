@@ -46,7 +46,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
-		return topCoversMediumSquare(world, blockPos) || sideCoversSmallSquare(world, blockPos, Direction.UP);
+		return hasTopRim(world, blockPos) || sideCoversSmallSquare(world, blockPos, Direction.UP);
 	}
 
 	@Override

@@ -85,7 +85,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_RED_MUSHROOM_CONFIG);
 		}
 
-		if (configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
+		if (configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
 			return true;
 		} else {
 			serverWorld.setBlockState(pos, state, 3);

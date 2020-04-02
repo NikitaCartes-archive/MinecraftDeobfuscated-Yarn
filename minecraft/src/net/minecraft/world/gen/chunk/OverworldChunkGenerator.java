@@ -19,6 +19,7 @@ import net.minecraft.world.gen.CatSpawner;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.PhantomSpawner;
 import net.minecraft.world.gen.PillagerSpawner;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.level.LevelGeneratorType;
 
@@ -138,26 +139,26 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory category, BlockPos pos) {
-		if (Feature.SWAMP_HUT.method_14029(this.world, pos)) {
-			if (category == EntityCategory.MONSTER) {
+	public List<Biome.SpawnEntry> getEntitySpawnList(StructureAccessor structureAccessor, EntityCategory entityCategory, BlockPos blockPos) {
+		if (Feature.SWAMP_HUT.method_14029(this.world, structureAccessor, blockPos)) {
+			if (entityCategory == EntityCategory.MONSTER) {
 				return Feature.SWAMP_HUT.getMonsterSpawns();
 			}
 
-			if (category == EntityCategory.CREATURE) {
+			if (entityCategory == EntityCategory.CREATURE) {
 				return Feature.SWAMP_HUT.getCreatureSpawns();
 			}
-		} else if (category == EntityCategory.MONSTER) {
-			if (Feature.PILLAGER_OUTPOST.isApproximatelyInsideStructure(this.world, pos)) {
+		} else if (entityCategory == EntityCategory.MONSTER) {
+			if (Feature.PILLAGER_OUTPOST.isApproximatelyInsideStructure(this.world, structureAccessor, blockPos)) {
 				return Feature.PILLAGER_OUTPOST.getMonsterSpawns();
 			}
 
-			if (Feature.OCEAN_MONUMENT.isApproximatelyInsideStructure(this.world, pos)) {
+			if (Feature.OCEAN_MONUMENT.isApproximatelyInsideStructure(this.world, structureAccessor, blockPos)) {
 				return Feature.OCEAN_MONUMENT.getMonsterSpawns();
 			}
 		}
 
-		return super.getEntitySpawnList(category, pos);
+		return super.getEntitySpawnList(structureAccessor, entityCategory, blockPos);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -34,6 +33,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,26 +49,23 @@ public class IntegratedServer extends MinecraftServer {
 
 	public IntegratedServer(
 		MinecraftClient client,
-		String levelName,
+		LevelStorage.Session session,
 		String displayName,
 		LevelInfo levelInfo,
-		YggdrasilAuthenticationService authService,
-		MinecraftSessionService sessionService,
-		GameProfileRepository profileRepo,
+		MinecraftSessionService minecraftSessionService,
+		GameProfileRepository gameProfileRepository,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
-			new File(client.runDirectory, "saves"),
+			session,
 			client.getNetworkProxy(),
 			client.getDataFixer(),
 			new CommandManager(false),
-			authService,
-			sessionService,
-			profileRepo,
+			minecraftSessionService,
+			gameProfileRepository,
 			userCache,
-			worldGenerationProgressListenerFactory,
-			levelName
+			worldGenerationProgressListenerFactory
 		);
 		this.setUserName(client.getSession().getUsername());
 		this.setServerName(displayName);
@@ -81,15 +78,15 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public void loadWorld(String name, String serverName, long seed, LevelGeneratorOptions levelGeneratorOptions) {
-		this.upgradeWorld(name);
-		WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(name, this);
-		this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
+	public void loadWorld(String string, long l, LevelGeneratorOptions levelGeneratorOptions) {
+		this.method_27052();
+		WorldSaveHandler worldSaveHandler = this.session.createSaveHandler(this);
+		this.loadWorldResourcePack(this.session.getDirectoryName(), worldSaveHandler);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		if (levelProperties == null) {
-			levelProperties = new LevelProperties(this.levelInfo, serverName);
+			levelProperties = new LevelProperties(this.levelInfo, string);
 		} else {
-			levelProperties.setLevelName(serverName);
+			levelProperties.setLevelName(string);
 		}
 
 		levelProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
@@ -104,7 +101,7 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public boolean setupServer() throws IOException {
+	public boolean setupServer() {
 		LOGGER.info("Starting integrated minecraft server version " + SharedConstants.getGameVersion().getName());
 		this.setOnlineMode(true);
 		this.setSpawnAnimals(true);
@@ -113,7 +110,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setFlightEnabled(true);
 		LOGGER.info("Generating keypair");
 		this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
-		this.loadWorld(this.getLevelName(), this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorOptions());
+		this.loadWorld(this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorOptions());
 		this.setMotd(this.getUserName() + " - " + this.getWorld(DimensionType.OVERWORLD).getLevelProperties().getLevelName());
 		return true;
 	}
@@ -187,8 +184,8 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public void setCrashReport(CrashReport crashReport) {
-		this.client.setCrashReport(crashReport);
+	public void setCrashReport(CrashReport report) {
+		this.client.setCrashReport(report);
 	}
 
 	@Override
@@ -309,7 +306,7 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public boolean isOwner(GameProfile profile) {
+	public boolean isHost(GameProfile profile) {
 		return profile.getName().equalsIgnoreCase(this.getUserName());
 	}
 }

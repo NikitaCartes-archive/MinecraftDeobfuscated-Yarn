@@ -55,7 +55,7 @@ public class ScoreText extends BaseText implements ParsableText {
 
 	private void parse(ServerCommandSource source) {
 		MinecraftServer minecraftServer = source.getMinecraftServer();
-		if (minecraftServer != null && minecraftServer.hasGameDir() && ChatUtil.isEmpty(this.score)) {
+		if (minecraftServer != null && ChatUtil.isEmpty(this.score)) {
 			Scoreboard scoreboard = minecraftServer.getScoreboard();
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.objective);
 			if (scoreboard.playerHasObjective(this.name, scoreboardObjective)) {

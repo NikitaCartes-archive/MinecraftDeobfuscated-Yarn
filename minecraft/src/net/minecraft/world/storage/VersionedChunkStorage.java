@@ -20,9 +20,9 @@ public class VersionedChunkStorage implements AutoCloseable {
 	@Nullable
 	private FeatureUpdater featureUpdater;
 
-	public VersionedChunkStorage(File file, DataFixer dataFixer) {
+	public VersionedChunkStorage(File file, DataFixer dataFixer, boolean bl) {
 		this.dataFixer = dataFixer;
-		this.worker = new StorageIoWorker(new RegionBasedStorage(file), "chunk");
+		this.worker = new StorageIoWorker(new RegionBasedStorage(file, bl), "chunk");
 	}
 
 	public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {

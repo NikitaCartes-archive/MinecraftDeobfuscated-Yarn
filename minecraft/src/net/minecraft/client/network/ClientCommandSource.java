@@ -70,7 +70,7 @@ public class ClientCommandSource implements CommandSource {
 	@Override
 	public boolean hasPermissionLevel(int level) {
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
-		return clientPlayerEntity != null ? clientPlayerEntity.allowsPermissionLevel(level) : level == 0;
+		return clientPlayerEntity != null ? clientPlayerEntity.hasPermissionLevel(level) : level == 0;
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
 
@@ -28,10 +29,15 @@ public class OptimizeWorldScreen extends Screen {
 	private final BooleanConsumer callback;
 	private final WorldUpdater updater;
 
-	public OptimizeWorldScreen(BooleanConsumer callback, String string, LevelStorage levelStorage, boolean bl) {
-		super(new TranslatableText("optimizeWorld.title", levelStorage.getLevelProperties(string).getLevelName()));
+	public static OptimizeWorldScreen method_27031(BooleanConsumer booleanConsumer, LevelStorage.Session session, boolean bl) {
+		LevelProperties levelProperties = session.readLevelProperties();
+		return new OptimizeWorldScreen(booleanConsumer, session, levelProperties, bl);
+	}
+
+	private OptimizeWorldScreen(BooleanConsumer callback, LevelStorage.Session session, LevelProperties levelProperties, boolean bl) {
+		super(new TranslatableText("optimizeWorld.title", levelProperties.getLevelName()));
 		this.callback = callback;
-		this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string), bl);
+		this.updater = new WorldUpdater(session, levelProperties, bl);
 	}
 
 	@Override
@@ -48,6 +54,11 @@ public class OptimizeWorldScreen extends Screen {
 		if (this.updater.isDone()) {
 			this.callback.accept(true);
 		}
+	}
+
+	@Override
+	public void onClose() {
+		this.callback.accept(false);
 	}
 
 	@Override

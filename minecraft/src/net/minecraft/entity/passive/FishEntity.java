@@ -14,10 +14,12 @@ import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -48,10 +50,8 @@ public abstract class FishEntity extends WaterCreatureEntity {
 		return dimensions.height * 0.65F;
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(3.0);
+	public static DefaultAttributeContainer.Builder createFishAttributes() {
+		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 3.0);
 	}
 
 	@Override
@@ -207,7 +207,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.fish.yaw = this.changeAngle(this.fish.yaw, h, 90.0F);
 				this.fish.bodyYaw = this.fish.yaw;
-				float i = (float)(this.speed * this.fish.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+				float i = (float)(this.speed * this.fish.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
 				this.fish.setMovementSpeed(MathHelper.lerp(0.125F, this.fish.getMovementSpeed(), i));
 				this.fish.setVelocity(this.fish.getVelocity().add(0.0, (double)this.fish.getMovementSpeed() * e * 0.1, 0.0));
 			} else {

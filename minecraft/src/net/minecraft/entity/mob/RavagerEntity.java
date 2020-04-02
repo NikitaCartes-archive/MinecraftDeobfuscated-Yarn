@@ -22,7 +22,8 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -79,15 +80,14 @@ public class RavagerEntity extends RaiderEntity {
 		this.goalSelector.setControlEnabled(Goal.Control.TARGET, bl);
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(100.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3);
-		this.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(12.0);
-		this.getAttributeInstance(EntityAttributes.ATTACK_KNOCKBACK).setBaseValue(1.5);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(32.0);
+	public static DefaultAttributeContainer.Builder createRavagerAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(Attributes.GENERIC_MAX_HEALTH, 100.0)
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3)
+			.add(Attributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
+			.add(Attributes.GENERIC_ATTACK_DAMAGE, 12.0)
+			.add(Attributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
+			.add(Attributes.GENERIC_FOLLOW_RANGE, 32.0);
 	}
 
 	@Override
@@ -142,11 +142,11 @@ public class RavagerEntity extends RaiderEntity {
 		super.tickMovement();
 		if (this.isAlive()) {
 			if (this.isImmobile()) {
-				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.0);
+				this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.0);
 			} else {
 				double d = this.getTarget() != null ? 0.35 : 0.3;
-				double e = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getBaseValue();
-				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
+				double e = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).getBaseValue();
+				this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
 			}
 
 			if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {

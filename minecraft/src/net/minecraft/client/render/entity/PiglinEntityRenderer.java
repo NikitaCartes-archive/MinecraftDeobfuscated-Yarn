@@ -20,7 +20,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 	}
 
 	private static PiglinEntityModel<MobEntity> getPiglinModel(boolean zombified) {
-		PiglinEntityModel<MobEntity> piglinEntityModel = new PiglinEntityModel<>(0.0F, 128, 64);
+		PiglinEntityModel<MobEntity> piglinEntityModel = new PiglinEntityModel<>(0.0F, 64, 64);
 		if (zombified) {
 			piglinEntityModel.leftEar.visible = false;
 		}
@@ -28,7 +28,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 		return piglinEntityModel;
 	}
 
-	private static <T extends PiglinEntity> PiglinEntityModel<T> createEarlessPiglinModel() {
+	private static <T extends MobEntity> PiglinEntityModel<T> createEarlessPiglinModel() {
 		PiglinEntityModel<T> piglinEntityModel = new PiglinEntityModel<>(1.0F, 64, 16);
 		piglinEntityModel.leftEar.visible = false;
 		piglinEntityModel.rightEar.visible = false;

@@ -42,7 +42,7 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return topCoversMediumSquare(world, pos.down());
+		return hasTopRim(world, pos.down());
 	}
 
 	@Override
@@ -67,24 +67,24 @@ public abstract class AbstractRailBlock extends Block {
 			RailShape railShape = state.get(this.getShapeProperty());
 			boolean bl = false;
 			BlockPos blockPos = pos.down();
-			if (!topCoversMediumSquare(world, blockPos)) {
+			if (!hasTopRim(world, blockPos)) {
 				bl = true;
 			}
 
 			BlockPos blockPos2 = pos.east();
-			if (railShape == RailShape.ASCENDING_EAST && !topCoversMediumSquare(world, blockPos2)) {
+			if (railShape == RailShape.ASCENDING_EAST && !hasTopRim(world, blockPos2)) {
 				bl = true;
 			} else {
 				BlockPos blockPos3 = pos.west();
-				if (railShape == RailShape.ASCENDING_WEST && !topCoversMediumSquare(world, blockPos3)) {
+				if (railShape == RailShape.ASCENDING_WEST && !hasTopRim(world, blockPos3)) {
 					bl = true;
 				} else {
 					BlockPos blockPos4 = pos.north();
-					if (railShape == RailShape.ASCENDING_NORTH && !topCoversMediumSquare(world, blockPos4)) {
+					if (railShape == RailShape.ASCENDING_NORTH && !hasTopRim(world, blockPos4)) {
 						bl = true;
 					} else {
 						BlockPos blockPos5 = pos.south();
-						if (railShape == RailShape.ASCENDING_SOUTH && !topCoversMediumSquare(world, blockPos5)) {
+						if (railShape == RailShape.ASCENDING_SOUTH && !hasTopRim(world, blockPos5)) {
 							bl = true;
 						}
 					}

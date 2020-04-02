@@ -11,8 +11,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class Texture {
-	private final Map<TextureKey, Identifier> entries = Maps.newHashMap();
-	private final Set<TextureKey> inherited = Sets.newHashSet();
+	private final Map<TextureKey, Identifier> entries = Maps.<TextureKey, Identifier>newHashMap();
+	private final Set<TextureKey> inherited = Sets.<TextureKey>newHashSet();
 
 	public Texture put(TextureKey key, Identifier id) {
 		this.entries.put(key, id);
@@ -99,7 +99,7 @@ public class Texture {
 	}
 
 	public static Texture stemAndUpper(Block stem, Block upper) {
-		return new Texture().put(TextureKey.STEM, getId(stem)).put(TextureKey.UPPER_STEM, getId(upper));
+		return new Texture().put(TextureKey.STEM, getId(stem)).put(TextureKey.UPPERSTEM, getId(upper));
 	}
 
 	public static Texture pattern(Block block) {

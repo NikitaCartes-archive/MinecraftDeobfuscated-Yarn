@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -14,7 +15,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -74,12 +74,12 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	@Nullable
 	@Override
 	public BlockPos locateStructure(
-		World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks
+		ServerWorld serverWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks
 	) {
 		if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
 			return null;
 		} else {
-			if (this.lastSeed != world.getSeed()) {
+			if (this.lastSeed != serverWorld.getSeed()) {
 				this.invalidateState();
 			}
 

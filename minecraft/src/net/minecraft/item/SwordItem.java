@@ -1,14 +1,17 @@
 package net.minecraft.item;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableMultimap.Builder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -16,12 +19,21 @@ import net.minecraft.world.World;
 
 public class SwordItem extends ToolItem {
 	private final float attackDamage;
-	private final float attackSpeed;
+	private final Multimap<EntityAttribute, EntityAttributeModifier> field_23745;
 
-	public SwordItem(ToolMaterial material, int attackDamage, float attackSpeed, Item.Settings settings) {
-		super(material, settings);
-		this.attackSpeed = attackSpeed;
-		this.attackDamage = (float)attackDamage + material.getAttackDamage();
+	public SwordItem(ToolMaterial toolMaterial, int attackDamage, float attackSpeed, Item.Settings settings) {
+		super(toolMaterial, settings);
+		this.attackDamage = (float)attackDamage + toolMaterial.getAttackDamage();
+		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
+		builder.put(
+			Attributes.GENERIC_ATTACK_DAMAGE,
+			new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Weapon modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION)
+		);
+		builder.put(
+			Attributes.GENERIC_ATTACK_SPEED,
+			new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Weapon modifier", (double)attackSpeed, EntityAttributeModifier.Operation.ADDITION)
+		);
+		this.field_23745 = builder.build();
 	}
 
 	public float getAttackDamage() {
@@ -71,19 +83,7 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public Multimap<String, EntityAttributeModifier> getModifiers(EquipmentSlot slot) {
-		Multimap<String, EntityAttributeModifier> multimap = super.getModifiers(slot);
-		if (slot == EquipmentSlot.MAINHAND) {
-			multimap.put(
-				EntityAttributes.ATTACK_DAMAGE.getId(),
-				new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Weapon modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION)
-			);
-			multimap.put(
-				EntityAttributes.ATTACK_SPEED.getId(),
-				new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Weapon modifier", (double)this.attackSpeed, EntityAttributeModifier.Operation.ADDITION)
-			);
-		}
-
-		return multimap;
+	public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
+		return equipmentSlot == EquipmentSlot.MAINHAND ? this.field_23745 : super.getModifiers(equipmentSlot);
 	}
 }

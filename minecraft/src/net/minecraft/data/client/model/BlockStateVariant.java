@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * The supplier for a {@code ModelVariant}'s JSON representation.
  */
 public class BlockStateVariant implements Supplier<JsonElement> {
-	private final Map<VariantSetting<?>, VariantSetting<?>.Value> properties = Maps.<VariantSetting<?>, VariantSetting<?>.Value>newHashMap();
+	private final Map<VariantSetting<?>, VariantSetting<?>.Value> properties = Maps.<VariantSetting<?>, VariantSetting<?>.Value>newLinkedHashMap();
 
 	public <T> BlockStateVariant put(VariantSetting<T> key, T value) {
 		VariantSetting<?>.Value value2 = (VariantSetting.Value)this.properties.put(key, key.evaluate(value));

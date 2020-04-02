@@ -248,9 +248,9 @@ public class RenderSystem {
 		GlStateManager.fogMode(mode.value);
 	}
 
-	public static void fogMode(int mode) {
+	public static void fogMode(int i) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.fogMode(mode);
+		GlStateManager.fogMode(i);
 	}
 
 	public static void fogDensity(float density) {
@@ -273,9 +273,9 @@ public class RenderSystem {
 		GlStateManager.fog(pname, new float[]{red, green, blue, alpha});
 	}
 
-	public static void fogi(int pname, int param) {
+	public static void fogi(int i, int j) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.fogi(pname, param);
+		GlStateManager.fogi(i, j);
 	}
 
 	public static void enableCull() {
@@ -288,9 +288,9 @@ public class RenderSystem {
 		GlStateManager.disableCull();
 	}
 
-	public static void polygonMode(int face, int mode) {
+	public static void polygonMode(int i, int j) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.polygonMode(face, mode);
+		GlStateManager.polygonMode(i, j);
 	}
 
 	public static void enablePolygonOffset() {
@@ -391,9 +391,9 @@ public class RenderSystem {
 		GlStateManager.stencilFunc(func, ref, mask);
 	}
 
-	public static void stencilMask(int mask) {
+	public static void stencilMask(int i) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.stencilMask(mask);
+		GlStateManager.stencilMask(i);
 	}
 
 	public static void stencilOp(int sfail, int dpfail, int dppass) {
@@ -411,9 +411,9 @@ public class RenderSystem {
 		GlStateManager.clearColor(red, green, blue, alpha);
 	}
 
-	public static void clearStencil(int stencil) {
+	public static void clearStencil(int i) {
 		assertThread(RenderSystem::isOnGameThread);
-		GlStateManager.clearStencil(stencil);
+		GlStateManager.clearStencil(i);
 	}
 
 	public static void clear(int mask, boolean getError) {
@@ -506,8 +506,8 @@ public class RenderSystem {
 		GlStateManager.pixelStore(pname, param);
 	}
 
-	public static void pixelTransfer(int pname, float param) {
-		GlStateManager.pixelTransfer(pname, param);
+	public static void pixelTransfer(int i, float f) {
+		GlStateManager.pixelTransfer(i, f);
 	}
 
 	public static void readPixels(int x, int y, int width, int height, int format, int type, ByteBuffer pixels) {

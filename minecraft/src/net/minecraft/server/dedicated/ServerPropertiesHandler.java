@@ -55,6 +55,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean broadcastRconToOps;
 	public final boolean broadcastConsoleToOps;
 	public final int maxWorldSize;
+	public final boolean syncChunkWrites;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout;
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList;
 
@@ -76,6 +77,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.broadcastRconToOps = this.parseBoolean("broadcast-rcon-to-ops", true);
 		this.broadcastConsoleToOps = this.parseBoolean("broadcast-console-to-ops", true);
 		this.maxWorldSize = this.transformedParseInt("max-world-size", integer -> MathHelper.clamp(integer, 1, 29999984), 29999984);
+		this.syncChunkWrites = this.parseBoolean("sync-chunk-writes", true);
 		this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 		this.whiteList = this.booleanAccessor("white-list", false);
 	}

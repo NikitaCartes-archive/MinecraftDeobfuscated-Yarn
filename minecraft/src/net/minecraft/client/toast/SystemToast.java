@@ -4,7 +4,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
@@ -50,13 +53,29 @@ public class SystemToast implements Toast {
 		return this.type;
 	}
 
+	public static void method_27024(ToastManager toastManager, SystemToast.Type type, Text text, @Nullable Text text2) {
+		toastManager.add(new SystemToast(type, text, text2));
+	}
+
 	public static void show(ToastManager toastManager, SystemToast.Type type, Text title, @Nullable Text description) {
 		SystemToast systemToast = toastManager.getToast(SystemToast.class, type);
 		if (systemToast == null) {
-			toastManager.add(new SystemToast(type, title, description));
+			method_27024(toastManager, type, title, description);
 		} else {
 			systemToast.setContent(title, description);
 		}
+	}
+
+	public static void method_27023(MinecraftClient minecraftClient, String string) {
+		method_27024(
+			minecraftClient.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.access_failure"), new LiteralText(string)
+		);
+	}
+
+	public static void method_27025(MinecraftClient minecraftClient, String string) {
+		method_27024(
+			minecraftClient.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.delete_failure"), new LiteralText(string)
+		);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -64,6 +83,7 @@ public class SystemToast implements Toast {
 		TUTORIAL_HINT,
 		NARRATOR_TOGGLE,
 		WORLD_BACKUP,
-		PACK_LOAD_FAILURE;
+		PACK_LOAD_FAILURE,
+		WORLD_ACCESS_FAILURE;
 	}
 }

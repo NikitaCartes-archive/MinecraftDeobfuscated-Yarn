@@ -3,7 +3,6 @@ package net.minecraft.world;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -50,14 +49,14 @@ public interface EntityView {
 		return this.getEntitiesIncludingUngeneratedChunks(entityClass, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> excluded) {
+	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
 		if (box.getAverageSideLength() < 1.0E-7) {
 			return Stream.empty();
 		} else {
 			Box box2 = box.expand(1.0E-7);
 			return this.getEntities(entity, box2)
 				.stream()
-				.filter(e -> !excluded.contains(e))
+				.filter(predicate)
 				.filter(e -> entity == null || !entity.isConnectedThroughVehicle(e))
 				.flatMap(e -> Stream.of(e.getCollisionBox(), entity == null ? null : entity.getHardCollisionBox(e)))
 				.filter(Objects::nonNull)

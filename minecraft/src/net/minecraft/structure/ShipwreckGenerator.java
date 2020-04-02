@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 
@@ -116,7 +117,9 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
+		public boolean generate(
+			IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos, BlockPos blockPos
+		) {
 			int i = 256;
 			int j = 0;
 			BlockPos blockPos2 = this.structure.getSize();
@@ -138,7 +141,7 @@ public class ShipwreckGenerator {
 
 			int m = this.grounded ? i - blockPos2.getY() / 2 - random.nextInt(3) : j;
 			this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-			return super.generate(world, generator, random, box, pos, blockPos);
+			return super.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos);
 		}
 	}
 }

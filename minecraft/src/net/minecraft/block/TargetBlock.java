@@ -64,7 +64,7 @@ public class TargetBlock extends Block {
 			g = Math.max(e, f);
 		}
 
-		return MathHelper.ceil(15.0 * MathHelper.clamp((0.5 - g) / 0.5, 0.0, 1.0));
+		return Math.max(1, MathHelper.ceil(15.0 * MathHelper.clamp((0.5 - g) / 0.5, 0.0, 1.0)));
 	}
 
 	private static void setPower(IWorld world, BlockState state, int power, BlockPos pos, int delay) {

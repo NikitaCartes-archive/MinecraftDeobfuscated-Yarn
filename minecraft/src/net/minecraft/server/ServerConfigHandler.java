@@ -425,9 +425,7 @@ public class ServerConfigHandler {
 	}
 
 	private static File getLevelPlayersFolder(MinecraftServer server) {
-		String string = server.getLevelName();
-		File file = new File(string);
-		return new File(file, "players");
+		return server.method_27050().resolve("players").toFile();
 	}
 
 	private static void markFileConverted(File file) {

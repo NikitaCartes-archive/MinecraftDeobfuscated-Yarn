@@ -1,6 +1,5 @@
 package net.minecraft.tag;
 
-import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -62,49 +61,21 @@ public class RegistryTagManager implements ResourceReloadListener {
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		CompletableFuture<Map<Identifier, Tag.Builder<Block>>> completableFuture = this.blocks.prepareReload(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, Tag.Builder<Item>>> completableFuture2 = this.items.prepareReload(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, Tag.Builder<Fluid>>> completableFuture3 = this.fluids.prepareReload(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, Tag.Builder<EntityType<?>>>> completableFuture4 = this.entityTypes.prepareReload(manager, prepareExecutor);
-		return completableFuture.thenCombine(completableFuture2, Pair::of)
-			.thenCombine(
-				completableFuture3.thenCombine(completableFuture4, Pair::of),
-				(pair, pair2) -> new RegistryTagManager.BuilderHolder(
-						(Map<Identifier, Tag.Builder<Block>>)pair.getFirst(),
-						(Map<Identifier, Tag.Builder<Item>>)pair.getSecond(),
-						(Map<Identifier, Tag.Builder<Fluid>>)pair2.getFirst(),
-						(Map<Identifier, Tag.Builder<EntityType<?>>>)pair2.getSecond()
-					)
-			)
+		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = this.blocks.prepareReload(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture2 = this.items.prepareReload(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture3 = this.fluids.prepareReload(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture4 = this.entityTypes.prepareReload(manager, prepareExecutor);
+		return CompletableFuture.allOf(completableFuture, completableFuture2, completableFuture3, completableFuture4)
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(builderHolder -> {
-				this.blocks.applyReload(builderHolder.blocks);
-				this.items.applyReload(builderHolder.items);
-				this.fluids.applyReload(builderHolder.fluids);
-				this.entityTypes.applyReload(builderHolder.entityTypes);
+			.thenAcceptAsync(void_ -> {
+				this.blocks.applyReload((Map<Identifier, Tag.Builder>)completableFuture.join());
+				this.items.applyReload((Map<Identifier, Tag.Builder>)completableFuture2.join());
+				this.fluids.applyReload((Map<Identifier, Tag.Builder>)completableFuture3.join());
+				this.entityTypes.applyReload((Map<Identifier, Tag.Builder>)completableFuture4.join());
 				BlockTags.setContainer(this.blocks);
 				ItemTags.setContainer(this.items);
 				FluidTags.setContainer(this.fluids);
 				EntityTypeTags.setContainer(this.entityTypes);
 			}, applyExecutor);
-	}
-
-	public static class BuilderHolder {
-		final Map<Identifier, Tag.Builder<Block>> blocks;
-		final Map<Identifier, Tag.Builder<Item>> items;
-		final Map<Identifier, Tag.Builder<Fluid>> fluids;
-		final Map<Identifier, Tag.Builder<EntityType<?>>> entityTypes;
-
-		public BuilderHolder(
-			Map<Identifier, Tag.Builder<Block>> blocks,
-			Map<Identifier, Tag.Builder<Item>> items,
-			Map<Identifier, Tag.Builder<Fluid>> fluids,
-			Map<Identifier, Tag.Builder<EntityType<?>>> entityTypes
-		) {
-			this.blocks = blocks;
-			this.items = items;
-			this.fluids = fluids;
-			this.entityTypes = entityTypes;
-		}
 	}
 }

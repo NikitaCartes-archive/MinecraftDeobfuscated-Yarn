@@ -186,7 +186,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
 			Feature.END_ISLAND
 				.configure(FeatureConfig.DEFAULT)
-				.generate(world, world.getChunkManager().getChunkGenerator(), new Random(this.exitPortalPos.asLong()), this.exitPortalPos);
+				.generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), new Random(this.exitPortalPos.asLong()), this.exitPortalPos);
 		} else {
 			LOGGER.debug("Found block at {}", this.exitPortalPos);
 		}
@@ -253,7 +253,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	private void createPortal(ServerWorld world, BlockPos pos) {
 		Feature.END_GATEWAY
 			.configure(EndGatewayFeatureConfig.createConfig(this.getPos(), false))
-			.generate(world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
+			.generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), new Random(), pos);
 	}
 
 	@Environment(EnvType.CLIENT)

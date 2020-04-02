@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -21,7 +20,7 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 		this.getOrCreateTagBuilder(EntityTypeTags.BEEHIVE_INHABITORS).add(EntityType.BEE);
 		this.getOrCreateTagBuilder(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
 		this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES)
-			.add(EntityTypeTags.ARROWS)
+			.addTag(EntityTypeTags.ARROWS)
 			.add(
 				EntityType.SNOWBALL,
 				EntityType.FIREBALL,
@@ -41,10 +40,5 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 	@Override
 	public String getName() {
 		return "Entity Type Tags";
-	}
-
-	@Override
-	protected void setContainer(TagContainer<EntityType<?>> tagContainer) {
-		EntityTypeTags.setContainer(tagContainer);
 	}
 }

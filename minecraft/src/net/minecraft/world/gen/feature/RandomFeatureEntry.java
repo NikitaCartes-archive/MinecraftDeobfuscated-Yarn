@@ -7,6 +7,7 @@ import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -35,8 +36,10 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 		);
 	}
 
-	public boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos pos) {
-		return this.feature.generate(world, chunkGenerator, random, pos);
+	public boolean generate(
+		IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos
+	) {
+		return this.feature.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
 	}
 
 	public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {
