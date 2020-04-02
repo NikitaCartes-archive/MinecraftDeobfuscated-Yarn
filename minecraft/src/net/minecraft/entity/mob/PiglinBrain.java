@@ -139,7 +139,7 @@ public class PiglinBrain {
 			ImmutableList.of(
 				new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 14.0F),
 				new UpdateAttackTargetTask<>(PiglinEntity::isAdult, PiglinBrain::getPreferredTarget),
-				new HuntHoglinTask(),
+				new ConditionalTask(PiglinEntity::method_26952, new HuntHoglinTask<>()),
 				(UpdateAttackTargetTask<? super PiglinEntity>)makeGoToZombifiedPiglinTask(),
 				makeGoToSoulFireTask(),
 				makeRememberRideableHoglinTask(),
@@ -256,7 +256,7 @@ public class PiglinBrain {
 	}
 
 	private static GoToRememberedPositionTask<?> makeGoToZombifiedPiglinTask() {
-		return GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN, 1.1F, 10, false);
+		return GoToRememberedPositionTask.toEntity(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, 1.1F, 10, false);
 	}
 
 	protected static void tickActivities(PiglinEntity piglin) {
@@ -563,7 +563,11 @@ public class PiglinBrain {
 	}
 
 	public static void angerAtCloserTargets(PiglinEntity piglin, LivingEntity target) {
-		getNearbyPiglins(piglin).forEach(piglinx -> angerAtIfCloser(piglinx, target));
+		getNearbyPiglins(piglin).forEach(piglinEntity -> {
+			if (target.getType() != EntityType.HOGLIN || piglinEntity.method_26952() && ((HoglinEntity)target).canBeHunted()) {
+				angerAtIfCloser(piglinEntity, target);
+			}
+		});
 	}
 
 	public static void rememberGroupHunting(PiglinEntity piglin) {
@@ -676,7 +680,7 @@ public class PiglinBrain {
 	}
 
 	private static boolean hasZombifiedPiglinNearby(PiglinEntity piglin) {
-		return piglin.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED_PIGLIN);
+		return piglin.getBrain().hasMemoryModule(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED);
 	}
 
 	private static boolean hasPlayerHoldingWantedItemNearby(LivingEntity entity) {

@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.UniformLootTableRange;
@@ -21,6 +22,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.registry.Registry;
 
 public class SetAttributesLootFunction extends ConditionalLootFunction {
 	private final List<SetAttributesLootFunction.Attribute> attributes;
@@ -51,7 +53,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 	static class Attribute {
 		private final String name;
-		private final String attribute;
+		private final EntityAttribute attribute;
 		private final EntityAttributeModifier.Operation operation;
 		private final UniformLootTableRange amountRange;
 		@Nullable
@@ -59,10 +61,15 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		private final EquipmentSlot[] slots;
 
 		private Attribute(
-			String name, String attribute, EntityAttributeModifier.Operation operation, UniformLootTableRange amountRange, EquipmentSlot[] slots, @Nullable UUID id
+			String name,
+			EntityAttribute entityAttribute,
+			EntityAttributeModifier.Operation operation,
+			UniformLootTableRange amountRange,
+			EquipmentSlot[] slots,
+			@Nullable UUID id
 		) {
 			this.name = name;
-			this.attribute = attribute;
+			this.attribute = entityAttribute;
 			this.operation = operation;
 			this.amountRange = amountRange;
 			this.id = id;
@@ -72,7 +79,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		public JsonObject serialize(JsonSerializationContext context) {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("name", this.name);
-			jsonObject.addProperty("attribute", this.attribute);
+			jsonObject.addProperty("attribute", Registry.ATTRIBUTES.getId(this.attribute).toString());
 			jsonObject.addProperty("operation", getName(this.operation));
 			jsonObject.add("amount", context.serialize(this.amountRange));
 			if (this.id != null) {
@@ -96,7 +103,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 		public static SetAttributesLootFunction.Attribute deserialize(JsonObject json, JsonDeserializationContext context) {
 			String string = JsonHelper.getString(json, "name");
-			String string2 = JsonHelper.getString(json, "attribute");
+			EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(new Identifier(JsonHelper.getString(json, "attribute")));
 			EntityAttributeModifier.Operation operation = fromName(JsonHelper.getString(json, "operation"));
 			UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(json, "amount", context, UniformLootTableRange.class);
 			UUID uUID = null;
@@ -122,16 +129,16 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			}
 
 			if (json.has("id")) {
-				String string3 = JsonHelper.getString(json, "id");
+				String string2 = JsonHelper.getString(json, "id");
 
 				try {
-					uUID = UUID.fromString(string3);
+					uUID = UUID.fromString(string2);
 				} catch (IllegalArgumentException var12) {
-					throw new JsonSyntaxException("Invalid attribute modifier id '" + string3 + "' (must be UUID format, with dashes)");
+					throw new JsonSyntaxException("Invalid attribute modifier id '" + string2 + "' (must be UUID format, with dashes)");
 				}
 			}
 
-			return new SetAttributesLootFunction.Attribute(string, string2, operation, uniformLootTableRange, equipmentSlots, uUID);
+			return new SetAttributesLootFunction.Attribute(string, entityAttribute, operation, uniformLootTableRange, equipmentSlots, uUID);
 		}
 
 		private static String getName(EntityAttributeModifier.Operation operation) {

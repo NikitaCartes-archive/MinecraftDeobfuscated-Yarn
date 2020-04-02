@@ -36,7 +36,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 	@Override
 	public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
 		if (!(random.nextFloat() >= this.chance)) {
-			Direction direction = BeehiveBlock.GENERATE_DIRECTIONS[random.nextInt(BeehiveBlock.GENERATE_DIRECTIONS.length)];
+			Direction direction = BeehiveBlock.method_26978(random);
 			int i = !leavesPositions.isEmpty()
 				? Math.max(((BlockPos)leavesPositions.get(0)).getY() - 1, ((BlockPos)logPositions.get(0)).getY())
 				: Math.min(((BlockPos)logPositions.get(0)).getY() + 1 + random.nextInt(3), ((BlockPos)logPositions.get(logPositions.size() - 1)).getY());

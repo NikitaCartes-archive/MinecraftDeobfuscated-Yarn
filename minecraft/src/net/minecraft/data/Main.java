@@ -66,8 +66,9 @@ public class Main {
 
 		if (includeServer) {
 			dataGenerator.install(new FluidTagsProvider(dataGenerator));
-			dataGenerator.install(new BlockTagsProvider(dataGenerator));
-			dataGenerator.install(new ItemTagsProvider(dataGenerator));
+			BlockTagsProvider blockTagsProvider = new BlockTagsProvider(dataGenerator);
+			dataGenerator.install(blockTagsProvider);
+			dataGenerator.install(new ItemTagsProvider(dataGenerator, blockTagsProvider));
 			dataGenerator.install(new EntityTypeTagsProvider(dataGenerator));
 			dataGenerator.install(new RecipesProvider(dataGenerator));
 			dataGenerator.install(new AdvancementsProvider(dataGenerator));

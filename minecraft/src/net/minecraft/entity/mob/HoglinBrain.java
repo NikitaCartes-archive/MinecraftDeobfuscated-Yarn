@@ -48,21 +48,21 @@ public class HoglinBrain {
 			(Collection<SensorType<? extends Sensor<? super HoglinEntity>>>)HoglinEntity.SENSOR_TYPES,
 			data
 		);
-		addCoreTasks(hoglin, brain);
-		addIdleTasks(hoglin, brain);
-		addFightTasks(hoglin, brain);
-		addAvoidTasks(hoglin, brain);
+		addCoreTasks(brain);
+		addIdleTasks(brain);
+		addFightTasks(brain);
+		addAvoidTasks(brain);
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();
 		return brain;
 	}
 
-	private static void addCoreTasks(HoglinEntity hoglin, Brain<HoglinEntity> brain) {
+	private static void addCoreTasks(Brain<HoglinEntity> brain) {
 		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(200)));
 	}
 
-	private static void addIdleTasks(HoglinEntity hoglin, Brain<HoglinEntity> brain) {
+	private static void addIdleTasks(Brain<HoglinEntity> brain) {
 		brain.setTaskList(
 			Activity.IDLE,
 			10,
@@ -80,7 +80,7 @@ public class HoglinBrain {
 		);
 	}
 
-	private static void addFightTasks(HoglinEntity hoglin, Brain<HoglinEntity> brain) {
+	private static void addFightTasks(Brain<HoglinEntity> brain) {
 		brain.setTaskList(
 			Activity.FIGHT,
 			10,
@@ -97,7 +97,7 @@ public class HoglinBrain {
 		);
 	}
 
-	private static void addAvoidTasks(HoglinEntity hoglin, Brain<HoglinEntity> brain) {
+	private static void addAvoidTasks(Brain<HoglinEntity> brain) {
 		brain.setTaskList(
 			Activity.AVOID,
 			10,
@@ -222,7 +222,7 @@ public class HoglinBrain {
 
 	private static void playSound(HoglinEntity hoglin) {
 		hoglin.getBrain().getFirstPossibleNonCoreActivity().ifPresent(activity -> {
-			if (activity == Activity.AVOID) {
+			if (activity == Activity.AVOID || hoglin.canConvert()) {
 				hoglin.playRetreatSound();
 			} else if (activity == Activity.FIGHT) {
 				hoglin.playFightSound();

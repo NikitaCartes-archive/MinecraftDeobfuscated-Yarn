@@ -115,7 +115,7 @@ public class Vector4f {
 		Quaternion quaternion2 = new Quaternion(rotation);
 		quaternion2.conjugate();
 		quaternion.hamiltonProduct(quaternion2);
-		this.set(quaternion.getB(), quaternion.getC(), quaternion.getD(), this.getW());
+		this.set(quaternion.getX(), quaternion.getY(), quaternion.getZ(), this.getW());
 	}
 
 	public void normalizeProjectiveCoordinates() {

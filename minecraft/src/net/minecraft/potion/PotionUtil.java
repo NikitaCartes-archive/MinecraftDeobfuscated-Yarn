@@ -1,6 +1,7 @@
 package net.minecraft.potion;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 
 public class PotionUtil {
@@ -150,7 +150,7 @@ public class PotionUtil {
 	@Environment(EnvType.CLIENT)
 	public static void buildTooltip(ItemStack stack, List<Text> list, float f) {
 		List<StatusEffectInstance> list2 = getPotionEffects(stack);
-		List<Pair<String, EntityAttributeModifier>> list3 = Lists.<Pair<String, EntityAttributeModifier>>newArrayList();
+		List<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.<Pair<EntityAttribute, EntityAttributeModifier>>newArrayList();
 		if (list2.isEmpty()) {
 			list.add(new TranslatableText("effect.none").formatted(Formatting.GRAY));
 		} else {
@@ -166,7 +166,7 @@ public class PotionUtil {
 							statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier),
 							entityAttributeModifier.getOperation()
 						);
-						list3.add(new Pair<>(((EntityAttribute)entry.getKey()).getId(), entityAttributeModifier2));
+						list3.add(new Pair<>(entry.getKey(), entityAttributeModifier2));
 					}
 				}
 
@@ -186,8 +186,8 @@ public class PotionUtil {
 			list.add(new LiteralText(""));
 			list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
 
-			for (Pair<String, EntityAttributeModifier> pair : list3) {
-				EntityAttributeModifier entityAttributeModifier3 = pair.getRight();
+			for (Pair<EntityAttribute, EntityAttributeModifier> pair : list3) {
+				EntityAttributeModifier entityAttributeModifier3 = pair.getSecond();
 				double d = entityAttributeModifier3.getAmount();
 				double e;
 				if (entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
@@ -202,7 +202,7 @@ public class PotionUtil {
 						new TranslatableText(
 								"attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
-								new TranslatableText("attribute.name." + pair.getLeft())
+								new TranslatableText(pair.getFirst().getTranslationKey())
 							)
 							.formatted(Formatting.BLUE)
 					);
@@ -212,7 +212,7 @@ public class PotionUtil {
 						new TranslatableText(
 								"attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
-								new TranslatableText("attribute.name." + pair.getLeft())
+								new TranslatableText(pair.getFirst().getTranslationKey())
 							)
 							.formatted(Formatting.RED)
 					);

@@ -8,8 +8,8 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -56,6 +56,13 @@ public class HorseEntity extends HorseBaseEntity {
 
 	public HorseEntity(EntityType<? extends HorseEntity> entityType, World world) {
 		super(entityType, world);
+	}
+
+	@Override
+	protected void initAttributes() {
+		this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus());
+		this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.getChildMovementSpeedBonus());
+		this.getAttributeInstance(Attributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
 	}
 
 	@Override
@@ -147,14 +154,12 @@ public class HorseEntity extends HorseBaseEntity {
 	private void setArmorTypeFromStack(ItemStack stack) {
 		this.equipArmor(stack);
 		if (!this.world.isClient) {
-			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(HORSE_ARMOR_BONUS_UUID);
+			this.getAttributeInstance(Attributes.GENERIC_ARMOR).removeModifier(HORSE_ARMOR_BONUS_UUID);
 			if (this.canEquip(stack)) {
 				int i = ((HorseArmorItem)stack.getItem()).getBonus();
 				if (i != 0) {
-					this.getAttributeInstance(EntityAttributes.ARMOR)
-						.addModifier(
-							new EntityAttributeModifier(HORSE_ARMOR_BONUS_UUID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION).setSerialize(false)
-						);
+					this.getAttributeInstance(Attributes.GENERIC_ARMOR)
+						.addTemporaryModifier(new EntityAttributeModifier(HORSE_ARMOR_BONUS_UUID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION));
 				}
 			}
 		}
@@ -176,14 +181,6 @@ public class HorseEntity extends HorseBaseEntity {
 		if (this.random.nextInt(10) == 0) {
 			this.playSound(SoundEvents.ENTITY_HORSE_BREATHE, group.getVolume() * 0.6F, group.getPitch());
 		}
-	}
-
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus());
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(this.getChildMovementSpeedBonus());
-		this.getAttributeInstance(JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
 	}
 
 	@Override

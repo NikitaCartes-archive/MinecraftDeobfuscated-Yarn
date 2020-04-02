@@ -190,6 +190,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 				.configure(FeatureConfig.DEFAULT)
 				.generate(
 					world,
+					world.getStructureAccessor(),
 					(ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(),
 					new Random(this.exitPortalPos.asLong()),
 					this.exitPortalPos
@@ -260,7 +261,9 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	private void createPortal(ServerWorld world, BlockPos pos) {
 		Feature.END_GATEWAY
 			.configure(EndGatewayFeatureConfig.createConfig(this.getPos(), false))
-			.generate(world, (ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(), new Random(), pos);
+			.generate(
+				world, world.getStructureAccessor(), (ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(), new Random(), pos
+			);
 	}
 
 	@Environment(EnvType.CLIENT)

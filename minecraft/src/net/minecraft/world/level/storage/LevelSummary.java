@@ -1,5 +1,6 @@
 package net.minecraft.world.level.storage;
 
+import java.io.File;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -19,25 +20,29 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	private final long getSizeOnDisk;
 	private final boolean requiresConversion;
 	private final GameMode gameMode;
-	private final boolean isHardcore;
+	private final boolean hardcore;
 	private final boolean commandsAllowed;
 	private final String versionName;
 	private final int versionId;
-	private final boolean isSnapshot;
+	private final boolean snapshot;
 	private final LevelGeneratorType generatorType;
+	private final boolean locked;
+	private final File file;
 
-	public LevelSummary(LevelProperties properties, String name, String displayName, long size, boolean requiresConversion) {
+	public LevelSummary(LevelProperties properties, String name, String displayName, long size, boolean requiresConversion, boolean locked, File file) {
 		this.name = name;
 		this.displayName = displayName;
+		this.locked = locked;
+		this.file = file;
 		this.lastPlayed = properties.getLastPlayed();
 		this.getSizeOnDisk = size;
 		this.gameMode = properties.getGameMode();
 		this.requiresConversion = requiresConversion;
-		this.isHardcore = properties.isHardcore();
+		this.hardcore = properties.isHardcore();
 		this.commandsAllowed = properties.areCommandsAllowed();
 		this.versionName = properties.getVersionName();
 		this.versionId = properties.getVersionId();
-		this.isSnapshot = properties.isVersionSnapshot();
+		this.snapshot = properties.isVersionSnapshot();
 		this.generatorType = properties.getGeneratorType();
 	}
 
@@ -47,6 +52,10 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 	public String getDisplayName() {
 		return this.displayName;
+	}
+
+	public File getFile() {
+		return this.file;
 	}
 
 	public boolean requiresConversion() {
@@ -70,7 +79,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	public boolean isHardcore() {
-		return this.isHardcore;
+		return this.hardcore;
 	}
 
 	public boolean hasCheats() {
@@ -82,7 +91,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	public boolean isDifferentVersion() {
-		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.isSnapshot || this.isOutdatedLevel() || this.isLegacyCustomizedWorld();
+		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.snapshot || this.isOutdatedLevel() || this.isLegacyCustomizedWorld();
 	}
 
 	public boolean isFutureLevel() {
@@ -95,5 +104,9 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 	public boolean isOutdatedLevel() {
 		return this.versionId < SharedConstants.getGameVersion().getWorldVersion();
+	}
+
+	public boolean isLocked() {
+		return this.locked;
 	}
 }

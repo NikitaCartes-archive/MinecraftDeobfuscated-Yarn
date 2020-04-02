@@ -274,7 +274,7 @@ public class EnchantmentHelper {
 	 */
 	@Nullable
 	public static Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity) {
-		return chooseEquipmentWith(enchantment, entity, itemStack -> true);
+		return chooseEquipmentWith(enchantment, entity, stack -> true);
 	}
 
 	/**

@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -16,7 +17,12 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
+		IWorld iWorld,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		DiskFeatureConfig diskFeatureConfig
 	) {
 		if (!iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			return false;

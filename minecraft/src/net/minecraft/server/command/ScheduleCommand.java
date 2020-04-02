@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.command.arguments.FunctionArgumentType;
 import net.minecraft.command.arguments.TimeArgumentType;
 import net.minecraft.server.MinecraftServer;
@@ -83,30 +84,29 @@ public class ScheduleCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Either<CommandFunction, Tag<CommandFunction>> either, int time, boolean bl) throws CommandSyntaxException {
-		if (time == 0) {
+	private static int execute(ServerCommandSource serverCommandSource, Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> pair, int i, boolean bl) throws CommandSyntaxException {
+		if (i == 0) {
 			throw SAME_TICK_EXCEPTION.create();
 		} else {
-			long l = serverCommandSource.getWorld().getTime() + (long)time;
+			long l = serverCommandSource.getWorld().getTime() + (long)i;
+			Identifier identifier = pair.getFirst();
 			Timer<MinecraftServer> timer = serverCommandSource.getWorld().getLevelProperties().getScheduledEvents();
-			either.ifLeft(commandFunction -> {
-				Identifier identifier = commandFunction.getId();
+			pair.getSecond().ifLeft(commandFunction -> {
 				String string = identifier.toString();
 				if (bl) {
 					timer.method_22593(string);
 				}
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
-				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, time, l), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, i, l), true);
 			}).ifRight(tag -> {
-				Identifier identifier = tag.getId();
 				String string = "#" + identifier.toString();
 				if (bl) {
 					timer.method_22593(string);
 				}
 
 				timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
-				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, time, l), true);
+				serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, i, l), true);
 			});
 			return (int)Math.floorMod(l, 2147483647L);
 		}

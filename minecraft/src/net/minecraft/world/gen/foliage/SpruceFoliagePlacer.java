@@ -1,6 +1,9 @@
 package net.minecraft.world.gen.foliage;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
@@ -8,12 +11,24 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 
 public class SpruceFoliagePlacer extends FoliagePlacer {
-	public SpruceFoliagePlacer(int i, int j) {
-		super(i, j, FoliagePlacerType.SPRUCE_FOLIAGE_PLACER);
+	private final int field_23757;
+	private final int field_23758;
+
+	public SpruceFoliagePlacer(int i, int j, int k, int l, int m, int n) {
+		super(i, j, k, l, FoliagePlacerType.SPRUCE_FOLIAGE_PLACER);
+		this.field_23757 = m;
+		this.field_23758 = n;
 	}
 
 	public <T> SpruceFoliagePlacer(Dynamic<T> dynamic) {
-		this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0));
+		this(
+			dynamic.get("radius").asInt(0),
+			dynamic.get("radius_random").asInt(0),
+			dynamic.get("offset").asInt(0),
+			dynamic.get("offset_random").asInt(0),
+			dynamic.get("trunk_height").asInt(0),
+			dynamic.get("trunk_height_random").asInt(0)
+		);
 	}
 
 	@Override
@@ -21,40 +36,53 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 		ModifiableTestableWorld world,
 		Random random,
 		BranchedTreeFeatureConfig config,
-		int baseHeight,
 		int trunkHeight,
-		int radius,
 		BlockPos pos,
+		int foliageHeight,
+		int radius,
 		Set<BlockPos> leaves
 	) {
-		int i = random.nextInt(2);
-		int j = 1;
-		int k = 0;
+		int i = this.offset + random.nextInt(this.randomOffset + 1);
+		int j = random.nextInt(2);
+		int k = 1;
+		int l = 0;
 
-		for (int l = baseHeight; l >= trunkHeight; l--) {
-			this.generate(world, random, config, baseHeight, pos, l, i, leaves);
-			if (i >= j) {
-				i = k;
-				k = 1;
-				j = Math.min(j + 1, radius);
+		for (int m = foliageHeight + i; m >= 0; m--) {
+			this.generate(world, random, config, pos, foliageHeight, m, j, leaves);
+			if (j >= k) {
+				j = l;
+				l = 1;
+				k = Math.min(k + 1, radius);
 			} else {
-				i++;
+				j++;
 			}
 		}
 	}
 
 	@Override
-	public int getRadius(Random random, int baseHeight, int trunkHeight, BranchedTreeFeatureConfig config) {
+	public int getRadius(Random random, int baseHeight, BranchedTreeFeatureConfig config) {
 		return this.radius + random.nextInt(this.randomRadius + 1);
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int x, int y, int z, int radius) {
-		return Math.abs(x) == radius && Math.abs(z) == radius && radius > 0;
+	public int getHeight(Random random, int trunkHeight) {
+		return trunkHeight - this.field_23757 - random.nextInt(this.field_23758 + 1);
 	}
 
 	@Override
-	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius, int currentTreeHeight) {
-		return currentTreeHeight <= 1 ? 0 : 2;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, int radius) {
+		return Math.abs(dx) == radius && Math.abs(dz) == radius && radius > 0;
+	}
+
+	@Override
+	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius) {
+		return radius <= 1 ? 0 : 2;
+	}
+
+	@Override
+	public <T> T serialize(DynamicOps<T> ops) {
+		Builder<T, T> builder = ImmutableMap.builder();
+		builder.put(ops.createString("trunk_height"), ops.createInt(this.field_23757)).put(ops.createString("trunk_height_random"), ops.createInt(this.field_23758));
+		return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
 	}
 }

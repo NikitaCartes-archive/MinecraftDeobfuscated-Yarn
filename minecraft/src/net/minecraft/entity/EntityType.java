@@ -1,7 +1,6 @@
 package net.minecraft.entity;
 
 import com.mojang.datafixers.DataFixUtils;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -51,6 +50,7 @@ import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
+import net.minecraft.entity.mob.ZoglinEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
@@ -294,9 +294,6 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<PufferfishEntity> PUFFERFISH = register(
 		"pufferfish", EntityType.Builder.create(PufferfishEntity::new, EntityCategory.WATER_CREATURE).setDimensions(0.7F, 0.7F).method_24910(64)
 	);
-	public static final EntityType<ZombifiedPiglinEntity> ZOMBIFIED_PIGLIN = register(
-		"zombified_piglin", EntityType.Builder.create(ZombifiedPiglinEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.95F)
-	);
 	public static final EntityType<PolarBearEntity> POLAR_BEAR = register(
 		"polar_bear", EntityType.Builder.create(PolarBearEntity::new, EntityCategory.CREATURE).setDimensions(1.4F, 1.4F)
 	);
@@ -411,6 +408,9 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<ZombieEntity> ZOMBIE = register(
 		"zombie", EntityType.Builder.<ZombieEntity>create(ZombieEntity::new, EntityCategory.MONSTER).setDimensions(0.6F, 1.95F)
 	);
+	public static final EntityType<ZombifiedPiglinEntity> ZOMBIFIED_PIGLIN = register(
+		"zombified_piglin", EntityType.Builder.create(ZombifiedPiglinEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(0.6F, 1.95F)
+	);
 	public static final EntityType<ZombieHorseEntity> ZOMBIE_HORSE = register(
 		"zombie_horse", EntityType.Builder.create(ZombieHorseEntity::new, EntityCategory.CREATURE).setDimensions(1.3964844F, 1.6F)
 	);
@@ -431,6 +431,9 @@ public class EntityType<T extends Entity> {
 	);
 	public static final EntityType<StriderEntity> STRIDER = register(
 		"strider", EntityType.Builder.create(StriderEntity::new, EntityCategory.CREATURE).makeFireImmune().setDimensions(0.9F, 1.7F)
+	);
+	public static final EntityType<ZoglinEntity> ZOGLIN = register(
+		"zoglin", EntityType.Builder.create(ZoglinEntity::new, EntityCategory.MONSTER).makeFireImmune().setDimensions(1.3964844F, 1.4F)
 	);
 	public static final EntityType<LightningEntity> LIGHTNING_BOLT = register(
 		"lightning_bolt", EntityType.Builder.<LightningEntity>create(EntityCategory.MISC).disableSaving().setDimensions(0.0F, 0.0F)
@@ -572,7 +575,7 @@ public class EntityType<T extends Entity> {
 			box = box.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = worldView.getCollisions(null, box, Collections.emptySet());
+		Stream<VoxelShape> stream = worldView.getCollisions(null, box, entity -> true);
 		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
 	}
 

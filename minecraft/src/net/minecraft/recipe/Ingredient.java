@@ -30,14 +30,13 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public final class Ingredient implements Predicate<ItemStack> {
-	private static final Predicate<? super Ingredient.Entry> NON_EMPTY = entry -> !entry.getStacks().stream().allMatch(ItemStack::isEmpty);
 	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
 	private final Ingredient.Entry[] entries;
 	private ItemStack[] matchingStacks;
 	private IntList ids;
 
 	private Ingredient(Stream<? extends Ingredient.Entry> entries) {
-		this.entries = (Ingredient.Entry[])entries.filter(NON_EMPTY).toArray(Ingredient.Entry[]::new);
+		this.entries = (Ingredient.Entry[])entries.toArray(Ingredient.Entry[]::new);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -55,18 +54,19 @@ public final class Ingredient implements Predicate<ItemStack> {
 	public boolean test(@Nullable ItemStack itemStack) {
 		if (itemStack == null) {
 			return false;
-		} else if (this.entries.length == 0) {
-			return itemStack.isEmpty();
 		} else {
 			this.cacheMatchingStacks();
-
-			for (ItemStack itemStack2 : this.matchingStacks) {
-				if (itemStack2.getItem() == itemStack.getItem()) {
-					return true;
+			if (this.matchingStacks.length == 0) {
+				return itemStack.isEmpty();
+			} else {
+				for (ItemStack itemStack2 : this.matchingStacks) {
+					if (itemStack2.getItem() == itemStack.getItem()) {
+						return true;
+					}
 				}
-			}
 
-			return false;
+				return false;
+			}
 		}
 	}
 
@@ -118,12 +118,16 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	public static Ingredient ofItems(ItemConvertible... items) {
-		return ofEntries(Arrays.stream(items).map(item -> new Ingredient.StackEntry(new ItemStack(item))));
+		return method_26964(Arrays.stream(items).map(ItemStack::new));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static Ingredient ofStacks(ItemStack... stacks) {
-		return ofEntries(Arrays.stream(stacks).map(stack -> new Ingredient.StackEntry(stack)));
+		return method_26964(Arrays.stream(stacks));
+	}
+
+	public static Ingredient method_26964(Stream<ItemStack> stream) {
+		return ofEntries(stream.filter(itemStack -> !itemStack.isEmpty()).map(stack -> new Ingredient.StackEntry(stack)));
 	}
 
 	public static Ingredient fromTag(Tag<Item> tag) {
@@ -152,7 +156,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public static Ingredient.Entry entryFromJson(JsonObject json) {
+	private static Ingredient.Entry entryFromJson(JsonObject json) {
 		if (json.has("item") && json.has("tag")) {
 			throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
 		} else if (json.has("item")) {
@@ -219,7 +223,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("tag", this.tag.getId().toString());
+			jsonObject.addProperty("tag", ItemTags.getContainer().method_26798(this.tag).toString());
 			return jsonObject;
 		}
 	}

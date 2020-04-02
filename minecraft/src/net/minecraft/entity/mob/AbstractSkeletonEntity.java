@@ -24,7 +24,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -79,10 +80,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.targetSelector.add(3, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+	public static DefaultAttributeContainer.Builder createAbstractSkeletonAttributes() {
+		return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override

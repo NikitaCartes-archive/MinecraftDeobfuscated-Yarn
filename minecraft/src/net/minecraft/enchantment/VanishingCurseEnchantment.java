@@ -4,7 +4,7 @@ import net.minecraft.entity.EquipmentSlot;
 
 public class VanishingCurseEnchantment extends Enchantment {
 	public VanishingCurseEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
-		super(weight, EnchantmentTarget.ALL, slotTypes);
+		super(weight, EnchantmentTarget.VANISHABLE, slotTypes);
 	}
 
 	@Override

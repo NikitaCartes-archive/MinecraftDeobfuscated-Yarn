@@ -86,7 +86,7 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 		this.setMemory(type, Optional.of(Memory.timed(value, startTime)));
 	}
 
-	public <U> void remember(MemoryModuleType<U> type, Optional<U> value) {
+	public <U> void remember(MemoryModuleType<U> type, Optional<? extends U> value) {
 		this.setMemory(type, value.map(Memory::permanent));
 	}
 

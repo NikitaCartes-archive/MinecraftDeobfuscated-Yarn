@@ -25,10 +25,10 @@ public final class Matrix3f {
 	}
 
 	public Matrix3f(Quaternion source) {
-		float f = source.getB();
-		float g = source.getC();
-		float h = source.getD();
-		float i = source.getA();
+		float f = source.getX();
+		float g = source.getY();
+		float h = source.getZ();
+		float i = source.getW();
 		float j = 2.0F * f * f;
 		float k = 2.0F * g * g;
 		float l = 2.0F * h * h;

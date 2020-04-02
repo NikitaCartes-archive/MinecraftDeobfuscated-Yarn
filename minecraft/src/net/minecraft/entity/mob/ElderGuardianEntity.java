@@ -2,7 +2,8 @@ package net.minecraft.entity.mob;
 
 import java.util.List;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -25,12 +26,11 @@ public class ElderGuardianEntity extends GuardianEntity {
 		}
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(8.0);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(80.0);
+	public static DefaultAttributeContainer.Builder createElderGuardianAttributes() {
+		return GuardianEntity.createGuardianAttributes()
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(Attributes.GENERIC_ATTACK_DAMAGE, 8.0)
+			.add(Attributes.GENERIC_MAX_HEALTH, 80.0);
 	}
 
 	@Override

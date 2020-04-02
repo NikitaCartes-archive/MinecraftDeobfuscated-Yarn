@@ -60,7 +60,7 @@ public class ProtoChunk implements Chunk {
 	private final ChunkTickScheduler<Fluid> fluidTickScheduler;
 	private long inhabitedTime;
 	private final Map<GenerationStep.Carver, BitSet> carvingMasks = Maps.<GenerationStep.Carver, BitSet>newHashMap();
-	private volatile boolean isLightOn;
+	private volatile boolean lightOn;
 
 	public ProtoChunk(ChunkPos chunkPos, UpgradeData upgradeData) {
 		this(
@@ -265,8 +265,8 @@ public class ProtoChunk implements Chunk {
 		return this.status;
 	}
 
-	public void setStatus(ChunkStatus chunkStatus) {
-		this.status = chunkStatus;
+	public void setStatus(ChunkStatus status) {
+		this.status = status;
 		this.setShouldSave(true);
 	}
 
@@ -461,12 +461,12 @@ public class ProtoChunk implements Chunk {
 
 	@Override
 	public boolean isLightOn() {
-		return this.isLightOn;
+		return this.lightOn;
 	}
 
 	@Override
 	public void setLightOn(boolean lightOn) {
-		this.isLightOn = lightOn;
+		this.lightOn = lightOn;
 		this.setShouldSave(true);
 	}
 }

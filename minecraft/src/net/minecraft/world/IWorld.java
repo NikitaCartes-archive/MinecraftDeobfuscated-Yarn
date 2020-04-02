@@ -1,7 +1,7 @@
 package net.minecraft.world;
 
 import java.util.Random;
-import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -77,8 +77,8 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	}
 
 	@Override
-	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Set<Entity> excluded) {
-		return EntityView.super.getEntityCollisions(entity, box, excluded);
+	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+		return EntityView.super.getEntityCollisions(entity, box, predicate);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	}
 
 	@Override
-	default BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
-		return WorldView.super.getTopPosition(type, pos);
+	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+		return WorldView.super.getTopPosition(heightmap, pos);
 	}
 }

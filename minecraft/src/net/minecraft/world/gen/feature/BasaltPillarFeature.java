@@ -8,6 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -17,7 +19,12 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (iWorld.isAir(blockPos) && !iWorld.isAir(blockPos.up())) {
 			BlockPos.Mutable mutable = blockPos.mutableCopy();
@@ -28,6 +35,10 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 			boolean bl4 = true;
 
 			while (iWorld.isAir(mutable)) {
+				if (World.isHeightInvalid(mutable)) {
+					return true;
+				}
+
 				iWorld.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
 				bl = bl && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.NORTH));
 				bl2 = bl2 && this.stopOrPlaceBasalt(iWorld, random, mutable2.set(mutable, Direction.SOUTH));

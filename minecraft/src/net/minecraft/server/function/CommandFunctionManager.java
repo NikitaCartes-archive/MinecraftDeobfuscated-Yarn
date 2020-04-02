@@ -42,7 +42,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	private boolean executing;
 	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
 	private final List<CommandFunctionManager.Entry> pending = Lists.<CommandFunctionManager.Entry>newArrayList();
-	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::getFunction, "tags/functions", true, "function");
+	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::getFunction, "tags/functions", "function");
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean needToRunLoadFunctions;
 
@@ -161,7 +161,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			LOGGER.info("Loaded {} custom command functions", this.idMap.size());
 		}
 
-		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(manager, this.server.getWorkerExecutor()).join());
+		this.tags.applyReload((Map<Identifier, Tag.Builder>)this.tags.prepareReload(manager, this.server.getWorkerExecutor()).join());
 		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
 		this.needToRunLoadFunctions = true;
 	}

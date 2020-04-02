@@ -8,12 +8,12 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 
 public class AcaciaFoliagePlacer extends FoliagePlacer {
-	public AcaciaFoliagePlacer(int i, int j) {
-		super(i, j, FoliagePlacerType.ACACIA_FOLIAGE_PLACER);
+	public AcaciaFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset) {
+		super(radius, randomRadius, offset, randomOffset, FoliagePlacerType.ACACIA_FOLIAGE_PLACER);
 	}
 
-	public <T> AcaciaFoliagePlacer(Dynamic<T> dynamic) {
-		this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0));
+	public <T> AcaciaFoliagePlacer(Dynamic<T> data) {
+		this(data.get("radius").asInt(0), data.get("radius_random").asInt(0), data.get("offset").asInt(0), data.get("offset_random").asInt(0));
 	}
 
 	@Override
@@ -21,42 +21,47 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 		ModifiableTestableWorld world,
 		Random random,
 		BranchedTreeFeatureConfig config,
-		int baseHeight,
 		int trunkHeight,
-		int radius,
 		BlockPos pos,
+		int foliageHeight,
+		int radius,
 		Set<BlockPos> leaves
 	) {
-		config.foliagePlacer.generate(world, random, config, baseHeight, pos, 0, radius, leaves);
-		config.foliagePlacer.generate(world, random, config, baseHeight, pos, 1, 1, leaves);
-		BlockPos blockPos = pos.up();
+		int i = this.offset + random.nextInt(this.randomOffset + 1);
+		config.foliagePlacer.generate(world, random, config, pos, foliageHeight, i - 1, radius, leaves);
+		config.foliagePlacer.generate(world, random, config, pos, foliageHeight, i, 1, leaves);
 
-		for (int i = -1; i <= 1; i++) {
-			for (int j = -1; j <= 1; j++) {
-				this.placeLeaves(world, random, blockPos.add(i, 0, j), config, leaves);
+		for (int j = -1; j <= 1; j++) {
+			for (int k = -1; k <= 1; k++) {
+				this.placeLeaves(world, random, pos.add(j, 0, k), config, leaves);
 			}
 		}
 
-		for (int i = 2; i <= radius - 1; i++) {
-			this.placeLeaves(world, random, blockPos.east(i), config, leaves);
-			this.placeLeaves(world, random, blockPos.west(i), config, leaves);
-			this.placeLeaves(world, random, blockPos.south(i), config, leaves);
-			this.placeLeaves(world, random, blockPos.north(i), config, leaves);
+		for (int j = 2; j <= radius - 1; j++) {
+			this.placeLeaves(world, random, pos.up(i).east(j), config, leaves);
+			this.placeLeaves(world, random, pos.up(i).west(j), config, leaves);
+			this.placeLeaves(world, random, pos.up(i).south(j), config, leaves);
+			this.placeLeaves(world, random, pos.up(i).north(j), config, leaves);
 		}
 	}
 
 	@Override
-	public int getRadius(Random random, int baseHeight, int trunkHeight, BranchedTreeFeatureConfig config) {
+	public int getRadius(Random random, int baseHeight, BranchedTreeFeatureConfig config) {
 		return this.radius + random.nextInt(this.randomRadius + 1);
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int x, int y, int z, int radius) {
-		return Math.abs(x) == radius && Math.abs(z) == radius && radius > 0;
+	public int getHeight(Random random, int trunkHeight) {
+		return 0;
 	}
 
 	@Override
-	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius, int currentTreeHeight) {
-		return currentTreeHeight == 0 ? 0 : 2;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, int radius) {
+		return Math.abs(dx) == radius && Math.abs(dz) == radius && radius > 0;
+	}
+
+	@Override
+	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius) {
+		return radius == 0 ? 0 : 2;
 	}
 }

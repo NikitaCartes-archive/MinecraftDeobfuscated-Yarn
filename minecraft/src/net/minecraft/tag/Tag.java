@@ -1,22 +1,23 @@
 package net.minecraft.tag;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import javax.annotation.Nullable;
+import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
 
 /**
  * A tag is a set of objects.
@@ -30,128 +31,86 @@ import net.minecraft.util.Util;
  * <p>Its entries' iteration may be ordered
  * or unordered, depending on the configuration from the tag builder.
  */
-public class Tag<T> {
-	private final Identifier id;
-	private final Set<T> values;
-	private final Collection<Tag.Entry<T>> entries;
+public interface Tag<T> {
+	boolean contains(T entry);
 
-	public Tag(Identifier id) {
-		this.id = id;
-		this.values = Collections.emptySet();
-		this.entries = Collections.emptyList();
-	}
+	List<T> values();
 
-	public Tag(Identifier id, Collection<Tag.Entry<T>> entries, boolean ordered) {
-		this.id = id;
-		this.values = (Set<T>)(ordered ? Sets.<T>newLinkedHashSet() : Sets.<T>newHashSet());
-		this.entries = entries;
-
-		for (Tag.Entry<T> entry : entries) {
-			entry.build(this.values);
-		}
-	}
-
-	public JsonObject toJson(Function<T, Identifier> idGetter) {
-		JsonObject jsonObject = new JsonObject();
-		JsonArray jsonArray = new JsonArray();
-
-		for (Tag.Entry<T> entry : this.entries) {
-			entry.toJson(jsonArray, idGetter);
-		}
-
-		jsonObject.addProperty("replace", false);
-		jsonObject.add("values", jsonArray);
-		return jsonObject;
-	}
-
-	public boolean contains(T entry) {
-		return this.values.contains(entry);
-	}
-
-	public Collection<T> values() {
-		return this.values;
-	}
-
-	public Collection<Tag.Entry<T>> entries() {
-		return this.entries;
-	}
-
-	public T getRandom(Random random) {
-		List<T> list = Lists.<T>newArrayList(this.values());
+	default T getRandom(Random random) {
+		List<T> list = this.values();
 		return (T)list.get(random.nextInt(list.size()));
 	}
 
-	public Identifier getId() {
-		return this.id;
+	static <T> Tag<T> of(Set<T> set) {
+		final ImmutableList<T> immutableList = ImmutableList.copyOf(set);
+		return new Tag<T>() {
+			@Override
+			public boolean contains(T entry) {
+				return set.contains(entry);
+			}
+
+			@Override
+			public List<T> values() {
+				return immutableList;
+			}
+		};
 	}
 
 	/**
 	 * A builder class to ease the creation of tags. It can also be used as a
 	 * mutable form of a tag.
 	 */
-	public static class Builder<T> {
-		private final Set<Tag.Entry<T>> entries = Sets.<Tag.Entry<T>>newLinkedHashSet();
-		private boolean ordered;
+	public static class Builder {
+		private final Set<Tag.Entry> entries = Sets.<Tag.Entry>newLinkedHashSet();
 
-		public static <T> Tag.Builder<T> create() {
-			return new Tag.Builder<>();
+		public static Tag.Builder create() {
+			return new Tag.Builder();
 		}
 
-		public Tag.Builder<T> add(Tag.Entry<T> entry) {
+		public Tag.Builder add(Tag.Entry entry) {
 			this.entries.add(entry);
 			return this;
 		}
 
-		public Tag.Builder<T> add(T entry) {
-			this.entries.add(new Tag.CollectionEntry(Collections.singleton(entry)));
-			return this;
+		public Tag.Builder add(Identifier id) {
+			return this.add(new Tag.ObjectEntry(id));
 		}
 
-		@SafeVarargs
-		public final Tag.Builder<T> add(T... entries) {
-			this.entries.add(new Tag.CollectionEntry(Lists.<T>newArrayList(entries)));
-			return this;
+		public Tag.Builder addTag(Identifier id) {
+			return this.add(new Tag.TagEntry(id));
 		}
 
-		public Tag.Builder<T> add(Tag<T> tag) {
-			this.entries.add(new Tag.TagEntry<>(tag));
-			return this;
-		}
+		public <T> Optional<Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
+			ImmutableSet.Builder<T> builder = ImmutableSet.builder();
 
-		public Tag.Builder<T> ordered(boolean ordered) {
-			this.ordered = ordered;
-			return this;
-		}
-
-		public boolean applyTagGetter(Function<Identifier, Tag<T>> tagGetter) {
-			for (Tag.Entry<T> entry : this.entries) {
-				if (!entry.applyTagGetter(tagGetter)) {
-					return false;
+			for (Tag.Entry entry : this.entries) {
+				if (!entry.resolve(tagGetter, objectGetter, builder::add)) {
+					return Optional.empty();
 				}
 			}
 
-			return true;
+			return Optional.of(Tag.of(builder.build()));
 		}
 
-		public Tag<T> build(Identifier id) {
-			return new Tag<>(id, this.entries, this.ordered);
+		public Stream<Tag.Entry> streamEntries() {
+			return this.entries.stream();
 		}
 
-		public Tag.Builder<T> fromJson(Function<Identifier, Optional<T>> entryGetter, JsonObject json) {
+		public <T> Stream<Tag.Entry> streamUnresolvedEntries(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
+			return this.streamEntries().filter(entry -> !entry.resolve(tagGetter, objectGetter, object -> {
+				}));
+		}
+
+		public Tag.Builder read(JsonObject json) {
 			JsonArray jsonArray = JsonHelper.getArray(json, "values");
-			List<Tag.Entry<T>> list = Lists.<Tag.Entry<T>>newArrayList();
+			List<Tag.Entry> list = Lists.<Tag.Entry>newArrayList();
 
 			for (JsonElement jsonElement : jsonArray) {
 				String string = JsonHelper.asString(jsonElement, "value");
 				if (string.startsWith("#")) {
 					list.add(new Tag.TagEntry(new Identifier(string.substring(1))));
 				} else {
-					Identifier identifier = new Identifier(string);
-					list.add(
-						new Tag.CollectionEntry(
-							Collections.singleton(((Optional)entryGetter.apply(identifier)).orElseThrow(() -> new JsonParseException("Unknown value '" + identifier + "'")))
-						)
-					);
+					list.add(new Tag.ObjectEntry(new Identifier(string)));
 				}
 			}
 
@@ -162,106 +121,113 @@ public class Tag<T> {
 			this.entries.addAll(list);
 			return this;
 		}
+
+		public JsonObject toJson() {
+			JsonObject jsonObject = new JsonObject();
+			JsonArray jsonArray = new JsonArray();
+
+			for (Tag.Entry entry : this.entries) {
+				entry.addToJson(jsonArray);
+			}
+
+			jsonObject.addProperty("replace", false);
+			jsonObject.add("values", jsonArray);
+			return jsonObject;
+		}
 	}
 
-	public static class CollectionEntry<T> implements Tag.Entry<T> {
-		private final Collection<T> values;
+	public interface Entry {
+		<T> boolean resolve(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter, Consumer<T> collector);
 
-		public CollectionEntry(Collection<T> values) {
-			this.values = values;
+		void addToJson(JsonArray json);
+	}
+
+	public interface Identified<T> extends Tag<T> {
+		Identifier getId();
+	}
+
+	public static class ObjectBuilder<T> extends Tag.Builder {
+		private final Function<T, Identifier> idGetter;
+
+		public ObjectBuilder(Function<T, Identifier> idGetter) {
+			this.idGetter = idGetter;
+		}
+
+		public Tag.ObjectBuilder<T> add(T element) {
+			this.add((Identifier)this.idGetter.apply(element));
+			return this;
+		}
+
+		public Tag.ObjectBuilder<T> add(Collection<T> elements) {
+			elements.stream().map(this.idGetter).forEach(this::add);
+			return this;
+		}
+
+		@SafeVarargs
+		public final Tag.ObjectBuilder<T> add(T... elements) {
+			this.add(Arrays.asList(elements));
+			return this;
+		}
+
+		public Tag.ObjectBuilder<T> addTag(Tag.Identified<T> identifiedTag) {
+			this.addTag(identifiedTag.getId());
+			return this;
+		}
+	}
+
+	public static class ObjectEntry implements Tag.Entry {
+		private final Identifier id;
+
+		public ObjectEntry(Identifier id) {
+			this.id = id;
 		}
 
 		@Override
-		public void build(Collection<T> targetCollection) {
-			targetCollection.addAll(this.values);
-		}
-
-		@Override
-		public void toJson(JsonArray targetArray, Function<T, Identifier> idGetter) {
-			for (T object : this.values) {
-				Identifier identifier = (Identifier)idGetter.apply(object);
-				if (identifier == null) {
-					throw new IllegalStateException("Unable to serialize an anonymous value to json!");
-				}
-
-				targetArray.add(identifier.toString());
+		public <T> boolean resolve(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter, Consumer<T> collector) {
+			T object = (T)objectGetter.apply(this.id);
+			if (object == null) {
+				return false;
+			} else {
+				collector.accept(object);
+				return true;
 			}
 		}
 
-		public Collection<T> getValues() {
-			return this.values;
+		@Override
+		public void addToJson(JsonArray json) {
+			json.add(this.id.toString());
+		}
+
+		public String toString() {
+			return this.id.toString();
 		}
 	}
 
-	public interface Entry<T> {
-		/**
-		 * Resolves the tag entry, given the availalbe tags.
-		 * 
-		 * @return true if the tag entry has been resolved
-		 * 
-		 * @param tagGetter the getter for resolved tags, consuming tag identifiers
-		 */
-		default boolean applyTagGetter(Function<Identifier, Tag<T>> tagGetter) {
-			return true;
-		}
-
-		/**
-		 * Build this tag entry by adding elements to the backing collection of
-		 * a tag.
-		 * 
-		 * @param targetCollection the collection to which the tag entries should be added
-		 */
-		void build(Collection<T> targetCollection);
-
-		void toJson(JsonArray targetArray, Function<T, Identifier> idGetter);
-	}
-
-	public static class TagEntry<T> implements Tag.Entry<T> {
-		@Nullable
+	public static class TagEntry implements Tag.Entry {
 		private final Identifier id;
-		@Nullable
-		private Tag<T> tag;
 
 		public TagEntry(Identifier id) {
 			this.id = id;
 		}
 
-		public TagEntry(Tag<T> tag) {
-			this.id = tag.getId();
-			this.tag = tag;
-		}
-
 		@Override
-		public boolean applyTagGetter(Function<Identifier, Tag<T>> tagGetter) {
-			if (this.tag == null) {
-				this.tag = (Tag<T>)tagGetter.apply(this.id);
-			}
-
-			return this.tag != null;
-		}
-
-		@Override
-		public void build(Collection<T> targetCollection) {
-			if (this.tag == null) {
-				throw (IllegalStateException)Util.throwOrPause((T)(new IllegalStateException("Cannot build unresolved tag entry")));
+		public <T> boolean resolve(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter, Consumer<T> collector) {
+			Tag<T> tag = (Tag<T>)tagGetter.apply(this.id);
+			if (tag == null) {
+				return false;
 			} else {
-				targetCollection.addAll(this.tag.values());
-			}
-		}
-
-		public Identifier getId() {
-			if (this.tag != null) {
-				return this.tag.getId();
-			} else if (this.id != null) {
-				return this.id;
-			} else {
-				throw new IllegalStateException("Cannot serialize an anonymous tag to json!");
+				tag.values().forEach(collector);
+				return true;
 			}
 		}
 
 		@Override
-		public void toJson(JsonArray targetArray, Function<T, Identifier> idGetter) {
-			targetArray.add("#" + this.getId());
+		public void addToJson(JsonArray json) {
+			json.add("#" + this.id);
+		}
+
+		public String toString() {
+			return "#" + this.id;
 		}
 	}
 }

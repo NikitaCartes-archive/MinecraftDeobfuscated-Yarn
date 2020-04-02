@@ -95,13 +95,17 @@ public class PistonHeadBlock extends FacingBlock {
 		}
 	}
 
+	private boolean method_26980(BlockState blockState, BlockState blockState2) {
+		Block block = blockState.get(TYPE) == PistonType.DEFAULT ? Blocks.PISTON : Blocks.STICKY_PISTON;
+		return blockState2.getBlock() == block && (Boolean)blockState2.get(PistonBlock.EXTENDED) && blockState2.get(FACING) == blockState.get(FACING);
+	}
+
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient && player.abilities.creativeMode) {
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
-			Block block = world.getBlockState(blockPos).getBlock();
-			if (block == Blocks.PISTON || block == Blocks.STICKY_PISTON) {
-				world.removeBlock(blockPos, false);
+			if (this.method_26980(state, world.getBlockState(blockPos))) {
+				world.breakBlock(blockPos, false);
 			}
 		}
 
@@ -112,12 +116,9 @@ public class PistonHeadBlock extends FacingBlock {
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
 		if (state.getBlock() != newState.getBlock()) {
 			super.onBlockRemoved(state, world, pos, newState, notify);
-			Direction direction = ((Direction)state.get(FACING)).getOpposite();
-			pos = pos.offset(direction);
-			BlockState blockState = world.getBlockState(pos);
-			if ((blockState.getBlock() == Blocks.PISTON || blockState.getBlock() == Blocks.STICKY_PISTON) && (Boolean)blockState.get(PistonBlock.EXTENDED)) {
-				dropStacks(blockState, world, pos);
-				world.removeBlock(pos, false);
+			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
+			if (this.method_26980(state, world.getBlockState(blockPos))) {
+				world.breakBlock(blockPos, true);
 			}
 		}
 	}
@@ -131,8 +132,8 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		Block block = world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite())).getBlock();
-		return block == Blocks.PISTON || block == Blocks.STICKY_PISTON || block == Blocks.MOVING_PISTON;
+		BlockState blockState = world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite()));
+		return this.method_26980(state, blockState) || blockState.getBlock() == Blocks.MOVING_PISTON && blockState.get(FACING) == state.get(FACING);
 	}
 
 	@Override

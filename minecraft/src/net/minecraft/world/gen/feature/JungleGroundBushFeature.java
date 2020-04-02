@@ -21,7 +21,7 @@ public class JungleGroundBushFeature extends AbstractTreeFeature<TreeFeatureConf
 		pos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, pos).down();
 		if (isNaturalDirtOrGrass(world, pos)) {
 			pos = pos.up();
-			this.setLogBlockState(world, random, pos, logPositions, box, config);
+			setLogBlockState(world, random, pos, logPositions, box, config);
 
 			for (int i = 0; i <= 2; i++) {
 				int j = 2 - i;

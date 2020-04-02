@@ -13,9 +13,10 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -33,9 +34,8 @@ import net.minecraft.world.WorldView;
 public class ZombifiedPiglinEntity extends ZombieEntity {
 	private static final UUID ATTACKING_SPEED_BOOST_UUID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
-			ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
-		)
-		.setSerialize(false);
+		ATTACKING_SPEED_BOOST_UUID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
+	);
 	private int anger;
 	private int angrySoundDelay;
 	private UUID angerTarget;
@@ -61,12 +61,11 @@ public class ZombifiedPiglinEntity extends ZombieEntity {
 		this.targetSelector.add(2, new ZombifiedPiglinEntity.FollowPlayerIfAngryGoal(this));
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(SPAWN_REINFORCEMENTS).setBaseValue(0.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
+	public static DefaultAttributeContainer.Builder createZombifiedPiglinAttributes() {
+		return ZombieEntity.createZombieAttributes()
+			.add(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0)
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.23F)
+			.add(Attributes.GENERIC_ATTACK_DAMAGE, 5.0);
 	}
 
 	@Override
@@ -76,11 +75,11 @@ public class ZombifiedPiglinEntity extends ZombieEntity {
 
 	@Override
 	protected void mobTick() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
 		LivingEntity livingEntity = this.getAttacker();
 		if (this.isAngry()) {
 			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
-				entityAttributeInstance.addModifier(ATTACKING_SPEED_BOOST);
+				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
 			}
 
 			this.anger--;
@@ -198,6 +197,11 @@ public class ZombifiedPiglinEntity extends ZombieEntity {
 	@Override
 	protected ItemStack getSkull() {
 		return ItemStack.EMPTY;
+	}
+
+	@Override
+	protected void initAttributes() {
+		this.getAttributeInstance(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(0.0);
 	}
 
 	@Override

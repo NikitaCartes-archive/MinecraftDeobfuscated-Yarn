@@ -10,6 +10,7 @@ import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -19,7 +20,12 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
+		IWorld iWorld,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
 			return false;

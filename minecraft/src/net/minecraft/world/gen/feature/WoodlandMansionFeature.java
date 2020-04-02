@@ -19,6 +19,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfig> {
@@ -111,12 +112,14 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		}
 
 		@Override
-		public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
-			super.generateStructure(world, chunkGenerator, random, box, pos);
+		public void generateStructure(
+			IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
+		) {
+			super.generateStructure(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
 			int i = this.boundingBox.minY;
 
-			for (int j = box.minX; j <= box.maxX; j++) {
-				for (int k = box.minZ; k <= box.maxZ; k++) {
+			for (int j = blockBox.minX; j <= blockBox.maxX; j++) {
+				for (int k = blockBox.minZ; k <= blockBox.maxZ; k++) {
 					BlockPos blockPos = new BlockPos(j, i, k);
 					if (!world.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
 						boolean bl = false;

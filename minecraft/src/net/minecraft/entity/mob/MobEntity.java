@@ -28,8 +28,9 @@ import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -123,11 +124,8 @@ public abstract class MobEntity extends LivingEntity {
 	protected void initGoals() {
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributes().register(EntityAttributes.FOLLOW_RANGE).setBaseValue(16.0);
-		this.getAttributes().register(EntityAttributes.ATTACK_KNOCKBACK);
+	public static DefaultAttributeContainer.Builder createMobAttributes() {
+		return LivingEntity.createLivingAttributes().add(Attributes.GENERIC_FOLLOW_RANGE, 16.0).add(Attributes.GENERIC_ATTACK_KNOCKBACK);
 	}
 
 	protected EntityNavigation createNavigation(World world) {
@@ -969,8 +967,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Nullable
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE)
-			.addModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+		this.getAttributeInstance(Attributes.GENERIC_FOLLOW_RANGE)
+			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
 		if (this.random.nextFloat() < 0.05F) {
 			this.setLeftHanded(true);
 		} else {
@@ -1265,8 +1263,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		float f = (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
-		float g = (float)this.getAttributeInstance(EntityAttributes.ATTACK_KNOCKBACK).getValue();
+		float f = (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
+		float g = (float)this.method_26825(Attributes.GENERIC_ATTACK_KNOCKBACK);
 		if (target instanceof LivingEntity) {
 			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
 			g += (float)EnchantmentHelper.getKnockback(this);

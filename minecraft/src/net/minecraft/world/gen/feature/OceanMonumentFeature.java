@@ -16,6 +16,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
@@ -107,13 +108,15 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		}
 
 		@Override
-		public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
+		public void generateStructure(
+			IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
+		) {
 			if (!this.field_13717) {
 				this.children.clear();
 				this.method_16588(this.getChunkX(), this.getChunkZ());
 			}
 
-			super.generateStructure(world, chunkGenerator, random, box, pos);
+			super.generateStructure(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
 		}
 	}
 }

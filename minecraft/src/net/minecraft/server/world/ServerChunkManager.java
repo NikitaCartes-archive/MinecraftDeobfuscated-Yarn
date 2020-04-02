@@ -72,8 +72,9 @@ public class ServerChunkManager extends ChunkManager {
 		Executor workerExecutor,
 		ChunkGenerator<?> chunkGenerator,
 		int viewDistance,
-		WorldGenerationProgressListener progressListener,
-		Supplier<PersistentStateManager> mainWorldPersistentStateManagerGetter
+		boolean bl,
+		WorldGenerationProgressListener worldGenerationProgressListener,
+		Supplier<PersistentStateManager> supplier
 	) {
 		this.world = world;
 		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(world);
@@ -92,9 +93,10 @@ public class ServerChunkManager extends ChunkManager {
 			this.mainThreadExecutor,
 			this,
 			this.getChunkGenerator(),
-			progressListener,
-			mainWorldPersistentStateManagerGetter,
-			viewDistance
+			worldGenerationProgressListener,
+			supplier,
+			viewDistance,
+			bl
 		);
 		this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
 		this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();

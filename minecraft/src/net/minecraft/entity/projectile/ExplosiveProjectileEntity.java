@@ -19,7 +19,6 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
-	private int ticks;
 	public double posX;
 	public double posY;
 	public double posZ;
@@ -75,8 +74,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				this.setOnFireFor(1);
 			}
 
-			this.ticks++;
-			HitResult hitResult = ProjectileUtil.getCollision(this, true, this.ticks >= 25, entity, RayTraceContext.ShapeType.COLLIDER);
+			HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.COLLIDER);
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.onCollision(hitResult);
 			}
@@ -102,6 +100,11 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		} else {
 			this.remove();
 		}
+	}
+
+	@Override
+	protected boolean method_26958(Entity entity) {
+		return super.method_26958(entity) && !entity.noClip;
 	}
 
 	protected boolean isBurning() {

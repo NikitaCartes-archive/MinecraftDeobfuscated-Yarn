@@ -12,7 +12,7 @@ public class HuntHoglinTask<E extends PiglinEntity> extends Task<E> {
 	public HuntHoglinTask() {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLIN,
+				MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN,
 				MemoryModuleState.VALUE_PRESENT,
 				MemoryModuleType.ANGRY_AT,
 				MemoryModuleState.VALUE_ABSENT,
@@ -29,7 +29,7 @@ public class HuntHoglinTask<E extends PiglinEntity> extends Task<E> {
 	}
 
 	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-		HoglinEntity hoglinEntity = (HoglinEntity)piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLIN).get();
+		HoglinEntity hoglinEntity = (HoglinEntity)piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN).get();
 		PiglinBrain.angerAt(piglinEntity, hoglinEntity);
 		PiglinBrain.rememberHunting(piglinEntity);
 		PiglinBrain.angerAtCloserTargets(piglinEntity, hoglinEntity);

@@ -1,6 +1,5 @@
 package net.minecraft.world.gen.chunk;
 
-import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
@@ -13,12 +12,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
@@ -33,6 +32,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -286,7 +286,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	}
 
 	@Override
-	public void populateNoise(IWorld world, Chunk chunk) {
+	public void populateNoise(IWorld world, StructureAccessor structureAccessor, Chunk chunk) {
 		ObjectList<StructurePiece> objectList = new ObjectArrayList<>(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
 		ChunkPos chunkPos = chunk.getPos();
@@ -296,46 +296,37 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		int l = j << 4;
 
 		for (StructureFeature<?> structureFeature : Feature.JIGSAW_STRUCTURES) {
-			String string = structureFeature.getName();
-			LongIterator longIterator = chunk.getStructureReferences(string).iterator();
-
-			while (longIterator.hasNext()) {
-				long m = longIterator.nextLong();
-				ChunkPos chunkPos2 = new ChunkPos(m);
-				Chunk chunk2 = world.getChunk(chunkPos2.x, chunkPos2.z);
-				StructureStart structureStart = chunk2.getStructureStart(string);
-				if (structureStart != null && structureStart.hasChildren()) {
-					for (StructurePiece structurePiece : structureStart.getChildren()) {
-						if (structurePiece.intersectsChunk(chunkPos, 12)) {
-							if (structurePiece instanceof PoolStructurePiece) {
-								PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
-								StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
-								if (projection == StructurePool.Projection.RIGID) {
-									objectList.add(poolStructurePiece);
-								}
-
-								for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
-									int n = jigsawJunction.getSourceX();
-									int o = jigsawJunction.getSourceZ();
-									if (n > k - 12 && o > l - 12 && n < k + 15 + 12 && o < l + 15 + 12) {
-										objectList2.add(jigsawJunction);
-									}
-								}
-							} else {
-								objectList.add(structurePiece);
+			structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(chunkPos, 0), structureFeature, world).forEach(structureStart -> {
+				for (StructurePiece structurePiece : structureStart.getChildren()) {
+					if (structurePiece.intersectsChunk(chunkPos, 12)) {
+						if (structurePiece instanceof PoolStructurePiece) {
+							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
+							StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
+							if (projection == StructurePool.Projection.RIGID) {
+								objectList.add(poolStructurePiece);
 							}
+
+							for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
+								int kx = jigsawJunction.getSourceX();
+								int lx = jigsawJunction.getSourceZ();
+								if (kx > k - 12 && lx > l - 12 && kx < k + 15 + 12 && lx < l + 15 + 12) {
+									objectList2.add(jigsawJunction);
+								}
+							}
+						} else {
+							objectList.add(structurePiece);
 						}
 					}
 				}
-			}
+			});
 		}
 
 		double[][][] ds = new double[2][this.noiseSizeZ + 1][this.noiseSizeY + 1];
 
-		for (int p = 0; p < this.noiseSizeZ + 1; p++) {
-			ds[0][p] = new double[this.noiseSizeY + 1];
-			this.sampleNoiseColumn(ds[0][p], i * this.noiseSizeX, j * this.noiseSizeZ + p);
-			ds[1][p] = new double[this.noiseSizeY + 1];
+		for (int m = 0; m < this.noiseSizeZ + 1; m++) {
+			ds[0][m] = new double[this.noiseSizeY + 1];
+			this.sampleNoiseColumn(ds[0][m], i * this.noiseSizeX, j * this.noiseSizeZ + m);
+			ds[1][m] = new double[this.noiseSizeY + 1];
 		}
 
 		ProtoChunk protoChunk = (ProtoChunk)chunk;
@@ -345,86 +336,86 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		ObjectListIterator<StructurePiece> objectListIterator = objectList.iterator();
 		ObjectListIterator<JigsawJunction> objectListIterator2 = objectList2.iterator();
 
-		for (int q = 0; q < this.noiseSizeX; q++) {
-			for (int r = 0; r < this.noiseSizeZ + 1; r++) {
-				this.sampleNoiseColumn(ds[1][r], i * this.noiseSizeX + q + 1, j * this.noiseSizeZ + r);
+		for (int n = 0; n < this.noiseSizeX; n++) {
+			for (int o = 0; o < this.noiseSizeZ + 1; o++) {
+				this.sampleNoiseColumn(ds[1][o], i * this.noiseSizeX + n + 1, j * this.noiseSizeZ + o);
 			}
 
-			for (int r = 0; r < this.noiseSizeZ; r++) {
+			for (int o = 0; o < this.noiseSizeZ; o++) {
 				ChunkSection chunkSection = protoChunk.getSection(15);
 				chunkSection.lock();
 
-				for (int s = this.noiseSizeY - 1; s >= 0; s--) {
-					double d = ds[0][r][s];
-					double e = ds[0][r + 1][s];
-					double f = ds[1][r][s];
-					double g = ds[1][r + 1][s];
-					double h = ds[0][r][s + 1];
-					double t = ds[0][r + 1][s + 1];
-					double u = ds[1][r][s + 1];
-					double v = ds[1][r + 1][s + 1];
+				for (int p = this.noiseSizeY - 1; p >= 0; p--) {
+					double d = ds[0][o][p];
+					double e = ds[0][o + 1][p];
+					double f = ds[1][o][p];
+					double g = ds[1][o + 1][p];
+					double h = ds[0][o][p + 1];
+					double q = ds[0][o + 1][p + 1];
+					double r = ds[1][o][p + 1];
+					double s = ds[1][o + 1][p + 1];
 
-					for (int w = this.verticalNoiseResolution - 1; w >= 0; w--) {
-						int x = s * this.verticalNoiseResolution + w;
-						int y = x & 15;
-						int z = x >> 4;
-						if (chunkSection.getYOffset() >> 4 != z) {
+					for (int t = this.verticalNoiseResolution - 1; t >= 0; t--) {
+						int u = p * this.verticalNoiseResolution + t;
+						int v = u & 15;
+						int w = u >> 4;
+						if (chunkSection.getYOffset() >> 4 != w) {
 							chunkSection.unlock();
-							chunkSection = protoChunk.getSection(z);
+							chunkSection = protoChunk.getSection(w);
 							chunkSection.lock();
 						}
 
-						double aa = (double)w / (double)this.verticalNoiseResolution;
-						double ab = MathHelper.lerp(aa, d, h);
-						double ac = MathHelper.lerp(aa, f, u);
-						double ad = MathHelper.lerp(aa, e, t);
-						double ae = MathHelper.lerp(aa, g, v);
+						double x = (double)t / (double)this.verticalNoiseResolution;
+						double y = MathHelper.lerp(x, d, h);
+						double z = MathHelper.lerp(x, f, r);
+						double aa = MathHelper.lerp(x, e, q);
+						double ab = MathHelper.lerp(x, g, s);
 
-						for (int af = 0; af < this.horizontalNoiseResolution; af++) {
-							int ag = k + q * this.horizontalNoiseResolution + af;
-							int ah = ag & 15;
-							double ai = (double)af / (double)this.horizontalNoiseResolution;
-							double aj = MathHelper.lerp(ai, ab, ac);
-							double ak = MathHelper.lerp(ai, ad, ae);
+						for (int ac = 0; ac < this.horizontalNoiseResolution; ac++) {
+							int ad = k + n * this.horizontalNoiseResolution + ac;
+							int ae = ad & 15;
+							double af = (double)ac / (double)this.horizontalNoiseResolution;
+							double ag = MathHelper.lerp(af, y, z);
+							double ah = MathHelper.lerp(af, aa, ab);
 
-							for (int al = 0; al < this.horizontalNoiseResolution; al++) {
-								int am = l + r * this.horizontalNoiseResolution + al;
-								int an = am & 15;
-								double ao = (double)al / (double)this.horizontalNoiseResolution;
-								double ap = MathHelper.lerp(ao, aj, ak);
-								double aq = MathHelper.clamp(ap / 200.0, -1.0, 1.0);
-								aq = aq / 2.0 - aq * aq * aq / 24.0;
+							for (int ai = 0; ai < this.horizontalNoiseResolution; ai++) {
+								int aj = l + o * this.horizontalNoiseResolution + ai;
+								int ak = aj & 15;
+								double al = (double)ai / (double)this.horizontalNoiseResolution;
+								double am = MathHelper.lerp(al, ag, ah);
+								double an = MathHelper.clamp(am / 200.0, -1.0, 1.0);
+								an = an / 2.0 - an * an * an / 24.0;
 
 								while (objectListIterator.hasNext()) {
-									StructurePiece structurePiece2 = (StructurePiece)objectListIterator.next();
-									BlockBox blockBox = structurePiece2.getBoundingBox();
-									int ar = Math.max(0, Math.max(blockBox.minX - ag, ag - blockBox.maxX));
-									int as = x - (blockBox.minY + (structurePiece2 instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece2).getGroundLevelDelta() : 0));
-									int at = Math.max(0, Math.max(blockBox.minZ - am, am - blockBox.maxZ));
-									aq += method_16572(ar, as, at) * 0.8;
+									StructurePiece structurePiece = (StructurePiece)objectListIterator.next();
+									BlockBox blockBox = structurePiece.getBoundingBox();
+									int ao = Math.max(0, Math.max(blockBox.minX - ad, ad - blockBox.maxX));
+									int ap = u - (blockBox.minY + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
+									int aq = Math.max(0, Math.max(blockBox.minZ - aj, aj - blockBox.maxZ));
+									an += method_16572(ao, ap, aq) * 0.8;
 								}
 
 								objectListIterator.back(objectList.size());
 
 								while (objectListIterator2.hasNext()) {
-									JigsawJunction jigsawJunction2 = (JigsawJunction)objectListIterator2.next();
-									int au = ag - jigsawJunction2.getSourceX();
-									int ar = x - jigsawJunction2.getSourceGroundY();
-									int as = am - jigsawJunction2.getSourceZ();
-									aq += method_16572(au, ar, as) * 0.4;
+									JigsawJunction jigsawJunction = (JigsawJunction)objectListIterator2.next();
+									int ar = ad - jigsawJunction.getSourceX();
+									int ao = u - jigsawJunction.getSourceGroundY();
+									int ap = aj - jigsawJunction.getSourceZ();
+									an += method_16572(ar, ao, ap) * 0.4;
 								}
 
 								objectListIterator2.back(objectList2.size());
-								BlockState blockState = this.method_26262(aq, x);
+								BlockState blockState = this.method_26262(an, u);
 								if (blockState != AIR) {
 									if (blockState.getLuminance() != 0) {
-										mutable.set(ag, x, am);
+										mutable.set(ad, u, aj);
 										protoChunk.addLightSource(mutable);
 									}
 
-									chunkSection.setBlockState(ah, y, an, blockState, false);
-									heightmap.trackUpdate(ah, x, an, blockState);
-									heightmap2.trackUpdate(ah, x, an, blockState);
+									chunkSection.setBlockState(ae, v, ak, blockState, false);
+									heightmap.trackUpdate(ae, u, ak, blockState);
+									heightmap2.trackUpdate(ae, u, ak, blockState);
 								}
 							}
 						}

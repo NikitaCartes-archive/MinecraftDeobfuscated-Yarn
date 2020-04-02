@@ -101,7 +101,7 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public boolean shouldNotCopyTagFromItem() {
+	public boolean copyItemDataRequiresOperator() {
 		return true;
 	}
 

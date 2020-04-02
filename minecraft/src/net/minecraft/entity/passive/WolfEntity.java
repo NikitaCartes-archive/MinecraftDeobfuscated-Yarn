@@ -27,7 +27,8 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TrackOwnerAttackerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.WolfBegGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -35,6 +36,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.DyeItem;
@@ -93,17 +95,11 @@ public class WolfEntity extends TameableEntity {
 		this.targetSelector.add(5, new FollowTargetGoal(this, AbstractSkeletonEntity.class, false));
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
-		if (this.isTamed()) {
-			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(20.0);
-		} else {
-			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
-		}
-
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
+	public static DefaultAttributeContainer.Builder createWolfAttributes() {
+		return MobEntity.createMobAttributes()
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(Attributes.GENERIC_MAX_HEALTH, 8.0)
+			.add(Attributes.GENERIC_ATTACK_DAMAGE, 2.0);
 	}
 
 	@Override
@@ -307,7 +303,7 @@ public class WolfEntity extends TameableEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.dealDamage(this, target);
 		}
@@ -319,13 +315,13 @@ public class WolfEntity extends TameableEntity {
 	public void setTamed(boolean tamed) {
 		super.setTamed(tamed);
 		if (tamed) {
-			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(20.0);
+			this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue(20.0);
 			this.setHealth(20.0F);
 		} else {
-			this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
+			this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue(8.0);
 		}
 
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
+		this.getAttributeInstance(Attributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4.0);
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public abstract class ItemGroup {
 		public ItemStack createIcon() {
 			return new ItemStack(Items.IRON_AXE);
 		}
-	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE});
+	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.VANISHABLE, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE});
 	public static final ItemGroup COMBAT = (new ItemGroup(9, "combat") {
 			@Environment(EnvType.CLIENT)
 			@Override
@@ -77,7 +77,7 @@ public abstract class ItemGroup {
 		})
 		.setEnchantments(
 			new EnchantmentTarget[]{
-				EnchantmentTarget.ALL,
+				EnchantmentTarget.VANISHABLE,
 				EnchantmentTarget.ARMOR,
 				EnchantmentTarget.ARMOR_FEET,
 				EnchantmentTarget.ARMOR_HEAD,

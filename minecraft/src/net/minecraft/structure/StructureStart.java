@@ -14,6 +14,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -52,17 +53,20 @@ public abstract class StructureStart {
 		return this.children;
 	}
 
-	public void generateStructure(IWorld world, ChunkGenerator<?> chunkGenerator, Random random, BlockBox box, ChunkPos pos) {
+	public void generateStructure(
+		IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
+	) {
 		synchronized (this.children) {
 			if (!this.children.isEmpty()) {
-				BlockBox blockBox = ((StructurePiece)this.children.get(0)).boundingBox;
-				Vec3i vec3i = blockBox.getCenter();
-				BlockPos blockPos = new BlockPos(vec3i.getX(), blockBox.minY, vec3i.getZ());
+				BlockBox blockBox2 = ((StructurePiece)this.children.get(0)).boundingBox;
+				Vec3i vec3i = blockBox2.getCenter();
+				BlockPos blockPos = new BlockPos(vec3i.getX(), blockBox2.minY, vec3i.getZ());
 				Iterator<StructurePiece> iterator = this.children.iterator();
 
 				while (iterator.hasNext()) {
 					StructurePiece structurePiece = (StructurePiece)iterator.next();
-					if (structurePiece.getBoundingBox().intersects(box) && !structurePiece.generate(world, chunkGenerator, random, box, pos, blockPos)) {
+					if (structurePiece.getBoundingBox().intersects(blockBox)
+						&& !structurePiece.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) {
 						iterator.remove();
 					}
 				}

@@ -68,6 +68,8 @@ import net.minecraft.world.gen.stateprovider.PillarBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.PlainsFlowerBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
+import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
+import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
 
 public class DefaultBiomeFeatures {
 	private static final BlockState GRASS = Blocks.GRASS.getDefaultState();
@@ -143,7 +145,7 @@ public class DefaultBiomeFeatures {
 		.getDefaultState()
 		.with(MushroomBlock.UP, Boolean.valueOf(false))
 		.with(MushroomBlock.DOWN, Boolean.valueOf(false));
-	private static final BlockState field_23076 = Blocks.NETHER_GOLD_ORE.getDefaultState();
+	private static final BlockState NETHER_GOLD_ORE = Blocks.NETHER_GOLD_ORE.getDefaultState();
 	private static final BlockState NETHER_QUARTZ_ORE = Blocks.NETHER_QUARTZ_ORE.getDefaultState();
 	private static final BlockState WARPED_STEM = Blocks.WARPED_STEM.getDefaultState();
 	private static final BlockState WARPED_WART_BLOCK = Blocks.WARPED_WART_BLOCK.getDefaultState();
@@ -151,156 +153,117 @@ public class DefaultBiomeFeatures {
 	private static final BlockState CRIMSON_STEM = Blocks.CRIMSON_STEM.getDefaultState();
 	private static final BlockState SHROOMLIGHT = Blocks.SHROOMLIGHT.getDefaultState();
 	public static final BranchedTreeFeatureConfig OAK_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(4, 2, 0)
 		)
-		.baseHeight(4)
-		.heightRandA(2)
-		.foliageHeight(3)
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig JUNGLE_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(JUNGLE_LOG), new SimpleBlockStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(JUNGLE_LOG),
+			new SimpleBlockStateProvider(JUNGLE_LEAVES),
+			new BlobFoliagePlacer(2, 0, 0, 0, 3),
+			new StraightTrunkPlacer(4, 8, 0)
 		)
-		.baseHeight(4)
-		.heightRandA(8)
-		.foliageHeight(3)
 		.treeDecorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig JUNGLE_SAPLING_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(JUNGLE_LOG), new SimpleBlockStateProvider(JUNGLE_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(JUNGLE_LOG),
+			new SimpleBlockStateProvider(JUNGLE_LEAVES),
+			new BlobFoliagePlacer(2, 0, 0, 0, 3),
+			new StraightTrunkPlacer(4, 8, 0)
 		)
-		.baseHeight(4)
-		.heightRandA(8)
-		.foliageHeight(3)
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig PINE_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(SPRUCE_LOG), new SimpleBlockStateProvider(SPRUCE_LEAVES), new PineFoliagePlacer(1, 0)
+			new SimpleBlockStateProvider(SPRUCE_LOG),
+			new SimpleBlockStateProvider(SPRUCE_LEAVES),
+			new PineFoliagePlacer(1, 0, 1, 0, 3, 1),
+			new StraightTrunkPlacer(6, 4, 0)
 		)
-		.baseHeight(7)
-		.heightRandA(4)
-		.trunkTopOffset(1)
-		.foliageHeight(3)
-		.foliageHeightRandom(1)
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig SPRUCE_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(SPRUCE_LOG), new SimpleBlockStateProvider(SPRUCE_LEAVES), new SpruceFoliagePlacer(2, 1)
+			new SimpleBlockStateProvider(SPRUCE_LOG),
+			new SimpleBlockStateProvider(SPRUCE_LEAVES),
+			new SpruceFoliagePlacer(2, 1, 0, 2, 1, 1),
+			new StraightTrunkPlacer(4, 3, 2)
 		)
-		.baseHeight(6)
-		.heightRandA(3)
-		.trunkHeight(1)
-		.trunkHeightRandom(1)
-		.trunkTopOffsetRandom(2)
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig ACACIA_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(ACACIA_LOG), new SimpleBlockStateProvider(ACACIA_LEAVES), new AcaciaFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(ACACIA_LOG), new SimpleBlockStateProvider(ACACIA_LEAVES), new AcaciaFoliagePlacer(2, 0, 0, 0), new ForkingTrunkPlacer(5, 2, 2)
 		)
-		.baseHeight(5)
-		.heightRandA(2)
-		.heightRandB(2)
-		.trunkHeight(0)
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig BIRCH_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(5, 2, 0)
 		)
-		.baseHeight(5)
-		.heightRandA(2)
-		.foliageHeight(3)
 		.noVines()
 		.build();
 	public static final BranchedTreeFeatureConfig BIRCH_TREE_WITH_RARE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(5, 2, 0)
 		)
-		.baseHeight(5)
-		.heightRandA(2)
-		.foliageHeight(3)
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.002F)))
 		.build();
 	public static final BranchedTreeFeatureConfig LARGE_BIRCH_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(5, 2, 6)
 		)
-		.baseHeight(5)
-		.heightRandA(2)
-		.heightRandB(6)
-		.foliageHeight(3)
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.002F)))
 		.build();
 	public static final BranchedTreeFeatureConfig SWAMP_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(3, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(3, 0, 0, 0, 3), new StraightTrunkPlacer(5, 3, 0)
 		)
-		.baseHeight(5)
-		.heightRandA(3)
-		.foliageHeight(3)
 		.maxFluidDepth(1)
 		.treeDecorators(ImmutableList.of(new LeaveVineTreeDecorator()))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0, 0, 0, 0), new StraightTrunkPlacer(0, 0, 0)
 		)
 		.build();
 	public static final BranchedTreeFeatureConfig OAK_TREE_WITH_MORE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(4, 2, 0)
 		)
-		.baseHeight(4)
-		.heightRandA(2)
-		.foliageHeight(3)
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_WITH_RARE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0, 0, 0, 0), new StraightTrunkPlacer(0, 0, 0)
 		)
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.002F)))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_WITH_MORE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0, 0, 0, 0), new StraightTrunkPlacer(0, 0, 0)
 		)
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.build();
 	public static final BranchedTreeFeatureConfig OAK_TREE_WITH_RARE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(4, 2, 0)
 		)
-		.baseHeight(4)
-		.heightRandA(2)
-		.foliageHeight(3)
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.002F)))
 		.build();
 	public static final BranchedTreeFeatureConfig OAK_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(4, 2, 0)
 		)
-		.baseHeight(4)
-		.heightRandA(2)
-		.foliageHeight(3)
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.02F)))
 		.build();
 	public static final BranchedTreeFeatureConfig FANCY_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0)
+			new SimpleBlockStateProvider(OAK_LOG), new SimpleBlockStateProvider(OAK_LEAVES), new BlobFoliagePlacer(0, 0, 0, 0, 0), new StraightTrunkPlacer(0, 0, 0)
 		)
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.02F)))
 		.build();
 	public static final BranchedTreeFeatureConfig BIRCH_TREE_WITH_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(5, 2, 0)
 		)
-		.baseHeight(5)
-		.heightRandA(2)
-		.foliageHeight(3)
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.02F)))
 		.build();
 	public static final BranchedTreeFeatureConfig BIRCH_TREE_WITH_MORE_BEEHIVES_CONFIG = new BranchedTreeFeatureConfig.Builder(
-			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0)
+			new SimpleBlockStateProvider(BIRCH_LOG), new SimpleBlockStateProvider(BIRCH_LEAVES), new BlobFoliagePlacer(2, 0, 0, 0, 3), new StraightTrunkPlacer(5, 2, 0)
 		)
-		.baseHeight(5)
-		.heightRandA(2)
-		.foliageHeight(3)
 		.noVines()
 		.treeDecorators(ImmutableList.of(new BeehiveTreeDecorator(0.05F)))
 		.build();
@@ -888,7 +851,7 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.ACACIA_TREE.configure(ACACIA_TREE_CONFIG).withChance(0.8F)), Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
+						ImmutableList.of(Feature.NORMAL_TREE.configure(ACACIA_TREE_CONFIG).withChance(0.8F)), Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(1, 0.1F, 1)))
@@ -901,7 +864,7 @@ public class DefaultBiomeFeatures {
 			Feature.RANDOM_SELECTOR
 				.configure(
 					new RandomFeatureConfig(
-						ImmutableList.of(Feature.ACACIA_TREE.configure(ACACIA_TREE_CONFIG).withChance(0.8F)), Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
+						ImmutableList.of(Feature.NORMAL_TREE.configure(ACACIA_TREE_CONFIG).withChance(0.8F)), Feature.NORMAL_TREE.configure(OAK_TREE_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(2, 0.1F, 1)))
@@ -1443,7 +1406,7 @@ public class DefaultBiomeFeatures {
 		biome.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.ORE
-				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, field_23076, 10))
+				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, NETHER_GOLD_ORE, 10))
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(10, 10, 20, 128)))
 		);
 		biome.addFeature(

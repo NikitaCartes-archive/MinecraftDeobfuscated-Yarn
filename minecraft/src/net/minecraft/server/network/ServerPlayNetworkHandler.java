@@ -265,8 +265,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		return this.connection;
 	}
 
-	private boolean isServerOwner() {
-		return this.server.isOwner(this.player.getGameProfile());
+	private boolean isHost() {
+		return this.server.isHost(this.player.getGameProfile());
 	}
 
 	public void disconnect(Text reason) {
@@ -321,7 +321,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				double n = i - this.lastTickRiddenZ;
 				double o = entity.getVelocity().lengthSquared();
 				double p = l * l + m * m + n * n;
-				if (p - o > 100.0 && !this.isServerOwner()) {
+				if (p - o > 100.0 && !this.isHost()) {
 					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
 					this.connection.send(new VehicleMoveS2CPacket(entity));
 					return;
@@ -673,7 +673,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onQueryEntityNbt(QueryEntityNbtC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (this.player.allowsPermissionLevel(2)) {
+		if (this.player.hasPermissionLevel(2)) {
 			Entity entity = this.player.getServerWorld().getEntityById(packet.getEntityId());
 			if (entity != null) {
 				CompoundTag compoundTag = entity.toTag(new CompoundTag());
@@ -685,7 +685,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onQueryBlockNbt(QueryBlockNbtC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (this.player.allowsPermissionLevel(2)) {
+		if (this.player.hasPermissionLevel(2)) {
 			BlockEntity blockEntity = this.player.getServerWorld().getBlockEntity(packet.getPos());
 			CompoundTag compoundTag = blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
 			this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
@@ -745,7 +745,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							if (!this.player.isInTeleportationState()
 								&& (!this.player.getServerWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !this.player.isFallFlying())) {
 								float s = this.player.isFallFlying() ? 300.0F : 100.0F;
-								if (q - p > (double)(s * (float)r) && !this.isServerOwner()) {
+								if (q - p > (double)(s * (float)r) && !this.isHost()) {
 									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), m, n, o);
 									this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.yaw, this.player.pitch);
 									return;
@@ -952,7 +952,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.server.getPlayerManager().sendToAll(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW));
 		this.player.method_14231();
 		this.server.getPlayerManager().remove(this.player);
-		if (this.isServerOwner()) {
+		if (this.isHost()) {
 			LOGGER.info("Stopping singleplayer server as player logged out");
 			this.server.stop(false);
 		}
@@ -1315,7 +1315,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			int i = (int)(Util.getMeasuringTimeMs() - this.lastKeepAliveTime);
 			this.player.pingMilliseconds = (this.player.pingMilliseconds * 3 + i) / 4;
 			this.waitingForKeepAlive = false;
-		} else if (!this.isServerOwner()) {
+		} else if (!this.isHost()) {
 			this.disconnect(new TranslatableText("disconnect.timeout"));
 		}
 	}
@@ -1339,7 +1339,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onUpdateDifficulty(UpdateDifficultyC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (this.player.allowsPermissionLevel(2) || this.isServerOwner()) {
+		if (this.player.hasPermissionLevel(2) || this.isHost()) {
 			this.server.setDifficulty(packet.getDifficulty(), false);
 		}
 	}
@@ -1347,7 +1347,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (this.player.allowsPermissionLevel(2) || this.isServerOwner()) {
+		if (this.player.hasPermissionLevel(2) || this.isHost()) {
 			this.server.setDifficultyLocked(packet.isDifficultyLocked());
 		}
 	}

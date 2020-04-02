@@ -113,6 +113,7 @@ import net.minecraft.datafixer.fix.RecipeFix;
 import net.minecraft.datafixer.fix.RecipeRenameFix;
 import net.minecraft.datafixer.fix.RecipeRenamingFix;
 import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
+import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
 import net.minecraft.datafixer.fix.SavedDataVillageCropFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
@@ -168,6 +169,7 @@ import net.minecraft.datafixer.schema.Schema2502;
 import net.minecraft.datafixer.schema.Schema2505;
 import net.minecraft.datafixer.schema.Schema2509;
 import net.minecraft.datafixer.schema.Schema2519;
+import net.minecraft.datafixer.schema.Schema2522;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -598,5 +600,9 @@ public class Schemas {
 		builder.addFixer(new JigsawRotationFix(schema110, false));
 		Schema schema111 = builder.addSchema(2519, Schema2519::new);
 		builder.addFixer(new ChoiceTypesFix(schema111, "Added Strider", TypeReferences.ENTITY));
+		Schema schema112 = builder.addSchema(2522, Schema2522::new);
+		builder.addFixer(new ChoiceTypesFix(schema112, "Added Zoglin", TypeReferences.ENTITY));
+		Schema schema113 = builder.addSchema(2523, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RenameItemStackAttributesFix(schema113));
 	}
 }

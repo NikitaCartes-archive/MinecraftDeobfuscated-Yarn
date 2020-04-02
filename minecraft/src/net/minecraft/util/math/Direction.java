@@ -234,7 +234,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public static Direction random(Random random) {
-		return values()[random.nextInt(values().length)];
+		return ALL[random.nextInt(ALL.length)];
 	}
 
 	public static Direction getFacing(double x, double y, double z) {
@@ -266,7 +266,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public static Direction get(Direction.AxisDirection direction, Direction.Axis axis) {
-		for (Direction direction2 : values()) {
+		for (Direction direction2 : ALL) {
 			if (direction2.getDirection() == direction && direction2.getAxis() == axis) {
 				return direction2;
 			}
@@ -314,7 +314,8 @@ public enum Direction implements StringIdentifiable {
 			}
 		};
 
-		private static final Map<String, Direction.Axis> BY_NAME = (Map<String, Direction.Axis>)Arrays.stream(values())
+		private static final Direction.Axis[] field_23780 = values();
+		private static final Map<String, Direction.Axis> BY_NAME = (Map<String, Direction.Axis>)Arrays.stream(field_23780)
 			.collect(Collectors.toMap(Direction.Axis::getName, axis -> axis));
 		private final String name;
 
@@ -344,7 +345,7 @@ public enum Direction implements StringIdentifiable {
 		}
 
 		public static Direction.Axis pickRandomAxis(Random random) {
-			return values()[random.nextInt(values().length)];
+			return field_23780[random.nextInt(field_23780.length)];
 		}
 
 		public boolean test(@Nullable Direction direction) {

@@ -19,6 +19,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ProbabilityConfig;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -57,7 +58,6 @@ public abstract class Feature<FC extends FeatureConfig> {
 	);
 	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(BranchedTreeFeatureConfig::deserialize));
-	public static final Feature<BranchedTreeFeatureConfig> ACACIA_TREE = register("acacia_tree", new AcaciaTreeFeature(BranchedTreeFeatureConfig::deserialize));
 	public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(BranchedTreeFeatureConfig::deserialize));
 	public static final Feature<TreeFeatureConfig> JUNGLE_GROUND_BUSH = register("jungle_ground_bush", new JungleGroundBushFeature(TreeFeatureConfig::deserialize));
 	public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeFeature(MegaTreeFeatureConfig::deserialize));
@@ -170,7 +170,9 @@ public abstract class Feature<FC extends FeatureConfig> {
 		world.setBlockState(pos, state, 3);
 	}
 
-	public abstract boolean generate(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, FC config);
+	public abstract boolean generate(
+		IWorld world, StructureAccessor accessor, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, FC config
+	);
 
 	public List<Biome.SpawnEntry> getMonsterSpawns() {
 		return Collections.emptyList();

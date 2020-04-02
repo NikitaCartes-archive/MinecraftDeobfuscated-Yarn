@@ -147,12 +147,12 @@ public class Keyboard {
 					return true;
 				case 73:
 					if (!this.client.player.getReducedDebugInfo()) {
-						this.copyLookAt(this.client.player.allowsPermissionLevel(2), !Screen.hasShiftDown());
+						this.copyLookAt(this.client.player.hasPermissionLevel(2), !Screen.hasShiftDown());
 					}
 
 					return true;
 				case 78:
-					if (!this.client.player.allowsPermissionLevel(2)) {
+					if (!this.client.player.hasPermissionLevel(2)) {
 						this.debugWarn("debug.creative_spectator.error");
 					} else if (this.client.player.isCreative()) {
 						this.client.player.sendChatMessage("/gamemode spectator");

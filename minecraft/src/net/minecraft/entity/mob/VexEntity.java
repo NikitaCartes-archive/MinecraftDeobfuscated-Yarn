@@ -16,7 +16,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -80,11 +81,8 @@ public class VexEntity extends HostileEntity {
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(14.0);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
+	public static DefaultAttributeContainer.Builder createVexAttributes() {
+		return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MAX_HEALTH, 14.0).add(Attributes.GENERIC_ATTACK_DAMAGE, 4.0);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -164,7 +165,11 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (this.fluid.isIn(FluidTags.LAVA)) {
-			entity.setInLava();
+			float f = (float)pos.getY() + state.getFluidState().getHeight(world, pos);
+			Box box = entity.getBoundingBox();
+			if (box.y1 < (double)f || (double)f > box.y2) {
+				entity.setInLava();
+			}
 		}
 	}
 }

@@ -33,7 +33,8 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -146,13 +147,11 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0F, 7.0F));
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributes().register(EntityAttributes.FLYING_SPEED);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(6.0);
-		this.getAttributeInstance(EntityAttributes.FLYING_SPEED).setBaseValue(0.4F);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
+	public static DefaultAttributeContainer.Builder createParrotAttributes() {
+		return MobEntity.createMobAttributes()
+			.add(Attributes.GENERIC_MAX_HEALTH, 6.0)
+			.add(Attributes.GENERIC_FLYING_SPEED, 0.4F)
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.2F);
 	}
 
 	@Override

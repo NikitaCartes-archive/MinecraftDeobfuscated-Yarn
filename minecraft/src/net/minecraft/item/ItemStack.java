@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
@@ -35,8 +36,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -60,6 +62,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -69,7 +72,9 @@ import org.apache.logging.log4j.Logger;
 public final class ItemStack {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final ItemStack EMPTY = new ItemStack((Item)null);
-	public static final DecimalFormat MODIFIER_FORMAT = createModifierFormat();
+	public static final DecimalFormat MODIFIER_FORMAT = Util.make(
+		new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
+	);
 	private int count;
 	private int cooldown;
 	@Deprecated
@@ -81,12 +86,6 @@ public final class ItemStack {
 	private boolean lastDestroyResult;
 	private CachedBlockPosition lastPlaceOnPos;
 	private boolean lastPlaceOnResult;
-
-	private static DecimalFormat createModifierFormat() {
-		DecimalFormat decimalFormat = new DecimalFormat("#.##");
-		decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
-		return decimalFormat;
-	}
 
 	public ItemStack(ItemConvertible item) {
 		this(item, 1);
@@ -555,35 +554,34 @@ public final class ItemStack {
 		}
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-			Multimap<String, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
+			Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
 			if (!multimap.isEmpty() && (i & 2) == 0) {
 				list.add(new LiteralText(""));
 				list.add(new TranslatableText("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
 
-				for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
+				for (Entry<EntityAttribute, EntityAttributeModifier> entry : multimap.entries()) {
 					EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
 					double d = entityAttributeModifier.getAmount();
 					boolean bl = false;
 					if (player != null) {
 						if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_UUID) {
-							d += player.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getBaseValue();
+							d += player.method_26826(Attributes.GENERIC_ATTACK_DAMAGE);
 							d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
 							bl = true;
 						} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_UUID) {
-							d += player.getAttributeInstance(EntityAttributes.ATTACK_SPEED).getBaseValue();
+							d += player.method_26826(Attributes.GENERIC_ATTACK_SPEED);
 							bl = true;
-						} else if (((String)entry.getKey()).equals(EntityAttributes.KNOCKBACK_RESISTANCE.getId())) {
-							d += player.getAttributeInstance(EntityAttributes.KNOCKBACK_RESISTANCE).getBaseValue();
-							d *= 10.0;
 						}
 					}
 
 					double e;
-					if (entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
-						&& entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
-						e = d;
-					} else {
+					if (entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE
+						|| entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
 						e = d * 100.0;
+					} else if (((EntityAttribute)entry.getKey()).equals(Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
+						e = d * 10.0;
+					} else {
+						e = d;
 					}
 
 					if (bl) {
@@ -593,7 +591,7 @@ public final class ItemStack {
 									new TranslatableText(
 										"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),
 										MODIFIER_FORMAT.format(e),
-										new TranslatableText("attribute.name." + (String)entry.getKey())
+										new TranslatableText(((EntityAttribute)entry.getKey()).getTranslationKey())
 									)
 								)
 								.formatted(Formatting.DARK_GREEN)
@@ -603,7 +601,7 @@ public final class ItemStack {
 							new TranslatableText(
 									"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
 									MODIFIER_FORMAT.format(e),
-									new TranslatableText("attribute.name." + (String)entry.getKey())
+									new TranslatableText(((EntityAttribute)entry.getKey()).getTranslationKey())
 								)
 								.formatted(Formatting.BLUE)
 						);
@@ -613,7 +611,7 @@ public final class ItemStack {
 							new TranslatableText(
 									"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
 									MODIFIER_FORMAT.format(e),
-									new TranslatableText("attribute.name." + (String)entry.getKey())
+									new TranslatableText(((EntityAttribute)entry.getKey()).getTranslationKey())
 								)
 								.formatted(Formatting.RED)
 						);
@@ -753,39 +751,42 @@ public final class ItemStack {
 		this.getOrCreateTag().putInt("RepairCost", repairCost);
 	}
 
-	public Multimap<String, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		Multimap<String, EntityAttributeModifier> multimap;
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
+		Multimap<EntityAttribute, EntityAttributeModifier> multimap;
 		if (this.hasTag() && this.tag.contains("AttributeModifiers", 9)) {
 			multimap = HashMultimap.create();
 			ListTag listTag = this.tag.getList("AttributeModifiers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompound(i);
-				EntityAttributeModifier entityAttributeModifier = EntityAttributes.createFromTag(compoundTag);
-				if (entityAttributeModifier != null
-					&& (!compoundTag.contains("Slot", 8) || compoundTag.getString("Slot").equals(slot.getName()))
-					&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
-					&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
-					multimap.put(compoundTag.getString("AttributeName"), entityAttributeModifier);
+				if (!compoundTag.contains("Slot", 8) || compoundTag.getString("Slot").equals(equipmentSlot.getName())) {
+					Optional<EntityAttribute> optional = Registry.ATTRIBUTES.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")));
+					if (optional.isPresent()) {
+						EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromTag(compoundTag);
+						if (entityAttributeModifier != null
+							&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
+							&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
+							multimap.put((EntityAttribute)optional.get(), entityAttributeModifier);
+						}
+					}
 				}
 			}
 		} else {
-			multimap = this.getItem().getModifiers(slot);
+			multimap = this.getItem().getModifiers(equipmentSlot);
 		}
 
-		multimap.values().forEach(entityAttributeModifierx -> entityAttributeModifierx.setSerialize(false));
 		return multimap;
 	}
 
-	public void addAttributeModifier(String name, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
+	public void addAttributeModifier(EntityAttribute entityAttribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
 		this.getOrCreateTag();
 		if (!this.tag.contains("AttributeModifiers", 9)) {
 			this.tag.put("AttributeModifiers", new ListTag());
 		}
 
 		ListTag listTag = this.tag.getList("AttributeModifiers", 10);
-		CompoundTag compoundTag = EntityAttributes.toTag(modifier);
-		compoundTag.putString("AttributeName", name);
+		CompoundTag compoundTag = modifier.toTag();
+		compoundTag.putString("AttributeName", Registry.ATTRIBUTES.getId(entityAttribute).toString());
 		if (slot != null) {
 			compoundTag.putString("Slot", slot.getName());
 		}

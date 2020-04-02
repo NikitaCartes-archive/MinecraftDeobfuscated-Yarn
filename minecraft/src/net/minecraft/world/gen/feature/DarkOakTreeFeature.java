@@ -56,10 +56,10 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<MegaTreeFeatureConfi
 					int s = k + r;
 					BlockPos blockPos3 = new BlockPos(o, s, p);
 					if (isAirOrLeaves(modifiableTestableWorld, blockPos3)) {
-						this.setLogBlockState(modifiableTestableWorld, random, blockPos3, set, blockBox, megaTreeFeatureConfig);
-						this.setLogBlockState(modifiableTestableWorld, random, blockPos3.east(), set, blockBox, megaTreeFeatureConfig);
-						this.setLogBlockState(modifiableTestableWorld, random, blockPos3.south(), set, blockBox, megaTreeFeatureConfig);
-						this.setLogBlockState(modifiableTestableWorld, random, blockPos3.east().south(), set, blockBox, megaTreeFeatureConfig);
+						setLogBlockState(modifiableTestableWorld, random, blockPos3, set, blockBox, megaTreeFeatureConfig);
+						setLogBlockState(modifiableTestableWorld, random, blockPos3.east(), set, blockBox, megaTreeFeatureConfig);
+						setLogBlockState(modifiableTestableWorld, random, blockPos3.south(), set, blockBox, megaTreeFeatureConfig);
+						setLogBlockState(modifiableTestableWorld, random, blockPos3.east().south(), set, blockBox, megaTreeFeatureConfig);
 					}
 				}
 
@@ -101,7 +101,7 @@ public class DarkOakTreeFeature extends AbstractTreeFeature<MegaTreeFeatureConfi
 							int t = random.nextInt(3) + 2;
 
 							for (int u = 0; u < t; u++) {
-								this.setLogBlockState(modifiableTestableWorld, random, new BlockPos(j + r, q - u - 1, l + sxx), set, blockBox, megaTreeFeatureConfig);
+								setLogBlockState(modifiableTestableWorld, random, new BlockPos(j + r, q - u - 1, l + sxx), set, blockBox, megaTreeFeatureConfig);
 							}
 
 							for (int u = -1; u <= 1; u++) {

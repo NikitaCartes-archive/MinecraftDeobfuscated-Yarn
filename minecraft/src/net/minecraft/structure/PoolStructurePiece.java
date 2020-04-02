@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class PoolStructurePiece extends StructurePiece {
@@ -77,8 +78,10 @@ public abstract class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
-		return this.poolElement.generate(this.structureManager, world, generator, this.pos, blockPos, this.rotation, box, random);
+	public boolean generate(
+		IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos, BlockPos blockPos
+	) {
+		return this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random);
 	}
 
 	@Override

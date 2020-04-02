@@ -107,9 +107,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 		this.model.animateModel(livingEntity, o, n, g);
 		this.model.setAngles(livingEntity, o, n, lx, k, m);
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		boolean bl = this.isVisible(livingEntity);
-		boolean bl2 = !bl && !livingEntity.isInvisibleTo(MinecraftClient.getInstance().player);
-		RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2);
+		boolean bl2 = !bl && !livingEntity.isInvisibleTo(minecraftClient.player);
+		boolean bl3 = minecraftClient.method_27022(livingEntity);
+		RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2, bl3);
 		if (renderLayer != null) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
 			int p = getOverlay(livingEntity, this.getAnimationCounter(livingEntity, g));
@@ -130,14 +132,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	 * Gets the render layer appropriate for rendering the passed entity. Returns null if the entity should not be rendered.
 	 */
 	@Nullable
-	protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent) {
+	protected RenderLayer getRenderLayer(T entity, boolean showBody, boolean translucent, boolean bl) {
 		Identifier identifier = this.getTexture(entity);
 		if (translucent) {
 			return RenderLayer.getEntityTranslucent(identifier);
 		} else if (showBody) {
 			return this.model.getLayer(identifier);
 		} else {
-			return entity.isGlowing() ? RenderLayer.getOutline(identifier) : null;
+			return bl ? RenderLayer.getOutline(identifier) : null;
 		}
 	}
 

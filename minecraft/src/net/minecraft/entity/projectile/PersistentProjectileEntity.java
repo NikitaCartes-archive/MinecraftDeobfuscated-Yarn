@@ -55,7 +55,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	public PersistentProjectileEntity.PickupPermission pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
 	public int shake;
 	private int life;
-	private int flyingTick;
 	private double damage = 2.0;
 	private int punch;
 	private SoundEvent sound = this.getHitSound();
@@ -168,7 +167,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.inGroundTime++;
 		} else {
 			this.inGroundTime = 0;
-			this.flyingTick++;
 			Vec3d vec3d3 = this.getPos();
 			Vec3d vec3d2 = vec3d3.add(vec3d);
 			HitResult hitResult = this.world.rayTrace(new RayTraceContext(vec3d3, vec3d2, RayTraceContext.ShapeType.COLLIDER, RayTraceContext.FluidHandling.NONE, this));
@@ -227,25 +225,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 
 			this.pitch = (float)(MathHelper.atan2(e, (double)l) * 180.0F / (float)Math.PI);
-
-			while (this.pitch - this.prevPitch < -180.0F) {
-				this.prevPitch -= 360.0F;
-			}
-
-			while (this.pitch - this.prevPitch >= 180.0F) {
-				this.prevPitch += 360.0F;
-			}
-
-			while (this.yaw - this.prevYaw < -180.0F) {
-				this.prevYaw -= 360.0F;
-			}
-
-			while (this.yaw - this.prevYaw >= 180.0F) {
-				this.prevYaw += 360.0F;
-			}
-
-			this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
-			this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
+			this.pitch = method_26960(this.prevPitch, this.pitch);
+			this.yaw = method_26960(this.prevYaw, this.yaw);
 			float m = 0.99F;
 			float n = 0.05F;
 			if (this.isTouchingWater()) {
@@ -277,7 +258,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.multiply((double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F), (double)(this.random.nextFloat() * 0.2F)));
 		this.life = 0;
-		this.flyingTick = 0;
 	}
 
 	@Override
@@ -400,7 +380,6 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.setVelocity(this.getVelocity().multiply(-0.1));
 			this.yaw += 180.0F;
 			this.prevYaw += 180.0F;
-			this.flyingTick = 0;
 			if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
 				if (this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
 					this.dropStack(this.asItemStack(), 0.1F);
@@ -443,17 +422,13 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Nullable
 	protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
 		return ProjectileUtil.getEntityCollision(
-			this.world,
-			this,
-			currentPosition,
-			nextPosition,
-			this.getBoundingBox().stretch(this.getVelocity()).expand(1.0),
-			entity -> !entity.isSpectator()
-					&& entity.isAlive()
-					&& entity.collides()
-					&& (entity != this.getOwner() || this.flyingTick >= 5)
-					&& (this.piercedEntities == null || !this.piercedEntities.contains(entity.getEntityId()))
+			this.world, this, currentPosition, nextPosition, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), this::method_26958
 		);
+	}
+
+	@Override
+	protected boolean method_26958(Entity entity) {
+		return super.method_26958(entity) && (this.piercedEntities == null || !this.piercedEntities.contains(entity.getEntityId()));
 	}
 
 	@Override

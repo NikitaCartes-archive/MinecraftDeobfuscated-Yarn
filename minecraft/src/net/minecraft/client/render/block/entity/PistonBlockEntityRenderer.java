@@ -40,7 +40,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 					(double)pistonBlockEntity.getRenderOffsetX(f), (double)pistonBlockEntity.getRenderOffsetY(f), (double)pistonBlockEntity.getRenderOffsetZ(f)
 				);
 				if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(f) <= 4.0F) {
-					blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(true));
+					blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(f) <= 0.5F));
 					this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
 				} else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
 					PistonType pistonType = blockState.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;

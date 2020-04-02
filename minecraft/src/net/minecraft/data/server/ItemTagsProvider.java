@@ -1,8 +1,7 @@
 package net.minecraft.data.server;
 
-import com.google.common.collect.Lists;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
@@ -10,17 +9,15 @@ import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ItemTagsProvider extends AbstractTagProvider<Item> {
-	private static final Logger LOG = LogManager.getLogger();
+	private final Function<Identifier, Tag.Builder> field_23783;
 
-	public ItemTagsProvider(DataGenerator dataGenerator) {
+	public ItemTagsProvider(DataGenerator dataGenerator, BlockTagsProvider blockTagsProvider) {
 		super(dataGenerator, Registry.ITEM);
+		this.field_23783 = blockTagsProvider::method_27047;
 	}
 
 	@Override
@@ -63,7 +60,6 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.copy(BlockTags.TALL_FLOWERS, ItemTags.TALL_FLOWERS);
 		this.copy(BlockTags.FLOWERS, ItemTags.FLOWERS);
 		this.copy(BlockTags.GOLD_ORES, ItemTags.GOLD_ORES);
-		this.copy(BlockTags.NON_FLAMMABLE_WOOD, ItemTags.NON_FLAMMABLE_WOOD);
 		this.getOrCreateTagBuilder(ItemTags.BANNERS)
 			.add(
 				Items.WHITE_BANNER,
@@ -107,36 +103,43 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.getOrCreateTagBuilder(ItemTags.LECTERN_BOOKS).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);
 		this.getOrCreateTagBuilder(ItemTags.BEACON_PAYMENT_ITEMS).add(Items.NETHERITE_INGOT, Items.EMERALD, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT);
 		this.getOrCreateTagBuilder(ItemTags.PIGLIN_REPELLENTS).add(Items.SOUL_FIRE_TORCH).add(Items.SOUL_FIRE_LANTERN);
+		this.getOrCreateTagBuilder(ItemTags.NON_FLAMMABLE_WOOD)
+			.add(
+				Items.WARPED_STEM,
+				Items.STRIPPED_WARPED_STEM,
+				Items.WARPED_HYPHAE,
+				Items.STRIPPED_WARPED_HYPHAE,
+				Items.CRIMSON_STEM,
+				Items.STRIPPED_CRIMSON_STEM,
+				Items.CRIMSON_HYPHAE,
+				Items.STRIPPED_CRIMSON_HYPHAE,
+				Items.CRIMSON_PLANKS,
+				Items.WARPED_PLANKS,
+				Items.CRIMSON_SLAB,
+				Items.WARPED_SLAB,
+				Items.CRIMSON_PRESSURE_PLATE,
+				Items.WARPED_PRESSURE_PLATE,
+				Items.CRIMSON_FENCE,
+				Items.WARPED_FENCE,
+				Items.CRIMSON_TRAPDOOR,
+				Items.WARPED_TRAPDOOR,
+				Items.CRIMSON_FENCE_GATE,
+				Items.WARPED_FENCE_GATE,
+				Items.CRIMSON_STAIRS,
+				Items.WARPED_STAIRS,
+				Items.CRIMSON_BUTTON,
+				Items.WARPED_BUTTON,
+				Items.CRIMSON_DOOR,
+				Items.WARPED_DOOR,
+				Items.CRIMSON_SIGN,
+				Items.WARPED_SIGN
+			);
 	}
 
-	protected void copy(Tag<Block> tag, Tag<Item> tag2) {
-		Tag.Builder<Item> builder = this.getOrCreateTagBuilder(tag2);
-
-		for (Tag.Entry<Block> entry : tag.entries()) {
-			Tag.Entry<Item> entry2 = this.convert(entry);
-			builder.add(entry2);
-		}
-	}
-
-	private Tag.Entry<Item> convert(Tag.Entry<Block> entry) {
-		if (entry instanceof Tag.TagEntry) {
-			return new Tag.TagEntry<>(((Tag.TagEntry)entry).getId());
-		} else if (entry instanceof Tag.CollectionEntry) {
-			List<Item> list = Lists.<Item>newArrayList();
-
-			for (Block block : ((Tag.CollectionEntry)entry).getValues()) {
-				Item item = block.asItem();
-				if (item == Items.AIR) {
-					LOG.warn("Itemless block copied to item tag: {}", Registry.BLOCK.getId(block));
-				} else {
-					list.add(item);
-				}
-			}
-
-			return new Tag.CollectionEntry<>(list);
-		} else {
-			throw new UnsupportedOperationException("Unknown tag entry " + entry);
-		}
+	protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
+		Tag.Builder builder = this.getOrCreateTagBuilder(identified2);
+		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(identified.getId());
+		builder2.streamEntries().forEach(builder::add);
 	}
 
 	@Override
@@ -147,10 +150,5 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 	@Override
 	public String getName() {
 		return "Item Tags";
-	}
-
-	@Override
-	protected void setContainer(TagContainer<Item> tagContainer) {
-		ItemTags.setContainer(tagContainer);
 	}
 }

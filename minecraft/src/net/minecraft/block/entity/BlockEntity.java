@@ -167,14 +167,14 @@ public abstract class BlockEntity {
 		this.pos = pos.toImmutable();
 	}
 
-	public boolean shouldNotCopyTagFromItem() {
+	public boolean copyItemDataRequiresOperator() {
 		return false;
 	}
 
-	public void applyRotation(BlockRotation blockRotation) {
+	public void applyRotation(BlockRotation rotation) {
 	}
 
-	public void applyMirror(BlockMirror blockMirror) {
+	public void applyMirror(BlockMirror mirror) {
 	}
 
 	public BlockEntityType<?> getType() {

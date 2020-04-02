@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
@@ -71,6 +72,10 @@ public class LevelStorage {
 		this.backupsDirectory = backupsDirectory;
 	}
 
+	public static LevelStorage create(Path path) {
+		return new LevelStorage(path, path.resolve("../backups"), Schemas.getFixer());
+	}
+
 	@Environment(EnvType.CLIENT)
 	public List<LevelSummary> getLevelList() throws LevelStorageException {
 		if (!Files.isDirectory(this.savesDirectory, new LinkOption[0])) {
@@ -82,16 +87,26 @@ public class LevelStorage {
 			for (File file : files) {
 				if (file.isDirectory()) {
 					String string = file.getName();
-					LevelProperties levelProperties = this.getLevelProperties(string);
+
+					boolean bl;
+					try {
+						bl = SessionLock.isLocked(file.toPath());
+					} catch (Exception var15) {
+						LOGGER.warn("Failed to read {} lock", file, var15);
+						continue;
+					}
+
+					LevelProperties levelProperties = this.readLevelProperties(file);
 					if (levelProperties != null && (levelProperties.getVersion() == 19132 || levelProperties.getVersion() == 19133)) {
-						boolean bl = levelProperties.getVersion() != this.getCurrentVersion();
+						boolean bl2 = levelProperties.getVersion() != this.getCurrentVersion();
 						String string2 = levelProperties.getLevelName();
 						if (StringUtils.isEmpty(string2)) {
 							string2 = string;
 						}
 
 						long l = 0L;
-						list.add(new LevelSummary(levelProperties, string, string2, 0L, bl));
+						File file2 = new File(file, "icon.png");
+						list.add(new LevelSummary(levelProperties, string, string2, 0L, bl2, bl, file2));
 					}
 				}
 			}
@@ -104,44 +119,21 @@ public class LevelStorage {
 		return 19133;
 	}
 
-	public WorldSaveHandler createSaveHandler(String name, @Nullable MinecraftServer server) {
-		return createSaveHandler(this.savesDirectory, this.dataFixer, name, server);
-	}
-
-	protected static WorldSaveHandler createSaveHandler(Path savesDirectory, DataFixer dataFixer, String name, @Nullable MinecraftServer server) {
-		return new WorldSaveHandler(savesDirectory.toFile(), name, server, dataFixer);
-	}
-
-	public boolean requiresConversion(String name) {
-		LevelProperties levelProperties = this.getLevelProperties(name);
-		return levelProperties != null && levelProperties.getVersion() != this.getCurrentVersion();
-	}
-
-	public boolean convertLevel(String name, ProgressListener progressListener) {
-		return AnvilLevelStorage.convertLevel(this.savesDirectory, this.dataFixer, name, progressListener);
-	}
-
 	@Nullable
-	public LevelProperties getLevelProperties(String string) {
-		return getLevelProperties(this.savesDirectory, this.dataFixer, string);
-	}
-
-	@Nullable
-	protected static LevelProperties getLevelProperties(Path savesDirectory, DataFixer dataFixer, String name) {
-		File file = new File(savesDirectory.toFile(), name);
+	private LevelProperties readLevelProperties(File file) {
 		if (!file.exists()) {
 			return null;
 		} else {
 			File file2 = new File(file, "level.dat");
 			if (file2.exists()) {
-				LevelProperties levelProperties = readLevelProperties(file2, dataFixer);
+				LevelProperties levelProperties = readLevelProperties(file2, this.dataFixer);
 				if (levelProperties != null) {
 					return levelProperties;
 				}
 			}
 
 			file2 = new File(file, "level.dat_old");
-			return file2.exists() ? readLevelProperties(file2, dataFixer) : null;
+			return file2.exists() ? readLevelProperties(file2, this.dataFixer) : null;
 		}
 	}
 
@@ -161,78 +153,15 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void renameLevel(String name, String newName) {
-		File file = new File(this.savesDirectory.toFile(), name);
-		if (file.exists()) {
-			File file2 = new File(file, "level.dat");
-			if (file2.exists()) {
-				try {
-					CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file2));
-					CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-					compoundTag2.putString("LevelName", newName);
-					NbtIo.writeCompressed(compoundTag, new FileOutputStream(file2));
-				} catch (Exception var7) {
-					var7.printStackTrace();
-				}
-			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean isLevelNameValid(String string) {
+	public boolean isLevelNameValid(String name) {
 		try {
-			Path path = this.savesDirectory.resolve(string);
+			Path path = this.savesDirectory.resolve(name);
 			Files.createDirectory(path);
 			Files.deleteIfExists(path);
 			return true;
 		} catch (IOException var3) {
 			return false;
 		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean deleteLevel(String name) {
-		File file = new File(this.savesDirectory.toFile(), name);
-		if (!file.exists()) {
-			return true;
-		} else {
-			LOGGER.info("Deleting level {}", name);
-
-			for (int i = 1; i <= 5; i++) {
-				LOGGER.info("Attempt {}...", i);
-				if (deleteFilesRecursively(file.listFiles())) {
-					break;
-				}
-
-				LOGGER.warn("Unsuccessful in deleting contents.");
-				if (i < 5) {
-					try {
-						Thread.sleep(500L);
-					} catch (InterruptedException var5) {
-					}
-				}
-			}
-
-			return file.delete();
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	private static boolean deleteFilesRecursively(File[] files) {
-		for (File file : files) {
-			LOGGER.debug("Deleting {}", file);
-			if (file.isDirectory() && !deleteFilesRecursively(file.listFiles())) {
-				LOGGER.warn("Couldn't delete directory {}", file);
-				return false;
-			}
-
-			if (!file.delete()) {
-				LOGGER.warn("Couldn't delete file {}", file);
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -245,65 +174,185 @@ public class LevelStorage {
 		return this.savesDirectory;
 	}
 
-	public File resolveFile(String string, String string2) {
-		return this.savesDirectory.resolve(string).resolve(string2).toFile();
-	}
-
-	@Environment(EnvType.CLIENT)
-	private Path resolvePath(String string) {
-		return this.savesDirectory.resolve(string);
-	}
-
 	@Environment(EnvType.CLIENT)
 	public Path getBackupsDirectory() {
 		return this.backupsDirectory;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public long backupLevel(String name) throws IOException {
-		final Path path = this.resolvePath(name);
-		String string = LocalDateTime.now().format(TIME_FORMATTER) + "_" + name;
-		Path path2 = this.getBackupsDirectory();
+	public LevelStorage.Session createSession(String directoryName) throws IOException {
+		return new LevelStorage.Session(directoryName);
+	}
 
-		try {
-			Files.createDirectories(Files.exists(path2, new LinkOption[0]) ? path2.toRealPath() : path2);
-		} catch (IOException var18) {
-			throw new RuntimeException(var18);
+	public class Session implements AutoCloseable {
+		private final SessionLock lock;
+		private final Path directory;
+		private final String directoryName;
+
+		public Session(String directoryName) throws IOException {
+			this.directoryName = directoryName;
+			this.directory = LevelStorage.this.savesDirectory.resolve(directoryName);
+			this.lock = SessionLock.create(this.directory);
 		}
 
-		Path path3 = path2.resolve(FileNameUtil.getNextUniqueName(path2, string, ".zip"));
-		final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path3)));
-		Throwable var7 = null;
+		public String getDirectoryName() {
+			return this.directoryName;
+		}
 
-		try {
-			final Path path4 = Paths.get(name);
-			Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-				public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
-					String string = path4.resolve(path.relativize(path)).toString().replace('\\', '/');
-					ZipEntry zipEntry = new ZipEntry(string);
-					zipOutputStream.putNextEntry(zipEntry);
-					com.google.common.io.Files.asByteSource(path.toFile()).copyTo(zipOutputStream);
-					zipOutputStream.closeEntry();
-					return FileVisitResult.CONTINUE;
-				}
-			});
-		} catch (Throwable var17) {
-			var7 = var17;
-			throw var17;
-		} finally {
-			if (zipOutputStream != null) {
-				if (var7 != null) {
-					try {
-						zipOutputStream.close();
-					} catch (Throwable var16) {
-						var7.addSuppressed(var16);
+		public Path getDirectory() {
+			return this.directory;
+		}
+
+		private void checkValid() {
+			if (!this.lock.isValid()) {
+				throw new IllegalStateException("Lock is no longer valid");
+			}
+		}
+
+		public WorldSaveHandler createSaveHandler(@Nullable MinecraftServer server) {
+			this.checkValid();
+			return new WorldSaveHandler(LevelStorage.this.savesDirectory.toFile(), this.directoryName, server, LevelStorage.this.dataFixer);
+		}
+
+		public boolean needsConversion() {
+			LevelProperties levelProperties = this.readLevelProperties();
+			return levelProperties != null && levelProperties.getVersion() != LevelStorage.this.getCurrentVersion();
+		}
+
+		public boolean convert(ProgressListener progressListener) {
+			this.checkValid();
+			return AnvilLevelStorage.convertLevel(this, progressListener);
+		}
+
+		@Nullable
+		public LevelProperties readLevelProperties() {
+			this.checkValid();
+			return LevelStorage.this.readLevelProperties(this.directory.toFile());
+		}
+
+		public File getIconFile() {
+			this.checkValid();
+			return this.directory.resolve("icon.png").toFile();
+		}
+
+		@Environment(EnvType.CLIENT)
+		public void deleteSessionLock() throws IOException {
+			this.checkValid();
+			final Path path = this.directory.resolve("session.lock");
+
+			for (int i = 1; i <= 5; i++) {
+				LevelStorage.LOGGER.info("Attempt {}...", i);
+
+				try {
+					Files.walkFileTree(this.directory, new SimpleFileVisitor<Path>() {
+						public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
+							if (!path.equals(path)) {
+								LevelStorage.LOGGER.debug("Deleting {}", path);
+								Files.delete(path);
+							}
+
+							return FileVisitResult.CONTINUE;
+						}
+
+						public FileVisitResult postVisitDirectory(Path path, IOException iOException) throws IOException {
+							if (iOException != null) {
+								throw iOException;
+							} else {
+								if (path.equals(Session.this.directory)) {
+									Session.this.lock.close();
+									Files.deleteIfExists(path);
+								}
+
+								Files.delete(path);
+								return FileVisitResult.CONTINUE;
+							}
+						}
+					});
+					break;
+				} catch (IOException var6) {
+					if (i >= 5) {
+						throw var6;
 					}
-				} else {
-					zipOutputStream.close();
+
+					LevelStorage.LOGGER.warn("Failed to delete {}", this.directory, var6);
+
+					try {
+						Thread.sleep(500L);
+					} catch (InterruptedException var5) {
+					}
 				}
 			}
 		}
 
-		return Files.size(path3);
+		@Environment(EnvType.CLIENT)
+		public void save(String name) throws IOException {
+			this.checkValid();
+			File file = new File(LevelStorage.this.savesDirectory.toFile(), this.directoryName);
+			if (file.exists()) {
+				File file2 = new File(file, "level.dat");
+				if (file2.exists()) {
+					CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file2));
+					CompoundTag compoundTag2 = compoundTag.getCompound("Data");
+					compoundTag2.putString("LevelName", name);
+					NbtIo.writeCompressed(compoundTag, new FileOutputStream(file2));
+				}
+			}
+		}
+
+		@Environment(EnvType.CLIENT)
+		public long createBackup() throws IOException {
+			this.checkValid();
+			final Path path = this.getDirectory();
+			String string = LocalDateTime.now().format(LevelStorage.TIME_FORMATTER) + "_" + this.directoryName;
+			Path path2 = LevelStorage.this.getBackupsDirectory();
+
+			try {
+				Files.createDirectories(Files.exists(path2, new LinkOption[0]) ? path2.toRealPath() : path2);
+			} catch (IOException var17) {
+				throw new RuntimeException(var17);
+			}
+
+			Path path3 = path2.resolve(FileNameUtil.getNextUniqueName(path2, string, ".zip"));
+			final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path3)));
+			Throwable var6 = null;
+
+			try {
+				final Path path4 = Paths.get(this.directoryName);
+				Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+					public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
+						if (path.endsWith("session.lock")) {
+							return FileVisitResult.CONTINUE;
+						} else {
+							String string = path4.resolve(path.relativize(path)).toString().replace('\\', '/');
+							ZipEntry zipEntry = new ZipEntry(string);
+							zipOutputStream.putNextEntry(zipEntry);
+							com.google.common.io.Files.asByteSource(path.toFile()).copyTo(zipOutputStream);
+							zipOutputStream.closeEntry();
+							return FileVisitResult.CONTINUE;
+						}
+					}
+				});
+			} catch (Throwable var16) {
+				var6 = var16;
+				throw var16;
+			} finally {
+				if (zipOutputStream != null) {
+					if (var6 != null) {
+						try {
+							zipOutputStream.close();
+						} catch (Throwable var15) {
+							var6.addSuppressed(var15);
+						}
+					} else {
+						zipOutputStream.close();
+					}
+				}
+			}
+
+			return Files.size(path3);
+		}
+
+		public void close() throws IOException {
+			this.lock.close();
+		}
 	}
 }

@@ -45,6 +45,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
@@ -280,21 +281,22 @@ public abstract class Biome {
 
 	public void generateFeatureStep(
 		GenerationStep.Feature step,
+		StructureAccessor structureAccessor,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
-		IWorld world,
-		long populationSeed,
-		ChunkRandom random,
-		BlockPos pos
+		IWorld iWorld,
+		long l,
+		ChunkRandom chunkRandom,
+		BlockPos blockPos
 	) {
 		int i = 0;
 
 		for (ConfiguredFeature<?, ?> configuredFeature : (List)this.features.get(step)) {
-			random.setDecoratorSeed(populationSeed, i, step.ordinal());
+			chunkRandom.setDecoratorSeed(l, i, step.ordinal());
 
 			try {
-				configuredFeature.generate(world, chunkGenerator, random, pos);
-			} catch (Exception var13) {
-				CrashReport crashReport = CrashReport.create(var13, "Feature placement");
+				configuredFeature.generate(iWorld, structureAccessor, chunkGenerator, chunkRandom, blockPos);
+			} catch (Exception var14) {
+				CrashReport crashReport = CrashReport.create(var14, "Feature placement");
 				crashReport.addElement("Feature")
 					.add("Id", Registry.FEATURE.getId(configuredFeature.feature))
 					.add("Description", (CrashCallable<String>)(() -> configuredFeature.feature.toString()));
@@ -470,8 +472,8 @@ public abstract class Biome {
 	public static class MixedNoisePoint {
 		private final float temperature;
 		private final float humidity;
-		private final float hilliness;
-		private final float style;
+		private final float altitude;
+		private final float weirdness;
 		/**
 		 * This value awards another point with value farthest from this one; i.e.
 		 * unlike other points where closer distance is better, for this value the
@@ -479,14 +481,14 @@ public abstract class Biome {
 		 * approximately modeled by a hyperbola weight=cosh(peak-1) as used by the
 		 * mixed-noise generator.
 		 */
-		private final float rarityPotential;
+		private final float weight;
 
-		public MixedNoisePoint(float heat, float humidity, float hilliness, float style, float rarityPotential) {
-			this.temperature = heat;
+		public MixedNoisePoint(float temperature, float humidity, float altitude, float weirdness, float weight) {
+			this.temperature = temperature;
 			this.humidity = humidity;
-			this.hilliness = hilliness;
-			this.style = style;
-			this.rarityPotential = rarityPotential;
+			this.altitude = altitude;
+			this.weirdness = weirdness;
+			this.weight = weight;
 		}
 
 		public boolean equals(Object object) {
@@ -499,7 +501,7 @@ public abstract class Biome {
 				} else if (Float.compare(mixedNoisePoint.humidity, this.humidity) != 0) {
 					return false;
 				} else {
-					return Float.compare(mixedNoisePoint.hilliness, this.hilliness) != 0 ? false : Float.compare(mixedNoisePoint.style, this.style) == 0;
+					return Float.compare(mixedNoisePoint.altitude, this.altitude) != 0 ? false : Float.compare(mixedNoisePoint.weirdness, this.weirdness) == 0;
 				}
 			} else {
 				return false;
@@ -509,8 +511,8 @@ public abstract class Biome {
 		public int hashCode() {
 			int i = this.temperature != 0.0F ? Float.floatToIntBits(this.temperature) : 0;
 			i = 31 * i + (this.humidity != 0.0F ? Float.floatToIntBits(this.humidity) : 0);
-			i = 31 * i + (this.hilliness != 0.0F ? Float.floatToIntBits(this.hilliness) : 0);
-			return 31 * i + (this.style != 0.0F ? Float.floatToIntBits(this.style) : 0);
+			i = 31 * i + (this.altitude != 0.0F ? Float.floatToIntBits(this.altitude) : 0);
+			return 31 * i + (this.weirdness != 0.0F ? Float.floatToIntBits(this.weirdness) : 0);
 		}
 
 		/**
@@ -532,9 +534,9 @@ public abstract class Biome {
 		public float calculateDistanceTo(Biome.MixedNoisePoint other) {
 			return (this.temperature - other.temperature) * (this.temperature - other.temperature)
 				+ (this.humidity - other.humidity) * (this.humidity - other.humidity)
-				+ (this.hilliness - other.hilliness) * (this.hilliness - other.hilliness)
-				+ (this.style - other.style) * (this.style - other.style)
-				- (this.rarityPotential - other.rarityPotential) * (this.rarityPotential - other.rarityPotential);
+				+ (this.altitude - other.altitude) * (this.altitude - other.altitude)
+				+ (this.weirdness - other.weirdness) * (this.weirdness - other.weirdness)
+				- (this.weight - other.weight) * (this.weight - other.weight);
 		}
 	}
 

@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -121,15 +122,16 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 
 	protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(
 		IWorld world,
-		ChunkGenerator<? extends ChunkGeneratorConfig> generator,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
-		BlockPos pos,
+		BlockPos blockPos,
 		DC decoratorConfig,
 		ConfiguredFeature<FC, F> configuredFeature
 	) {
 		AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-		this.getPositions(world, generator, random, decoratorConfig, pos).forEach(blockPos -> {
-			boolean bl = configuredFeature.generate(world, generator, random, blockPos);
+		this.getPositions(world, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
+			boolean bl = configuredFeature.generate(world, structureAccessor, chunkGenerator, random, blockPosx);
 			atomicBoolean.set(atomicBoolean.get() || bl);
 		});
 		return atomicBoolean.get();

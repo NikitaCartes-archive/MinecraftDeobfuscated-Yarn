@@ -9,8 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.util.Util;
@@ -27,7 +26,6 @@ public abstract class EntityNavigation {
 	@Nullable
 	protected Path currentPath;
 	protected double speed;
-	private final EntityAttributeInstance followRange;
 	protected int tickCount;
 	protected int pathStartTime;
 	protected Vec3d pathStartPos = Vec3d.ZERO;
@@ -51,8 +49,7 @@ public abstract class EntityNavigation {
 	public EntityNavigation(MobEntity mob, World world) {
 		this.entity = mob;
 		this.world = world;
-		this.followRange = mob.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
-		int i = MathHelper.floor(this.followRange.getValue() * 16.0);
+		int i = MathHelper.floor(mob.method_26825(Attributes.GENERIC_FOLLOW_RANGE) * 16.0);
 		this.pathNodeNavigator = this.createPathNodeNavigator(i);
 	}
 
@@ -123,7 +120,7 @@ public abstract class EntityNavigation {
 			return this.currentPath;
 		} else {
 			this.world.getProfiler().push("pathfind");
-			float f = (float)this.followRange.getValue();
+			float f = (float)this.entity.method_26825(Attributes.GENERIC_FOLLOW_RANGE);
 			BlockPos blockPos = bl ? this.entity.getBlockPos().up() : this.entity.getBlockPos();
 			int i = (int)(f + (float)range);
 			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));

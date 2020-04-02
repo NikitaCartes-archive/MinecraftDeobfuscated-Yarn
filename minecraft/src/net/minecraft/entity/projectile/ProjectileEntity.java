@@ -18,24 +18,37 @@ import net.minecraft.world.World;
 
 public abstract class ProjectileEntity extends Entity {
 	private UUID ownerUuid;
+	private int field_23739;
+	private boolean field_23740;
 
 	public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
 	}
 
 	public void setOwner(@Nullable Entity entity) {
-		this.ownerUuid = entity == null ? null : entity.getUuid();
+		if (entity != null) {
+			this.ownerUuid = entity.getUuid();
+			this.field_23739 = entity.getEntityId();
+		}
 	}
 
 	@Nullable
 	public Entity getOwner() {
-		return this.ownerUuid != null && this.world instanceof ServerWorld ? ((ServerWorld)this.world).getEntity(this.ownerUuid) : null;
+		if (this.ownerUuid != null && this.world instanceof ServerWorld) {
+			return ((ServerWorld)this.world).getEntity(this.ownerUuid);
+		} else {
+			return this.field_23739 != 0 ? this.world.getEntityById(this.field_23739) : null;
+		}
 	}
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag tag) {
 		if (this.ownerUuid != null) {
 			tag.putUuidNew("Owner", this.ownerUuid);
+		}
+
+		if (this.field_23740) {
+			tag.putBoolean("LeftOwner", true);
 		}
 	}
 
@@ -44,6 +57,30 @@ public abstract class ProjectileEntity extends Entity {
 		if (tag.containsUuidNew("Owner")) {
 			this.ownerUuid = tag.getUuidNew("Owner");
 		}
+
+		this.field_23740 = tag.getBoolean("LeftOwner");
+	}
+
+	@Override
+	public void tick() {
+		if (!this.field_23740) {
+			this.field_23740 = this.method_26961();
+		}
+
+		super.tick();
+	}
+
+	private boolean method_26961() {
+		Entity entity = this.getOwner();
+		if (entity != null) {
+			for (Entity entity2 : this.world.getEntities(this, this.getBoundingBox().expand(1.0), entityx -> !entityx.isSpectator() && entityx.collides())) {
+				if (entity2.getRootVehicle() == entity.getRootVehicle()) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	public void setVelocity(double x, double y, double z, float speed, float divergence) {
@@ -101,5 +138,33 @@ public abstract class ProjectileEntity extends Entity {
 			this.prevYaw = this.yaw;
 			this.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
 		}
+	}
+
+	protected boolean method_26958(Entity entity) {
+		if (!entity.isSpectator() && entity.isAlive() && entity.collides()) {
+			Entity entity2 = this.getOwner();
+			return entity2 == null || this.field_23740 || !entity2.isConnectedThroughVehicle(entity);
+		} else {
+			return false;
+		}
+	}
+
+	protected void method_26962() {
+		Vec3d vec3d = this.getVelocity();
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.pitch = method_26960(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI));
+		this.yaw = method_26960(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
+	}
+
+	public static float method_26960(float f, float g) {
+		while (g - f < -180.0F) {
+			f -= 360.0F;
+		}
+
+		while (g - f >= 180.0F) {
+			f += 360.0F;
+		}
+
+		return MathHelper.lerp(0.2F, f, g);
 	}
 }

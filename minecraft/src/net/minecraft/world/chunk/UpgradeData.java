@@ -109,7 +109,7 @@ public class UpgradeData {
 	}
 
 	private static BlockState applyAdjacentBlock(BlockState oldState, Direction dir, IWorld world, BlockPos currentPos, BlockPos otherPos) {
-		return ((UpgradeData.Logic)BLOCK_TO_LOGIC.getOrDefault(oldState.getBlock(), UpgradeData.BulitinLogic.DEFAULT))
+		return ((UpgradeData.Logic)BLOCK_TO_LOGIC.getOrDefault(oldState.getBlock(), UpgradeData.BuiltinLogic.DEFAULT))
 			.getUpdatedState(oldState, dir, world.getBlockState(otherPos), world, currentPos, otherPos);
 	}
 
@@ -191,7 +191,7 @@ public class UpgradeData {
 		return compoundTag;
 	}
 
-	static enum BulitinLogic implements UpgradeData.Logic {
+	static enum BuiltinLogic implements UpgradeData.Logic {
 		BLACKLIST(
 			Blocks.OBSERVER,
 			Blocks.NETHER_PORTAL,
@@ -335,11 +335,11 @@ public class UpgradeData {
 
 		public static final Direction[] DIRECTIONS = Direction.values();
 
-		private BulitinLogic(Block... blocks) {
+		private BuiltinLogic(Block... blocks) {
 			this(false, blocks);
 		}
 
-		private BulitinLogic(boolean bl, Block... blocks) {
+		private BuiltinLogic(boolean bl, Block... blocks) {
 			for (Block block : blocks) {
 				UpgradeData.BLOCK_TO_LOGIC.put(block, this);
 			}

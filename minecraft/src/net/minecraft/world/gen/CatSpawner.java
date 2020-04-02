@@ -45,7 +45,7 @@ public class CatSpawner {
 								return this.spawnInHouse(serverWorld, blockPos);
 							}
 
-							if (Feature.SWAMP_HUT.isInsideStructure(serverWorld, blockPos)) {
+							if (Feature.SWAMP_HUT.isInsideStructure(serverWorld, serverWorld.getStructureAccessor(), blockPos)) {
 								return this.spawnInSwampHut(serverWorld, blockPos);
 							}
 						}

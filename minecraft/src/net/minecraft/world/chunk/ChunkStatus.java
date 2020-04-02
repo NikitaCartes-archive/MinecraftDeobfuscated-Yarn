@@ -48,7 +48,9 @@ public class ChunkStatus {
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
 				if (serverWorld.getLevelProperties().hasStructures()) {
-					chunkGenerator.setStructureStarts(serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, chunkGenerator, structureManager);
+					chunkGenerator.setStructureStarts(
+						serverWorld.getStructureAccessor(), serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, chunkGenerator, structureManager
+					);
 				}
 
 				if (chunk instanceof ProtoChunk) {
@@ -65,7 +67,9 @@ public class ChunkStatus {
 		8,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.addStructureReferences(new ChunkRegion(serverWorld, list), chunk)
+		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.addStructureReferences(
+				new ChunkRegion(serverWorld, list), serverWorld.getStructureAccessor(), chunk
+			)
 	);
 	public static final ChunkStatus BIOMES = register(
 		"biomes",
@@ -81,7 +85,7 @@ public class ChunkStatus {
 		8,
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
-		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.populateNoise(new ChunkRegion(serverWorld, list), chunk)
+		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.populateNoise(new ChunkRegion(serverWorld, list), serverWorld.getStructureAccessor(), chunk)
 	);
 	public static final ChunkStatus SURFACE = register(
 		"surface",
@@ -124,7 +128,7 @@ public class ChunkStatus {
 				Heightmap.populateHeightmaps(
 					chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE)
 				);
-				chunkGenerator.generateFeatures(new ChunkRegion(serverWorld, list));
+				chunkGenerator.generateFeatures(new ChunkRegion(serverWorld, list), serverWorld.getStructureAccessor());
 				protoChunk.setStatus(chunkStatus);
 			}
 

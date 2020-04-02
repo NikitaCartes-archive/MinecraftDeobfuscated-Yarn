@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -28,9 +29,14 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 	}
 
 	public <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(
-		IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, ConfiguredFeature<FC, F> configuredFeature
+		IWorld world,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		ConfiguredFeature<FC, F> configuredFeature
 	) {
-		return this.decorator.generate(world, generator, random, pos, this.config, configuredFeature);
+		return this.decorator.generate(world, structureAccessor, chunkGenerator, random, blockPos, this.config, configuredFeature);
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {

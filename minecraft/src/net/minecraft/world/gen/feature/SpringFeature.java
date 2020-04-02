@@ -6,6 +6,7 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -15,7 +16,12 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
+		IWorld iWorld,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		SpringFeatureConfig springFeatureConfig
 	) {
 		if (!springFeatureConfig.validBlocks.contains(iWorld.getBlockState(blockPos.up()).getBlock())) {
 			return false;

@@ -26,8 +26,9 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -53,9 +54,8 @@ import net.minecraft.world.World;
 public class ShulkerEntity extends GolemEntity implements Monster {
 	private static final UUID ATTR_COVERED_ARMOR_BONUS_UUID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
 	private static final EntityAttributeModifier ATTR_COVERED_ARMOR_BONUS = new EntityAttributeModifier(
-			ATTR_COVERED_ARMOR_BONUS_UUID, "Covered armor bonus", 20.0, EntityAttributeModifier.Operation.ADDITION
-		)
-		.setSerialize(false);
+		ATTR_COVERED_ARMOR_BONUS_UUID, "Covered armor bonus", 20.0, EntityAttributeModifier.Operation.ADDITION
+	);
 	protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
 	protected static final TrackedData<Optional<BlockPos>> ATTACHED_BLOCK = DataTracker.registerData(
 		ShulkerEntity.class, TrackedDataHandlerRegistry.OPTIONA_BLOCK_POS
@@ -139,10 +139,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		this.dataTracker.startTracking(COLOR, (byte)16);
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(30.0);
+	public static DefaultAttributeContainer.Builder createShulkerAttributes() {
+		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 30.0);
 	}
 
 	@Override
@@ -421,9 +419,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	public void setPeekAmount(int i) {
 		if (!this.world.isClient) {
-			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(ATTR_COVERED_ARMOR_BONUS);
+			this.getAttributeInstance(Attributes.GENERIC_ARMOR).removeModifier(ATTR_COVERED_ARMOR_BONUS);
 			if (i == 0) {
-				this.getAttributeInstance(EntityAttributes.ARMOR).addModifier(ATTR_COVERED_ARMOR_BONUS);
+				this.getAttributeInstance(Attributes.GENERIC_ARMOR).addPersistentModifier(ATTR_COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
 			} else {
 				this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0F, 1.0F);

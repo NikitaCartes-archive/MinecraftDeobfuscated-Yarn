@@ -77,7 +77,7 @@ public class Models {
 	public static final Model[] STEM_GROWTH_STAGES = (Model[])IntStream.range(0, 8)
 		.mapToObj(i -> block("stem_growth" + i, "_stage" + i, TextureKey.STEM))
 		.toArray(Model[]::new);
-	public static final Model STEM_FRUIT = block("stem_fruit", TextureKey.STEM, TextureKey.UPPER_STEM);
+	public static final Model STEM_FRUIT = block("stem_fruit", TextureKey.STEM, TextureKey.UPPERSTEM);
 	public static final Model CROP = block("crop", TextureKey.CROP);
 	public static final Model TEMPLATE_FARMLAND = block("template_farmland", TextureKey.DIRT, TextureKey.TOP);
 	public static final Model TEMPLATE_FIRE_FLOOR = block("template_fire_floor", TextureKey.FIRE);

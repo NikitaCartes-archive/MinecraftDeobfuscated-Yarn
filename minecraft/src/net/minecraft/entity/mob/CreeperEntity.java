@@ -19,7 +19,8 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -71,10 +72,8 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		this.targetSelector.add(2, new RevengeGoal(this));
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+	public static DefaultAttributeContainer.Builder createCreeperAttributes() {
+		return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override

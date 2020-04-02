@@ -25,7 +25,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -504,13 +505,12 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		return false;
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(300.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.6F);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(40.0);
-		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(4.0);
+	public static DefaultAttributeContainer.Builder createWitherAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(Attributes.GENERIC_MAX_HEALTH, 300.0)
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.6F)
+			.add(Attributes.GENERIC_FOLLOW_RANGE, 40.0)
+			.add(Attributes.GENERIC_ARMOR, 4.0);
 	}
 
 	@Environment(EnvType.CLIENT)

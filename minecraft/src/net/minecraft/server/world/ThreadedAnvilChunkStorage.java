@@ -9,6 +9,8 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ByteMap;
+import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -73,7 +75,6 @@ import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.SessionLockException;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -116,6 +117,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final File saveDir;
 	private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
 	private final Int2ObjectMap<ThreadedAnvilChunkStorage.EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<>();
+	private final Long2ByteMap field_23786 = new Long2ByteOpenHashMap();
 	private final Queue<Runnable> field_19343 = Queues.<Runnable>newConcurrentLinkedQueue();
 	private int watchDistance;
 
@@ -130,9 +132,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		ChunkGenerator<?> chunkGenerator,
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		Supplier<PersistentStateManager> supplier,
-		int i
+		int i,
+		boolean bl
 	) {
-		super(new File(world.getDimension().getType().getSaveDirectory(file), "region"), dataFixer);
+		super(new File(world.getDimension().getType().getSaveDirectory(file), "region"), dataFixer, bl);
 		this.structureManager = structureManager;
 		this.saveDir = world.getDimension().getType().getSaveDirectory(file);
 		this.world = world;
@@ -150,7 +153,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(workerExecutor, mainThreadExecutor);
 		this.persistentStateManagerFactory = supplier;
-		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer);
+		this.pointOfInterestStorage = new PointOfInterestStorage(new File(this.saveDir, "poi"), dataFixer, bl);
 		this.setViewDistance(i);
 	}
 
@@ -484,6 +487,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					if (bl) {
 						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, compoundTag);
 						chunk.setLastSaveTime(this.world.getTime());
+						this.method_27053(pos, chunk.getStatus().getChunkType());
 						return Either.left(chunk);
 					}
 
@@ -492,6 +496,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			} catch (CrashException var5) {
 				Throwable throwable = var5.getCause();
 				if (!(throwable instanceof IOException)) {
+					this.method_27054(pos);
 					throw var5;
 				}
 
@@ -500,8 +505,17 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				LOGGER.error("Couldn't load chunk {}", pos, var6);
 			}
 
+			this.method_27054(pos);
 			return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA));
 		}, this.mainThreadExecutor);
+	}
+
+	private void method_27054(ChunkPos chunkPos) {
+		this.field_23786.put(chunkPos.toLong(), (byte)-1);
+	}
+
+	private byte method_27053(ChunkPos chunkPos, ChunkStatus.ChunkType chunkType) {
+		return this.field_23786.put(chunkPos.toLong(), (byte)(chunkType == ChunkStatus.ChunkType.PROTOCHUNK ? -1 : 1));
 	}
 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> generateChunk(ChunkHolder chunkHolder, ChunkStatus chunkStatus) {
@@ -637,13 +651,6 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		if (!chunk.needsSaving()) {
 			return false;
 		} else {
-			try {
-				this.world.checkSessionLock();
-			} catch (SessionLockException var6) {
-				LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var6);
-				return false;
-			}
-
 			chunk.setLastSaveTime(this.world.getTime());
 			chunk.setShouldSave(false);
 			ChunkPos chunkPos = chunk.getPos();
@@ -651,8 +658,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			try {
 				ChunkStatus chunkStatus = chunk.getStatus();
 				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
-					CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
-					if (compoundTag != null && ChunkSerializer.getChunkType(compoundTag) == ChunkStatus.ChunkType.LEVELCHUNK) {
+					if (this.method_27055(chunkPos)) {
 						return false;
 					}
 
@@ -662,13 +668,37 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}
 
 				this.world.getProfiler().visit("chunkSave");
-				CompoundTag compoundTagx = ChunkSerializer.serialize(this.world, chunk);
-				this.setTagAt(chunkPos, compoundTagx);
+				CompoundTag compoundTag = ChunkSerializer.serialize(this.world, chunk);
+				this.setTagAt(chunkPos, compoundTag);
+				this.method_27053(chunkPos, chunkStatus.getChunkType());
 				return true;
 			} catch (Exception var5) {
 				LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, var5);
 				return false;
 			}
+		}
+	}
+
+	private boolean method_27055(ChunkPos chunkPos) {
+		byte b = this.field_23786.get(chunkPos.toLong());
+		if (b != 0) {
+			return b == 1;
+		} else {
+			CompoundTag compoundTag;
+			try {
+				compoundTag = this.getUpdatedChunkTag(chunkPos);
+				if (compoundTag == null) {
+					this.method_27054(chunkPos);
+					return false;
+				}
+			} catch (Exception var5) {
+				LOGGER.error("Failed to read chunk {}", chunkPos, var5);
+				this.method_27054(chunkPos);
+				return false;
+			}
+
+			ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(compoundTag);
+			return this.method_27053(chunkPos, chunkType) == 1;
 		}
 	}
 

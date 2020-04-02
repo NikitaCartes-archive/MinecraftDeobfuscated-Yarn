@@ -960,6 +960,19 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.register(EntityType.WOLF, LootTable.builder());
 		this.register(
+			EntityType.ZOGLIN,
+			LootTable.builder()
+				.withPool(
+					LootPool.builder()
+						.withRolls(ConstantLootTableRange.create(1))
+						.withEntry(
+							ItemEntry.builder(Items.ROTTEN_FLESH)
+								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+						)
+				)
+		);
+		this.register(
 			EntityType.ZOMBIE,
 			LootTable.builder()
 				.withPool(

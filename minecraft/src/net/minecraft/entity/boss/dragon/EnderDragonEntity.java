@@ -17,7 +17,8 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathMinHeap;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.boss.dragon.phase.Phase;
 import net.minecraft.entity.boss.dragon.phase.PhaseManager;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
@@ -115,10 +116,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		this.phaseManager = new PhaseManager(this);
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(200.0);
+	public static DefaultAttributeContainer.Builder createEnderDragonAttributes() {
+		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 200.0);
 	}
 
 	@Override

@@ -13,7 +13,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -133,11 +132,7 @@ public class BoatEntity extends Entity {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (this.world.isClient || this.removed) {
-			return true;
-		} else if (source instanceof ProjectileDamageSource && source.getAttacker() != null && this.hasPassenger(source.getAttacker())) {
-			return false;
-		} else {
+		} else if (!this.world.isClient && !this.removed) {
 			this.setDamageWobbleSide(-this.getDamageWobbleSide());
 			this.setDamageWobbleTicks(10);
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
@@ -151,6 +146,8 @@ public class BoatEntity extends Entity {
 				this.remove();
 			}
 
+			return true;
+		} else {
 			return true;
 		}
 	}

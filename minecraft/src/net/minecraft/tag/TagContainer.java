@@ -1,6 +1,9 @@
 package net.minecraft.tag;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -15,11 +18,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,7 +32,6 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,17 +40,16 @@ public class TagContainer<T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new Gson();
 	private static final int JSON_EXTENSION_LENGTH = ".json".length();
-	private Map<Identifier, Tag<T>> entries = ImmutableMap.of();
+	private final Tag<T> field_23691 = Tag.of(ImmutableSet.of());
+	private BiMap<Identifier, Tag<T>> entries = HashBiMap.create();
 	private final Function<Identifier, Optional<T>> getter;
 	private final String dataType;
-	private final boolean ordered;
 	private final String entryType;
 
-	public TagContainer(Function<Identifier, Optional<T>> getter, String dataType, boolean ordered, String entryType) {
+	public TagContainer(Function<Identifier, Optional<T>> getter, String dataType, String string) {
 		this.getter = getter;
 		this.dataType = dataType;
-		this.ordered = ordered;
-		this.entryType = entryType;
+		this.entryType = string;
 	}
 
 	@Nullable
@@ -55,8 +58,21 @@ public class TagContainer<T> {
 	}
 
 	public Tag<T> getOrCreate(Identifier id) {
-		Tag<T> tag = (Tag<T>)this.entries.get(id);
-		return tag == null ? new Tag<>(id) : tag;
+		return (Tag<T>)this.entries.getOrDefault(id, this.field_23691);
+	}
+
+	@Nullable
+	public Identifier method_26796(Tag<T> tag) {
+		return tag instanceof Tag.Identified ? ((Tag.Identified)tag).getId() : (Identifier)this.entries.inverse().get(tag);
+	}
+
+	public Identifier method_26798(Tag<T> tag) {
+		Identifier identifier = this.method_26796(tag);
+		if (identifier == null) {
+			throw new IllegalStateException("Unrecognized tag");
+		} else {
+			return identifier;
+		}
 	}
 
 	public Collection<Identifier> getKeys() {
@@ -76,10 +92,10 @@ public class TagContainer<T> {
 		return list;
 	}
 
-	public CompletableFuture<Map<Identifier, Tag.Builder<T>>> prepareReload(ResourceManager manager, Executor executor) {
+	public CompletableFuture<Map<Identifier, Tag.Builder>> prepareReload(ResourceManager manager, Executor executor) {
 		return CompletableFuture.supplyAsync(
 			() -> {
-				Map<Identifier, Tag.Builder<T>> map = Maps.<Identifier, Tag.Builder<T>>newHashMap();
+				Map<Identifier, Tag.Builder> map = Maps.<Identifier, Tag.Builder>newHashMap();
 
 				for (Identifier identifier : manager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
 					String string = identifier.getPath();
@@ -99,15 +115,14 @@ public class TagContainer<T> {
 										JsonObject jsonObject = JsonHelper.deserialize(GSON, reader, JsonObject.class);
 										if (jsonObject == null) {
 											LOGGER.error(
-												"Couldn't load {} tag list {} from {} in data pack {} as it's empty or null",
+												"Couldn't load {} tag list {} from {} in data pack {} as it is empty or null",
 												this.entryType,
 												identifier2,
 												identifier,
 												resource.getResourcePackName()
 											);
 										} else {
-											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Util.make(Tag.Builder.create(), builder -> builder.ordered(this.ordered))))
-												.fromJson(this.getter, jsonObject);
+											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject);
 										}
 									} catch (Throwable var53) {
 										var12 = var53;
@@ -158,42 +173,43 @@ public class TagContainer<T> {
 		);
 	}
 
-	public void applyReload(Map<Identifier, Tag.Builder<T>> preparedBuilders) {
-		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMap();
+	public void applyReload(Map<Identifier, Tag.Builder> map) {
+		Map<Identifier, Tag<T>> map2 = Maps.<Identifier, Tag<T>>newHashMap();
+		Function<Identifier, Tag<T>> function = map2::get;
+		Function<Identifier, T> function2 = identifier -> ((Optional)this.getter.apply(identifier)).orElse(null);
 
-		while (!preparedBuilders.isEmpty()) {
+		while (!map.isEmpty()) {
 			boolean bl = false;
-			Iterator<Entry<Identifier, Tag.Builder<T>>> iterator = preparedBuilders.entrySet().iterator();
+			Iterator<Entry<Identifier, Tag.Builder>> iterator = map.entrySet().iterator();
 
 			while (iterator.hasNext()) {
-				Entry<Identifier, Tag.Builder<T>> entry = (Entry<Identifier, Tag.Builder<T>>)iterator.next();
-				Tag.Builder<T> builder = (Tag.Builder<T>)entry.getValue();
-				if (builder.applyTagGetter(map::get)) {
-					bl = true;
-					Identifier identifier = (Identifier)entry.getKey();
-					map.put(identifier, builder.build(identifier));
+				Entry<Identifier, Tag.Builder> entry = (Entry<Identifier, Tag.Builder>)iterator.next();
+				Optional<Tag<T>> optional = ((Tag.Builder)entry.getValue()).build(function, function2);
+				if (optional.isPresent()) {
+					map2.put(entry.getKey(), optional.get());
 					iterator.remove();
+					bl = true;
 				}
 			}
 
 			if (!bl) {
-				preparedBuilders.forEach(
-					(identifierx, builderx) -> LOGGER.error(
-							"Couldn't load {} tag {} as it either references another tag that doesn't exist, or ultimately references itself", this.entryType, identifierx
-						)
-				);
 				break;
 			}
 		}
 
-		preparedBuilders.forEach((identifierx, builderx) -> {
-			Tag var10000 = (Tag)map.put(identifierx, builderx.build(identifierx));
-		});
-		this.setEntries(map);
+		map.forEach(
+			(identifier, builder) -> LOGGER.error(
+					"Couldn't load {} tag {} as it is missing following references: {}",
+					this.entryType,
+					identifier,
+					builder.streamUnresolvedEntries(function, function2).map(Objects::toString).collect(Collectors.joining(","))
+				)
+		);
+		this.setEntries(map2);
 	}
 
 	protected void setEntries(Map<Identifier, Tag<T>> entries) {
-		this.entries = ImmutableMap.copyOf(entries);
+		this.entries = ImmutableBiMap.copyOf(entries);
 	}
 
 	public Map<Identifier, Tag<T>> getEntries() {

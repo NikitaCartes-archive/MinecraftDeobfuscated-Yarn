@@ -28,6 +28,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
@@ -260,7 +261,9 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		public boolean generate(IWorld world, ChunkGenerator<?> generator, Random random, BlockBox box, ChunkPos pos, BlockPos blockPos) {
+		public boolean generate(
+			IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos, BlockPos blockPos
+		) {
 			this.placementData
 				.clearProcessors()
 				.addProcessor(new BlockRotStructureProcessor(this.integrity))
@@ -272,7 +275,7 @@ public class OceanRuinGenerator {
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, world, blockPos2), this.pos.getZ());
-			return super.generate(world, generator, random, box, pos, blockPos);
+			return super.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos);
 		}
 
 		private int method_14829(BlockPos blockPos, BlockView blockView, BlockPos blockPos2) {

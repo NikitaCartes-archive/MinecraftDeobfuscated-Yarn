@@ -26,7 +26,8 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -85,13 +86,12 @@ public class VindicatorEntity extends IllagerEntity {
 		super.mobTick();
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.35F);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(12.0);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(24.0);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
+	public static DefaultAttributeContainer.Builder createVindicatorAttributes() {
+		return HostileEntity.createHostileAttributes()
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.35F)
+			.add(Attributes.GENERIC_FOLLOW_RANGE, 12.0)
+			.add(Attributes.GENERIC_MAX_HEALTH, 24.0)
+			.add(Attributes.GENERIC_ATTACK_DAMAGE, 5.0);
 	}
 
 	@Override

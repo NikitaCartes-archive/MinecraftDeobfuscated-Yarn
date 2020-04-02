@@ -26,6 +26,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.TestableWorld;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -96,14 +97,14 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 		}
 	}
 
-	protected boolean setLogBlockState(
-		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, BlockBox box, TreeFeatureConfig config
+	public static boolean setLogBlockState(
+		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> trunkPositions, BlockBox box, TreeFeatureConfig config
 	) {
 		if (!isAirOrLeaves(world, pos) && !isReplaceablePlant(world, pos) && !isWater(world, pos)) {
 			return false;
 		} else {
-			this.setBlockState(world, pos, config.trunkProvider.getBlockState(random, pos), box);
-			logPositions.add(pos.toImmutable());
+			setBlockState(world, pos, config.trunkProvider.getBlockState(random, pos), box);
+			trunkPositions.add(pos.toImmutable());
 			return true;
 		}
 	}
@@ -114,7 +115,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 		if (!isAirOrLeaves(world, pos) && !isReplaceablePlant(world, pos) && !isWater(world, pos)) {
 			return false;
 		} else {
-			this.setBlockState(world, pos, config.leavesProvider.getBlockState(random, pos), box);
+			setBlockState(world, pos, config.leavesProvider.getBlockState(random, pos), box);
 			leavesPositions.add(pos.toImmutable());
 			return true;
 		}
@@ -122,20 +123,25 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 
 	@Override
 	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
-		this.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
+		setBlockStateWithoutUpdatingNeighbors(world, pos, state);
 	}
 
-	protected final void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state, BlockBox box) {
-		this.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
+	protected static final void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state, BlockBox box) {
+		setBlockStateWithoutUpdatingNeighbors(world, pos, state);
 		box.encompass(new BlockBox(pos, pos));
 	}
 
-	private void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
+	private static void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state, 19);
 	}
 
 	public final boolean generate(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T treeFeatureConfig
+		IWorld iWorld,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		Random random,
+		BlockPos blockPos,
+		T treeFeatureConfig
 	) {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set2 = Sets.<BlockPos>newHashSet();
@@ -187,7 +193,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 					BlockState blockState = world.getBlockState(mutable);
 					if (blockState.contains(Properties.DISTANCE_1_7)) {
 						((Set)list.get(0)).add(mutable.toImmutable());
-						this.setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
+						setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
 						if (box.contains(mutable)) {
 							voxelSet.set(mutable.getX() - box.minX, mutable.getY() - box.minY, mutable.getZ() - box.minZ, true, true);
 						}
@@ -213,7 +219,7 @@ public abstract class AbstractTreeFeature<T extends TreeFeatureConfig> extends F
 							int l = (Integer)blockState2.get(Properties.DISTANCE_1_7);
 							if (l > k + 1) {
 								BlockState blockState3 = blockState2.with(Properties.DISTANCE_1_7, Integer.valueOf(k + 1));
-								this.setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState3);
+								setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState3);
 								if (box.contains(mutable)) {
 									voxelSet.set(mutable.getX() - box.minX, mutable.getY() - box.minY, mutable.getZ() - box.minZ, true, true);
 								}

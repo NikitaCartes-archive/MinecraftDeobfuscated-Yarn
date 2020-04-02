@@ -15,8 +15,10 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -61,11 +63,8 @@ public class ChickenEntity extends AnimalEntity {
 		return this.isBaby() ? dimensions.height * 0.85F : dimensions.height * 0.92F;
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(4.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+	public static DefaultAttributeContainer.Builder createChickenAttributes() {
+		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 4.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25);
 	}
 
 	@Override

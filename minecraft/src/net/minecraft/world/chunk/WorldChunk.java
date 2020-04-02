@@ -85,7 +85,7 @@ public class WorldChunk implements Chunk {
 	@Nullable
 	private Consumer<WorldChunk> loadToWorldConsumer;
 	private final ChunkPos pos;
-	private volatile boolean isLightOn;
+	private volatile boolean lightOn;
 
 	public WorldChunk(World world, ChunkPos chunkPos, BiomeArray biomeArray) {
 		this(world, chunkPos, biomeArray, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
@@ -375,8 +375,8 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Nullable
-	private BlockEntity createBlockEntity(BlockPos blockPos) {
-		BlockState blockState = this.getBlockState(blockPos);
+	private BlockEntity createBlockEntity(BlockPos pos) {
+		BlockState blockState = this.getBlockState(pos);
 		Block block = blockState.getBlock();
 		return !block.hasBlockEntity() ? null : ((BlockEntityProvider)block).createBlockEntity(this.world);
 	}
@@ -727,10 +727,10 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Nullable
-	private BlockEntity loadBlockEntity(BlockPos pos, CompoundTag compoundTag) {
+	private BlockEntity loadBlockEntity(BlockPos pos, CompoundTag tag) {
 		BlockState blockState = this.getBlockState(pos);
 		BlockEntity blockEntity;
-		if ("DUMMY".equals(compoundTag.getString("id"))) {
+		if ("DUMMY".equals(tag.getString("id"))) {
 			Block block = blockState.getBlock();
 			if (block instanceof BlockEntityProvider) {
 				blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
@@ -739,7 +739,7 @@ public class WorldChunk implements Chunk {
 				LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", pos, blockState);
 			}
 		} else {
-			blockEntity = BlockEntity.createFromTag(blockState, compoundTag);
+			blockEntity = BlockEntity.createFromTag(blockState, tag);
 		}
 
 		if (blockEntity != null) {
@@ -811,12 +811,12 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public boolean isLightOn() {
-		return this.isLightOn;
+		return this.lightOn;
 	}
 
 	@Override
 	public void setLightOn(boolean lightOn) {
-		this.isLightOn = lightOn;
+		this.lightOn = lightOn;
 		this.setShouldSave(true);
 	}
 

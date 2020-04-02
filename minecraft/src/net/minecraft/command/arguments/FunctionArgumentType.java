@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,8 +41,8 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 				}
 
 				@Override
-				public Either<CommandFunction, Tag<CommandFunction>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-					return Either.right(FunctionArgumentType.getFunctionTag(commandContext, identifier));
+				public Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+					return Pair.of(identifier, Either.right(FunctionArgumentType.getFunctionTag(commandContext, identifier)));
 				}
 			};
 		} else {
@@ -53,8 +54,8 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 				}
 
 				@Override
-				public Either<CommandFunction, Tag<CommandFunction>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-					return Either.left(FunctionArgumentType.getFunction(commandContext, identifier));
+				public Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+					return Pair.of(identifier, Either.left(FunctionArgumentType.getFunction(commandContext, identifier)));
 				}
 			};
 		}
@@ -81,8 +82,11 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 		return context.<FunctionArgumentType.FunctionArgument>getArgument(name, FunctionArgumentType.FunctionArgument.class).getFunctions(context);
 	}
 
-	public static Either<CommandFunction, Tag<CommandFunction>> getFunctionOrTag(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return context.<FunctionArgumentType.FunctionArgument>getArgument(name, FunctionArgumentType.FunctionArgument.class).getFunctionOrTag(context);
+	public static Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> getFunctionOrTag(
+		CommandContext<ServerCommandSource> commandContext, String string
+	) throws CommandSyntaxException {
+		return commandContext.<FunctionArgumentType.FunctionArgument>getArgument(string, FunctionArgumentType.FunctionArgument.class)
+			.getFunctionOrTag(commandContext);
 	}
 
 	@Override
@@ -93,6 +97,6 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 	public interface FunctionArgument {
 		Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
 
-		Either<CommandFunction, Tag<CommandFunction>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
+		Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
 	}
 }

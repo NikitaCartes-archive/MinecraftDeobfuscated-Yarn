@@ -13,7 +13,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -71,19 +71,13 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.dataTracker.startTracking(SLIME_SIZE, 1);
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE);
-	}
-
 	protected void setSize(int size, boolean heal) {
 		this.dataTracker.set(SLIME_SIZE, size);
 		this.refreshPosition();
 		this.calculateDimensions();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)(size * size));
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)size);
+		this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue((double)(size * size));
+		this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));
+		this.getAttributeInstance(Attributes.GENERIC_ATTACK_DAMAGE).setBaseValue((double)size);
 		if (heal) {
 			this.setHealth(this.getMaximumHealth());
 		}
@@ -256,7 +250,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	protected float getDamageAmount() {
-		return (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
+		return (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -479,7 +473,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			} else {
 				this.state = MoveControl.State.WAIT;
 				if (this.entity.isOnGround()) {
-					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+					this.entity.setMovementSpeed((float)(this.speed * this.entity.method_26825(Attributes.GENERIC_MOVEMENT_SPEED)));
 					if (this.ticksUntilJump-- <= 0) {
 						this.ticksUntilJump = this.slime.getTicksUntilNextJump();
 						if (this.jumpOften) {
@@ -496,7 +490,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 						this.entity.setMovementSpeed(0.0F);
 					}
 				} else {
-					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+					this.entity.setMovementSpeed((float)(this.speed * this.entity.method_26825(Attributes.GENERIC_MOVEMENT_SPEED)));
 				}
 			}
 		}

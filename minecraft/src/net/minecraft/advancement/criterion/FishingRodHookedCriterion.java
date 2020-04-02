@@ -4,6 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.Collection;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -47,34 +48,37 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 			return new FishingRodHookedCriterion.Conditions(rod, bobber, item);
 		}
 
-		public boolean matches(ServerPlayerEntity player, ItemStack rodStack, FishingBobberEntity bobber, Collection<ItemStack> fishingLoots) {
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack rodStack, FishingBobberEntity fishingBobberEntity, Collection<ItemStack> fishingLoots) {
 			if (!this.rod.test(rodStack)) {
 				return false;
-			} else if (!this.hookedEntity.test(player, bobber.hookedEntity)) {
-				return false;
 			} else {
-				if (this.caughtItem != ItemPredicate.ANY) {
-					boolean bl = false;
-					if (bobber.hookedEntity instanceof ItemEntity) {
-						ItemEntity itemEntity = (ItemEntity)bobber.hookedEntity;
-						if (this.caughtItem.test(itemEntity.getStack())) {
-							bl = true;
+				Entity entity = fishingBobberEntity.method_26957();
+				if (!this.hookedEntity.test(serverPlayerEntity, entity)) {
+					return false;
+				} else {
+					if (this.caughtItem != ItemPredicate.ANY) {
+						boolean bl = false;
+						if (entity instanceof ItemEntity) {
+							ItemEntity itemEntity = (ItemEntity)entity;
+							if (this.caughtItem.test(itemEntity.getStack())) {
+								bl = true;
+							}
+						}
+
+						for (ItemStack itemStack : fishingLoots) {
+							if (this.caughtItem.test(itemStack)) {
+								bl = true;
+								break;
+							}
+						}
+
+						if (!bl) {
+							return false;
 						}
 					}
 
-					for (ItemStack itemStack : fishingLoots) {
-						if (this.caughtItem.test(itemStack)) {
-							bl = true;
-							break;
-						}
-					}
-
-					if (!bl) {
-						return false;
-					}
+					return true;
 				}
-
-				return true;
 			}
 		}
 

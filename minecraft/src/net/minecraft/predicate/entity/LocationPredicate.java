@@ -125,7 +125,7 @@ public class LocationPredicate {
 			BlockPos blockPos = new BlockPos((double)x, (double)y, (double)z);
 			boolean bl = world.canSetBlock(blockPos);
 			if (this.biome == null || bl && this.biome == world.getBiome(blockPos)) {
-				if (this.feature == null || bl && this.feature.isInsideStructure(world, blockPos)) {
+				if (this.feature == null || bl && this.feature.isInsideStructure(world, world.getStructureAccessor(), blockPos)) {
 					if (!this.light.test(world, blockPos)) {
 						return false;
 					} else {

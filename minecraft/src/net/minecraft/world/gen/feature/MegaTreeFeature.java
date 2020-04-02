@@ -104,23 +104,23 @@ public abstract class MegaTreeFeature<T extends TreeFeatureConfig> extends Abstr
 		for (int i = 0; i < height; i++) {
 			mutable.set(pos, 0, i, 0);
 			if (canTreeReplace(world, mutable)) {
-				this.setLogBlockState(world, random, mutable, logs, box, config);
+				setLogBlockState(world, random, mutable, logs, box, config);
 			}
 
 			if (i < height - 1) {
 				mutable.set(pos, 1, i, 0);
 				if (canTreeReplace(world, mutable)) {
-					this.setLogBlockState(world, random, mutable, logs, box, config);
+					setLogBlockState(world, random, mutable, logs, box, config);
 				}
 
 				mutable.set(pos, 1, i, 1);
 				if (canTreeReplace(world, mutable)) {
-					this.setLogBlockState(world, random, mutable, logs, box, config);
+					setLogBlockState(world, random, mutable, logs, box, config);
 				}
 
 				mutable.set(pos, 0, i, 1);
 				if (canTreeReplace(world, mutable)) {
-					this.setLogBlockState(world, random, mutable, logs, box, config);
+					setLogBlockState(world, random, mutable, logs, box, config);
 				}
 			}
 		}

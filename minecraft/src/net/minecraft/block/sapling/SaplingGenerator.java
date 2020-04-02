@@ -4,29 +4,32 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class SaplingGenerator {
 	@Nullable
-	protected abstract ConfiguredFeature<BranchedTreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl);
+	protected abstract ConfiguredFeature<? extends TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl);
 
-	public boolean generate(IWorld iWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
-		ConfiguredFeature<BranchedTreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.method_24282(iWorld, blockPos));
+	public boolean generate(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
+		ConfiguredFeature<? extends TreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.method_24282(serverWorld, blockPos));
 		if (configuredFeature == null) {
 			return false;
 		} else {
-			iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
+			serverWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
 			configuredFeature.config.ignoreFluidCheck();
-			if (configuredFeature.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos)) {
+			if (configuredFeature.generate(
+				serverWorld, serverWorld.getStructureAccessor(), (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos
+			)) {
 				return true;
 			} else {
-				iWorld.setBlockState(blockPos, blockState, 4);
+				serverWorld.setBlockState(blockPos, blockState, 4);
 				return false;
 			}
 		}

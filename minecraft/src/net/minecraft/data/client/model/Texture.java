@@ -99,7 +99,7 @@ public class Texture {
 	}
 
 	public static Texture stemAndUpper(Block stem, Block upper) {
-		return new Texture().put(TextureKey.STEM, getId(stem)).put(TextureKey.UPPER_STEM, getId(upper));
+		return new Texture().put(TextureKey.STEM, getId(stem)).put(TextureKey.UPPERSTEM, getId(upper));
 	}
 
 	public static Texture pattern(Block block) {

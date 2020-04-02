@@ -117,7 +117,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.PortalForcer;
 import net.minecraft.world.ScheduledTick;
-import net.minecraft.world.SessionLockException;
 import net.minecraft.world.WanderingTraderManager;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
@@ -129,6 +128,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -149,7 +149,7 @@ public class ServerWorld extends World {
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
 	private final Queue<Entity> entitiesToLoad = Queues.<Entity>newArrayDeque();
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
-	boolean ticking;
+	boolean inEntityTick;
 	private final MinecraftServer server;
 	private final WorldSaveHandler worldSaveHandler;
 	public boolean savingDisabled;
@@ -165,9 +165,10 @@ public class ServerWorld extends World {
 	private final Set<EntityNavigation> entityNavigations = Sets.<EntityNavigation>newHashSet();
 	protected final RaidManager raidManager;
 	private final ObjectLinkedOpenHashSet<BlockAction> pendingBlockActions = new ObjectLinkedOpenHashSet<>();
-	private boolean insideTick;
+	private boolean inBlockTick;
 	@Nullable
 	private final WanderingTraderManager wanderingTraderManager;
+	private final StructureAccessor structureAccessor = new StructureAccessor();
 
 	public ServerWorld(
 		MinecraftServer server,
@@ -188,6 +189,7 @@ public class ServerWorld extends World {
 					workerExecutor,
 					dimension.createChunkGenerator(),
 					server.getPlayerManager().getViewDistance(),
+					server.syncChunkWrites(),
 					worldGenerationProgressListener,
 					() -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()
 				),
@@ -213,9 +215,13 @@ public class ServerWorld extends World {
 		return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
+	public StructureAccessor getStructureAccessor() {
+		return this.structureAccessor;
+	}
+
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		Profiler profiler = this.getProfiler();
-		this.insideTick = true;
+		this.inBlockTick = true;
 		profiler.push("world border");
 		this.getWorldBorder().tick();
 		profiler.swap("weather");
@@ -335,7 +341,7 @@ public class ServerWorld extends World {
 
 		profiler.swap("blockEvents");
 		this.sendBlockActions();
-		this.insideTick = false;
+		this.inBlockTick = false;
 		profiler.swap("entities");
 		boolean bl4 = !this.players.isEmpty() || !this.getForcedChunks().isEmpty();
 		if (bl4) {
@@ -358,7 +364,7 @@ public class ServerWorld extends World {
 			}
 
 			profiler.swap("regular");
-			this.ticking = true;
+			this.inEntityTick = true;
 			ObjectIterator<Entry<Entity>> objectIterator = this.entitiesById.int2ObjectEntrySet().iterator();
 
 			while (objectIterator.hasNext()) {
@@ -403,7 +409,7 @@ public class ServerWorld extends World {
 				profiler.pop();
 			}
 
-			this.ticking = false;
+			this.inEntityTick = false;
 
 			Entity entity;
 			while ((entity = (Entity)this.entitiesToLoad.poll()) != null) {
@@ -509,8 +515,8 @@ public class ServerWorld extends World {
 		}
 	}
 
-	public boolean isInsideTick() {
-		return this.insideTick;
+	public boolean isInBlockTick() {
+		return this.inBlockTick;
 	}
 
 	public void updateSleepingPlayers() {
@@ -693,6 +699,7 @@ public class ServerWorld extends World {
 		ConfiguredFeature<?, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
 		configuredFeature.generate(
 			this,
+			this.getStructureAccessor(),
 			(ChunkGenerator<? extends ChunkGeneratorConfig>)this.getChunkManager().getChunkGenerator(),
 			this.random,
 			new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ())
@@ -704,7 +711,7 @@ public class ServerWorld extends World {
 		return this.dimension.getForcedSpawnPoint();
 	}
 
-	public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) throws SessionLockException {
+	public void save(@Nullable ProgressListener progressListener, boolean flush, boolean bl) {
 		ServerChunkManager serverChunkManager = this.getChunkManager();
 		if (!bl) {
 			if (progressListener != null) {
@@ -720,8 +727,7 @@ public class ServerWorld extends World {
 		}
 	}
 
-	protected void saveLevel() throws SessionLockException {
-		this.checkSessionLock();
+	protected void saveLevel() {
 		this.dimension.saveWorldData();
 		this.getChunkManager().getPersistentStateManager().save();
 	}
@@ -889,7 +895,7 @@ public class ServerWorld extends World {
 		for (int var4 = 0; var4 < var3; var4++) {
 			for (Entity entity : var2[var4]) {
 				if (!(entity instanceof ServerPlayerEntity)) {
-					if (this.ticking) {
+					if (this.inEntityTick) {
 						throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
 					}
 
@@ -921,7 +927,7 @@ public class ServerWorld extends World {
 	}
 
 	private void loadEntityUnchecked(Entity entity) {
-		if (this.ticking) {
+		if (this.inEntityTick) {
 			this.entitiesToLoad.add(entity);
 		} else {
 			this.entitiesById.put(entity.getEntityId(), entity);
@@ -940,7 +946,7 @@ public class ServerWorld extends World {
 	}
 
 	public void removeEntity(Entity entity) {
-		if (this.ticking) {
+		if (this.inEntityTick) {
 			throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Removing entity while ticking!"));
 		} else {
 			this.removeEntityFromChunk(entity);
@@ -1217,10 +1223,6 @@ public class ServerWorld extends World {
 	@Override
 	public boolean isSavingDisabled() {
 		return this.savingDisabled;
-	}
-
-	public void checkSessionLock() throws SessionLockException {
-		this.worldSaveHandler.checkSessionLock();
 	}
 
 	public WorldSaveHandler getSaveHandler() {

@@ -140,7 +140,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	private boolean cloudsDirty = true;
 	@Nullable
 	private VertexBuffer cloudsBuffer;
-	private FpsSmoother chunkUpdateSmoother = new FpsSmoother(100);
+	private final FpsSmoother chunkUpdateSmoother = new FpsSmoother(100);
 	private int ticks;
 	private final Int2ObjectMap<BlockBreakingInfo> blockBreakingInfos = new Int2ObjectOpenHashMap<>();
 	private final Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions = new Long2ObjectOpenHashMap<>();
@@ -969,7 +969,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				}
 
 				VertexConsumerProvider vertexConsumerProvider;
-				if (this.canDrawEntityOutlines() && entity.isGlowing()) {
+				if (this.canDrawEntityOutlines() && this.client.method_27022(entity)) {
 					bl3 = true;
 					OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
 					vertexConsumerProvider = outlineVertexConsumerProvider;
@@ -1228,8 +1228,8 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 					RenderSystem.lineWidth(10.0F);
 					int i = 0;
 
-					for (Direction direction : Direction.values()) {
-						for (Direction direction2 : Direction.values()) {
+					for (Direction direction : DIRECTIONS) {
+						for (Direction direction2 : DIRECTIONS) {
 							boolean bl = builtChunk.getData().isVisibleThrough(direction, direction2);
 							if (!bl) {
 								i++;

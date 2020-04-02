@@ -1,8 +1,8 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.Registry;
@@ -13,31 +13,31 @@ public class StatusEffects {
 		1,
 		"speed",
 		new StatusEffect(StatusEffectType.BENEFICIAL, 8171462)
-			.addAttributeModifier(EntityAttributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.2F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
+			.addAttributeModifier(Attributes.GENERIC_MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.2F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
 	);
 	public static final StatusEffect SLOWNESS = register(
 		2,
 		"slowness",
 		new StatusEffect(StatusEffectType.HARMFUL, 5926017)
-			.addAttributeModifier(EntityAttributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
+			.addAttributeModifier(Attributes.GENERIC_MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
 	);
 	public static final StatusEffect HASTE = register(
 		3,
 		"haste",
 		new StatusEffect(StatusEffectType.BENEFICIAL, 14270531)
-			.addAttributeModifier(EntityAttributes.ATTACK_SPEED, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.1F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
+			.addAttributeModifier(Attributes.GENERIC_ATTACK_SPEED, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.1F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
 	);
 	public static final StatusEffect MINING_FATIGUE = register(
 		4,
 		"mining_fatigue",
 		new StatusEffect(StatusEffectType.HARMFUL, 4866583)
-			.addAttributeModifier(EntityAttributes.ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
+			.addAttributeModifier(Attributes.GENERIC_ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
 	);
 	public static final StatusEffect STRENGTH = register(
 		5,
 		"strength",
 		new DamageModifierStatusEffect(StatusEffectType.BENEFICIAL, 9643043, 3.0)
-			.addAttributeModifier(EntityAttributes.ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0, EntityAttributeModifier.Operation.ADDITION)
+			.addAttributeModifier(Attributes.GENERIC_ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0, EntityAttributeModifier.Operation.ADDITION)
 	);
 	public static final StatusEffect INSTANT_HEALTH = register(6, "instant_health", new InstantStatusEffect(StatusEffectType.BENEFICIAL, 16262179));
 	public static final StatusEffect INSTANT_DAMAGE = register(7, "instant_damage", new InstantStatusEffect(StatusEffectType.HARMFUL, 4393481));
@@ -55,7 +55,7 @@ public class StatusEffects {
 		18,
 		"weakness",
 		new DamageModifierStatusEffect(StatusEffectType.HARMFUL, 4738376, -4.0)
-			.addAttributeModifier(EntityAttributes.ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0, EntityAttributeModifier.Operation.ADDITION)
+			.addAttributeModifier(Attributes.GENERIC_ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0, EntityAttributeModifier.Operation.ADDITION)
 	);
 	public static final StatusEffect POISON = register(19, "poison", new StatusEffect(StatusEffectType.HARMFUL, 5149489));
 	public static final StatusEffect WITHER = register(20, "wither", new StatusEffect(StatusEffectType.HARMFUL, 3484199));
@@ -63,7 +63,7 @@ public class StatusEffects {
 		21,
 		"health_boost",
 		new HealthBoostStatusEffect(StatusEffectType.BENEFICIAL, 16284963)
-			.addAttributeModifier(EntityAttributes.MAX_HEALTH, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0, EntityAttributeModifier.Operation.ADDITION)
+			.addAttributeModifier(Attributes.GENERIC_MAX_HEALTH, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0, EntityAttributeModifier.Operation.ADDITION)
 	);
 	public static final StatusEffect ABSORPTION = register(22, "absorption", new AbsorptionStatusEffect(StatusEffectType.BENEFICIAL, 2445989));
 	public static final StatusEffect SATURATION = register(23, "saturation", new InstantStatusEffect(StatusEffectType.BENEFICIAL, 16262179));
@@ -73,13 +73,13 @@ public class StatusEffects {
 		26,
 		"luck",
 		new StatusEffect(StatusEffectType.BENEFICIAL, 3381504)
-			.addAttributeModifier(EntityAttributes.LUCK, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0, EntityAttributeModifier.Operation.ADDITION)
+			.addAttributeModifier(Attributes.GENERIC_LUCK, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0, EntityAttributeModifier.Operation.ADDITION)
 	);
 	public static final StatusEffect UNLUCK = register(
 		27,
 		"unluck",
 		new StatusEffect(StatusEffectType.HARMFUL, 12624973)
-			.addAttributeModifier(EntityAttributes.LUCK, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0, EntityAttributeModifier.Operation.ADDITION)
+			.addAttributeModifier(Attributes.GENERIC_LUCK, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0, EntityAttributeModifier.Operation.ADDITION)
 	);
 	public static final StatusEffect SLOW_FALLING = register(28, "slow_falling", new StatusEffect(StatusEffectType.BENEFICIAL, 16773073));
 	public static final StatusEffect CONDUIT_POWER = register(29, "conduit_power", new StatusEffect(StatusEffectType.BENEFICIAL, 1950417));

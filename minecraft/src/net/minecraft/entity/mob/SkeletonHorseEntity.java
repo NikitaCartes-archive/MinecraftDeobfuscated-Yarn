@@ -4,7 +4,8 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.SkeletonHorseTrapTriggerGoal;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -28,12 +29,13 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 		super(entityType, world);
 	}
 
+	public static DefaultAttributeContainer.Builder createSkeletonHorseAttributes() {
+		return createBaseHorseAttributes().add(Attributes.GENERIC_MAX_HEALTH, 15.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.2F);
+	}
+
 	@Override
 	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(15.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
-		this.getAttributeInstance(JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
+		this.getAttributeInstance(Attributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
 	}
 
 	@Override

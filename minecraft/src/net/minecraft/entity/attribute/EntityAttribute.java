@@ -1,16 +1,33 @@
 package net.minecraft.entity.attribute;
 
-import javax.annotation.Nullable;
+public class EntityAttribute {
+	private final double fallback;
+	private boolean tracked;
+	private final String translationKey;
 
-public interface EntityAttribute {
-	String getId();
+	protected EntityAttribute(String translationKey, double fallback) {
+		this.fallback = fallback;
+		this.translationKey = translationKey;
+	}
 
-	double clamp(double value);
+	public double getDefaultValue() {
+		return this.fallback;
+	}
 
-	double getDefaultValue();
+	public boolean isTracked() {
+		return this.tracked;
+	}
 
-	boolean isTracked();
+	public EntityAttribute setTracked(boolean tracked) {
+		this.tracked = tracked;
+		return this;
+	}
 
-	@Nullable
-	EntityAttribute getParent();
+	public double clamp(double value) {
+		return value;
+	}
+
+	public String getTranslationKey() {
+		return this.translationKey;
+	}
 }

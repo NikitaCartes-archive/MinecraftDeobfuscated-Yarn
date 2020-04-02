@@ -12,6 +12,8 @@ import net.minecraft.command.EntitySelectorOptions;
 import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.attribute.DefaultAttributeRegistry;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.BrewingRecipeRegistry;
@@ -61,6 +63,7 @@ public class Bootstrap {
 
 	public static Set<String> getMissingTranslations() {
 		Set<String> set = new TreeSet();
+		collectMissingTranslations(Registry.ATTRIBUTES, EntityAttribute::getTranslationKey, set);
 		collectMissingTranslations(Registry.ENTITY_TYPE, EntityType::getTranslationKey, set);
 		collectMissingTranslations(Registry.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
 		collectMissingTranslations(Registry.ITEM, Item::getTranslationKey, set);
@@ -71,13 +74,15 @@ public class Bootstrap {
 		return set;
 	}
 
-	public static void logMissingTranslations() {
+	public static void logMissing() {
 		if (!initialized) {
 			throw new IllegalArgumentException("Not bootstrapped");
 		} else {
 			if (SharedConstants.isDevelopment) {
 				getMissingTranslations().forEach(string -> LOGGER.error("Missing translations: " + string));
 			}
+
+			DefaultAttributeRegistry.checkMissing();
 		}
 	}
 

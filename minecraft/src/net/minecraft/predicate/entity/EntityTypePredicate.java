@@ -36,8 +36,7 @@ public abstract class EntityTypePredicate {
 			String string = JsonHelper.asString(element, "type");
 			if (string.startsWith("#")) {
 				Identifier identifier = new Identifier(string.substring(1));
-				Tag<EntityType<?>> tag = EntityTypeTags.getContainer().getOrCreate(identifier);
-				return new EntityTypePredicate.Tagged(tag);
+				return new EntityTypePredicate.Tagged(EntityTypeTags.getContainer().getOrCreate(identifier));
 			} else {
 				Identifier identifier = new Identifier(string);
 				EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE
@@ -92,7 +91,7 @@ public abstract class EntityTypePredicate {
 
 		@Override
 		public JsonElement toJson() {
-			return new JsonPrimitive("#" + this.tag.getId().toString());
+			return new JsonPrimitive("#" + EntityTypeTags.getContainer().method_26798(this.tag));
 		}
 	}
 }

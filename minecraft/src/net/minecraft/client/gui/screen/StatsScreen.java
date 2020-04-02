@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -135,6 +136,10 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 	}
 
+	private static String method_27027(Stat<Identifier> stat) {
+		return "stat." + stat.getValue().toString().replace(':', '.');
+	}
+
 	private int getColumnX(int index) {
 		return 115 + 40 * index;
 	}
@@ -206,8 +211,10 @@ public class StatsScreen extends Screen implements StatsListener {
 	class GeneralStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.GeneralStatsListWidget.Entry> {
 		public GeneralStatsListWidget(MinecraftClient minecraftClient) {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
+			ObjectArrayList<Stat<Identifier>> objectArrayList = new ObjectArrayList<>(Stats.CUSTOM.iterator());
+			objectArrayList.sort(Comparator.comparing(statx -> I18n.translate(StatsScreen.method_27027(statx))));
 
-			for (Stat<Identifier> stat : Stats.CUSTOM) {
+			for (Stat<Identifier> stat : objectArrayList) {
 				this.addEntry(new StatsScreen.GeneralStatsListWidget.Entry(stat));
 			}
 		}
@@ -227,7 +234,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			@Override
 			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
-				Text text = new TranslatableText("stat." + this.stat.getValue().toString().replace(':', '.')).formatted(Formatting.GRAY);
+				Text text = new TranslatableText(StatsScreen.method_27027(this.stat)).formatted(Formatting.GRAY);
 				GeneralStatsListWidget.this.drawString(StatsScreen.this.textRenderer, text.getString(), x + 2, y + 1, index % 2 == 0 ? 16777215 : 9474192);
 				String string = this.stat.format(StatsScreen.this.statHandler.getStat(this.stat));
 				GeneralStatsListWidget.this.drawString(

@@ -129,6 +129,7 @@ import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -355,7 +356,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		Bootstrap.initialize();
-		Bootstrap.logMissingTranslations();
+		Bootstrap.logMissing();
 		KeybindText.i18n = KeyBinding::getLocalizedName;
 		this.dataFixer = Schemas.getFixer();
 		this.toastManager = new ToastManager(this);
@@ -1563,7 +1564,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void startIntegratedServer(String name, String displayName, @Nullable LevelInfo levelInfo) {
 		this.disconnect();
-		WorldSaveHandler worldSaveHandler = this.levelStorage.createSaveHandler(name, null);
+
+		LevelStorage.Session session;
+		try {
+			session = this.levelStorage.createSession(name);
+		} catch (IOException var13) {
+			LOGGER.warn("Failed to read level {} data", name, var13);
+			SystemToast.method_27023(this, name);
+			this.openScreen(null);
+			return;
+		}
+
+		WorldSaveHandler worldSaveHandler = session.createSaveHandler(null);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		if (levelProperties == null && levelInfo != null) {
 			levelProperties = new LevelProperties(levelInfo, name);
@@ -1584,18 +1596,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			SkullBlockEntity.setUserCache(userCache);
 			SkullBlockEntity.setSessionService(minecraftSessionService);
 			UserCache.setUseRemote(false);
-			this.server = new IntegratedServer(
-				this, name, displayName, levelInfo, yggdrasilAuthenticationService, minecraftSessionService, gameProfileRepository, userCache, i -> {
-					WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
-					worldGenerationProgressTracker.start();
-					this.worldGenProgressTracker.set(worldGenerationProgressTracker);
-					return new QueueingWorldGenerationProgressListener(worldGenerationProgressTracker, this.renderTaskQueue::add);
-				}
-			);
+			this.server = new IntegratedServer(this, session, displayName, levelInfo, minecraftSessionService, gameProfileRepository, userCache, i -> {
+				WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
+				worldGenerationProgressTracker.start();
+				this.worldGenProgressTracker.set(worldGenerationProgressTracker);
+				return new QueueingWorldGenerationProgressListener(worldGenerationProgressTracker, this.renderTaskQueue::add);
+			});
 			this.server.start();
 			this.isIntegratedServerRunning = true;
-		} catch (Throwable var11) {
-			CrashReport crashReport = CrashReport.create(var11, "Starting integrated server");
+		} catch (Throwable var12) {
+			CrashReport crashReport = CrashReport.create(var12, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
 			crashReportSection.add("Level ID", name);
 			crashReportSection.add("Level Name", displayName);
@@ -1616,7 +1626,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			try {
 				Thread.sleep(16L);
-			} catch (InterruptedException var10) {
+			} catch (InterruptedException var11) {
 			}
 
 			if (this.crashReport != null) {
@@ -2087,6 +2097,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public void setCameraEntity(Entity entity) {
 		this.cameraEntity = entity;
 		this.gameRenderer.onCameraEntitySet(entity);
+	}
+
+	public boolean method_27022(Entity entity) {
+		return entity.isGlowing()
+			|| this.player != null && this.player.isSpectator() && this.options.keySpectatorOutlines.isPressed() && entity.getType() == EntityType.PLAYER;
 	}
 
 	@Override

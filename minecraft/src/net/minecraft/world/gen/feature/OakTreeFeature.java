@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -23,29 +24,21 @@ public class OakTreeFeature extends BranchedTreeFeature<BranchedTreeFeatureConfi
 		BlockBox blockBox,
 		BranchedTreeFeatureConfig branchedTreeFeatureConfig
 	) {
-		int i = branchedTreeFeatureConfig.baseHeight
-			+ random.nextInt(branchedTreeFeatureConfig.heightRandA + 1)
-			+ random.nextInt(branchedTreeFeatureConfig.heightRandB + 1);
-		int j = branchedTreeFeatureConfig.trunkHeight >= 0
-			? branchedTreeFeatureConfig.trunkHeight + random.nextInt(branchedTreeFeatureConfig.trunkHeightRandom + 1)
-			: i - (branchedTreeFeatureConfig.foliageHeight + random.nextInt(branchedTreeFeatureConfig.foliageHeightRandom + 1));
-		int k = branchedTreeFeatureConfig.foliagePlacer.getRadius(random, j, i, branchedTreeFeatureConfig);
-		Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, j, k, blockPos, branchedTreeFeatureConfig);
+		int i = branchedTreeFeatureConfig.trunkPlacer.getHeight(random, branchedTreeFeatureConfig);
+		int j = branchedTreeFeatureConfig.foliagePlacer.getHeight(random, i);
+		int k = i - j;
+		int l = branchedTreeFeatureConfig.foliagePlacer.getRadius(random, k, branchedTreeFeatureConfig);
+		Optional<BlockPos> optional = this.findPositionToGenerate(modifiableTestableWorld, i, l, blockPos, branchedTreeFeatureConfig);
 		if (!optional.isPresent()) {
 			return false;
 		} else {
 			BlockPos blockPos2 = (BlockPos)optional.get();
 			this.setToDirt(modifiableTestableWorld, blockPos2.down());
-			branchedTreeFeatureConfig.foliagePlacer.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, j, k, blockPos2, set2);
-			this.generate(
-				modifiableTestableWorld,
-				random,
-				i,
-				blockPos2,
-				branchedTreeFeatureConfig.trunkTopOffset + random.nextInt(branchedTreeFeatureConfig.trunkTopOffsetRandom + 1),
-				set,
-				blockBox,
-				branchedTreeFeatureConfig
+			Map<BlockPos, Integer> map = branchedTreeFeatureConfig.trunkPlacer
+				.generate(modifiableTestableWorld, random, i, blockPos2, l, set, blockBox, branchedTreeFeatureConfig);
+			map.forEach(
+				(blockPosx, integer) -> branchedTreeFeatureConfig.foliagePlacer
+						.generate(modifiableTestableWorld, random, branchedTreeFeatureConfig, i, blockPosx, j, integer, set2)
 			);
 			return true;
 		}

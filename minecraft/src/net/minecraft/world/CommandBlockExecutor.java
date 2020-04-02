@@ -111,7 +111,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		} else {
 			this.successCount = 0;
 			MinecraftServer minecraftServer = this.getWorld().getServer();
-			if (minecraftServer != null && minecraftServer.hasGameDir() && minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
+			if (minecraftServer != null && minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
 				try {
 					this.lastOutput = null;
 					ServerCommandSource serverCommandSource = this.getSource().withConsumer((commandContext, bl, i) -> {

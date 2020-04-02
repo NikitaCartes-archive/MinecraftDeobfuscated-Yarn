@@ -2571,10 +2571,13 @@ public class Blocks {
 		return Registry.register(Registry.BLOCK, id, block);
 	}
 
+	public static void method_26979() {
+		Block.STATE_IDS.forEach(AbstractBlock.AbstractBlockState::initShapeCache);
+	}
+
 	static {
 		for (Block block : Registry.BLOCK) {
 			for (BlockState blockState : block.getStateManager().getStates()) {
-				blockState.initShapeCache();
 				Block.STATE_IDS.add(blockState);
 			}
 

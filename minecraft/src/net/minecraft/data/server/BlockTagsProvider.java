@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.TagContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -59,7 +58,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.CRIMSON_BUTTON,
 				Blocks.WARPED_BUTTON
 			);
-		this.getOrCreateTagBuilder(BlockTags.BUTTONS).add(BlockTags.WOODEN_BUTTONS).add(Blocks.STONE_BUTTON);
+		this.getOrCreateTagBuilder(BlockTags.BUTTONS).addTag(BlockTags.WOODEN_BUTTONS).add(Blocks.STONE_BUTTON);
 		this.getOrCreateTagBuilder(BlockTags.CARPETS)
 			.add(
 				Blocks.WHITE_CARPET,
@@ -123,7 +122,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.CRIMSON_FENCE,
 				Blocks.WARPED_FENCE
 			);
-		this.getOrCreateTagBuilder(BlockTags.DOORS).add(BlockTags.WOODEN_DOORS).add(Blocks.IRON_DOOR);
+		this.getOrCreateTagBuilder(BlockTags.DOORS).addTag(BlockTags.WOODEN_DOORS).add(Blocks.IRON_DOOR);
 		this.getOrCreateTagBuilder(BlockTags.SAPLINGS)
 			.add(Blocks.OAK_SAPLING, Blocks.SPRUCE_SAPLING, Blocks.BIRCH_SAPLING, Blocks.JUNGLE_SAPLING, Blocks.ACACIA_SAPLING, Blocks.DARK_OAK_SAPLING);
 		this.getOrCreateTagBuilder(BlockTags.DARK_OAK_LOGS)
@@ -137,13 +136,13 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.add(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM, Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE);
 		this.getOrCreateTagBuilder(BlockTags.WARPED_STEMS).add(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM, Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE);
 		this.getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN)
-			.add(BlockTags.DARK_OAK_LOGS)
-			.add(BlockTags.OAK_LOGS)
-			.add(BlockTags.ACACIA_LOGS)
-			.add(BlockTags.BIRCH_LOGS)
-			.add(BlockTags.JUNGLE_LOGS)
-			.add(BlockTags.SPRUCE_LOGS);
-		this.getOrCreateTagBuilder(BlockTags.LOGS).add(BlockTags.LOGS_THAT_BURN).add(BlockTags.CRIMSON_STEMS).add(BlockTags.WARPED_STEMS);
+			.addTag(BlockTags.DARK_OAK_LOGS)
+			.addTag(BlockTags.OAK_LOGS)
+			.addTag(BlockTags.ACACIA_LOGS)
+			.addTag(BlockTags.BIRCH_LOGS)
+			.addTag(BlockTags.JUNGLE_LOGS)
+			.addTag(BlockTags.SPRUCE_LOGS);
+		this.getOrCreateTagBuilder(BlockTags.LOGS).addTag(BlockTags.LOGS_THAT_BURN).addTag(BlockTags.CRIMSON_STEMS).addTag(BlockTags.WARPED_STEMS);
 		this.getOrCreateTagBuilder(BlockTags.ANVIL).add(Blocks.ANVIL, Blocks.CHIPPED_ANVIL, Blocks.DAMAGED_ANVIL);
 		this.getOrCreateTagBuilder(BlockTags.SMALL_FLOWERS)
 			.add(
@@ -162,7 +161,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.WITHER_ROSE
 			);
 		this.getOrCreateTagBuilder(BlockTags.ENDERMAN_HOLDABLE)
-			.add(BlockTags.SMALL_FLOWERS)
+			.addTag(BlockTags.SMALL_FLOWERS)
 			.add(
 				Blocks.GRASS_BLOCK,
 				Blocks.DIRT,
@@ -301,7 +300,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.DIORITE_STAIRS
 			);
 		this.getOrCreateTagBuilder(BlockTags.SLABS)
-			.add(BlockTags.WOODEN_SLABS)
+			.addTag(BlockTags.WOODEN_SLABS)
 			.add(
 				Blocks.STONE_SLAB,
 				Blocks.SMOOTH_STONE_SLAB,
@@ -352,7 +351,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.CORAL_PLANTS).add(Blocks.TUBE_CORAL, Blocks.BRAIN_CORAL, Blocks.BUBBLE_CORAL, Blocks.FIRE_CORAL, Blocks.HORN_CORAL);
 		this.getOrCreateTagBuilder(BlockTags.CORALS)
-			.add(BlockTags.CORAL_PLANTS)
+			.addTag(BlockTags.CORAL_PLANTS)
 			.add(Blocks.TUBE_CORAL_FAN, Blocks.BRAIN_CORAL_FAN, Blocks.BUBBLE_CORAL_FAN, Blocks.FIRE_CORAL_FAN, Blocks.HORN_CORAL_FAN);
 		this.getOrCreateTagBuilder(BlockTags.WALL_CORALS)
 			.add(Blocks.TUBE_CORAL_WALL_FAN, Blocks.BRAIN_CORAL_WALL_FAN, Blocks.BUBBLE_CORAL_WALL_FAN, Blocks.FIRE_CORAL_WALL_FAN, Blocks.HORN_CORAL_WALL_FAN);
@@ -395,10 +394,10 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.CRIMSON_TRAPDOOR,
 				Blocks.WARPED_TRAPDOOR
 			);
-		this.getOrCreateTagBuilder(BlockTags.TRAPDOORS).add(BlockTags.WOODEN_TRAPDOORS).add(Blocks.IRON_TRAPDOOR);
-		this.getOrCreateTagBuilder(BlockTags.UNDERWATER_BONEMEALS).add(Blocks.SEAGRASS).add(BlockTags.CORALS).add(BlockTags.WALL_CORALS);
+		this.getOrCreateTagBuilder(BlockTags.TRAPDOORS).addTag(BlockTags.WOODEN_TRAPDOORS).add(Blocks.IRON_TRAPDOOR);
+		this.getOrCreateTagBuilder(BlockTags.UNDERWATER_BONEMEALS).add(Blocks.SEAGRASS).addTag(BlockTags.CORALS).addTag(BlockTags.WALL_CORALS);
 		this.getOrCreateTagBuilder(BlockTags.BAMBOO_PLANTABLE_ON)
-			.add(BlockTags.SAND)
+			.addTag(BlockTags.SAND)
 			.add(Blocks.BAMBOO, Blocks.BAMBOO_SAPLING, Blocks.GRAVEL, Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.MYCELIUM);
 		this.getOrCreateTagBuilder(BlockTags.STANDING_SIGNS)
 			.add(
@@ -422,7 +421,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.CRIMSON_WALL_SIGN,
 				Blocks.WARPED_WALL_SIGN
 			);
-		this.getOrCreateTagBuilder(BlockTags.SIGNS).add(BlockTags.STANDING_SIGNS).add(BlockTags.WALL_SIGNS);
+		this.getOrCreateTagBuilder(BlockTags.SIGNS).addTag(BlockTags.STANDING_SIGNS).addTag(BlockTags.WALL_SIGNS);
 		this.getOrCreateTagBuilder(BlockTags.BEDS)
 			.add(
 				Blocks.RED_BED,
@@ -442,7 +441,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.WHITE_BED,
 				Blocks.YELLOW_BED
 			);
-		this.getOrCreateTagBuilder(BlockTags.FENCES).add(BlockTags.WOODEN_FENCES).add(Blocks.NETHER_BRICK_FENCE);
+		this.getOrCreateTagBuilder(BlockTags.FENCES).addTag(BlockTags.WOODEN_FENCES).add(Blocks.NETHER_BRICK_FENCE);
 		this.getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE)
 			.add(
 				Blocks.BARRIER,
@@ -478,10 +477,10 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.WITHER_SUMMON_BASE_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.TALL_FLOWERS).add(Blocks.SUNFLOWER, Blocks.LILAC, Blocks.PEONY, Blocks.ROSE_BUSH);
-		this.getOrCreateTagBuilder(BlockTags.FLOWERS).add(BlockTags.SMALL_FLOWERS).add(BlockTags.TALL_FLOWERS);
+		this.getOrCreateTagBuilder(BlockTags.FLOWERS).addTag(BlockTags.SMALL_FLOWERS).addTag(BlockTags.TALL_FLOWERS);
 		this.getOrCreateTagBuilder(BlockTags.BEEHIVES).add(Blocks.BEE_NEST, Blocks.BEEHIVE);
 		this.getOrCreateTagBuilder(BlockTags.CROPS).add(Blocks.BEETROOTS, Blocks.CARROTS, Blocks.POTATOES, Blocks.WHEAT, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
-		this.getOrCreateTagBuilder(BlockTags.BEE_GROWABLES).add(BlockTags.CROPS).add(Blocks.SWEET_BERRY_BUSH);
+		this.getOrCreateTagBuilder(BlockTags.BEE_GROWABLES).addTag(BlockTags.CROPS).add(Blocks.SWEET_BERRY_BUSH);
 		this.getOrCreateTagBuilder(BlockTags.SHULKER_BOXES)
 			.add(
 				Blocks.SHULKER_BOX,
@@ -518,7 +517,11 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.add(Blocks.SOUL_FIRE_TORCH)
 			.add(Blocks.SOUL_FIRE_LANTERN)
 			.add(Blocks.SOUL_FIRE_WALL_TORCH);
-		this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS).add(Blocks.WARPED_FUNGUS).add(Blocks.POTTED_WARPED_FUNGUS);
+		this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS)
+			.add(Blocks.WARPED_FUNGUS)
+			.add(Blocks.POTTED_WARPED_FUNGUS)
+			.add(Blocks.NETHER_PORTAL)
+			.add(Blocks.RESPAWN_ANCHOR);
 		this.getOrCreateTagBuilder(BlockTags.GOLD_ORES).add(Blocks.GOLD_ORE, Blocks.NETHER_GOLD_ORE);
 		this.getOrCreateTagBuilder(BlockTags.SOUL_FIRE_BASE_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.NON_FLAMMABLE_WOOD)
@@ -565,10 +568,5 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 	@Override
 	public String getName() {
 		return "Block Tags";
-	}
-
-	@Override
-	protected void setContainer(TagContainer<Block> tagContainer) {
-		BlockTags.setContainer(tagContainer);
 	}
 }

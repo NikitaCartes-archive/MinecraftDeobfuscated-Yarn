@@ -53,11 +53,11 @@ public class WorldUpdater {
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
-	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties, boolean eraseCache) {
-		this.levelName = levelProperties.getLevelName();
+	public WorldUpdater(LevelStorage.Session session, LevelProperties properties, boolean eraseCache) {
+		this.levelName = properties.getLevelName();
 		this.eraseCache = eraseCache;
-		this.worldSaveHandler = levelStorage.createSaveHandler(string, null);
-		this.worldSaveHandler.saveWorld(levelProperties);
+		this.worldSaveHandler = session.createSaveHandler(null);
+		this.worldSaveHandler.saveWorld(properties);
 		this.persistentStateManager = new PersistentStateManager(
 			new File(DimensionType.OVERWORLD.getSaveDirectory(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
 		);
@@ -100,7 +100,7 @@ public class WorldUpdater {
 
 			for (DimensionType dimensionType2 : DimensionType.getAll()) {
 				File file2 = dimensionType2.getSaveDirectory(file);
-				builder2.put(dimensionType2, new VersionedChunkStorage(new File(file2, "region"), this.worldSaveHandler.getDataFixer()));
+				builder2.put(dimensionType2, new VersionedChunkStorage(new File(file2, "region"), this.worldSaveHandler.getDataFixer(), true));
 			}
 
 			ImmutableMap<DimensionType, VersionedChunkStorage> immutableMap2 = builder2.build();
@@ -205,7 +205,7 @@ public class WorldUpdater {
 					int i = Integer.parseInt(matcher.group(1)) << 5;
 					int j = Integer.parseInt(matcher.group(2)) << 5;
 
-					try (RegionFile regionFile = new RegionFile(file3, file2)) {
+					try (RegionFile regionFile = new RegionFile(file3, file2, true)) {
 						for (int k = 0; k < 32; k++) {
 							for (int l = 0; l < 32; l++) {
 								ChunkPos chunkPos = new ChunkPos(k + i, l + j);

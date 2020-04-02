@@ -26,12 +26,14 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -237,11 +239,8 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(3.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
+	public static DefaultAttributeContainer.Builder createRabbitAttributes() {
+		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 3.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F);
 	}
 
 	@Override
@@ -327,7 +326,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	public void setRabbitType(int rabbitType) {
 		if (rabbitType == 99) {
-			this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(8.0);
+			this.getAttributeInstance(Attributes.GENERIC_ARMOR).setBaseValue(8.0);
 			this.goalSelector.add(4, new RabbitEntity.RabbitAttackGoal(this));
 			this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 			this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));

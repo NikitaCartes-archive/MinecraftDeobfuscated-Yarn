@@ -51,13 +51,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	public void tick() {
 		super.tick();
 		Vec3d vec3d = this.getVelocity();
-		HitResult hitResult = ProjectileUtil.getCollision(
-			this,
-			this.getBoundingBox().stretch(vec3d).expand(1.0),
-			entity -> !entity.isSpectator() && entity != this.getOwner(),
-			RayTraceContext.ShapeType.OUTLINE,
-			true
-		);
+		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.OUTLINE);
 		if (hitResult != null) {
 			this.onCollision(hitResult);
 		}
@@ -65,30 +59,9 @@ public class LlamaSpitEntity extends ProjectileEntity {
 		double d = this.getX() + vec3d.x;
 		double e = this.getY() + vec3d.y;
 		double f = this.getZ() + vec3d.z;
-		float g = MathHelper.sqrt(squaredHorizontalLength(vec3d));
-		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
-		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)g) * 180.0F / (float)Math.PI);
-
-		while (this.pitch - this.prevPitch < -180.0F) {
-			this.prevPitch -= 360.0F;
-		}
-
-		while (this.pitch - this.prevPitch >= 180.0F) {
-			this.prevPitch += 360.0F;
-		}
-
-		while (this.yaw - this.prevYaw < -180.0F) {
-			this.prevYaw -= 360.0F;
-		}
-
-		while (this.yaw - this.prevYaw >= 180.0F) {
-			this.prevYaw += 360.0F;
-		}
-
-		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
-		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-		float h = 0.99F;
-		float i = 0.06F;
+		this.method_26962();
+		float g = 0.99F;
+		float h = 0.06F;
 		if (!this.world.containsBlockWithMaterial(this.getBoundingBox(), Material.AIR)) {
 			this.remove();
 		} else if (this.isInsideWaterOrBubbleColumn()) {

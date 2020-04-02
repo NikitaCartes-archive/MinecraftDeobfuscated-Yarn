@@ -4,14 +4,18 @@ import io.netty.util.internal.ThreadLocalRandom;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.MathHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EntityAttributeModifier {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private final double amount;
 	private final EntityAttributeModifier.Operation operation;
 	private final Supplier<String> nameGetter;
 	private final UUID uuid;
-	private boolean serialize = true;
 
 	public EntityAttributeModifier(String name, double amount, EntityAttributeModifier.Operation operation) {
 		this(MathHelper.randomUuid(ThreadLocalRandom.current()), (Supplier<String>)(() -> name), amount, operation);
@@ -44,15 +48,6 @@ public class EntityAttributeModifier {
 		return this.amount;
 	}
 
-	public boolean shouldSerialize() {
-		return this.serialize;
-	}
-
-	public EntityAttributeModifier setSerialize(boolean serialize) {
-		this.serialize = serialize;
-		return this;
-	}
-
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -65,7 +60,7 @@ public class EntityAttributeModifier {
 	}
 
 	public int hashCode() {
-		return this.uuid != null ? this.uuid.hashCode() : 0;
+		return this.uuid.hashCode();
 	}
 
 	public String toString() {
@@ -78,9 +73,29 @@ public class EntityAttributeModifier {
 			+ '\''
 			+ ", id="
 			+ this.uuid
-			+ ", serialize="
-			+ this.serialize
 			+ '}';
+	}
+
+	public CompoundTag toTag() {
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.putString("Name", this.getName());
+		compoundTag.putDouble("Amount", this.amount);
+		compoundTag.putInt("Operation", this.operation.getId());
+		compoundTag.putUuidNew("UUID", this.uuid);
+		return compoundTag;
+	}
+
+	@Nullable
+	public static EntityAttributeModifier fromTag(CompoundTag tag) {
+		UUID uUID = tag.getUuidNew("UUID");
+
+		try {
+			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(tag.getInt("Operation"));
+			return new EntityAttributeModifier(uUID, tag.getString("Name"), tag.getDouble("Amount"), operation);
+		} catch (Exception var3) {
+			LOGGER.warn("Unable to create attribute: {}", var3.getMessage());
+			return null;
+		}
 	}
 
 	public static enum Operation {

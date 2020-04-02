@@ -161,7 +161,7 @@ public final class Vector3f {
 		Quaternion quaternion2 = new Quaternion(rotation);
 		quaternion2.conjugate();
 		quaternion.hamiltonProduct(quaternion2);
-		this.set(quaternion.getB(), quaternion.getC(), quaternion.getD());
+		this.set(quaternion.getX(), quaternion.getY(), quaternion.getZ());
 	}
 
 	@Environment(EnvType.CLIENT)

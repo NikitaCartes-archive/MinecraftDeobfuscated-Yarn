@@ -44,7 +44,8 @@ import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -270,13 +271,12 @@ public class FoxEntity extends AnimalEntity {
 		}
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(32.0);
-		this.getAttributes().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
+	public static DefaultAttributeContainer.Builder createFoxAttributes() {
+		return MobEntity.createMobAttributes()
+			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(Attributes.GENERIC_MAX_HEALTH, 10.0)
+			.add(Attributes.GENERIC_FOLLOW_RANGE, 32.0)
+			.add(Attributes.GENERIC_ATTACK_DAMAGE, 2.0);
 	}
 
 	public FoxEntity createChild(PassiveEntity passiveEntity) {

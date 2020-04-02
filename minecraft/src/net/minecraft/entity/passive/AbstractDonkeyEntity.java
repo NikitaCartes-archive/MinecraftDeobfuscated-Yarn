@@ -2,7 +2,8 @@ package net.minecraft.entity.passive;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -26,17 +27,18 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
+	protected void initAttributes() {
+		this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus());
+	}
+
+	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(CHEST, false);
 	}
 
-	@Override
-	protected void initAttributes() {
-		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus());
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.175F);
-		this.getAttributeInstance(JUMP_STRENGTH).setBaseValue(0.5);
+	public static DefaultAttributeContainer.Builder createAbstractDonkeyAttributes() {
+		return createBaseHorseAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.175F).add(Attributes.HORSE_JUMP_STRENGTH, 0.5);
 	}
 
 	public boolean hasChest() {

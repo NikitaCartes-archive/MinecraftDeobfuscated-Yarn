@@ -5,8 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -73,8 +72,7 @@ public abstract class TrackTargetGoal extends Goal {
 	}
 
 	protected double getFollowRange() {
-		EntityAttributeInstance entityAttributeInstance = this.mob.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
-		return entityAttributeInstance == null ? 16.0 : entityAttributeInstance.getValue();
+		return this.mob.method_26825(Attributes.GENERIC_FOLLOW_RANGE);
 	}
 
 	@Override
