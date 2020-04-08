@@ -83,7 +83,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
+			BlockRotation blockRotation = BlockRotation.random(this.random);
 			int i = 5;
 			int j = 5;
 			if (blockRotation == BlockRotation.CLOCKWISE_90) {

@@ -1,7 +1,9 @@
 package net.minecraft.block;
 
 import java.util.function.ToIntFunction;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.sapling.AcaciaSaplingGenerator;
 import net.minecraft.block.sapling.BirchSaplingGenerator;
@@ -199,6 +201,7 @@ public class Blocks {
 				.allowsSpawning(Blocks::method_26114)
 				.solidBlock(Blocks::method_26122)
 				.suffocates(Blocks::method_26122)
+				.blockVision(Blocks::method_26122)
 		)
 	);
 	public static final Block LAPIS_ORE = register("lapis_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
@@ -312,6 +315,7 @@ public class Blocks {
 				.nonOpaque()
 				.solidBlock(Blocks::method_26122)
 				.suffocates(Blocks::method_26122)
+				.blockVision(Blocks::method_26122)
 		)
 	);
 	public static final Block DANDELION = register(
@@ -390,7 +394,7 @@ public class Blocks {
 		)
 	);
 	public static final Block GOLD_BLOCK = register(
-		"gold_block", new GoldBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.GOLD).strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL))
+		"gold_block", new Block(AbstractBlock.Settings.of(Material.METAL, MaterialColor.GOLD).strength(3.0F, 6.0F).sounds(BlockSoundGroup.METAL))
 	);
 	public static final Block IRON_BLOCK = register(
 		"iron_block", new Block(AbstractBlock.Settings.of(Material.METAL, MaterialColor.IRON).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL))
@@ -837,7 +841,7 @@ public class Blocks {
 		new StemBlock((GourdBlock)MELON, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM))
 	);
 	public static final Block VINE = register(
-		"vine", new VineBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2F).sounds(BlockSoundGroup.field_23083))
+		"vine", new VineBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2F).sounds(BlockSoundGroup.VINE))
 	);
 	public static final Block OAK_FENCE_GATE = register(
 		"oak_fence_gate",
@@ -2239,10 +2243,22 @@ public class Blocks {
 	public static final Block CAMPFIRE = register(
 		"campfire",
 		new CampfireBlock(
+			true,
 			AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE)
 				.strength(2.0F)
 				.sounds(BlockSoundGroup.WOOD)
 				.lightLevel(createLightLevelFromBlockState(15))
+				.nonOpaque()
+		)
+	);
+	public static final Block SOUL_CAMPFIRE = register(
+		"soul_campfire",
+		new CampfireBlock(
+			false,
+			AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE)
+				.strength(2.0F)
+				.sounds(BlockSoundGroup.WOOD)
+				.lightLevel(createLightLevelFromBlockState(10))
 				.nonOpaque()
 		)
 	);
@@ -2479,8 +2495,54 @@ public class Blocks {
 		"potted_warped_roots", new FlowerPotBlock(WARPED_ROOTS, AbstractBlock.Settings.of(Material.PART).breakInstantly().nonOpaque())
 	);
 	public static final Block LODESTONE = register(
-		"lodestone", new Block(AbstractBlock.Settings.of(Material.ANVIL).strength(3.5F).sounds(BlockSoundGroup.field_23265))
+		"lodestone", new Block(AbstractBlock.Settings.of(Material.ANVIL).strength(3.5F).sounds(BlockSoundGroup.LODESTONE))
 	);
+	public static final Block BLACKSTONE = register("blackstone", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).strength(1.5F, 6.0F)));
+	public static final Block BLACKSTONE_STAIRS = register(
+		"blackstone_stairs", new StairsBlock(BLACKSTONE.getDefaultState(), AbstractBlock.Settings.copy(BLACKSTONE))
+	);
+	public static final Block BLACKSTONE_WALL = register("blackstone_wall", new WallBlock(AbstractBlock.Settings.copy(BLACKSTONE)));
+	public static final Block BLACKSTONE_SLAB = register("blackstone_slab", new SlabBlock(AbstractBlock.Settings.copy(BLACKSTONE).strength(2.0F, 6.0F)));
+	public static final Block POLISHED_BLACKSTONE = register("polished_blackstone", new Block(AbstractBlock.Settings.copy(BLACKSTONE).strength(2.0F, 6.0F)));
+	public static final Block POLISHED_BLACKSTONE_BRICKS = register(
+		"polished_blackstone_bricks", new Block(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE).strength(1.5F, 6.0F))
+	);
+	public static final Block CRACKED_POLISHED_BLACKSTONE_BRICKS = register(
+		"cracked_polished_blackstone_bricks", new Block(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS))
+	);
+	public static final Block CHISELED_POLISHED_BLACKSTONE = register(
+		"chiseled_polished_blackstone", new Block(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE).strength(1.5F, 6.0F))
+	);
+	public static final Block POLISHED_BLACKSTONE_BRICK_SLAB = register(
+		"polished_blackstone_brick_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS).strength(2.0F, 6.0F))
+	);
+	public static final Block POLISHED_BLACKSTONE_BRICK_STAIRS = register(
+		"polished_blackstone_brick_stairs", new StairsBlock(POLISHED_BLACKSTONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS))
+	);
+	public static final Block POLISHED_BLACKSTONE_BRICK_WALL = register(
+		"polished_blackstone_brick_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS))
+	);
+	public static final Block GILDED_BLACKSTONE = register("gilded_blackstone", new Block(AbstractBlock.Settings.copy(BLACKSTONE)));
+	public static final Block POLISHED_BLACKSTONE_STAIRS = register(
+		"polished_blackstone_stairs", new StairsBlock(POLISHED_BLACKSTONE.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_BLACKSTONE))
+	);
+	public static final Block POLISHED_BLACKSTONE_SLAB = register("polished_blackstone_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE)));
+	public static final Block POLISHED_BLACKSTONE_PRESSURE_PLATE = register(
+		"polished_blackstone_pressure_plate",
+		new PressurePlateBlock(PressurePlateBlock.ActivationRule.MOBS, AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).noCollision().strength(0.5F))
+	);
+	public static final Block POLISHED_BLACKSTONE_BUTTON = register(
+		"polished_blackstone_button", new StoneButtonBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.5F))
+	);
+	public static final Block POLISHED_BLACKSTONE_WALL = register("polished_blackstone_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE)));
+	public static final Block CHISELED_NETHER_BRICKS = register(
+		"chiseled_nether_bricks",
+		new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICK))
+	);
+	public static final Block CRACKED_NETHER_BRICKS = register(
+		"cracked_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICK))
+	);
+	public static final Block QUARTZ_BRICKS = register("quartz_bricks", new Block(AbstractBlock.Settings.copy(QUARTZ_BLOCK)));
 
 	private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
 		return blockState -> blockState.get(Properties.LIT) ? litLevel : 0;
@@ -2538,6 +2600,7 @@ public class Blocks {
 				.allowsSpawning(Blocks::method_26114)
 				.solidBlock(Blocks::method_26122)
 				.suffocates(Blocks::method_26122)
+				.blockVision(Blocks::method_26122)
 		);
 	}
 
@@ -2550,20 +2613,28 @@ public class Blocks {
 				.nonOpaque()
 				.allowsSpawning(Blocks::canSpawnOnLeaves)
 				.suffocates(Blocks::method_26122)
+				.blockVision(Blocks::method_26122)
 		);
 	}
 
 	private static ShulkerBoxBlock createShulkerBoxBlock(DyeColor color, AbstractBlock.Settings settings) {
-		return new ShulkerBoxBlock(color, settings.strength(2.0F).dynamicBounds().nonOpaque().suffocates(Blocks::method_26113));
+		AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> {
+			BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+			if (!(blockEntity instanceof ShulkerBoxBlockEntity)) {
+				return true;
+			} else {
+				ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
+				return shulkerBoxBlockEntity.method_27093();
+			}
+		};
+		return new ShulkerBoxBlock(color, settings.strength(2.0F).dynamicBounds().nonOpaque().suffocates(contextPredicate).blockVision(contextPredicate));
 	}
 
 	private static PistonBlock createPistonBlock(boolean sticky) {
+		AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> !(Boolean)blockState.get(PistonBlock.EXTENDED);
 		return new PistonBlock(
 			sticky,
-			AbstractBlock.Settings.of(Material.PISTON)
-				.strength(1.5F)
-				.solidBlock(Blocks::method_26122)
-				.suffocates((blockState, blockView, blockPos) -> !(Boolean)blockState.get(PistonBlock.EXTENDED))
+			AbstractBlock.Settings.of(Material.PISTON).strength(1.5F).solidBlock(Blocks::method_26122).suffocates(contextPredicate).blockVision(contextPredicate)
 		);
 	}
 
@@ -2581,7 +2652,7 @@ public class Blocks {
 				Block.STATE_IDS.add(blockState);
 			}
 
-			block.getDropTableID();
+			block.getLootTableId();
 		}
 	}
 }

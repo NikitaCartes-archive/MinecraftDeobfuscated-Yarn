@@ -70,6 +70,27 @@ public abstract class Option {
 			return doubleOption.getDisplayPrefix() + ChatHud.getWidth(d) + "px";
 		}
 	);
+	public static final DoubleOption field_23930 = new DoubleOption(
+		"options.chat.line_spacing",
+		0.0,
+		1.0,
+		0.0F,
+		gameOptions -> gameOptions.chatLineSpacing,
+		(gameOptions, double_) -> gameOptions.chatLineSpacing = double_,
+		(gameOptions, doubleOption) -> doubleOption.getDisplayPrefix() + (int)(doubleOption.getRatio(doubleOption.get(gameOptions)) * 100.0) + "%"
+	);
+	public static final DoubleOption field_23931 = new DoubleOption(
+		"options.chat.delay_instant",
+		0.0,
+		6.0,
+		0.1F,
+		gameOptions -> gameOptions.chatDelay,
+		(gameOptions, double_) -> gameOptions.chatDelay = double_,
+		(gameOptions, doubleOption) -> {
+			double d = doubleOption.get(gameOptions);
+			return d <= 0.0 ? I18n.translate("options.chat.delay_none") : I18n.translate("options.chat.delay", String.format("%.1f", d));
+		}
+	);
 	public static final DoubleOption FOV = new DoubleOption(
 		"options.fov", 30.0, 110.0, 1.0F, gameOptions -> gameOptions.fov, (gameOptions, double_) -> gameOptions.fov = double_, (gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);

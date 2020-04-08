@@ -139,7 +139,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private int syncedExperience = -99999999;
 	private int field_13998 = 60;
 	private ChatVisibility clientChatVisibility;
-	private boolean field_13971 = true;
+	private boolean clientChatColorsEnabled = true;
 	private long lastActionTime = Util.getMeasuringTimeMs();
 	private Entity cameraEntity;
 	private boolean inTeleportationState;
@@ -737,9 +737,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
 		} else if (!this.world.dimension.hasVisibleSky()) {
 			return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
-		} else if (!this.method_26285(pos, direction)) {
+		} else if (!this.isBedTooFarAway(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
-		} else if (this.method_26286(pos, direction)) {
+		} else if (this.isBedObstructed(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
 		} else {
 			this.setSpawnPoint(this.world.getDimension().getType(), pos, false, true);
@@ -777,18 +777,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		super.sleep(pos);
 	}
 
-	private boolean method_26285(BlockPos blockPos, Direction direction) {
-		return this.method_26287(blockPos) || this.method_26287(blockPos.offset(direction.getOpposite()));
+	private boolean isBedTooFarAway(BlockPos pos, Direction direction) {
+		return this.isBedTooFarAway(pos) || this.isBedTooFarAway(pos.offset(direction.getOpposite()));
 	}
 
-	private boolean method_26287(BlockPos blockPos) {
-		Vec3d vec3d = Vec3d.method_24955(blockPos);
+	private boolean isBedTooFarAway(BlockPos pos) {
+		Vec3d vec3d = Vec3d.method_24955(pos);
 		return Math.abs(this.getX() - vec3d.getX()) <= 3.0 && Math.abs(this.getY() - vec3d.getY()) <= 2.0 && Math.abs(this.getZ() - vec3d.getZ()) <= 3.0;
 	}
 
-	private boolean method_26286(BlockPos blockPos, Direction direction) {
-		BlockPos blockPos2 = blockPos.up();
-		return !this.doesNotSuffocate(blockPos2) || !this.doesNotSuffocate(blockPos2.offset(direction.getOpposite()));
+	private boolean isBedObstructed(BlockPos pos, Direction direction) {
+		BlockPos blockPos = pos.up();
+		return !this.doesNotSuffocate(blockPos) || !this.doesNotSuffocate(blockPos.offset(direction.getOpposite()));
 	}
 
 	@Override
@@ -875,7 +875,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.inventory, this);
 			if (screenHandler == null) {
 				if (this.isSpectator()) {
-					this.addMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
+					this.sendMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
 				}
 
 				return OptionalInt.empty();
@@ -1039,7 +1039,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void addMessage(Text message, boolean actionBar) {
+	public void sendMessage(Text message, boolean actionBar) {
 		this.networkHandler.sendPacket(new GameMessageS2CPacket(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT));
 	}
 
@@ -1186,18 +1186,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void sendMessage(Text message) {
-		this.sendChatMessage(message, MessageType.SYSTEM);
+	public void sendSystemMessage(Text message) {
+		this.sendMessage(message, MessageType.SYSTEM);
 	}
 
-	public void sendChatMessage(Text text, MessageType messageType) {
+	public void sendMessage(Text message, MessageType type) {
 		this.networkHandler
 			.sendPacket(
-				new GameMessageS2CPacket(text, messageType),
+				new GameMessageS2CPacket(message, type),
 				future -> {
-					if (!future.isSuccess() && (messageType == MessageType.GAME_INFO || messageType == MessageType.SYSTEM)) {
+					if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM)) {
 						int i = 256;
-						String string = text.asTruncatedString(256);
+						String string = message.asTruncatedString(256);
 						Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
 						this.networkHandler
 							.sendPacket(new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM));
@@ -1215,7 +1215,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public void setClientSettings(ClientSettingsC2SPacket clientSettingsC2SPacket) {
 		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
-		this.field_13971 = clientSettingsC2SPacket.hasChatColors();
+		this.clientChatColorsEnabled = clientSettingsC2SPacket.hasChatColors();
 		this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
 		this.getDataTracker().set(MAIN_ARM, (byte)(clientSettingsC2SPacket.getMainArm() == Arm.LEFT ? 0 : 1));
 	}
@@ -1366,16 +1366,16 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		return this.spawnPointSet;
 	}
 
-	public void setSpawnPoint(DimensionType dimension, BlockPos pos, boolean bl, boolean bl2) {
+	public void setSpawnPoint(DimensionType dimension, BlockPos pos, boolean spawnPointSet, boolean bl) {
 		if (pos != null) {
-			boolean bl3 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
-			if (bl2 && !bl3) {
-				this.sendMessage(new TranslatableText("block.minecraft.set_spawn"));
+			boolean bl2 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
+			if (bl && !bl2) {
+				this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn"));
 			}
 
 			this.spawnPointPosition = pos;
 			this.spawnPointDimension = dimension;
-			this.spawnPointSet = bl;
+			this.spawnPointSet = spawnPointSet;
 		} else {
 			this.spawnPointPosition = null;
 			this.spawnPointDimension = DimensionType.OVERWORLD;

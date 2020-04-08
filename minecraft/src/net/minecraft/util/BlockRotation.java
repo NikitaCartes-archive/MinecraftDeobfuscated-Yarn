@@ -94,8 +94,7 @@ public enum BlockRotation {
 	}
 
 	public static BlockRotation random(Random random) {
-		BlockRotation[] blockRotations = values();
-		return blockRotations[random.nextInt(blockRotations.length)];
+		return Util.getRandom(values(), random);
 	}
 
 	public static List<BlockRotation> randomRotationOrder(Random random) {

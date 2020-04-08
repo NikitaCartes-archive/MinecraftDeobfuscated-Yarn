@@ -11,8 +11,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -53,9 +53,9 @@ public class BlazeEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createBlazeAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 6.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.23F)
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 48.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
 	}
 
 	@Override
@@ -255,7 +255,7 @@ public class BlazeEntity extends HostileEntity {
 		}
 
 		private double method_6995() {
-			return this.blaze.method_26825(Attributes.GENERIC_FOLLOW_RANGE);
+			return this.blaze.method_26825(EntityAttributes.GENERIC_FOLLOW_RANGE);
 		}
 	}
 }

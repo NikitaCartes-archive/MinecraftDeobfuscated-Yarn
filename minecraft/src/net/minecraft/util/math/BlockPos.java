@@ -4,6 +4,7 @@ import com.google.common.collect.AbstractIterator;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Spliterator.OfInt;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -229,6 +230,26 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	 */
 	public BlockPos.Mutable mutableCopy() {
 		return new BlockPos.Mutable(this.getX(), this.getY(), this.getZ());
+	}
+
+	public static Iterable<BlockPos> method_27156(Random random, int i, int j, int k, int l, int m, int n, int o) {
+		int p = m - j + 1;
+		int q = n - k + 1;
+		int r = o - l + 1;
+		return () -> new AbstractIterator<BlockPos>() {
+				final BlockPos.Mutable field_23945 = new BlockPos.Mutable();
+				int field_23946 = i;
+
+				protected BlockPos computeNext() {
+					if (this.field_23946 <= 0) {
+						return this.endOfData();
+					} else {
+						BlockPos blockPos = this.field_23945.set(j + random.nextInt(p), k + random.nextInt(q), l + random.nextInt(r));
+						this.field_23946--;
+						return blockPos;
+					}
+				}
+			};
 	}
 
 	/**
@@ -460,6 +481,19 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		 */
 		public BlockPos.Mutable move(int dx, int dy, int dz) {
 			return this.set(this.getX() + dx, this.getY() + dy, this.getZ() + dz);
+		}
+
+		public BlockPos.Mutable method_27158(Direction.Axis axis, int i, int j) {
+			switch (axis) {
+				case X:
+					return this.set(MathHelper.clamp(this.getX(), i, j), this.getY(), this.getZ());
+				case Y:
+					return this.set(this.getX(), MathHelper.clamp(this.getY(), i, j), this.getZ());
+				case Z:
+					return this.set(this.getX(), this.getY(), MathHelper.clamp(this.getZ(), i, j));
+				default:
+					throw new IllegalStateException("Unable to clamp axis " + axis);
+			}
 		}
 
 		@Override

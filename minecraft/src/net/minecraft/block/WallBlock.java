@@ -34,11 +34,11 @@ public class WallBlock extends Block implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private final Map<BlockState, VoxelShape> shapeMap;
 	private final Map<BlockState, VoxelShape> collisionShapeMap;
-	private static final VoxelShape field_22163 = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
-	private static final VoxelShape field_22164 = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 16.0, 11.0);
-	private static final VoxelShape field_22165 = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 16.0);
-	private static final VoxelShape field_22166 = Block.createCuboidShape(0.0, 0.0, 5.0, 11.0, 16.0, 11.0);
-	private static final VoxelShape field_22167 = Block.createCuboidShape(5.0, 0.0, 5.0, 16.0, 16.0, 11.0);
+	private static final VoxelShape field_22163 = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0);
+	private static final VoxelShape field_22164 = Block.createCuboidShape(7.0, 0.0, 0.0, 9.0, 16.0, 9.0);
+	private static final VoxelShape field_22165 = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 16.0);
+	private static final VoxelShape field_22166 = Block.createCuboidShape(0.0, 0.0, 7.0, 9.0, 16.0, 9.0);
+	private static final VoxelShape field_22167 = Block.createCuboidShape(7.0, 0.0, 7.0, 16.0, 16.0, 9.0);
 
 	public WallBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -128,8 +128,8 @@ public class WallBlock extends Block implements Waterloggable {
 
 	private boolean shouldConnectTo(BlockState state, boolean faceFullSquare, Direction side) {
 		Block block = state.getBlock();
-		boolean bl = block.isIn(BlockTags.WALLS) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
-		return !cannotConnect(block) && faceFullSquare || bl;
+		boolean bl = block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(state, side);
+		return state.isIn(BlockTags.WALLS) || !cannotConnect(block) && faceFullSquare || block instanceof PaneBlock || bl;
 	}
 
 	@Override
@@ -207,9 +207,31 @@ public class WallBlock extends Block implements Waterloggable {
 		WorldView worldView, BlockState blockState, BlockPos blockPos, BlockState blockState2, boolean bl, boolean bl2, boolean bl3, boolean bl4
 	) {
 		VoxelShape voxelShape = blockState2.getCollisionShape(worldView, blockPos).getFace(Direction.DOWN);
-		boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
-		boolean bl6 = bl5 || blockState2.getBlock().isIn(BlockTags.WALL_POST_OVERRIDE) || method_24427(voxelShape, field_22163);
-		return this.method_24425(blockState.with(UP, Boolean.valueOf(bl6)), bl, bl2, bl3, bl4, voxelShape);
+		BlockState blockState3 = this.method_24425(blockState, bl, bl2, bl3, bl4, voxelShape);
+		return blockState3.with(UP, Boolean.valueOf(this.method_27092(blockState3, blockState2, voxelShape)));
+	}
+
+	private boolean method_27092(BlockState blockState, BlockState blockState2, VoxelShape voxelShape) {
+		boolean bl = blockState2.getBlock() instanceof WallBlock && (Boolean)blockState2.get(UP);
+		if (bl) {
+			return true;
+		} else {
+			WallShape wallShape = blockState.get(NORTH_SHAPE);
+			WallShape wallShape2 = blockState.get(SOUTH_SHAPE);
+			WallShape wallShape3 = blockState.get(EAST_SHAPE);
+			WallShape wallShape4 = blockState.get(WEST_SHAPE);
+			boolean bl2 = wallShape2 == WallShape.NONE;
+			boolean bl3 = wallShape4 == WallShape.NONE;
+			boolean bl4 = wallShape3 == WallShape.NONE;
+			boolean bl5 = wallShape == WallShape.NONE;
+			boolean bl6 = bl5 && bl2 && bl3 && bl4 || bl5 != bl2 || bl3 != bl4;
+			if (bl6) {
+				return true;
+			} else {
+				boolean bl7 = wallShape == WallShape.TALL && wallShape2 == WallShape.TALL || wallShape3 == WallShape.TALL && wallShape4 == WallShape.TALL;
+				return bl7 ? false : blockState2.getBlock().isIn(BlockTags.WALL_POST_OVERRIDE) || method_24427(voxelShape, field_22163);
+			}
+		}
 	}
 
 	private BlockState method_24425(BlockState blockState, boolean bl, boolean bl2, boolean bl3, boolean bl4, VoxelShape voxelShape) {

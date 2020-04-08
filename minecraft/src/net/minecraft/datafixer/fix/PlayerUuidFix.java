@@ -20,10 +20,11 @@ public class PlayerUuidFix extends AbstractUuidFix {
 			typed -> {
 				OpticFinder<?> opticFinder = typed.getType().findField("RootVehicle");
 				return typed.updateTyped(
-					opticFinder,
-					opticFinder.type(),
-					typedx -> typedx.update(DSL.remainderFinder(), dynamic -> (Dynamic)updateRegularMostLeast(dynamic, "Attach", "Attach").orElse(dynamic))
-				);
+						opticFinder,
+						opticFinder.type(),
+						typedx -> typedx.update(DSL.remainderFinder(), dynamic -> (Dynamic)updateRegularMostLeast(dynamic, "Attach", "Attach").orElse(dynamic))
+					)
+					.update(DSL.remainderFinder(), dynamic -> EntityUuidFix.updateSelfUuid(EntityUuidFix.updateLiving(dynamic)));
 			}
 		);
 	}

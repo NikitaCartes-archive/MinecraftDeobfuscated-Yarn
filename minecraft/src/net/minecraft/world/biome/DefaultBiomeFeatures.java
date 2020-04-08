@@ -9,6 +9,7 @@ import net.minecraft.block.MushroomBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
@@ -29,10 +30,12 @@ import net.minecraft.world.gen.decorator.NoiseHeightmapDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.decorator.TrunkVineTreeDecorator;
+import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.BoulderFeatureConfig;
 import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
+import net.minecraft.world.gen.feature.DeltaFeatureConfig;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -42,6 +45,7 @@ import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
+import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
@@ -467,7 +471,31 @@ public class DefaultBiomeFeatures {
 		LAVA_FLUID, true, 4, 1, ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE)
 	);
 	public static final SpringFeatureConfig NETHER_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, false, 4, 1, ImmutableSet.of(Blocks.NETHERRACK));
+	public static final SpringFeatureConfig field_23851 = new SpringFeatureConfig(
+		LAVA_FLUID, true, 4, 1, ImmutableSet.of(Blocks.NETHERRACK, Blocks.SOUL_SAND, Blocks.GRAVEL, Blocks.MAGMA_BLOCK, Blocks.BLACKSTONE)
+	);
 	public static final SpringFeatureConfig ENCLOSED_NETHER_SPRING_CONFIG = new SpringFeatureConfig(LAVA_FLUID, false, 5, 0, ImmutableSet.of(Blocks.NETHERRACK));
+	public static final SpringFeatureConfig field_23852 = new SpringFeatureConfig(LAVA_FLUID, false, 4, 1, ImmutableSet.of(Blocks.SOUL_SAND));
+	public static final SpringFeatureConfig field_23853 = new SpringFeatureConfig(LAVA_FLUID, false, 5, 0, ImmutableSet.of(Blocks.SOUL_SAND));
+	public static final BasaltColumnsFeatureConfig field_23854 = new BasaltColumnsFeatureConfig.Builder().reach(1).height(1, 4).build();
+	public static final BasaltColumnsFeatureConfig field_23855 = new BasaltColumnsFeatureConfig.Builder().reach(2, 3).height(5, 10).build();
+	public static final NetherrackReplaceBlobsFeatureConfig field_23856 = new NetherrackReplaceBlobsFeatureConfig.Builder()
+		.minReachPos(new Vec3i(3, 3, 3))
+		.maxReachPos(new Vec3i(7, 7, 7))
+		.target(Blocks.NETHERRACK.getDefaultState())
+		.state(Blocks.BASALT.getDefaultState())
+		.build();
+	public static final NetherrackReplaceBlobsFeatureConfig field_23857 = new NetherrackReplaceBlobsFeatureConfig.Builder()
+		.minReachPos(new Vec3i(3, 3, 3))
+		.maxReachPos(new Vec3i(7, 7, 7))
+		.target(Blocks.NETHERRACK.getDefaultState())
+		.state(Blocks.BLACKSTONE.getDefaultState())
+		.build();
+	public static final DeltaFeatureConfig field_23858 = new DeltaFeatureConfig.Builder()
+		.contents(Blocks.LAVA.getDefaultState())
+		.radius(3, 6)
+		.rim(Blocks.MAGMA_BLOCK.getDefaultState(), 2)
+		.build();
 	public static final HugeMushroomFeatureConfig HUGE_RED_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(
 		new SimpleBlockStateProvider(RED_MUSHROOM_BLOCK), new SimpleBlockStateProvider(MUSHROOM_BLOCK), 2
 	);

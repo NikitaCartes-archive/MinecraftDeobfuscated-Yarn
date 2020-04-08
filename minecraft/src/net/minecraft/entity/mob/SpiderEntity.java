@@ -20,8 +20,8 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SpiderNavigation;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -86,7 +86,7 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createSpiderAttributes() {
-		return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MAX_HEALTH, 16.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F);
+		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F);
 	}
 
 	@Override

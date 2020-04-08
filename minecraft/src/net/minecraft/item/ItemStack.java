@@ -36,9 +36,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -565,11 +565,11 @@ public final class ItemStack {
 					boolean bl = false;
 					if (player != null) {
 						if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_UUID) {
-							d += player.method_26826(Attributes.GENERIC_ATTACK_DAMAGE);
+							d += player.method_26826(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 							d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
 							bl = true;
 						} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_UUID) {
-							d += player.method_26826(Attributes.GENERIC_ATTACK_SPEED);
+							d += player.method_26826(EntityAttributes.GENERIC_ATTACK_SPEED);
 							bl = true;
 						}
 					}
@@ -578,7 +578,7 @@ public final class ItemStack {
 					if (entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE
 						|| entityAttributeModifier.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
 						e = d * 100.0;
-					} else if (((EntityAttribute)entry.getKey()).equals(Attributes.GENERIC_KNOCKBACK_RESISTANCE)) {
+					} else if (((EntityAttribute)entry.getKey()).equals(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)) {
 						e = d * 10.0;
 					} else {
 						e = d;

@@ -32,7 +32,7 @@ public class MessageCommand {
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text message) {
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.sendMessage(
+			serverPlayerEntity.sendSystemMessage(
 				new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message.deepCopy())
 					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC})
 			);

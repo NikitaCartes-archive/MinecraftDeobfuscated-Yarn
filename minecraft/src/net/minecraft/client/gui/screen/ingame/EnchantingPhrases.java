@@ -5,6 +5,7 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -30,7 +31,7 @@ public class EnchantingPhrases {
 				string = string + " ";
 			}
 
-			string = string + this.phrases[this.random.nextInt(this.phrases.length)];
+			string = string + Util.getRandom(this.phrases, this.random);
 		}
 
 		List<String> list = fontRenderer.wrapStringToWidthAsList(string, width);

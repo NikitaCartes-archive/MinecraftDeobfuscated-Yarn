@@ -21,8 +21,8 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.TrackIronGolemTargetGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.WanderAroundPointOfInterestGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -84,10 +84,10 @@ public class IronGolemEntity extends GolemEntity {
 
 	public static DefaultAttributeContainer.Builder createIronGolemAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 100.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25)
-			.add(Attributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 15.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 100.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 1.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 15.0);
 	}
 
 	@Override
@@ -157,7 +157,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	private float getAttackDamage() {
-		return (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
+		return (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override

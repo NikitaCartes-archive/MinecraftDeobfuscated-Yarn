@@ -206,6 +206,7 @@ public class ItemModelGenerator {
 		this.register(Items.PAINTING, Models.GENERATED);
 		this.register(Items.PAPER, Models.GENERATED);
 		this.register(Items.PHANTOM_MEMBRANE, Models.GENERATED);
+		this.register(Items.PIGLIN_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.PINK_DYE, Models.GENERATED);
 		this.register(Items.POISONOUS_POTATO, Models.GENERATED);
 		this.register(Items.POPPED_CHORUS_FRUIT, Models.GENERATED);

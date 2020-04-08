@@ -9,6 +9,7 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -59,9 +60,7 @@ public class ShipwreckGenerator {
 	public static void addParts(
 		StructureManager structureManager, BlockPos pos, BlockRotation rotation, List<StructurePiece> children, Random random, ShipwreckFeatureConfig config
 	) {
-		Identifier identifier = config.isBeached
-			? BEACHED_TEMPLATES[random.nextInt(BEACHED_TEMPLATES.length)]
-			: REGULAR_TEMPLATES[random.nextInt(REGULAR_TEMPLATES.length)];
+		Identifier identifier = Util.getRandom(config.isBeached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
 		children.add(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, config.isBeached));
 	}
 

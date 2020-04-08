@@ -51,7 +51,7 @@ public class LecternScreenHandler extends ScreenHandler {
 					return true;
 				}
 				case 3:
-					if (!player.canModifyWorld()) {
+					if (!player.canModifyBlocks()) {
 						return false;
 					}
 

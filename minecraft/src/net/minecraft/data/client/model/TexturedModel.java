@@ -28,12 +28,11 @@ public class TexturedModel {
 	public static final TexturedModel.Factory LEAVES = makeFactory(Texture::all, Models.LEAVES);
 	public static final TexturedModel.Factory TEMPLATE_LANTERN = makeFactory(Texture::lantern, Models.TEMPLATE_LANTERN);
 	public static final TexturedModel.Factory TEMPLATE_HANGING_LANTERN = makeFactory(Texture::lantern, Models.TEMPLATE_HANGING_LANTERN);
-	public static final TexturedModel.Factory TEMPLATE_TORCH = makeFactory(Texture::torch, Models.TEMPLATE_TORCH);
-	public static final TexturedModel.Factory TEMPLATE_TORCH_WALL = makeFactory(Texture::torch, Models.TEMPLATE_TORCH_WALL);
 	public static final TexturedModel.Factory TEMPLATE_SEAGRASS = makeFactory(Texture::texture, Models.TEMPLATE_SEAGRASS);
 	public static final TexturedModel.Factory END_FOR_TOP_CUBE_COLUMN = makeFactory(Texture::sideAndEndForTop, Models.CUBE_COLUMN);
 	public static final TexturedModel.Factory END_FOR_TOP_CUBE_COLUMN_HORIZONTAL = makeFactory(Texture::sideAndEndForTop, Models.CUBE_COLUMN_HORIZONTAL);
 	public static final TexturedModel.Factory WALL_CUBE_BUTTOM_TOP = makeFactory(Texture::wallSideTopBottom, Models.CUBE_BOTTOM_TOP);
+	public static final TexturedModel.Factory field_23959 = makeFactory(Texture::method_27168, Models.CUBE_TOP);
 	private final Texture texture;
 	private final Model model;
 

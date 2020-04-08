@@ -37,6 +37,7 @@ public final class TextureKey {
 	public static final TextureKey UNSTICKY = method_27043("unsticky");
 	public static final TextureKey TORCH = method_27043("torch");
 	public static final TextureKey LAYER0 = method_27043("layer0");
+	public static final TextureKey LIT_LOG = method_27043("lit_log");
 	private final String name;
 	@Nullable
 	private final TextureKey parent;

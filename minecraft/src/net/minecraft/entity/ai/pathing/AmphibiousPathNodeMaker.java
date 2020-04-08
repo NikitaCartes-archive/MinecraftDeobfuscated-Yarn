@@ -5,6 +5,7 @@ import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -233,10 +234,11 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
-		PathNodeType pathNodeType = getCommonNodeType(world, x, y, z);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		PathNodeType pathNodeType = getCommonNodeType(world, mutable.set(x, y, z));
 		if (pathNodeType == PathNodeType.WATER) {
 			for (Direction direction : Direction.values()) {
-				PathNodeType pathNodeType2 = getCommonNodeType(world, x + direction.getOffsetX(), y + direction.getOffsetY(), z + direction.getOffsetZ());
+				PathNodeType pathNodeType2 = getCommonNodeType(world, mutable.set(x, y, z).move(direction));
 				if (pathNodeType2 == PathNodeType.BLOCKED) {
 					return PathNodeType.WATER_BORDER;
 				}
@@ -246,14 +248,14 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 		} else {
 			if (pathNodeType == PathNodeType.OPEN && y >= 1) {
 				Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
-				PathNodeType pathNodeType3 = getCommonNodeType(world, x, y - 1, z);
+				PathNodeType pathNodeType3 = getCommonNodeType(world, mutable.set(x, y - 1, z));
 				if (pathNodeType3 != PathNodeType.WALKABLE && pathNodeType3 != PathNodeType.OPEN && pathNodeType3 != PathNodeType.LAVA) {
 					pathNodeType = PathNodeType.WALKABLE;
 				} else {
 					pathNodeType = PathNodeType.OPEN;
 				}
 
-				if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block == Blocks.CAMPFIRE) {
+				if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block.isIn(BlockTags.CAMPFIRES)) {
 					pathNodeType = PathNodeType.DAMAGE_FIRE;
 				}
 
@@ -267,7 +269,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 			}
 
 			if (pathNodeType == PathNodeType.WALKABLE) {
-				pathNodeType = getNodeTypeFromNeighbors(world, x, y, z, pathNodeType);
+				pathNodeType = getNodeTypeFromNeighbors(world, mutable.set(x, y, z), pathNodeType);
 			}
 
 			return pathNodeType;

@@ -13,10 +13,10 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -63,9 +63,9 @@ public class ZombifiedPiglinEntity extends ZombieEntity {
 
 	public static DefaultAttributeContainer.Builder createZombifiedPiglinAttributes() {
 		return ZombieEntity.createZombieAttributes()
-			.add(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.23F)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 5.0);
+			.add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity {
 
 	@Override
 	protected void mobTick() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		LivingEntity livingEntity = this.getAttacker();
 		if (this.isAngry()) {
 			if (!this.isBaby() && !entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
@@ -201,7 +201,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity {
 
 	@Override
 	protected void initAttributes() {
-		this.getAttributeInstance(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(0.0);
+		this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(0.0);
 	}
 
 	@Override

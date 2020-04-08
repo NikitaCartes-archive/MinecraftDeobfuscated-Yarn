@@ -25,8 +25,8 @@ import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -120,7 +120,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	public static DefaultAttributeContainer.Builder createLlamaAttributes() {
-		return createAbstractDonkeyAttributes().add(Attributes.GENERIC_FOLLOW_RANGE, 40.0);
+		return createAbstractDonkeyAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 40.0);
 	}
 
 	@Override
@@ -292,6 +292,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Override
 	public boolean canEquip() {
 		return true;
+	}
+
+	@Override
+	public boolean setSaddled() {
+		return !this.items.getStack(1).isEmpty();
 	}
 
 	@Override

@@ -101,15 +101,15 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				);
 				return ActionResult.SUCCESS;
 			} else if ((Boolean)state.get(OCCUPIED)) {
-				if (!this.method_22357(world, pos)) {
-					player.addMessage(new TranslatableText("block.minecraft.bed.occupied"), true);
+				if (!this.isFree(world, pos)) {
+					player.sendMessage(new TranslatableText("block.minecraft.bed.occupied"), true);
 				}
 
 				return ActionResult.SUCCESS;
 			} else {
 				player.trySleep(pos).ifLeft(sleepFailureReason -> {
 					if (sleepFailureReason != null) {
-						player.addMessage(sleepFailureReason.toText(), true);
+						player.sendMessage(sleepFailureReason.toText(), true);
 					}
 				});
 				return ActionResult.SUCCESS;
@@ -117,8 +117,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		}
 	}
 
-	private boolean method_22357(World world, BlockPos blockPos) {
-		List<VillagerEntity> list = world.getEntities(VillagerEntity.class, new Box(blockPos), LivingEntity::isSleeping);
+	private boolean isFree(World world, BlockPos pos) {
+		List<VillagerEntity> list = world.getEntities(VillagerEntity.class, new Box(pos), LivingEntity::isSleeping);
 		if (list.isEmpty()) {
 			return false;
 		} else {

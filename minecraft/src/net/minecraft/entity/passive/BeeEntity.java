@@ -45,8 +45,8 @@ import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -200,7 +200,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(DamageSource.sting(this), (float)((int)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE)));
+		boolean bl = target.damage(DamageSource.sting(this), (float)((int)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.dealDamage(this, target);
 			if (target instanceof LivingEntity) {
@@ -491,11 +491,11 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 
 	public static DefaultAttributeContainer.Builder createBeeAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(Attributes.GENERIC_FLYING_SPEED, 0.6F)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 2.0)
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 48.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
+			.add(EntityAttributes.GENERIC_FLYING_SPEED, 0.6F)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
 	}
 
 	@Override

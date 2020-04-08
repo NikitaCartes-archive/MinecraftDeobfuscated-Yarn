@@ -7,14 +7,15 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Shearable;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -26,6 +27,7 @@ import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -34,7 +36,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
+public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAttackMob {
 	private static final TrackedData<Byte> SNOW_GOLEM_FLAGS = DataTracker.registerData(SnowGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
 
 	public SnowGolemEntity(EntityType<? extends SnowGolemEntity> entityType, World world) {
@@ -51,7 +53,7 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	}
 
 	public static DefaultAttributeContainer.Builder createSnowGolemAttributes() {
-		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 4.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.2F);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 4.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
 	}
 
 	@Override
@@ -130,18 +132,30 @@ public class SnowGolemEntity extends GolemEntity implements RangedAttackMob {
 	@Override
 	protected boolean interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.SHEARS && this.hasPumpkin()) {
+		if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
+			this.sheared(SoundCategory.PLAYERS);
 			if (!this.world.isClient) {
-				this.setHasPumpkin(false);
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
-				this.dropStack(new ItemStack(Items.CARVED_PUMPKIN), 1.7F);
-				this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, 1.0F, 1.0F);
 			}
 
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public void sheared(SoundCategory shearedSoundCategory) {
+		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		if (!this.world.isClient()) {
+			this.setHasPumpkin(false);
+			this.dropStack(new ItemStack(Items.CARVED_PUMPKIN), 1.7F);
+		}
+	}
+
+	@Override
+	public boolean isShearable() {
+		return this.isAlive() && this.hasPumpkin();
 	}
 
 	public boolean hasPumpkin() {

@@ -28,9 +28,9 @@ import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -125,7 +125,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createMobAttributes() {
-		return LivingEntity.createLivingAttributes().add(Attributes.GENERIC_FOLLOW_RANGE, 16.0).add(Attributes.GENERIC_ATTACK_KNOCKBACK);
+		return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0).add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 	}
 
 	protected EntityNavigation createNavigation(World world) {
@@ -559,10 +559,10 @@ public abstract class MobEntity extends LivingEntity {
 		} else if (itemStack.getItem() instanceof BowItem && itemStack2.getItem() instanceof BowItem) {
 			return this.method_26320(itemStack, itemStack2);
 		} else if (itemStack.getItem() instanceof ArmorItem) {
-			if (!(itemStack2.getItem() instanceof ArmorItem)) {
-				return true;
-			} else if (EnchantmentHelper.hasBindingCurse(itemStack2)) {
+			if (EnchantmentHelper.hasBindingCurse(itemStack2)) {
 				return false;
+			} else if (!(itemStack2.getItem() instanceof ArmorItem)) {
+				return true;
 			} else {
 				ArmorItem armorItem = (ArmorItem)itemStack.getItem();
 				ArmorItem armorItem2 = (ArmorItem)itemStack2.getItem();
@@ -967,7 +967,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Nullable
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		this.getAttributeInstance(Attributes.GENERIC_FOLLOW_RANGE)
+		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
 		if (this.random.nextFloat() < 0.05F) {
 			this.setLeftHanded(true);
@@ -1041,7 +1041,7 @@ public abstract class MobEntity extends LivingEntity {
 		Item item = itemStack.getItem();
 		if (!this.world.isClient && item instanceof SpawnEggItem) {
 			SpawnEggItem spawnEggItem = (SpawnEggItem)item;
-			Optional<MobEntity> optional = spawnEggItem.spawnBaby(player, (EntityType<? extends MobEntity>)this.getType(), this.world, this.getPos(), itemStack);
+			Optional<MobEntity> optional = spawnEggItem.spawnBaby(player, this, (EntityType<? extends MobEntity>)this.getType(), this.world, this.getPos(), itemStack);
 			optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(player, mobEntity));
 		}
 
@@ -1263,8 +1263,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		float f = (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
-		float g = (float)this.method_26825(Attributes.GENERIC_ATTACK_KNOCKBACK);
+		float f = (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		float g = (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 		if (target instanceof LivingEntity) {
 			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
 			g += (float)EnchantmentHelper.getKnockback(this);

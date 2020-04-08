@@ -197,7 +197,7 @@ public class BlockEntityType<T extends BlockEntity> {
 	public static final BlockEntityType<BellBlockEntity> BELL = create("bell", BlockEntityType.Builder.create(BellBlockEntity::new, Blocks.BELL));
 	public static final BlockEntityType<JigsawBlockEntity> JIGSAW = create("jigsaw", BlockEntityType.Builder.create(JigsawBlockEntity::new, Blocks.JIGSAW));
 	public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = create(
-		"campfire", BlockEntityType.Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE)
+		"campfire", BlockEntityType.Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE)
 	);
 	public static final BlockEntityType<BeehiveBlockEntity> BEEHIVE = create(
 		"beehive", BlockEntityType.Builder.create(BeehiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE)

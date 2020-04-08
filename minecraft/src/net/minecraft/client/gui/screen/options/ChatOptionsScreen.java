@@ -21,12 +21,13 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 		Option.CHAT_OPACITY,
 		Option.TEXT_BACKGROUND_OPACITY,
 		Option.CHAT_SCALE,
+		Option.field_23930,
 		Option.CHAT_WIDTH,
 		Option.CHAT_HEIGHT_FOCUSED,
 		Option.SATURATION,
-		Option.REDUCED_DEBUG_INFO,
+		Option.NARRATOR,
 		Option.AUTO_SUGGESTIONS,
-		Option.NARRATOR
+		Option.REDUCED_DEBUG_INFO
 	};
 	private AbstractButtonWidget narratorOptionButton;
 

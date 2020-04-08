@@ -22,6 +22,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public class SetAttributesLootFunction extends ConditionalLootFunction {
@@ -42,7 +43,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 				uUID = UUID.randomUUID();
 			}
 
-			EquipmentSlot equipmentSlot = attribute.slots[random.nextInt(attribute.slots.length)];
+			EquipmentSlot equipmentSlot = Util.getRandom(attribute.slots, random);
 			stack.addAttributeModifier(
 				attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amountRange.nextFloat(random), attribute.operation), equipmentSlot
 			);

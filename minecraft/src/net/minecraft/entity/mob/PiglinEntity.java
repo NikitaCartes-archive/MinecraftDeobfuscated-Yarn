@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.CrossbowUser;
@@ -25,10 +23,11 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -123,6 +122,8 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		this.setCanPickUpLoot(true);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.experiencePoints = 5;
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 	}
 
 	@Override
@@ -174,6 +175,10 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		return this.inventory.addStack(stack);
 	}
 
+	protected boolean method_27085(ItemStack itemStack) {
+		return this.inventory.method_27070(itemStack);
+	}
+
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
@@ -192,9 +197,9 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 
 	public static DefaultAttributeContainer.Builder createPiglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 16.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.35F)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 5.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
 	}
 
 	public static boolean canSpawn(EntityType<PiglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
@@ -255,7 +260,9 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		if (super.interactMob(player, hand)) {
 			return true;
 		} else {
-			return this.world.isClient ? false : PiglinBrain.playerInteract(this, player, hand);
+			return !this.world.isClient
+				? PiglinBrain.playerInteract(this, player, hand)
+				: PiglinBrain.method_27086(this, player.getStackInHand(hand)) && this.getActivity() != PiglinEntity.Activity.ADMIRING_ITEM;
 		}
 	}
 
@@ -268,7 +275,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
 		if (!this.world.isClient) {
-			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST_MODIFIER);
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST_MODIFIER);
@@ -376,7 +383,6 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		return (double)this.random.nextFloat() < 0.5 ? new ItemStack(Items.CROSSBOW) : new ItemStack(Items.GOLDEN_SWORD);
 	}
 
-	@Environment(EnvType.CLIENT)
 	private boolean isCharging() {
 		return this.dataTracker.get(CHARGING);
 	}
@@ -391,9 +397,8 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		this.despawnCounter = 0;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public PiglinEntity.Activity getActivity() {
-		if (this.isHandSwinging) {
+		if (this.handSwinging) {
 			return PiglinEntity.Activity.DEFAULT;
 		} else if (PiglinBrain.isGoldenItem(this.getOffHandStack().getItem())) {
 			return PiglinEntity.Activity.ADMIRING_ITEM;
@@ -438,7 +443,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	protected void equipToOffHand(ItemStack stack) {
-		if (stack.getItem() == Items.GOLD_INGOT) {
+		if (stack.getItem() == PiglinBrain.field_23826) {
 			this.equipStack(EquipmentSlot.OFFHAND, stack);
 			this.method_25939(EquipmentSlot.OFFHAND);
 		} else {
@@ -542,7 +547,6 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		DebugInfoSender.sendBrainDebugData(this);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static enum Activity {
 		CROSSBOW_HOLD,
 		CROSSBOW_CHARGE,

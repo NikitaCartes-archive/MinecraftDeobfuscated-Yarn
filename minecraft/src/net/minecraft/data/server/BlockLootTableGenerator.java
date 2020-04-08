@@ -844,6 +844,22 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerForSelfDrop(Blocks.CRIMSON_SIGN);
 		this.registerForSelfDrop(Blocks.NETHERITE_BLOCK);
 		this.registerForSelfDrop(Blocks.ANCIENT_DEBRIS);
+		this.registerForSelfDrop(Blocks.BLACKSTONE);
+		this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_BRICKS);
+		this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS);
+		this.registerForSelfDrop(Blocks.BLACKSTONE_STAIRS);
+		this.registerForSelfDrop(Blocks.BLACKSTONE_WALL);
+		this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+		this.registerForSelfDrop(Blocks.CHISELED_POLISHED_BLACKSTONE);
+		this.registerForSelfDrop(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS);
+		this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE);
+		this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_STAIRS);
+		this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE);
+		this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_BUTTON);
+		this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_WALL);
+		this.registerForSelfDrop(Blocks.CHISELED_NETHER_BRICKS);
+		this.registerForSelfDrop(Blocks.CRACKED_NETHER_BRICKS);
+		this.registerForSelfDrop(Blocks.QUARTZ_BRICKS);
 		this.register(Blocks.FARMLAND, Blocks.DIRT);
 		this.register(Blocks.TRIPWIRE, Items.STRING);
 		this.register(Blocks.GRASS_PATH, Blocks.DIRT);
@@ -929,6 +945,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.registerWithFunction(Blocks.DIORITE_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.CRIMSON_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.WARPED_SLAB, BlockLootTableGenerator::createForSlabs);
+		this.registerWithFunction(Blocks.BLACKSTONE_SLAB, BlockLootTableGenerator::createForSlabs);
+		this.registerWithFunction(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, BlockLootTableGenerator::createForSlabs);
+		this.registerWithFunction(Blocks.POLISHED_BLACKSTONE_SLAB, BlockLootTableGenerator::createForSlabs);
 		this.registerWithFunction(Blocks.ACACIA_DOOR, BlockLootTableGenerator::method_24817);
 		this.registerWithFunction(Blocks.BIRCH_DOOR, BlockLootTableGenerator::method_24817);
 		this.registerWithFunction(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::method_24817);
@@ -1411,6 +1430,28 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					)
 				)
 		);
+		this.registerWithFunction(
+			Blocks.GILDED_BLACKSTONE,
+			blockx -> createForNeedingSilkTouch(
+					blockx,
+					addSurvivesExplosionLootCondition(
+						blockx,
+						ItemEntry.builder(Items.GOLD_NUGGET)
+							.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 5.0F)))
+							.withCondition(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1F, 0.14285715F, 0.25F, 1.0F))
+							.withChild(ItemEntry.builder(blockx))
+					)
+				)
+		);
+		this.registerWithFunction(
+			Blocks.SOUL_CAMPFIRE,
+			blockx -> createForNeedingSilkTouch(
+					blockx,
+					(LootEntry.Builder<?>)addSurvivesExplosionLootCondition(
+						blockx, ItemEntry.builder(Items.SOUL_SOIL).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1)))
+					)
+				)
+		);
 		this.registerForNeedingSilkTouch(Blocks.GLASS);
 		this.registerForNeedingSilkTouch(Blocks.WHITE_STAINED_GLASS);
 		this.registerForNeedingSilkTouch(Blocks.ORANGE_STAINED_GLASS);
@@ -1486,7 +1527,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (Block block : Registry.BLOCK) {
-			Identifier identifier = block.getDropTableID();
+			Identifier identifier = block.getLootTableId();
 			if (identifier != LootTables.EMPTY && set.add(identifier)) {
 				LootTable.Builder builder5 = (LootTable.Builder)this.lootTables.remove(identifier);
 				if (builder5 == null) {
@@ -1546,6 +1587,6 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private void register(Block block, LootTable.Builder builder) {
-		this.lootTables.put(block.getDropTableID(), builder);
+		this.lootTables.put(block.getLootTableId(), builder);
 	}
 }

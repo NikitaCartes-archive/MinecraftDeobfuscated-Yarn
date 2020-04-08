@@ -61,6 +61,11 @@ public class TagContainer<T> {
 		return (Tag<T>)this.entries.getOrDefault(id, this.field_23691);
 	}
 
+	@Environment(EnvType.CLIENT)
+	public Tag<T> method_27068() {
+		return this.field_23691;
+	}
+
 	@Nullable
 	public Identifier method_26796(Tag<T> tag) {
 		return tag instanceof Tag.Identified ? ((Tag.Identified)tag).getId() : (Identifier)this.entries.inverse().get(tag);
@@ -122,7 +127,7 @@ public class TagContainer<T> {
 												resource.getResourcePackName()
 											);
 										} else {
-											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject);
+											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject, resource.getResourcePackName());
 										}
 									} catch (Throwable var53) {
 										var12 = var53;

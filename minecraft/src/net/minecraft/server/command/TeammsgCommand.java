@@ -48,9 +48,9 @@ public class TeammsgCommand {
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {
 				if (serverPlayerEntity == entity) {
-					serverPlayerEntity.sendMessage(new TranslatableText("chat.type.team.sent", text, source.getDisplayName(), message.deepCopy()));
+					serverPlayerEntity.sendSystemMessage(new TranslatableText("chat.type.team.sent", text, source.getDisplayName(), message.deepCopy()));
 				} else if (serverPlayerEntity.getScoreboardTeam() == team) {
-					serverPlayerEntity.sendMessage(new TranslatableText("chat.type.team.text", text, source.getDisplayName(), message.deepCopy()));
+					serverPlayerEntity.sendSystemMessage(new TranslatableText("chat.type.team.text", text, source.getDisplayName(), message.deepCopy()));
 				}
 			}
 

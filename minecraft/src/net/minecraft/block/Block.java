@@ -16,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -367,6 +368,9 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		world.playLevelEvent(player, 2001, pos, getRawIdFromState(state));
+		if (this.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
+			PiglinBrain.onGoldBlockBroken(player);
+		}
 	}
 
 	public void rainTick(World world, BlockPos pos) {

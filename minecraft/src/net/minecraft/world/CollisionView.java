@@ -80,11 +80,11 @@ public interface CollisionView extends BlockView {
 			public boolean tryAdvance(Consumer<? super VoxelShape> consumer) {
 				if (!this.field_19296) {
 					this.field_19296 = true;
-					VoxelShape voxelShape = CollisionView.this.getWorldBorder().asVoxelShape();
-					boolean bl = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
-					boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
-					if (!bl && bl2) {
-						consumer.accept(voxelShape);
+					WorldBorder worldBorder = CollisionView.this.getWorldBorder();
+					boolean bl = CollisionView.method_27087(worldBorder, entity.getBoundingBox().contract(1.0E-7));
+					boolean bl2 = bl && !CollisionView.method_27087(worldBorder, entity.getBoundingBox().expand(1.0E-7));
+					if (bl2) {
+						consumer.accept(worldBorder.asVoxelShape());
 						return true;
 					}
 				}
@@ -102,11 +102,18 @@ public interface CollisionView extends BlockView {
 							mutable.set(i, j, k);
 							BlockState blockState = blockView.getBlockState(mutable);
 							if ((l != 1 || blockState.exceedsCube()) && (l != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
-								VoxelShape voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, shapeContext);
-								VoxelShape voxelShape3 = voxelShape2.offset((double)i, (double)j, (double)k);
-								if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape3, BooleanBiFunction.AND)) {
-									consumer.accept(voxelShape3);
-									return true;
+								VoxelShape voxelShape = blockState.getCollisionShape(CollisionView.this, mutable, shapeContext);
+								if (voxelShape == VoxelShapes.fullCube()) {
+									if (box.intersects((double)i, (double)j, (double)k, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)) {
+										consumer.accept(voxelShape.offset((double)i, (double)j, (double)k));
+										return true;
+									}
+								} else {
+									VoxelShape voxelShape2 = voxelShape.offset((double)i, (double)j, (double)k);
+									if (VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND)) {
+										consumer.accept(voxelShape2);
+										return true;
+									}
 								}
 							}
 						}
@@ -116,5 +123,13 @@ public interface CollisionView extends BlockView {
 				return false;
 			}
 		}, false);
+	}
+
+	static boolean method_27087(WorldBorder worldBorder, Box box) {
+		double d = (double)MathHelper.floor(worldBorder.getBoundWest());
+		double e = (double)MathHelper.floor(worldBorder.getBoundNorth());
+		double f = (double)MathHelper.ceil(worldBorder.getBoundEast());
+		double g = (double)MathHelper.ceil(worldBorder.getBoundSouth());
+		return box.x1 > d && box.x1 < f && box.z1 > e && box.z1 < g && box.x2 > d && box.x2 < f && box.z2 > e && box.z2 < g;
 	}
 }

@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.Shearable;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EatGrassGoal;
@@ -25,8 +26,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -57,7 +58,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
-public class SheepEntity extends AnimalEntity {
+public class SheepEntity extends AnimalEntity implements Shearable {
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final Map<DyeColor, ItemConvertible> DROPS = Util.make(Maps.newEnumMap(DyeColor.class), enumMap -> {
 		enumMap.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
@@ -132,7 +133,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createSheepAttributes() {
-		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 8.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.23F);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F);
 	}
 
 	@Override
@@ -217,39 +218,42 @@ public class SheepEntity extends AnimalEntity {
 
 	@Override
 	public boolean interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.getItem() == Items.SHEARS && !this.isSheared() && !this.isBaby()) {
-			this.dropItems();
-			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.PLAYERS, 1.0F, 1.0F);
-			if (!this.world.isClient) {
+		if (!this.world.isClient) {
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
+				this.sheared(SoundCategory.PLAYERS);
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				return true;
 			}
+		}
 
-			return true;
-		} else {
-			return super.interactMob(player, hand);
+		return super.interactMob(player, hand);
+	}
+
+	@Override
+	public void sheared(SoundCategory shearedSoundCategory) {
+		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		this.setSheared(true);
+		int i = 1 + this.random.nextInt(3);
+
+		for (int j = 0; j < i; j++) {
+			ItemEntity itemEntity = this.dropItem((ItemConvertible)DROPS.get(this.getColor()), 1);
+			if (itemEntity != null) {
+				itemEntity.setVelocity(
+					itemEntity.getVelocity()
+						.add(
+							(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
+							(double)(this.random.nextFloat() * 0.05F),
+							(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F)
+						)
+				);
+			}
 		}
 	}
 
-	public void dropItems() {
-		if (!this.world.isClient) {
-			this.setSheared(true);
-			int i = 1 + this.random.nextInt(3);
-
-			for (int j = 0; j < i; j++) {
-				ItemEntity itemEntity = this.dropItem((ItemConvertible)DROPS.get(this.getColor()), 1);
-				if (itemEntity != null) {
-					itemEntity.setVelocity(
-						itemEntity.getVelocity()
-							.add(
-								(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
-								(double)(this.random.nextFloat() * 0.05F),
-								(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F)
-							)
-					);
-				}
-			}
-		}
+	@Override
+	public boolean isShearable() {
+		return this.isAlive() && !this.isSheared() && !this.isBaby();
 	}
 
 	@Override

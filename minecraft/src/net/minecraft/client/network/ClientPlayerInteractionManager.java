@@ -83,7 +83,7 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public boolean breakBlock(BlockPos pos) {
-		if (this.client.player.canMine(this.client.world, pos, this.gameMode)) {
+		if (this.client.player.isBlockBreakingRestricted(this.client.world, pos, this.gameMode)) {
 			return false;
 		} else {
 			World world = this.client.world;
@@ -111,7 +111,7 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public boolean attackBlock(BlockPos pos, Direction direction) {
-		if (this.client.player.canMine(this.client.world, pos, this.gameMode)) {
+		if (this.client.player.isBlockBreakingRestricted(this.client.world, pos, this.gameMode)) {
 			return false;
 		} else if (!this.client.world.getWorldBorder().contains(pos)) {
 			return false;

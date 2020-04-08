@@ -51,7 +51,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		this.wooden = wooden;
 	}
 
-	private int method_26153() {
+	private int getPressTicks() {
 		return this.wooden ? 30 : 20;
 	}
 
@@ -102,7 +102,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	public void powerOn(BlockState state, World world, BlockPos pos) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 3);
 		this.updateNeighbors(state, world, pos);
-		world.getBlockTickScheduler().schedule(pos, this, this.method_26153());
+		world.getBlockTickScheduler().schedule(pos, this, this.getPressTicks());
 	}
 
 	protected void playClickSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos, boolean powered) {
@@ -168,7 +168,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		}
 
 		if (bl) {
-			world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.method_26153());
+			world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getPressTicks());
 		}
 	}
 

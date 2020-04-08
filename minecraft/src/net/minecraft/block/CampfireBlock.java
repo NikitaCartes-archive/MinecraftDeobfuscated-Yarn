@@ -28,6 +28,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -51,9 +52,11 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	private static final VoxelShape field_21580 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
+	private final boolean field_23881;
 
-	public CampfireBlock(AbstractBlock.Settings settings) {
+	public CampfireBlock(boolean bl, AbstractBlock.Settings settings) {
 		super(settings);
+		this.field_23881 = bl;
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
@@ -163,7 +166,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 				);
 			}
 
-			if (random.nextInt(5) == 0) {
+			if (this.field_23881 && random.nextInt(5) == 0) {
 				for (int i = 0; i < random.nextInt(1) + 1; i++) {
 					world.addParticle(
 						ParticleTypes.LAVA,
@@ -262,8 +265,8 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		return false;
 	}
 
-	private static boolean isLitCampfire(BlockState state) {
-		return state.getBlock() == Blocks.CAMPFIRE && (Boolean)state.get(LIT);
+	public static boolean isLitCampfire(BlockState state) {
+		return state.getBlock().isIn(BlockTags.CAMPFIRES) && state.contains(LIT) && (Boolean)state.get(LIT);
 	}
 
 	@Override

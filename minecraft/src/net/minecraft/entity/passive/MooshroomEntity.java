@@ -10,6 +10,7 @@ import net.minecraft.block.FlowerBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.Shearable;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -22,6 +23,8 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.ItemTags;
@@ -32,7 +35,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class MooshroomEntity extends CowEntity {
+public class MooshroomEntity extends CowEntity implements Shearable {
 	private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
 	private StatusEffect stewEffect;
 	private int stewEffectDuration;
@@ -99,40 +102,17 @@ public class MooshroomEntity extends CowEntity {
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
 			return true;
-		} else if (itemStack.getItem() == Items.SHEARS && !this.isBaby()) {
-			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 0.0, 0.0, 0.0);
+		} else if (itemStack.getItem() == Items.SHEARS && this.isShearable()) {
+			this.sheared(SoundCategory.PLAYERS);
 			if (!this.world.isClient) {
-				this.remove();
-				CowEntity cowEntity = EntityType.COW.create(this.world);
-				cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
-				cowEntity.setHealth(this.getHealth());
-				cowEntity.bodyYaw = this.bodyYaw;
-				if (this.hasCustomName()) {
-					cowEntity.setCustomName(this.getCustomName());
-					cowEntity.setCustomNameVisible(this.isCustomNameVisible());
-				}
-
-				if (this.isPersistent()) {
-					cowEntity.setPersistent();
-				}
-
-				cowEntity.setInvulnerable(this.isInvulnerable());
-				this.world.spawnEntity(cowEntity);
-
-				for (int i = 0; i < 5; i++) {
-					this.world
-						.spawnEntity(new ItemEntity(this.world, this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
-				}
-
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
-				this.playSound(SoundEvents.ENTITY_MOOSHROOM_SHEAR, 1.0F, 1.0F);
 			}
 
 			return true;
 		} else {
 			if (this.getMooshroomType() == MooshroomEntity.Type.BROWN && itemStack.getItem().isIn(ItemTags.SMALL_FLOWERS)) {
 				if (this.stewEffect != null) {
-					for (int j = 0; j < 2; j++) {
+					for (int i = 0; i < 2; i++) {
 						this.world
 							.addParticle(
 								ParticleTypes.SMOKE,
@@ -150,7 +130,7 @@ public class MooshroomEntity extends CowEntity {
 						itemStack.decrement(1);
 					}
 
-					for (int i = 0; i < 4; i++) {
+					for (int j = 0; j < 4; j++) {
 						this.world
 							.addParticle(
 								ParticleTypes.EFFECT,
@@ -171,6 +151,40 @@ public class MooshroomEntity extends CowEntity {
 
 			return super.interactMob(player, hand);
 		}
+	}
+
+	@Override
+	public void sheared(SoundCategory shearedSoundCategory) {
+		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		if (!this.world.isClient()) {
+			((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+			this.remove();
+			CowEntity cowEntity = EntityType.COW.create(this.world);
+			cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			cowEntity.setHealth(this.getHealth());
+			cowEntity.bodyYaw = this.bodyYaw;
+			if (this.hasCustomName()) {
+				cowEntity.setCustomName(this.getCustomName());
+				cowEntity.setCustomNameVisible(this.isCustomNameVisible());
+			}
+
+			if (this.isPersistent()) {
+				cowEntity.setPersistent();
+			}
+
+			cowEntity.setInvulnerable(this.isInvulnerable());
+			this.world.spawnEntity(cowEntity);
+
+			for (int i = 0; i < 5; i++) {
+				this.world
+					.spawnEntity(new ItemEntity(this.world, this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
+			}
+		}
+	}
+
+	@Override
+	public boolean isShearable() {
+		return this.isAlive() && !this.isBaby();
 	}
 
 	@Override

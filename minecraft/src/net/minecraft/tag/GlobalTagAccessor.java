@@ -3,7 +3,10 @@ package net.minecraft.tag;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 
 /**
@@ -11,7 +14,8 @@ import net.minecraft.util.Identifier;
  * tag changes through reloads/server tag sends.
  */
 public class GlobalTagAccessor<T> {
-	private TagContainer<T> currentContainer = new TagContainer<>(identifier -> Optional.empty(), "", "");
+	private final TagContainer<T> field_23804 = new TagContainer<>(identifier -> Optional.empty(), "", "");
+	private TagContainer<T> currentContainer = this.field_23804;
 	private final List<GlobalTagAccessor.CachedTag<T>> tags = Lists.<GlobalTagAccessor.CachedTag<T>>newArrayList();
 
 	public Tag.Identified<T> get(String id) {
@@ -20,9 +24,16 @@ public class GlobalTagAccessor<T> {
 		return cachedTag;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public void method_27061() {
+		this.currentContainer = this.field_23804;
+		Tag<T> tag = this.field_23804.method_27068();
+		this.tags.forEach(cachedTag -> cachedTag.updateContainer(identifier -> tag));
+	}
+
 	public void setContainer(TagContainer<T> container) {
 		this.currentContainer = container;
-		this.tags.forEach(cachedTag -> cachedTag.updateContainer(container));
+		this.tags.forEach(cachedTag -> cachedTag.updateContainer(container::get));
 	}
 
 	public TagContainer<T> getContainer() {
@@ -51,8 +62,8 @@ public class GlobalTagAccessor<T> {
 			}
 		}
 
-		void updateContainer(TagContainer<T> container) {
-			this.currentTag = container.get(this.id);
+		void updateContainer(Function<Identifier, Tag<T>> function) {
+			this.currentTag = (Tag<T>)function.apply(this.id);
 		}
 
 		@Override

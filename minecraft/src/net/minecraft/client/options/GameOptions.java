@@ -59,6 +59,7 @@ public class GameOptions {
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
 	public ChatVisibility chatVisibility = ChatVisibility.FULL;
 	public double chatOpacity = 1.0;
+	public double chatLineSpacing = 0.0;
 	public double textBackgroundOpacity = 0.5;
 	@Nullable
 	public String fullscreenResolution;
@@ -74,6 +75,7 @@ public class GameOptions {
 	public double chatWidth = 1.0;
 	public double chatHeightUnfocused = 0.44366196F;
 	public double chatHeightFocused = 1.0;
+	public double chatDelay = 0.0;
 	public int mipmapLevels = 4;
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
@@ -431,6 +433,10 @@ public class GameOptions {
 						this.chatOpacity = (double)parseFloat(string2);
 					}
 
+					if ("chatLineSpacing".equals(string)) {
+						this.chatLineSpacing = (double)parseFloat(string2);
+					}
+
 					if ("textBackgroundOpacity".equals(string)) {
 						this.textBackgroundOpacity = (double)parseFloat(string2);
 					}
@@ -469,6 +475,10 @@ public class GameOptions {
 
 					if ("chatHeightFocused".equals(string)) {
 						this.chatHeightFocused = (double)parseFloat(string2);
+					}
+
+					if ("chatDelay".equals(string)) {
+						this.chatDelay = (double)parseFloat(string2);
 					}
 
 					if ("chatHeightUnfocused".equals(string)) {
@@ -620,6 +630,7 @@ public class GameOptions {
 				printWriter.println("lang:" + this.language);
 				printWriter.println("chatVisibility:" + this.chatVisibility.getId());
 				printWriter.println("chatOpacity:" + this.chatOpacity);
+				printWriter.println("chatLineSpacing:" + this.chatLineSpacing);
 				printWriter.println("textBackgroundOpacity:" + this.textBackgroundOpacity);
 				printWriter.println("backgroundForChatOnly:" + this.backgroundForChatOnly);
 				if (this.client.getWindow().getVideoMode().isPresent()) {
@@ -633,6 +644,7 @@ public class GameOptions {
 				printWriter.println("overrideHeight:" + this.overrideHeight);
 				printWriter.println("heldItemTooltips:" + this.heldItemTooltips);
 				printWriter.println("chatHeightFocused:" + this.chatHeightFocused);
+				printWriter.println("chatDelay: " + this.chatDelay);
 				printWriter.println("chatHeightUnfocused:" + this.chatHeightUnfocused);
 				printWriter.println("chatScale:" + this.chatScale);
 				printWriter.println("chatWidth:" + this.chatWidth);

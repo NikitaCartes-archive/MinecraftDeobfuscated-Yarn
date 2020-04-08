@@ -49,10 +49,12 @@ public interface CommandSource {
 			Identifier identifier2 = (Identifier)identifier.apply(object);
 			if (bl) {
 				String string2 = identifier2.toString();
-				if (string2.startsWith(string)) {
+				if (method_27136(string, string2)) {
 					action.accept(object);
 				}
-			} else if (identifier2.getNamespace().startsWith(string) || identifier2.getNamespace().equals("minecraft") && identifier2.getPath().startsWith(string)) {
+			} else if (method_27136(string, identifier2.getNamespace()) || identifier2.getNamespace().equals("minecraft") && method_27136(string, identifier2.getPath())
+				)
+			 {
 				action.accept(object);
 			}
 		}
@@ -167,7 +169,7 @@ public interface CommandSource {
 		String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
 
 		for (String string2 : iterable) {
-			if (string2.toLowerCase(Locale.ROOT).startsWith(string)) {
+			if (method_27136(string, string2.toLowerCase(Locale.ROOT))) {
 				suggestionsBuilder.suggest(string2);
 			}
 		}
@@ -177,7 +179,7 @@ public interface CommandSource {
 
 	static CompletableFuture<Suggestions> suggestMatching(Stream<String> stream, SuggestionsBuilder suggestionsBuilder) {
 		String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
-		stream.filter(string2 -> string2.toLowerCase(Locale.ROOT).startsWith(string)).forEach(suggestionsBuilder::suggest);
+		stream.filter(string2 -> method_27136(string, string2.toLowerCase(Locale.ROOT))).forEach(suggestionsBuilder::suggest);
 		return suggestionsBuilder.buildFuture();
 	}
 
@@ -185,12 +187,23 @@ public interface CommandSource {
 		String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
 
 		for (String string2 : strings) {
-			if (string2.toLowerCase(Locale.ROOT).startsWith(string)) {
+			if (method_27136(string, string2.toLowerCase(Locale.ROOT))) {
 				suggestionsBuilder.suggest(string2);
 			}
 		}
 
 		return suggestionsBuilder.buildFuture();
+	}
+
+	static boolean method_27136(String string, String string2) {
+		for (int i = 0; !string2.startsWith(string, i); i++) {
+			i = string2.indexOf(95, i);
+			if (i < 0) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public static class RelativePosition {

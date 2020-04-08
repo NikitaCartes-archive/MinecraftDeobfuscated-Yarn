@@ -151,10 +151,4 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
-
-	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		super.onBreak(world, pos, state, player);
-		PiglinBrain.onGoldBlockBroken(player);
-	}
 }

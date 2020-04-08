@@ -25,45 +25,45 @@ public class EntityUuidFix extends AbstractUuidFix {
 	@Override
 	protected TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped("EntityUUIDFixes", this.getInputSchema().getType(this.typeReference), typed -> {
-			typed = typed.update(DSL.remainderFinder(), this::updateSelfUuid);
+			typed = typed.update(DSL.remainderFinder(), EntityUuidFix::updateSelfUuid);
 
 			for (String string : RIDEABLE_TAMEABLES) {
-				typed = this.updateTyped(typed, string, this::updateTameable);
+				typed = this.updateTyped(typed, string, EntityUuidFix::updateTameable);
 			}
 
 			for (String string : TAMEABLE_PETS) {
-				typed = this.updateTyped(typed, string, this::updateTameable);
+				typed = this.updateTyped(typed, string, EntityUuidFix::updateTameable);
 			}
 
 			for (String string : BREEDABLES) {
-				typed = this.updateTyped(typed, string, this::updateBreedable);
+				typed = this.updateTyped(typed, string, EntityUuidFix::updateBreedable);
 			}
 
 			for (String string : LEASHABLES) {
-				typed = this.updateTyped(typed, string, this::updateLeashable);
+				typed = this.updateTyped(typed, string, EntityUuidFix::updateLeashable);
 			}
 
 			for (String string : OTHER_LIVINGS) {
-				typed = this.updateTyped(typed, string, this::updateLiving);
+				typed = this.updateTyped(typed, string, EntityUuidFix::updateLiving);
 			}
 
 			for (String string : PROJECTILES) {
-				typed = this.updateTyped(typed, string, this::updateProjectile);
+				typed = this.updateTyped(typed, string, EntityUuidFix::updateProjectile);
 			}
 
-			typed = this.updateTyped(typed, "minecraft:bee", this::updateZombifiedPiglin);
-			typed = this.updateTyped(typed, "minecraft:zombified_piglin", this::updateZombifiedPiglin);
-			typed = this.updateTyped(typed, "minecraft:fox", this::updateFox);
-			typed = this.updateTyped(typed, "minecraft:item", this::updateItemEntity);
-			typed = this.updateTyped(typed, "minecraft:shulker_bullet", this::updateShulkerBullet);
-			typed = this.updateTyped(typed, "minecraft:area_effect_cloud", this::updateAreaEffectCloud);
-			typed = this.updateTyped(typed, "minecraft:zombie_villager", this::updateZombieVillager);
-			typed = this.updateTyped(typed, "minecraft:evoker_fangs", this::updateEvokerFangs);
-			return this.updateTyped(typed, "minecraft:piglin", this::updateAngryAtMemory);
+			typed = this.updateTyped(typed, "minecraft:bee", EntityUuidFix::updateZombifiedPiglin);
+			typed = this.updateTyped(typed, "minecraft:zombified_piglin", EntityUuidFix::updateZombifiedPiglin);
+			typed = this.updateTyped(typed, "minecraft:fox", EntityUuidFix::updateFox);
+			typed = this.updateTyped(typed, "minecraft:item", EntityUuidFix::updateItemEntity);
+			typed = this.updateTyped(typed, "minecraft:shulker_bullet", EntityUuidFix::updateShulkerBullet);
+			typed = this.updateTyped(typed, "minecraft:area_effect_cloud", EntityUuidFix::updateAreaEffectCloud);
+			typed = this.updateTyped(typed, "minecraft:zombie_villager", EntityUuidFix::updateZombieVillager);
+			typed = this.updateTyped(typed, "minecraft:evoker_fangs", EntityUuidFix::updateEvokerFangs);
+			return this.updateTyped(typed, "minecraft:piglin", EntityUuidFix::updateAngryAtMemory);
 		});
 	}
 
-	private Dynamic<?> updateAngryAtMemory(Dynamic<?> dynamic) {
+	private static Dynamic<?> updateAngryAtMemory(Dynamic<?> dynamic) {
 		return dynamic.update(
 			"Brain",
 			dynamicx -> dynamicx.update(
@@ -75,65 +75,65 @@ public class EntityUuidFix extends AbstractUuidFix {
 		);
 	}
 
-	private Dynamic<?> updateEvokerFangs(Dynamic<?> root) {
-		return (Dynamic<?>)updateRegularMostLeast(root, "OwnerUUID", "Owner").orElse(root);
+	private static Dynamic<?> updateEvokerFangs(Dynamic<?> dynamic) {
+		return (Dynamic<?>)updateRegularMostLeast(dynamic, "OwnerUUID", "Owner").orElse(dynamic);
 	}
 
-	private Dynamic<?> updateZombieVillager(Dynamic<?> root) {
-		return (Dynamic<?>)updateRegularMostLeast(root, "ConversionPlayer", "ConversionPlayer").orElse(root);
+	private static Dynamic<?> updateZombieVillager(Dynamic<?> dynamic) {
+		return (Dynamic<?>)updateRegularMostLeast(dynamic, "ConversionPlayer", "ConversionPlayer").orElse(dynamic);
 	}
 
-	private Dynamic<?> updateAreaEffectCloud(Dynamic<?> root) {
-		return (Dynamic<?>)updateRegularMostLeast(root, "OwnerUUID", "Owner").orElse(root);
+	private static Dynamic<?> updateAreaEffectCloud(Dynamic<?> dynamic) {
+		return (Dynamic<?>)updateRegularMostLeast(dynamic, "OwnerUUID", "Owner").orElse(dynamic);
 	}
 
-	private Dynamic<?> updateShulkerBullet(Dynamic<?> root) {
-		root = (Dynamic<?>)updateCompoundUuid(root, "Owner", "Owner").orElse(root);
-		return (Dynamic<?>)updateCompoundUuid(root, "Target", "Target").orElse(root);
+	private static Dynamic<?> updateShulkerBullet(Dynamic<?> dynamic) {
+		dynamic = (Dynamic<?>)updateCompoundUuid(dynamic, "Owner", "Owner").orElse(dynamic);
+		return (Dynamic<?>)updateCompoundUuid(dynamic, "Target", "Target").orElse(dynamic);
 	}
 
-	private Dynamic<?> updateItemEntity(Dynamic<?> root) {
-		root = (Dynamic<?>)updateCompoundUuid(root, "Owner", "Owner").orElse(root);
-		return (Dynamic<?>)updateCompoundUuid(root, "Thrower", "Thrower").orElse(root);
+	private static Dynamic<?> updateItemEntity(Dynamic<?> dynamic) {
+		dynamic = (Dynamic<?>)updateCompoundUuid(dynamic, "Owner", "Owner").orElse(dynamic);
+		return (Dynamic<?>)updateCompoundUuid(dynamic, "Thrower", "Thrower").orElse(dynamic);
 	}
 
-	private Dynamic<?> updateFox(Dynamic<?> root) {
-		Optional<Dynamic<?>> optional = root.get("TrustedUUIDs")
-			.map(dynamic2 -> root.createList(dynamic2.asStream().map(dynamicx -> (Dynamic)createArrayFromCompoundUuid(dynamicx).orElseGet(() -> {
+	private static Dynamic<?> updateFox(Dynamic<?> dynamic) {
+		Optional<Dynamic<?>> optional = dynamic.get("TrustedUUIDs")
+			.map(dynamic2 -> dynamic.createList(dynamic2.asStream().map(dynamicxx -> (Dynamic)createArrayFromCompoundUuid(dynamicxx).orElseGet(() -> {
 						LOGGER.warn("Trusted contained invalid data.");
-						return dynamicx;
+						return dynamicxx;
 					}))));
-		return DataFixUtils.orElse(optional.map(dynamic2 -> root.remove("TrustedUUIDs").set("Trusted", dynamic2)), root);
+		return DataFixUtils.orElse(optional.map(dynamic2 -> dynamic.remove("TrustedUUIDs").set("Trusted", dynamic2)), dynamic);
 	}
 
-	private Dynamic<?> updateZombifiedPiglin(Dynamic<?> root) {
-		return (Dynamic<?>)updateStringUuid(root, "HurtBy", "HurtBy").orElse(root);
+	private static Dynamic<?> updateZombifiedPiglin(Dynamic<?> dynamic) {
+		return (Dynamic<?>)updateStringUuid(dynamic, "HurtBy", "HurtBy").orElse(dynamic);
 	}
 
-	private Dynamic<?> updateTameable(Dynamic<?> root) {
-		Dynamic<?> dynamic = this.updateBreedable(root);
-		return (Dynamic<?>)updateStringUuid(dynamic, "OwnerUUID", "Owner").orElse(dynamic);
+	private static Dynamic<?> updateTameable(Dynamic<?> dynamic) {
+		Dynamic<?> dynamic2 = updateBreedable(dynamic);
+		return (Dynamic<?>)updateStringUuid(dynamic2, "OwnerUUID", "Owner").orElse(dynamic2);
 	}
 
-	private Dynamic<?> updateBreedable(Dynamic<?> root) {
-		Dynamic<?> dynamic = this.updateLeashable(root);
-		return (Dynamic<?>)updateRegularMostLeast(dynamic, "LoveCause", "LoveCause").orElse(dynamic);
+	private static Dynamic<?> updateBreedable(Dynamic<?> dynamic) {
+		Dynamic<?> dynamic2 = updateLeashable(dynamic);
+		return (Dynamic<?>)updateRegularMostLeast(dynamic2, "LoveCause", "LoveCause").orElse(dynamic2);
 	}
 
-	private Dynamic<?> updateLeashable(Dynamic<?> root) {
-		return this.updateLiving(root).update("Leash", dynamic -> (Dynamic)updateRegularMostLeast(dynamic, "UUID", "UUID").orElse(dynamic));
+	private static Dynamic<?> updateLeashable(Dynamic<?> dynamic) {
+		return updateLiving(dynamic).update("Leash", dynamicx -> (Dynamic)updateRegularMostLeast(dynamicx, "UUID", "UUID").orElse(dynamicx));
 	}
 
-	private Dynamic<?> updateLiving(Dynamic<?> root) {
-		return root.update(
+	public static Dynamic<?> updateLiving(Dynamic<?> dynamic) {
+		return dynamic.update(
 			"Attributes",
-			dynamic2 -> root.createList(
+			dynamic2 -> dynamic.createList(
 					dynamic2.asStream()
 						.map(
-							dynamicx -> dynamicx.update(
+							dynamicxx -> dynamicxx.update(
 									"Modifiers",
-									dynamic2x -> dynamicx.createList(
-											dynamic2x.asStream().map(dynamicxxx -> (Dynamic)updateRegularMostLeast(dynamicxxx, "UUID", "UUID").orElse(dynamicxxx))
+									dynamic2x -> dynamicxx.createList(
+											dynamic2x.asStream().map(dynamicxxxx -> (Dynamic)updateRegularMostLeast(dynamicxxxx, "UUID", "UUID").orElse(dynamicxxxx))
 										)
 								)
 						)
@@ -141,12 +141,12 @@ public class EntityUuidFix extends AbstractUuidFix {
 		);
 	}
 
-	private Dynamic<?> updateProjectile(Dynamic<?> root) {
-		return DataFixUtils.orElse(root.get("OwnerUUID").map(dynamic2 -> root.remove("OwnerUUID").set("Owner", dynamic2)), root);
+	private static Dynamic<?> updateProjectile(Dynamic<?> dynamic) {
+		return DataFixUtils.orElse(dynamic.get("OwnerUUID").map(dynamic2 -> dynamic.remove("OwnerUUID").set("Owner", dynamic2)), dynamic);
 	}
 
-	private Dynamic<?> updateSelfUuid(Dynamic<?> root) {
-		return (Dynamic<?>)updateRegularMostLeast(root, "UUID", "UUID").orElse(root);
+	public static Dynamic<?> updateSelfUuid(Dynamic<?> dynamic) {
+		return (Dynamic<?>)updateRegularMostLeast(dynamic, "UUID", "UUID").orElse(dynamic);
 	}
 
 	static {

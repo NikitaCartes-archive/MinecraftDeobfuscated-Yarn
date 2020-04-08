@@ -390,7 +390,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 					float o = Math.max(m, n);
 					ParticleEffect particleEffect = !fluidState.matches(FluidTags.LAVA)
 							&& blockState.getBlock() != Blocks.MAGMA_BLOCK
-							&& (blockState.getBlock() != Blocks.CAMPFIRE || !blockState.get(CampfireBlock.LIT))
+							&& !CampfireBlock.isLitCampfire(blockState)
 						? ParticleTypes.RAIN
 						: ParticleTypes.SMOKE;
 					this.client

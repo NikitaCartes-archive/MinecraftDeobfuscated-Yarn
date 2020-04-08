@@ -125,7 +125,6 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			}
 		}
 
-		PiglinBrain.onGoldBlockBroken(player);
 		super.onBreak(world, pos, state, player);
 	}
 

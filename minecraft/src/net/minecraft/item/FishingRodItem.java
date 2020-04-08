@@ -1,8 +1,8 @@
 package net.minecraft.item;
 
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class FishingRodItem extends Item {
+public class FishingRodItem extends Item implements Vanishable {
 	public FishingRodItem(Item.Settings settings) {
 		super(settings);
 		this.addPropertyGetter(new Identifier("cast"), (stack, world, entity) -> {

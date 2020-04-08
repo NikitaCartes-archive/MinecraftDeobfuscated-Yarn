@@ -33,12 +33,20 @@ public interface EntityView {
 	}
 
 	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-		return shape.isEmpty()
-			? true
-			: this.getEntities(except, shape.getBoundingBox())
-				.stream()
-				.filter(e -> !e.removed && e.inanimate && (except == null || !e.isConnectedThroughVehicle(except)))
-				.noneMatch(entity -> VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND));
+		if (shape.isEmpty()) {
+			return true;
+		} else {
+			for (Entity entity : this.getEntities(except, shape.getBoundingBox())) {
+				if (!entity.removed
+					&& entity.field_23807
+					&& (except == null || !entity.isConnectedThroughVehicle(except))
+					&& VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND)) {
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 
 	default <T extends Entity> List<T> getNonSpectatingEntities(Class<? extends T> entityClass, Box box) {

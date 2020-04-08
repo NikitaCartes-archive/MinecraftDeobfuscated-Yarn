@@ -21,8 +21,8 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.Schedule;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.painting.PaintingMotive;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
@@ -119,7 +119,7 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = create("menu", () -> ScreenHandlerType.ANVIL);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = create("recipe_type", () -> RecipeType.CRAFTING);
 	public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = create("recipe_serializer", () -> RecipeSerializer.SHAPELESS);
-	public static final Registry<EntityAttribute> ATTRIBUTES = create("attributes", () -> Attributes.GENERIC_LUCK);
+	public static final Registry<EntityAttribute> ATTRIBUTES = create("attributes", () -> EntityAttributes.GENERIC_LUCK);
 	public static final Registry<StatType<?>> STAT_TYPE = create("stat_type", () -> Stats.USED);
 	public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = create("villager_type", "plains", () -> VillagerType.PLAINS);
 	public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = create("villager_profession", "none", () -> VillagerProfession.NONE);

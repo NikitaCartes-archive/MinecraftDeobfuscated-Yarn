@@ -22,8 +22,8 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -82,12 +82,12 @@ public class RavagerEntity extends RaiderEntity {
 
 	public static DefaultAttributeContainer.Builder createRavagerAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 100.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3)
-			.add(Attributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 12.0)
-			.add(Attributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 32.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 100.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 12.0)
+			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0);
 	}
 
 	@Override
@@ -142,11 +142,11 @@ public class RavagerEntity extends RaiderEntity {
 		super.tickMovement();
 		if (this.isAlive()) {
 			if (this.isImmobile()) {
-				this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.0);
+				this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.0);
 			} else {
 				double d = this.getTarget() != null ? 0.35 : 0.3;
-				double e = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).getBaseValue();
-				this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
+				double e = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).getBaseValue();
+				this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1, e, d));
 			}
 
 			if (this.horizontalCollision && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {

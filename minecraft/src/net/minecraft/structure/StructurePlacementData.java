@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -153,9 +152,13 @@ public class StructurePlacementData {
 		return this.placeFluids;
 	}
 
-	public List<Structure.StructureBlockInfo> getRandomBlockInfos(List<List<Structure.StructureBlockInfo>> list, @Nullable BlockPos blockPos) {
+	public Structure.class_5162 getRandomBlockInfos(List<Structure.class_5162> list, @Nullable BlockPos blockPos) {
 		int i = list.size();
-		return i > 0 ? (List)list.get(this.getRandom(blockPos).nextInt(i)) : Collections.emptyList();
+		if (i == 0) {
+			throw new IllegalStateException("No palettes");
+		} else {
+			return (Structure.class_5162)list.get(this.getRandom(blockPos).nextInt(i));
+		}
 	}
 
 	@Nullable

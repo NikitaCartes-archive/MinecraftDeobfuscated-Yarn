@@ -1,5 +1,7 @@
 package net.minecraft.tag;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.fluid.Fluid;
 
 public class FluidTags {
@@ -13,6 +15,11 @@ public class FluidTags {
 
 	public static void setContainer(TagContainer<Fluid> container) {
 		ACCESSOR.setContainer(container);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void method_27059() {
+		ACCESSOR.method_27061();
 	}
 
 	public static TagContainer<Fluid> getContainer() {

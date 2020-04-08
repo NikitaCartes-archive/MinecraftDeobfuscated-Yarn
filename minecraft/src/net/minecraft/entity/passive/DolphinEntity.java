@@ -34,8 +34,8 @@ import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -171,9 +171,9 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	public static DefaultAttributeContainer.Builder createDolphinAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 1.2F)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 3.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.2F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
 	}
 
 	@Override
@@ -183,7 +183,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE)));
+		boolean bl = target.damage(DamageSource.mob(this), (float)((int)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.dealDamage(this, target);
 			this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0F, 1.0F);
@@ -418,7 +418,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 					this.dolphin.yaw = this.changeAngle(this.dolphin.yaw, h, 10.0F);
 					this.dolphin.bodyYaw = this.dolphin.yaw;
 					this.dolphin.headYaw = this.dolphin.yaw;
-					float i = (float)(this.speed * this.dolphin.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
+					float i = (float)(this.speed * this.dolphin.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 					if (this.dolphin.isTouchingWater()) {
 						this.dolphin.setMovementSpeed(i * 0.02F);
 						float j = -((float)(MathHelper.atan2(e, (double)MathHelper.sqrt(d * d + f * f)) * 180.0F / (float)Math.PI));

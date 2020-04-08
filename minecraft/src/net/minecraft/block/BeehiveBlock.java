@@ -36,6 +36,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -309,6 +310,6 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	public static Direction method_26978(Random random) {
-		return GENERATE_DIRECTIONS[random.nextInt(GENERATE_DIRECTIONS.length)];
+		return Util.getRandom(GENERATE_DIRECTIONS, random);
 	}
 }

@@ -3,7 +3,7 @@ package net.minecraft.entity.mob;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.Vec3d;
 
@@ -12,7 +12,7 @@ public interface Hoglin {
 	int getMovementCooldownTicks();
 
 	static boolean tryAttack(LivingEntity livingEntity, LivingEntity livingEntity2) {
-		float f = (float)livingEntity.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
+		float f = (float)livingEntity.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 		float g;
 		if (!livingEntity.isBaby() && (int)f > 0) {
 			g = f / 2.0F + (float)livingEntity.world.random.nextInt((int)f);
@@ -32,8 +32,8 @@ public interface Hoglin {
 	}
 
 	static void knockback(LivingEntity livingEntity, LivingEntity livingEntity2) {
-		double d = livingEntity.method_26825(Attributes.GENERIC_ATTACK_KNOCKBACK);
-		double e = livingEntity2.method_26825(Attributes.GENERIC_KNOCKBACK_RESISTANCE);
+		double d = livingEntity.method_26825(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+		double e = livingEntity2.method_26825(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
 		double f = d - e;
 		if (!(f <= 0.0)) {
 			double g = livingEntity2.getX() - livingEntity.getX();

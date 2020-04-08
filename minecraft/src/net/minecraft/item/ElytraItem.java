@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class ElytraItem extends Item {
+public class ElytraItem extends Item implements Wearable {
 	public ElytraItem(Item.Settings settings) {
 		super(settings);
 		this.addPropertyGetter(new Identifier("broken"), (stack, world, entity) -> isUsable(stack) ? 0.0F : 1.0F);

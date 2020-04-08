@@ -1,6 +1,6 @@
 package net.minecraft.entity.ai.control;
 
-import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -33,9 +33,9 @@ public class FlightMoveControl extends MoveControl {
 			this.entity.yaw = this.changeAngle(this.entity.yaw, h, 90.0F);
 			float i;
 			if (this.entity.isOnGround()) {
-				i = (float)(this.speed * this.entity.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
+				i = (float)(this.speed * this.entity.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 			} else {
-				i = (float)(this.speed * this.entity.method_26825(Attributes.GENERIC_FLYING_SPEED));
+				i = (float)(this.speed * this.entity.method_26825(EntityAttributes.GENERIC_FLYING_SPEED));
 			}
 
 			this.entity.setMovementSpeed(i);

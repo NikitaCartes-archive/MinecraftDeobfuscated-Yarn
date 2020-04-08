@@ -208,7 +208,7 @@ public abstract class TameableEntity extends AnimalEntity {
 	@Override
 	public void onDeath(DamageSource source) {
 		if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
-			this.getOwner().sendMessage(this.getDamageTracker().getDeathMessage());
+			this.getOwner().sendSystemMessage(this.getDamageTracker().getDeathMessage());
 		}
 
 		super.onDeath(source);

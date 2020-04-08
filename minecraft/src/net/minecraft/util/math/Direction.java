@@ -18,6 +18,7 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
 
 public enum Direction implements StringIdentifiable {
 	DOWN(0, 1, -1, "down", Direction.AxisDirection.NEGATIVE, Direction.Axis.Y, new Vec3i(0, -1, 0)),
@@ -234,7 +235,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public static Direction random(Random random) {
-		return ALL[random.nextInt(ALL.length)];
+		return Util.getRandom(ALL, random);
 	}
 
 	public static Direction getFacing(double x, double y, double z) {
@@ -345,7 +346,7 @@ public enum Direction implements StringIdentifiable {
 		}
 
 		public static Direction.Axis pickRandomAxis(Random random) {
-			return field_23780[random.nextInt(field_23780.length)];
+			return Util.getRandom(field_23780, random);
 		}
 
 		public boolean test(@Nullable Direction direction) {
@@ -412,7 +413,7 @@ public enum Direction implements StringIdentifiable {
 		}
 
 		public Direction random(Random random) {
-			return this.facingArray[random.nextInt(this.facingArray.length)];
+			return Util.getRandom(this.facingArray, random);
 		}
 
 		public boolean test(@Nullable Direction direction) {

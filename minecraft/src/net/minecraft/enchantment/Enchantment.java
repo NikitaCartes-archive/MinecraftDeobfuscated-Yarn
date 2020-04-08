@@ -20,8 +20,7 @@ import net.minecraft.util.registry.Registry;
 public abstract class Enchantment {
 	private final EquipmentSlot[] slotTypes;
 	private final Enchantment.Rarity rarity;
-	@Nullable
-	public EnchantmentTarget type;
+	public final EnchantmentTarget type;
 	@Nullable
 	protected String translationKey;
 

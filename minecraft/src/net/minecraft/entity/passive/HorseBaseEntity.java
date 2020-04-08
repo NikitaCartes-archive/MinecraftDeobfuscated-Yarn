@@ -15,8 +15,10 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -27,8 +29,8 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -48,6 +50,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Arm;
@@ -61,7 +64,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
-public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, JumpingMount {
+public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, JumpingMount, Saddleable {
 	private static final Predicate<LivingEntity> IS_BRED_HORSE = livingEntity -> livingEntity instanceof HorseBaseEntity
 			&& ((HorseBaseEntity)livingEntity).isBred();
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = new TargetPredicate()
@@ -181,8 +184,22 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		this.setHorseFlag(8, bred);
 	}
 
-	public void setSaddled(boolean saddled) {
-		this.setHorseFlag(4, saddled);
+	@Override
+	public boolean canBeSaddled() {
+		return this.isAlive() && !this.isBaby() && this.isTame();
+	}
+
+	@Override
+	public void saddle(@Nullable SoundCategory sound) {
+		this.items.setStack(0, new ItemStack(Items.SADDLE));
+		if (sound != null) {
+			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_HORSE_SADDLE, sound, 0.5F, 1.0F);
+		}
+	}
+
+	@Override
+	public boolean isSaddled() {
+		return this.getHorseFlag(4);
 	}
 
 	public int getTemper() {
@@ -273,7 +290,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	protected void updateSaddle() {
 		if (!this.world.isClient) {
-			this.setSaddled(!this.items.getStack(0).isEmpty() && this.canBeSaddled());
+			this.setHorseFlag(4, !this.items.getStack(0).isEmpty() && this.canBeSaddled());
 		}
 	}
 
@@ -287,7 +304,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	public double getJumpStrength() {
-		return this.method_26825(Attributes.HORSE_JUMP_STRENGTH);
+		return this.method_26825(EntityAttributes.HORSE_JUMP_STRENGTH);
 	}
 
 	@Nullable
@@ -314,14 +331,6 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 
 		return null;
-	}
-
-	public boolean canBeSaddled() {
-		return true;
-	}
-
-	public boolean isSaddled() {
-		return this.getHorseFlag(4);
 	}
 
 	@Nullable
@@ -360,9 +369,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	public static DefaultAttributeContainer.Builder createBaseHorseAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(Attributes.HORSE_JUMP_STRENGTH)
-			.add(Attributes.GENERIC_MAX_HEALTH, 53.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.225F);
+			.add(EntityAttributes.HORSE_JUMP_STRENGTH)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 53.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.225F);
 	}
 
 	@Override
@@ -699,7 +708,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 				this.flyingSpeed = this.getMovementSpeed() * 0.1F;
 				if (this.isLogicalSideForUpdatingMovement()) {
-					this.setMovementSpeed((float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
+					this.setMovementSpeed((float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 					super.travel(new Vec3d((double)f, movementInput.y, (double)g));
 				} else if (livingEntity instanceof PlayerEntity) {
 					this.setVelocity(Vec3d.ZERO);
@@ -792,12 +801,18 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	protected void setChildAttributes(PassiveEntity mate, HorseBaseEntity child) {
-		double d = this.method_26826(Attributes.GENERIC_MAX_HEALTH) + mate.method_26826(Attributes.GENERIC_MAX_HEALTH) + (double)this.getChildHealthBonus();
-		child.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue(d / 3.0);
-		double e = this.method_26826(Attributes.HORSE_JUMP_STRENGTH) + mate.method_26826(Attributes.HORSE_JUMP_STRENGTH) + this.getChildJumpStrengthBonus();
-		child.getAttributeInstance(Attributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
-		double f = this.method_26826(Attributes.GENERIC_MOVEMENT_SPEED) + mate.method_26826(Attributes.GENERIC_MOVEMENT_SPEED) + this.getChildMovementSpeedBonus();
-		child.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
+		double d = this.method_26826(EntityAttributes.GENERIC_MAX_HEALTH)
+			+ mate.method_26826(EntityAttributes.GENERIC_MAX_HEALTH)
+			+ (double)this.getChildHealthBonus();
+		child.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(d / 3.0);
+		double e = this.method_26826(EntityAttributes.HORSE_JUMP_STRENGTH)
+			+ mate.method_26826(EntityAttributes.HORSE_JUMP_STRENGTH)
+			+ this.getChildJumpStrengthBonus();
+		child.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
+		double f = this.method_26826(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+			+ mate.method_26826(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+			+ this.getChildMovementSpeedBonus();
+		child.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
 	}
 
 	@Override
@@ -924,6 +939,10 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	public boolean canEquip() {
 		return false;
+	}
+
+	public boolean setSaddled() {
+		return !this.getEquippedStack(EquipmentSlot.CHEST).isEmpty();
 	}
 
 	public boolean canEquip(ItemStack item) {

@@ -35,8 +35,8 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.VillagerTaskListProvider;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -229,7 +229,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	public static DefaultAttributeContainer.Builder createVillagerAttributes() {
-		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.5).add(Attributes.GENERIC_FOLLOW_RANGE, 48.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
 	}
 
 	@Override
@@ -730,28 +730,18 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
 		if (this.canGather(itemStack)) {
-			Item item2 = itemStack.getItem();
 			BasicInventory basicInventory = this.getInventory();
-			boolean bl = false;
-
-			for (int i = 0; i < basicInventory.size(); i++) {
-				ItemStack itemStack2 = basicInventory.getStack(i);
-				if (itemStack2.isEmpty() || itemStack2.getItem() == item2 && itemStack2.getCount() < itemStack2.getMaxCount()) {
-					bl = true;
-					break;
-				}
-			}
-
+			boolean bl = basicInventory.method_27070(itemStack);
 			if (!bl) {
 				return;
 			}
 
 			this.sendPickup(item, itemStack.getCount());
-			ItemStack itemStack3 = basicInventory.addStack(itemStack);
-			if (itemStack3.isEmpty()) {
+			ItemStack itemStack2 = basicInventory.addStack(itemStack);
+			if (itemStack2.isEmpty()) {
 				item.remove();
 			} else {
-				itemStack.setCount(itemStack3.getCount());
+				itemStack.setCount(itemStack2.getCount());
 			}
 		}
 	}

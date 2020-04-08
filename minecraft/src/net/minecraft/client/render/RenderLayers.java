@@ -202,6 +202,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.LANTERN, renderLayer2);
 		hashMap.put(Blocks.SOUL_FIRE_LANTERN, renderLayer2);
 		hashMap.put(Blocks.CAMPFIRE, renderLayer2);
+		hashMap.put(Blocks.SOUL_CAMPFIRE, renderLayer2);
 		hashMap.put(Blocks.SWEET_BERRY_BUSH, renderLayer2);
 		hashMap.put(Blocks.WEEPING_VINES, renderLayer2);
 		hashMap.put(Blocks.WEEPING_VINES_PLANT, renderLayer2);

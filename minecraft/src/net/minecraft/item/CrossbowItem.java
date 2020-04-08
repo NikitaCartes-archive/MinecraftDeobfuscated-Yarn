@@ -37,7 +37,7 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class CrossbowItem extends RangedWeaponItem {
+public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 	private boolean charged = false;
 	private boolean loaded = false;
 

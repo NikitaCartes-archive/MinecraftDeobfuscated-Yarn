@@ -65,7 +65,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (player.canModifyWorld()) {
+		if (player.canModifyBlocks()) {
 			if (world.isClient) {
 				return ActionResult.SUCCESS;
 			} else {

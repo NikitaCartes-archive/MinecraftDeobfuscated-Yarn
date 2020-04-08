@@ -15,7 +15,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class BowItem extends RangedWeaponItem {
+public class BowItem extends RangedWeaponItem implements Vanishable {
 	public BowItem(Item.Settings settings) {
 		super(settings);
 		this.addPropertyGetter(new Identifier("pull"), (stack, world, entity) -> {

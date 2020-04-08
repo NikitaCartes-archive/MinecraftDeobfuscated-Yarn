@@ -5,19 +5,18 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.entity.LivingEntity;
@@ -29,7 +28,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.lang3.mutable.MutableInt;
 
 public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	private final Map<MemoryModuleType<?>, Optional<? extends Memory<?>>> memories = Maps.<MemoryModuleType<?>, Optional<? extends Memory<?>>>newHashMap();
@@ -47,20 +45,22 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	private Activity defaultActivity = Activity.IDLE;
 	private long activityStartTime = -9999L;
 
-	public <T> Brain(Collection<MemoryModuleType<?>> memoryTypes, Collection<SensorType<? extends Sensor<? super E>>> sensors, Dynamic<T> data) {
-		memoryTypes.forEach(memoryModuleType -> {
-			Optional var10000 = (Optional)this.memories.put(memoryModuleType, Optional.empty());
-		});
-		sensors.forEach(sensorType -> {
-			Sensor var10000 = (Sensor)this.sensors.put(sensorType, sensorType.create());
-		});
-		this.sensors.values().forEach(sensor -> {
-			for (MemoryModuleType<?> memoryModuleType : sensor.getOutputMemoryModules()) {
-				this.memories.put(memoryModuleType, Optional.empty());
-			}
-		});
+	public <T> Brain(Collection<MemoryModuleType<?>> memoryTypes, Collection<SensorType<? extends Sensor<? super E>>> collection, Dynamic<T> dynamic) {
+		for (MemoryModuleType<?> memoryModuleType : memoryTypes) {
+			this.memories.put(memoryModuleType, Optional.empty());
+		}
 
-		for (Entry<Dynamic<T>, Dynamic<T>> entry : data.get("memories").asMap(Function.identity(), Function.identity()).entrySet()) {
+		for (SensorType<? extends Sensor<? super E>> sensorType : collection) {
+			this.sensors.put(sensorType, sensorType.create());
+		}
+
+		for (Sensor<? super E> sensor : this.sensors.values()) {
+			for (MemoryModuleType<?> memoryModuleType2 : sensor.getOutputMemoryModules()) {
+				this.memories.put(memoryModuleType2, Optional.empty());
+			}
+		}
+
+		for (Entry<Dynamic<T>, Dynamic<T>> entry : dynamic.get("memories").asMap(Function.identity(), Function.identity()).entrySet()) {
 			this.readMemory(Registry.MEMORY_MODULE_TYPE.get(new Identifier(((Dynamic)entry.getKey()).asString(""))), (Dynamic<T>)entry.getValue());
 		}
 	}
@@ -126,8 +126,20 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	@Deprecated
-	public Stream<Task<? super E>> streamRunningTasks() {
-		return this.tasks.values().stream().flatMap(map -> map.values().stream()).flatMap(Collection::stream).filter(task -> task.getStatus() == Task.Status.RUNNING);
+	public List<Task<? super E>> method_27074() {
+		List<Task<? super E>> list = new ObjectArrayList<>();
+
+		for (Map<Activity, Set<Task<? super E>>> map : this.tasks.values()) {
+			for (Set<Task<? super E>> set : map.values()) {
+				for (Task<? super E> task : set) {
+					if (task.getStatus() == Task.Status.RUNNING) {
+						list.add(task);
+					}
+				}
+			}
+		}
+
+		return list;
 	}
 
 	public void resetPossibleActivities() {
@@ -135,7 +147,13 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	public Optional<Activity> getFirstPossibleNonCoreActivity() {
-		return this.possibleActivities.stream().filter(activity -> !this.coreActivities.contains(activity)).findFirst();
+		for (Activity activity : this.possibleActivities) {
+			if (!this.coreActivities.contains(activity)) {
+				return Optional.of(activity);
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	public void method_24526(Activity activity) {
@@ -156,13 +174,16 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	private void method_24537(Activity activity) {
-		this.possibleActivities
-			.stream()
-			.filter(activity2 -> activity2 != activity)
-			.map(this.forgettingActivityMemories::get)
-			.filter(Objects::nonNull)
-			.flatMap(Collection::stream)
-			.forEach(this::forget);
+		for (Activity activity2 : this.possibleActivities) {
+			if (activity2 != activity) {
+				Set<MemoryModuleType<?>> set = (Set<MemoryModuleType<?>>)this.forgettingActivityMemories.get(activity2);
+				if (set != null) {
+					for (MemoryModuleType<?> memoryModuleType : set) {
+						this.forget(memoryModuleType);
+					}
+				}
+			}
+		}
 	}
 
 	public void refreshActivities(long timeOfDay, long time) {
@@ -176,7 +197,12 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	}
 
 	public void resetPossibleActivities(List<Activity> list) {
-		list.stream().filter(this::canDoActivity).findFirst().ifPresent(this::resetPossibleActivities);
+		for (Activity activity : list) {
+			if (this.canDoActivity(activity)) {
+				this.resetPossibleActivities(activity);
+				break;
+			}
+		}
 	}
 
 	public void setDefaultActivity(Activity activity) {
@@ -216,11 +242,10 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 			this.forgettingActivityMemories.put(activity, forgettingMemories);
 		}
 
-		indexedTasks.forEach(
-			pair -> ((Set)((Map)this.tasks.computeIfAbsent(pair.getFirst(), integer -> Maps.newHashMap()))
-						.computeIfAbsent(activity, activityxx -> Sets.newLinkedHashSet()))
-					.add(pair.getSecond())
-		);
+		for (Pair<Integer, ? extends Task<? super E>> pair : indexedTasks) {
+			((Set)((Map)this.tasks.computeIfAbsent(pair.getFirst(), integer -> Maps.newHashMap())).computeIfAbsent(activity, activityx -> Sets.newLinkedHashSet()))
+				.add(pair.getSecond());
+		}
 	}
 
 	public boolean hasActivity(Activity activity) {
@@ -229,75 +254,106 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 
 	public Brain<E> copy() {
 		Brain<E> brain = new Brain<>(this.memories.keySet(), this.sensors.keySet(), new Dynamic<>(NbtOps.INSTANCE, new CompoundTag()));
-		this.memories.forEach((memoryModuleType, optional) -> optional.ifPresent(memory -> {
-				Optional var10000 = (Optional)brain.memories.put(memoryModuleType, Optional.of(memory));
-			}));
+
+		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : this.memories.entrySet()) {
+			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)entry.getKey();
+			if (((Optional)entry.getValue()).isPresent()) {
+				brain.memories.put(memoryModuleType, entry.getValue());
+			}
+		}
+
 		return brain;
 	}
 
 	public void tick(ServerWorld serverWorld, E entity) {
-		this.memories.forEach(this::method_24912);
-		this.sensors.values().forEach(sensor -> sensor.canSense(serverWorld, entity));
+		this.method_27075();
+		this.method_27073(serverWorld, entity);
 		this.startTasks(serverWorld, entity);
 		this.updateTasks(serverWorld, entity);
 	}
 
+	private void method_27073(ServerWorld serverWorld, E livingEntity) {
+		for (Sensor<? super E> sensor : this.sensors.values()) {
+			sensor.canSense(serverWorld, livingEntity);
+		}
+	}
+
+	private void method_27075() {
+		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : this.memories.entrySet()) {
+			if (((Optional)entry.getValue()).isPresent()) {
+				Memory<?> memory = (Memory<?>)((Optional)entry.getValue()).get();
+				memory.method_24913();
+				if (memory.isExpired()) {
+					this.forget((MemoryModuleType)entry.getKey());
+				}
+			}
+		}
+	}
+
 	public void stopAllTasks(ServerWorld serverWorld, E livingEntity) {
 		long l = livingEntity.world.getTime();
-		this.streamRunningTasks().forEach(task -> task.stop(serverWorld, livingEntity, l));
+
+		for (Task<? super E> task : this.method_27074()) {
+			task.stop(serverWorld, livingEntity, l);
+		}
 	}
 
 	@Override
 	public <T> T serialize(DynamicOps<T> ops) {
-		T object = ops.createMap(
-			(Map<T, T>)this.memories
-				.entrySet()
-				.stream()
-				.filter(entry -> ((MemoryModuleType)entry.getKey()).getFactory().isPresent() && ((Optional)entry.getValue()).isPresent())
-				.map(
-					entry -> Pair.of(
-							ops.createString(Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)entry.getKey()).toString()),
-							((Memory)((Optional)entry.getValue()).get()).serialize(ops)
-						)
-				)
-				.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond))
-		);
-		return ops.createMap(ImmutableMap.of(ops.createString("memories"), object));
+		Builder<T, T> builder = ImmutableMap.builder();
+
+		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : this.memories.entrySet()) {
+			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)entry.getKey();
+			if (((Optional)entry.getValue()).isPresent() && memoryModuleType.getFactory().isPresent()) {
+				Memory<?> memory = (Memory<?>)((Optional)entry.getValue()).get();
+				T object = ops.createString(Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType).toString());
+				T object2 = memory.serialize(ops);
+				builder.put(object, object2);
+			}
+		}
+
+		return ops.createMap(ImmutableMap.of(ops.createString("memories"), ops.createMap(builder.build())));
 	}
 
 	private void startTasks(ServerWorld serverWorld, E livingEntity) {
 		long l = serverWorld.getTime();
-		this.tasks
-			.values()
-			.stream()
-			.flatMap(map -> map.entrySet().stream())
-			.filter(entry -> this.possibleActivities.contains(entry.getKey()))
-			.map(Entry::getValue)
-			.flatMap(Collection::stream)
-			.filter(task -> task.getStatus() == Task.Status.STOPPED)
-			.forEach(task -> task.tryStarting(serverWorld, livingEntity, l));
+
+		for (Map<Activity, Set<Task<? super E>>> map : this.tasks.values()) {
+			for (Entry<Activity, Set<Task<? super E>>> entry : map.entrySet()) {
+				Activity activity = (Activity)entry.getKey();
+				if (this.possibleActivities.contains(activity)) {
+					for (Task<? super E> task : (Set)entry.getValue()) {
+						if (task.getStatus() == Task.Status.STOPPED) {
+							task.tryStarting(serverWorld, livingEntity, l);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void updateTasks(ServerWorld serverWorld, E livingEntity) {
 		long l = serverWorld.getTime();
-		this.streamRunningTasks().forEach(task -> task.tick(serverWorld, livingEntity, l));
-	}
 
-	private void method_24912(MemoryModuleType<?> memoryModuleType, Optional<? extends Memory<?>> optional) {
-		optional.ifPresent(memory -> {
-			memory.method_24913();
-			if (memory.isExpired()) {
-				this.forget(memoryModuleType);
-			}
-		});
+		for (Task<? super E> task : this.method_27074()) {
+			task.tick(serverWorld, livingEntity, l);
+		}
 	}
 
 	private boolean canDoActivity(Activity activity) {
-		return this.requiredActivityMemories.containsKey(activity) && ((Set)this.requiredActivityMemories.get(activity)).stream().allMatch(pair -> {
-			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)pair.getFirst();
-			MemoryModuleState memoryModuleState = (MemoryModuleState)pair.getSecond();
-			return this.isMemoryInState(memoryModuleType, memoryModuleState);
-		});
+		if (!this.requiredActivityMemories.containsKey(activity)) {
+			return false;
+		} else {
+			for (Pair<MemoryModuleType<?>, MemoryModuleState> pair : (Set)this.requiredActivityMemories.get(activity)) {
+				MemoryModuleType<?> memoryModuleType = pair.getFirst();
+				MemoryModuleState memoryModuleState = pair.getSecond();
+				if (!this.isMemoryInState(memoryModuleType, memoryModuleState)) {
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 
 	private boolean isEmptyCollection(Object value) {
@@ -307,10 +363,14 @@ public class Brain<E extends LivingEntity> implements DynamicSerializable {
 	/**
 	 * @param begin The beginning of the index of tasks, exclusive
 	 */
-	private ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexTaskList(int begin, ImmutableList<? extends Task<? super E>> immutableList) {
-		MutableInt mutableInt = new MutableInt(begin);
-		return (ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>>)immutableList.stream()
-			.map(task -> Pair.of(mutableInt.incrementAndGet(), task))
-			.collect(ImmutableList.toImmutableList());
+	ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexTaskList(int begin, ImmutableList<? extends Task<? super E>> immutableList) {
+		int i = begin;
+		com.google.common.collect.ImmutableList.Builder<Pair<Integer, ? extends Task<? super E>>> builder = ImmutableList.builder();
+
+		for (Task<? super E> task : immutableList) {
+			builder.add(Pair.of(i++, task));
+		}
+
+		return builder.build();
 	}
 }

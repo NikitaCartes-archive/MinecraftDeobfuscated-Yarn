@@ -10,9 +10,9 @@ import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -23,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-public class ArmorItem extends Item {
+public class ArmorItem extends Item implements Wearable {
 	private static final UUID[] MODIFIERS = new UUID[]{
 		UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"),
 		UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"),
@@ -41,7 +41,7 @@ public class ArmorItem extends Item {
 	private final float toughness;
 	protected final float knockbackResistance;
 	protected final ArmorMaterial type;
-	private final Multimap<EntityAttribute, EntityAttributeModifier> field_23741;
+	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
 	public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
 		BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
@@ -74,19 +74,20 @@ public class ArmorItem extends Item {
 		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 		UUID uUID = MODIFIERS[slot.getEntitySlotId()];
 		builder.put(
-			Attributes.GENERIC_ARMOR, new EntityAttributeModifier(uUID, "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION)
+			EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(uUID, "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION)
 		);
 		builder.put(
-			Attributes.GENERIC_ARMOR_TOUGHNESS, new EntityAttributeModifier(uUID, "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION)
+			EntityAttributes.GENERIC_ARMOR_TOUGHNESS,
+			new EntityAttributeModifier(uUID, "Armor toughness", (double)this.toughness, EntityAttributeModifier.Operation.ADDITION)
 		);
 		if (material == ArmorMaterials.NETHERITE) {
 			builder.put(
-				Attributes.GENERIC_KNOCKBACK_RESISTANCE,
+				EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
 				new EntityAttributeModifier(uUID, "Armor knockback resistance", (double)this.knockbackResistance, EntityAttributeModifier.Operation.ADDITION)
 			);
 		}
 
-		this.field_23741 = builder.build();
+		this.attributeModifiers = builder.build();
 	}
 
 	public EquipmentSlot getSlotType() {
@@ -123,7 +124,7 @@ public class ArmorItem extends Item {
 
 	@Override
 	public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-		return equipmentSlot == this.slot ? this.field_23741 : super.getModifiers(equipmentSlot);
+		return equipmentSlot == this.slot ? this.attributeModifiers : super.getModifiers(equipmentSlot);
 	}
 
 	public int getProtection() {

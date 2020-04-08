@@ -681,6 +681,12 @@ public class RecipesProvider implements DataProvider {
 			.pattern("B")
 			.criterion("has_minecart", conditionsFromItem(Items.MINECART))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.CHISELED_NETHER_BRICKS)
+			.input('#', Blocks.NETHER_BRICK_SLAB)
+			.pattern("#")
+			.pattern("#")
+			.criterion("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.CHISELED_QUARTZ_BLOCK)
 			.input('#', Blocks.QUARTZ_SLAB)
 			.pattern("#")
@@ -1043,11 +1049,11 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_brick", conditionsFromItem(Items.BRICK))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.FURNACE)
-			.input('#', Blocks.COBBLESTONE)
+			.input('#', ItemTags.FURNACE_MATERIALS)
 			.pattern("###")
 			.pattern("# #")
 			.pattern("###")
-			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
+			.criterion("has_cobblestone", conditionsFromTag(ItemTags.FURNACE_MATERIALS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.FURNACE_MINECART)
 			.input('A', Blocks.FURNACE)
@@ -1818,6 +1824,12 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.criterion("has_quartz", conditionsFromItem(Items.QUARTZ))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.QUARTZ_BRICKS, 4)
+			.input('#', Blocks.QUARTZ_BLOCK)
+			.pattern("##")
+			.pattern("##")
+			.criterion("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.QUARTZ_SLAB, 6)
 			.input('#', Ingredient.ofItems(Blocks.CHISELED_QUARTZ_BLOCK, Blocks.QUARTZ_BLOCK, Blocks.QUARTZ_PILLAR))
 			.pattern("###")
@@ -2029,6 +2041,16 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_snowball", conditionsFromItem(Items.SNOWBALL))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.SOUL_CAMPFIRE)
+			.input('L', ItemTags.LOGS)
+			.input('S', Items.STICK)
+			.input('#', ItemTags.SOUL_FIRE_BASE_BLOCKS)
+			.pattern(" S ")
+			.pattern("S#S")
+			.pattern("LLL")
+			.criterion("has_stick", conditionsFromItem(Items.STICK))
+			.criterion("has_soul_sand", conditionsFromTag(ItemTags.SOUL_FIRE_BASE_BLOCKS))
+			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.GLISTERING_MELON_SLICE)
 			.input('#', Items.GOLD_NUGGET)
 			.input('X', Items.MELON_SLICE)
@@ -2074,11 +2096,11 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.STONE_AXE)
 			.input('#', Items.STICK)
-			.input('X', Blocks.COBBLESTONE)
+			.input('X', ItemTags.STONE_TOOL_MATERIALS)
 			.pattern("XX")
 			.pattern("X#")
 			.pattern(" #")
-			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
+			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_TOOL_MATERIALS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.STONE_BRICK_SLAB, 6)
 			.input('#', Blocks.STONE_BRICKS)
@@ -2095,19 +2117,19 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Blocks.STONE_BUTTON).input(Blocks.STONE).criterion("has_stone", conditionsFromItem(Blocks.STONE)).offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.STONE_HOE)
 			.input('#', Items.STICK)
-			.input('X', Blocks.COBBLESTONE)
+			.input('X', ItemTags.STONE_TOOL_MATERIALS)
 			.pattern("XX")
 			.pattern(" #")
 			.pattern(" #")
-			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
+			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_TOOL_MATERIALS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.STONE_PICKAXE)
 			.input('#', Items.STICK)
-			.input('X', Blocks.COBBLESTONE)
+			.input('X', ItemTags.STONE_TOOL_MATERIALS)
 			.pattern("XXX")
 			.pattern(" # ")
 			.pattern(" # ")
-			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
+			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_TOOL_MATERIALS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.STONE_PRESSURE_PLATE)
 			.input('#', Blocks.STONE)
@@ -2116,11 +2138,11 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.STONE_SHOVEL)
 			.input('#', Items.STICK)
-			.input('X', Blocks.COBBLESTONE)
+			.input('X', ItemTags.STONE_TOOL_MATERIALS)
 			.pattern("X")
 			.pattern("#")
 			.pattern("#")
-			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
+			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_TOOL_MATERIALS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.STONE_SLAB, 6)
 			.input('#', Blocks.STONE)
@@ -2141,11 +2163,11 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.STONE_SWORD)
 			.input('#', Items.STICK)
-			.input('X', Blocks.COBBLESTONE)
+			.input('X', ItemTags.STONE_TOOL_MATERIALS)
 			.pattern("X")
 			.pattern("X")
 			.pattern("#")
-			.criterion("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
+			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_TOOL_MATERIALS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.WHITE_WOOL)
 			.input('#', Items.STRING)
@@ -2197,11 +2219,11 @@ public class RecipesProvider implements DataProvider {
 		ShapedRecipeJsonFactory.create(Blocks.SOUL_FIRE_TORCH, 4)
 			.input('X', Ingredient.ofItems(Items.COAL, Items.CHARCOAL))
 			.input('#', Items.STICK)
-			.input('S', Items.SOUL_SOIL)
+			.input('S', ItemTags.SOUL_FIRE_BASE_BLOCKS)
 			.pattern("X")
 			.pattern("#")
 			.pattern("S")
-			.criterion("has_soul_soil", conditionsFromItem(Items.SOUL_SOIL))
+			.criterion("has_soul_sand", conditionsFromTag(ItemTags.SOUL_FIRE_BASE_BLOCKS))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.LANTERN)
 			.input('#', Items.TORCH)
@@ -2677,6 +2699,87 @@ public class RecipesProvider implements DataProvider {
 			.pattern("OOO")
 			.criterion("has_obsidian", conditionsFromItem(Blocks.CRYING_OBSIDIAN))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.BLACKSTONE_STAIRS, 4)
+			.input('#', Blocks.BLACKSTONE)
+			.pattern("#  ")
+			.pattern("## ")
+			.pattern("###")
+			.criterion("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_STAIRS, 4)
+			.input('#', Blocks.POLISHED_BLACKSTONE)
+			.pattern("#  ")
+			.pattern("## ")
+			.pattern("###")
+			.criterion("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, 4)
+			.input('#', Blocks.POLISHED_BLACKSTONE_BRICKS)
+			.pattern("#  ")
+			.pattern("## ")
+			.pattern("###")
+			.criterion("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.BLACKSTONE_SLAB, 6)
+			.input('#', Blocks.BLACKSTONE)
+			.pattern("###")
+			.criterion("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_SLAB, 6)
+			.input('#', Blocks.POLISHED_BLACKSTONE)
+			.pattern("###")
+			.criterion("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, 6)
+			.input('#', Blocks.POLISHED_BLACKSTONE_BRICKS)
+			.pattern("###")
+			.criterion("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE, 4)
+			.input('S', Blocks.BLACKSTONE)
+			.pattern("SS")
+			.pattern("SS")
+			.criterion("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_BRICKS, 4)
+			.input('#', Blocks.POLISHED_BLACKSTONE)
+			.pattern("##")
+			.pattern("##")
+			.criterion("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.CHISELED_POLISHED_BLACKSTONE)
+			.input('#', Blocks.POLISHED_BLACKSTONE_SLAB)
+			.pattern("#")
+			.pattern("#")
+			.criterion("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.BLACKSTONE_WALL, 6)
+			.input('#', Blocks.BLACKSTONE)
+			.pattern("###")
+			.pattern("###")
+			.criterion("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_WALL, 6)
+			.input('#', Blocks.POLISHED_BLACKSTONE)
+			.pattern("###")
+			.pattern("###")
+			.criterion("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_BRICK_WALL, 6)
+			.input('#', Blocks.POLISHED_BLACKSTONE_BRICKS)
+			.pattern("###")
+			.pattern("###")
+			.criterion("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
+			.offerTo(consumer);
+		ShapelessRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_BUTTON)
+			.input(Blocks.POLISHED_BLACKSTONE)
+			.criterion("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE)
+			.input('#', Blocks.POLISHED_BLACKSTONE)
+			.pattern("##")
+			.criterion("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer);
 		ComplexRecipeJsonFactory.create(RecipeSerializer.ARMOR_DYE).offerTo(consumer, "armor_dye");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(consumer, "banner_duplicate");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.BOOK_CLONING).offerTo(consumer, "book_cloning");
@@ -2901,6 +3004,12 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.ANCIENT_DEBRIS), Items.NETHERITE_SCRAP, 2.0F, 200)
 			.criterion("has_ancient_debris", conditionsFromItem(Blocks.ANCIENT_DEBRIS))
 			.offerTo(consumer);
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.asItem(), 0.1F, 200)
+			.criterion("has_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
+			.offerTo(consumer);
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.NETHER_BRICKS), Blocks.CRACKED_NETHER_BRICKS.asItem(), 0.1F, 200)
+			.criterion("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
+			.offerTo(consumer);
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.IRON_ORE.asItem()), Items.IRON_INGOT, 0.7F, 100)
 			.criterion("has_iron_ore", conditionsFromItem(Blocks.IRON_ORE.asItem()))
 			.offerTo(consumer, "iron_ingot_from_blasting");
@@ -3069,6 +3178,9 @@ public class RecipesProvider implements DataProvider {
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), Blocks.CHISELED_QUARTZ_BLOCK)
 			.create("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
 			.offerTo(consumer, "chiseled_quartz_block_from_quartz_block_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.QUARTZ_BLOCK), Blocks.QUARTZ_BRICKS)
+			.create("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
+			.offerTo(consumer, "quartz_bricks_from_quartz_block_stonecutting");
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.COBBLESTONE), Blocks.COBBLESTONE_STAIRS)
 			.create("has_cobblestone", conditionsFromItem(Blocks.COBBLESTONE))
 			.offerTo(consumer, "cobblestone_stairs_from_cobblestone_stonecutting");
@@ -3108,6 +3220,9 @@ public class RecipesProvider implements DataProvider {
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.NETHER_BRICKS), Blocks.NETHER_BRICK_WALL)
 			.create("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
 			.offerTo(consumer, "nether_brick_wall_from_nether_bricks_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.NETHER_BRICKS), Blocks.CHISELED_NETHER_BRICKS)
+			.create("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
+			.offerTo(consumer, "chiseled_nether_bricks_from_nether_bricks_stonecutting");
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.RED_NETHER_BRICKS), Blocks.RED_NETHER_BRICK_SLAB, 2)
 			.create("has_nether_bricks", conditionsFromItem(Blocks.RED_NETHER_BRICKS))
 			.offerTo(consumer, "red_nether_brick_slab_from_red_nether_bricks_stonecutting");
@@ -3282,6 +3397,75 @@ public class RecipesProvider implements DataProvider {
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.SMOOTH_STONE), Blocks.SMOOTH_STONE_SLAB, 2)
 			.create("has_smooth_stone", conditionsFromItem(Blocks.SMOOTH_STONE))
 			.offerTo(consumer, "smooth_stone_slab_from_smooth_stone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.BLACKSTONE_SLAB, 2)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "blackstone_slab_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.BLACKSTONE_STAIRS)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "blackstone_stairs_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.BLACKSTONE_WALL)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "blackstone_wall_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_WALL)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_wall_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_SLAB, 2)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_slab_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_STAIRS)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_stairs_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.CHISELED_POLISHED_BLACKSTONE)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "chiseled_polished_blackstone_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICKS)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_bricks_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, 2)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_brick_slab_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_brick_stairs_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
+			.create("has_blackstone", conditionsFromItem(Blocks.BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_brick_wall_from_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_SLAB, 2)
+			.create("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_slab_from_polished_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_STAIRS)
+			.create("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_stairs_from_polished_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICKS)
+			.create("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_bricks_from_polished_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_WALL)
+			.create("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_wall_from_polished_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, 2)
+			.create("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_brick_slab_from_polished_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS)
+			.create("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_brick_stairs_from_polished_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
+			.create("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer, "polished_blackstone_brick_wall_from_polished_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE), Blocks.CHISELED_POLISHED_BLACKSTONE)
+			.create("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
+			.offerTo(consumer, "chiseled_polished_blackstone_from_polished_blackstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, 2)
+			.create("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
+			.offerTo(consumer, "polished_blackstone_brick_slab_from_polished_blackstone_bricks_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS)
+			.create("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
+			.offerTo(consumer, "polished_blackstone_brick_stairs_from_polished_blackstone_bricks_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
+			.create("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
+			.offerTo(consumer, "polished_blackstone_brick_wall_from_polished_blackstone_bricks_stonecutting");
 	}
 
 	private static void method_24475(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, Tag<Item> tag) {

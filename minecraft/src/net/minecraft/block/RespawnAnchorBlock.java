@@ -50,10 +50,20 @@ public class RespawnAnchorBlock extends Block {
 		} else if ((Integer)state.get(CHARGES) == 0) {
 			return ActionResult.PASS;
 		} else if (world.dimension.getType() != DimensionType.THE_NETHER) {
-			world.removeBlock(pos, false);
-			world.createExplosion(
-				null, DamageSource.netherBed(), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0F, true, Explosion.DestructionType.DESTROY
-			);
+			if (!world.isClient) {
+				world.removeBlock(pos, false);
+				world.createExplosion(
+					null,
+					DamageSource.netherBed(),
+					(double)pos.getX() + 0.5,
+					(double)pos.getY() + 0.5,
+					(double)pos.getZ() + 0.5,
+					5.0F,
+					true,
+					Explosion.DestructionType.DESTROY
+				);
+			}
+
 			return ActionResult.SUCCESS;
 		} else {
 			if (!world.isClient) {

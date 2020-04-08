@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
@@ -32,8 +33,8 @@ import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -143,11 +144,11 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 
 	public static DefaultAttributeContainer.Builder createZoglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 40.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(Attributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
-			.add(Attributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 6.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
+			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
 	}
 
 	public boolean isAdult() {
@@ -296,5 +297,10 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	protected void sendAiDebugData() {
 		super.sendAiDebugData();
 		DebugInfoSender.sendBrainDebugData(this);
+	}
+
+	@Override
+	public EntityGroup getGroup() {
+		return EntityGroup.UNDEAD;
 	}
 }

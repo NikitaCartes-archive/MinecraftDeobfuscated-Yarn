@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.poi.PointOfInterestType;
 
-public class CompassItem extends Item {
+public class CompassItem extends Item implements Vanishable {
 	public CompassItem(Item.Settings settings) {
 		super(settings);
 		this.addPropertyGetter(new Identifier("angle"), new ItemPropertyGetter() {
@@ -114,7 +114,7 @@ public class CompassItem extends Item {
 	@Environment(EnvType.CLIENT)
 	private BlockPos getLodestonePos(World world, CompoundTag tag) {
 		boolean bl = tag.contains("LodestonePos");
-		boolean bl2 = tag.contains("LodestonePos");
+		boolean bl2 = tag.contains("LodestoneDimension");
 		if (bl && bl2) {
 			Optional<DimensionType> optional = getLodestoneDimension(tag);
 			if (optional.isPresent() && world.dimension.getType().equals(optional.get())) {

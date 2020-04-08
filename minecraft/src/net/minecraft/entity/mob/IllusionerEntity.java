@@ -17,8 +17,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -76,9 +76,9 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	public static DefaultAttributeContainer.Builder createIllusionerAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.5)
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 18.0)
-			.add(Attributes.GENERIC_MAX_HEALTH, 32.0);
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 18.0)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 32.0);
 	}
 
 	@Override

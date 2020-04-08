@@ -7,6 +7,7 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -31,9 +32,9 @@ public class PlainsFlowerBlockStateProvider extends BlockStateProvider {
 	public BlockState getBlockState(Random random, BlockPos pos) {
 		double d = Biome.FOLIAGE_NOISE.sample((double)pos.getX() / 200.0, (double)pos.getZ() / 200.0, false);
 		if (d < -0.8) {
-			return tulips[random.nextInt(tulips.length)];
+			return Util.getRandom(tulips, random);
 		} else {
-			return random.nextInt(3) > 0 ? flowers[random.nextInt(flowers.length)] : Blocks.DANDELION.getDefaultState();
+			return random.nextInt(3) > 0 ? Util.getRandom(flowers, random) : Blocks.DANDELION.getDefaultState();
 		}
 	}
 

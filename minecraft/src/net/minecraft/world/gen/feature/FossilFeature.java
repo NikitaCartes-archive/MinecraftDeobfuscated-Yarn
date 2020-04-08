@@ -56,8 +56,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		DefaultFeatureConfig defaultFeatureConfig
 	) {
 		Random random2 = iWorld.getRandom();
-		BlockRotation[] blockRotations = BlockRotation.values();
-		BlockRotation blockRotation = blockRotations[random2.nextInt(blockRotations.length)];
+		BlockRotation blockRotation = BlockRotation.random(random2);
 		int i = random2.nextInt(FOSSILS.length);
 		StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).getSaveHandler().getStructureManager();
 		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);

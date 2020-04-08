@@ -15,6 +15,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -259,7 +260,7 @@ public class FireworksSparkParticle {
 			int i = this.random.nextInt(colors.length);
 			explosion.setColor(colors[i]);
 			if (fadeColors.length > 0) {
-				explosion.setTargetColor(fadeColors[this.random.nextInt(fadeColors.length)]);
+				explosion.setTargetColor(Util.getRandom(fadeColors, this.random));
 			}
 		}
 

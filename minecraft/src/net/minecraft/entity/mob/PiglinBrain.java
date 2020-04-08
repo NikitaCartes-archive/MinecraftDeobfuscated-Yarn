@@ -74,6 +74,7 @@ import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.Vec3d;
 
 public class PiglinBrain {
+	public static final Item field_23826 = Items.GOLD_INGOT;
 	private static final IntRange field_22477 = IntRange.between(10, 20);
 	private static final IntRange HUNT_MEMORY_DURATION = Durations.betweenSeconds(30, 120);
 	private static final IntRange MEMORY_TRANSFER_TASK_DURATION = Durations.betweenSeconds(10, 40);
@@ -93,7 +94,8 @@ public class PiglinBrain {
 		Items.BELL,
 		Items.GLISTERING_MELON_SLICE,
 		Items.CLOCK,
-		Items.NETHER_GOLD_ORE
+		Items.NETHER_GOLD_ORE,
+		Items.GILDED_BLACKSTONE
 	);
 
 	protected static Brain<?> create(PiglinEntity piglin, Dynamic<?> data) {
@@ -389,16 +391,19 @@ public class PiglinBrain {
 
 	protected static boolean canGather(PiglinEntity piglin, ItemStack stack) {
 		Item item = stack.getItem();
-		if (item == Items.GOLD_NUGGET) {
-			return true;
-		} else if (item.isIn(ItemTags.PIGLIN_REPELLENTS)) {
+		if (item.isIn(ItemTags.PIGLIN_REPELLENTS)) {
 			return false;
 		} else if (hasBeenHitByPlayer(piglin) && piglin.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET)) {
 			return false;
-		} else if (isFood(item)) {
-			return !hasAteRecently(piglin);
 		} else {
-			return isGoldenItem(item) ? doesNotHaveGoldInOffHand(piglin) : piglin.method_24846(stack);
+			boolean bl = piglin.method_27085(stack);
+			if (item == Items.GOLD_NUGGET) {
+				return bl;
+			} else if (isFood(item)) {
+				return !hasAteRecently(piglin) && bl;
+			} else {
+				return !isGoldenItem(item) ? piglin.method_24846(stack) : doesNotHaveGoldInOffHand(piglin) && bl;
+			}
 		}
 	}
 
@@ -453,8 +458,7 @@ public class PiglinBrain {
 
 	public static boolean playerInteract(PiglinEntity piglin, PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		Item item = itemStack.getItem();
-		if (!isAdmiringItem(piglin) && piglin.isAdult() && acceptsForBarter(item) && !hasBeenHitByPlayer(piglin)) {
+		if (method_27086(piglin, itemStack)) {
 			ItemStack itemStack2 = itemStack.split(1);
 			piglin.equipToOffHand(itemStack2);
 			setAdmiringItem(piglin);
@@ -462,6 +466,10 @@ public class PiglinBrain {
 		} else {
 			return false;
 		}
+	}
+
+	public static boolean method_27086(PiglinEntity piglinEntity, ItemStack itemStack) {
+		return !hasBeenHitByPlayer(piglinEntity) && !isAdmiringItem(piglinEntity) && piglinEntity.isAdult() && acceptsForBarter(itemStack.getItem());
 	}
 
 	protected static void onAttacked(PiglinEntity piglin, LivingEntity attacker) {
@@ -664,7 +672,7 @@ public class PiglinBrain {
 	}
 
 	private static boolean acceptsForBarter(Item item) {
-		return item == Items.GOLD_INGOT;
+		return item == field_23826;
 	}
 
 	private static boolean isFood(Item item) {

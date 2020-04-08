@@ -34,12 +34,12 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTracker;
@@ -130,7 +130,7 @@ public abstract class LivingEntity extends Entity {
 	private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.<StatusEffect, StatusEffectInstance>newHashMap();
 	private final DefaultedList<ItemStack> equippedHand = DefaultedList.ofSize(2, ItemStack.EMPTY);
 	private final DefaultedList<ItemStack> equippedArmor = DefaultedList.ofSize(4, ItemStack.EMPTY);
-	public boolean isHandSwinging;
+	public boolean handSwinging;
 	public Hand preferredHand;
 	public int handSwingTicks;
 	public int stuckArrowTimer;
@@ -201,7 +201,7 @@ public abstract class LivingEntity extends Entity {
 		super(entityType, world);
 		this.attributes = new AttributeContainer(DefaultAttributeRegistry.get(entityType));
 		this.setHealth(this.getMaximumHealth());
-		this.inanimate = true;
+		this.field_23807 = true;
 		this.randomSmallSeed = (float)((Math.random() + 1.0) * 0.01F);
 		this.refreshPosition();
 		this.randomLargeSeed = (float)Math.random() * 12398.0F;
@@ -241,11 +241,11 @@ public abstract class LivingEntity extends Entity {
 
 	public static DefaultAttributeContainer.Builder createLivingAttributes() {
 		return DefaultAttributeContainer.builder()
-			.add(Attributes.GENERIC_MAX_HEALTH)
-			.add(Attributes.GENERIC_KNOCKBACK_RESISTANCE)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED)
-			.add(Attributes.GENERIC_ARMOR)
-			.add(Attributes.GENERIC_ARMOR_TOUGHNESS);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+			.add(EntityAttributes.GENERIC_ARMOR)
+			.add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
 	}
 
 	@Override
@@ -426,7 +426,7 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		if (!this.getLandingBlockState().isAir()) {
-			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 			if (entityAttributeInstance.getModifier(SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID) != null) {
 				entityAttributeInstance.removeModifier(SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID);
 			}
@@ -474,6 +474,10 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected boolean canDropLootAndXp() {
+		return !this.isBaby();
+	}
+
+	protected boolean method_27071() {
 		return !this.isBaby();
 	}
 
@@ -1211,7 +1215,7 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		boolean bl = this.playerHitTimer > 0;
-		if (this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+		if (this.method_27071() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 			this.dropLoot(source, bl);
 			this.dropEquipment(source, i, bl);
 		}
@@ -1266,7 +1270,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void takeKnockback(float f, double d, double e) {
-		f = (float)((double)f * (1.0 - this.method_26825(Attributes.GENERIC_KNOCKBACK_RESISTANCE)));
+		f = (float)((double)f * (1.0 - this.method_26825(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)));
 		if (!(f <= 0.0F)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
@@ -1390,7 +1394,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public int getArmor() {
-		return MathHelper.floor(this.method_26825(Attributes.GENERIC_ARMOR));
+		return MathHelper.floor(this.method_26825(EntityAttributes.GENERIC_ARMOR));
 	}
 
 	protected void damageArmor(DamageSource source, float amount) {
@@ -1402,7 +1406,7 @@ public abstract class LivingEntity extends Entity {
 	protected float applyArmorToDamage(DamageSource source, float amount) {
 		if (!source.bypassesArmor()) {
 			this.damageArmor(source, amount);
-			amount = DamageUtil.getDamageLeft(amount, (float)this.getArmor(), (float)this.method_26825(Attributes.GENERIC_ARMOR_TOUGHNESS));
+			amount = DamageUtil.getDamageLeft(amount, (float)this.getArmor(), (float)this.method_26825(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
 		}
 
 		return amount;
@@ -1477,7 +1481,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public final float getMaximumHealth() {
-		return (float)this.method_26825(Attributes.GENERIC_MAX_HEALTH);
+		return (float)this.method_26825(EntityAttributes.GENERIC_MAX_HEALTH);
 	}
 
 	public final int getStuckArrowCount() {
@@ -1509,9 +1513,9 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void swingHand(Hand hand, boolean bl) {
-		if (!this.isHandSwinging || this.handSwingTicks >= this.getHandSwingDuration() / 2 || this.handSwingTicks < 0) {
+		if (!this.handSwinging || this.handSwingTicks >= this.getHandSwingDuration() / 2 || this.handSwingTicks < 0) {
 			this.handSwingTicks = -1;
-			this.isHandSwinging = true;
+			this.handSwinging = true;
 			this.preferredHand = hand;
 			if (this.world instanceof ServerWorld) {
 				EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? 0 : 3);
@@ -1666,11 +1670,11 @@ public abstract class LivingEntity extends Entity {
 
 	protected void tickHandSwing() {
 		int i = this.getHandSwingDuration();
-		if (this.isHandSwinging) {
+		if (this.handSwinging) {
 			this.handSwingTicks++;
 			if (this.handSwingTicks >= i) {
 				this.handSwingTicks = 0;
-				this.isHandSwinging = false;
+				this.handSwinging = false;
 			}
 		} else {
 			this.handSwingTicks = 0;
@@ -1779,7 +1783,7 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public void setSprinting(boolean sprinting) {
 		super.setSprinting(sprinting);
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (entityAttributeInstance.getModifier(ATTR_SPRINTING_SPEED_BOOST_ID) != null) {
 			entityAttributeInstance.removeModifier(ATTR_SPRINTING_SPEED_BOOST);
 		}
@@ -2526,7 +2530,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	protected void scheduleVelocityUpdate() {
-		this.velocityModified = this.random.nextDouble() >= this.method_26825(Attributes.GENERIC_KNOCKBACK_RESISTANCE);
+		this.velocityModified = this.random.nextDouble() >= this.method_26825(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
 	}
 
 	@Override
