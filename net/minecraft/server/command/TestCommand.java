@@ -252,7 +252,7 @@ public class TestCommand {
     }
 
     private static void sendMessage(ServerWorld world, String message, Formatting formatting) {
-        world.getPlayers(serverPlayerEntity -> true).forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText((Object)((Object)formatting) + message)));
+        world.getPlayers(serverPlayerEntity -> true).forEach(serverPlayerEntity -> serverPlayerEntity.sendSystemMessage(new LiteralText((Object)((Object)formatting) + message)));
     }
 
     static class Listener

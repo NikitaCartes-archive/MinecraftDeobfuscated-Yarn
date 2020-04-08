@@ -67,8 +67,10 @@ extends Block {
             }
             return state.get(CHARGES) < 4 ? ActionResult.PASS : ActionResult.CONSUME;
         }
-        world.removeBlock(pos, false);
-        world.createExplosion(null, DamageSource.netherBed(), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
+        if (!world.isClient) {
+            world.removeBlock(pos, false);
+            world.createExplosion(null, DamageSource.netherBed(), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
+        }
         return ActionResult.SUCCESS;
     }
 

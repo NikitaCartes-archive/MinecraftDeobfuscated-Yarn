@@ -3,6 +3,8 @@
  */
 package net.minecraft.tag;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.GlobalTagAccessor;
 import net.minecraft.tag.Tag;
@@ -22,6 +24,11 @@ public class EntityTypeTags {
 
     public static void setContainer(TagContainer<EntityType<?>> container) {
         ACCESSOR.setContainer(container);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static void method_27058() {
+        ACCESSOR.method_27061();
     }
 
     public static TagContainer<EntityType<?>> getContainer() {

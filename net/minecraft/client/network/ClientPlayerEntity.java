@@ -380,7 +380,7 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void addMessage(Text message, boolean actionBar) {
+    public void sendMessage(Text message, boolean actionBar) {
         if (actionBar) {
             this.client.inGameHud.setOverlayMessage(message, false);
         } else {
@@ -459,7 +459,7 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void sendMessage(Text message) {
+    public void sendSystemMessage(Text message) {
         this.client.inGameHud.getChatHud().addMessage(message);
     }
 

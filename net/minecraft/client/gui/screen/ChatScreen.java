@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -133,12 +134,18 @@ extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Text text;
         if (this.commandSuggestor.mouseClicked((int)mouseX, (int)mouseY, button)) {
             return true;
         }
-        if (button == 0 && (text = this.client.inGameHud.getChatHud().getText(mouseX, mouseY)) != null && this.handleTextClick(text)) {
-            return true;
+        if (button == 0) {
+            ChatHud chatHud = this.client.inGameHud.getChatHud();
+            if (chatHud.method_27146(mouseX, mouseY)) {
+                return true;
+            }
+            Text text = chatHud.getText(mouseX, mouseY);
+            if (text != null && this.handleTextClick(text)) {
+                return true;
+            }
         }
         if (this.chatField.mouseClicked(mouseX, mouseY, button)) {
             return true;

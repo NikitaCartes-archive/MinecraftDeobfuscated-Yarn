@@ -71,6 +71,7 @@ public class GameOptions {
     public List<String> incompatibleResourcePacks = Lists.newArrayList();
     public ChatVisibility chatVisibility = ChatVisibility.FULL;
     public double chatOpacity = 1.0;
+    public double chatLineSpacing = 0.0;
     public double textBackgroundOpacity = 0.5;
     @Nullable
     public String fullscreenResolution;
@@ -86,6 +87,7 @@ public class GameOptions {
     public double chatWidth = 1.0;
     public double chatHeightUnfocused = 0.44366195797920227;
     public double chatHeightFocused = 1.0;
+    public double chatDelay = 0.0;
     public int mipmapLevels = 4;
     private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
     public boolean useNativeTransport = true;
@@ -355,6 +357,9 @@ public class GameOptions {
                     if ("chatOpacity".equals(string2)) {
                         this.chatOpacity = GameOptions.parseFloat(string22);
                     }
+                    if ("chatLineSpacing".equals(string2)) {
+                        this.chatLineSpacing = GameOptions.parseFloat(string22);
+                    }
                     if ("textBackgroundOpacity".equals(string2)) {
                         this.textBackgroundOpacity = GameOptions.parseFloat(string22);
                     }
@@ -384,6 +389,9 @@ public class GameOptions {
                     }
                     if ("chatHeightFocused".equals(string2)) {
                         this.chatHeightFocused = GameOptions.parseFloat(string22);
+                    }
+                    if ("chatDelay".equals(string2)) {
+                        this.chatDelay = GameOptions.parseFloat(string22);
                     }
                     if ("chatHeightUnfocused".equals(string2)) {
                         this.chatHeightUnfocused = GameOptions.parseFloat(string22);
@@ -515,6 +523,7 @@ public class GameOptions {
             printWriter.println("lang:" + this.language);
             printWriter.println("chatVisibility:" + this.chatVisibility.getId());
             printWriter.println("chatOpacity:" + this.chatOpacity);
+            printWriter.println("chatLineSpacing:" + this.chatLineSpacing);
             printWriter.println("textBackgroundOpacity:" + this.textBackgroundOpacity);
             printWriter.println("backgroundForChatOnly:" + this.backgroundForChatOnly);
             if (this.client.getWindow().getVideoMode().isPresent()) {
@@ -527,6 +536,7 @@ public class GameOptions {
             printWriter.println("overrideHeight:" + this.overrideHeight);
             printWriter.println("heldItemTooltips:" + this.heldItemTooltips);
             printWriter.println("chatHeightFocused:" + this.chatHeightFocused);
+            printWriter.println("chatDelay: " + this.chatDelay);
             printWriter.println("chatHeightUnfocused:" + this.chatHeightUnfocused);
             printWriter.println("chatScale:" + this.chatScale);
             printWriter.println("chatWidth:" + this.chatWidth);

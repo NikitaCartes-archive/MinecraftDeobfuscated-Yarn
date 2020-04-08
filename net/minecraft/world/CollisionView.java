@@ -68,7 +68,7 @@ extends BlockView {
         return Streams.concat(this.getBlockCollisions(entity, box), this.getEntityCollisions(entity, box, predicate));
     }
 
-    default public Stream<VoxelShape> getBlockCollisions(final @Nullable Entity entity, Box box) {
+    default public Stream<VoxelShape> getBlockCollisions(final @Nullable Entity entity, final Box box) {
         int i = MathHelper.floor(box.x1 - 1.0E-7) - 1;
         int j = MathHelper.floor(box.x2 + 1.0E-7) + 1;
         int k = MathHelper.floor(box.y1 - 1.0E-7) - 1;
@@ -89,18 +89,17 @@ extends BlockView {
             @Override
             public boolean tryAdvance(Consumer<? super VoxelShape> consumer) {
                 if (!this.field_19296) {
+                    boolean bl2;
                     this.field_19296 = true;
-                    VoxelShape voxelShape4 = CollisionView.this.getWorldBorder().asVoxelShape();
-                    boolean bl = VoxelShapes.matchesAnywhere(voxelShape4, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
-                    boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape4, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
-                    if (!bl && bl2) {
-                        consumer.accept(voxelShape4);
+                    WorldBorder worldBorder = CollisionView.this.getWorldBorder();
+                    boolean bl = CollisionView.method_27087(worldBorder, entity.getBoundingBox().contract(1.0E-7));
+                    boolean bl3 = bl2 = bl && !CollisionView.method_27087(worldBorder, entity.getBoundingBox().expand(1.0E-7));
+                    if (bl2) {
+                        consumer.accept(worldBorder.asVoxelShape());
                         return true;
                     }
                 }
                 while (cuboidBlockIterator.step()) {
-                    VoxelShape voxelShape2;
-                    VoxelShape voxelShape3;
                     int n;
                     int m;
                     BlockView blockView;
@@ -111,13 +110,29 @@ extends BlockView {
                     if (l == 3 || (blockView = CollisionView.this.getExistingChunk(m = i >> 4, n = k >> 4)) == null) continue;
                     mutable.set(i, j, k);
                     BlockState blockState = blockView.getBlockState(mutable);
-                    if (l == 1 && !blockState.exceedsCube() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON || !VoxelShapes.matchesAnywhere(voxelShape, voxelShape3 = (voxelShape2 = blockState.getCollisionShape(CollisionView.this, mutable, shapeContext)).offset(i, j, k), BooleanBiFunction.AND)) continue;
-                    consumer.accept(voxelShape3);
+                    if (l == 1 && !blockState.exceedsCube() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON) continue;
+                    VoxelShape voxelShape3 = blockState.getCollisionShape(CollisionView.this, mutable, shapeContext);
+                    if (voxelShape3 == VoxelShapes.fullCube()) {
+                        if (!box.intersects(i, j, k, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)) continue;
+                        consumer.accept(voxelShape3.offset(i, j, k));
+                        return true;
+                    }
+                    VoxelShape voxelShape2 = voxelShape3.offset(i, j, k);
+                    if (!VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND)) continue;
+                    consumer.accept(voxelShape2);
                     return true;
                 }
                 return false;
             }
         }, false);
+    }
+
+    public static boolean method_27087(WorldBorder worldBorder, Box box) {
+        double d = MathHelper.floor(worldBorder.getBoundWest());
+        double e = MathHelper.floor(worldBorder.getBoundNorth());
+        double f = MathHelper.ceil(worldBorder.getBoundEast());
+        double g = MathHelper.ceil(worldBorder.getBoundSouth());
+        return box.x1 > d && box.x1 < f && box.z1 > e && box.z1 < g && box.x2 > d && box.x2 < f && box.z2 > e && box.z2 < g;
     }
 }
 

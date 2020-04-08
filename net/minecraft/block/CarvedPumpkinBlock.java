@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.Wearable;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
@@ -30,7 +31,8 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public class CarvedPumpkinBlock
-extends HorizontalFacingBlock {
+extends HorizontalFacingBlock
+implements Wearable {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     @Nullable
     private BlockPattern snowGolemDispenserPattern;

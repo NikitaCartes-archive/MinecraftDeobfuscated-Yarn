@@ -206,44 +206,6 @@ implements AutoCloseable {
         return MemoryUtil.memGetByte(this.pointer + (long)i);
     }
 
-    public void blendPixel(int x, int y, int radius) {
-        if (this.format != Format.RGBA) {
-            throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
-        }
-        int i = this.getPixelRgba(x, y);
-        float f = (float)NativeImage.method_24030(radius) / 255.0f;
-        float g = (float)NativeImage.method_24035(radius) / 255.0f;
-        float h = (float)NativeImage.method_24034(radius) / 255.0f;
-        float j = (float)NativeImage.method_24033(radius) / 255.0f;
-        float k = (float)NativeImage.method_24030(i) / 255.0f;
-        float l = (float)NativeImage.method_24035(i) / 255.0f;
-        float m = (float)NativeImage.method_24034(i) / 255.0f;
-        float n = (float)NativeImage.method_24033(i) / 255.0f;
-        float o = f;
-        float p = 1.0f - f;
-        float q = f * o + k * p;
-        float r = g * o + l * p;
-        float s = h * o + m * p;
-        float t = j * o + n * p;
-        if (q > 1.0f) {
-            q = 1.0f;
-        }
-        if (r > 1.0f) {
-            r = 1.0f;
-        }
-        if (s > 1.0f) {
-            s = 1.0f;
-        }
-        if (t > 1.0f) {
-            t = 1.0f;
-        }
-        int u = (int)(q * 255.0f);
-        int v = (int)(r * 255.0f);
-        int w = (int)(s * 255.0f);
-        int z = (int)(t * 255.0f);
-        this.setPixelRgba(x, y, NativeImage.method_24031(u, v, w, z));
-    }
-
     @Deprecated
     public int[] makePixelArray() {
         if (this.format != Format.RGBA) {

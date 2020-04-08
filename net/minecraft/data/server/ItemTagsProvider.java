@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 
 public class ItemTagsProvider
 extends AbstractTagProvider<Item> {
-    private final Function<Identifier, Tag.Builder> field_23783 = blockTagsProvider::method_27047;
+    private final Function<Tag.Identified<Block>, Tag.Builder> field_23783 = blockTagsProvider::method_27169;
 
     public ItemTagsProvider(DataGenerator dataGenerator, BlockTagsProvider blockTagsProvider) {
         super(dataGenerator, Registry.ITEM);
@@ -65,6 +65,7 @@ extends AbstractTagProvider<Item> {
         this.copy(BlockTags.TALL_FLOWERS, ItemTags.TALL_FLOWERS);
         this.copy(BlockTags.FLOWERS, ItemTags.FLOWERS);
         this.copy(BlockTags.GOLD_ORES, ItemTags.GOLD_ORES);
+        this.copy(BlockTags.SOUL_FIRE_BASE_BLOCKS, ItemTags.SOUL_FIRE_BASE_BLOCKS);
         this.getOrCreateTagBuilder(ItemTags.BANNERS).add((Item[])new Item[]{Items.WHITE_BANNER, Items.ORANGE_BANNER, Items.MAGENTA_BANNER, Items.LIGHT_BLUE_BANNER, Items.YELLOW_BANNER, Items.LIME_BANNER, Items.PINK_BANNER, Items.GRAY_BANNER, Items.LIGHT_GRAY_BANNER, Items.CYAN_BANNER, Items.PURPLE_BANNER, Items.BLUE_BANNER, Items.BROWN_BANNER, Items.GREEN_BANNER, Items.RED_BANNER, Items.BLACK_BANNER});
         this.getOrCreateTagBuilder(ItemTags.BOATS).add((Item[])new Item[]{Items.OAK_BOAT, Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT});
         this.getOrCreateTagBuilder(ItemTags.FISHES).add((Item[])new Item[]{Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH});
@@ -76,12 +77,14 @@ extends AbstractTagProvider<Item> {
         this.getOrCreateTagBuilder(ItemTags.BEACON_PAYMENT_ITEMS).add((Item[])new Item[]{Items.NETHERITE_INGOT, Items.EMERALD, Items.DIAMOND, Items.GOLD_INGOT, Items.IRON_INGOT});
         this.getOrCreateTagBuilder(ItemTags.PIGLIN_REPELLENTS).add(Items.SOUL_FIRE_TORCH).add(Items.SOUL_FIRE_LANTERN);
         this.getOrCreateTagBuilder(ItemTags.NON_FLAMMABLE_WOOD).add((Item[])new Item[]{Items.WARPED_STEM, Items.STRIPPED_WARPED_STEM, Items.WARPED_HYPHAE, Items.STRIPPED_WARPED_HYPHAE, Items.CRIMSON_STEM, Items.STRIPPED_CRIMSON_STEM, Items.CRIMSON_HYPHAE, Items.STRIPPED_CRIMSON_HYPHAE, Items.CRIMSON_PLANKS, Items.WARPED_PLANKS, Items.CRIMSON_SLAB, Items.WARPED_SLAB, Items.CRIMSON_PRESSURE_PLATE, Items.WARPED_PRESSURE_PLATE, Items.CRIMSON_FENCE, Items.WARPED_FENCE, Items.CRIMSON_TRAPDOOR, Items.WARPED_TRAPDOOR, Items.CRIMSON_FENCE_GATE, Items.WARPED_FENCE_GATE, Items.CRIMSON_STAIRS, Items.WARPED_STAIRS, Items.CRIMSON_BUTTON, Items.WARPED_BUTTON, Items.CRIMSON_DOOR, Items.WARPED_DOOR, Items.CRIMSON_SIGN, Items.WARPED_SIGN});
+        this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add((Item[])new Item[]{Items.COBBLESTONE, Items.BLACKSTONE});
+        this.getOrCreateTagBuilder(ItemTags.FURNACE_MATERIALS).add((Item[])new Item[]{Items.COBBLESTONE, Items.BLACKSTONE});
     }
 
     protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
-        Tag.ObjectBuilder<Item> builder = this.getOrCreateTagBuilder(identified2);
-        Tag.Builder builder2 = this.field_23783.apply(identified.getId());
-        builder2.streamEntries().forEach(builder::add);
+        Tag.Builder builder = this.method_27169(identified2);
+        Tag.Builder builder2 = this.field_23783.apply(identified);
+        builder2.streamEntries().forEach(builder::method_27064);
     }
 
     @Override

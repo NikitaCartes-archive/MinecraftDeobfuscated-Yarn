@@ -6,13 +6,10 @@ package net.minecraft.tag;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -128,100 +125,92 @@ public interface Tag<T> {
         public void addToJson(JsonArray var1);
     }
 
-    public static class ObjectBuilder<T>
-    extends Builder {
-        private final Function<T, Identifier> idGetter;
-
-        public ObjectBuilder(Function<T, Identifier> idGetter) {
-            this.idGetter = idGetter;
-        }
-
-        public ObjectBuilder<T> add(T element) {
-            this.add(this.idGetter.apply(element));
-            return this;
-        }
-
-        public ObjectBuilder<T> add(Collection<T> elements) {
-            elements.stream().map(this.idGetter).forEach(this::add);
-            return this;
-        }
-
-        @SafeVarargs
-        public final ObjectBuilder<T> add(T ... elements) {
-            this.add((Collection<T>)Arrays.asList(elements));
-            return this;
-        }
-
-        public ObjectBuilder<T> addTag(Identified<T> identifiedTag) {
-            this.addTag(identifiedTag.getId());
-            return this;
-        }
-    }
-
     public static class Builder {
-        private final Set<Entry> entries = Sets.newLinkedHashSet();
+        private final List<class_5145> entries = Lists.newArrayList();
 
         public static Builder create() {
             return new Builder();
         }
 
-        public Builder add(Entry entry) {
-            this.entries.add(entry);
+        public Builder method_27064(class_5145 arg) {
+            this.entries.add(arg);
             return this;
         }
 
-        public Builder add(Identifier id) {
-            return this.add(new ObjectEntry(id));
+        public Builder method_27065(Entry entry, String string) {
+            return this.method_27064(new class_5145(entry, string));
         }
 
-        public Builder addTag(Identifier id) {
-            return this.add(new TagEntry(id));
+        public Builder add(Identifier id, String string) {
+            return this.method_27065(new ObjectEntry(id), string);
+        }
+
+        public Builder addTag(Identifier id, String string) {
+            return this.method_27065(new TagEntry(id), string);
         }
 
         public <T> Optional<Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
             ImmutableSet.Builder builder = ImmutableSet.builder();
-            for (Entry entry : this.entries) {
-                if (entry.resolve(tagGetter, objectGetter, builder::add)) continue;
+            for (class_5145 lv : this.entries) {
+                if (lv.method_27067().resolve(tagGetter, objectGetter, builder::add)) continue;
                 return Optional.empty();
             }
             return Optional.of(Tag.of(builder.build()));
         }
 
-        public Stream<Entry> streamEntries() {
+        public Stream<class_5145> streamEntries() {
             return this.entries.stream();
         }
 
-        public <T> Stream<Entry> streamUnresolvedEntries(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
-            return this.streamEntries().filter(entry -> !entry.resolve(tagGetter, objectGetter, object -> {}));
+        public <T> Stream<class_5145> streamUnresolvedEntries(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
+            return this.streamEntries().filter(arg -> !arg.method_27067().resolve(tagGetter, objectGetter, object -> {}));
         }
 
-        public Builder read(JsonObject json) {
+        public Builder read(JsonObject json, String string) {
             JsonArray jsonArray = JsonHelper.getArray(json, "values");
             ArrayList<Entry> list = Lists.newArrayList();
             for (JsonElement jsonElement : jsonArray) {
-                String string = JsonHelper.asString(jsonElement, "value");
-                if (string.startsWith("#")) {
-                    list.add(new TagEntry(new Identifier(string.substring(1))));
+                String string2 = JsonHelper.asString(jsonElement, "value");
+                if (string2.startsWith("#")) {
+                    list.add(new TagEntry(new Identifier(string2.substring(1))));
                     continue;
                 }
-                list.add(new ObjectEntry(new Identifier(string)));
+                list.add(new ObjectEntry(new Identifier(string2)));
             }
             if (JsonHelper.getBoolean(json, "replace", false)) {
                 this.entries.clear();
             }
-            this.entries.addAll(list);
+            list.forEach(entry -> this.entries.add(new class_5145((Entry)entry, string)));
             return this;
         }
 
         public JsonObject toJson() {
             JsonObject jsonObject = new JsonObject();
             JsonArray jsonArray = new JsonArray();
-            for (Entry entry : this.entries) {
-                entry.addToJson(jsonArray);
+            for (class_5145 lv : this.entries) {
+                lv.method_27067().addToJson(jsonArray);
             }
             jsonObject.addProperty("replace", false);
             jsonObject.add("values", jsonArray);
             return jsonObject;
+        }
+    }
+
+    public static class class_5145 {
+        private final Entry field_23805;
+        private final String field_23806;
+
+        private class_5145(Entry entry, String string) {
+            this.field_23805 = entry;
+            this.field_23806 = string;
+        }
+
+        public Entry method_27067() {
+            return this.field_23805;
+        }
+
+        public String toString() {
+            return this.field_23805.toString() + " (from " + this.field_23806 + ")";
         }
     }
 }

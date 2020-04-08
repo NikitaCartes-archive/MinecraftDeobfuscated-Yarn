@@ -31,6 +31,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -54,11 +55,11 @@ public class OceanRuinGenerator {
     private static final Identifier[] BIG_WARM_RUINS = new Identifier[]{new Identifier("underwater_ruin/big_warm_4"), new Identifier("underwater_ruin/big_warm_5"), new Identifier("underwater_ruin/big_warm_6"), new Identifier("underwater_ruin/big_warm_7")};
 
     private static Identifier getRandomWarmRuin(Random random) {
-        return WARM_RUINS[random.nextInt(WARM_RUINS.length)];
+        return Util.getRandom(WARM_RUINS, random);
     }
 
     private static Identifier getRandomBigWarmRuin(Random random) {
-        return BIG_WARM_RUINS[random.nextInt(BIG_WARM_RUINS.length)];
+        return Util.getRandom(BIG_WARM_RUINS, random);
     }
 
     public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random, OceanRuinFeatureConfig config) {
@@ -86,7 +87,7 @@ public class OceanRuinGenerator {
             BlockPos blockPos3;
             int n;
             BlockBox blockBox2;
-            if (list.isEmpty() || (blockBox2 = BlockBox.create(n = (blockPos3 = list.remove(m = random.nextInt(list.size()))).getX(), 0, o = blockPos3.getZ(), (blockPos4 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation = BlockRotation.values()[random.nextInt(BlockRotation.values().length)], BlockPos.ORIGIN).add(n, 0, o)).getX(), 0, blockPos4.getZ())).intersects(blockBox)) continue;
+            if (list.isEmpty() || (blockBox2 = BlockBox.create(n = (blockPos3 = list.remove(m = random.nextInt(list.size()))).getX(), 0, o = blockPos3.getZ(), (blockPos4 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation = BlockRotation.random(random), BlockPos.ORIGIN).add(n, 0, o)).getX(), 0, blockPos4.getZ())).intersects(blockBox)) continue;
             OceanRuinGenerator.method_14822(manager, blockPos3, blockRotation, pieces, random, config, false, 0.8f);
         }
     }

@@ -58,7 +58,7 @@ extends WallMountedBlock {
         this.wooden = wooden;
     }
 
-    private int method_26153() {
+    private int getPressTicks() {
         return this.wooden ? 30 : 20;
     }
 
@@ -107,7 +107,7 @@ extends WallMountedBlock {
     public void powerOn(BlockState state, World world, BlockPos pos) {
         world.setBlockState(pos, (BlockState)state.with(POWERED, true), 3);
         this.updateNeighbors(state, world, pos);
-        world.getBlockTickScheduler().schedule(pos, this, this.method_26153());
+        world.getBlockTickScheduler().schedule(pos, this, this.getPressTicks());
     }
 
     protected void playClickSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos, boolean powered) {
@@ -177,7 +177,7 @@ extends WallMountedBlock {
             this.playClickSound(null, world, pos, bl);
         }
         if (bl) {
-            world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.method_26153());
+            world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getPressTicks());
         }
     }
 

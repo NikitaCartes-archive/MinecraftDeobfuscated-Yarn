@@ -8,8 +8,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.CrossbowUser;
@@ -27,10 +25,11 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -88,6 +87,8 @@ implements CrossbowUser {
         this.setCanPickUpLoot(true);
         ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         this.experiencePoints = 5;
+        this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0f);
+        this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0f);
     }
 
     @Override
@@ -136,6 +137,10 @@ implements CrossbowUser {
         return this.inventory.addStack(stack);
     }
 
+    protected boolean method_27085(ItemStack itemStack) {
+        return this.inventory.method_27070(itemStack);
+    }
+
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
@@ -153,7 +158,7 @@ implements CrossbowUser {
     }
 
     public static DefaultAttributeContainer.Builder createPiglinAttributes() {
-        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MAX_HEALTH, 16.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.35f).add(Attributes.GENERIC_ATTACK_DAMAGE, 5.0);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
     }
 
     public static boolean canSpawn(EntityType<PiglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
@@ -213,7 +218,7 @@ implements CrossbowUser {
             return true;
         }
         if (this.world.isClient) {
-            return false;
+            return PiglinBrain.method_27086(this, player.getStackInHand(hand)) && this.getActivity() != Activity.ADMIRING_ITEM;
         }
         return PiglinBrain.playerInteract(this, player, hand);
     }
@@ -227,7 +232,7 @@ implements CrossbowUser {
     public void setBaby(boolean baby) {
         this.getDataTracker().set(BABY, baby);
         if (!this.world.isClient) {
-            EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+            EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
             entityAttributeInstance.removeModifier(BABY_SPEED_BOOST_MODIFIER);
             if (baby) {
                 entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST_MODIFIER);
@@ -325,7 +330,6 @@ implements CrossbowUser {
         return new ItemStack(Items.GOLDEN_SWORD);
     }
 
-    @Environment(value=EnvType.CLIENT)
     private boolean isCharging() {
         return this.dataTracker.get(CHARGING);
     }
@@ -340,9 +344,8 @@ implements CrossbowUser {
         this.despawnCounter = 0;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public Activity getActivity() {
-        if (this.isHandSwinging) {
+        if (this.handSwinging) {
             return Activity.DEFAULT;
         }
         if (PiglinBrain.isGoldenItem(this.getOffHandStack().getItem())) {
@@ -389,7 +392,7 @@ implements CrossbowUser {
     }
 
     protected void equipToOffHand(ItemStack stack) {
-        if (stack.getItem() == Items.GOLD_INGOT) {
+        if (stack.getItem() == PiglinBrain.field_23826) {
             this.equipStack(EquipmentSlot.OFFHAND, stack);
             this.method_25939(EquipmentSlot.OFFHAND);
         } else {
@@ -499,7 +502,6 @@ implements CrossbowUser {
         DebugInfoSender.sendBrainDebugData(this);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public static enum Activity {
         CROSSBOW_HOLD,
         CROSSBOW_CHARGE,

@@ -88,6 +88,9 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.5f, Items.CACTUS);
         ComposterBlock.registerCompostableItem(0.5f, Items.SUGAR_CANE);
         ComposterBlock.registerCompostableItem(0.5f, Items.VINE);
+        ComposterBlock.registerCompostableItem(0.5f, Items.NETHER_SPROUTS);
+        ComposterBlock.registerCompostableItem(0.5f, Items.WEEPING_VINES);
+        ComposterBlock.registerCompostableItem(0.5f, Items.TWISTING_VINES);
         ComposterBlock.registerCompostableItem(0.5f, Items.MELON_SLICE);
         ComposterBlock.registerCompostableItem(0.65f, Items.SEA_PICKLE);
         ComposterBlock.registerCompostableItem(0.65f, Items.LILY_PAD);
@@ -103,6 +106,11 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.65f, Items.BROWN_MUSHROOM);
         ComposterBlock.registerCompostableItem(0.65f, Items.RED_MUSHROOM);
         ComposterBlock.registerCompostableItem(0.65f, Items.MUSHROOM_STEM);
+        ComposterBlock.registerCompostableItem(0.65f, Items.CRIMSON_FUNGUS);
+        ComposterBlock.registerCompostableItem(0.65f, Items.WARPED_FUNGUS);
+        ComposterBlock.registerCompostableItem(0.65f, Items.NETHER_WART);
+        ComposterBlock.registerCompostableItem(0.65f, Items.CRIMSON_ROOTS);
+        ComposterBlock.registerCompostableItem(0.65f, Items.WARPED_ROOTS);
         ComposterBlock.registerCompostableItem(0.65f, Items.DANDELION);
         ComposterBlock.registerCompostableItem(0.65f, Items.POPPY);
         ComposterBlock.registerCompostableItem(0.65f, Items.BLUE_ORCHID);
@@ -125,6 +133,8 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.85f, Items.HAY_BLOCK);
         ComposterBlock.registerCompostableItem(0.85f, Items.BROWN_MUSHROOM_BLOCK);
         ComposterBlock.registerCompostableItem(0.85f, Items.RED_MUSHROOM_BLOCK);
+        ComposterBlock.registerCompostableItem(0.85f, Items.NETHER_WART_BLOCK);
+        ComposterBlock.registerCompostableItem(0.85f, Items.WARPED_WART_BLOCK);
         ComposterBlock.registerCompostableItem(0.85f, Items.BREAD);
         ComposterBlock.registerCompostableItem(0.85f, Items.BAKED_POTATO);
         ComposterBlock.registerCompostableItem(0.85f, Items.COOKIE);

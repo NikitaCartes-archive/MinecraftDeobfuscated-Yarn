@@ -98,11 +98,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ShulkerBulletEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -128,8 +126,10 @@ import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.entity.projectile.SpectralArrowEntity;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -354,6 +354,12 @@ implements ClientPlayPacketListener {
     public void onGameJoin(GameJoinS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
+        if (!this.connection.isLocal()) {
+            BlockTags.method_27057();
+            ItemTags.method_27060();
+            FluidTags.method_27059();
+            EntityTypeTags.method_27058();
+        }
         this.chunkLoadDistance = packet.getChunkLoadDistance();
         this.world = new ClientWorld(this, new LevelInfo(packet.getSeed(), packet.getGameMode(), false, packet.isHardcore(), packet.getGeneratorType().getDefaultOptions()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
         this.client.joinWorld(this.world);
@@ -914,8 +920,8 @@ implements ClientPlayPacketListener {
         DimensionType dimensionType = packet.getDimension();
         ClientPlayerEntity clientPlayerEntity = this.client.player;
         int i = clientPlayerEntity.getEntityId();
+        this.positionLookSetup = false;
         if (dimensionType != clientPlayerEntity.dimension) {
-            this.positionLookSetup = false;
             Scoreboard scoreboard = this.world.getScoreboard();
             this.world = new ClientWorld(this, new LevelInfo(packet.getSha256Seed(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType().getDefaultOptions()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
             this.world.setScoreboard(scoreboard);
@@ -1102,7 +1108,7 @@ implements ClientPlayPacketListener {
         float f = packet.getValue();
         int j = MathHelper.floor(f + 0.5f);
         if (i >= 0 && i < GameStateChangeS2CPacket.REASON_MESSAGES.length && GameStateChangeS2CPacket.REASON_MESSAGES[i] != null) {
-            ((PlayerEntity)playerEntity).addMessage(new TranslatableText(GameStateChangeS2CPacket.REASON_MESSAGES[i], new Object[0]), false);
+            ((PlayerEntity)playerEntity).sendMessage(new TranslatableText(GameStateChangeS2CPacket.REASON_MESSAGES[i], new Object[0]), false);
         }
         if (i == 1) {
             this.world.getLevelProperties().setRaining(true);

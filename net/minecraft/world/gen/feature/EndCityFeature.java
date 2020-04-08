@@ -74,7 +74,7 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     private static int getGenerationHeight(int chunkX, int chunkZ, ChunkGenerator<?> chunkGenerator) {
         Random random = new Random(chunkX + chunkZ * 10387313);
-        BlockRotation blockRotation = BlockRotation.values()[random.nextInt(BlockRotation.values().length)];
+        BlockRotation blockRotation = BlockRotation.random(random);
         int i = 5;
         int j = 5;
         if (blockRotation == BlockRotation.CLOCKWISE_90) {
@@ -102,7 +102,7 @@ extends StructureFeature<DefaultFeatureConfig> {
 
         @Override
         public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
-            BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
+            BlockRotation blockRotation = BlockRotation.random(this.random);
             int i = EndCityFeature.getGenerationHeight(x, z, chunkGenerator);
             if (i < 60) {
                 return;

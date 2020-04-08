@@ -6,6 +6,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -27,7 +28,8 @@ extends Feature<DefaultFeatureConfig> {
         if (!iWorld.isAir(blockPos)) {
             return false;
         }
-        if (iWorld.getBlockState(blockPos.up()).getBlock() != Blocks.NETHERRACK) {
+        Block block = iWorld.getBlockState(blockPos.up()).getBlock();
+        if (block != Blocks.NETHERRACK && block != Blocks.BASALT && block != Blocks.BLACKSTONE) {
             return false;
         }
         iWorld.setBlockState(blockPos, Blocks.GLOWSTONE.getDefaultState(), 2);

@@ -78,16 +78,16 @@ extends Block {
         }
     }
 
-    protected void updatePlateState(World world, BlockPos pos, BlockState blockState, int rsOut) {
+    protected void updatePlateState(World world, BlockPos pos, BlockState state, int rsOut) {
         boolean bl2;
         int i = this.getRedstoneOutput(world, pos);
         boolean bl = rsOut > 0;
         boolean bl3 = bl2 = i > 0;
         if (rsOut != i) {
-            BlockState blockState2 = this.setRedstoneOutput(blockState, i);
-            world.setBlockState(pos, blockState2, 2);
+            BlockState blockState = this.setRedstoneOutput(state, i);
+            world.setBlockState(pos, blockState, 2);
             this.updateNeighbors(world, pos);
-            world.checkBlockRerender(pos, blockState, blockState2);
+            world.checkBlockRerender(pos, state, blockState);
         }
         if (!bl2 && bl) {
             this.playDepressSound(world, pos);

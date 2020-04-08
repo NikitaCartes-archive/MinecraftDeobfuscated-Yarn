@@ -13,6 +13,7 @@ import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
@@ -232,11 +233,12 @@ extends LandPathNodeMaker {
 
     @Override
     public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
-        PathNodeType pathNodeType = BirdPathNodeMaker.getCommonNodeType(world, x, y, z);
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        PathNodeType pathNodeType = BirdPathNodeMaker.getCommonNodeType(world, mutable.set(x, y, z));
         if (pathNodeType == PathNodeType.OPEN && y >= 1) {
-            Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
-            PathNodeType pathNodeType2 = BirdPathNodeMaker.getCommonNodeType(world, x, y - 1, z);
-            if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || pathNodeType2 == PathNodeType.LAVA || block == Blocks.CAMPFIRE) {
+            Block block = world.getBlockState(mutable.set(x, y - 1, z)).getBlock();
+            PathNodeType pathNodeType2 = BirdPathNodeMaker.getCommonNodeType(world, mutable.set(x, y - 1, z));
+            if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || pathNodeType2 == PathNodeType.LAVA || block.isIn(BlockTags.CAMPFIRES)) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;
             } else if (pathNodeType2 == PathNodeType.DAMAGE_CACTUS) {
                 pathNodeType = PathNodeType.DAMAGE_CACTUS;
@@ -251,7 +253,7 @@ extends LandPathNodeMaker {
             }
         }
         if (pathNodeType == PathNodeType.WALKABLE || pathNodeType == PathNodeType.OPEN) {
-            pathNodeType = BirdPathNodeMaker.getNodeTypeFromNeighbors(world, x, y, z, pathNodeType);
+            pathNodeType = BirdPathNodeMaker.getNodeTypeFromNeighbors(world, mutable.set(x, y, z), pathNodeType);
         }
         return pathNodeType;
     }

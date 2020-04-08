@@ -4,14 +4,12 @@
 package net.minecraft.entity.passive;
 
 import java.util.UUID;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -19,6 +17,8 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.DonkeyEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.HorseColor;
+import net.minecraft.entity.passive.HorseMarking;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -31,6 +31,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -40,13 +41,6 @@ public class HorseEntity
 extends HorseBaseEntity {
     private static final UUID HORSE_ARMOR_BONUS_UUID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HorseEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final String[] HORSE_TEX = new String[]{"textures/entity/horse/horse_white.png", "textures/entity/horse/horse_creamy.png", "textures/entity/horse/horse_chestnut.png", "textures/entity/horse/horse_brown.png", "textures/entity/horse/horse_black.png", "textures/entity/horse/horse_gray.png", "textures/entity/horse/horse_darkbrown.png"};
-    private static final String[] HORSE_TEX_ID = new String[]{"hwh", "hcr", "hch", "hbr", "hbl", "hgr", "hdb"};
-    private static final String[] HORSE_MARKING_TEX = new String[]{null, "textures/entity/horse/horse_markings_white.png", "textures/entity/horse/horse_markings_whitefield.png", "textures/entity/horse/horse_markings_whitedots.png", "textures/entity/horse/horse_markings_blackdots.png"};
-    private static final String[] HORSE_MARKING_TEX_ID = new String[]{"", "wo_", "wmo", "wdo", "bdo"};
-    @Nullable
-    private String textureLocation;
-    private final String[] textureLayers = new String[2];
 
     public HorseEntity(EntityType<? extends HorseEntity> entityType, World world) {
         super((EntityType<? extends HorseBaseEntity>)entityType, world);
@@ -54,9 +48,9 @@ extends HorseBaseEntity {
 
     @Override
     protected void initAttributes() {
-        this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue(this.getChildHealthBonus());
-        this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.getChildMovementSpeedBonus());
-        this.getAttributeInstance(Attributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(this.getChildHealthBonus());
+        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.getChildMovementSpeedBonus());
+        this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
     }
 
     @Override
@@ -94,43 +88,24 @@ extends HorseBaseEntity {
         this.updateSaddle();
     }
 
-    public void setVariant(int variant) {
+    private void setVariant(int variant) {
         this.dataTracker.set(VARIANT, variant);
-        this.clearTextureInfo();
     }
 
-    public int getVariant() {
+    private int getVariant() {
         return this.dataTracker.get(VARIANT);
     }
 
-    private void clearTextureInfo() {
-        this.textureLocation = null;
+    private void setVariant(HorseColor color, HorseMarking marking) {
+        this.setVariant(color.getIndex() & 0xFF | marking.getIndex() << 8 & 0xFF00);
     }
 
-    @Environment(value=EnvType.CLIENT)
-    private void initTextureInfo() {
-        int i = this.getVariant();
-        int j = (i & 0xFF) % 7;
-        int k = ((i & 0xFF00) >> 8) % 5;
-        this.textureLayers[0] = HORSE_TEX[j];
-        this.textureLayers[1] = HORSE_MARKING_TEX[k];
-        this.textureLocation = "horse/" + HORSE_TEX_ID[j] + HORSE_MARKING_TEX_ID[k];
+    public HorseColor getColor() {
+        return HorseColor.byIndex(this.getVariant() & 0xFF);
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public String getTextureLocation() {
-        if (this.textureLocation == null) {
-            this.initTextureInfo();
-        }
-        return this.textureLocation;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public String[] getTextureLayers() {
-        if (this.textureLocation == null) {
-            this.initTextureInfo();
-        }
-        return this.textureLayers;
+    public HorseMarking getMarking() {
+        return HorseMarking.byIndex((this.getVariant() & 0xFF00) >> 8);
     }
 
     @Override
@@ -144,9 +119,9 @@ extends HorseBaseEntity {
         this.equipArmor(stack);
         if (!this.world.isClient) {
             int i;
-            this.getAttributeInstance(Attributes.GENERIC_ARMOR).removeModifier(HORSE_ARMOR_BONUS_UUID);
+            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(HORSE_ARMOR_BONUS_UUID);
             if (this.canEquip(stack) && (i = ((HorseArmorItem)stack.getItem()).getBonus()) != 0) {
-                this.getAttributeInstance(Attributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(HORSE_ARMOR_BONUS_UUID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION));
+                this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addTemporaryModifier(new EntityAttributeModifier(HORSE_ARMOR_BONUS_UUID, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.ADDITION));
             }
         }
     }
@@ -166,15 +141,6 @@ extends HorseBaseEntity {
         super.playWalkSound(group);
         if (this.random.nextInt(10) == 0) {
             this.playSound(SoundEvents.ENTITY_HORSE_BREATHE, group.getVolume() * 0.6f, group.getPitch());
-        }
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-        if (this.world.isClient && this.dataTracker.isDirty()) {
-            this.dataTracker.clearDirty();
-            this.clearTextureInfo();
         }
     }
 
@@ -267,10 +233,10 @@ extends HorseBaseEntity {
             HorseEntity horseEntity = (HorseEntity)mate;
             horseBaseEntity = EntityType.HORSE.create(this.world);
             int i = this.random.nextInt(9);
-            int j = i < 4 ? this.getVariant() & 0xFF : (i < 8 ? horseEntity.getVariant() & 0xFF : this.random.nextInt(7));
-            int k = this.random.nextInt(5);
-            j = k < 2 ? (j |= this.getVariant() & 0xFF00) : (k < 4 ? (j |= horseEntity.getVariant() & 0xFF00) : (j |= this.random.nextInt(5) << 8 & 0xFF00));
-            ((HorseEntity)horseBaseEntity).setVariant(j);
+            HorseColor horseColor = i < 4 ? this.getColor() : (i < 8 ? horseEntity.getColor() : Util.getRandom(HorseColor.values(), this.random));
+            int j = this.random.nextInt(5);
+            HorseMarking horseMarking = j < 2 ? this.getMarking() : (j < 4 ? horseEntity.getMarking() : Util.getRandom(HorseMarking.values(), this.random));
+            ((HorseEntity)horseBaseEntity).setVariant(horseColor, horseMarking);
         }
         this.setChildAttributes(mate, horseBaseEntity);
         return horseBaseEntity;
@@ -289,23 +255,23 @@ extends HorseBaseEntity {
     @Override
     @Nullable
     public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        int i;
+        HorseColor horseColor;
         if (entityData instanceof HorseData) {
-            i = ((HorseData)entityData).variant;
+            horseColor = ((HorseData)entityData).variant;
         } else {
-            i = this.random.nextInt(7);
-            entityData = new HorseData(i);
+            horseColor = Util.getRandom(HorseColor.values(), this.random);
+            entityData = new HorseData(horseColor);
         }
-        this.setVariant(i | this.random.nextInt(5) << 8);
+        this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), this.random));
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
 
     public static class HorseData
     extends PassiveEntity.PassiveData {
-        public final int variant;
+        public final HorseColor variant;
 
-        public HorseData(int variant) {
-            this.variant = variant;
+        public HorseData(HorseColor horseColor) {
+            this.variant = horseColor;
         }
     }
 }

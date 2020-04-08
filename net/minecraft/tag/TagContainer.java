@@ -66,6 +66,11 @@ public class TagContainer<T> {
         return this.entries.getOrDefault(id, this.field_23691);
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public Tag<T> method_27068() {
+        return this.field_23691;
+    }
+
     @Nullable
     public Identifier method_26796(Tag<T> tag) {
         if (tag instanceof Tag.Identified) {
@@ -116,7 +121,7 @@ public class TagContainer<T> {
                                         LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
                                         continue;
                                     }
-                                    map.computeIfAbsent(identifier22, identifier -> Tag.Builder.create()).read(jsonObject);
+                                    map.computeIfAbsent(identifier22, identifier -> Tag.Builder.create()).read(jsonObject, resource.getResourcePackName());
                                 } catch (Throwable throwable3) {
                                     throwable2 = throwable3;
                                     throw throwable3;

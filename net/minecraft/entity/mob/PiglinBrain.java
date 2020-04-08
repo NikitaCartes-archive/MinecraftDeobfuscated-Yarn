@@ -82,13 +82,14 @@ import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.Vec3d;
 
 public class PiglinBrain {
+    public static final Item field_23826 = Items.GOLD_INGOT;
     private static final IntRange field_22477 = IntRange.between(10, 20);
     private static final IntRange HUNT_MEMORY_DURATION = Durations.betweenSeconds(30, 120);
     private static final IntRange MEMORY_TRANSFER_TASK_DURATION = Durations.betweenSeconds(10, 40);
     private static final IntRange RIDE_TARGET_MEMORY_DURATION = Durations.betweenSeconds(10, 30);
     private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
     private static final Set FOOD = ImmutableSet.of(Items.PORKCHOP, Items.COOKED_PORKCHOP);
-    private static final Set<Item> GOLDEN_ITEMS = ImmutableSet.of(Items.GOLD_INGOT, Items.GOLDEN_APPLE, Items.GOLDEN_HORSE_ARMOR, Items.GOLDEN_CARROT, Items.GOLD_BLOCK, Items.GOLD_ORE, new Item[]{Items.ENCHANTED_GOLDEN_APPLE, Items.GOLDEN_HORSE_ARMOR, Items.LIGHT_WEIGHTED_PRESSURE_PLATE, Items.BELL, Items.GLISTERING_MELON_SLICE, Items.CLOCK, Items.NETHER_GOLD_ORE});
+    private static final Set<Item> GOLDEN_ITEMS = ImmutableSet.of(Items.GOLD_INGOT, Items.GOLDEN_APPLE, Items.GOLDEN_HORSE_ARMOR, Items.GOLDEN_CARROT, Items.GOLD_BLOCK, Items.GOLD_ORE, new Item[]{Items.ENCHANTED_GOLDEN_APPLE, Items.GOLDEN_HORSE_ARMOR, Items.LIGHT_WEIGHTED_PRESSURE_PLATE, Items.BELL, Items.GLISTERING_MELON_SLICE, Items.CLOCK, Items.NETHER_GOLD_ORE, Items.GILDED_BLACKSTONE});
 
     protected static Brain<?> create(PiglinEntity piglin, Dynamic<?> data) {
         Brain<PiglinEntity> brain = new Brain<PiglinEntity>(PiglinEntity.MEMORY_MODULE_TYPES, PiglinEntity.SENSOR_TYPES, data);
@@ -281,20 +282,21 @@ public class PiglinBrain {
 
     protected static boolean canGather(PiglinEntity piglin, ItemStack stack) {
         Item item = stack.getItem();
-        if (item == Items.GOLD_NUGGET) {
-            return true;
-        }
         if (item.isIn(ItemTags.PIGLIN_REPELLENTS)) {
             return false;
         }
         if (PiglinBrain.hasBeenHitByPlayer(piglin) && piglin.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET)) {
             return false;
         }
+        boolean bl = piglin.method_27085(stack);
+        if (item == Items.GOLD_NUGGET) {
+            return bl;
+        }
         if (PiglinBrain.isFood(item)) {
-            return !PiglinBrain.hasAteRecently(piglin);
+            return !PiglinBrain.hasAteRecently(piglin) && bl;
         }
         if (PiglinBrain.isGoldenItem(item)) {
-            return PiglinBrain.doesNotHaveGoldInOffHand(piglin);
+            return PiglinBrain.doesNotHaveGoldInOffHand(piglin) && bl;
         }
         return piglin.method_24846(stack);
     }
@@ -342,14 +344,17 @@ public class PiglinBrain {
 
     public static boolean playerInteract(PiglinEntity piglin, PlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
-        Item item = itemStack.getItem();
-        if (!PiglinBrain.isAdmiringItem(piglin) && piglin.isAdult() && PiglinBrain.acceptsForBarter(item) && !PiglinBrain.hasBeenHitByPlayer(piglin)) {
+        if (PiglinBrain.method_27086(piglin, itemStack)) {
             ItemStack itemStack2 = itemStack.split(1);
             piglin.equipToOffHand(itemStack2);
             PiglinBrain.setAdmiringItem(piglin);
             return true;
         }
         return false;
+    }
+
+    public static boolean method_27086(PiglinEntity piglinEntity, ItemStack itemStack) {
+        return !PiglinBrain.hasBeenHitByPlayer(piglinEntity) && !PiglinBrain.isAdmiringItem(piglinEntity) && piglinEntity.isAdult() && PiglinBrain.acceptsForBarter(itemStack.getItem());
     }
 
     protected static void onAttacked(PiglinEntity piglin, LivingEntity attacker) {
@@ -554,7 +559,7 @@ public class PiglinBrain {
     }
 
     private static boolean acceptsForBarter(Item item) {
-        return item == Items.GOLD_INGOT;
+        return item == field_23826;
     }
 
     private static boolean isFood(Item item) {

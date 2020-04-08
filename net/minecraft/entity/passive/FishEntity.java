@@ -17,8 +17,8 @@ import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -55,7 +55,7 @@ extends WaterCreatureEntity {
     }
 
     public static DefaultAttributeContainer.Builder createFishAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 3.0);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0);
     }
 
     @Override
@@ -200,15 +200,19 @@ extends WaterCreatureEntity {
                 this.fish.setMovementSpeed(0.0f);
                 return;
             }
+            float f = (float)(this.speed * this.fish.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            this.fish.setMovementSpeed(MathHelper.lerp(0.125f, this.fish.getMovementSpeed(), f));
             double d = this.targetX - this.fish.getX();
             double e = this.targetY - this.fish.getY();
-            double f = this.targetZ - this.fish.getZ();
-            double g = MathHelper.sqrt(d * d + e * e + f * f);
-            float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-            this.fish.bodyYaw = this.fish.yaw = this.changeAngle(this.fish.yaw, h, 90.0f);
-            float i = (float)(this.speed * this.fish.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
-            this.fish.setMovementSpeed(MathHelper.lerp(0.125f, this.fish.getMovementSpeed(), i));
-            this.fish.setVelocity(this.fish.getVelocity().add(0.0, (double)this.fish.getMovementSpeed() * (e /= g) * 0.1, 0.0));
+            double g = this.targetZ - this.fish.getZ();
+            if (e != 0.0) {
+                double h = MathHelper.sqrt(d * d + e * e + g * g);
+                this.fish.setVelocity(this.fish.getVelocity().add(0.0, (double)this.fish.getMovementSpeed() * (e / h) * 0.1, 0.0));
+            }
+            if (d != 0.0 || g != 0.0) {
+                float i = (float)(MathHelper.atan2(g, d) * 57.2957763671875) - 90.0f;
+                this.fish.bodyYaw = this.fish.yaw = this.changeAngle(this.fish.yaw, i, 90.0f);
+            }
         }
     }
 

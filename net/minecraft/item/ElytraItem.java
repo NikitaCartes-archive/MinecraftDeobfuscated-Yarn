@@ -11,13 +11,15 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.Wearable;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class ElytraItem
-extends Item {
+extends Item
+implements Wearable {
     public ElytraItem(Item.Settings settings) {
         super(settings);
         this.addPropertyGetter(new Identifier("broken"), (stack, world, entity) -> ElytraItem.isUsable(stack) ? 0.0f : 1.0f);

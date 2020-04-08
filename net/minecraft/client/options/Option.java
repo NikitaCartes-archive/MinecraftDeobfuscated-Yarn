@@ -75,6 +75,18 @@ public abstract class Option {
         double d = doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions));
         return doubleOption.getDisplayPrefix() + ChatHud.getWidth(d) + "px";
     });
+    public static final DoubleOption field_23930 = new DoubleOption("options.chat.line_spacing", 0.0, 1.0, 0.0f, gameOptions -> gameOptions.chatLineSpacing, (gameOptions, double_) -> {
+        gameOptions.chatLineSpacing = double_;
+    }, (gameOptions, doubleOption) -> doubleOption.getDisplayPrefix() + (int)(doubleOption.getRatio(doubleOption.get((GameOptions)gameOptions)) * 100.0) + "%");
+    public static final DoubleOption field_23931 = new DoubleOption("options.chat.delay_instant", 0.0, 6.0, 0.1f, gameOptions -> gameOptions.chatDelay, (gameOptions, double_) -> {
+        gameOptions.chatDelay = double_;
+    }, (gameOptions, doubleOption) -> {
+        double d = doubleOption.get((GameOptions)gameOptions);
+        if (d <= 0.0) {
+            return I18n.translate("options.chat.delay_none", new Object[0]);
+        }
+        return I18n.translate("options.chat.delay", String.format("%.1f", d));
+    });
     public static final DoubleOption FOV = new DoubleOption("options.fov", 30.0, 110.0, 1.0f, gameOptions -> gameOptions.fov, (gameOptions, double_) -> {
         gameOptions.fov = double_;
     }, (gameOptions, doubleOption) -> {

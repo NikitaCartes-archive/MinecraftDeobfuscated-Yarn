@@ -5,12 +5,12 @@ package net.minecraft.item;
 
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,7 +27,7 @@ extends Item {
         BlockPos blockPos = context.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         boolean bl = false;
-        if (blockState.getBlock() == Blocks.CAMPFIRE) {
+        if (blockState.getBlock().isIn(BlockTags.CAMPFIRES)) {
             if (!blockState.get(CampfireBlock.LIT).booleanValue() && !blockState.get(CampfireBlock.WATERLOGGED).booleanValue()) {
                 this.playUseSound(world, blockPos);
                 world.setBlockState(blockPos, (BlockState)blockState.with(CampfireBlock.LIT, true));

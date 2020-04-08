@@ -16,6 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -58,7 +59,7 @@ extends Item {
     }
 
     public static boolean isIgnitable(BlockState state) {
-        return state.getBlock() == Blocks.CAMPFIRE && state.get(Properties.WATERLOGGED) == false && state.get(Properties.LIT) == false;
+        return state.getBlock().isIn(BlockTags.CAMPFIRES) && state.get(Properties.WATERLOGGED) == false && state.get(Properties.LIT) == false;
     }
 
     public static boolean canIgnite(BlockState block, IWorld world, BlockPos pos) {

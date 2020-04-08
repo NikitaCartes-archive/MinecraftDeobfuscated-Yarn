@@ -27,8 +27,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -86,7 +86,7 @@ implements CrossbowUser {
     }
 
     public static DefaultAttributeContainer.Builder createPillagerAttributes() {
-        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.35f).add(Attributes.GENERIC_MAX_HEALTH, 24.0).add(Attributes.GENERIC_ATTACK_DAMAGE, 5.0).add(Attributes.GENERIC_FOLLOW_RANGE, 32.0);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35f).add(EntityAttributes.GENERIC_MAX_HEALTH, 24.0).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0);
     }
 
     @Override

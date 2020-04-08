@@ -364,7 +364,7 @@ AutoCloseable {
             float m = (float)voxelShape.getEndingCoord(Direction.Axis.Y, g, h);
             float n = fluidState.getHeight(worldView, (BlockPos)blockPos2);
             float o = Math.max(m, n);
-            DefaultParticleType particleEffect = fluidState.matches(FluidTags.LAVA) || blockState.getBlock() == Blocks.MAGMA_BLOCK || blockState.getBlock() == Blocks.CAMPFIRE && blockState.get(CampfireBlock.LIT) != false ? ParticleTypes.SMOKE : ParticleTypes.RAIN;
+            DefaultParticleType particleEffect = fluidState.matches(FluidTags.LAVA) || blockState.getBlock() == Blocks.MAGMA_BLOCK || CampfireBlock.isLitCampfire(blockState) ? ParticleTypes.SMOKE : ParticleTypes.RAIN;
             this.client.world.addParticle(particleEffect, (float)blockPos2.getX() + g, (float)blockPos2.getY() + o, (float)blockPos2.getZ() + h, 0.0, 0.0, 0.0);
         }
         if (blockPos2 != null && random.nextInt(3) < this.field_20793++) {

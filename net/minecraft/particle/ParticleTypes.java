@@ -83,6 +83,7 @@ public class ParticleTypes {
     public static final DefaultParticleType FALLING_OBSIDIAN_TEAR = ParticleTypes.register("falling_obsidian_tear", false);
     public static final DefaultParticleType LANDING_OBSIDIAN_TEAR = ParticleTypes.register("landing_obsidian_tear", false);
     public static final DefaultParticleType REVERSE_PORTAL = ParticleTypes.register("reverse_portal", false);
+    public static final DefaultParticleType WHITE_ASH = ParticleTypes.register("white_ash", false);
 
     private static DefaultParticleType register(String name, boolean alwaysShow) {
         return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));

@@ -64,7 +64,7 @@ extends AbstractTempleFeature<ShipwreckFeatureConfig> {
         @Override
         public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             ShipwreckFeatureConfig shipwreckFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.SHIPWRECK);
-            BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
+            BlockRotation blockRotation = BlockRotation.random(this.random);
             BlockPos blockPos = new BlockPos(x * 16, 90, z * 16);
             ShipwreckGenerator.addParts(structureManager, blockPos, blockRotation, this.children, this.random, shipwreckFeatureConfig);
             this.setBoundingBoxFromChildren();

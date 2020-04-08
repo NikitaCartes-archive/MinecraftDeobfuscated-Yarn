@@ -51,11 +51,11 @@ public interface CommandSource {
             Identifier identifier2 = identifier.apply(object);
             if (bl) {
                 String string2 = identifier2.toString();
-                if (!string2.startsWith(string)) continue;
+                if (!CommandSource.method_27136(string, string2)) continue;
                 action.accept(object);
                 continue;
             }
-            if (!identifier2.getNamespace().startsWith(string) && (!identifier2.getNamespace().equals("minecraft") || !identifier2.getPath().startsWith(string))) continue;
+            if (!CommandSource.method_27136(string, identifier2.getNamespace()) && (!identifier2.getNamespace().equals("minecraft") || !CommandSource.method_27136(string, identifier2.getPath()))) continue;
             action.accept(object);
         }
     }
@@ -163,7 +163,7 @@ public interface CommandSource {
     public static CompletableFuture<Suggestions> suggestMatching(Iterable<String> iterable, SuggestionsBuilder suggestionsBuilder) {
         String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
         for (String string2 : iterable) {
-            if (!string2.toLowerCase(Locale.ROOT).startsWith(string)) continue;
+            if (!CommandSource.method_27136(string, string2.toLowerCase(Locale.ROOT))) continue;
             suggestionsBuilder.suggest(string2);
         }
         return suggestionsBuilder.buildFuture();
@@ -171,17 +171,28 @@ public interface CommandSource {
 
     public static CompletableFuture<Suggestions> suggestMatching(Stream<String> stream, SuggestionsBuilder suggestionsBuilder) {
         String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
-        stream.filter(string2 -> string2.toLowerCase(Locale.ROOT).startsWith(string)).forEach(suggestionsBuilder::suggest);
+        stream.filter(string2 -> CommandSource.method_27136(string, string2.toLowerCase(Locale.ROOT))).forEach(suggestionsBuilder::suggest);
         return suggestionsBuilder.buildFuture();
     }
 
     public static CompletableFuture<Suggestions> suggestMatching(String[] strings, SuggestionsBuilder suggestionsBuilder) {
         String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
         for (String string2 : strings) {
-            if (!string2.toLowerCase(Locale.ROOT).startsWith(string)) continue;
+            if (!CommandSource.method_27136(string, string2.toLowerCase(Locale.ROOT))) continue;
             suggestionsBuilder.suggest(string2);
         }
         return suggestionsBuilder.buildFuture();
+    }
+
+    public static boolean method_27136(String string, String string2) {
+        int i = 0;
+        while (!string2.startsWith(string, i)) {
+            if ((i = string2.indexOf(95, i)) < 0) {
+                return false;
+            }
+            ++i;
+        }
+        return true;
     }
 
     public static class RelativePosition {

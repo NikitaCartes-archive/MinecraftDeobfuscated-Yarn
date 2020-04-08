@@ -7,18 +7,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SaddledComponent;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public interface ItemSteerable {
     public boolean consumeOnAStickItem();
-
-    public void setSaddled(boolean var1);
-
-    public boolean isSaddled();
 
     public void setMovementInput(Vec3d var1);
 
@@ -58,21 +51,6 @@ public interface ItemSteerable {
             entity.setVelocity(Vec3d.ZERO);
         }
         return true;
-    }
-
-    default public boolean interactMob(MobEntity entity, PlayerEntity player, Hand hand, boolean childRideable) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.getItem() == Items.NAME_TAG) {
-            itemStack.useOnEntity(player, entity, hand);
-            return true;
-        }
-        if (this.isSaddled() && !entity.hasPassengers() && (childRideable || !entity.isBaby())) {
-            if (!entity.world.isClient) {
-                player.startRiding(entity);
-            }
-            return true;
-        }
-        return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, entity, hand);
     }
 }
 

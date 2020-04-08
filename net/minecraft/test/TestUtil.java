@@ -140,7 +140,7 @@ public class TestUtil {
     }
 
     private static void sendMessage(ServerWorld world, Formatting formatting, String message) {
-        world.getPlayers(serverPlayerEntity -> true).forEach(serverPlayerEntity -> serverPlayerEntity.sendMessage(new LiteralText(message).formatted(formatting)));
+        world.getPlayers(serverPlayerEntity -> true).forEach(serverPlayerEntity -> serverPlayerEntity.sendSystemMessage(new LiteralText(message).formatted(formatting)));
     }
 
     public static void clearDebugMarkers(ServerWorld world) {

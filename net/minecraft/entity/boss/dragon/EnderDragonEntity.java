@@ -20,8 +20,8 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathMinHeap;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.boss.dragon.phase.Phase;
@@ -118,7 +118,7 @@ implements Monster {
     }
 
     public static DefaultAttributeContainer.Builder createEnderDragonAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 200.0);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 200.0);
     }
 
     @Override

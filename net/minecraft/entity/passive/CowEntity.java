@@ -15,8 +15,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -51,7 +51,7 @@ extends AnimalEntity {
     }
 
     public static DefaultAttributeContainer.Builder createCowAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 10.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.2f);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2f);
     }
 
     @Override

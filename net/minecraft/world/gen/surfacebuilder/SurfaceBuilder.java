@@ -12,6 +12,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.surfacebuilder.BadlandsSurfaceBuilder;
+import net.minecraft.world.gen.surfacebuilder.BasaltDeltasSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.DefaultSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.ErodedBadlandsSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.FrozenOceanSurfaceBuilder;
@@ -47,6 +48,9 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     public static final BlockState WARPED_NYLIUM = Blocks.WARPED_NYLIUM.getDefaultState();
     public static final BlockState NETHER_WART_BLOCK = Blocks.NETHER_WART_BLOCK.getDefaultState();
     public static final BlockState WARPED_WART_BLOCK = Blocks.WARPED_WART_BLOCK.getDefaultState();
+    public static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
+    public static final BlockState BASALT = Blocks.BASALT.getDefaultState();
+    public static final BlockState MAGMA_BLOCK = Blocks.MAGMA_BLOCK.getDefaultState();
     public static final TernarySurfaceConfig AIR_CONFIG = new TernarySurfaceConfig(AIR, AIR, AIR);
     public static final TernarySurfaceConfig PODZOL_CONFIG = new TernarySurfaceConfig(PODZOL, DIRT, GRAVEL);
     public static final TernarySurfaceConfig GRAVEL_CONFIG = new TernarySurfaceConfig(GRAVEL, GRAVEL, GRAVEL);
@@ -64,6 +68,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     public static final TernarySurfaceConfig END_CONFIG = new TernarySurfaceConfig(END_STONE, END_STONE, END_STONE);
     public static final TernarySurfaceConfig CRIMSON_NYLIUM_CONFIG = new TernarySurfaceConfig(CRIMSON_NYLIUM, NETHERRACK, NETHER_WART_BLOCK);
     public static final TernarySurfaceConfig WARPED_NYLIUM_CONFIG = new TernarySurfaceConfig(WARPED_NYLIUM, NETHERRACK, WARPED_WART_BLOCK);
+    public static final TernarySurfaceConfig BASALT_DELTA_CONFIG = new TernarySurfaceConfig(BLACKSTONE, BASALT, MAGMA_BLOCK);
     public static final SurfaceBuilder<TernarySurfaceConfig> DEFAULT = SurfaceBuilder.register("default", new DefaultSurfaceBuilder((Function<Dynamic<?>, ? extends TernarySurfaceConfig>)((Function<Dynamic<?>, TernarySurfaceConfig>)TernarySurfaceConfig::deserialize)));
     public static final SurfaceBuilder<TernarySurfaceConfig> MOUNTAIN = SurfaceBuilder.register("mountain", new MountainSurfaceBuilder((Function<Dynamic<?>, ? extends TernarySurfaceConfig>)((Function<Dynamic<?>, TernarySurfaceConfig>)TernarySurfaceConfig::deserialize)));
     public static final SurfaceBuilder<TernarySurfaceConfig> SHATTERED_SAVANNA = SurfaceBuilder.register("shattered_savanna", new ShatteredSavannaSurfaceBuilder((Function<Dynamic<?>, ? extends TernarySurfaceConfig>)((Function<Dynamic<?>, TernarySurfaceConfig>)TernarySurfaceConfig::deserialize)));
@@ -77,6 +82,7 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     public static final SurfaceBuilder<TernarySurfaceConfig> NETHER = SurfaceBuilder.register("nether", new NetherSurfaceBuilder((Function<Dynamic<?>, ? extends TernarySurfaceConfig>)((Function<Dynamic<?>, TernarySurfaceConfig>)TernarySurfaceConfig::deserialize)));
     public static final SurfaceBuilder<TernarySurfaceConfig> NETHER_FOREST = SurfaceBuilder.register("nether_forest", new NetherForestSurfaceBuilder((Function<Dynamic<?>, ? extends TernarySurfaceConfig>)((Function<Dynamic<?>, TernarySurfaceConfig>)TernarySurfaceConfig::deserialize)));
     public static final SurfaceBuilder<TernarySurfaceConfig> SOUL_SAND_VALLEY = SurfaceBuilder.register("soul_sand_valley", new SoulSandValleySurfaceBuilder((Function<Dynamic<?>, ? extends TernarySurfaceConfig>)((Function<Dynamic<?>, TernarySurfaceConfig>)TernarySurfaceConfig::deserialize)));
+    public static final SurfaceBuilder<TernarySurfaceConfig> BASALT_DELTAS = SurfaceBuilder.register("basalt_deltas", new BasaltDeltasSurfaceBuilder((Function<Dynamic<?>, ? extends TernarySurfaceConfig>)((Function<Dynamic<?>, TernarySurfaceConfig>)TernarySurfaceConfig::deserialize)));
     public static final SurfaceBuilder<TernarySurfaceConfig> NOPE = SurfaceBuilder.register("nope", new NopeSurfaceBuilder((Function<Dynamic<?>, ? extends TernarySurfaceConfig>)((Function<Dynamic<?>, TernarySurfaceConfig>)TernarySurfaceConfig::deserialize)));
     private final Function<Dynamic<?>, ? extends C> factory;
 
@@ -84,8 +90,8 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
         return (F)Registry.register(Registry.SURFACE_BUILDER, string, surfaceBuilder);
     }
 
-    public SurfaceBuilder(Function<Dynamic<?>, ? extends C> function) {
-        this.factory = function;
+    public SurfaceBuilder(Function<Dynamic<?>, ? extends C> factory) {
+        this.factory = factory;
     }
 
     public abstract void generate(Random var1, Chunk var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, long var12, C var14);

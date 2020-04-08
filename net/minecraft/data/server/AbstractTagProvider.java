@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -35,7 +36,7 @@ implements DataProvider {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     protected final DataGenerator root;
     protected final Registry<T> registry;
-    protected final Map<Identifier, Tag.ObjectBuilder<T>> tagBuilders = Maps.newLinkedHashMap();
+    private final Map<Identifier, Tag.Builder> tagBuilders = Maps.newLinkedHashMap();
 
     protected AbstractTagProvider(DataGenerator root, Registry<T> registry) {
         this.root = root;
@@ -51,12 +52,12 @@ implements DataProvider {
         Tag tag = Tag.of(ImmutableSet.of());
         Function<Identifier, Tag> function = identifier -> this.tagBuilders.containsKey(identifier) ? tag : null;
         Function<Identifier, Object> function2 = identifier -> this.registry.getOrEmpty((Identifier)identifier).orElse(null);
-        this.tagBuilders.forEach((identifier, objectBuilder) -> {
-            List list = objectBuilder.streamUnresolvedEntries(function, function2).collect(Collectors.toList());
+        this.tagBuilders.forEach((identifier, builder) -> {
+            List list = builder.streamUnresolvedEntries(function, function2).collect(Collectors.toList());
             if (!list.isEmpty()) {
                 throw new IllegalArgumentException(String.format("Couldn't define tag %s as it is missing following references: %s", identifier, list.stream().map(Objects::toString).collect(Collectors.joining(","))));
             }
-            JsonObject jsonObject = objectBuilder.toJson();
+            JsonObject jsonObject = builder.toJson();
             Path path = this.getOutput((Identifier)identifier);
             try {
                 String string = GSON.toJson(jsonObject);
@@ -76,12 +77,41 @@ implements DataProvider {
 
     protected abstract Path getOutput(Identifier var1);
 
-    protected Tag.ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> identified) {
-        return this.method_27047(identified.getId());
+    protected ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> identified) {
+        Tag.Builder builder = this.method_27169(identified);
+        return new ObjectBuilder(builder, this.registry, "vanilla");
     }
 
-    protected Tag.ObjectBuilder<T> method_27047(Identifier identifier2) {
-        return this.tagBuilders.computeIfAbsent(identifier2, identifier -> new Tag.ObjectBuilder<Object>(this.registry::getId));
+    protected Tag.Builder method_27169(Tag.Identified<T> identified) {
+        return this.tagBuilders.computeIfAbsent(identified.getId(), identifier -> new Tag.Builder());
+    }
+
+    public static class ObjectBuilder<T> {
+        private final Tag.Builder field_23960;
+        private final Registry<T> field_23961;
+        private final String field_23962;
+
+        private ObjectBuilder(Tag.Builder builder, Registry<T> registry, String string) {
+            this.field_23960 = builder;
+            this.field_23961 = registry;
+            this.field_23962 = string;
+        }
+
+        public ObjectBuilder<T> add(T element) {
+            this.field_23960.add(this.field_23961.getId(element), this.field_23962);
+            return this;
+        }
+
+        public ObjectBuilder<T> addTag(Tag.Identified<T> identifiedTag) {
+            this.field_23960.addTag(identifiedTag.getId(), this.field_23962);
+            return this;
+        }
+
+        @SafeVarargs
+        public final ObjectBuilder<T> add(T ... objects) {
+            Stream.of(objects).map(this.field_23961::getId).forEach(identifier -> this.field_23960.add((Identifier)identifier, this.field_23962));
+            return this;
+        }
     }
 }
 

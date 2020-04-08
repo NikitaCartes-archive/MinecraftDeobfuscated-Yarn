@@ -81,8 +81,8 @@ public class EntityAttributeModifier {
 
     @Nullable
     public static EntityAttributeModifier fromTag(CompoundTag tag) {
-        UUID uUID = tag.getUuidNew("UUID");
         try {
+            UUID uUID = tag.getUuidNew("UUID");
             Operation operation = Operation.fromId(tag.getInt("Operation"));
             return new EntityAttributeModifier(uUID, tag.getString("Name"), tag.getDouble("Amount"), operation);
         } catch (Exception exception) {

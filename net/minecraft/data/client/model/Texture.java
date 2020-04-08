@@ -149,6 +149,11 @@ public class Texture {
         return new Texture().put(TextureKey.WALL, identifier).put(TextureKey.SIDE, identifier).put(TextureKey.TOP, Texture.getSubId(block, "_top")).put(TextureKey.BOTTOM, Texture.getSubId(block, "_bottom"));
     }
 
+    public static Texture method_27168(Block block) {
+        Identifier identifier = Texture.getId(block);
+        return new Texture().put(TextureKey.WALL, identifier).put(TextureKey.SIDE, identifier).put(TextureKey.END, Texture.getSubId(block, "_top"));
+    }
+
     public static Texture topBottom(Block block) {
         return new Texture().put(TextureKey.TOP, Texture.getSubId(block, "_top")).put(TextureKey.BOTTOM, Texture.getSubId(block, "_bottom"));
     }
@@ -211,6 +216,10 @@ public class Texture {
 
     public static Texture frontTopSide(Block frontTopSideBlock, Block downBlock) {
         return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(frontTopSideBlock, "_front")).put(TextureKey.DOWN, Texture.getId(downBlock)).put(TextureKey.UP, Texture.getSubId(frontTopSideBlock, "_top")).put(TextureKey.NORTH, Texture.getSubId(frontTopSideBlock, "_front")).put(TextureKey.SOUTH, Texture.getSubId(frontTopSideBlock, "_front")).put(TextureKey.EAST, Texture.getSubId(frontTopSideBlock, "_side")).put(TextureKey.WEST, Texture.getSubId(frontTopSideBlock, "_side"));
+    }
+
+    public static Texture method_27167(Block block) {
+        return new Texture().put(TextureKey.LIT_LOG, Texture.getSubId(block, "_log_lit")).put(TextureKey.FIRE, Texture.getSubId(block, "_fire"));
     }
 
     public static Texture layer0(Item item) {

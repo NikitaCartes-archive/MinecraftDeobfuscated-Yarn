@@ -14,6 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.item.Vanishable;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -24,7 +25,8 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
 public class BowItem
-extends RangedWeaponItem {
+extends RangedWeaponItem
+implements Vanishable {
     public BowItem(Item.Settings settings) {
         super(settings);
         this.addPropertyGetter(new Identifier("pull"), (stack, world, entity) -> {

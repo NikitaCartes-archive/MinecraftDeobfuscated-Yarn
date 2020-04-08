@@ -12,7 +12,7 @@ public interface CommandOutput {
     public static final CommandOutput DUMMY = new CommandOutput(){
 
         @Override
-        public void sendMessage(Text message) {
+        public void sendSystemMessage(Text message) {
         }
 
         @Override
@@ -31,7 +31,7 @@ public interface CommandOutput {
         }
     };
 
-    public void sendMessage(Text var1);
+    public void sendSystemMessage(Text var1);
 
     public boolean shouldReceiveFeedback();
 

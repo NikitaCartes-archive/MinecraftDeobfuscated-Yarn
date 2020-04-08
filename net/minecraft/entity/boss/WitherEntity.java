@@ -27,8 +27,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
@@ -459,7 +459,7 @@ RangedAttackMob {
     }
 
     public static DefaultAttributeContainer.Builder createWitherAttributes() {
-        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MAX_HEALTH, 300.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.6f).add(Attributes.GENERIC_FOLLOW_RANGE, 40.0).add(Attributes.GENERIC_ARMOR, 4.0);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 300.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.6f).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 40.0).add(EntityAttributes.GENERIC_ARMOR, 4.0);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -26,6 +26,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
+import net.minecraft.item.Vanishable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -47,7 +48,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class CrossbowItem
-extends RangedWeaponItem {
+extends RangedWeaponItem
+implements Vanishable {
     private boolean charged = false;
     private boolean loaded = false;
 

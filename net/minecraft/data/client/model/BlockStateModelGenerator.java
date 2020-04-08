@@ -544,11 +544,13 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(cooker).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.LIT, identifier3, identifier)).coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates()));
     }
 
-    private void registerCampfire() {
-        Identifier identifier = ModelIds.getBlockSubModelId(Blocks.CAMPFIRE, "_off");
-        Identifier identifier2 = ModelIds.getBlockModelId(Blocks.CAMPFIRE);
-        this.registerItemModel(Items.CAMPFIRE);
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.CAMPFIRE).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.LIT, identifier2, identifier)).coordinate(BlockStateModelGenerator.createSouthDefaultHorizontalRotationStates()));
+    private void method_27166(Block ... blocks) {
+        Identifier identifier = ModelIds.getMinecraftNamespacedBlock("campfire_off");
+        for (Block block : blocks) {
+            Identifier identifier2 = Models.TEMPLATE_CAMPFIRE.upload(block, Texture.method_27167(block), this.modelCollector);
+            this.registerItemModel(block.asItem());
+            this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.LIT, identifier2, identifier)).coordinate(BlockStateModelGenerator.createSouthDefaultHorizontalRotationStates()));
+        }
     }
 
     private void registerBookshelf() {
@@ -1122,9 +1124,12 @@ public class BlockStateModelGenerator {
         this.registerSingleton(Blocks.NETHER_QUARTZ_ORE, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.REDSTONE_ORE, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.REDSTONE_BLOCK, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.GILDED_BLACKSTONE, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.BLUE_ICE, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.CHISELED_NETHER_BRICKS, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.CLAY, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.COARSE_DIRT, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.CRACKED_NETHER_BRICKS, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.CRACKED_STONE_BRICKS, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.CRYING_OBSIDIAN, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.END_STONE, TexturedModel.CUBE_ALL);
@@ -1139,6 +1144,7 @@ public class BlockStateModelGenerator {
         this.registerSingleton(Blocks.NOTE_BLOCK, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.PACKED_ICE, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.OBSIDIAN, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.QUARTZ_BRICKS, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.SEA_LANTERN, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.SHROOMLIGHT, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.SOUL_SAND, TexturedModel.CUBE_ALL);
@@ -1151,16 +1157,18 @@ public class BlockStateModelGenerator {
         this.registerSingleton(Blocks.TARGET, TexturedModel.CUBE_COLUMN);
         this.registerSingleton(Blocks.WARPED_WART_BLOCK, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.WET_SPONGE, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.CHISELED_QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN.withTexture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_QUARTZ_BLOCK))));
         this.registerSingleton(Blocks.CHISELED_STONE_BRICKS, TexturedModel.CUBE_ALL);
         this.registerCubeColumn(Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE);
         this.registerCubeColumn(Blocks.CHISELED_RED_SANDSTONE, Blocks.RED_SANDSTONE);
+        this.registerSingleton(Blocks.CHISELED_POLISHED_BLACKSTONE, TexturedModel.CUBE_ALL);
         this.registerPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
         this.registerPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
         this.registerBookshelf();
         this.registerBrewingStand();
         this.registerCake();
-        this.registerCampfire();
+        this.method_27166(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
         this.registerCartographyTable();
         this.registerCauldron();
         this.registerChorusFlower();
@@ -1483,6 +1491,9 @@ public class BlockStateModelGenerator {
         this.registerTexturePool(Blocks.QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN).stairs(Blocks.QUARTZ_STAIRS).slab(Blocks.QUARTZ_SLAB);
         this.registerTexturePool(Blocks.SMOOTH_QUARTZ, TexturedModel.getCubeAll(Texture.getSubId(Blocks.QUARTZ_BLOCK, "_bottom"))).stairs(Blocks.SMOOTH_QUARTZ_STAIRS).slab(Blocks.SMOOTH_QUARTZ_SLAB);
         this.registerCubeAllModelTexturePool(Blocks.RED_NETHER_BRICKS).slab(Blocks.RED_NETHER_BRICK_SLAB).stairs(Blocks.RED_NETHER_BRICK_STAIRS).wall(Blocks.RED_NETHER_BRICK_WALL);
+        this.registerTexturePool(Blocks.BLACKSTONE, TexturedModel.field_23959).wall(Blocks.BLACKSTONE_WALL).stairs(Blocks.BLACKSTONE_STAIRS).slab(Blocks.BLACKSTONE_SLAB);
+        this.registerCubeAllModelTexturePool(Blocks.POLISHED_BLACKSTONE_BRICKS).wall(Blocks.POLISHED_BLACKSTONE_BRICK_WALL).stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS).slab(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB);
+        this.registerCubeAllModelTexturePool(Blocks.POLISHED_BLACKSTONE).wall(Blocks.POLISHED_BLACKSTONE_WALL).pressurePlate(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE).button(Blocks.POLISHED_BLACKSTONE_BUTTON).stairs(Blocks.POLISHED_BLACKSTONE_STAIRS).slab(Blocks.POLISHED_BLACKSTONE_SLAB);
         this.registorSmoothStone();
         this.registerTurnableRail(Blocks.RAIL);
         this.registerStraightRail(Blocks.POWERED_RAIL);

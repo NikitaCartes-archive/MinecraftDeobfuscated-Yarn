@@ -131,7 +131,6 @@ extends BlockWithEntity {
                 shulkerBoxBlockEntity.checkLootInteraction(player);
             }
         }
-        PiglinBrain.onGoldBlockBroken(player);
         super.onBreak(world, pos, state, player);
     }
 

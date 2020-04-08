@@ -60,7 +60,7 @@ extends ScreenHandler {
                 return true;
             }
             case 3: {
-                if (!player.canModifyWorld()) {
+                if (!player.canModifyBlocks()) {
                     return false;
                 }
                 ItemStack itemStack = this.inventory.removeStack(0);

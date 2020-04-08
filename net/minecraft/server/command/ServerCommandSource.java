@@ -207,7 +207,7 @@ implements CommandSource {
 
     public void sendFeedback(Text message, boolean broadcastToOps) {
         if (this.output.shouldReceiveFeedback() && !this.silent) {
-            this.output.sendMessage(message);
+            this.output.sendSystemMessage(message);
         }
         if (broadcastToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
             this.sendToOps(message);
@@ -219,17 +219,17 @@ implements CommandSource {
         if (this.minecraftServer.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
             for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
                 if (serverPlayerEntity == this.output || !this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) continue;
-                serverPlayerEntity.sendMessage(text);
+                serverPlayerEntity.sendSystemMessage(text);
             }
         }
         if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
-            this.minecraftServer.sendMessage(text);
+            this.minecraftServer.sendSystemMessage(text);
         }
     }
 
     public void sendError(Text message) {
         if (this.output.shouldTrackOutput() && !this.silent) {
-            this.output.sendMessage(new LiteralText("").append(message).formatted(Formatting.RED));
+            this.output.sendSystemMessage(new LiteralText("").append(message).formatted(Formatting.RED));
         }
     }
 

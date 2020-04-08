@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -192,10 +193,11 @@ extends LandPathNodeMaker {
 
     @Override
     public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
-        PathNodeType pathNodeType = AmphibiousPathNodeMaker.getCommonNodeType(world, x, y, z);
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        PathNodeType pathNodeType = AmphibiousPathNodeMaker.getCommonNodeType(world, mutable.set(x, y, z));
         if (pathNodeType == PathNodeType.WATER) {
             for (Direction direction : Direction.values()) {
-                PathNodeType pathNodeType2 = AmphibiousPathNodeMaker.getCommonNodeType(world, x + direction.getOffsetX(), y + direction.getOffsetY(), z + direction.getOffsetZ());
+                PathNodeType pathNodeType2 = AmphibiousPathNodeMaker.getCommonNodeType(world, mutable.set(x, y, z).move(direction));
                 if (pathNodeType2 != PathNodeType.BLOCKED) continue;
                 return PathNodeType.WATER_BORDER;
             }
@@ -203,9 +205,9 @@ extends LandPathNodeMaker {
         }
         if (pathNodeType == PathNodeType.OPEN && y >= 1) {
             Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
-            PathNodeType pathNodeType3 = AmphibiousPathNodeMaker.getCommonNodeType(world, x, y - 1, z);
+            PathNodeType pathNodeType3 = AmphibiousPathNodeMaker.getCommonNodeType(world, mutable.set(x, y - 1, z));
             pathNodeType = pathNodeType3 == PathNodeType.WALKABLE || pathNodeType3 == PathNodeType.OPEN || pathNodeType3 == PathNodeType.LAVA ? PathNodeType.OPEN : PathNodeType.WALKABLE;
-            if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block == Blocks.CAMPFIRE) {
+            if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block.isIn(BlockTags.CAMPFIRES)) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;
             }
             if (pathNodeType3 == PathNodeType.DAMAGE_CACTUS) {
@@ -216,7 +218,7 @@ extends LandPathNodeMaker {
             }
         }
         if (pathNodeType == PathNodeType.WALKABLE) {
-            pathNodeType = AmphibiousPathNodeMaker.getNodeTypeFromNeighbors(world, x, y, z, pathNodeType);
+            pathNodeType = AmphibiousPathNodeMaker.getNodeTypeFromNeighbors(world, mutable.set(x, y, z), pathNodeType);
         }
         return pathNodeType;
     }

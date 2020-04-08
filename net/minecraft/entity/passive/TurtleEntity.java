@@ -35,8 +35,8 @@ import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -195,7 +195,7 @@ extends AnimalEntity {
     }
 
     public static DefaultAttributeContainer.Builder createTurtleAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 30.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
     }
 
     @Override
@@ -407,7 +407,7 @@ extends AnimalEntity {
             double g = MathHelper.sqrt(d * d + e * e + f * f);
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
             this.turtle.bodyYaw = this.turtle.yaw = this.changeAngle(this.turtle.yaw, h, 90.0f);
-            float i = (float)(this.speed * this.turtle.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
+            float i = (float)(this.speed * this.turtle.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             this.turtle.setMovementSpeed(MathHelper.lerp(0.125f, this.turtle.getMovementSpeed(), i));
             this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * (e /= g) * 0.1, 0.0));
         }

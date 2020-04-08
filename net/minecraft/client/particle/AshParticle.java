@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class AshParticle
 extends AscendingParticle {
-    protected AshParticle(World world, double d, double e, double f, double g, double h, double i, float j, SpriteProvider spriteProvider) {
-        super(world, d, e, f, 0.1f, -0.1f, 0.1f, g, h, i, j, spriteProvider, 0.5f, 20, -0.004, false);
+    protected AshParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider) {
+        super(world, x, y, z, 0.1f, -0.1f, 0.1f, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.5f, 20, -0.004, false);
     }
 
     @Environment(value=EnvType.CLIENT)

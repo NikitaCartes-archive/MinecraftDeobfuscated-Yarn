@@ -137,7 +137,7 @@ implements CommandOutput {
     }
 
     @Override
-    public void sendMessage(Text message) {
+    public void sendSystemMessage(Text message) {
         if (this.trackOutput) {
             this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
             this.markDirty();

@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SaddledComponent;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -18,8 +19,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -34,6 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -45,7 +47,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class PigEntity
 extends AnimalEntity
-implements ItemSteerable {
+implements ItemSteerable,
+Saddleable {
     private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CARROT, Items.POTATO, Items.BEETROOT);
@@ -70,7 +73,7 @@ implements ItemSteerable {
     }
 
     public static DefaultAttributeContainer.Builder createPigAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 10.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
     }
 
     @Override
@@ -142,9 +145,25 @@ implements ItemSteerable {
     @Override
     public boolean interactMob(PlayerEntity player, Hand hand) {
         if (!super.interactMob(player, hand)) {
-            return this.interactMob(this, player, hand, true);
+            ItemStack itemStack = player.getStackInHand(hand);
+            if (itemStack.getItem() == Items.NAME_TAG) {
+                itemStack.useOnEntity(player, this, hand);
+                return true;
+            }
+            if (this.isSaddled() && !this.hasPassengers()) {
+                if (!this.world.isClient) {
+                    player.startRiding(this);
+                }
+                return true;
+            }
+            return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
         }
         return true;
+    }
+
+    @Override
+    public boolean canBeSaddled() {
+        return this.isAlive() && !this.isBaby();
     }
 
     @Override
@@ -161,8 +180,11 @@ implements ItemSteerable {
     }
 
     @Override
-    public void setSaddled(boolean saddled) {
-        this.saddledComponent.setSaddled(saddled);
+    public void saddle(@Nullable SoundCategory sound) {
+        this.saddledComponent.setSaddled(true);
+        if (sound != null) {
+            this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_PIG_SADDLE, sound, 0.5f, 1.0f);
+        }
     }
 
     @Override
@@ -197,7 +219,7 @@ implements ItemSteerable {
 
     @Override
     public float getSaddledSpeed() {
-        return (float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED) * 0.225f;
+        return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225f;
     }
 
     @Override

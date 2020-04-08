@@ -106,6 +106,16 @@ RecipeInputProvider {
         return itemStack;
     }
 
+    public boolean method_27070(ItemStack itemStack) {
+        boolean bl = false;
+        for (ItemStack itemStack2 : this.stacks) {
+            if (!itemStack2.isEmpty() && (!this.canCombine(itemStack2, itemStack) || itemStack2.getCount() >= itemStack2.getMaxCount())) continue;
+            bl = true;
+            break;
+        }
+        return bl;
+    }
+
     @Override
     public ItemStack removeStack(int slot) {
         ItemStack itemStack = this.stacks.get(slot);

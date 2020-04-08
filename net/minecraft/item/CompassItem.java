@@ -14,6 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.Vanishable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
@@ -32,7 +33,8 @@ import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class CompassItem
-extends Item {
+extends Item
+implements Vanishable {
     public CompassItem(Item.Settings settings) {
         super(settings);
         this.addPropertyGetter(new Identifier("angle"), new ItemPropertyGetter(){
@@ -123,7 +125,7 @@ extends Item {
     private BlockPos getLodestonePos(World world, CompoundTag tag) {
         Optional<DimensionType> optional;
         boolean bl = tag.contains("LodestonePos");
-        boolean bl2 = tag.contains("LodestonePos");
+        boolean bl2 = tag.contains("LodestoneDimension");
         if (bl && bl2 && (optional = CompassItem.getLodestoneDimension(tag)).isPresent() && world.dimension.getType().equals(optional.get())) {
             return NbtHelper.toBlockPos((CompoundTag)tag.get("LodestonePos"));
         }

@@ -8,7 +8,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.FishingBobberEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 

@@ -15,7 +15,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -81,9 +81,9 @@ implements Monster {
         this.dataTracker.set(SLIME_SIZE, size);
         this.refreshPosition();
         this.calculateDimensions();
-        this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue(size * size);
-        this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)size);
-        this.getAttributeInstance(Attributes.GENERIC_ATTACK_DAMAGE).setBaseValue(size);
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(size * size);
+        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)size);
+        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(size);
         if (heal) {
             this.setHealth(this.getMaximumHealth());
         }
@@ -244,7 +244,7 @@ implements Monster {
     }
 
     protected float getDamageAmount() {
-        return (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
+        return (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
     }
 
     @Override
@@ -497,7 +497,7 @@ implements Monster {
             }
             this.state = MoveControl.State.WAIT;
             if (this.entity.isOnGround()) {
-                this.entity.setMovementSpeed((float)(this.speed * this.entity.method_26825(Attributes.GENERIC_MOVEMENT_SPEED)));
+                this.entity.setMovementSpeed((float)(this.speed * this.entity.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
                 if (this.ticksUntilJump-- <= 0) {
                     this.ticksUntilJump = this.slime.getTicksUntilNextJump();
                     if (this.jumpOften) {
@@ -513,7 +513,7 @@ implements Monster {
                     this.entity.setMovementSpeed(0.0f);
                 }
             } else {
-                this.entity.setMovementSpeed((float)(this.speed * this.entity.method_26825(Attributes.GENERIC_MOVEMENT_SPEED)));
+                this.entity.setMovementSpeed((float)(this.speed * this.entity.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
             }
         }
     }

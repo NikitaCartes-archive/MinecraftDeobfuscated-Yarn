@@ -605,6 +605,22 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.CRIMSON_SIGN);
         this.registerForSelfDrop(Blocks.NETHERITE_BLOCK);
         this.registerForSelfDrop(Blocks.ANCIENT_DEBRIS);
+        this.registerForSelfDrop(Blocks.BLACKSTONE);
+        this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_BRICKS);
+        this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS);
+        this.registerForSelfDrop(Blocks.BLACKSTONE_STAIRS);
+        this.registerForSelfDrop(Blocks.BLACKSTONE_WALL);
+        this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+        this.registerForSelfDrop(Blocks.CHISELED_POLISHED_BLACKSTONE);
+        this.registerForSelfDrop(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS);
+        this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE);
+        this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_STAIRS);
+        this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE);
+        this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_BUTTON);
+        this.registerForSelfDrop(Blocks.POLISHED_BLACKSTONE_WALL);
+        this.registerForSelfDrop(Blocks.CHISELED_NETHER_BRICKS);
+        this.registerForSelfDrop(Blocks.CRACKED_NETHER_BRICKS);
+        this.registerForSelfDrop(Blocks.QUARTZ_BRICKS);
         this.register(Blocks.FARMLAND, Blocks.DIRT);
         this.register(Blocks.TRIPWIRE, Items.STRING);
         this.register(Blocks.GRASS_PATH, Blocks.DIRT);
@@ -690,6 +706,9 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerWithFunction(Blocks.DIORITE_SLAB, BlockLootTableGenerator::createForSlabs);
         this.registerWithFunction(Blocks.CRIMSON_SLAB, BlockLootTableGenerator::createForSlabs);
         this.registerWithFunction(Blocks.WARPED_SLAB, BlockLootTableGenerator::createForSlabs);
+        this.registerWithFunction(Blocks.BLACKSTONE_SLAB, BlockLootTableGenerator::createForSlabs);
+        this.registerWithFunction(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, BlockLootTableGenerator::createForSlabs);
+        this.registerWithFunction(Blocks.POLISHED_BLACKSTONE_SLAB, BlockLootTableGenerator::createForSlabs);
         this.registerWithFunction(Blocks.ACACIA_DOOR, BlockLootTableGenerator::method_24817);
         this.registerWithFunction(Blocks.BIRCH_DOOR, BlockLootTableGenerator::method_24817);
         this.registerWithFunction(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::method_24817);
@@ -826,6 +845,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerWithFunction(Blocks.SNOW, block -> LootTable.builder().withPool(LootPool.builder().withCondition(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS)).withEntry(AlternativeEntry.builder(new LootEntry.Builder[]{AlternativeEntry.builder(new LootEntry.Builder[]{ItemEntry.builder(Items.SNOWBALL).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, true))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2)))).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(2))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3)))).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(3))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4)))).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(4))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5)))).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(5))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6)))).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(6))), ((LeafEntry.Builder)ItemEntry.builder(Items.SNOWBALL).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7)))).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(7))), ItemEntry.builder(Items.SNOWBALL).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(8)))}).withCondition(DOESNT_NEED_SILK_TOUCH), AlternativeEntry.builder(new LootEntry.Builder[]{ItemEntry.builder(Blocks.SNOW).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, true))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(3)))).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(4)))).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(5)))).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(6)))).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6))), ((LootEntry.Builder)ItemEntry.builder(Blocks.SNOW).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(7)))).withCondition(BlockStatePropertyLootCondition.builder(block).method_22584(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7))), ItemEntry.builder(Blocks.SNOW_BLOCK)})}))));
         this.registerWithFunction(Blocks.GRAVEL, block -> BlockLootTableGenerator.createForNeedingSilkTouch(block, BlockLootTableGenerator.addSurvivesExplosionLootCondition(block, ((LeafEntry.Builder)ItemEntry.builder(Items.FLINT).withCondition(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1f, 0.14285715f, 0.25f, 1.0f))).withChild(ItemEntry.builder(block)))));
         this.registerWithFunction(Blocks.CAMPFIRE, block -> BlockLootTableGenerator.createForNeedingSilkTouch(block, (LootEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionLootCondition(block, ItemEntry.builder(Items.CHARCOAL).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(2))))));
+        this.registerWithFunction(Blocks.GILDED_BLACKSTONE, block -> BlockLootTableGenerator.createForNeedingSilkTouch(block, BlockLootTableGenerator.addSurvivesExplosionLootCondition(block, ((LeafEntry.Builder)((LootEntry.Builder)ItemEntry.builder(Items.GOLD_NUGGET).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(2.0f, 5.0f)))).withCondition(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1f, 0.14285715f, 0.25f, 1.0f))).withChild(ItemEntry.builder(block)))));
+        this.registerWithFunction(Blocks.SOUL_CAMPFIRE, block -> BlockLootTableGenerator.createForNeedingSilkTouch(block, (LootEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionLootCondition(block, ItemEntry.builder(Items.SOUL_SOIL).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))));
         this.registerForNeedingSilkTouch(Blocks.GLASS);
         this.registerForNeedingSilkTouch(Blocks.WHITE_STAINED_GLASS);
         this.registerForNeedingSilkTouch(Blocks.ORANGE_STAINED_GLASS);
@@ -900,7 +921,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.register(Blocks.SOUL_FIRE, BlockLootTableGenerator.createEmpty());
         HashSet<Identifier> set = Sets.newHashSet();
         for (Block block2 : Registry.BLOCK) {
-            Identifier identifier = block2.getDropTableID();
+            Identifier identifier = block2.getLootTableId();
             if (identifier == LootTables.EMPTY || !set.add(identifier)) continue;
             LootTable.Builder builder5 = this.lootTables.remove(identifier);
             if (builder5 == null) {
@@ -948,7 +969,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     private void register(Block block, LootTable.Builder builder) {
-        this.lootTables.put(block.getDropTableID(), builder);
+        this.lootTables.put(block.getLootTableId(), builder);
     }
 
     @Override

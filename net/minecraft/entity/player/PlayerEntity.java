@@ -37,13 +37,12 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.FishingBobberEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -62,6 +61,7 @@ import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.EnderChestInventory;
@@ -169,14 +169,14 @@ extends LivingEntity {
         this.field_6215 = 180.0f;
     }
 
-    public boolean canMine(World world, BlockPos pos, GameMode gameMode) {
-        if (!gameMode.shouldLimitWorldModification()) {
+    public boolean isBlockBreakingRestricted(World world, BlockPos pos, GameMode gameMode) {
+        if (!gameMode.isBlockBreakingRestricted()) {
             return false;
         }
         if (gameMode == GameMode.SPECTATOR) {
             return true;
         }
-        if (this.canModifyWorld()) {
+        if (this.canModifyBlocks()) {
             return false;
         }
         ItemStack itemStack = this.getMainHandStack();
@@ -184,7 +184,7 @@ extends LivingEntity {
     }
 
     public static DefaultAttributeContainer.Builder createPlayerAttributes() {
-        return LivingEntity.createLivingAttributes().add(Attributes.GENERIC_ATTACK_DAMAGE, 1.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.1f).add(Attributes.GENERIC_ATTACK_SPEED).add(Attributes.GENERIC_LUCK);
+        return LivingEntity.createLivingAttributes().add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1f).add(EntityAttributes.GENERIC_ATTACK_SPEED).add(EntityAttributes.GENERIC_LUCK);
     }
 
     @Override
@@ -459,7 +459,7 @@ extends LivingEntity {
         this.inventory.updateItems();
         this.prevStrideDistance = this.strideDistance;
         super.tickMovement();
-        EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+        EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (!this.world.isClient) {
             entityAttributeInstance.setBaseValue(this.abilities.getWalkSpeed());
         }
@@ -950,7 +950,7 @@ extends LivingEntity {
         if (target.handleAttack(this)) {
             return;
         }
-        float f = (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
+        float f = (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         float g = target instanceof LivingEntity ? EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup()) : EnchantmentHelper.getAttackDamage(this.getMainHandStack(), EntityGroup.DEFAULT);
         float h = this.getAttackCooldownProgress(0.5f);
         g *= h;
@@ -1169,7 +1169,7 @@ extends LivingEntity {
         return this.sleepTimer;
     }
 
-    public void addMessage(Text message, boolean actionBar) {
+    public void sendMessage(Text message, boolean actionBar) {
     }
 
     public void incrementStat(Identifier stat) {
@@ -1258,7 +1258,7 @@ extends LivingEntity {
 
     @Override
     public float getMovementSpeed() {
-        return (float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED);
+        return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED);
     }
 
     public void increaseTravelMotionStats(double dx, double dy, double dz) {
@@ -1463,7 +1463,7 @@ extends LivingEntity {
         return this.getHealth() > 0.0f && this.getHealth() < this.getMaximumHealth();
     }
 
-    public boolean canModifyWorld() {
+    public boolean canModifyBlocks() {
         return this.abilities.allowModifyWorld;
     }
 
@@ -1750,7 +1750,7 @@ extends LivingEntity {
     }
 
     public float getAttackCooldownProgressPerTick() {
-        return (float)(1.0 / this.method_26825(Attributes.GENERIC_ATTACK_SPEED) * 20.0);
+        return (float)(1.0 / this.method_26825(EntityAttributes.GENERIC_ATTACK_SPEED) * 20.0);
     }
 
     public float getAttackCooldownProgress(float baseTime) {
@@ -1771,7 +1771,7 @@ extends LivingEntity {
     }
 
     public float getLuck() {
-        return (float)this.method_26825(Attributes.GENERIC_LUCK);
+        return (float)this.method_26825(EntityAttributes.GENERIC_LUCK);
     }
 
     public boolean isCreativeLevelTwoOp() {

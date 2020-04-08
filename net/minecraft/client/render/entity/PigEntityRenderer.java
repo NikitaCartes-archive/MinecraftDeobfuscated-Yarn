@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.PigSaddleFeatureRenderer;
+import net.minecraft.client.render.entity.feature.SaddleFeatureRenderer;
 import net.minecraft.client.render.entity.model.PigEntityModel;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.util.Identifier;
@@ -19,7 +19,7 @@ extends MobEntityRenderer<PigEntity, PigEntityModel<PigEntity>> {
 
     public PigEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new PigEntityModel(), 0.7f);
-        this.addFeature(new PigSaddleFeatureRenderer(this, new PigEntityModel(0.5f), new Identifier("textures/entity/pig/pig_saddle.png")));
+        this.addFeature(new SaddleFeatureRenderer(this, new PigEntityModel(0.5f), new Identifier("textures/entity/pig/pig_saddle.png")));
     }
 
     @Override

@@ -14,6 +14,7 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.util.registry.MutableRegistry;
 import org.apache.commons.lang3.Validate;
@@ -102,7 +103,7 @@ extends MutableRegistry<T> {
             }
             this.randomEntries = collection.toArray(new Object[collection.size()]);
         }
-        return (T)this.randomEntries[random.nextInt(this.randomEntries.length)];
+        return (T)Util.getRandom(this.randomEntries, random);
     }
 
     @Override

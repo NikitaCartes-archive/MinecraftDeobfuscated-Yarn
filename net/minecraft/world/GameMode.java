@@ -50,10 +50,10 @@ public enum GameMode {
             abilities.invulnerable = false;
             abilities.flying = false;
         }
-        abilities.allowModifyWorld = !this.shouldLimitWorldModification();
+        abilities.allowModifyWorld = !this.isBlockBreakingRestricted();
     }
 
-    public boolean shouldLimitWorldModification() {
+    public boolean isBlockBreakingRestricted() {
         return this == ADVENTURE || this == SPECTATOR;
     }
 

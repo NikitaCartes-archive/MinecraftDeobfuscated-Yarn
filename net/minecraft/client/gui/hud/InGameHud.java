@@ -46,7 +46,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -674,7 +674,7 @@ extends DrawableHelper {
         int m = this.scaledWidth / 2 - 91;
         int n = this.scaledWidth / 2 + 91;
         int o = this.scaledHeight - 39;
-        float f = (float)playerEntity.method_26825(Attributes.GENERIC_MAX_HEALTH);
+        float f = (float)playerEntity.method_26825(EntityAttributes.GENERIC_MAX_HEALTH);
         int p = MathHelper.ceil(playerEntity.getAbsorptionAmount());
         int q = MathHelper.ceil((f + (float)p) / 2.0f / 10.0f);
         int r = Math.max(10 - (q - 2), 3);

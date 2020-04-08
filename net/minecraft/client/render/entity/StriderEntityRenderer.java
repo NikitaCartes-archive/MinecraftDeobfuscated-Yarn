@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.render.entity.feature.PigSaddleFeatureRenderer;
+import net.minecraft.client.render.entity.feature.SaddleFeatureRenderer;
 import net.minecraft.client.render.entity.model.StriderEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -18,15 +18,16 @@ import net.minecraft.util.Identifier;
 public class StriderEntityRenderer
 extends MobEntityRenderer<StriderEntity, StriderEntityModel<StriderEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/strider/strider.png");
+    private static final Identifier COLD_TEXTURE = new Identifier("textures/entity/strider/strider_cold.png");
 
     public StriderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
         super(entityRenderDispatcher, new StriderEntityModel(), 0.5f);
-        this.addFeature(new PigSaddleFeatureRenderer(this, new StriderEntityModel(), new Identifier("textures/entity/strider/strider_saddle.png")));
+        this.addFeature(new SaddleFeatureRenderer(this, new StriderEntityModel(), new Identifier("textures/entity/strider/strider_saddle.png")));
     }
 
     @Override
     public Identifier getTexture(StriderEntity striderEntity) {
-        return TEXTURE;
+        return striderEntity.isCold() ? COLD_TEXTURE : TEXTURE;
     }
 
     @Override

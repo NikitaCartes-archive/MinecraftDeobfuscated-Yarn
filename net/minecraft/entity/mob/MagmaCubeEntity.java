@@ -6,8 +6,8 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.SlimeEntity;
@@ -34,7 +34,7 @@ extends SlimeEntity {
     }
 
     public static DefaultAttributeContainer.Builder createMagmaCubeAttributes() {
-        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.2f);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2f);
     }
 
     public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
@@ -49,7 +49,7 @@ extends SlimeEntity {
     @Override
     protected void setSize(int size, boolean heal) {
         super.setSize(size, heal);
-        this.getAttributeInstance(Attributes.GENERIC_ARMOR).setBaseValue(size * 3);
+        this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(size * 3);
     }
 
     @Override

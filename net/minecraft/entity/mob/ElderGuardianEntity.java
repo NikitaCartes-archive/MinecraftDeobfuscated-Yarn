@@ -6,8 +6,8 @@ package net.minecraft.entity.mob;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -33,7 +33,7 @@ extends GuardianEntity {
     }
 
     public static DefaultAttributeContainer.Builder createElderGuardianAttributes() {
-        return GuardianEntity.createGuardianAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(Attributes.GENERIC_ATTACK_DAMAGE, 8.0).add(Attributes.GENERIC_MAX_HEALTH, 80.0);
+        return GuardianEntity.createGuardianAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 8.0).add(EntityAttributes.GENERIC_MAX_HEALTH, 80.0);
     }
 
     @Override

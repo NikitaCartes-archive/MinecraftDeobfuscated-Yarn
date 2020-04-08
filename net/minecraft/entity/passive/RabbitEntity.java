@@ -28,8 +28,8 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -237,7 +237,7 @@ extends AnimalEntity {
     }
 
     public static DefaultAttributeContainer.Builder createRabbitAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 3.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3f);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 3.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3f);
     }
 
     @Override
@@ -321,7 +321,7 @@ extends AnimalEntity {
 
     public void setRabbitType(int rabbitType) {
         if (rabbitType == 99) {
-            this.getAttributeInstance(Attributes.GENERIC_ARMOR).setBaseValue(8.0);
+            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(8.0);
             this.goalSelector.add(4, new RabbitAttackGoal(this));
             this.targetSelector.add(1, new RevengeGoal(this, new Class[0]).setGroupRevenge(new Class[0]));
             this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));

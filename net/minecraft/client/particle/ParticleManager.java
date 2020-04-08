@@ -76,6 +76,7 @@ import net.minecraft.client.particle.TotemParticle;
 import net.minecraft.client.particle.WaterBubbleParticle;
 import net.minecraft.client.particle.WaterSplashParticle;
 import net.minecraft.client.particle.WaterSuspendParticle;
+import net.minecraft.client.particle.WhiteAshParticle;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -201,6 +202,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.FALLING_OBSIDIAN_TEAR, BlockLeakParticle.FallingObsidianTearFactory::new);
         this.registerFactory(ParticleTypes.LANDING_OBSIDIAN_TEAR, BlockLeakParticle.LandingObsidianTearFactory::new);
         this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
+        this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

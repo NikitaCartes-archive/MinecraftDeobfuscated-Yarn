@@ -33,8 +33,8 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -268,7 +268,7 @@ extends AnimalEntity {
     }
 
     public static DefaultAttributeContainer.Builder createPandaAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.15f).add(Attributes.GENERIC_ATTACK_DAMAGE, 6.0);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.15f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
     }
 
     public Gene getProductGene() {
@@ -527,10 +527,10 @@ extends AnimalEntity {
 
     public void resetAttributes() {
         if (this.isWeak()) {
-            this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH).setBaseValue(10.0);
+            this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(10.0);
         }
         if (this.isLazy()) {
-            this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.07f);
+            this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.07f);
         }
     }
 

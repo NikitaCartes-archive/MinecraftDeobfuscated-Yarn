@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemSteerable;
+import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SaddledComponent;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -24,8 +25,8 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -41,6 +42,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
@@ -58,7 +60,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class StriderEntity
 extends AnimalEntity
-implements ItemSteerable {
+implements ItemSteerable,
+Saddleable {
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS);
     private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
     private static final TrackedData<Integer> BOOST_TIME = DataTracker.registerData(StriderEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -71,7 +74,7 @@ implements ItemSteerable {
     public StriderEntity(EntityType<? extends StriderEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
-        this.inanimate = true;
+        this.field_23807 = true;
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
         this.setPathfindingPenalty(PathNodeType.LAVA, 0.0f);
         this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0f);
@@ -79,7 +82,7 @@ implements ItemSteerable {
     }
 
     public static boolean canSpawn(EntityType<StriderEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return pos.getY() <= 31;
+        return world.getBlockState(pos.up()).isAir();
     }
 
     @Override
@@ -116,8 +119,16 @@ implements ItemSteerable {
     }
 
     @Override
-    public void setSaddled(boolean saddled) {
-        this.saddledComponent.setSaddled(saddled);
+    public boolean canBeSaddled() {
+        return this.isAlive() && !this.isBaby();
+    }
+
+    @Override
+    public void saddle(@Nullable SoundCategory sound) {
+        this.saddledComponent.setSaddled(true);
+        if (sound != null) {
+            this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_STRIDER_SADDLE, sound, 0.5f, 1.0f);
+        }
     }
 
     @Override
@@ -199,12 +210,12 @@ implements ItemSteerable {
     }
 
     public float getSpeed() {
-        return (float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66f : 1.0f);
+        return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66f : 1.0f);
     }
 
     @Override
     public float getSaddledSpeed() {
-        return (float)this.method_26825(Attributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23f : 0.55f);
+        return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23f : 0.55f);
     }
 
     @Override
@@ -277,7 +288,7 @@ implements ItemSteerable {
     }
 
     public static DefaultAttributeContainer.Builder createStriderAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MOVEMENT_SPEED, 0.15f).add(Attributes.GENERIC_FOLLOW_RANGE, 16.0);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.15f).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0);
     }
 
     @Override
@@ -353,7 +364,18 @@ implements ItemSteerable {
     public boolean interactMob(PlayerEntity player, Hand hand) {
         boolean bl = this.isBreedingItem(player.getStackInHand(hand));
         if (!super.interactMob(player, hand)) {
-            return this.interactMob(this, player, hand, false);
+            ItemStack itemStack = player.getStackInHand(hand);
+            if (itemStack.getItem() == Items.NAME_TAG) {
+                itemStack.useOnEntity(player, this, hand);
+                return true;
+            }
+            if (this.isSaddled() && !this.hasPassengers() && !this.isBaby()) {
+                if (!this.world.isClient) {
+                    player.startRiding(this);
+                }
+                return true;
+            }
+            return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
         }
         if (bl && !this.isSilent()) {
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_STRIDER_EAT, this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
@@ -382,7 +404,7 @@ implements ItemSteerable {
             }
         } else if (riderType == StriderData.RiderType.PIGLIN_RIDER && (zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world)) != null) {
             mobEntity = zombifiedPiglinEntity;
-            this.setSaddled(true);
+            this.saddle(null);
         }
         if (mobEntity != null) {
             mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);

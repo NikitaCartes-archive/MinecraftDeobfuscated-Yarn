@@ -11,6 +11,7 @@ import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.AbstractUuidFix;
+import net.minecraft.datafixer.fix.EntityUuidFix;
 
 public class PlayerUuidFix
 extends AbstractUuidFix {
@@ -22,7 +23,7 @@ extends AbstractUuidFix {
     protected TypeRewriteRule makeRule() {
         return this.fixTypeEverywhereTyped("PlayerUUIDFix", this.getInputSchema().getType(this.typeReference), typed2 -> {
             OpticFinder<?> opticFinder = typed2.getType().findField("RootVehicle");
-            return typed2.updateTyped(opticFinder, opticFinder.type(), (Typed<?> typed) -> typed.update(DSL.remainderFinder(), dynamic -> PlayerUuidFix.updateRegularMostLeast(dynamic, "Attach", "Attach").orElse((Dynamic<?>)dynamic)));
+            return typed2.updateTyped(opticFinder, opticFinder.type(), (Typed<?> typed) -> typed.update(DSL.remainderFinder(), dynamic -> PlayerUuidFix.updateRegularMostLeast(dynamic, "Attach", "Attach").orElse((Dynamic<?>)dynamic))).update(DSL.remainderFinder(), dynamic -> EntityUuidFix.updateSelfUuid(EntityUuidFix.updateLiving(dynamic)));
         });
     }
 }

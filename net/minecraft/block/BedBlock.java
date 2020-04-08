@@ -101,21 +101,21 @@ implements BlockEntityProvider {
             return ActionResult.SUCCESS;
         }
         if (state.get(OCCUPIED).booleanValue()) {
-            if (!this.method_22357(world, pos)) {
-                player.addMessage(new TranslatableText("block.minecraft.bed.occupied", new Object[0]), true);
+            if (!this.isFree(world, pos)) {
+                player.sendMessage(new TranslatableText("block.minecraft.bed.occupied", new Object[0]), true);
             }
             return ActionResult.SUCCESS;
         }
         player.trySleep(pos).ifLeft(sleepFailureReason -> {
             if (sleepFailureReason != null) {
-                player.addMessage(sleepFailureReason.toText(), true);
+                player.sendMessage(sleepFailureReason.toText(), true);
             }
         });
         return ActionResult.SUCCESS;
     }
 
-    private boolean method_22357(World world, BlockPos blockPos) {
-        List<VillagerEntity> list = world.getEntities(VillagerEntity.class, new Box(blockPos), LivingEntity::isSleeping);
+    private boolean isFree(World world, BlockPos pos) {
+        List<VillagerEntity> list = world.getEntities(VillagerEntity.class, new Box(pos), LivingEntity::isSleeping);
         if (list.isEmpty()) {
             return false;
         }

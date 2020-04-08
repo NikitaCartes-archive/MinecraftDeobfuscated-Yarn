@@ -21,10 +21,10 @@ import net.minecraft.entity.ai.goal.RaidGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -107,7 +107,7 @@ implements RangedAttackMob {
     }
 
     public static DefaultAttributeContainer.Builder createWitchAttributes() {
-        return HostileEntity.createHostileAttributes().add(Attributes.GENERIC_MAX_HEALTH, 26.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 26.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
     }
 
     @Override
@@ -130,7 +130,7 @@ implements RangedAttackMob {
                             this.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
                         }
                     }
-                    this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
+                    this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
                 }
             } else {
                 Potion potion = null;
@@ -150,7 +150,7 @@ implements RangedAttackMob {
                     if (!this.isSilent()) {
                         this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0f, 0.8f + this.random.nextFloat() * 0.4f);
                     }
-                    EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+                    EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
                     entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
                     entityAttributeInstance.addTemporaryModifier(DRINKING_SPEED_PENALTY_MODIFIER);
                 }

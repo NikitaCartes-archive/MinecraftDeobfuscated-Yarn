@@ -133,7 +133,7 @@ public class ServerPlayerInteractionManager {
                 this.finishMining(pos, action, "creative destroy");
                 return;
             }
-            if (this.player.canMine(this.world, pos, this.gameMode)) {
+            if (this.player.isBlockBreakingRestricted(this.world, pos, this.gameMode)) {
                 this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, false, "block action restricted"));
                 return;
             }
@@ -209,7 +209,7 @@ public class ServerPlayerInteractionManager {
             this.world.updateListeners(blockPos, blockState, blockState, 3);
             return false;
         }
-        if (this.player.canMine(this.world, blockPos, this.gameMode)) {
+        if (this.player.isBlockBreakingRestricted(this.world, blockPos, this.gameMode)) {
             return false;
         }
         block.onBreak(this.world, blockPos, blockState, this.player);

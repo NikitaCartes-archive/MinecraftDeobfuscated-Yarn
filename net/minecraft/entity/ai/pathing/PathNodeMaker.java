@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.TargetPathNode;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
@@ -36,6 +37,10 @@ public abstract class PathNodeMaker {
     public void clear() {
         this.cachedWorld = null;
         this.entity = null;
+    }
+
+    protected PathNode method_27137(BlockPos blockPos) {
+        return this.getNode(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
     protected PathNode getNode(int x, int y, int z) {

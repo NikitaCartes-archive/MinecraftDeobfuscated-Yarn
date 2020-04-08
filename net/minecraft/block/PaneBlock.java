@@ -15,6 +15,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -78,7 +79,7 @@ extends HorizontalConnectingBlock {
 
     public final boolean connectsTo(BlockState state, boolean bl) {
         Block block = state.getBlock();
-        return !PaneBlock.cannotConnect(block) && bl || block instanceof PaneBlock;
+        return !PaneBlock.cannotConnect(block) && bl || block instanceof PaneBlock || block.isIn(BlockTags.WALLS);
     }
 
     @Override

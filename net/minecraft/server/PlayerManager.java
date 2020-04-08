@@ -444,7 +444,7 @@ public abstract class PlayerManager {
         for (String string : collection) {
             ServerPlayerEntity serverPlayerEntity = this.getPlayer(string);
             if (serverPlayerEntity == null || serverPlayerEntity == source) continue;
-            serverPlayerEntity.sendMessage(message);
+            serverPlayerEntity.sendSystemMessage(message);
         }
     }
 
@@ -457,7 +457,7 @@ public abstract class PlayerManager {
         for (int i = 0; i < this.players.size(); ++i) {
             ServerPlayerEntity serverPlayerEntity = this.players.get(i);
             if (serverPlayerEntity.getScoreboardTeam() == abstractTeam) continue;
-            serverPlayerEntity.sendMessage(message);
+            serverPlayerEntity.sendSystemMessage(message);
         }
     }
 
@@ -635,7 +635,7 @@ public abstract class PlayerManager {
     }
 
     public void broadcastChatMessage(Text message, boolean system) {
-        this.server.sendMessage(message);
+        this.server.sendSystemMessage(message);
         MessageType messageType = system ? MessageType.SYSTEM : MessageType.CHAT;
         this.sendToAll(new GameMessageS2CPacket(message, messageType));
     }

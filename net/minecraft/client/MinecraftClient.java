@@ -208,6 +208,7 @@ import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.dimension.TheEndDimension;
 import net.minecraft.world.dimension.TheNetherDimension;
 import net.minecraft.world.level.LevelInfo;
@@ -1869,7 +1870,22 @@ WindowEventHandler {
         }
         if (this.player != null) {
             if (this.player.world.dimension instanceof TheNetherDimension) {
-                return MusicTracker.MusicType.NETHER;
+                Biome biome = this.player.world.getBiomeAccess().getBiome(this.player.getX(), this.player.getY(), this.player.getZ());
+                if (biome == Biomes.BASALT_DELTAS) {
+                    return MusicTracker.MusicType.BASALT_DELTAS;
+                }
+                if (biome == Biomes.NETHER_WASTES) {
+                    return MusicTracker.MusicType.NETHER_WASTES;
+                }
+                if (biome == Biomes.SOUL_SAND_VALLEY) {
+                    return MusicTracker.MusicType.SOUL_SAND_VALLEY;
+                }
+                if (biome == Biomes.CRIMSON_FOREST) {
+                    return MusicTracker.MusicType.CRIMSON_FOREST;
+                }
+                if (biome == Biomes.WARPED_FOREST) {
+                    return MusicTracker.MusicType.WARPED_FOREST;
+                }
             }
             if (this.player.world.dimension instanceof TheEndDimension) {
                 if (this.inGameHud.getBossBarHud().shouldPlayDragonMusic()) {

@@ -20,7 +20,6 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.ShulkerBulletEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -28,9 +27,9 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -41,6 +40,7 @@ import net.minecraft.entity.mob.ShulkerLidCollisions;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -147,7 +147,7 @@ implements Monster {
     }
 
     public static DefaultAttributeContainer.Builder createShulkerAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 30.0);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0);
     }
 
     @Override
@@ -393,9 +393,9 @@ implements Monster {
 
     public void setPeekAmount(int i) {
         if (!this.world.isClient) {
-            this.getAttributeInstance(Attributes.GENERIC_ARMOR).removeModifier(ATTR_COVERED_ARMOR_BONUS);
+            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(ATTR_COVERED_ARMOR_BONUS);
             if (i == 0) {
-                this.getAttributeInstance(Attributes.GENERIC_ARMOR).addPersistentModifier(ATTR_COVERED_ARMOR_BONUS);
+                this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(ATTR_COVERED_ARMOR_BONUS);
                 this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0f, 1.0f);
             } else {
                 this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0f, 1.0f);

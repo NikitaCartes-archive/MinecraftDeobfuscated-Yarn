@@ -212,7 +212,7 @@ extends PassiveEntity {
         other.setBreedingAge(6000);
         this.resetLoveTicks();
         other.resetLoveTicks();
-        passiveEntity.setBreedingAge(-24000);
+        passiveEntity.setBaby(true);
         passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
         world.spawnEntity(passiveEntity);
         world.sendEntityStatus(this, (byte)18);

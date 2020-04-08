@@ -8,9 +8,7 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
@@ -179,10 +177,9 @@ implements FlyingItemEntity {
 
     private void extinguishFire(BlockPos pos, Direction direction) {
         BlockState blockState = this.world.getBlockState(pos);
-        Block block = blockState.getBlock();
         if (blockState.isIn(BlockTags.FIRE)) {
             this.world.removeBlock(pos, false);
-        } else if (block == Blocks.CAMPFIRE && blockState.get(CampfireBlock.LIT).booleanValue()) {
+        } else if (CampfireBlock.isLitCampfire(blockState)) {
             this.world.playLevelEvent(null, 1009, pos, 0);
             this.world.setBlockState(pos, (BlockState)blockState.with(CampfireBlock.LIT, false));
         }

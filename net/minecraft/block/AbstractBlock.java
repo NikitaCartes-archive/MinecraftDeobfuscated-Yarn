@@ -79,12 +79,12 @@ public abstract class AbstractBlock {
     protected final boolean dynamicBounds;
     protected final Settings settings;
     @Nullable
-    protected Identifier dropTableId;
+    protected Identifier lootTableId;
 
     public AbstractBlock(Settings settings) {
         this.material = settings.material;
         this.collidable = settings.collidable;
-        this.dropTableId = settings.dropTableId;
+        this.lootTableId = settings.lootTableId;
         this.resistance = settings.resistance;
         this.randomTicks = settings.randomTicks;
         this.soundGroup = settings.soundGroup;
@@ -208,7 +208,7 @@ public abstract class AbstractBlock {
 
     @Deprecated
     public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-        Identifier identifier = this.getDropTableID();
+        Identifier identifier = this.getLootTableId();
         if (identifier == LootTables.EMPTY) {
             return Collections.emptyList();
         }
@@ -329,12 +329,12 @@ public abstract class AbstractBlock {
         return this instanceof BlockEntityProvider;
     }
 
-    public final Identifier getDropTableID() {
-        if (this.dropTableId == null) {
+    public final Identifier getLootTableId() {
+        if (this.lootTableId == null) {
             Identifier identifier = Registry.BLOCK.getId(this.asBlock());
-            this.dropTableId = new Identifier(identifier.getNamespace(), "blocks/" + identifier.getPath());
+            this.lootTableId = new Identifier(identifier.getNamespace(), "blocks/" + identifier.getPath());
         }
-        return this.dropTableId;
+        return this.lootTableId;
     }
 
     @Deprecated
@@ -771,7 +771,7 @@ public abstract class AbstractBlock {
         private float slipperiness = 0.6f;
         private float velocityMultiplier = 1.0f;
         private float jumpVelocityMultiplier = 1.0f;
-        private Identifier dropTableId;
+        private Identifier lootTableId;
         private boolean opaque = true;
         private boolean isAir;
         private TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(world, pos, Direction.UP) && state.getLuminance() < 14;
@@ -887,12 +887,12 @@ public abstract class AbstractBlock {
         }
 
         public Settings dropsNothing() {
-            this.dropTableId = LootTables.EMPTY;
+            this.lootTableId = LootTables.EMPTY;
             return this;
         }
 
         public Settings dropsLike(Block source) {
-            this.dropTableId = source.getDropTableID();
+            this.lootTableId = source.getLootTableId();
             return this;
         }
 

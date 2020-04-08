@@ -94,7 +94,7 @@ extends Entity {
 
     protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
         super(entityType, world);
-        this.inanimate = true;
+        this.field_23807 = true;
     }
 
     protected AbstractMinecartEntity(EntityType<?> type, World world, double x, double y, double z) {

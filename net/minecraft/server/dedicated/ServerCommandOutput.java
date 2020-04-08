@@ -36,7 +36,7 @@ implements CommandOutput {
     }
 
     @Override
-    public void sendMessage(Text message) {
+    public void sendSystemMessage(Text message) {
         this.buffer.append(message.getString());
     }
 

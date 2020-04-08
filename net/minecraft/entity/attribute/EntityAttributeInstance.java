@@ -177,6 +177,7 @@ public class EntityAttributeInstance {
                 if (entityAttributeModifier == null) continue;
                 this.byId.put(entityAttributeModifier.getId(), entityAttributeModifier);
                 this.getModifiers(entityAttributeModifier.getOperation()).add(entityAttributeModifier);
+                this.persistentModifiers.add(entityAttributeModifier);
             }
         }
         this.onUpdate();

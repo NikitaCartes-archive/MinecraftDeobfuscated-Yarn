@@ -21,7 +21,11 @@ implements ClientChatListener {
 
     @Override
     public void onChatMessage(MessageType messageType, Text message) {
-        this.client.inGameHud.getChatHud().addMessage(message);
+        if (messageType != MessageType.CHAT) {
+            this.client.inGameHud.getChatHud().addMessage(message);
+        } else {
+            this.client.inGameHud.getChatHud().method_27147(message);
+        }
     }
 }
 

@@ -98,7 +98,7 @@ public class TargetFinder {
             if (aboveGround) {
                 blockPos3 = TargetFinder.findValidPositionAbove(blockPos3, random.nextInt(distanceAboveGroundRange + 1) + minDistanceAboveGround, mob.world.getHeight(), blockPos -> mobEntityWithAi.world.getBlockState((BlockPos)blockPos).getMaterial().isSolid());
             }
-            if (!notInWater && mob.world.getFluidState(blockPos3).matches(FluidTags.WATER) || mob.getPathfindingPenalty(pathNodeType = LandPathNodeMaker.getLandNodeType(mob.world, blockPos3.getX(), blockPos3.getY(), blockPos3.getZ())) != 0.0f || !((e = favorProvider.applyAsDouble(blockPos3)) > d)) continue;
+            if (!notInWater && mob.world.getFluidState(blockPos3).matches(FluidTags.WATER) || mob.getPathfindingPenalty(pathNodeType = LandPathNodeMaker.getLandNodeType(mob.world, blockPos3.mutableCopy())) != 0.0f || !((e = favorProvider.applyAsDouble(blockPos3)) > d)) continue;
             d = e;
             blockPos2 = blockPos3;
             bl2 = true;
@@ -129,18 +129,18 @@ public class TargetFinder {
         return new BlockPos(g, (double)l, h);
     }
 
-    static BlockPos findValidPositionAbove(BlockPos pos, int minDistanceAboveIllegal, int maxOffset, Predicate<BlockPos> isIllegalPredicate) {
+    static BlockPos findValidPositionAbove(BlockPos pos, int minDistanceAboveIllegal, int maxOffset, Predicate<BlockPos> illegalPredicate) {
         if (minDistanceAboveIllegal < 0) {
             throw new IllegalArgumentException("aboveSolidAmount was " + minDistanceAboveIllegal + ", expected >= 0");
         }
-        if (isIllegalPredicate.test(pos)) {
+        if (illegalPredicate.test(pos)) {
             BlockPos blockPos3;
             BlockPos blockPos = pos.up();
-            while (blockPos.getY() < maxOffset && isIllegalPredicate.test(blockPos)) {
+            while (blockPos.getY() < maxOffset && illegalPredicate.test(blockPos)) {
                 blockPos = blockPos.up();
             }
             BlockPos blockPos2 = blockPos;
-            while (blockPos2.getY() < maxOffset && blockPos2.getY() - blockPos.getY() < minDistanceAboveIllegal && !isIllegalPredicate.test(blockPos3 = blockPos2.up())) {
+            while (blockPos2.getY() < maxOffset && blockPos2.getY() - blockPos.getY() < minDistanceAboveIllegal && !illegalPredicate.test(blockPos3 = blockPos2.up())) {
                 blockPos2 = blockPos3;
             }
             return blockPos2;

@@ -410,11 +410,11 @@ implements ServerPlayPacketListener {
     public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         if (!this.server.areCommandBlocksEnabled()) {
-            this.player.sendMessage(new TranslatableText("advMode.notEnabled", new Object[0]));
+            this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled", new Object[0]));
             return;
         }
         if (!this.player.isCreativeLevelTwoOp()) {
-            this.player.sendMessage(new TranslatableText("advMode.notAllowed", new Object[0]));
+            this.player.sendSystemMessage(new TranslatableText("advMode.notAllowed", new Object[0]));
             return;
         }
         CommandBlockExecutor commandBlockExecutor = null;
@@ -459,7 +459,7 @@ implements ServerPlayPacketListener {
             }
             commandBlockExecutor.markDirty();
             if (!ChatUtil.isEmpty(string)) {
-                this.player.sendMessage(new TranslatableText("advMode.setCommand.success", string));
+                this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", string));
             }
         }
     }
@@ -468,11 +468,11 @@ implements ServerPlayPacketListener {
     public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         if (!this.server.areCommandBlocksEnabled()) {
-            this.player.sendMessage(new TranslatableText("advMode.notEnabled", new Object[0]));
+            this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled", new Object[0]));
             return;
         }
         if (!this.player.isCreativeLevelTwoOp()) {
-            this.player.sendMessage(new TranslatableText("advMode.notAllowed", new Object[0]));
+            this.player.sendSystemMessage(new TranslatableText("advMode.notAllowed", new Object[0]));
             return;
         }
         CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
@@ -483,7 +483,7 @@ implements ServerPlayPacketListener {
                 commandBlockExecutor.setLastOutput(null);
             }
             commandBlockExecutor.markDirty();
-            this.player.sendMessage(new TranslatableText("advMode.setCommand.success", packet.getCommand()));
+            this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", packet.getCommand()));
         }
     }
 
@@ -543,27 +543,27 @@ implements ServerPlayPacketListener {
                 String string = structureBlockBlockEntity.getStructureName();
                 if (packet.getAction() == StructureBlockBlockEntity.Action.SAVE_AREA) {
                     if (structureBlockBlockEntity.saveStructure()) {
-                        this.player.addMessage(new TranslatableText("structure_block.save_success", string), false);
+                        this.player.sendMessage((Text)new TranslatableText("structure_block.save_success", string), false);
                     } else {
-                        this.player.addMessage(new TranslatableText("structure_block.save_failure", string), false);
+                        this.player.sendMessage((Text)new TranslatableText("structure_block.save_failure", string), false);
                     }
                 } else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
                     if (!structureBlockBlockEntity.isStructureAvailable()) {
-                        this.player.addMessage(new TranslatableText("structure_block.load_not_found", string), false);
+                        this.player.sendMessage((Text)new TranslatableText("structure_block.load_not_found", string), false);
                     } else if (structureBlockBlockEntity.loadStructure()) {
-                        this.player.addMessage(new TranslatableText("structure_block.load_success", string), false);
+                        this.player.sendMessage((Text)new TranslatableText("structure_block.load_success", string), false);
                     } else {
-                        this.player.addMessage(new TranslatableText("structure_block.load_prepare", string), false);
+                        this.player.sendMessage((Text)new TranslatableText("structure_block.load_prepare", string), false);
                     }
                 } else if (packet.getAction() == StructureBlockBlockEntity.Action.SCAN_AREA) {
                     if (structureBlockBlockEntity.detectStructureSize()) {
-                        this.player.addMessage(new TranslatableText("structure_block.size_success", string), false);
+                        this.player.sendMessage((Text)new TranslatableText("structure_block.size_success", string), false);
                     } else {
-                        this.player.addMessage(new TranslatableText("structure_block.size_failure", new Object[0]), false);
+                        this.player.sendMessage((Text)new TranslatableText("structure_block.size_failure", new Object[0]), false);
                     }
                 }
             } else {
-                this.player.addMessage(new TranslatableText("structure_block.invalid_structure_name", packet.getStructureName()), false);
+                this.player.sendMessage((Text)new TranslatableText("structure_block.invalid_structure_name", packet.getStructureName()), false);
             }
             structureBlockBlockEntity.markDirty();
             this.player.world.updateListeners(blockPos, blockState, blockState, 3);

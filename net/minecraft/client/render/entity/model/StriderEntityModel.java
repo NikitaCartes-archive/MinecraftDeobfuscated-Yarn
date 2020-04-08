@@ -25,7 +25,7 @@ extends CompositeEntityModel<T> {
     private final ModelPart field_23361;
 
     public StriderEntityModel() {
-        this.textureWidth = 128;
+        this.textureWidth = 64;
         this.textureHeight = 128;
         this.field_23353 = new ModelPart(this, 0, 32);
         this.field_23353.setPivot(-4.0f, 8.0f, 0.0f);

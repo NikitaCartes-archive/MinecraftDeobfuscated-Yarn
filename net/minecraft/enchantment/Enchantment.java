@@ -25,8 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class Enchantment {
     private final EquipmentSlot[] slotTypes;
     private final Rarity rarity;
-    @Nullable
-    public EnchantmentTarget type;
+    public final EnchantmentTarget type;
     @Nullable
     protected String translationKey;
 
