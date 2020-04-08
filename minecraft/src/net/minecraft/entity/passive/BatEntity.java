@@ -11,8 +11,8 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -84,7 +84,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createBatAttributes() {
-		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 6.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 6.0);
 	}
 
 	public boolean isRoosting() {

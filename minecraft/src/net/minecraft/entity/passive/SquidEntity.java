@@ -11,8 +11,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
@@ -58,7 +58,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createSquidAttributes() {
-		return MobEntity.createMobAttributes().add(Attributes.GENERIC_MAX_HEALTH, 10.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0);
 	}
 
 	@Override

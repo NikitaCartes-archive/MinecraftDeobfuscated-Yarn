@@ -4,8 +4,8 @@ import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -104,11 +104,16 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	public static DefaultAttributeContainer.Builder createHostileAttributes() {
-		return MobEntity.createMobAttributes().add(Attributes.GENERIC_ATTACK_DAMAGE);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override
 	protected boolean canDropLootAndXp() {
+		return true;
+	}
+
+	@Override
+	protected boolean method_27071() {
 		return true;
 	}
 

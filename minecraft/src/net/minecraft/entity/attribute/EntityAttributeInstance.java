@@ -184,6 +184,7 @@ public class EntityAttributeInstance {
 				if (entityAttributeModifier != null) {
 					this.byId.put(entityAttributeModifier.getId(), entityAttributeModifier);
 					this.getModifiers(entityAttributeModifier.getOperation()).add(entityAttributeModifier);
+					this.persistentModifiers.add(entityAttributeModifier);
 				}
 			}
 		}

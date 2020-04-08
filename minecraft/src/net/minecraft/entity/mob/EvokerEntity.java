@@ -15,8 +15,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -62,9 +62,9 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 	public static DefaultAttributeContainer.Builder createEvokerAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.5)
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 12.0)
-			.add(Attributes.GENERIC_MAX_HEALTH, 24.0);
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 24.0);
 	}
 
 	@Override

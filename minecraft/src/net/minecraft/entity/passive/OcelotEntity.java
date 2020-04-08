@@ -22,8 +22,8 @@ import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -126,9 +126,9 @@ public class OcelotEntity extends AnimalEntity {
 
 	public static DefaultAttributeContainer.Builder createOcelotAttributes() {
 		return MobEntity.createMobAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 10.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 3.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	private float method_22329() {
-		return (float)this.method_26825(Attributes.GENERIC_ATTACK_DAMAGE);
+		return (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override

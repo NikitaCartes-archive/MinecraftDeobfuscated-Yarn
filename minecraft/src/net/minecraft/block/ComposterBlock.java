@@ -84,6 +84,9 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.5F, Items.CACTUS);
 		registerCompostableItem(0.5F, Items.SUGAR_CANE);
 		registerCompostableItem(0.5F, Items.VINE);
+		registerCompostableItem(0.5F, Items.NETHER_SPROUTS);
+		registerCompostableItem(0.5F, Items.WEEPING_VINES);
+		registerCompostableItem(0.5F, Items.TWISTING_VINES);
 		registerCompostableItem(0.5F, Items.MELON_SLICE);
 		registerCompostableItem(0.65F, Items.SEA_PICKLE);
 		registerCompostableItem(0.65F, Items.LILY_PAD);
@@ -99,6 +102,11 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.65F, Items.BROWN_MUSHROOM);
 		registerCompostableItem(0.65F, Items.RED_MUSHROOM);
 		registerCompostableItem(0.65F, Items.MUSHROOM_STEM);
+		registerCompostableItem(0.65F, Items.CRIMSON_FUNGUS);
+		registerCompostableItem(0.65F, Items.WARPED_FUNGUS);
+		registerCompostableItem(0.65F, Items.NETHER_WART);
+		registerCompostableItem(0.65F, Items.CRIMSON_ROOTS);
+		registerCompostableItem(0.65F, Items.WARPED_ROOTS);
 		registerCompostableItem(0.65F, Items.DANDELION);
 		registerCompostableItem(0.65F, Items.POPPY);
 		registerCompostableItem(0.65F, Items.BLUE_ORCHID);
@@ -121,6 +129,8 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.85F, Items.HAY_BLOCK);
 		registerCompostableItem(0.85F, Items.BROWN_MUSHROOM_BLOCK);
 		registerCompostableItem(0.85F, Items.RED_MUSHROOM_BLOCK);
+		registerCompostableItem(0.85F, Items.NETHER_WART_BLOCK);
+		registerCompostableItem(0.85F, Items.WARPED_WART_BLOCK);
 		registerCompostableItem(0.85F, Items.BREAD);
 		registerCompostableItem(0.85F, Items.BAKED_POTATO);
 		registerCompostableItem(0.85F, Items.COOKIE);

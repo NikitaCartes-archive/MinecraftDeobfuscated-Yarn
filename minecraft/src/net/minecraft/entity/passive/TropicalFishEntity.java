@@ -18,6 +18,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -226,7 +227,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 				k = tropicalFishData.baseColor;
 				l = tropicalFishData.patternColor;
 			} else if ((double)this.random.nextFloat() < 0.9) {
-				int m = COMMON_VARIANTS[this.random.nextInt(COMMON_VARIANTS.length)];
+				int m = Util.getRandom(COMMON_VARIANTS, this.random);
 				i = m & 0xFF;
 				j = (m & 0xFF00) >> 8;
 				k = (m & 0xFF0000) >> 16;

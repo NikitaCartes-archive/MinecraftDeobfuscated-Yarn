@@ -7,6 +7,7 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -34,7 +35,7 @@ public class NetherFossilGenerator {
 
 	public static void addPieces(StructureManager manager, List<StructurePiece> pieces, Random random, BlockPos pos) {
 		BlockRotation blockRotation = BlockRotation.random(random);
-		pieces.add(new NetherFossilGenerator.Piece(manager, FOSSILS[random.nextInt(FOSSILS.length)], pos, blockRotation));
+		pieces.add(new NetherFossilGenerator.Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
 	}
 
 	public static class Piece extends SimpleStructurePiece {

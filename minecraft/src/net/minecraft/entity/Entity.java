@@ -116,7 +116,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	private static double renderDistanceMultiplier = 1.0;
 	private final EntityType<?> type;
 	private int entityId = MAX_ENTITY_ID.incrementAndGet();
-	public boolean inanimate;
+	public boolean field_23807;
 	private final List<Entity> passengerList = Lists.<Entity>newArrayList();
 	protected int ridingCooldown;
 	@Nullable
@@ -2400,7 +2400,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Override
-	public void sendMessage(Text message) {
+	public void sendSystemMessage(Text message) {
 	}
 
 	public World getEntityWorld() {

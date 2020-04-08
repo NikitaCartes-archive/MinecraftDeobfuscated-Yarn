@@ -47,7 +47,7 @@ public class IglooFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 			int i = x * 16;
 			int j = z * 16;
 			BlockPos blockPos = new BlockPos(i, 90, j);
-			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
+			BlockRotation blockRotation = BlockRotation.random(this.random);
 			IglooGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random, defaultFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}

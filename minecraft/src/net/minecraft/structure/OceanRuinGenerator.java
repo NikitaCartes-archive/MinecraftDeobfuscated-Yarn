@@ -21,6 +21,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -100,11 +101,11 @@ public class OceanRuinGenerator {
 	};
 
 	private static Identifier getRandomWarmRuin(Random random) {
-		return WARM_RUINS[random.nextInt(WARM_RUINS.length)];
+		return Util.getRandom(WARM_RUINS, random);
 	}
 
 	private static Identifier getRandomBigWarmRuin(Random random) {
-		return BIG_WARM_RUINS[random.nextInt(BIG_WARM_RUINS.length)];
+		return Util.getRandom(BIG_WARM_RUINS, random);
 	}
 
 	public static void addPieces(
@@ -135,7 +136,7 @@ public class OceanRuinGenerator {
 				BlockPos blockPos3 = (BlockPos)list.remove(m);
 				int n = blockPos3.getX();
 				int o = blockPos3.getZ();
-				BlockRotation blockRotation = BlockRotation.values()[random.nextInt(BlockRotation.values().length)];
+				BlockRotation blockRotation = BlockRotation.random(random);
 				BlockPos blockPos4 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(n, 0, o);
 				BlockBox blockBox2 = BlockBox.create(n, 0, o, blockPos4.getX(), 0, blockPos4.getZ());
 				if (!blockBox2.intersects(blockBox)) {

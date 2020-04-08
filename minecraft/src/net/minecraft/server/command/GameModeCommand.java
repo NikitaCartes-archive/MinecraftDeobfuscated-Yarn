@@ -39,7 +39,7 @@ public class GameModeCommand {
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
 		} else {
 			if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-				player.sendMessage(new TranslatableText("gameMode.changed", text));
+				player.sendSystemMessage(new TranslatableText("gameMode.changed", text));
 			}
 
 			source.sendFeedback(new TranslatableText("commands.gamemode.success.other", player.getDisplayName(), text), true);

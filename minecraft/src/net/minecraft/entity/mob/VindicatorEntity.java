@@ -26,8 +26,8 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -49,7 +49,7 @@ import net.minecraft.world.World;
 public class VindicatorEntity extends IllagerEntity {
 	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL
 			|| difficulty == Difficulty.HARD;
-	private boolean isJohnny;
+	private boolean johnny;
 
 	public VindicatorEntity(EntityType<? extends VindicatorEntity> entityType, World world) {
 		super(entityType, world);
@@ -88,16 +88,16 @@ public class VindicatorEntity extends IllagerEntity {
 
 	public static DefaultAttributeContainer.Builder createVindicatorAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.35F)
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 12.0)
-			.add(Attributes.GENERIC_MAX_HEALTH, 24.0)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 5.0);
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35F)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 12.0)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 24.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
 	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		if (this.isJohnny) {
+		if (this.johnny) {
 			tag.putBoolean("Johnny", true);
 		}
 	}
@@ -116,7 +116,7 @@ public class VindicatorEntity extends IllagerEntity {
 	public void readCustomDataFromTag(CompoundTag tag) {
 		super.readCustomDataFromTag(tag);
 		if (tag.contains("Johnny", 99)) {
-			this.isJohnny = tag.getBoolean("Johnny");
+			this.johnny = tag.getBoolean("Johnny");
 		}
 	}
 
@@ -156,8 +156,8 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	public void setCustomName(@Nullable Text name) {
 		super.setCustomName(name);
-		if (!this.isJohnny && name != null && name.getString().equals("Johnny")) {
-			this.isJohnny = true;
+		if (!this.johnny && name != null && name.getString().equals("Johnny")) {
+			this.johnny = true;
 		}
 	}
 
@@ -243,7 +243,7 @@ public class VindicatorEntity extends IllagerEntity {
 
 		@Override
 		public boolean canStart() {
-			return ((VindicatorEntity)this.mob).isJohnny && super.canStart();
+			return ((VindicatorEntity)this.mob).johnny && super.canStart();
 		}
 
 		@Override

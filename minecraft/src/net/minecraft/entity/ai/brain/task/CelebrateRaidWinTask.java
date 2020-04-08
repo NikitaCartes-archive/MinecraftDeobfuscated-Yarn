@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 public class CelebrateRaidWinTask extends Task<VillagerEntity> {
@@ -47,7 +48,7 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 		}
 
 		if (random.nextInt(200) == 0 && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity, villagerEntity.getBlockPos())) {
-			DyeColor dyeColor = DyeColor.values()[random.nextInt(DyeColor.values().length)];
+			DyeColor dyeColor = Util.getRandom(DyeColor.values(), random);
 			int i = random.nextInt(3);
 			ItemStack itemStack = this.createFirework(dyeColor, i);
 			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(

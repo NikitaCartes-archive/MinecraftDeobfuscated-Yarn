@@ -9,15 +9,15 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SwordItem extends ToolItem {
+public class SwordItem extends ToolItem implements Vanishable {
 	private final float attackDamage;
 	private final Multimap<EntityAttribute, EntityAttributeModifier> field_23745;
 
@@ -26,11 +26,11 @@ public class SwordItem extends ToolItem {
 		this.attackDamage = (float)attackDamage + toolMaterial.getAttackDamage();
 		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 		builder.put(
-			Attributes.GENERIC_ATTACK_DAMAGE,
+			EntityAttributes.GENERIC_ATTACK_DAMAGE,
 			new EntityAttributeModifier(ATTACK_DAMAGE_MODIFIER_UUID, "Weapon modifier", (double)this.attackDamage, EntityAttributeModifier.Operation.ADDITION)
 		);
 		builder.put(
-			Attributes.GENERIC_ATTACK_SPEED,
+			EntityAttributes.GENERIC_ATTACK_SPEED,
 			new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Weapon modifier", (double)attackSpeed, EntityAttributeModifier.Operation.ADDITION)
 		);
 		this.field_23745 = builder.build();

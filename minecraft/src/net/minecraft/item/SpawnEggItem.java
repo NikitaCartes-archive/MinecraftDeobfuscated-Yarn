@@ -17,6 +17,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.stat.Stats;
@@ -150,29 +151,37 @@ public class SpawnEggItem extends Item {
 		return this.type;
 	}
 
-	public Optional<MobEntity> spawnBaby(PlayerEntity user, EntityType<? extends MobEntity> type, World world, Vec3d pos, ItemStack stack) {
-		if (!this.isOfSameEntityType(stack.getTag(), type)) {
+	public Optional<MobEntity> spawnBaby(
+		PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, World world, Vec3d vec3d, ItemStack itemStack
+	) {
+		if (!this.isOfSameEntityType(itemStack.getTag(), entityType)) {
 			return Optional.empty();
 		} else {
-			MobEntity mobEntity = type.create(world);
-			if (mobEntity == null) {
+			MobEntity mobEntity2;
+			if (mobEntity instanceof PassiveEntity) {
+				mobEntity2 = ((PassiveEntity)mobEntity).createChild((PassiveEntity)mobEntity);
+			} else {
+				mobEntity2 = entityType.create(world);
+			}
+
+			if (mobEntity2 == null) {
 				return Optional.empty();
 			} else {
-				mobEntity.setBaby(true);
-				if (!mobEntity.isBaby()) {
+				mobEntity2.setBaby(true);
+				if (!mobEntity2.isBaby()) {
 					return Optional.empty();
 				} else {
-					mobEntity.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
-					world.spawnEntity(mobEntity);
-					if (stack.hasCustomName()) {
-						mobEntity.setCustomName(stack.getName());
+					mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
+					world.spawnEntity(mobEntity2);
+					if (itemStack.hasCustomName()) {
+						mobEntity2.setCustomName(itemStack.getName());
 					}
 
 					if (!user.abilities.creativeMode) {
-						stack.decrement(1);
+						itemStack.decrement(1);
 					}
 
-					return Optional.of(mobEntity);
+					return Optional.of(mobEntity2);
 				}
 			}
 		}

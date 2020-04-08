@@ -25,8 +25,8 @@ import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -84,10 +84,10 @@ public class GuardianEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createGuardianAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 6.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.5)
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 16.0)
-			.add(Attributes.GENERIC_MAX_HEALTH, 30.0);
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 30.0);
 	}
 
 	@Override
@@ -419,7 +419,7 @@ public class GuardianEntity extends HostileEntity {
 					}
 
 					livingEntity.damage(DamageSource.magic(this.guardian, this.guardian), f);
-					livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.method_26825(Attributes.GENERIC_ATTACK_DAMAGE));
+					livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE));
 					this.guardian.setTarget(null);
 				}
 
@@ -447,7 +447,7 @@ public class GuardianEntity extends HostileEntity {
 				float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) - 90.0F;
 				this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0F);
 				this.guardian.bodyYaw = this.guardian.yaw;
-				float i = (float)(this.speed * this.guardian.method_26825(Attributes.GENERIC_MOVEMENT_SPEED));
+				float i = (float)(this.speed * this.guardian.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);
 				this.guardian.setMovementSpeed(j);
 				double k = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.5) * 0.05;

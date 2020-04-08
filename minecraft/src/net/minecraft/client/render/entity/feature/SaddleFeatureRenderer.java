@@ -9,18 +9,18 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemSteerable;
+import net.minecraft.entity.Saddleable;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class PigSaddleFeatureRenderer<T extends Entity & ItemSteerable, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
-	private final Identifier SKIN;
+public class SaddleFeatureRenderer<T extends Entity & Saddleable, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
+	private final Identifier TEXTURE;
 	private final M model;
 
-	public PigSaddleFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, M entityModel, Identifier identifier) {
-		super(featureRendererContext);
-		this.model = entityModel;
-		this.SKIN = identifier;
+	public SaddleFeatureRenderer(FeatureRendererContext<T, M> context, M model, Identifier texture) {
+		super(context);
+		this.model = model;
+		this.TEXTURE = texture;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class PigSaddleFeatureRenderer<T extends Entity & ItemSteerable, M extend
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(entity, limbAngle, limbDistance, tickDelta);
 			this.model.setAngles(entity, limbAngle, limbDistance, customAngle, headYaw, headPitch);
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(this.SKIN));
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(this.TEXTURE));
 			this.model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		}
 	}

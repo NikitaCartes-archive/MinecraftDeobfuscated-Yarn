@@ -1,5 +1,7 @@
 package net.minecraft.tag;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 
 public class EntityTypeTags {
@@ -16,6 +18,11 @@ public class EntityTypeTags {
 
 	public static void setContainer(TagContainer<EntityType<?>> container) {
 		ACCESSOR.setContainer(container);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void method_27058() {
+		ACCESSOR.method_27061();
 	}
 
 	public static TagContainer<EntityType<?>> getContainer() {

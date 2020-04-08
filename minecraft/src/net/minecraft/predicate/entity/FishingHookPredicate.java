@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.FishingBobberEntity;
+import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.util.JsonHelper;
 
 public class FishingHookPredicate {

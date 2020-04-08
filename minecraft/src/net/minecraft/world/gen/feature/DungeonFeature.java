@@ -12,6 +12,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTables;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
@@ -131,6 +132,6 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	private EntityType<?> getMobSpawnerEntity(Random random) {
-		return MOB_SPAWNER_ENTITIES[random.nextInt(MOB_SPAWNER_ENTITIES.length)];
+		return Util.getRandom(MOB_SPAWNER_ENTITIES, random);
 	}
 }

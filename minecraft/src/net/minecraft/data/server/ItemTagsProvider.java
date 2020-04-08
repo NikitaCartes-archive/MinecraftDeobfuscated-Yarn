@@ -13,11 +13,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ItemTagsProvider extends AbstractTagProvider<Item> {
-	private final Function<Identifier, Tag.Builder> field_23783;
+	private final Function<Tag.Identified<Block>, Tag.Builder> field_23783;
 
 	public ItemTagsProvider(DataGenerator dataGenerator, BlockTagsProvider blockTagsProvider) {
 		super(dataGenerator, Registry.ITEM);
-		this.field_23783 = blockTagsProvider::method_27047;
+		this.field_23783 = blockTagsProvider::method_27169;
 	}
 
 	@Override
@@ -60,6 +60,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.copy(BlockTags.TALL_FLOWERS, ItemTags.TALL_FLOWERS);
 		this.copy(BlockTags.FLOWERS, ItemTags.FLOWERS);
 		this.copy(BlockTags.GOLD_ORES, ItemTags.GOLD_ORES);
+		this.copy(BlockTags.SOUL_FIRE_BASE_BLOCKS, ItemTags.SOUL_FIRE_BASE_BLOCKS);
 		this.getOrCreateTagBuilder(ItemTags.BANNERS)
 			.add(
 				Items.WHITE_BANNER,
@@ -134,12 +135,14 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.CRIMSON_SIGN,
 				Items.WARPED_SIGN
 			);
+		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
+		this.getOrCreateTagBuilder(ItemTags.FURNACE_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
 	}
 
 	protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
-		Tag.Builder builder = this.getOrCreateTagBuilder(identified2);
-		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(identified.getId());
-		builder2.streamEntries().forEach(builder::add);
+		Tag.Builder builder = this.method_27169(identified2);
+		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(identified);
+		builder2.streamEntries().forEach(builder::method_27064);
 	}
 
 	@Override

@@ -1053,7 +1053,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public abstract Optional<String> getModdedStatusMessage();
 
 	@Override
-	public void sendMessage(Text message) {
+	public void sendSystemMessage(Text message) {
 		LOGGER.info(message.getString());
 	}
 

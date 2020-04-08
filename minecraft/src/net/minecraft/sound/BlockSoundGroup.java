@@ -163,7 +163,7 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup STEM = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.ITEM_CROP_PLANT, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL
 	);
-	public static final BlockSoundGroup field_23083 = new BlockSoundGroup(
+	public static final BlockSoundGroup VINE = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_GRASS_BREAK,
@@ -346,7 +346,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_ANCIENT_DEBRIS_HIT,
 		SoundEvents.BLOCK_ANCIENT_DEBRIS_FALL
 	);
-	public static final BlockSoundGroup field_23265 = new BlockSoundGroup(
+	public static final BlockSoundGroup LODESTONE = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_LODESTONE_BREAK,

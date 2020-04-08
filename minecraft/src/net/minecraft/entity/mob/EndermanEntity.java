@@ -24,10 +24,10 @@ import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -91,16 +91,16 @@ public class EndermanEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createEndermanAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 40.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 7.0)
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 64.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 7.0)
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 64.0);
 	}
 
 	@Override
 	public void setTarget(@Nullable LivingEntity target) {
 		super.setTarget(target);
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 		if (target == null) {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);

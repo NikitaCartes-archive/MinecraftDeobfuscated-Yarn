@@ -1,5 +1,7 @@
 package net.minecraft.tag;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 
 public class ItemTags {
@@ -45,6 +47,7 @@ public class ItemTags {
 	public static final Tag.Identified<Item> PIGLIN_REPELLENTS = register("piglin_repellents");
 	public static final Tag.Identified<Item> GOLD_ORES = register("gold_ores");
 	public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
+	public static final Tag.Identified<Item> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");
 	public static final Tag.Identified<Item> BOATS = register("boats");
 	public static final Tag.Identified<Item> FISHES = register("fishes");
 	public static final Tag.Identified<Item> SIGNS = register("signs");
@@ -53,6 +56,8 @@ public class ItemTags {
 	public static final Tag.Identified<Item> ARROWS = register("arrows");
 	public static final Tag.Identified<Item> LECTERN_BOOKS = register("lectern_books");
 	public static final Tag.Identified<Item> BEACON_PAYMENT_ITEMS = register("beacon_payment_items");
+	public static final Tag.Identified<Item> STONE_TOOL_MATERIALS = register("stone_tool_materials");
+	public static final Tag.Identified<Item> FURNACE_MATERIALS = register("furnace_materials");
 
 	private static Tag.Identified<Item> register(String id) {
 		return ACCESSOR.get(id);
@@ -60,6 +65,11 @@ public class ItemTags {
 
 	public static void setContainer(TagContainer<Item> container) {
 		ACCESSOR.setContainer(container);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void method_27060() {
+		ACCESSOR.method_27061();
 	}
 
 	public static TagContainer<Item> getContainer() {

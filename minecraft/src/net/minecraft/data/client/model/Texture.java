@@ -154,6 +154,11 @@ public class Texture {
 			.put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
 	}
 
+	public static Texture method_27168(Block block) {
+		Identifier identifier = getId(block);
+		return new Texture().put(TextureKey.WALL, identifier).put(TextureKey.SIDE, identifier).put(TextureKey.END, getSubId(block, "_top"));
+	}
+
 	public static Texture topBottom(Block block) {
 		return new Texture().put(TextureKey.TOP, getSubId(block, "_top")).put(TextureKey.BOTTOM, getSubId(block, "_bottom"));
 	}
@@ -243,6 +248,10 @@ public class Texture {
 			.put(TextureKey.SOUTH, getSubId(frontTopSideBlock, "_front"))
 			.put(TextureKey.EAST, getSubId(frontTopSideBlock, "_side"))
 			.put(TextureKey.WEST, getSubId(frontTopSideBlock, "_side"));
+	}
+
+	public static Texture method_27167(Block block) {
+		return new Texture().put(TextureKey.LIT_LOG, getSubId(block, "_log_lit")).put(TextureKey.FIRE, getSubId(block, "_fire"));
 	}
 
 	public static Texture layer0(Item item) {

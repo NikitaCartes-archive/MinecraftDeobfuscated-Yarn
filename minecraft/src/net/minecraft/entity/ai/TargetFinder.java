@@ -173,7 +173,7 @@ public class TargetFinder {
 					}
 
 					if (notInWater || !mob.world.getFluidState(blockPos3).matches(FluidTags.WATER)) {
-						PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(mob.world, blockPos3.getX(), blockPos3.getY(), blockPos3.getZ());
+						PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(mob.world, blockPos3.mutableCopy());
 						if (mob.getPathfindingPenalty(pathNodeType) == 0.0F) {
 							double e = favorProvider.applyAsDouble(blockPos3);
 							if (e > d) {
@@ -214,15 +214,15 @@ public class TargetFinder {
 		}
 	}
 
-	static BlockPos findValidPositionAbove(BlockPos pos, int minDistanceAboveIllegal, int maxOffset, Predicate<BlockPos> isIllegalPredicate) {
+	static BlockPos findValidPositionAbove(BlockPos pos, int minDistanceAboveIllegal, int maxOffset, Predicate<BlockPos> illegalPredicate) {
 		if (minDistanceAboveIllegal < 0) {
 			throw new IllegalArgumentException("aboveSolidAmount was " + minDistanceAboveIllegal + ", expected >= 0");
-		} else if (!isIllegalPredicate.test(pos)) {
+		} else if (!illegalPredicate.test(pos)) {
 			return pos;
 		} else {
 			BlockPos blockPos = pos.up();
 
-			while(blockPos.getY() < maxOffset && isIllegalPredicate.test(blockPos)) {
+			while(blockPos.getY() < maxOffset && illegalPredicate.test(blockPos)) {
 				blockPos = blockPos.up();
 			}
 
@@ -230,7 +230,7 @@ public class TargetFinder {
 			BlockPos blockPos3;
 			for(blockPos2 = blockPos; blockPos2.getY() < maxOffset && blockPos2.getY() - blockPos.getY() < minDistanceAboveIllegal; blockPos2 = blockPos3) {
 				blockPos3 = blockPos2.up();
-				if (isIllegalPredicate.test(blockPos3)) {
+				if (illegalPredicate.test(blockPos3)) {
 					break;
 				}
 			}

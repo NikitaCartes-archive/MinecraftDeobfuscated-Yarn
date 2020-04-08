@@ -14,8 +14,8 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -53,9 +53,9 @@ public class EndermiteEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createEndermiteAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 8.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.25)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 2.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 8.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
 	}
 
 	@Override

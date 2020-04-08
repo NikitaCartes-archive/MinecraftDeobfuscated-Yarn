@@ -28,10 +28,10 @@ import net.minecraft.entity.ai.goal.StepAndDestroyBlockGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.ZombieAttackGoal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -101,11 +101,11 @@ public class ZombieEntity extends HostileEntity {
 
 	public static DefaultAttributeContainer.Builder createZombieAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_FOLLOW_RANGE, 35.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.23F)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 3.0)
-			.add(Attributes.GENERIC_ARMOR, 2.0)
-			.add(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS);
+			.add(EntityAttributes.GENERIC_FOLLOW_RANGE, 35.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0)
+			.add(EntityAttributes.GENERIC_ARMOR, 2.0)
+			.add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS);
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public class ZombieEntity extends HostileEntity {
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
 		if (this.world != null && !this.world.isClient) {
-			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(Attributes.GENERIC_MOVEMENT_SPEED);
+			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 			entityAttributeInstance.removeModifier(BABY_SPEED_BONUS);
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BONUS);
@@ -294,7 +294,7 @@ public class ZombieEntity extends HostileEntity {
 
 			if (livingEntity != null
 				&& this.world.getDifficulty() == Difficulty.HARD
-				&& (double)this.random.nextFloat() < this.method_26825(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS)
+				&& (double)this.random.nextFloat() < this.method_26825(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
 				&& this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 				int i = MathHelper.floor(this.getX());
 				int j = MathHelper.floor(this.getY());
@@ -315,9 +315,9 @@ public class ZombieEntity extends HostileEntity {
 							this.world.spawnEntity(zombieEntity);
 							zombieEntity.setTarget(livingEntity);
 							zombieEntity.initialize(this.world, this.world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnType.REINFORCEMENT, null, null);
-							this.getAttributeInstance(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS)
+							this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
 								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement caller charge", -0.05F, EntityAttributeModifier.Operation.ADDITION));
-							zombieEntity.getAttributeInstance(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS)
+							zombieEntity.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
 								.addPersistentModifier(new EntityAttributeModifier("Zombie reinforcement callee charge", -0.05F, EntityAttributeModifier.Operation.ADDITION));
 							break;
 						}
@@ -512,20 +512,20 @@ public class ZombieEntity extends HostileEntity {
 
 	protected void applyAttributeModifiers(float chanceMultiplier) {
 		this.initAttributes();
-		this.getAttributeInstance(Attributes.GENERIC_KNOCKBACK_RESISTANCE)
+		this.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
 			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextDouble() * 0.05F, EntityAttributeModifier.Operation.ADDITION));
 		double d = this.random.nextDouble() * 1.5 * (double)chanceMultiplier;
 		if (d > 1.0) {
-			this.getAttributeInstance(Attributes.GENERIC_FOLLOW_RANGE)
+			this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 				.addPersistentModifier(new EntityAttributeModifier("Random zombie-spawn bonus", d, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
 		}
 
 		if (this.random.nextFloat() < chanceMultiplier * 0.05F) {
-			this.getAttributeInstance(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS)
+			this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
 				.addPersistentModifier(
 					new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 0.25 + 0.5, EntityAttributeModifier.Operation.ADDITION)
 				);
-			this.getAttributeInstance(Attributes.GENERIC_MAX_HEALTH)
+			this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)
 				.addPersistentModifier(
 					new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 3.0 + 1.0, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)
 				);
@@ -534,7 +534,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	protected void initAttributes() {
-		this.getAttributeInstance(Attributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(this.random.nextDouble() * 0.1F);
+		this.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(this.random.nextDouble() * 0.1F);
 	}
 
 	@Override

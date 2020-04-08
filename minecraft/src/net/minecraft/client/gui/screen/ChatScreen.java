@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
@@ -129,7 +130,12 @@ public class ChatScreen extends Screen {
 			return true;
 		} else {
 			if (button == 0) {
-				Text text = this.client.inGameHud.getChatHud().getText(mouseX, mouseY);
+				ChatHud chatHud = this.client.inGameHud.getChatHud();
+				if (chatHud.method_27146(mouseX, mouseY)) {
+					return true;
+				}
+
+				Text text = chatHud.getText(mouseX, mouseY);
 				if (text != null && this.handleTextClick(text)) {
 					return true;
 				}

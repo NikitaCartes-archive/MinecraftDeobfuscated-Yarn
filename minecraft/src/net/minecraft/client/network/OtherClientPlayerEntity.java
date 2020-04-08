@@ -95,7 +95,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendMessage(Text message) {
+	public void sendSystemMessage(Text message) {
 		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(message);
 	}
 }

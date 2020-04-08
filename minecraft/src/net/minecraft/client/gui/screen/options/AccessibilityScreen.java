@@ -19,6 +19,8 @@ public class AccessibilityScreen extends GameOptionsScreen {
 		Option.TEXT_BACKGROUND_OPACITY,
 		Option.TEXT_BACKGROUND,
 		Option.CHAT_OPACITY,
+		Option.field_23930,
+		Option.field_23931,
 		Option.AUTO_JUMP,
 		Option.SNEAK_TOGGLED,
 		Option.SPRINT_TOGGLED

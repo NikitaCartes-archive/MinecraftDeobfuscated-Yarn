@@ -19,9 +19,11 @@ public class Activity {
 	public static final Activity AVOID = register("avoid");
 	public static final Activity RIDE = register("ride");
 	private final String id;
+	private final int field_23827;
 
 	private Activity(String id) {
 		this.id = id;
+		this.field_23827 = id.hashCode();
 	}
 
 	public String getId() {
@@ -30,6 +32,21 @@ public class Activity {
 
 	private static Activity register(String id) {
 		return Registry.register(Registry.ACTIVITY, id, new Activity(id));
+	}
+
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			Activity activity = (Activity)object;
+			return this.id.equals(activity.id);
+		} else {
+			return false;
+		}
+	}
+
+	public int hashCode() {
+		return this.field_23827;
 	}
 
 	public String toString() {

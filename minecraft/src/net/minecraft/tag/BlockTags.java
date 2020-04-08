@@ -1,5 +1,7 @@
 package net.minecraft.tag;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 
 public class BlockTags {
@@ -77,6 +79,8 @@ public class BlockTags {
 	public static final Tag.Identified<Block> HOGLIN_REPELLENTS = register("hoglin_repellents");
 	public static final Tag.Identified<Block> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");
 	public static final Tag.Identified<Block> STRIDER_WARM_BLOCKS = register("strider_warm_blocks");
+	public static final Tag.Identified<Block> CAMPFIRES = register("campfires");
+	public static final Tag.Identified<Block> GUARDED_BY_PIGLINS = register("guarded_by_piglins");
 
 	private static Tag.Identified<Block> register(String id) {
 		return ACCESSOR.get(id);
@@ -84,6 +88,11 @@ public class BlockTags {
 
 	public static void setContainer(TagContainer<Block> container) {
 		ACCESSOR.setContainer(container);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static void method_27057() {
+		ACCESSOR.method_27061();
 	}
 
 	public static TagContainer<Block> getContainer() {

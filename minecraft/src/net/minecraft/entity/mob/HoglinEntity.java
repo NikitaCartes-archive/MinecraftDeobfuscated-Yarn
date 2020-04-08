@@ -17,8 +17,9 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.attribute.Attributes;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -83,6 +84,8 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	public HoglinEntity(EntityType<? extends HoglinEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 5;
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
 	}
 
 	@Override
@@ -102,11 +105,11 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	public static DefaultAttributeContainer.Builder createHoglinAttributes() {
 		return HostileEntity.createHostileAttributes()
-			.add(Attributes.GENERIC_MAX_HEALTH, 40.0)
-			.add(Attributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-			.add(Attributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
-			.add(Attributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
-			.add(Attributes.GENERIC_ATTACK_DAMAGE, 6.0);
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
+			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.5)
+			.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
 	}
 
 	@Override
@@ -180,6 +183,17 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		super.tickMovement();
 	}
 
+	@Override
+	protected void onGrowUp() {
+		if (this.isBaby()) {
+			this.experiencePoints = 3;
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
+		} else {
+			this.experiencePoints = 5;
+			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(6.0);
+		}
+	}
+
 	public static boolean canSpawn(EntityType<HoglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
 		return world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
 	}
@@ -189,8 +203,6 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
 		if (world.getRandom().nextFloat() < 0.2F) {
 			this.setBaby(true);
-			this.experiencePoints = 3;
-			this.getAttributeInstance(Attributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
 		}
 
 		return super.initialize(world, difficulty, spawnType, entityData, entityTag);

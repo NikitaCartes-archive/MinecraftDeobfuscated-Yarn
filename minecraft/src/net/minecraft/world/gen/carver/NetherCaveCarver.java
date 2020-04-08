@@ -32,7 +32,8 @@ public class NetherCaveCarver extends CaveCarver {
 			Blocks.CRIMSON_NYLIUM,
 			Blocks.WARPED_NYLIUM,
 			Blocks.NETHER_WART_BLOCK,
-			Blocks.WARPED_WART_BLOCK
+			Blocks.WARPED_WART_BLOCK,
+			Blocks.BASALT
 		);
 		this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
 	}

@@ -3,8 +3,8 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.attribute.Attributes;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -23,12 +23,12 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createZombieHorseAttributes() {
-		return createBaseHorseAttributes().add(Attributes.GENERIC_MAX_HEALTH, 15.0).add(Attributes.GENERIC_MOVEMENT_SPEED, 0.2F);
+		return createBaseHorseAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 15.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
 	}
 
 	@Override
 	protected void initAttributes() {
-		this.getAttributeInstance(Attributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
+		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
 	}
 
 	@Override

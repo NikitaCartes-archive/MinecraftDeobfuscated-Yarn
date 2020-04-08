@@ -4,9 +4,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.item.Wearable;
 import net.minecraft.world.BlockView;
 
-public abstract class AbstractSkullBlock extends BlockWithEntity {
+public abstract class AbstractSkullBlock extends BlockWithEntity implements Wearable {
 	private final SkullBlock.SkullType type;
 
 	public AbstractSkullBlock(SkullBlock.SkullType type, AbstractBlock.Settings settings) {

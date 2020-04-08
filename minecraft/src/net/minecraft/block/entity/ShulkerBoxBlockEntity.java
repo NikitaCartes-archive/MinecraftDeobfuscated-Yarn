@@ -297,6 +297,10 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return new ShulkerBoxScreenHandler(i, playerInventory, this);
 	}
 
+	public boolean method_27093() {
+		return this.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+	}
+
 	public static enum AnimationStage {
 		CLOSED,
 		OPENING,

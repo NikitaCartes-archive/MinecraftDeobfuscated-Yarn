@@ -85,6 +85,7 @@ public class Models {
 	public static final Model TEMPLATE_FIRE_SIDE_ALT = block("template_fire_side_alt", TextureKey.FIRE);
 	public static final Model TEMPLATE_FIRE_UP = block("template_fire_up", TextureKey.FIRE);
 	public static final Model TEMPLATE_FIRE_UP_ALT = block("template_fire_up_alt", TextureKey.FIRE);
+	public static final Model TEMPLATE_CAMPFIRE = block("template_campfire", TextureKey.FIRE, TextureKey.LIT_LOG);
 	public static final Model TEMPLATE_LANTERN = block("template_lantern", TextureKey.LANTERN);
 	public static final Model TEMPLATE_HANGING_LANTERN = block("template_hanging_lantern", "_hanging", TextureKey.LANTERN);
 	public static final Model TEMPLATE_TORCH = block("template_torch", TextureKey.TORCH);
