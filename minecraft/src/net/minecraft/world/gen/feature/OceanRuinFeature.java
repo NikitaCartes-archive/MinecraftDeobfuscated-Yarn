@@ -12,7 +12,9 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConfig> {
 	public OceanRuinFeature(Function<Dynamic<?>, ? extends OceanRuinFeatureConfig> function) {
@@ -30,13 +32,13 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 	}
 
 	@Override
-	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getConfig().getOceanRuinSpacing();
+	protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+		return chunkGeneratorConfig.getOceanRuinSpacing();
 	}
 
 	@Override
-	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.getConfig().getOceanRuinSeparation();
+	protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
+		return chunkGenerationConfig.getOceanRuinSeparation();
 	}
 
 	@Override
@@ -45,7 +47,7 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 	}
 
 	@Override
-	protected int getSeedModifier() {
+	protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
 		return 14357621;
 	}
 
@@ -76,7 +78,7 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			OceanRuinFeatureConfig oceanRuinFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.OCEAN_RUIN);
 			int i = x * 16;
 			int j = z * 16;

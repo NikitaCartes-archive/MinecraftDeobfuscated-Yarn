@@ -73,10 +73,11 @@ public class ListPoolElement extends StructurePoolElement {
 		BlockPos blockPos2,
 		BlockRotation blockRotation,
 		BlockBox blockBox,
-		Random random
+		Random random,
+		boolean bl
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.generate(structureManager, world, structureAccessor, chunkGenerator, blockPos, blockPos2, blockRotation, blockBox, random)) {
+			if (!structurePoolElement.generate(structureManager, world, structureAccessor, chunkGenerator, blockPos, blockPos2, blockRotation, blockBox, random, bl)) {
 				return false;
 			}
 		}

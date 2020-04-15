@@ -3368,6 +3368,8 @@ public class BlockStateModelGenerator {
 		this.registerSimpleState(Blocks.WATER);
 		this.registerSimpleState(Blocks.LAVA);
 		this.registerSimpleState(Blocks.SLIME_BLOCK);
+		this.registerSimpleState(Blocks.CHAIN);
+		this.registerItemModel(Items.CHAIN);
 		this.registerSimpleState(Blocks.POTTED_BAMBOO);
 		this.registerSimpleState(Blocks.POTTED_CACTUS);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);

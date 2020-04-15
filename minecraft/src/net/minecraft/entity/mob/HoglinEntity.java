@@ -44,19 +44,12 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(HoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int movementCooldownTicks;
 	private int timeInOverworld = 0;
 	private boolean cannotBeHunted = false;
-	private static int field_22361 = 0;
-	private static int field_22362 = 0;
-	private static int field_22363 = 0;
-	private static int field_22364 = 0;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super HoglinEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HOGLIN_SPECIFIC_SENSOR
 	);
@@ -86,16 +79,6 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		this.experiencePoints = 5;
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
-	}
-
-	@Override
-	public void onDeath(DamageSource source) {
-		super.onDeath(source);
-	}
-
-	@Override
-	public void remove() {
-		super.remove();
 	}
 
 	@Override
@@ -148,7 +131,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Override
 	protected Brain<?> deserializeBrain(Dynamic<?> data) {
-		return HoglinBrain.create(this, data);
+		return HoglinBrain.create(data);
 	}
 
 	@Override

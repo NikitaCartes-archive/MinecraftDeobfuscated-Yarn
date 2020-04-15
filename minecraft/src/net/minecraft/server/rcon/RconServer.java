@@ -1,27 +1,29 @@
 package net.minecraft.server.rcon;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RconServer extends RconBase {
+	private static final Logger field_23966 = LogManager.getLogger();
 	private final int port;
 	private String hostname;
 	private ServerSocket listener;
 	private final String password;
-	private Map<SocketAddress, RconClient> clients;
+	private final List<RconClient> clients = Lists.<RconClient>newArrayList();
+	private final DedicatedServer field_23967;
 
 	public RconServer(DedicatedServer dedicatedServer) {
-		super(dedicatedServer, "RCON Listener");
+		super("RCON Listener");
+		this.field_23967 = dedicatedServer;
 		ServerPropertiesHandler serverPropertiesHandler = dedicatedServer.getProperties();
 		this.port = serverPropertiesHandler.rconPort;
 		this.password = serverPropertiesHandler.rconPassword;
@@ -29,77 +31,75 @@ public class RconServer extends RconBase {
 		if (this.hostname.isEmpty()) {
 			this.hostname = "0.0.0.0";
 		}
-
-		this.cleanClientList();
-		this.listener = null;
-	}
-
-	private void cleanClientList() {
-		this.clients = Maps.<SocketAddress, RconClient>newHashMap();
 	}
 
 	private void removeStoppedClients() {
-		Iterator<Entry<SocketAddress, RconClient>> iterator = this.clients.entrySet().iterator();
-
-		while (iterator.hasNext()) {
-			Entry<SocketAddress, RconClient> entry = (Entry<SocketAddress, RconClient>)iterator.next();
-			if (!((RconClient)entry.getValue()).isRunning()) {
-				iterator.remove();
-			}
-		}
+		this.clients.removeIf(rconClient -> !rconClient.isRunning());
 	}
 
 	public void run() {
-		this.info("RCON running on " + this.hostname + ":" + this.port);
+		field_23966.info("RCON running on {}:{}", this.hostname, this.port);
 
 		try {
 			while (this.running) {
 				try {
 					Socket socket = this.listener.accept();
-					socket.setSoTimeout(500);
-					RconClient rconClient = new RconClient(this.server, this.password, socket);
+					RconClient rconClient = new RconClient(this.field_23967, this.password, socket);
 					rconClient.start();
-					this.clients.put(socket.getRemoteSocketAddress(), rconClient);
+					this.clients.add(rconClient);
 					this.removeStoppedClients();
 				} catch (SocketTimeoutException var7) {
 					this.removeStoppedClients();
 				} catch (IOException var8) {
 					if (this.running) {
-						this.info("IO: " + var8.getMessage());
+						field_23966.info("IO exception: ", (Throwable)var8);
 					}
 				}
 			}
 		} finally {
-			this.closeSocket(this.listener);
+			this.method_27176(this.listener);
 		}
 	}
 
 	@Override
 	public void start() {
 		if (this.password.isEmpty()) {
-			this.warn("No rcon password set in server.properties, rcon disabled!");
+			field_23966.warn("No rcon password set in server.properties, rcon disabled!");
 		} else if (0 >= this.port || 65535 < this.port) {
-			this.warn("Invalid rcon port " + this.port + " found in server.properties, rcon disabled!");
+			field_23966.warn("Invalid rcon port {} found in server.properties, rcon disabled!", this.port);
 		} else if (!this.running) {
 			try {
 				this.listener = new ServerSocket(this.port, 0, InetAddress.getByName(this.hostname));
 				this.listener.setSoTimeout(500);
 				super.start();
 			} catch (IOException var2) {
-				this.warn("Unable to initialise rcon on " + this.hostname + ":" + this.port + " : " + var2.getMessage());
+				field_23966.warn("Unable to initialise rcon on {}:{}", this.hostname, this.port, var2);
 			}
 		}
 	}
 
 	@Override
 	public void stop() {
+		this.running = false;
+		this.method_27176(this.listener);
 		super.stop();
 
-		for (Entry<SocketAddress, RconClient> entry : this.clients.entrySet()) {
-			((RconClient)entry.getValue()).stop();
+		for (RconClient rconClient : this.clients) {
+			if (rconClient.isRunning()) {
+				rconClient.stop();
+			}
 		}
 
-		this.closeSocket(this.listener);
-		this.cleanClientList();
+		this.clients.clear();
+	}
+
+	private void method_27176(ServerSocket serverSocket) {
+		field_23966.debug("closeSocket: {}", serverSocket);
+
+		try {
+			serverSocket.close();
+		} catch (IOException var3) {
+			field_23966.warn("Failed to close socket", (Throwable)var3);
+		}
 	}
 }

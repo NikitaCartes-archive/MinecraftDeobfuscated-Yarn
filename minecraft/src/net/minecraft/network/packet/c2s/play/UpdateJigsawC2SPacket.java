@@ -14,23 +14,23 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 	private BlockPos pos;
 	private Identifier attachmentType;
 	private Identifier targetPool;
-	private Identifier field_23401;
+	private Identifier pool;
 	private String finalState;
-	private JigsawBlockEntity.Joint field_23402;
+	private JigsawBlockEntity.Joint jointType;
 
 	public UpdateJigsawC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
 	public UpdateJigsawC2SPacket(
-		BlockPos pos, Identifier attachmentType, Identifier targetPool, Identifier identifier, String string, JigsawBlockEntity.Joint joint
+		BlockPos pos, Identifier attachmentType, Identifier targetPool, Identifier pool, String finalState, JigsawBlockEntity.Joint jointType
 	) {
 		this.pos = pos;
 		this.attachmentType = attachmentType;
 		this.targetPool = targetPool;
-		this.field_23401 = identifier;
-		this.finalState = string;
-		this.field_23402 = joint;
+		this.pool = pool;
+		this.finalState = finalState;
+		this.jointType = jointType;
 	}
 
 	@Override
@@ -38,9 +38,9 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.pos = buf.readBlockPos();
 		this.attachmentType = buf.readIdentifier();
 		this.targetPool = buf.readIdentifier();
-		this.field_23401 = buf.readIdentifier();
+		this.pool = buf.readIdentifier();
 		this.finalState = buf.readString(32767);
-		this.field_23402 = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(buf.readString(32767)).orElse(JigsawBlockEntity.Joint.ALIGNED);
+		this.jointType = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(buf.readString(32767)).orElse(JigsawBlockEntity.Joint.ALIGNED);
 	}
 
 	@Override
@@ -48,9 +48,9 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		buf.writeBlockPos(this.pos);
 		buf.writeIdentifier(this.attachmentType);
 		buf.writeIdentifier(this.targetPool);
-		buf.writeIdentifier(this.field_23401);
+		buf.writeIdentifier(this.pool);
 		buf.writeString(this.finalState);
-		buf.writeString(this.field_23402.asString());
+		buf.writeString(this.jointType.asString());
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -69,15 +69,15 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		return this.targetPool;
 	}
 
-	public Identifier method_26435() {
-		return this.field_23401;
+	public Identifier getPool() {
+		return this.pool;
 	}
 
 	public String getFinalState() {
 		return this.finalState;
 	}
 
-	public JigsawBlockEntity.Joint method_26436() {
-		return this.field_23402;
+	public JigsawBlockEntity.Joint getJointType() {
+		return this.jointType;
 	}
 }

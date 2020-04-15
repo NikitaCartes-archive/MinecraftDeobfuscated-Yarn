@@ -1,7 +1,11 @@
 package net.minecraft.block.entity;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,8 +13,22 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.PoolStructurePiece;
+import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.pool.SinglePoolElement;
+import net.minecraft.structure.pool.StructurePool;
+import net.minecraft.structure.pool.StructurePoolBasedGenerator;
+import net.minecraft.structure.pool.StructurePoolElement;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JigsawBlockEntity extends BlockEntity {
 	private Identifier name = new Identifier("empty");
@@ -105,6 +123,28 @@ public class JigsawBlockEntity extends BlockEntity {
 		return this.toTag(new CompoundTag());
 	}
 
+	public void generate(ServerWorld world, int maxDepth) {
+		ChunkGenerator<?> chunkGenerator = world.getChunkManager().getChunkGenerator();
+		StructureManager structureManager = world.getStructureManager();
+		StructureAccessor structureAccessor = world.getStructureAccessor();
+		Random random = world.getRandom();
+		BlockPos blockPos = this.getPos();
+		List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
+		Structure structure = new Structure();
+		structure.saveFromWorld(world, blockPos, new BlockPos(1, 1, 1), false, null);
+		StructurePoolElement structurePoolElement = new SinglePoolElement(structure, ImmutableList.of(), StructurePool.Projection.RIGID);
+		JigsawBlockEntity.RuntimeStructurePiece runtimeStructurePiece = new JigsawBlockEntity.RuntimeStructurePiece(
+			structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos)
+		);
+		StructurePoolBasedGenerator.method_27230(
+			runtimeStructurePiece, maxDepth, JigsawBlockEntity.RuntimeStructurePiece::new, chunkGenerator, structureManager, list, random
+		);
+
+		for (PoolStructurePiece poolStructurePiece : list) {
+			poolStructurePiece.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, true);
+		}
+	}
+
 	public static enum Joint implements StringIdentifiable {
 		ROLLABLE("rollable"),
 		ALIGNED("aligned");
@@ -122,6 +162,18 @@ public class JigsawBlockEntity extends BlockEntity {
 
 		public static Optional<JigsawBlockEntity.Joint> byName(String name) {
 			return Arrays.stream(values()).filter(joint -> joint.asString().equals(name)).findFirst();
+		}
+	}
+
+	public static final class RuntimeStructurePiece extends PoolStructurePiece {
+		public RuntimeStructurePiece(
+			StructureManager manager, StructurePoolElement poolElement, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox box
+		) {
+			super(StructurePieceType.RUNTIME, manager, poolElement, pos, groundLevelDelta, rotation, box);
+		}
+
+		public RuntimeStructurePiece(StructureManager manager, CompoundTag tag) {
+			super(manager, tag, StructurePieceType.RUNTIME);
 		}
 	}
 }

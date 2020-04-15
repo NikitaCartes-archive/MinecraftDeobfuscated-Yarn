@@ -246,6 +246,10 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			}
 
 			Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.of());
+			if (serverPropertiesHandler.enableJmxMonitoring) {
+				ServerMBean.register(this);
+			}
+
 			return true;
 		}
 	}

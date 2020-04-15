@@ -267,6 +267,7 @@ public class Items {
 	public static final Item RED_MUSHROOM_BLOCK = register(Blocks.RED_MUSHROOM_BLOCK, ItemGroup.DECORATIONS);
 	public static final Item MUSHROOM_STEM = register(Blocks.MUSHROOM_STEM, ItemGroup.DECORATIONS);
 	public static final Item IRON_BARS = register(Blocks.IRON_BARS, ItemGroup.DECORATIONS);
+	public static final Item CHAIN = register(Blocks.CHAIN, ItemGroup.DECORATIONS);
 	public static final Item GLASS_PANE = register(Blocks.GLASS_PANE, ItemGroup.DECORATIONS);
 	public static final Item MELON = register(Blocks.MELON, ItemGroup.BUILDING_BLOCKS);
 	public static final Item VINE = register(Blocks.VINE, ItemGroup.DECORATIONS);
@@ -1307,6 +1308,9 @@ public class Items {
 	);
 	public static final Item MUSIC_DISC_WAIT = register(
 		"music_disc_wait", new MusicDiscItem(12, SoundEvents.MUSIC_DISC_WAIT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+	);
+	public static final Item MUSIC_DISC_PIGSTEP = register(
+		"music_disc_pigstep", new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
 	);
 	public static final Item TRIDENT = register("trident", new TridentItem(new Item.Settings().maxDamage(250).group(ItemGroup.COMBAT)));
 	public static final Item PHANTOM_MEMBRANE = register("phantom_membrane", new Item(new Item.Settings().group(ItemGroup.BREWING)));

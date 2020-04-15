@@ -164,7 +164,7 @@ public class PresetsScreen extends Screen {
 			I18n.translate("createWorld.customize.preset.overworld"),
 			Blocks.GRASS,
 			Biomes.PLAINS,
-			Arrays.asList("village", "biome_1", "decoration", "stronghold", "mineshaft", "dungeon", "lake", "lava_lake", "pillager_outpost"),
+			Arrays.asList("village", "biome_1", "decoration", "stronghold", "mineshaft", "dungeon", "lake", "lava_lake", "pillager_outpost", "ruined_portal"),
 			new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
 			new FlatChunkGeneratorLayer(3, Blocks.DIRT),
 			new FlatChunkGeneratorLayer(59, Blocks.STONE),

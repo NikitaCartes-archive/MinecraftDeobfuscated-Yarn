@@ -85,7 +85,13 @@ public abstract class StructurePiece {
 	}
 
 	public abstract boolean generate(
-		IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos, BlockPos blockPos
+		IWorld world,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<?> chunkGenerator,
+		Random random,
+		BlockBox boundingBox,
+		ChunkPos chunkPos,
+		BlockPos blockPos
 	);
 
 	public BlockBox getBoundingBox() {

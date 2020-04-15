@@ -137,7 +137,7 @@ public class TestCommand {
 	}
 
 	private static int executeCreate(ServerCommandSource source, String structure, int x, int y, int z) {
-		if (x <= 32 && y <= 32 && z <= 32) {
+		if (x <= 48 && y <= 48 && z <= 48) {
 			ServerWorld serverWorld = source.getWorld();
 			BlockPos blockPos = new BlockPos(source.getPosition());
 			BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
@@ -155,7 +155,7 @@ public class TestCommand {
 			StructureTestUtil.placeStartButton(blockPos2.add(1, 0, -1), serverWorld);
 			return 0;
 		} else {
-			throw new IllegalArgumentException("The structure must be less than 32 blocks big in each axis");
+			throw new IllegalArgumentException("The structure must be less than 48 blocks big in each axis");
 		}
 	}
 

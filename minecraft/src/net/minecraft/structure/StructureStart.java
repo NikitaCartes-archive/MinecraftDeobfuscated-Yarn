@@ -22,7 +22,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public abstract class StructureStart {
 	public static final StructureStart DEFAULT = new StructureStart(Feature.MINESHAFT, 0, 0, BlockBox.empty(), 0, 0L) {
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 		}
 	};
 	private final StructureFeature<?> feature;
@@ -43,7 +43,7 @@ public abstract class StructureStart {
 		this.boundingBox = box;
 	}
 
-	public abstract void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome);
+	public abstract void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome);
 
 	public BlockBox getBoundingBox() {
 		return this.boundingBox;

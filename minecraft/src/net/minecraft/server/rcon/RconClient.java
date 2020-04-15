@@ -16,9 +16,11 @@ public class RconClient extends RconBase {
 	private Socket socket;
 	private final byte[] packetBuffer = new byte[1460];
 	private final String password;
+	private final DedicatedServer field_23965;
 
 	RconClient(DedicatedServer dedicatedServer, String string, Socket socket) {
-		super(dedicatedServer, "RCON Client");
+		super("RCON Client " + socket.getInetAddress());
+		this.field_23965 = dedicatedServer;
 		this.socket = socket;
 
 		try {
@@ -28,7 +30,6 @@ public class RconClient extends RconBase {
 		}
 
 		this.password = string;
-		this.info("Rcon connection from: " + socket.getInetAddress());
 	}
 
 	public void run() {
@@ -58,7 +59,7 @@ public class RconClient extends RconBase {
 								String string2 = BufferHelper.getString(this.packetBuffer, j, i);
 
 								try {
-									this.method_14789(l, this.server.executeRconCommand(string2));
+									this.method_14789(l, this.field_23965.executeRconCommand(string2));
 								} catch (Exception var16) {
 									this.method_14789(l, "Error executing: " + string2 + " (" + var16.getMessage() + ")");
 								}
@@ -92,6 +93,8 @@ public class RconClient extends RconBase {
 			}
 		} finally {
 			this.close();
+			LOGGER.info("Thread {} shutting down", this.description);
+			this.running = false;
 		}
 	}
 
@@ -125,8 +128,9 @@ public class RconClient extends RconBase {
 
 	@Override
 	public void stop() {
-		super.stop();
+		this.running = false;
 		this.close();
+		super.stop();
 	}
 
 	private void close() {
@@ -134,7 +138,7 @@ public class RconClient extends RconBase {
 			try {
 				this.socket.close();
 			} catch (IOException var2) {
-				this.warn("IO: " + var2.getMessage());
+				LOGGER.warn("Failed to close socket", (Throwable)var2);
 			}
 
 			this.socket = null;

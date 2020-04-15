@@ -335,7 +335,7 @@ public class ClientPlayerInteractionManager {
 	}
 
 	/**
-	 * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int)
+	 * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int, net.minecraft.screen.slot.SlotActionType, net.minecraft.entity.player.PlayerEntity)
 	 */
 	public ItemStack clickSlot(int syncId, int slotId, int clickData, SlotActionType actionType, PlayerEntity player) {
 		short s = player.currentScreenHandler.getNextActionId(player.inventory);

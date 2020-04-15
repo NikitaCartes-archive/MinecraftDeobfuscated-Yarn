@@ -25,6 +25,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.GLASS_PANE, renderLayer);
 		hashMap.put(Blocks.TRIPWIRE_HOOK, renderLayer);
 		hashMap.put(Blocks.HOPPER, renderLayer);
+		hashMap.put(Blocks.CHAIN, renderLayer);
 		hashMap.put(Blocks.JUNGLE_LEAVES, renderLayer);
 		hashMap.put(Blocks.OAK_LEAVES, renderLayer);
 		hashMap.put(Blocks.SPRUCE_LEAVES, renderLayer);

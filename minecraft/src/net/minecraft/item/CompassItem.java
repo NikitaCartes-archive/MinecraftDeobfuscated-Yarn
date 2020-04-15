@@ -28,12 +28,8 @@ public class CompassItem extends Item implements Vanishable {
 	public CompassItem(Item.Settings settings) {
 		super(settings);
 		this.addPropertyGetter(new Identifier("angle"), new ItemPropertyGetter() {
-			@Environment(EnvType.CLIENT)
-			private double angle;
-			@Environment(EnvType.CLIENT)
-			private double step;
-			@Environment(EnvType.CLIENT)
-			private long lastTick;
+			private final CompassItem.AngleRandomizer targetedAngle = new CompassItem.AngleRandomizer();
+			private final CompassItem.AngleRandomizer targetlessAngle = new CompassItem.AngleRandomizer();
 
 			@Environment(EnvType.CLIENT)
 			@Override
@@ -48,40 +44,27 @@ public class CompassItem extends Item implements Vanishable {
 					}
 
 					CompoundTag compoundTag = itemStack.getOrCreateTag();
-					boolean bl2 = CompassItem.hasLodestone(compoundTag);
-					BlockPos blockPos = bl2 ? CompassItem.this.getLodestonePos(world, compoundTag) : CompassItem.this.getSpawnPos(world);
-					double f;
+					BlockPos blockPos = CompassItem.hasLodestone(compoundTag) ? CompassItem.this.getLodestonePos(world, compoundTag) : CompassItem.this.getSpawnPos(world);
+					double g;
 					if (blockPos != null) {
 						double d = bl ? (double)entity.yaw : CompassItem.getItemFrameAngleOffset((ItemFrameEntity)entity);
 						d = MathHelper.floorMod(d / 360.0, 1.0);
-						boolean bl3 = !bl && entity.getHorizontalFacing().getAxis().isVertical();
-						boolean bl4 = bl3 && entity.getHorizontalFacing() == Direction.UP;
-						double e = CompassItem.getAngleToPos(Vec3d.method_24953(blockPos), entity) / (float) (Math.PI * 2) * (double)(bl4 ? -1 : 1);
-						f = 0.5 - (d - 0.25 - e) * (double)(bl3 ? -1 : 1);
+						double e = 0.5 - (d - 0.25);
+						boolean bl2 = !bl && entity.getHorizontalFacing().getAxis().isVertical();
+						boolean bl3 = bl2 && entity.getHorizontalFacing() == Direction.UP;
+						double f = CompassItem.getAngleToPos(Vec3d.method_24953(blockPos), entity) / (float) (Math.PI * 2) * (double)(bl3 ? -1 : 1);
+						g = 0.5 - (d - 0.25 - f) * (double)(bl2 ? -1 : 1);
+						if (bl) {
+							this.targetedAngle.update(world, e);
+							g -= e - this.targetedAngle.get();
+						}
 					} else {
-						f = Math.random();
+						this.targetlessAngle.update(world, Math.random());
+						g = this.targetlessAngle.get();
 					}
 
-					if (bl) {
-						f = this.getAngle(world, f);
-					}
-
-					return MathHelper.floorMod((float)f, 1.0F);
+					return MathHelper.floorMod((float)g, 1.0F);
 				}
-			}
-
-			@Environment(EnvType.CLIENT)
-			private double getAngle(World world, double entityYaw) {
-				if (world.getTime() != this.lastTick) {
-					this.lastTick = world.getTime();
-					double d = entityYaw - this.angle;
-					d = MathHelper.floorMod(d + 0.5, 1.0) - 0.5;
-					this.step += d * 0.1;
-					this.step *= 0.8;
-					this.angle = MathHelper.floorMod(this.angle + this.step, 1.0);
-				}
-
-				return this.angle;
 			}
 		});
 	}
@@ -128,7 +111,9 @@ public class CompassItem extends Item implements Vanishable {
 	@Environment(EnvType.CLIENT)
 	private static double getItemFrameAngleOffset(ItemFrameEntity itemFrame) {
 		Direction direction = itemFrame.getHorizontalFacing();
-		return direction.getAxis().isVertical() ? 0.0 : (double)MathHelper.wrapDegrees(180 + itemFrame.getHorizontalFacing().getHorizontal() * 90);
+		return direction.getAxis().isVertical()
+			? (double)MathHelper.wrapDegrees(itemFrame.getRotation() * -45)
+			: (double)MathHelper.wrapDegrees(180 + itemFrame.getHorizontalFacing().getHorizontal() * 90 + itemFrame.getRotation() * 45);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -176,5 +161,34 @@ public class CompassItem extends Item implements Vanishable {
 	@Override
 	public String getTranslationKey(ItemStack stack) {
 		return hasLodestone(stack) ? "item.minecraft.lodestone_compass" : super.getTranslationKey(stack);
+	}
+
+	static class AngleRandomizer {
+		@Environment(EnvType.CLIENT)
+		private double value;
+		@Environment(EnvType.CLIENT)
+		private double speed;
+		@Environment(EnvType.CLIENT)
+		private long lastUpdateTime;
+
+		private AngleRandomizer() {
+		}
+
+		@Environment(EnvType.CLIENT)
+		public double get() {
+			return this.value;
+		}
+
+		@Environment(EnvType.CLIENT)
+		private void update(World world, double target) {
+			if (world.getTime() != this.lastUpdateTime) {
+				this.lastUpdateTime = world.getTime();
+				double d = target - this.value;
+				d = MathHelper.floorMod(d + 0.5, 1.0) - 0.5;
+				this.speed += d * 0.1;
+				this.speed *= 0.8;
+				this.value = MathHelper.floorMod(this.value + this.speed, 1.0);
+			}
+		}
 	}
 }

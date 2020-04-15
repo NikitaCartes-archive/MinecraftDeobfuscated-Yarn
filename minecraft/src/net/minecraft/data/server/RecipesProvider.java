@@ -2780,6 +2780,15 @@ public class RecipesProvider implements DataProvider {
 			.pattern("##")
 			.criterion("has_polished_blackstone", conditionsFromItem(Blocks.POLISHED_BLACKSTONE))
 			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.CHAIN)
+			.input('I', Items.IRON_INGOT)
+			.input('N', Items.IRON_NUGGET)
+			.pattern("N")
+			.pattern("I")
+			.pattern("N")
+			.criterion("has_iron_nugget", conditionsFromItem(Items.IRON_NUGGET))
+			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
+			.offerTo(consumer);
 		ComplexRecipeJsonFactory.create(RecipeSerializer.ARMOR_DYE).offerTo(consumer, "armor_dye");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(consumer, "banner_duplicate");
 		ComplexRecipeJsonFactory.create(RecipeSerializer.BOOK_CLONING).offerTo(consumer, "book_cloning");

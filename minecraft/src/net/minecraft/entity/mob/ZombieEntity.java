@@ -294,7 +294,7 @@ public class ZombieEntity extends HostileEntity {
 
 			if (livingEntity != null
 				&& this.world.getDifficulty() == Difficulty.HARD
-				&& (double)this.random.nextFloat() < this.method_26825(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
+				&& (double)this.random.nextFloat() < this.getAttribute(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
 				&& this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 				int i = MathHelper.floor(this.getX());
 				int j = MathHelper.floor(this.getY());
@@ -486,8 +486,8 @@ public class ZombieEntity extends HostileEntity {
 					chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
 					chickenEntity2.initialize(world, difficulty, SpawnType.JOCKEY, null, null);
 					chickenEntity2.setHasJockey(true);
-					world.spawnEntity(chickenEntity2);
 					this.startRiding(chickenEntity2);
+					world.spawnEntity(chickenEntity2);
 				}
 			}
 

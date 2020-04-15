@@ -56,7 +56,7 @@ public class FallingBlockEntity extends Entity {
 	public FallingBlockEntity(World world, double x, double y, double z, BlockState block) {
 		this(EntityType.FALLING_BLOCK, world);
 		this.block = block;
-		this.field_23807 = true;
+		this.inanimate = true;
 		this.updatePosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = x;

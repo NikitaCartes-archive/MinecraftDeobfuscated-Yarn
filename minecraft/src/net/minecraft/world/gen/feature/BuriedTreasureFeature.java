@@ -1,13 +1,13 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.datafixers.Dynamic;
-import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.gen.ChunkRandom;
@@ -19,14 +19,12 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
-		if (chunkGenerator.hasStructure(biome, this)) {
-			((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), chunkX, chunkZ, 10387320);
-			BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
-			return random.nextFloat() < buriedTreasureFeatureConfig.probability;
-		} else {
-			return false;
-		}
+	protected boolean shouldStartAt(
+		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+	) {
+		chunkRandom.setRegionSeed(chunkGenerator.getSeed(), chunkX, chunkZ, 10387320);
+		BuriedTreasureFeatureConfig buriedTreasureFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
+		return chunkRandom.nextFloat() < buriedTreasureFeatureConfig.probability;
 	}
 
 	@Override
@@ -50,7 +48,7 @@ public class BuriedTreasureFeature extends StructureFeature<BuriedTreasureFeatur
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			int i = x * 16;
 			int j = z * 16;
 			BlockPos blockPos = new BlockPos(i + 9, 90, j + 9);

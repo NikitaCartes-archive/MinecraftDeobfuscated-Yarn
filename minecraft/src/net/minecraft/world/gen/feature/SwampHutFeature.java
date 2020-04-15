@@ -15,6 +15,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.WITCH, 1, 1, 1));
@@ -40,7 +41,7 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	protected int getSeedModifier() {
+	protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
 		return 14357620;
 	}
 
@@ -70,7 +71,7 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, x * 16, z * 16);
 			this.children.add(swampHutGenerator);
 			this.setBoundingBoxFromChildren();

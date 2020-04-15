@@ -19,6 +19,8 @@ import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.gen.feature.RuinedPortalFeature;
+import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class BasaltDeltasBiome extends Biome {
@@ -54,10 +56,13 @@ public class BasaltDeltasBiome extends Biome {
 				.parent(null)
 				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.5F, 0.0F, 0.0F, 0.0F, 1.0F)))
 		);
+		this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER)));
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
+		this.addStructureFeature(Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT));
+		DefaultBiomeFeatures.addDefaultStructures(this);
 		this.addFeature(
 			GenerationStep.Feature.LOCAL_MODIFICATIONS,
-			Feature.DELTA_FEATURE.configure(DefaultBiomeFeatures.field_23858).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(10)))
+			Feature.DELTA_FEATURE.configure(DefaultBiomeFeatures.field_23858).createDecoratedFeature(Decorator.COUNT_HEIGHTMAP.configure(new CountDecoratorConfig(40)))
 		);
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -88,6 +93,12 @@ public class BasaltDeltasBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
+		);
+		this.addFeature(
+			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			Feature.RUINED_PORTAL
+				.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER))
+				.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,

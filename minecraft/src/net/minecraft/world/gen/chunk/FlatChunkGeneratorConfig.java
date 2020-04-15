@@ -37,9 +37,10 @@ import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
+import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
-import net.minecraft.world.gen.feature.VillageFeatureConfig;
+import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,7 +50,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL))
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
 	private static final ConfiguredFeature<?, ?> VILLAGE = Feature.VILLAGE
-		.configure(new VillageFeatureConfig("village/plains/town_centers", 6))
+		.configure(new StructurePoolFeatureConfig("village/plains/town_centers", 6))
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
 	private static final ConfiguredFeature<?, ?> STRONGHOLD = Feature.STRONGHOLD
 		.configure(FeatureConfig.DEFAULT)
@@ -65,6 +66,9 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
 	private static final ConfiguredFeature<?, ?> IGLOO = Feature.IGLOO
 		.configure(FeatureConfig.DEFAULT)
+		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
+	private static final ConfiguredFeature<?, ?> field_24017 = Feature.RUINED_PORTAL
+		.configure(new RuinedPortalFeatureConfig())
 		.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT));
 	private static final ConfiguredFeature<?, ?> SHIPWRECK = Feature.SHIPWRECK
 		.configure(new ShipwreckFeatureConfig(false))
@@ -102,6 +106,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(DESERT_PYRAMID, GenerationStep.Feature.SURFACE_STRUCTURES);
 			hashMap.put(JUNGLE_TEMPLE, GenerationStep.Feature.SURFACE_STRUCTURES);
 			hashMap.put(IGLOO, GenerationStep.Feature.SURFACE_STRUCTURES);
+			hashMap.put(field_24017, GenerationStep.Feature.SURFACE_STRUCTURES);
 			hashMap.put(SHIPWRECK, GenerationStep.Feature.SURFACE_STRUCTURES);
 			hashMap.put(OCEAN_RUIN, GenerationStep.Feature.SURFACE_STRUCTURES);
 			hashMap.put(WATER_LAKE, GenerationStep.Feature.LOCAL_MODIFICATIONS);
@@ -126,12 +131,13 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put("mansion", new ConfiguredFeature[]{WOODLAND_MANSION});
 			hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
 			hashMap.put("pillager_outpost", new ConfiguredFeature[]{PILLAGER_OUTPOST});
+			hashMap.put("ruined_portal", new ConfiguredFeature[]{field_24017});
 		}
 	);
 	public static final Map<ConfiguredFeature<?, ?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.make(
 		Maps.<ConfiguredFeature<?, ?>, FeatureConfig>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-			hashMap.put(VILLAGE, new VillageFeatureConfig("village/plains/town_centers", 6));
+			hashMap.put(VILLAGE, new StructurePoolFeatureConfig("village/plains/town_centers", 6));
 			hashMap.put(STRONGHOLD, FeatureConfig.DEFAULT);
 			hashMap.put(SWAMP_HUT, FeatureConfig.DEFAULT);
 			hashMap.put(DESERT_PYRAMID, FeatureConfig.DEFAULT);

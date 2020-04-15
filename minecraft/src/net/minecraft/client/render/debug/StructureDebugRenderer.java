@@ -40,6 +40,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 			for (BlockBox blockBox : ((Map)this.field_4626.get(dimensionType)).values()) {
 				if (blockPos.isWithinDistance(blockBox.getCenter(), 500.0)) {
 					WorldRenderer.drawBox(
+						matrices,
 						vertexConsumer,
 						(double)blockBox.minX - cameraX,
 						(double)blockBox.minY - cameraY,
@@ -47,6 +48,9 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 						(double)(blockBox.maxX + 1) - cameraX,
 						(double)(blockBox.maxY + 1) - cameraY,
 						(double)(blockBox.maxZ + 1) - cameraZ,
+						1.0F,
+						1.0F,
+						1.0F,
 						1.0F,
 						1.0F,
 						1.0F,
@@ -64,6 +68,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 				if (blockPos.isWithinDistance(blockBox2.getCenter(), 500.0)) {
 					if (boolean_) {
 						WorldRenderer.drawBox(
+							matrices,
 							vertexConsumer,
 							(double)blockBox2.minX - cameraX,
 							(double)blockBox2.minY - cameraY,
@@ -74,10 +79,14 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 							0.0F,
 							1.0F,
 							0.0F,
-							1.0F
+							1.0F,
+							0.0F,
+							1.0F,
+							0.0F
 						);
 					} else {
 						WorldRenderer.drawBox(
+							matrices,
 							vertexConsumer,
 							(double)blockBox2.minX - cameraX,
 							(double)blockBox2.minY - cameraY,
@@ -88,6 +97,9 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 							0.0F,
 							0.0F,
 							1.0F,
+							1.0F,
+							0.0F,
+							0.0F,
 							1.0F
 						);
 					}

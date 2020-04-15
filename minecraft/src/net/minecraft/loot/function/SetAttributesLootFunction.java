@@ -104,42 +104,47 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 		public static SetAttributesLootFunction.Attribute deserialize(JsonObject json, JsonDeserializationContext context) {
 			String string = JsonHelper.getString(json, "name");
-			EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(new Identifier(JsonHelper.getString(json, "attribute")));
-			EntityAttributeModifier.Operation operation = fromName(JsonHelper.getString(json, "operation"));
-			UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(json, "amount", context, UniformLootTableRange.class);
-			UUID uUID = null;
-			EquipmentSlot[] equipmentSlots;
-			if (JsonHelper.hasString(json, "slot")) {
-				equipmentSlots = new EquipmentSlot[]{EquipmentSlot.byName(JsonHelper.getString(json, "slot"))};
+			Identifier identifier = new Identifier(JsonHelper.getString(json, "attribute"));
+			EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(identifier);
+			if (entityAttribute == null) {
+				throw new JsonSyntaxException("Unknown attribute: " + identifier);
 			} else {
-				if (!JsonHelper.hasArray(json, "slot")) {
-					throw new JsonSyntaxException("Invalid or missing attribute modifier slot; must be either string or array of strings.");
+				EntityAttributeModifier.Operation operation = fromName(JsonHelper.getString(json, "operation"));
+				UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(json, "amount", context, UniformLootTableRange.class);
+				UUID uUID = null;
+				EquipmentSlot[] equipmentSlots;
+				if (JsonHelper.hasString(json, "slot")) {
+					equipmentSlots = new EquipmentSlot[]{EquipmentSlot.byName(JsonHelper.getString(json, "slot"))};
+				} else {
+					if (!JsonHelper.hasArray(json, "slot")) {
+						throw new JsonSyntaxException("Invalid or missing attribute modifier slot; must be either string or array of strings.");
+					}
+
+					JsonArray jsonArray = JsonHelper.getArray(json, "slot");
+					equipmentSlots = new EquipmentSlot[jsonArray.size()];
+					int i = 0;
+
+					for (JsonElement jsonElement : jsonArray) {
+						equipmentSlots[i++] = EquipmentSlot.byName(JsonHelper.asString(jsonElement, "slot"));
+					}
+
+					if (equipmentSlots.length == 0) {
+						throw new JsonSyntaxException("Invalid attribute modifier slot; must contain at least one entry.");
+					}
 				}
 
-				JsonArray jsonArray = JsonHelper.getArray(json, "slot");
-				equipmentSlots = new EquipmentSlot[jsonArray.size()];
-				int i = 0;
+				if (json.has("id")) {
+					String string2 = JsonHelper.getString(json, "id");
 
-				for (JsonElement jsonElement : jsonArray) {
-					equipmentSlots[i++] = EquipmentSlot.byName(JsonHelper.asString(jsonElement, "slot"));
+					try {
+						uUID = UUID.fromString(string2);
+					} catch (IllegalArgumentException var13) {
+						throw new JsonSyntaxException("Invalid attribute modifier id '" + string2 + "' (must be UUID format, with dashes)");
+					}
 				}
 
-				if (equipmentSlots.length == 0) {
-					throw new JsonSyntaxException("Invalid attribute modifier slot; must contain at least one entry.");
-				}
+				return new SetAttributesLootFunction.Attribute(string, entityAttribute, operation, uniformLootTableRange, equipmentSlots, uUID);
 			}
-
-			if (json.has("id")) {
-				String string2 = JsonHelper.getString(json, "id");
-
-				try {
-					uUID = UUID.fromString(string2);
-				} catch (IllegalArgumentException var12) {
-					throw new JsonSyntaxException("Invalid attribute modifier id '" + string2 + "' (must be UUID format, with dashes)");
-				}
-			}
-
-			return new SetAttributesLootFunction.Attribute(string, entityAttribute, operation, uniformLootTableRange, equipmentSlots, uUID);
 		}
 
 		private static String getName(EntityAttributeModifier.Operation operation) {

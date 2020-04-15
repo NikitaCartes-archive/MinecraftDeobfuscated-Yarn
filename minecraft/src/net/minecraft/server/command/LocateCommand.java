@@ -23,6 +23,7 @@ public class LocateCommand {
 				.then(CommandManager.literal("Mineshaft").executes(commandContext -> execute(commandContext.getSource(), "Mineshaft")))
 				.then(CommandManager.literal("Mansion").executes(commandContext -> execute(commandContext.getSource(), "Mansion")))
 				.then(CommandManager.literal("Igloo").executes(commandContext -> execute(commandContext.getSource(), "Igloo")))
+				.then(CommandManager.literal("Ruined_Portal").executes(commandContext -> execute(commandContext.getSource(), "Ruined_Portal")))
 				.then(CommandManager.literal("Desert_Pyramid").executes(commandContext -> execute(commandContext.getSource(), "Desert_Pyramid")))
 				.then(CommandManager.literal("Jungle_Pyramid").executes(commandContext -> execute(commandContext.getSource(), "Jungle_Pyramid")))
 				.then(CommandManager.literal("Swamp_Hut").executes(commandContext -> execute(commandContext.getSource(), "Swamp_Hut")))
@@ -35,6 +36,7 @@ public class LocateCommand {
 				.then(CommandManager.literal("Shipwreck").executes(commandContext -> execute(commandContext.getSource(), "Shipwreck")))
 				.then(CommandManager.literal("Village").executes(commandContext -> execute(commandContext.getSource(), "Village")))
 				.then(CommandManager.literal("Nether_Fossil").executes(commandContext -> execute(commandContext.getSource(), "Nether_Fossil")))
+				.then(CommandManager.literal("Bastion_Remnant").executes(commandContext -> execute(commandContext.getSource(), "Bastion_Remnant")))
 		);
 	}
 

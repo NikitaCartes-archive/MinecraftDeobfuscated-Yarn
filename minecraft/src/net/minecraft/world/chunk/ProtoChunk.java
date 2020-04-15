@@ -231,9 +231,11 @@ public class ProtoChunk implements Chunk {
 
 	@Override
 	public void addEntity(Entity entity) {
-		CompoundTag compoundTag = new CompoundTag();
-		entity.saveToTag(compoundTag);
-		this.addEntity(compoundTag);
+		if (!entity.hasVehicle()) {
+			CompoundTag compoundTag = new CompoundTag();
+			entity.saveToTag(compoundTag);
+			this.addEntity(compoundTag);
+		}
 	}
 
 	public List<CompoundTag> getEntities() {

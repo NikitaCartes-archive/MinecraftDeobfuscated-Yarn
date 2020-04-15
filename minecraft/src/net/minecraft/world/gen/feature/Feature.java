@@ -38,6 +38,9 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"desert_pyramid", new DesertPyramidFeature(DefaultFeatureConfig::deserialize)
 	);
 	public static final StructureFeature<DefaultFeatureConfig> IGLOO = register("igloo", new IglooFeature(DefaultFeatureConfig::deserialize));
+	public static final StructureFeature<RuinedPortalFeatureConfig> RUINED_PORTAL = register(
+		"ruined_portal", new RuinedPortalFeature(RuinedPortalFeatureConfig::deserialize)
+	);
 	public static final StructureFeature<ShipwreckFeatureConfig> SHIPWRECK = register("shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig::deserialize));
 	public static final SwampHutFeature SWAMP_HUT = register("swamp_hut", new SwampHutFeature(DefaultFeatureConfig::deserialize));
 	public static final StructureFeature<DefaultFeatureConfig> STRONGHOLD = register("stronghold", new StrongholdFeature(DefaultFeatureConfig::deserialize));
@@ -52,9 +55,12 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final StructureFeature<BuriedTreasureFeatureConfig> BURIED_TREASURE = register(
 		"buried_treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig::deserialize)
 	);
-	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
+	public static final StructureFeature<StructurePoolFeatureConfig> VILLAGE = register("village", new VillageFeature(StructurePoolFeatureConfig::deserialize));
 	public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = register(
 		"nether_fossil", new NetherFossilFeature(DefaultFeatureConfig::deserialize)
+	);
+	public static final StructureFeature<BastionRemnantFeatureConfig> BASTION_REMNANT = register(
+		"bastion_remnant", new BastionRemnantFeature(BastionRemnantFeatureConfig::deserialize)
 	);
 	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(BranchedTreeFeatureConfig::deserialize));
@@ -143,6 +149,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		map.put("Jungle_Pyramid".toLowerCase(Locale.ROOT), JUNGLE_TEMPLE);
 		map.put("Desert_Pyramid".toLowerCase(Locale.ROOT), DESERT_PYRAMID);
 		map.put("Igloo".toLowerCase(Locale.ROOT), IGLOO);
+		map.put("Ruined_Portal".toLowerCase(Locale.ROOT), RUINED_PORTAL);
 		map.put("Shipwreck".toLowerCase(Locale.ROOT), SHIPWRECK);
 		map.put("Swamp_Hut".toLowerCase(Locale.ROOT), SWAMP_HUT);
 		map.put("Stronghold".toLowerCase(Locale.ROOT), STRONGHOLD);
@@ -153,6 +160,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		map.put("Buried_Treasure".toLowerCase(Locale.ROOT), BURIED_TREASURE);
 		map.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
 		map.put("Nether_Fossil".toLowerCase(Locale.ROOT), NETHER_FOSSIL);
+		map.put("Bastion_Remnant".toLowerCase(Locale.ROOT), BASTION_REMNANT);
 	});
 	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
 	private final Function<Dynamic<?>, ? extends FC> configDeserializer;

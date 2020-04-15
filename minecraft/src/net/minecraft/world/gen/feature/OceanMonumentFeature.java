@@ -15,9 +15,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig> {
 	private static final List<Biome.SpawnEntry> MONSTER_SPAWNS = Lists.<Biome.SpawnEntry>newArrayList(new Biome.SpawnEntry(EntityType.GUARDIAN, 1, 2, 4));
@@ -27,43 +29,42 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 	}
 
 	@Override
-	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.getConfig().getOceanMonumentSpacing();
-		int n = chunkGenerator.getConfig().getOceanMonumentSeparation();
-		int o = i + m * k;
-		int p = j + m * l;
-		int q = o < 0 ? o - m + 1 : o;
-		int r = p < 0 ? p - m + 1 : p;
-		int s = q / m;
-		int t = r / m;
-		((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), s, t, 10387313);
-		s *= m;
-		t *= m;
-		s += (random.nextInt(m - n) + random.nextInt(m - n)) / 2;
-		t += (random.nextInt(m - n) + random.nextInt(m - n)) / 2;
-		return new ChunkPos(s, t);
+	protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+		return chunkGeneratorConfig.getOceanMonumentSpacing();
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
-		if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
-			for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 16)) {
-				if (!chunkGenerator.hasStructure(biome2, this)) {
-					return false;
-				}
-			}
+	protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
+		return chunkGenerationConfig.getOceanMonumentSeparation();
+	}
 
-			for (Biome biome3 : chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 29)) {
-				if (biome3.getCategory() != Biome.Category.OCEAN && biome3.getCategory() != Biome.Category.RIVER) {
-					return false;
-				}
-			}
+	@Override
+	protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
+		return 10387313;
+	}
 
-			return true;
-		} else {
-			return false;
+	@Override
+	protected boolean method_27219() {
+		return false;
+	}
+
+	@Override
+	protected boolean shouldStartAt(
+		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+	) {
+		for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 16)) {
+			if (!chunkGenerator.hasStructure(biome2, this)) {
+				return false;
+			}
 		}
+
+		for (Biome biome3 : chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 29)) {
+			if (biome3.getCategory() != Biome.Category.OCEAN && biome3.getCategory() != Biome.Category.RIVER) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@Override
@@ -94,7 +95,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			this.method_16588(x, z);
 		}
 

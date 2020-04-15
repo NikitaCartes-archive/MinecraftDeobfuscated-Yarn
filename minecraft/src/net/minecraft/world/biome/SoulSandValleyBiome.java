@@ -8,6 +8,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.Carver;
@@ -16,9 +17,12 @@ import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.feature.BastionRemnantFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.gen.feature.RuinedPortalFeature;
+import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public class SoulSandValleyBiome extends Biome {
@@ -48,6 +52,9 @@ public class SoulSandValleyBiome extends Biome {
 		);
 		this.addStructureFeature(Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT));
 		this.addStructureFeature(Feature.NETHER_FOSSIL.configure(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER)));
+		this.addStructureFeature(Feature.BASTION_REMNANT.configure(new BastionRemnantFeatureConfig(BastionRemnantGenerator.START_POOLS_TO_SIZES)));
+		DefaultBiomeFeatures.addDefaultStructures(this);
 		this.addCarver(GenerationStep.Carver.AIR, configureCarver(Carver.NETHER_CAVE, new ProbabilityConfig(0.2F)));
 		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
@@ -62,6 +69,12 @@ public class SoulSandValleyBiome extends Biome {
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,
 			Feature.NETHER_FOSSIL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
+		);
+		this.addFeature(
+			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			Feature.RUINED_PORTAL
+				.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER))
+				.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,

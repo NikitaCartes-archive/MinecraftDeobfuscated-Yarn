@@ -28,7 +28,6 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	@Nullable
 	private BlockPos currentTarget;
 	private boolean ableToPlant;
-	private boolean ableToPickUpSeed;
 	private long nextResponseTime;
 	private int ticksRan;
 	private final List<BlockPos> targetPositions = Lists.<BlockPos>newArrayList();
@@ -53,25 +52,13 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 			return false;
 		} else {
 			this.ableToPlant = villagerEntity.hasSeedToPlant();
-			this.ableToPickUpSeed = false;
-			BasicInventory basicInventory = villagerEntity.getInventory();
-			int i = basicInventory.size();
-
-			for (int j = 0; j < i; j++) {
-				ItemStack itemStack = basicInventory.getStack(j);
-				if (itemStack.isEmpty()) {
-					this.ableToPickUpSeed = true;
-					break;
-				}
-			}
-
 			BlockPos.Mutable mutable = villagerEntity.getBlockPos().mutableCopy();
 			this.targetPositions.clear();
 
-			for (int k = -1; k <= 1; k++) {
-				for (int l = -1; l <= 1; l++) {
-					for (int m = -1; m <= 1; m++) {
-						mutable.set(villagerEntity.getX() + (double)k, villagerEntity.getY() + (double)l, villagerEntity.getZ() + (double)m);
+			for (int i = -1; i <= 1; i++) {
+				for (int j = -1; j <= 1; j++) {
+					for (int k = -1; k <= 1; k++) {
+						mutable.set(villagerEntity.getX() + (double)i, villagerEntity.getY() + (double)j, villagerEntity.getZ() + (double)k);
 						if (this.isSuitableTarget(mutable, serverWorld)) {
 							this.targetPositions.add(new BlockPos(mutable));
 						}
@@ -80,7 +67,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 			}
 
 			this.currentTarget = this.chooseRandomTarget(serverWorld);
-			return (this.ableToPlant || this.ableToPickUpSeed) && this.currentTarget != null;
+			return this.ableToPlant && this.currentTarget != null;
 		}
 	}
 
@@ -93,8 +80,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
 		Block block2 = world.getBlockState(pos.down()).getBlock();
-		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.ableToPickUpSeed
-			|| blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant;
+		return block instanceof CropBlock && ((CropBlock)block).isMature(blockState) || blockState.isAir() && block2 instanceof FarmlandBlock && this.ableToPlant;
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -117,7 +103,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				BlockState blockState = serverWorld.getBlockState(this.currentTarget);
 				Block block = blockState.getBlock();
 				Block block2 = serverWorld.getBlockState(this.currentTarget.down()).getBlock();
-				if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState) && this.ableToPickUpSeed) {
+				if (block instanceof CropBlock && ((CropBlock)block).isMature(blockState)) {
 					serverWorld.breakBlock(this.currentTarget, true, villagerEntity);
 				}
 

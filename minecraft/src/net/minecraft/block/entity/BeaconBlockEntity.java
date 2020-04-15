@@ -266,7 +266,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Environment(EnvType.CLIENT)
 	@Override
 	public double getSquaredRenderDistance() {
-		return 65536.0;
+		return 256.0;
 	}
 
 	@Nullable

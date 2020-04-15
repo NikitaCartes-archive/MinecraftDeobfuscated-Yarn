@@ -51,16 +51,22 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 
 	@Override
 	public boolean generate(
-		IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos, BlockPos blockPos
+		IWorld world,
+		StructureAccessor structureAccessor,
+		ChunkGenerator<?> chunkGenerator,
+		Random random,
+		BlockBox boundingBox,
+		ChunkPos chunkPos,
+		BlockPos blockPos
 	) {
-		this.placementData.setBoundingBox(blockBox);
+		this.placementData.setBoundingBox(boundingBox);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
 		if (this.structure.place(world, this.pos, blockPos, this.placementData, 2)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.tag != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
 					if (structureBlockMode == StructureBlockMode.DATA) {
-						this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, world, random, blockBox);
+						this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, world, random, boundingBox);
 					}
 				}
 			}

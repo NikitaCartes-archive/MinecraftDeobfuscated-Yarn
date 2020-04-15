@@ -84,7 +84,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 			.add(Items.OAK_BOAT, Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT);
 		this.getOrCreateTagBuilder(ItemTags.FISHES).add(Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH);
 		this.copy(BlockTags.STANDING_SIGNS, ItemTags.SIGNS);
-		this.getOrCreateTagBuilder(ItemTags.MUSIC_DISCS)
+		this.getOrCreateTagBuilder(ItemTags.CREEPER_DROP_MUSIC_DISCS)
 			.add(
 				Items.MUSIC_DISC_13,
 				Items.MUSIC_DISC_CAT,
@@ -99,6 +99,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.MUSIC_DISC_11,
 				Items.MUSIC_DISC_WAIT
 			);
+		this.getOrCreateTagBuilder(ItemTags.MUSIC_DISCS).addTag(ItemTags.CREEPER_DROP_MUSIC_DISCS).add(Items.MUSIC_DISC_PIGSTEP);
 		this.getOrCreateTagBuilder(ItemTags.COALS).add(Items.COAL, Items.CHARCOAL);
 		this.getOrCreateTagBuilder(ItemTags.ARROWS).add(Items.ARROW, Items.TIPPED_ARROW, Items.SPECTRAL_ARROW);
 		this.getOrCreateTagBuilder(ItemTags.LECTERN_BOOKS).add(Items.WRITTEN_BOOK, Items.WRITABLE_BOOK);
@@ -142,7 +143,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 	protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
 		Tag.Builder builder = this.method_27169(identified2);
 		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(identified);
-		builder2.streamEntries().forEach(builder::method_27064);
+		builder2.streamEntries().forEach(builder::add);
 	}
 
 	@Override

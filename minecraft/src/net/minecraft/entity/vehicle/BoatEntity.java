@@ -78,7 +78,7 @@ public class BoatEntity extends Entity {
 
 	public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_23807 = true;
+		this.inanimate = true;
 	}
 
 	public BoatEntity(World world, double x, double y, double z) {

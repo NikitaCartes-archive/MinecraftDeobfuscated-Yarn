@@ -42,11 +42,11 @@ import net.minecraft.util.math.IntRange;
 public class HoglinBrain {
 	private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
 
-	protected static Brain<?> create(HoglinEntity hoglin, Dynamic<?> data) {
+	protected static Brain<?> create(Dynamic<?> dynamic) {
 		Brain<HoglinEntity> brain = new Brain<>(
 			(Collection<MemoryModuleType<?>>)HoglinEntity.MEMORY_MODULE_TYPES,
 			(Collection<SensorType<? extends Sensor<? super HoglinEntity>>>)HoglinEntity.SENSOR_TYPES,
-			data
+			dynamic
 		);
 		addCoreTasks(brain);
 		addIdleTasks(brain);

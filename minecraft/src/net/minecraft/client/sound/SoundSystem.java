@@ -266,34 +266,39 @@ public class SoundSystem {
 						LOGGER.warn(MARKER, "Unable to play unknown soundEvent: {}", identifier);
 					}
 				} else {
-					if (!this.listeners.isEmpty()) {
-						for (SoundInstanceListener soundInstanceListener : this.listeners) {
-							soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);
+					Sound sound = soundInstance.getSound();
+					if (sound == SoundManager.MISSING_SOUND) {
+						if (unknownSounds.add(identifier)) {
+							LOGGER.warn(MARKER, "Unable to play empty soundEvent: {}", identifier);
 						}
-					}
-
-					if (this.listener.getVolume() <= 0.0F) {
-						LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", identifier);
 					} else {
-						Sound sound = soundInstance.getSound();
-						if (sound == SoundManager.MISSING_SOUND) {
-							if (unknownSounds.add(identifier)) {
-								LOGGER.warn(MARKER, "Unable to play empty soundEvent: {}", identifier);
-							}
+						float f = soundInstance.getVolume();
+						float g = Math.max(f, 1.0F) * (float)sound.getAttenuation();
+						SoundCategory soundCategory = soundInstance.getCategory();
+						float h = this.getAdjustedVolume(soundInstance);
+						float i = this.getAdjustedPitch(soundInstance);
+						SoundInstance.AttenuationType attenuationType = soundInstance.getAttenuationType();
+						boolean bl = soundInstance.isLooping();
+						if (h == 0.0F && !soundInstance.shouldAlwaysPlay()) {
+							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound.getIdentifier());
 						} else {
-							float f = soundInstance.getVolume();
-							float g = Math.max(f, 1.0F) * (float)sound.getAttenuation();
-							SoundCategory soundCategory = soundInstance.getCategory();
-							float h = this.getAdjustedVolume(soundInstance);
-							float i = this.getAdjustedPitch(soundInstance);
-							SoundInstance.AttenuationType attenuationType = soundInstance.getAttenuationType();
-							boolean bl = soundInstance.isLooping();
-							if (h == 0.0F && !soundInstance.shouldAlwaysPlay()) {
-								LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound.getIdentifier());
+							Vec3d vec3d = new Vec3d((double)soundInstance.getX(), (double)soundInstance.getY(), (double)soundInstance.getZ());
+							if (!this.listeners.isEmpty()) {
+								boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.method_27268().squaredDistanceTo(vec3d) < (double)(g * g);
+								if (bl2) {
+									for (SoundInstanceListener soundInstanceListener : this.listeners) {
+										soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);
+									}
+								} else {
+									LOGGER.debug(MARKER, "Did not notify listeners of soundEvent: {}, it is too far away to hear", identifier);
+								}
+							}
+
+							if (this.listener.getVolume() <= 0.0F) {
+								LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", identifier);
 							} else {
 								boolean bl2 = shouldRepeatInstantly(soundInstance);
 								boolean bl3 = sound.isStreamed();
-								Vec3d vec3d = new Vec3d((double)soundInstance.getX(), (double)soundInstance.getY(), (double)soundInstance.getZ());
 								CompletableFuture<Channel.SourceManager> completableFuture = this.channel
 									.createSource(sound.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
 								Channel.SourceManager sourceManager = (Channel.SourceManager)completableFuture.join();

@@ -23,6 +23,7 @@ public class StructureFeatures {
 	public static final StructureFeature<?> OCEAN_RUIN = register("Ocean_Ruin", Feature.OCEAN_RUIN);
 	public static final StructureFeature<?> DESERT_PYRAMID = register("Desert_Pyramid", Feature.DESERT_PYRAMID);
 	public static final StructureFeature<?> IGLOO = register("Igloo", Feature.IGLOO);
+	public static final StructureFeature<?> RUINED_PORTAL = register("Ruined_Portal", Feature.RUINED_PORTAL);
 	public static final StructureFeature<?> SWAMP_HUT = register("Swamp_Hut", Feature.SWAMP_HUT);
 	public static final StructureFeature<?> MONUMENT = register("Monument", Feature.OCEAN_MONUMENT);
 	public static final StructureFeature<?> END_CITY = register("EndCity", Feature.END_CITY);
@@ -31,6 +32,7 @@ public class StructureFeatures {
 	public static final StructureFeature<?> SHIPWRECK = register("Shipwreck", Feature.SHIPWRECK);
 	public static final StructureFeature<?> VILLAGE = register("Village", Feature.VILLAGE);
 	public static final StructureFeature<?> NETHER_FOSSIL = register("Nether_Fossil", Feature.NETHER_FOSSIL);
+	public static final StructureFeature<?> BASTION_REMNANT = register("Bastion_Remnant", Feature.BASTION_REMNANT);
 
 	private static StructureFeature<?> register(String name, StructureFeature<?> feature) {
 		return Registry.register(Registry.STRUCTURE_FEATURE, name.toLowerCase(Locale.ROOT), feature);

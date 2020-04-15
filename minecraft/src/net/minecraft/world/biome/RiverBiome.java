@@ -9,6 +9,8 @@ import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
+import net.minecraft.world.gen.feature.RuinedPortalFeature;
+import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -27,6 +29,7 @@ public final class RiverBiome extends Biome {
 				.parent(null)
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
+		this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD)));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

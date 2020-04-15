@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import javax.annotation.Nullable;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
@@ -33,7 +34,20 @@ public class GravityStructureProcessor extends StructureProcessor {
 		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData structurePlacementData
 	) {
-		int i = worldView.getTopY(this.heightmap, structureBlockInfo2.pos.getX(), structureBlockInfo2.pos.getZ()) + this.offset;
+		Heightmap.Type type;
+		if (worldView instanceof ServerWorld) {
+			if (this.heightmap == Heightmap.Type.WORLD_SURFACE_WG) {
+				type = Heightmap.Type.WORLD_SURFACE;
+			} else if (this.heightmap == Heightmap.Type.OCEAN_FLOOR_WG) {
+				type = Heightmap.Type.OCEAN_FLOOR;
+			} else {
+				type = this.heightmap;
+			}
+		} else {
+			type = this.heightmap;
+		}
+
+		int i = worldView.getTopY(type, structureBlockInfo2.pos.getX(), structureBlockInfo2.pos.getZ()) + this.offset;
 		int j = structureBlockInfo.pos.getY();
 		return new Structure.StructureBlockInfo(
 			new BlockPos(structureBlockInfo2.pos.getX(), i + j, structureBlockInfo2.pos.getZ()), structureBlockInfo2.state, structureBlockInfo2.tag

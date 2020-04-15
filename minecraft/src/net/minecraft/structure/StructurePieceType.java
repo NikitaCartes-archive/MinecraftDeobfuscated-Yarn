@@ -1,8 +1,10 @@
 package net.minecraft.structure;
 
 import java.util.Locale;
+import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.feature.RuinedPortalFeaturePiece;
 
 public interface StructurePieceType {
 	StructurePieceType MINESHAFT_CORRIDOR = register(MineshaftGenerator.MineshaftCorridor::new, "MSCorridor");
@@ -42,6 +44,7 @@ public interface StructurePieceType {
 	StructurePieceType JUNGLE_TEMPLE = register(JungleTempleGenerator::new, "TeJP");
 	StructurePieceType OCEAN_TEMPLE = register(OceanRuinGenerator.Piece::new, "ORP");
 	StructurePieceType IGLOO = register(IglooGenerator.Piece::new, "Iglu");
+	StructurePieceType RUPO = register(RuinedPortalFeaturePiece::new, "RUPO");
 	StructurePieceType SWAMP_HUT = register(SwampHutGenerator::new, "TeSH");
 	StructurePieceType DESERT_TEMPLE = register(DesertTempleGenerator::new, "TeDP");
 	StructurePieceType OCEAN_MONUMENT_BASE = register(OceanMonumentGenerator.Base::new, "OMB");
@@ -61,6 +64,8 @@ public interface StructurePieceType {
 	StructurePieceType BURIED_TREASURE = register(BuriedTreasureGenerator.Piece::new, "BTP");
 	StructurePieceType SHIPWRECK = register(ShipwreckGenerator.Piece::new, "Shipwreck");
 	StructurePieceType NE_FOS = register(NetherFossilGenerator.Piece::new, "NeFos");
+	StructurePieceType BASTION_REMNANT = register(BastionRemnantGenerator.Piece::new, "BastionRemnant");
+	StructurePieceType RUNTIME = register(JigsawBlockEntity.RuntimeStructurePiece::new, "Runtime");
 
 	StructurePiece load(StructureManager structureManager, CompoundTag tag);
 

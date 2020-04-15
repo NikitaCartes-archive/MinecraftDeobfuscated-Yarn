@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.world.gen.surfacebuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -15,16 +15,14 @@ import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
-import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
-public abstract class class_5164 extends SurfaceBuilder<TernarySurfaceConfig> {
+public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	private long field_23920;
 	private ImmutableMap<BlockState, OctavePerlinNoiseSampler> field_23921 = ImmutableMap.of();
 	private ImmutableMap<BlockState, OctavePerlinNoiseSampler> field_23922 = ImmutableMap.of();
 	private OctavePerlinNoiseSampler field_23923;
 
-	public class_5164(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
+	public AbstractNetherSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
 		super(function);
 	}
 

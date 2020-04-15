@@ -964,14 +964,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return new File(this.getRunDirectory(), string);
 	}
 
-	public void info(String string) {
-		LOGGER.info(string);
-	}
-
-	public void warn(String string) {
-		LOGGER.warn(string);
-	}
-
 	public ServerWorld getWorld(DimensionType dimensionType) {
 		return (ServerWorld)this.worlds.get(dimensionType);
 	}
@@ -994,20 +986,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public String[] getPlayerNames() {
 		return this.playerManager.getPlayerNames();
-	}
-
-	public boolean isDebuggingEnabled() {
-		return false;
-	}
-
-	public void logError(String string) {
-		LOGGER.error(string);
-	}
-
-	public void log(String string) {
-		if (this.isDebuggingEnabled()) {
-			LOGGER.info(string);
-		}
 	}
 
 	public String getServerModName() {
@@ -1729,7 +1707,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void method_24154() {
-		Blocks.method_26979();
+		Blocks.refreshShapeCache();
 	}
 
 	private void startMonitor(@Nullable TickDurationMonitor monitor) {

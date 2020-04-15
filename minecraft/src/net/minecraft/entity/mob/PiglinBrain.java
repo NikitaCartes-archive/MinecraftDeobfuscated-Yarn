@@ -74,7 +74,7 @@ import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.Vec3d;
 
 public class PiglinBrain {
-	public static final Item field_23826 = Items.GOLD_INGOT;
+	protected static final Item field_23826 = Items.GOLD_INGOT;
 	private static final IntRange field_22477 = IntRange.between(10, 20);
 	private static final IntRange HUNT_MEMORY_DURATION = Durations.betweenSeconds(30, 120);
 	private static final IntRange MEMORY_TRANSFER_TASK_DURATION = Durations.betweenSeconds(10, 40);
@@ -100,13 +100,13 @@ public class PiglinBrain {
 
 	protected static Brain<?> create(PiglinEntity piglin, Dynamic<?> data) {
 		Brain<PiglinEntity> brain = new Brain<>(PiglinEntity.MEMORY_MODULE_TYPES, PiglinEntity.SENSOR_TYPES, data);
-		addCoreActivities(piglin, brain);
-		addIdleActivities(piglin, brain);
-		addAdmireItemActivities(piglin, brain);
+		addCoreActivities(brain);
+		addIdleActivities(brain);
+		addAdmireItemActivities(brain);
 		addFightActivities(piglin, brain);
-		addCelebrateActivities(piglin, brain);
-		addAvoidActivities(piglin, brain);
-		addRideActivities(piglin, brain);
+		addCelebrateActivities(brain);
+		addAvoidActivities(brain);
+		addRideActivities(brain);
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();
@@ -118,7 +118,7 @@ public class PiglinBrain {
 		piglin.getBrain().remember(MemoryModuleType.HUNTED_RECENTLY, DynamicSerializableBoolean.of(true), (long)i);
 	}
 
-	private static void addCoreActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
+	private static void addCoreActivities(Brain<PiglinEntity> brain) {
 		brain.setTaskList(
 			Activity.CORE,
 			0,
@@ -134,7 +134,7 @@ public class PiglinBrain {
 		);
 	}
 
-	private static void addIdleActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
+	private static void addIdleActivities(Brain<PiglinEntity> brain) {
 		brain.setTaskList(
 			Activity.IDLE,
 			10,
@@ -168,7 +168,7 @@ public class PiglinBrain {
 		);
 	}
 
-	private static void addCelebrateActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
+	private static void addCelebrateActivities(Brain<PiglinEntity> brain) {
 		brain.setTaskList(
 			Activity.CELEBRATE,
 			10,
@@ -186,7 +186,7 @@ public class PiglinBrain {
 		);
 	}
 
-	private static void addAdmireItemActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
+	private static void addAdmireItemActivities(Brain<PiglinEntity> brain) {
 		brain.setTaskList(
 			Activity.ADMIRE_ITEM,
 			10,
@@ -199,7 +199,7 @@ public class PiglinBrain {
 		);
 	}
 
-	private static void addAvoidActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
+	private static void addAvoidActivities(Brain<PiglinEntity> brain) {
 		brain.setTaskList(
 			Activity.AVOID,
 			10,
@@ -213,7 +213,7 @@ public class PiglinBrain {
 		);
 	}
 
-	private static void addRideActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
+	private static void addRideActivities(Brain<PiglinEntity> brain) {
 		brain.setTaskList(
 			Activity.RIDE,
 			10,
@@ -468,7 +468,7 @@ public class PiglinBrain {
 		}
 	}
 
-	public static boolean method_27086(PiglinEntity piglinEntity, ItemStack itemStack) {
+	protected static boolean method_27086(PiglinEntity piglinEntity, ItemStack itemStack) {
 		return !hasBeenHitByPlayer(piglinEntity) && !isAdmiringItem(piglinEntity) && piglinEntity.isAdult() && acceptsForBarter(itemStack.getItem());
 	}
 

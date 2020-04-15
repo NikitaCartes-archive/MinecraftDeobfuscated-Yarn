@@ -37,7 +37,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		BlockPos blockPos,
 		DeltaFeatureConfig deltaFeatureConfig
 	) {
-		BlockPos blockPos2 = method_27102(iWorld, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, iWorld.getHeight() - 1), Integer.MAX_VALUE);
+		BlockPos blockPos2 = method_27102(iWorld, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, iWorld.getHeight() - 1));
 		if (blockPos2 == null) {
 			return false;
 		} else {
@@ -55,7 +55,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 					break;
 				}
 
-				if (iWorld.getBlockState(blockPos3).getBlock() != deltaFeatureConfig.contents.getBlock() && method_27103(iWorld, blockPos3, deltaFeatureConfig)) {
+				if (method_27103(iWorld, blockPos3, deltaFeatureConfig)) {
 					if (bl3) {
 						bl = true;
 						this.setBlockState(iWorld, blockPos3, deltaFeatureConfig.rim);
@@ -63,6 +63,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 
 					BlockPos blockPos4 = blockPos3.add(i, 0, j);
 					if (method_27103(iWorld, blockPos4, deltaFeatureConfig)) {
+						bl = true;
 						this.setBlockState(iWorld, blockPos4, deltaFeatureConfig.contents);
 					}
 				}
@@ -88,9 +89,8 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	}
 
 	@Nullable
-	private static BlockPos method_27102(IWorld iWorld, BlockPos.Mutable mutable, int i) {
-		while (mutable.getY() > 1 && i > 0) {
-			i--;
+	private static BlockPos method_27102(IWorld iWorld, BlockPos.Mutable mutable) {
+		while (mutable.getY() > 1) {
 			if (iWorld.getBlockState(mutable).isAir()) {
 				BlockState blockState = iWorld.getBlockState(mutable.move(Direction.DOWN));
 				mutable.move(Direction.UP);

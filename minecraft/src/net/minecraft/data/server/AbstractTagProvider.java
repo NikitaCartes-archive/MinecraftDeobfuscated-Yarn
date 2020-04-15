@@ -50,7 +50,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 		this.tagBuilders
 			.forEach(
 				(identifier, builder) -> {
-					List<Tag.class_5145> list = (List<Tag.class_5145>)builder.streamUnresolvedEntries(function, function2).collect(Collectors.toList());
+					List<Tag.TrackedEntry> list = (List<Tag.TrackedEntry>)builder.streamUnresolvedEntries(function, function2).collect(Collectors.toList());
 					if (!list.isEmpty()) {
 						throw new IllegalArgumentException(
 							String.format(

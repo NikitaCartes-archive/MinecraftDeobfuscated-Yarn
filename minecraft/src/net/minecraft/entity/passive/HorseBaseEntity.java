@@ -304,7 +304,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	public double getJumpStrength() {
-		return this.method_26825(EntityAttributes.HORSE_JUMP_STRENGTH);
+		return this.getAttribute(EntityAttributes.HORSE_JUMP_STRENGTH);
 	}
 
 	@Nullable
@@ -708,7 +708,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 				this.flyingSpeed = this.getMovementSpeed() * 0.1F;
 				if (this.isLogicalSideForUpdatingMovement()) {
-					this.setMovementSpeed((float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+					this.setMovementSpeed((float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 					super.travel(new Vec3d((double)f, movementInput.y, (double)g));
 				} else if (livingEntity instanceof PlayerEntity) {
 					this.setVelocity(Vec3d.ZERO);

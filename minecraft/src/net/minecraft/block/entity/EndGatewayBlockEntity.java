@@ -73,7 +73,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	@Environment(EnvType.CLIENT)
 	@Override
 	public double getSquaredRenderDistance() {
-		return 65536.0;
+		return 256.0;
 	}
 
 	@Override

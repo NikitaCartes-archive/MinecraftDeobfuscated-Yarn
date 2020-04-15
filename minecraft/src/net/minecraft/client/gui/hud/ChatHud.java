@@ -231,15 +231,14 @@ public class ChatHud extends DrawableHelper {
 	@Nullable
 	public Text getText(double x, double y) {
 		if (this.isChatFocused() && !this.client.options.hudHidden && this.method_23677()) {
-			double d = this.getChatScale() * (this.client.options.chatLineSpacing + 1.0);
-			double e = x - 2.0;
-			double f = (double)this.client.getWindow().getScaledHeight() - y - 40.0;
-			e = (double)MathHelper.floor(e / d);
-			f = (double)MathHelper.floor(f / d);
-			if (!(e < 0.0) && !(f < 0.0)) {
+			double d = x - 2.0;
+			double e = (double)this.client.getWindow().getScaledHeight() - y - 40.0;
+			d = (double)MathHelper.floor(d / this.getChatScale());
+			e = (double)MathHelper.floor(e / (this.getChatScale() * (this.client.options.chatLineSpacing + 1.0)));
+			if (!(d < 0.0) && !(e < 0.0)) {
 				int i = Math.min(this.getVisibleLineCount(), this.visibleMessages.size());
-				if (e <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && f < (double)(9 * i + i)) {
-					int j = (int)(f / 9.0 + (double)this.scrolledLines);
+				if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < (double)(9 * i + i)) {
+					int j = (int)(e / 9.0 + (double)this.scrolledLines);
 					if (j >= 0 && j < this.visibleMessages.size()) {
 						ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(j);
 						int k = 0;
@@ -247,7 +246,7 @@ public class ChatHud extends DrawableHelper {
 						for (Text text : chatHudLine.getText()) {
 							if (text instanceof LiteralText) {
 								k += this.client.textRenderer.getStringWidth(Texts.getRenderChatMessage(((LiteralText)text).getRawString(), false));
-								if ((double)k > e) {
+								if ((double)k > d) {
 									return text;
 								}
 							}

@@ -29,6 +29,7 @@ import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -282,6 +283,7 @@ public enum NetworkState {
 					.register(BookUpdateC2SPacket.class, BookUpdateC2SPacket::new)
 					.register(QueryEntityNbtC2SPacket.class, QueryEntityNbtC2SPacket::new)
 					.register(PlayerInteractEntityC2SPacket.class, PlayerInteractEntityC2SPacket::new)
+					.register(JigsawGeneratingC2SPacket.class, JigsawGeneratingC2SPacket::new)
 					.register(KeepAliveC2SPacket.class, KeepAliveC2SPacket::new)
 					.register(UpdateDifficultyLockC2SPacket.class, UpdateDifficultyLockC2SPacket::new)
 					.register(PlayerMoveC2SPacket.PositionOnly.class, PlayerMoveC2SPacket.PositionOnly::new)

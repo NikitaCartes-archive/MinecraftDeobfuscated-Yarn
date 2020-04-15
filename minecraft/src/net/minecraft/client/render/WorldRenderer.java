@@ -2047,10 +2047,6 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		});
 	}
 
-	public static void drawBox(VertexConsumer vertexConsumer, double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
-		drawBox(new MatrixStack(), vertexConsumer, d, e, f, g, h, i, j, k, l, m, j, k, l);
-	}
-
 	public static void drawBox(MatrixStack matrixStack, VertexConsumer vertexConsumer, Box box, float f, float g, float h, float i) {
 		drawBox(matrixStack, vertexConsumer, box.x1, box.y1, box.z1, box.x2, box.y2, box.z2, f, g, h, i, f, g, h);
 	}
@@ -2228,10 +2224,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	public void addParticle(
-		ParticleEffect parameters, boolean shouldAlwaysSpawn, boolean isImportant, double x, double y, double z, double velocityX, double velocityY, double velocityY
+		ParticleEffect parameters, boolean shouldAlwaysSpawn, boolean isImportant, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		try {
-			this.spawnParticle(parameters, shouldAlwaysSpawn, isImportant, x, y, z, velocityX, velocityY, velocityY);
+			this.spawnParticle(parameters, shouldAlwaysSpawn, isImportant, x, y, z, velocityX, velocityY, velocityZ);
 		} catch (Throwable var19) {
 			CrashReport crashReport = CrashReport.create(var19, "Exception while adding particle");
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");

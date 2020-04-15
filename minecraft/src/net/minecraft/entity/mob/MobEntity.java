@@ -132,13 +132,16 @@ public abstract class MobEntity extends LivingEntity {
 		return new MobNavigation(this, world);
 	}
 
-	protected boolean method_26323() {
+	/**
+	 * When true, causes this entity to take over pathfinding for its controlling passenger.
+	 */
+	protected boolean movesIndependently() {
 		return false;
 	}
 
 	public float getPathfindingPenalty(PathNodeType nodeType) {
 		MobEntity mobEntity;
-		if (this.getVehicle() instanceof MobEntity && ((MobEntity)this.getVehicle()).method_26323()) {
+		if (this.getVehicle() instanceof MobEntity && ((MobEntity)this.getVehicle()).movesIndependently()) {
 			mobEntity = (MobEntity)this.getVehicle();
 		} else {
 			mobEntity = this;
@@ -1263,8 +1266,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		float f = (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-		float g = (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+		float f = (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		float g = (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 		if (target instanceof LivingEntity) {
 			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
 			g += (float)EnchantmentHelper.getKnockback(this);

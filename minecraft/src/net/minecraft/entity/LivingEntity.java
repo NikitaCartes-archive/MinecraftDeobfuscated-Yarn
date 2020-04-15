@@ -201,7 +201,7 @@ public abstract class LivingEntity extends Entity {
 		super(entityType, world);
 		this.attributes = new AttributeContainer(DefaultAttributeRegistry.get(entityType));
 		this.setHealth(this.getMaximumHealth());
-		this.field_23807 = true;
+		this.inanimate = true;
 		this.randomSmallSeed = (float)((Math.random() + 1.0) * 0.01F);
 		this.refreshPosition();
 		this.randomLargeSeed = (float)Math.random() * 12398.0F;
@@ -1270,7 +1270,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public void takeKnockback(float f, double d, double e) {
-		f = (float)((double)f * (1.0 - this.method_26825(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)));
+		f = (float)((double)f * (1.0 - this.getAttribute(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)));
 		if (!(f <= 0.0F)) {
 			this.velocityDirty = true;
 			Vec3d vec3d = this.getVelocity();
@@ -1394,7 +1394,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public int getArmor() {
-		return MathHelper.floor(this.method_26825(EntityAttributes.GENERIC_ARMOR));
+		return MathHelper.floor(this.getAttribute(EntityAttributes.GENERIC_ARMOR));
 	}
 
 	protected void damageArmor(DamageSource source, float amount) {
@@ -1406,7 +1406,7 @@ public abstract class LivingEntity extends Entity {
 	protected float applyArmorToDamage(DamageSource source, float amount) {
 		if (!source.bypassesArmor()) {
 			this.damageArmor(source, amount);
-			amount = DamageUtil.getDamageLeft(amount, (float)this.getArmor(), (float)this.method_26825(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+			amount = DamageUtil.getDamageLeft(amount, (float)this.getArmor(), (float)this.getAttribute(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
 		}
 
 		return amount;
@@ -1481,7 +1481,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public final float getMaximumHealth() {
-		return (float)this.method_26825(EntityAttributes.GENERIC_MAX_HEALTH);
+		return (float)this.getAttribute(EntityAttributes.GENERIC_MAX_HEALTH);
 	}
 
 	public final int getStuckArrowCount() {
@@ -1688,7 +1688,7 @@ public abstract class LivingEntity extends Entity {
 		return this.getAttributes().getCustomInstance(attribute);
 	}
 
-	public double method_26825(EntityAttribute entityAttribute) {
+	public double getAttribute(EntityAttribute entityAttribute) {
 		return this.getAttributes().getValue(entityAttribute);
 	}
 
@@ -1862,7 +1862,7 @@ public abstract class LivingEntity extends Entity {
 		return 0.8F;
 	}
 
-	public boolean method_26319() {
+	public boolean canWalkOnLava() {
 		return false;
 	}
 
@@ -1941,7 +1941,7 @@ public abstract class LivingEntity extends Entity {
 
 						this.setVelocity(vec3d6.x * (double)fx, r * 0.98F, vec3d6.z * (double)fx);
 					}
-				} else if (this.method_26319()) {
+				} else if (this.canWalkOnLava()) {
 					float i = 0.6F;
 					float j = 0.54600006F;
 					Vec3d vec3d3 = this.method_26318(movementInput, 0.54600006F);
@@ -2530,7 +2530,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	protected void scheduleVelocityUpdate() {
-		this.velocityModified = this.random.nextDouble() >= this.method_26825(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+		this.velocityModified = this.random.nextDouble() >= this.getAttribute(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
 	}
 
 	@Override

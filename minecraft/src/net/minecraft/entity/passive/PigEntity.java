@@ -212,7 +212,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	public float getSaddledSpeed() {
-		return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225F;
+		return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225F;
 	}
 
 	@Override

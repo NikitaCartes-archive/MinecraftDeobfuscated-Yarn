@@ -17,6 +17,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -31,7 +32,15 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
+	public boolean method_27217(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int i, int j, Biome biome) {
+		ChunkPos chunkPos = this.method_27218(chunkGenerator, chunkRandom, i, j);
+		return this.shouldStartAt(biomeAccess, chunkGenerator, chunkRandom, i, j, biome, chunkPos);
+	}
+
+	@Override
+	protected boolean shouldStartAt(
+		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+	) {
 		if (this.lastSeed != chunkGenerator.getSeed()) {
 			this.invalidateState();
 		}
@@ -41,8 +50,8 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 			this.stateStillValid = true;
 		}
 
-		for (ChunkPos chunkPos : this.startPositions) {
-			if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
+		for (ChunkPos chunkPos2 : this.startPositions) {
+			if (chunkX == chunkPos2.x && chunkZ == chunkPos2.z) {
 				return true;
 			}
 		}
@@ -170,7 +179,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			int i = 0;
 			long l = chunkGenerator.getSeed();
 

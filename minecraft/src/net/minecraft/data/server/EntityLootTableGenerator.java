@@ -188,7 +188,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 				.withPool(
 					LootPool.builder()
-						.withEntry(TagEntry.builder(ItemTags.MUSIC_DISCS))
+						.withEntry(TagEntry.builder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
 						.withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.KILLER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
 				)
 		);

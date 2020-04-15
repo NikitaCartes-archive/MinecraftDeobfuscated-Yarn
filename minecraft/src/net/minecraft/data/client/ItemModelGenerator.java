@@ -181,6 +181,7 @@ public class ItemModelGenerator {
 		this.register(Items.MUSIC_DISC_FAR, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_MALL, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_MELLOHI, Models.GENERATED);
+		this.register(Items.MUSIC_DISC_PIGSTEP, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_STAL, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_STRAD, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_WAIT, Models.GENERATED);

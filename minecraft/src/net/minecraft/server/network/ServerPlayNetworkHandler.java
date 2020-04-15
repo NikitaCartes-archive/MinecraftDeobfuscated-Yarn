@@ -60,6 +60,7 @@ import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -613,11 +614,24 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
 				jigsawBlockEntity.setAttachmentType(packet.getAttachmentType());
 				jigsawBlockEntity.setTargetPool(packet.getTargetPool());
-				jigsawBlockEntity.setPool(packet.method_26435());
+				jigsawBlockEntity.setPool(packet.getPool());
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
-				jigsawBlockEntity.setJoint(packet.method_26436());
+				jigsawBlockEntity.setJoint(packet.getJointType());
 				jigsawBlockEntity.markDirty();
 				this.player.world.updateListeners(blockPos, blockState, blockState, 3);
+			}
+		}
+	}
+
+	@Override
+	public void onJigsawGenerating(JigsawGeneratingC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		if (this.player.isCreativeLevelTwoOp()) {
+			BlockPos blockPos = packet.getPos();
+			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
+			if (blockEntity instanceof JigsawBlockEntity) {
+				JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
+				jigsawBlockEntity.generate(this.server.getWorld(this.player.dimension), packet.getMaxDepth());
 			}
 		}
 	}
@@ -1121,7 +1135,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				} else if (rpacket.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
 					if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof PersistentProjectileEntity || entity == this.player) {
 						this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
-						this.server.warn("Player " + this.player.getName().getString() + " tried to attack an invalid entity");
+						LOGGER.warn("Player {} tried to attack an invalid entity", this.player.getName().getString());
 						return;
 					}
 
@@ -1294,7 +1308,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 			SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
 			if (!signBlockEntity.isEditable() || signBlockEntity.getEditor() != this.player) {
-				this.server.warn("Player " + this.player.getName().getString() + " just tried to change non-editable sign");
+				LOGGER.warn("Player {} just tried to change non-editable sign", this.player.getName().getString());
 				return;
 			}
 

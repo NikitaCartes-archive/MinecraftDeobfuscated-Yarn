@@ -748,7 +748,9 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	@Override
 	public boolean canGather(ItemStack stack) {
-		return GATHERABLE_ITEMS.contains(stack.getItem()) || this.getVillagerData().getProfession().getGatherableItems().contains(stack.getItem());
+		Item item = stack.getItem();
+		return (GATHERABLE_ITEMS.contains(item) || this.getVillagerData().getProfession().getGatherableItems().contains(item))
+			&& this.getInventory().method_27070(stack);
 	}
 
 	public boolean wantsToStartBreeding() {
@@ -765,8 +767,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	}
 
 	public boolean hasSeedToPlant() {
-		BasicInventory basicInventory = this.getInventory();
-		return basicInventory.containsAny(ImmutableSet.of(Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS));
+		return this.getInventory().containsAny(ImmutableSet.of(Items.WHEAT_SEEDS, Items.POTATO, Items.CARROT, Items.BEETROOT_SEEDS));
 	}
 
 	@Override

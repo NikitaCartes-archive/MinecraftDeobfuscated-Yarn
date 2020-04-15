@@ -21,8 +21,27 @@ public class ChunkGeneratorConfig {
 	protected final int oceanRuinSeparation = 4;
 	protected int mansionDistance = 80;
 	protected final int mansionSeparation = 20;
+	protected final int netherStructureSpacing = 24;
+	protected final int netherStructureSeparation = 4;
+	protected final int netherStructureSeedModifier = 30084232;
+	protected int ruinedPortalSpacing = 25;
+	protected final int ruinedPortalSeparation = 10;
+	protected int netherRuinedPortalSpacing = 15;
+	protected final int netherRuinedPortalSeparation = 7;
 	protected BlockState defaultBlock = Blocks.STONE.getDefaultState();
 	protected BlockState defaultFluid = Blocks.WATER.getDefaultState();
+
+	public int getNetherStructureSpacing() {
+		return 24;
+	}
+
+	public int getNetherStructureSeparation() {
+		return 4;
+	}
+
+	public int getNetherStructureSeedModifier() {
+		return 30084232;
+	}
 
 	public int getVillageDistance() {
 		return this.villageDistance;
@@ -90,6 +109,14 @@ public class ChunkGeneratorConfig {
 
 	public int getMansionSeparation() {
 		return 20;
+	}
+
+	public int getRuinedPortalSpacing(boolean inNether) {
+		return inNether ? this.netherRuinedPortalSpacing : this.ruinedPortalSpacing;
+	}
+
+	public int getRuinedPortalSeparation(boolean inNether) {
+		return inNether ? 7 : 10;
 	}
 
 	public BlockState getDefaultBlock() {

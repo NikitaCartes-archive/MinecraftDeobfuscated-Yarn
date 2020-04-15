@@ -108,14 +108,14 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	private static final AtomicInteger MAX_ENTITY_ID = new AtomicInteger();
 	private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
-	private static final ImmutableMap<EntityPose, ImmutableList<Integer>> field_22417 = ImmutableMap.of(
+	private static final ImmutableMap<EntityPose, ImmutableList<Integer>> POSE_HEIGHTS = ImmutableMap.of(
 		EntityPose.STANDING, ImmutableList.of(0, 1, -1), EntityPose.CROUCHING, ImmutableList.of(0, 1, -1), EntityPose.SWIMMING, ImmutableList.of(0, 1)
 	);
 	private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	private static double renderDistanceMultiplier = 1.0;
 	private final EntityType<?> type;
 	private int entityId = MAX_ENTITY_ID.incrementAndGet();
-	public boolean field_23807;
+	public boolean inanimate;
 	private final List<Entity> passengerList = Lists.<Entity>newArrayList();
 	protected int ridingCooldown;
 	@Nullable
@@ -2605,7 +2605,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				float g = 0.5F - f;
 				float h = 0.5F + f;
 
-				for (int i : field_22417.get(entityPose)) {
+				for (int i : POSE_HEIGHTS.get(entityPose)) {
 					for (int[] js : is) {
 						mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
 						double d = this.world

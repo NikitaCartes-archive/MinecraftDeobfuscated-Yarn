@@ -3,11 +3,10 @@ package net.minecraft.world.gen.surfacebuilder;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.Dynamic;
 import java.util.function.Function;
-import net.minecraft.class_5164;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
-public class BasaltDeltasSurfaceBuilder extends class_5164 {
+public class BasaltDeltasSurfaceBuilder extends AbstractNetherSurfaceBuilder {
 	private static final BlockState BASALT = Blocks.BASALT.getDefaultState();
 	private static final BlockState BLACKSTONE = Blocks.BLACKSTONE.getDefaultState();
 	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
