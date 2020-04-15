@@ -19,6 +19,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -35,38 +36,38 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-        int m = ((ChunkGeneratorConfig)chunkGenerator.getConfig()).getOceanMonumentSpacing();
-        int n = ((ChunkGeneratorConfig)chunkGenerator.getConfig()).getOceanMonumentSeparation();
-        int o = i + m * k;
-        int p = j + m * l;
-        int q = o < 0 ? o - m + 1 : o;
-        int r = p < 0 ? p - m + 1 : p;
-        int s = q / m;
-        int t = r / m;
-        ((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), s, t, 10387313);
-        s *= m;
-        t *= m;
-        return new ChunkPos(s += (random.nextInt(m - n) + random.nextInt(m - n)) / 2, t += (random.nextInt(m - n) + random.nextInt(m - n)) / 2);
+    protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+        return chunkGeneratorConfig.getOceanMonumentSpacing();
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
-        ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
-        if (chunkX == chunkPos.x && chunkZ == chunkPos.z) {
-            Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 16);
-            for (Biome biome2 : set) {
-                if (chunkGenerator.hasStructure(biome2, this)) continue;
-                return false;
-            }
-            Set<Biome> set2 = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 29);
-            for (Biome biome3 : set2) {
-                if (biome3.getCategory() == Biome.Category.OCEAN || biome3.getCategory() == Biome.Category.RIVER) continue;
-                return false;
-            }
-            return true;
-        }
+    protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
+        return chunkGenerationConfig.getOceanMonumentSeparation();
+    }
+
+    @Override
+    protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
+        return 10387313;
+    }
+
+    @Override
+    protected boolean method_27219() {
         return false;
+    }
+
+    @Override
+    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos) {
+        Set<Biome> set = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 16);
+        for (Biome biome2 : set) {
+            if (chunkGenerator.hasStructure(biome2, this)) continue;
+            return false;
+        }
+        Set<Biome> set2 = chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 29);
+        for (Biome biome3 : set2) {
+            if (biome3.getCategory() == Biome.Category.OCEAN || biome3.getCategory() == Biome.Category.RIVER) continue;
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -98,7 +99,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             this.method_16588(x, z);
         }
 

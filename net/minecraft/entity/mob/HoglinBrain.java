@@ -44,8 +44,8 @@ import net.minecraft.util.math.IntRange;
 public class HoglinBrain {
     private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
 
-    protected static Brain<?> create(HoglinEntity hoglin, Dynamic<?> data) {
-        Brain<HoglinEntity> brain = new Brain<HoglinEntity>(HoglinEntity.MEMORY_MODULE_TYPES, HoglinEntity.SENSOR_TYPES, data);
+    protected static Brain<?> create(Dynamic<?> dynamic) {
+        Brain<HoglinEntity> brain = new Brain<HoglinEntity>(HoglinEntity.MEMORY_MODULE_TYPES, HoglinEntity.SENSOR_TYPES, dynamic);
         HoglinBrain.addCoreTasks(brain);
         HoglinBrain.addIdleTasks(brain);
         HoglinBrain.addFightTasks(brain);

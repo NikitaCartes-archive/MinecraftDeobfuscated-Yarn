@@ -54,7 +54,7 @@ implements DebugRenderer.Renderer {
                             int m = chunkPos.x * 16 + k;
                             int n = chunkPos.z * 16 + l;
                             float f = (float)((double)((float)iWorld.getTopY(type, m, n) + (float)type.ordinal() * 0.09375f) - cameraY);
-                            WorldRenderer.drawBox(bufferBuilder, (double)((float)m + 0.25f) - cameraX, (double)f, (double)((float)n + 0.25f) - cameraZ, (double)((float)m + 0.75f) - cameraX, (double)(f + 0.09375f), (double)((float)n + 0.75f) - cameraZ, vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0f);
+                            WorldRenderer.drawBox(bufferBuilder, (double)((float)m + 0.25f) - cameraX, f, (double)((float)n + 0.25f) - cameraZ, (double)((float)m + 0.75f) - cameraX, f + 0.09375f, (double)((float)n + 0.75f) - cameraZ, vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0f);
                         }
                     }
                 }

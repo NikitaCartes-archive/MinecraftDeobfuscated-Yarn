@@ -219,7 +219,7 @@ Saddleable {
 
     @Override
     public float getSaddledSpeed() {
-        return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225f;
+        return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225f;
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world.gen.surfacebuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -19,14 +19,14 @@ import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
-public abstract class class_5164
+public abstract class AbstractNetherSurfaceBuilder
 extends SurfaceBuilder<TernarySurfaceConfig> {
     private long field_23920;
     private ImmutableMap<BlockState, OctavePerlinNoiseSampler> field_23921 = ImmutableMap.of();
     private ImmutableMap<BlockState, OctavePerlinNoiseSampler> field_23922 = ImmutableMap.of();
     private OctavePerlinNoiseSampler field_23923;
 
-    public class_5164(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
+    public AbstractNetherSurfaceBuilder(Function<Dynamic<?>, ? extends TernarySurfaceConfig> function) {
         super(function);
     }
 
@@ -72,8 +72,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     @Override
     public void initSeed(long seed) {
         if (this.field_23920 != seed || this.field_23923 == null || this.field_23921.isEmpty() || this.field_23922.isEmpty()) {
-            this.field_23921 = class_5164.method_27131(this.method_27129(), seed);
-            this.field_23922 = class_5164.method_27131(this.method_27133(), seed + (long)this.field_23921.size());
+            this.field_23921 = AbstractNetherSurfaceBuilder.method_27131(this.method_27129(), seed);
+            this.field_23922 = AbstractNetherSurfaceBuilder.method_27131(this.method_27133(), seed + (long)this.field_23921.size());
             this.field_23923 = new OctavePerlinNoiseSampler(new ChunkRandom(seed + (long)this.field_23921.size() + (long)this.field_23922.size()), ImmutableList.of(Integer.valueOf(0)));
         }
         this.field_23920 = seed;

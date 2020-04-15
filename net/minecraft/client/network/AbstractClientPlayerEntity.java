@@ -110,7 +110,7 @@ extends PlayerEntity {
         if (this.abilities.flying) {
             f *= 1.1f;
         }
-        f = (float)((double)f * ((this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED) / (double)this.abilities.getWalkSpeed() + 1.0) / 2.0));
+        f = (float)((double)f * ((this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) / (double)this.abilities.getWalkSpeed() + 1.0) / 2.0));
         if (this.abilities.getWalkSpeed() == 0.0f || Float.isNaN(f) || Float.isInfinite(f)) {
             f = 1.0f;
         }

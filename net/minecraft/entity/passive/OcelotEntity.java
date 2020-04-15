@@ -164,7 +164,7 @@ extends AnimalEntity {
     }
 
     private float method_22329() {
-        return (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        return (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
     }
 
     @Override

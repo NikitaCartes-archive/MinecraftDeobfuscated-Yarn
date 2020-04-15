@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.AbstractTempleFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -40,7 +41,7 @@ extends AbstractTempleFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected int getSeedModifier() {
+    protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
         return 14357618;
     }
 
@@ -51,7 +52,7 @@ extends AbstractTempleFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             DefaultFeatureConfig defaultFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.IGLOO);
             int i = x * 16;
             int j = z * 16;

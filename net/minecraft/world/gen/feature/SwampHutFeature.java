@@ -18,6 +18,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.AbstractTempleFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -47,7 +48,7 @@ extends AbstractTempleFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected int getSeedModifier() {
+    protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
         return 14357620;
     }
 
@@ -77,7 +78,7 @@ extends AbstractTempleFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, x * 16, z * 16);
             this.children.add(swampHutGenerator);
             this.setBoundingBoxFromChildren();

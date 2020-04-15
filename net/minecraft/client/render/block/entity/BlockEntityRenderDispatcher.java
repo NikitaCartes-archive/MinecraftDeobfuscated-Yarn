@@ -40,6 +40,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,7 +97,7 @@ public class BlockEntityRenderDispatcher {
     }
 
     public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
-        if (!(blockEntity.getSquaredDistance(this.camera.getPos().x, this.camera.getPos().y, this.camera.getPos().z) < blockEntity.getSquaredRenderDistance())) {
+        if (!Vec3d.method_24953(blockEntity.getPos()).isInRange(this.camera.getPos(), blockEntity.getSquaredRenderDistance())) {
             return;
         }
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);

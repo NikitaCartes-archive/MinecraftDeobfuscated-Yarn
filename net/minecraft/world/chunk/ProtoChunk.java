@@ -213,6 +213,9 @@ implements Chunk {
 
     @Override
     public void addEntity(Entity entity) {
+        if (entity.hasVehicle()) {
+            return;
+        }
         CompoundTag compoundTag = new CompoundTag();
         entity.saveToTag(compoundTag);
         this.addEntity(compoundTag);

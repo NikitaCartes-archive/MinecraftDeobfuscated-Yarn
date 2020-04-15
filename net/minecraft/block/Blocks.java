@@ -31,6 +31,7 @@ import net.minecraft.block.CarrotsBlock;
 import net.minecraft.block.CartographyTableBlock;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.block.CauldronBlock;
+import net.minecraft.block.ChainBlock;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.ChorusFlowerBlock;
 import net.minecraft.block.ChorusPlantBlock;
@@ -242,7 +243,7 @@ public class Blocks {
     public static final Block JUNGLE_SAPLING = Blocks.register("jungle_sapling", new SaplingBlock(new JungleSaplingGenerator(), AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block ACACIA_SAPLING = Blocks.register("acacia_sapling", new SaplingBlock(new AcaciaSaplingGenerator(), AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block DARK_OAK_SAPLING = Blocks.register("dark_oak_sapling", new SaplingBlock(new DarkOakSaplingGenerator(), AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS)));
-    public static final Block BEDROCK = Blocks.register("bedrock", new Block(AbstractBlock.Settings.of(Material.STONE).strength(-1.0f, 3600000.0f).dropsNothing().allowsSpawning(Blocks::method_26114)));
+    public static final Block BEDROCK = Blocks.register("bedrock", new Block(AbstractBlock.Settings.of(Material.STONE).strength(-1.0f, 3600000.0f).dropsNothing().allowsSpawning(Blocks::never)));
     public static final Block WATER = Blocks.register("water", new FluidBlock(Fluids.WATER, AbstractBlock.Settings.of(Material.WATER).noCollision().strength(100.0f).dropsNothing()));
     public static final Block LAVA = Blocks.register("lava", new FluidBlock(Fluids.LAVA, AbstractBlock.Settings.of(Material.LAVA).noCollision().ticksRandomly().strength(100.0f).lightLevel(blockState -> 15).dropsNothing()));
     public static final Block SAND = Blocks.register("sand", new SandBlock(14406560, AbstractBlock.Settings.of(Material.SAND, MaterialColor.SAND).strength(0.5f).sounds(BlockSoundGroup.SAND)));
@@ -284,7 +285,7 @@ public class Blocks {
     public static final Block DARK_OAK_LEAVES = Blocks.register("dark_oak_leaves", Blocks.createLeavesBlock());
     public static final Block SPONGE = Blocks.register("sponge", new SpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6f).sounds(BlockSoundGroup.GRASS)));
     public static final Block WET_SPONGE = Blocks.register("wet_sponge", new WetSpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6f).sounds(BlockSoundGroup.GRASS)));
-    public static final Block GLASS = Blocks.register("glass", new GlassBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::method_26114).solidBlock(Blocks::method_26122).suffocates(Blocks::method_26122).blockVision(Blocks::method_26122)));
+    public static final Block GLASS = Blocks.register("glass", new GlassBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::never).solidBlock(Blocks::never).suffocates(Blocks::never).blockVision(Blocks::never)));
     public static final Block LAPIS_ORE = Blocks.register("lapis_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
     public static final Block LAPIS_BLOCK = Blocks.register("lapis_block", new Block(AbstractBlock.Settings.of(Material.METAL, MaterialColor.LAPIS).strength(3.0f, 3.0f)));
     public static final Block DISPENSER = Blocks.register("dispenser", new DispenserBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.5f)));
@@ -335,7 +336,7 @@ public class Blocks {
     public static final Block GREEN_WOOL = Blocks.register("green_wool", new Block(AbstractBlock.Settings.of(Material.WOOL, MaterialColor.GREEN).strength(0.8f).sounds(BlockSoundGroup.WOOL)));
     public static final Block RED_WOOL = Blocks.register("red_wool", new Block(AbstractBlock.Settings.of(Material.WOOL, MaterialColor.RED).strength(0.8f).sounds(BlockSoundGroup.WOOL)));
     public static final Block BLACK_WOOL = Blocks.register("black_wool", new Block(AbstractBlock.Settings.of(Material.WOOL, MaterialColor.BLACK).strength(0.8f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block MOVING_PISTON = Blocks.register("moving_piston", new PistonExtensionBlock(AbstractBlock.Settings.of(Material.PISTON).strength(-1.0f).dynamicBounds().dropsNothing().nonOpaque().solidBlock(Blocks::method_26122).suffocates(Blocks::method_26122).blockVision(Blocks::method_26122)));
+    public static final Block MOVING_PISTON = Blocks.register("moving_piston", new PistonExtensionBlock(AbstractBlock.Settings.of(Material.PISTON).strength(-1.0f).dynamicBounds().dropsNothing().nonOpaque().solidBlock(Blocks::never).suffocates(Blocks::never).blockVision(Blocks::never)));
     public static final Block DANDELION = Blocks.register("dandelion", new FlowerBlock(StatusEffects.SATURATION, 7, AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block POPPY = Blocks.register("poppy", new FlowerBlock(StatusEffects.NIGHT_VISION, 5, AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block BLUE_ORCHID = Blocks.register("blue_orchid", new FlowerBlock(StatusEffects.SATURATION, 7, AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
@@ -349,8 +350,8 @@ public class Blocks {
     public static final Block CORNFLOWER = Blocks.register("cornflower", new FlowerBlock(StatusEffects.JUMP_BOOST, 6, AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block WITHER_ROSE = Blocks.register("wither_rose", new WitherRoseBlock(StatusEffects.WITHER, AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block LILY_OF_THE_VALLEY = Blocks.register("lily_of_the_valley", new FlowerBlock(StatusEffects.POISON, 12, AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS)));
-    public static final Block BROWN_MUSHROOM = Blocks.register("brown_mushroom", new MushroomPlantBlock(AbstractBlock.Settings.of(Material.PLANT, MaterialColor.BROWN).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS).lightLevel(blockState -> 1).postProcess(Blocks::method_26113)));
-    public static final Block RED_MUSHROOM = Blocks.register("red_mushroom", new MushroomPlantBlock(AbstractBlock.Settings.of(Material.PLANT, MaterialColor.RED).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS).postProcess(Blocks::method_26113)));
+    public static final Block BROWN_MUSHROOM = Blocks.register("brown_mushroom", new MushroomPlantBlock(AbstractBlock.Settings.of(Material.PLANT, MaterialColor.BROWN).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS).lightLevel(blockState -> 1).postProcess(Blocks::always)));
+    public static final Block RED_MUSHROOM = Blocks.register("red_mushroom", new MushroomPlantBlock(AbstractBlock.Settings.of(Material.PLANT, MaterialColor.RED).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS).postProcess(Blocks::always)));
     public static final Block GOLD_BLOCK = Blocks.register("gold_block", new Block(AbstractBlock.Settings.of(Material.METAL, MaterialColor.GOLD).strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL)));
     public static final Block IRON_BLOCK = Blocks.register("iron_block", new Block(AbstractBlock.Settings.of(Material.METAL, MaterialColor.IRON).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL)));
     public static final Block BRICKS = Blocks.register("bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.RED).strength(2.0f, 6.0f)));
@@ -370,7 +371,7 @@ public class Blocks {
     public static final Block DIAMOND_BLOCK = Blocks.register("diamond_block", new Block(AbstractBlock.Settings.of(Material.METAL, MaterialColor.DIAMOND).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL)));
     public static final Block CRAFTING_TABLE = Blocks.register("crafting_table", new CraftingTableBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block WHEAT = Blocks.register("wheat", new CropBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP)));
-    public static final Block FARMLAND = Blocks.register("farmland", new FarmlandBlock(AbstractBlock.Settings.of(Material.EARTH).ticksRandomly().strength(0.6f).sounds(BlockSoundGroup.GRAVEL).blockVision(Blocks::method_26113)));
+    public static final Block FARMLAND = Blocks.register("farmland", new FarmlandBlock(AbstractBlock.Settings.of(Material.EARTH).ticksRandomly().strength(0.6f).sounds(BlockSoundGroup.GRAVEL).blockVision(Blocks::always)));
     public static final Block FURNACE = Blocks.register("furnace", new FurnaceBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.5f).lightLevel(Blocks.createLightLevelFromBlockState(13))));
     public static final Block OAK_SIGN = Blocks.register("oak_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.OAK));
     public static final Block SPRUCE_SIGN = Blocks.register("spruce_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_LOG.getDefaultMaterialColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), SignType.SPRUCE));
@@ -411,7 +412,7 @@ public class Blocks {
     public static final Block OAK_FENCE = Blocks.register("oak_fence", new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getDefaultMaterialColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block PUMPKIN = Blocks.register("pumpkin", new PumpkinBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block NETHERRACK = Blocks.register("netherrack", new NetherrackBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(0.4f).sounds(BlockSoundGroup.NETHERRACK)));
-    public static final Block SOUL_SAND = Blocks.register("soul_sand", new SoulSandBlock(AbstractBlock.Settings.of(Material.SAND, MaterialColor.BROWN).strength(0.5f).velocityMultiplier(0.4f).sounds(BlockSoundGroup.SOUL_SAND).allowsSpawning(Blocks::method_26123).solidBlock(Blocks::method_26113).blockVision(Blocks::method_26113)));
+    public static final Block SOUL_SAND = Blocks.register("soul_sand", new SoulSandBlock(AbstractBlock.Settings.of(Material.SAND, MaterialColor.BROWN).strength(0.5f).velocityMultiplier(0.4f).sounds(BlockSoundGroup.SOUL_SAND).allowsSpawning(Blocks::always).solidBlock(Blocks::always).blockVision(Blocks::always)));
     public static final Block SOUL_SOIL = Blocks.register("soul_soil", new Block(AbstractBlock.Settings.of(Material.EARTH, MaterialColor.BROWN).strength(0.5f).sounds(BlockSoundGroup.SOUL_SOIL)));
     public static final Block BASALT = Blocks.register("basalt", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).strength(1.25f, 4.2f).sounds(BlockSoundGroup.BASALT)));
     public static final Block POLISHED_BASALT = Blocks.register("polished_basalt", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).strength(1.25f, 4.2f).sounds(BlockSoundGroup.BASALT)));
@@ -419,8 +420,8 @@ public class Blocks {
     public static final Block SOUL_FIRE_WALL_TORCH = Blocks.register("soul_fire_wall_torch", new WallTorchBlock(AbstractBlock.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(blockState -> 10).sounds(BlockSoundGroup.WOOD).dropsLike(SOUL_FIRE_TORCH), ParticleTypes.SOUL_FIRE_FLAME));
     public static final Block GLOWSTONE = Blocks.register("glowstone", new Block(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.SAND).strength(0.3f).sounds(BlockSoundGroup.GLASS).lightLevel(blockState -> 15)));
     public static final Block NETHER_PORTAL = Blocks.register("nether_portal", new NetherPortalBlock(AbstractBlock.Settings.of(Material.PORTAL).noCollision().ticksRandomly().strength(-1.0f).sounds(BlockSoundGroup.GLASS).lightLevel(blockState -> 11).dropsNothing()));
-    public static final Block CARVED_PUMPKIN = Blocks.register("carved_pumpkin", new CarvedPumpkinBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD).allowsSpawning(Blocks::method_26123)));
-    public static final Block JACK_O_LANTERN = Blocks.register("jack_o_lantern", new CarvedPumpkinBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD).lightLevel(blockState -> 15).allowsSpawning(Blocks::method_26123)));
+    public static final Block CARVED_PUMPKIN = Blocks.register("carved_pumpkin", new CarvedPumpkinBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD).allowsSpawning(Blocks::always)));
+    public static final Block JACK_O_LANTERN = Blocks.register("jack_o_lantern", new CarvedPumpkinBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.ORANGE).strength(1.0f).sounds(BlockSoundGroup.WOOD).lightLevel(blockState -> 15).allowsSpawning(Blocks::always)));
     public static final Block CAKE = Blocks.register("cake", new CakeBlock(AbstractBlock.Settings.of(Material.CAKE).strength(0.5f).sounds(BlockSoundGroup.WOOL)));
     public static final Block REPEATER = Blocks.register("repeater", new RepeaterBlock(AbstractBlock.Settings.of(Material.PART).breakInstantly().sounds(BlockSoundGroup.WOOD)));
     public static final Block WHITE_STAINED_GLASS = Blocks.register("white_stained_glass", Blocks.createStainedGlassBlock(DyeColor.WHITE));
@@ -439,12 +440,12 @@ public class Blocks {
     public static final Block GREEN_STAINED_GLASS = Blocks.register("green_stained_glass", Blocks.createStainedGlassBlock(DyeColor.GREEN));
     public static final Block RED_STAINED_GLASS = Blocks.register("red_stained_glass", Blocks.createStainedGlassBlock(DyeColor.RED));
     public static final Block BLACK_STAINED_GLASS = Blocks.register("black_stained_glass", Blocks.createStainedGlassBlock(DyeColor.BLACK));
-    public static final Block OAK_TRAPDOOR = Blocks.register("oak_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.WOOD).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
-    public static final Block SPRUCE_TRAPDOOR = Blocks.register("spruce_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
-    public static final Block BIRCH_TRAPDOOR = Blocks.register("birch_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SAND).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
-    public static final Block JUNGLE_TRAPDOOR = Blocks.register("jungle_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.DIRT).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
-    public static final Block ACACIA_TRAPDOOR = Blocks.register("acacia_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.ORANGE).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
-    public static final Block DARK_OAK_TRAPDOOR = Blocks.register("dark_oak_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.BROWN).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::method_26114)));
+    public static final Block OAK_TRAPDOOR = Blocks.register("oak_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.WOOD).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)));
+    public static final Block SPRUCE_TRAPDOOR = Blocks.register("spruce_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SPRUCE).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)));
+    public static final Block BIRCH_TRAPDOOR = Blocks.register("birch_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.SAND).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)));
+    public static final Block JUNGLE_TRAPDOOR = Blocks.register("jungle_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.DIRT).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)));
+    public static final Block ACACIA_TRAPDOOR = Blocks.register("acacia_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.ORANGE).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)));
+    public static final Block DARK_OAK_TRAPDOOR = Blocks.register("dark_oak_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.BROWN).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)));
     public static final Block STONE_BRICKS = Blocks.register("stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).strength(1.5f, 6.0f)));
     public static final Block MOSSY_STONE_BRICKS = Blocks.register("mossy_stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).strength(1.5f, 6.0f)));
     public static final Block CRACKED_STONE_BRICKS = Blocks.register("cracked_stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).strength(1.5f, 6.0f)));
@@ -459,6 +460,7 @@ public class Blocks {
     public static final Block RED_MUSHROOM_BLOCK = Blocks.register("red_mushroom_block", new MushroomBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.RED).strength(0.2f).sounds(BlockSoundGroup.WOOD)));
     public static final Block MUSHROOM_STEM = Blocks.register("mushroom_stem", new MushroomBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.WEB).strength(0.2f).sounds(BlockSoundGroup.WOOD)));
     public static final Block IRON_BARS = Blocks.register("iron_bars", new PaneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque()));
+    public static final Block CHAIN = Blocks.register("chain", new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque()));
     public static final Block GLASS_PANE = Blocks.register("glass_pane", new PaneBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque()));
     public static final Block MELON = Blocks.register("melon", new MelonBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.LIME).strength(1.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block ATTACHED_PUMPKIN_STEM = Blocks.register("attached_pumpkin_stem", new AttachedStemBlock((GourdBlock)PUMPKIN, AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD)));
@@ -482,7 +484,7 @@ public class Blocks {
     public static final Block END_PORTAL_FRAME = Blocks.register("end_portal_frame", new EndPortalFrameBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.GREEN).sounds(BlockSoundGroup.GLASS).lightLevel(blockState -> 1).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block END_STONE = Blocks.register("end_stone", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(3.0f, 9.0f)));
     public static final Block DRAGON_EGG = Blocks.register("dragon_egg", new DragonEggBlock(AbstractBlock.Settings.of(Material.EGG, MaterialColor.BLACK).strength(3.0f, 9.0f).lightLevel(blockState -> 1).nonOpaque()));
-    public static final Block REDSTONE_LAMP = Blocks.register("redstone_lamp", new RedstoneLampBlock(AbstractBlock.Settings.of(Material.REDSTONE_LAMP).lightLevel(Blocks.createLightLevelFromBlockState(15)).strength(0.3f).sounds(BlockSoundGroup.GLASS).allowsSpawning(Blocks::method_26123)));
+    public static final Block REDSTONE_LAMP = Blocks.register("redstone_lamp", new RedstoneLampBlock(AbstractBlock.Settings.of(Material.REDSTONE_LAMP).lightLevel(Blocks.createLightLevelFromBlockState(15)).strength(0.3f).sounds(BlockSoundGroup.GLASS).allowsSpawning(Blocks::always)));
     public static final Block COCOA = Blocks.register("cocoa", new CocoaBlock(AbstractBlock.Settings.of(Material.PLANT).ticksRandomly().strength(0.2f, 3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque()));
     public static final Block SANDSTONE_STAIRS = Blocks.register("sandstone_stairs", new StairsBlock(SANDSTONE.getDefaultState(), AbstractBlock.Settings.copy(SANDSTONE)));
     public static final Block EMERALD_ORE = Blocks.register("emerald_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
@@ -494,7 +496,7 @@ public class Blocks {
     public static final Block BIRCH_STAIRS = Blocks.register("birch_stairs", new StairsBlock(BIRCH_PLANKS.getDefaultState(), AbstractBlock.Settings.copy(BIRCH_PLANKS)));
     public static final Block JUNGLE_STAIRS = Blocks.register("jungle_stairs", new StairsBlock(JUNGLE_PLANKS.getDefaultState(), AbstractBlock.Settings.copy(JUNGLE_PLANKS)));
     public static final Block COMMAND_BLOCK = Blocks.register("command_block", new CommandBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.BROWN).strength(-1.0f, 3600000.0f).dropsNothing()));
-    public static final Block BEACON = Blocks.register("beacon", new BeaconBlock(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0f).lightLevel(blockState -> 15).nonOpaque().solidBlock(Blocks::method_26122)));
+    public static final Block BEACON = Blocks.register("beacon", new BeaconBlock(AbstractBlock.Settings.of(Material.GLASS, MaterialColor.DIAMOND).strength(3.0f).lightLevel(blockState -> 15).nonOpaque().solidBlock(Blocks::never)));
     public static final Block COBBLESTONE_WALL = Blocks.register("cobblestone_wall", new WallBlock(AbstractBlock.Settings.copy(COBBLESTONE)));
     public static final Block MOSSY_COBBLESTONE_WALL = Blocks.register("mossy_cobblestone_wall", new WallBlock(AbstractBlock.Settings.copy(COBBLESTONE)));
     public static final Block FLOWER_POT = Blocks.register("flower_pot", new FlowerPotBlock(AIR, AbstractBlock.Settings.of(Material.PART).breakInstantly().nonOpaque()));
@@ -594,7 +596,7 @@ public class Blocks {
     public static final Block ACACIA_STAIRS = Blocks.register("acacia_stairs", new StairsBlock(ACACIA_PLANKS.getDefaultState(), AbstractBlock.Settings.copy(ACACIA_PLANKS)));
     public static final Block DARK_OAK_STAIRS = Blocks.register("dark_oak_stairs", new StairsBlock(DARK_OAK_PLANKS.getDefaultState(), AbstractBlock.Settings.copy(DARK_OAK_PLANKS)));
     public static final Block SLIME_BLOCK = Blocks.register("slime_block", new SlimeBlock(AbstractBlock.Settings.of(Material.CLAY, MaterialColor.GRASS).slipperiness(0.8f).sounds(BlockSoundGroup.SLIME).nonOpaque()));
-    public static final Block BARRIER = Blocks.register("barrier", new BarrierBlock(AbstractBlock.Settings.of(Material.BARRIER).strength(-1.0f, 3600000.8f).dropsNothing().nonOpaque().allowsSpawning(Blocks::method_26114)));
+    public static final Block BARRIER = Blocks.register("barrier", new BarrierBlock(AbstractBlock.Settings.of(Material.BARRIER).strength(-1.0f, 3600000.8f).dropsNothing().nonOpaque().allowsSpawning(Blocks::never)));
     public static final Block IRON_TRAPDOOR = Blocks.register("iron_trapdoor", new TrapdoorBlock(AbstractBlock.Settings.of(Material.METAL).strength(5.0f).sounds(BlockSoundGroup.METAL).nonOpaque()));
     public static final Block PRISMARINE = Blocks.register("prismarine", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.CYAN).strength(1.5f, 6.0f)));
     public static final Block PRISMARINE_BRICKS = Blocks.register("prismarine_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.DIAMOND).strength(1.5f, 6.0f)));
@@ -714,12 +716,12 @@ public class Blocks {
     public static final Block PURPUR_STAIRS = Blocks.register("purpur_stairs", new StairsBlock(PURPUR_BLOCK.getDefaultState(), AbstractBlock.Settings.copy(PURPUR_BLOCK)));
     public static final Block END_STONE_BRICKS = Blocks.register("end_stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(3.0f, 9.0f)));
     public static final Block BEETROOTS = Blocks.register("beetroots", new BeetrootsBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP)));
-    public static final Block GRASS_PATH = Blocks.register("grass_path", new GrassPathBlock(AbstractBlock.Settings.of(Material.EARTH).strength(0.65f).sounds(BlockSoundGroup.GRASS).blockVision(Blocks::method_26113)));
+    public static final Block GRASS_PATH = Blocks.register("grass_path", new GrassPathBlock(AbstractBlock.Settings.of(Material.EARTH).strength(0.65f).sounds(BlockSoundGroup.GRASS).blockVision(Blocks::always)));
     public static final Block END_GATEWAY = Blocks.register("end_gateway", new EndGatewayBlock(AbstractBlock.Settings.of(Material.PORTAL, MaterialColor.BLACK).noCollision().lightLevel(blockState -> 15).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block REPEATING_COMMAND_BLOCK = Blocks.register("repeating_command_block", new CommandBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.PURPLE).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block CHAIN_COMMAND_BLOCK = Blocks.register("chain_command_block", new CommandBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.GREEN).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block FROSTED_ICE = Blocks.register("frosted_ice", new FrostedIceBlock(AbstractBlock.Settings.of(Material.ICE).slipperiness(0.98f).ticksRandomly().strength(0.5f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning((blockState, blockView, blockPos, entityType) -> entityType == EntityType.POLAR_BEAR)));
-    public static final Block MAGMA_BLOCK = Blocks.register("magma_block", new MagmaBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).lightLevel(blockState -> 3).ticksRandomly().strength(0.5f).allowsSpawning((blockState, blockView, blockPos, entityType) -> entityType.isFireImmune()).postProcess(Blocks::method_26113).emissiveLighting(Blocks::method_26113)));
+    public static final Block MAGMA_BLOCK = Blocks.register("magma_block", new MagmaBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).lightLevel(blockState -> 3).ticksRandomly().strength(0.5f).allowsSpawning((blockState, blockView, blockPos, entityType) -> entityType.isFireImmune()).postProcess(Blocks::always).emissiveLighting(Blocks::always)));
     public static final Block NETHER_WART_BLOCK = Blocks.register("nether_wart_block", new Block(AbstractBlock.Settings.of(Material.ORGANIC, MaterialColor.RED).strength(1.0f).sounds(BlockSoundGroup.WART_BLOCK)));
     public static final Block RED_NETHER_BRICKS = Blocks.register("red_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICK)));
     public static final Block BONE_BLOCK = Blocks.register("bone_block", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(2.0f).sounds(BlockSoundGroup.BONE)));
@@ -984,11 +986,19 @@ public class Blocks {
         return blockState -> blockState.get(Properties.LIT) != false ? litLevel : 0;
     }
 
-    private static Boolean method_26114(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+    /**
+     * A shortcut to always return {@code false} in a typed context predicate with an
+     * {@link EntityType}, used like {@code settings.allowSpawning(Blocks::never)}.
+     */
+    private static Boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
         return false;
     }
 
-    private static Boolean method_26123(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+    /**
+     * A shortcut to always return {@code true} in a typed context predicate with an
+     * {@link EntityType}, used like {@code settings.allowSpawning(Blocks::always)}.
+     */
+    private static Boolean always(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
         return true;
     }
 
@@ -1008,20 +1018,28 @@ public class Blocks {
         return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, blockState -> materialColor).strength(1.0f).sounds(BlockSoundGroup.NETHER_STEM));
     }
 
-    private static boolean method_26113(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    /**
+     * A shortcut to always return {@code true} a context predicate, used as
+     * {@code settings.solidBlock(Blocks::always)}.
+     */
+    private static boolean always(BlockState state, BlockView world, BlockPos pos) {
         return true;
     }
 
-    private static boolean method_26122(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+    /**
+     * A shortcut to always return {@code false} a context predicate, used as
+     * {@code settings.solidBlock(Blocks::never)}.
+     */
+    private static boolean never(BlockState state, BlockView world, BlockPos pos) {
         return false;
     }
 
     private static StainedGlassBlock createStainedGlassBlock(DyeColor color) {
-        return new StainedGlassBlock(color, AbstractBlock.Settings.of(Material.GLASS, color).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::method_26114).solidBlock(Blocks::method_26122).suffocates(Blocks::method_26122).blockVision(Blocks::method_26122));
+        return new StainedGlassBlock(color, AbstractBlock.Settings.of(Material.GLASS, color).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::never).solidBlock(Blocks::never).suffocates(Blocks::never).blockVision(Blocks::never));
     }
 
     private static LeavesBlock createLeavesBlock() {
-        return new LeavesBlock(AbstractBlock.Settings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning(Blocks::canSpawnOnLeaves).suffocates(Blocks::method_26122).blockVision(Blocks::method_26122));
+        return new LeavesBlock(AbstractBlock.Settings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning(Blocks::canSpawnOnLeaves).suffocates(Blocks::never).blockVision(Blocks::never));
     }
 
     private static ShulkerBoxBlock createShulkerBoxBlock(DyeColor color, AbstractBlock.Settings settings) {
@@ -1031,21 +1049,21 @@ public class Blocks {
                 return true;
             }
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-            return shulkerBoxBlockEntity.method_27093();
+            return shulkerBoxBlockEntity.suffocates();
         };
         return new ShulkerBoxBlock(color, settings.strength(2.0f).dynamicBounds().nonOpaque().suffocates(contextPredicate).blockVision(contextPredicate));
     }
 
     private static PistonBlock createPistonBlock(boolean sticky) {
         AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> blockState.get(PistonBlock.EXTENDED) == false;
-        return new PistonBlock(sticky, AbstractBlock.Settings.of(Material.PISTON).strength(1.5f).solidBlock(Blocks::method_26122).suffocates(contextPredicate).blockVision(contextPredicate));
+        return new PistonBlock(sticky, AbstractBlock.Settings.of(Material.PISTON).strength(1.5f).solidBlock(Blocks::never).suffocates(contextPredicate).blockVision(contextPredicate));
     }
 
     private static Block register(String id, Block block) {
         return Registry.register(Registry.BLOCK, id, block);
     }
 
-    public static void method_26979() {
+    public static void refreshShapeCache() {
         Block.STATE_IDS.forEach(AbstractBlock.AbstractBlockState::initShapeCache);
     }
 

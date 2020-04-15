@@ -950,7 +950,7 @@ extends LivingEntity {
         if (target.handleAttack(this)) {
             return;
         }
-        float f = (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        float f = (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         float g = target instanceof LivingEntity ? EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup()) : EnchantmentHelper.getAttackDamage(this.getMainHandStack(), EntityGroup.DEFAULT);
         float h = this.getAttackCooldownProgress(0.5f);
         g *= h;
@@ -1258,7 +1258,7 @@ extends LivingEntity {
 
     @Override
     public float getMovementSpeed() {
-        return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED);
     }
 
     public void increaseTravelMotionStats(double dx, double dy, double dz) {
@@ -1750,7 +1750,7 @@ extends LivingEntity {
     }
 
     public float getAttackCooldownProgressPerTick() {
-        return (float)(1.0 / this.method_26825(EntityAttributes.GENERIC_ATTACK_SPEED) * 20.0);
+        return (float)(1.0 / this.getAttribute(EntityAttributes.GENERIC_ATTACK_SPEED) * 20.0);
     }
 
     public float getAttackCooldownProgress(float baseTime) {
@@ -1771,7 +1771,7 @@ extends LivingEntity {
     }
 
     public float getLuck() {
-        return (float)this.method_26825(EntityAttributes.GENERIC_LUCK);
+        return (float)this.getAttribute(EntityAttributes.GENERIC_LUCK);
     }
 
     public boolean isCreativeLevelTwoOp() {

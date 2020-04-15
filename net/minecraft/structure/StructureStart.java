@@ -28,7 +28,7 @@ public abstract class StructureStart {
     public static final StructureStart DEFAULT = new StructureStart((StructureFeature)Feature.MINESHAFT, 0, 0, BlockBox.empty(), 0, 0L){
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
         }
     };
     private final StructureFeature<?> feature;
@@ -49,7 +49,7 @@ public abstract class StructureStart {
         this.boundingBox = box;
     }
 
-    public abstract void initialize(ChunkGenerator<?> var1, StructureManager var2, int var3, int var4, Biome var5);
+    public abstract void init(ChunkGenerator<?> var1, StructureManager var2, int var3, int var4, Biome var5);
 
     public BlockBox getBoundingBox() {
         return this.boundingBox;

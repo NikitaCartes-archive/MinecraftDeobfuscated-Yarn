@@ -292,7 +292,7 @@ Saddleable {
     }
 
     public double getJumpStrength() {
-        return this.method_26825(EntityAttributes.HORSE_JUMP_STRENGTH);
+        return this.getAttribute(EntityAttributes.HORSE_JUMP_STRENGTH);
     }
 
     @Override
@@ -662,7 +662,7 @@ Saddleable {
         }
         this.flyingSpeed = this.getMovementSpeed() * 0.1f;
         if (this.isLogicalSideForUpdatingMovement()) {
-            this.setMovementSpeed((float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            this.setMovementSpeed((float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             super.travel(new Vec3d(f, movementInput.y, g));
         } else if (livingEntity instanceof PlayerEntity) {
             this.setVelocity(Vec3d.ZERO);

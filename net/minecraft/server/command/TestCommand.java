@@ -63,8 +63,8 @@ public class TestCommand {
     }
 
     private static int executeCreate(ServerCommandSource source, String structure, int x, int y, int z) {
-        if (x > 32 || y > 32 || z > 32) {
-            throw new IllegalArgumentException("The structure must be less than 32 blocks big in each axis");
+        if (x > 48 || y > 48 || z > 48) {
+            throw new IllegalArgumentException("The structure must be less than 48 blocks big in each axis");
         }
         ServerWorld serverWorld = source.getWorld();
         BlockPos blockPos = new BlockPos(source.getPosition());

@@ -37,7 +37,7 @@ extends Feature<DeltaFeatureConfig> {
 
     @Override
     public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
-        BlockPos blockPos2 = DeltaFeature.method_27102(iWorld, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, iWorld.getHeight() - 1), Integer.MAX_VALUE);
+        BlockPos blockPos2 = DeltaFeature.method_27102(iWorld, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, iWorld.getHeight() - 1));
         if (blockPos2 == null) {
             return false;
         }
@@ -52,12 +52,13 @@ extends Feature<DeltaFeatureConfig> {
         for (BlockPos blockPos3 : BlockPos.iterateOutwards(blockPos2, k, 0, l)) {
             BlockPos blockPos4;
             if (blockPos3.getManhattanDistance(blockPos2) > m) break;
-            if (iWorld.getBlockState(blockPos3).getBlock() == deltaFeatureConfig.contents.getBlock() || !DeltaFeature.method_27103(iWorld, blockPos3, deltaFeatureConfig)) continue;
+            if (!DeltaFeature.method_27103(iWorld, blockPos3, deltaFeatureConfig)) continue;
             if (bl3) {
                 bl = true;
                 this.setBlockState(iWorld, blockPos3, deltaFeatureConfig.rim);
             }
             if (!DeltaFeature.method_27103(iWorld, blockPos4 = blockPos3.add(i, 0, j), deltaFeatureConfig)) continue;
+            bl = true;
             this.setBlockState(iWorld, blockPos4, deltaFeatureConfig.contents);
         }
         return bl;
@@ -76,9 +77,8 @@ extends Feature<DeltaFeatureConfig> {
     }
 
     @Nullable
-    private static BlockPos method_27102(IWorld iWorld, BlockPos.Mutable mutable, int i) {
-        while (mutable.getY() > 1 && i > 0) {
-            --i;
+    private static BlockPos method_27102(IWorld iWorld, BlockPos.Mutable mutable) {
+        while (mutable.getY() > 1) {
             if (iWorld.getBlockState(mutable).isAir()) {
                 BlockState blockState = iWorld.getBlockState(mutable.move(Direction.DOWN));
                 mutable.move(Direction.UP);

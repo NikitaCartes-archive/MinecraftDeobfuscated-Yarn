@@ -169,7 +169,7 @@ extends EntityNavigation {
                 double e = (double)l + 0.5 - entityPos.z;
                 if (d * lookVecX + e * lookVecZ < 0.0) continue;
                 PathNodeType pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY - 1, l, this.entity, xSize, ySize, zSize, true, true);
-                if (!this.method_26338(pathNodeType)) {
+                if (!this.canWalkOnPath(pathNodeType)) {
                     return false;
                 }
                 pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY, l, this.entity, xSize, ySize, zSize, true, true);
@@ -184,14 +184,14 @@ extends EntityNavigation {
         return true;
     }
 
-    protected boolean method_26338(PathNodeType pathNodeType) {
-        if (pathNodeType == PathNodeType.WATER) {
+    protected boolean canWalkOnPath(PathNodeType pathType) {
+        if (pathType == PathNodeType.WATER) {
             return false;
         }
-        if (pathNodeType == PathNodeType.LAVA) {
+        if (pathType == PathNodeType.LAVA) {
             return false;
         }
-        return pathNodeType != PathNodeType.OPEN;
+        return pathType != PathNodeType.OPEN;
     }
 
     /**

@@ -225,22 +225,21 @@ extends DrawableHelper {
         if (!this.isChatFocused() || this.client.options.hudHidden || !this.method_23677()) {
             return null;
         }
-        double d = this.getChatScale() * (this.client.options.chatLineSpacing + 1.0);
-        double e = x - 2.0;
-        double f = (double)this.client.getWindow().getScaledHeight() - y - 40.0;
-        e = MathHelper.floor(e / d);
-        f = MathHelper.floor(f / d);
-        if (e < 0.0 || f < 0.0) {
+        double d = x - 2.0;
+        double e = (double)this.client.getWindow().getScaledHeight() - y - 40.0;
+        d = MathHelper.floor(d / this.getChatScale());
+        e = MathHelper.floor(e / (this.getChatScale() * (this.client.options.chatLineSpacing + 1.0)));
+        if (d < 0.0 || e < 0.0) {
             return null;
         }
         int i = Math.min(this.getVisibleLineCount(), this.visibleMessages.size());
-        if (e <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && f < (double)(this.client.textRenderer.fontHeight * i + i)) {
-            int j = (int)(f / (double)this.client.textRenderer.fontHeight + (double)this.scrolledLines);
+        if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < (double)(this.client.textRenderer.fontHeight * i + i)) {
+            int j = (int)(e / (double)this.client.textRenderer.fontHeight + (double)this.scrolledLines);
             if (j >= 0 && j < this.visibleMessages.size()) {
                 ChatHudLine chatHudLine = this.visibleMessages.get(j);
                 int k = 0;
                 for (Text text : chatHudLine.getText()) {
-                    if (!(text instanceof LiteralText) || !((double)(k += this.client.textRenderer.getStringWidth(Texts.getRenderChatMessage(((LiteralText)text).getRawString(), false))) > e)) continue;
+                    if (!(text instanceof LiteralText) || !((double)(k += this.client.textRenderer.getStringWidth(Texts.getRenderChatMessage(((LiteralText)text).getRawString(), false))) > d)) continue;
                     return text;
                 }
             }

@@ -1329,7 +1329,7 @@ implements ClientPlayPacketListener {
             ItemTags.setContainer(this.tagManager.items());
             FluidTags.setContainer(this.tagManager.fluids());
             EntityTypeTags.setContainer(this.tagManager.entityTypes());
-            Blocks.method_26979();
+            Blocks.refreshShapeCache();
         }
         this.client.getSearchableContainer(SearchManager.ITEM_TAG).reload();
     }

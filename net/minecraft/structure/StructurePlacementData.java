@@ -33,6 +33,7 @@ public class StructurePlacementData {
     private int field_15575;
     private final List<StructureProcessor> processors = Lists.newArrayList();
     private boolean updateNeighbors;
+    private boolean field_24043;
 
     public StructurePlacementData copy() {
         StructurePlacementData structurePlacementData = new StructurePlacementData();
@@ -47,6 +48,7 @@ public class StructurePlacementData {
         structurePlacementData.field_15575 = this.field_15575;
         structurePlacementData.processors.addAll(this.processors);
         structurePlacementData.updateNeighbors = this.updateNeighbors;
+        structurePlacementData.field_24043 = this.field_24043;
         return structurePlacementData;
     }
 
@@ -157,12 +159,12 @@ public class StructurePlacementData {
         return this.placeFluids;
     }
 
-    public Structure.class_5162 getRandomBlockInfos(List<Structure.class_5162> list, @Nullable BlockPos blockPos) {
+    public Structure.PalettedBlockInfoList getRandomBlockInfos(List<Structure.PalettedBlockInfoList> list, @Nullable BlockPos pos) {
         int i = list.size();
         if (i == 0) {
             throw new IllegalStateException("No palettes");
         }
-        return list.get(this.getRandom(blockPos).nextInt(i));
+        return list.get(this.getRandom(pos).nextInt(i));
     }
 
     @Nullable
@@ -173,6 +175,15 @@ public class StructurePlacementData {
         int i = pos.x * 16;
         int j = pos.z * 16;
         return new BlockBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
+    }
+
+    public StructurePlacementData method_27264(boolean bl) {
+        this.field_24043 = bl;
+        return this;
+    }
+
+    public boolean method_27265() {
+        return this.field_24043;
     }
 }
 

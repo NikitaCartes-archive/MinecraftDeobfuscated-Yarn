@@ -58,6 +58,7 @@ public class ItemTags {
     public static final Tag.Identified<Item> FISHES = ItemTags.register("fishes");
     public static final Tag.Identified<Item> SIGNS = ItemTags.register("signs");
     public static final Tag.Identified<Item> MUSIC_DISCS = ItemTags.register("music_discs");
+    public static final Tag.Identified<Item> CREEPER_DROP_MUSIC_DISCS = ItemTags.register("creeper_drop_music_discs");
     public static final Tag.Identified<Item> COALS = ItemTags.register("coals");
     public static final Tag.Identified<Item> ARROWS = ItemTags.register("arrows");
     public static final Tag.Identified<Item> LECTERN_BOOKS = ItemTags.register("lectern_books");

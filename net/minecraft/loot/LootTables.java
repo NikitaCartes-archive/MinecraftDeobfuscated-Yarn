@@ -48,6 +48,11 @@ public class LootTables {
     public static final Identifier SHIPWRECK_SUPPLY_CHEST = LootTables.register("chests/shipwreck_supply");
     public static final Identifier SHIPWRECK_TREASURE_CHEST = LootTables.register("chests/shipwreck_treasure");
     public static final Identifier PILLAGER_OUTPOST_CHEST = LootTables.register("chests/pillager_outpost");
+    public static final Identifier BASTION_TREASURE_CHEST = LootTables.register("chests/bastion_treasure");
+    public static final Identifier BASTION_OTHER_CHEST = LootTables.register("chests/bastion_other");
+    public static final Identifier BASTION_BRIDGE_CHEST = LootTables.register("chests/bastion_bridge");
+    public static final Identifier BASTION_HOGLIN_STABLE_CHEST = LootTables.register("chests/bastion_hoglin_stable");
+    public static final Identifier RUINED_PORTAL_CHEST = LootTables.register("chests/ruined_portal");
     public static final Identifier WHITE_SHEEP_ENTITY = LootTables.register("entities/sheep/white");
     public static final Identifier ORANGE_SHEEP_ENTITY = LootTables.register("entities/sheep/orange");
     public static final Identifier MAGENTA_SHEEP_ENTITY = LootTables.register("entities/sheep/magenta");

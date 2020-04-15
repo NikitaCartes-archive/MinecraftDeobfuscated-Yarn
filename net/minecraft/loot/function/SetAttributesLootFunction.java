@@ -95,7 +95,11 @@ extends ConditionalLootFunction {
         public static Attribute deserialize(JsonObject json, JsonDeserializationContext context) {
             EquipmentSlot[] equipmentSlots;
             String string = JsonHelper.getString(json, "name");
-            EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(new Identifier(JsonHelper.getString(json, "attribute")));
+            Identifier identifier = new Identifier(JsonHelper.getString(json, "attribute"));
+            EntityAttribute entityAttribute = Registry.ATTRIBUTES.get(identifier);
+            if (entityAttribute == null) {
+                throw new JsonSyntaxException("Unknown attribute: " + identifier);
+            }
             EntityAttributeModifier.Operation operation = Attribute.fromName(JsonHelper.getString(json, "operation"));
             UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(json, "amount", context, UniformLootTableRange.class);
             UUID uUID = null;

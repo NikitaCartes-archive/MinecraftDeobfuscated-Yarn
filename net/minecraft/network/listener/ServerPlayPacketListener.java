@@ -19,6 +19,7 @@ import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.GuiCloseC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -134,6 +135,8 @@ extends PacketListener {
     public void onQueryBlockNbt(QueryBlockNbtC2SPacket var1);
 
     public void onJigsawUpdate(UpdateJigsawC2SPacket var1);
+
+    public void onJigsawGenerating(JigsawGeneratingC2SPacket var1);
 
     public void onUpdateDifficulty(UpdateDifficultyC2SPacket var1);
 

@@ -30,6 +30,7 @@ import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
@@ -56,6 +57,10 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
     public void populateBiomes(Chunk chunk) {
         ChunkPos chunkPos = chunk.getPos();
         ((ProtoChunk)chunk).setBiomes(new BiomeArray(chunkPos, this.biomeSource));
+    }
+
+    public DimensionType method_27192() {
+        return this.world.getDimension().getType();
     }
 
     protected Biome getDecorationBiome(BiomeAccess biomeAccess, BlockPos pos) {
@@ -162,9 +167,9 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
             ChunkPos chunkPos = chunk.getPos();
             StructureStart structureStart2 = StructureStart.DEFAULT;
             Biome biome = biomeAccess.getBiome(new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
-            if (structureFeature.shouldStartAt(biomeAccess, chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z, biome)) {
+            if (structureFeature.method_27217(biomeAccess, chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z, biome)) {
                 StructureStart structureStart3 = structureFeature.getStructureStartFactory().create(structureFeature, chunkPos.x, chunkPos.z, BlockBox.empty(), i, chunkGenerator.getSeed());
-                structureStart3.initialize(this, structureManager, chunkPos.x, chunkPos.z, biome);
+                structureStart3.init(this, structureManager, chunkPos.x, chunkPos.z, biome);
                 structureStart2 = structureStart3.hasChildren() ? structureStart3 : StructureStart.DEFAULT;
             }
             structureAccessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), structureFeature, structureStart2, chunk);

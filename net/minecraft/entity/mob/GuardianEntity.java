@@ -345,7 +345,7 @@ extends HostileEntity {
             double g = vec3d.z / d;
             float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 57.2957763671875) - 90.0f;
             this.guardian.bodyYaw = this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0f);
-            float i = (float)(this.speed * this.guardian.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            float i = (float)(this.speed * this.guardian.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             float j = MathHelper.lerp(0.125f, this.guardian.getMovementSpeed(), i);
             this.guardian.setMovementSpeed(j);
             double k = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.5) * 0.05;
@@ -432,7 +432,7 @@ extends HostileEntity {
                     f += 2.0f;
                 }
                 livingEntity.damage(DamageSource.magic(this.guardian, this.guardian), f);
-                livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+                livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE));
                 this.guardian.setTarget(null);
             }
             super.tick();

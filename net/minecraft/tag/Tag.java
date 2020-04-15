@@ -126,69 +126,69 @@ public interface Tag<T> {
     }
 
     public static class Builder {
-        private final List<class_5145> entries = Lists.newArrayList();
+        private final List<TrackedEntry> entries = Lists.newArrayList();
 
         public static Builder create() {
             return new Builder();
         }
 
-        public Builder method_27064(class_5145 arg) {
-            this.entries.add(arg);
+        public Builder add(TrackedEntry trackedEntry) {
+            this.entries.add(trackedEntry);
             return this;
         }
 
-        public Builder method_27065(Entry entry, String string) {
-            return this.method_27064(new class_5145(entry, string));
+        public Builder add(Entry entry, String source) {
+            return this.add(new TrackedEntry(entry, source));
         }
 
-        public Builder add(Identifier id, String string) {
-            return this.method_27065(new ObjectEntry(id), string);
+        public Builder add(Identifier id, String source) {
+            return this.add(new ObjectEntry(id), source);
         }
 
-        public Builder addTag(Identifier id, String string) {
-            return this.method_27065(new TagEntry(id), string);
+        public Builder addTag(Identifier id, String source) {
+            return this.add(new TagEntry(id), source);
         }
 
         public <T> Optional<Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
             ImmutableSet.Builder builder = ImmutableSet.builder();
-            for (class_5145 lv : this.entries) {
-                if (lv.method_27067().resolve(tagGetter, objectGetter, builder::add)) continue;
+            for (TrackedEntry trackedEntry : this.entries) {
+                if (trackedEntry.getEntry().resolve(tagGetter, objectGetter, builder::add)) continue;
                 return Optional.empty();
             }
             return Optional.of(Tag.of(builder.build()));
         }
 
-        public Stream<class_5145> streamEntries() {
+        public Stream<TrackedEntry> streamEntries() {
             return this.entries.stream();
         }
 
-        public <T> Stream<class_5145> streamUnresolvedEntries(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
-            return this.streamEntries().filter(arg -> !arg.method_27067().resolve(tagGetter, objectGetter, object -> {}));
+        public <T> Stream<TrackedEntry> streamUnresolvedEntries(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
+            return this.streamEntries().filter(trackedEntry -> !trackedEntry.getEntry().resolve(tagGetter, objectGetter, object -> {}));
         }
 
-        public Builder read(JsonObject json, String string) {
+        public Builder read(JsonObject json, String source) {
             JsonArray jsonArray = JsonHelper.getArray(json, "values");
             ArrayList<Entry> list = Lists.newArrayList();
             for (JsonElement jsonElement : jsonArray) {
-                String string2 = JsonHelper.asString(jsonElement, "value");
-                if (string2.startsWith("#")) {
-                    list.add(new TagEntry(new Identifier(string2.substring(1))));
+                String string = JsonHelper.asString(jsonElement, "value");
+                if (string.startsWith("#")) {
+                    list.add(new TagEntry(new Identifier(string.substring(1))));
                     continue;
                 }
-                list.add(new ObjectEntry(new Identifier(string2)));
+                list.add(new ObjectEntry(new Identifier(string)));
             }
             if (JsonHelper.getBoolean(json, "replace", false)) {
                 this.entries.clear();
             }
-            list.forEach(entry -> this.entries.add(new class_5145((Entry)entry, string)));
+            list.forEach(entry -> this.entries.add(new TrackedEntry((Entry)entry, source)));
             return this;
         }
 
         public JsonObject toJson() {
             JsonObject jsonObject = new JsonObject();
             JsonArray jsonArray = new JsonArray();
-            for (class_5145 lv : this.entries) {
-                lv.method_27067().addToJson(jsonArray);
+            for (TrackedEntry trackedEntry : this.entries) {
+                trackedEntry.getEntry().addToJson(jsonArray);
             }
             jsonObject.addProperty("replace", false);
             jsonObject.add("values", jsonArray);
@@ -196,21 +196,21 @@ public interface Tag<T> {
         }
     }
 
-    public static class class_5145 {
-        private final Entry field_23805;
-        private final String field_23806;
+    public static class TrackedEntry {
+        private final Entry entry;
+        private final String source;
 
-        private class_5145(Entry entry, String string) {
-            this.field_23805 = entry;
-            this.field_23806 = string;
+        private TrackedEntry(Entry entry, String source) {
+            this.entry = entry;
+            this.source = source;
         }
 
-        public Entry method_27067() {
-            return this.field_23805;
+        public Entry getEntry() {
+            return this.entry;
         }
 
         public String toString() {
-            return this.field_23805.toString() + " (from " + this.field_23806 + ")";
+            return this.entry.toString() + " (from " + this.source + ")";
         }
     }
 }

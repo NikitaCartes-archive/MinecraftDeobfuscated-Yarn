@@ -33,7 +33,7 @@ extends Entity {
 
     public EndCrystalEntity(EntityType<? extends EndCrystalEntity> entityType, World world) {
         super(entityType, world);
-        this.field_23807 = true;
+        this.inanimate = true;
         this.endCrystalAge = this.random.nextInt(100000);
     }
 

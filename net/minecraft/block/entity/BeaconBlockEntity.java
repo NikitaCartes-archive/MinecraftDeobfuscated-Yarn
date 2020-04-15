@@ -264,7 +264,7 @@ Tickable {
     @Override
     @Environment(value=EnvType.CLIENT)
     public double getSquaredRenderDistance() {
-        return 65536.0;
+        return 256.0;
     }
 
     @Nullable

@@ -60,7 +60,7 @@ extends PathNodeMaker {
                 blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ()));
             }
             --i;
-        } else if (this.entity.isInLava() && this.entity.method_26319()) {
+        } else if (this.entity.isInLava() && this.entity.canWalkOnLava()) {
             i = MathHelper.floor(this.entity.getY());
             BlockPos.Mutable mutable2 = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
             BlockState blockState2 = this.cachedWorld.getBlockState(mutable2);

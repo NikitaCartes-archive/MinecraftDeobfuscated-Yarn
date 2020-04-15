@@ -42,6 +42,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.DedicatedServerWatchdog;
 import net.minecraft.server.dedicated.PendingServerCommand;
 import net.minecraft.server.dedicated.ServerCommandOutput;
+import net.minecraft.server.dedicated.ServerMBean;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
@@ -232,6 +233,9 @@ implements DedicatedServer {
             thread2.start();
         }
         Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.of());
+        if (serverPropertiesHandler.enableJmxMonitoring) {
+            ServerMBean.register(this);
+        }
         return true;
     }
 

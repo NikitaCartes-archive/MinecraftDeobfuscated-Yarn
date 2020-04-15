@@ -104,16 +104,8 @@ public abstract class BlockEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public double getSquaredDistance(double x, double y, double z) {
-        double d = (double)this.pos.getX() + 0.5 - x;
-        double e = (double)this.pos.getY() + 0.5 - y;
-        double f = (double)this.pos.getZ() + 0.5 - z;
-        return d * d + e * e + f * f;
-    }
-
-    @Environment(value=EnvType.CLIENT)
     public double getSquaredRenderDistance() {
-        return 4096.0;
+        return 64.0;
     }
 
     public BlockPos getPos() {

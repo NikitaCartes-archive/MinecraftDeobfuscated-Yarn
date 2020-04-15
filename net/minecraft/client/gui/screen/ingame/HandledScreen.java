@@ -457,7 +457,7 @@ implements ScreenHandlerProvider<T> {
     }
 
     /**
-     * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int)
+     * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int, net.minecraft.screen.slot.SlotActionType, net.minecraft.entity.player.PlayerEntity)
      */
     protected void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
         if (slot != null) {

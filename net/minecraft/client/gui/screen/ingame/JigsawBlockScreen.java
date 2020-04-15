@@ -10,11 +10,14 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateJigsawC2SPacket;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class JigsawBlockScreen
@@ -24,6 +27,7 @@ extends Screen {
     private TextFieldWidget targetField;
     private TextFieldWidget poolField;
     private TextFieldWidget finalStateField;
+    private int generationDepth;
     private ButtonWidget jointRotationButton;
     private ButtonWidget doneButton;
     private JigsawBlockEntity.Joint joint;
@@ -54,6 +58,10 @@ extends Screen {
         this.client.getNetworkHandler().sendPacket(new UpdateJigsawC2SPacket(this.jigsaw.getPos(), new Identifier(this.nameField.getText()), new Identifier(this.targetField.getText()), new Identifier(this.poolField.getText()), this.finalStateField.getText(), this.joint));
     }
 
+    private void generate() {
+        this.client.getNetworkHandler().sendPacket(new JigsawGeneratingC2SPacket(this.jigsaw.getPos(), this.generationDepth));
+    }
+
     @Override
     public void onClose() {
         this.onCancel();
@@ -70,23 +78,39 @@ extends Screen {
         this.poolField.setText(this.jigsaw.getPool().toString());
         this.poolField.setChangedListener(string -> this.updateDoneButtonState());
         this.children.add(this.poolField);
-        this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 60, 300, 20, I18n.translate("jigsaw_block.name", new Object[0]));
+        this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 55, 300, 20, I18n.translate("jigsaw_block.name", new Object[0]));
         this.nameField.setMaxLength(128);
         this.nameField.setText(this.jigsaw.getName().toString());
         this.nameField.setChangedListener(string -> this.updateDoneButtonState());
         this.children.add(this.nameField);
-        this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 100, 300, 20, I18n.translate("jigsaw_block.target", new Object[0]));
+        this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 90, 300, 20, I18n.translate("jigsaw_block.target", new Object[0]));
         this.targetField.setMaxLength(128);
         this.targetField.setText(this.jigsaw.getTarget().toString());
         this.targetField.setChangedListener(string -> this.updateDoneButtonState());
         this.children.add(this.targetField);
-        this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 140, 300, 20, I18n.translate("jigsaw_block.final_state", new Object[0]));
+        this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 125, 300, 20, I18n.translate("jigsaw_block.final_state", new Object[0]));
         this.finalStateField.setMaxLength(256);
         this.finalStateField.setText(this.jigsaw.getFinalState());
         this.children.add(this.finalStateField);
+        this.addButton(new SliderWidget(this.width / 2 - 152, 180, 150, 20, "", 0.0){
+            {
+                this.updateMessage();
+            }
+
+            @Override
+            protected void updateMessage() {
+                this.setMessage(I18n.translate("jigsaw_block.levels", new Object[0]) + JigsawBlockScreen.this.generationDepth);
+            }
+
+            @Override
+            protected void applyValue() {
+                JigsawBlockScreen.this.generationDepth = MathHelper.floor(MathHelper.clampedLerp(0.0, 7.0, this.value));
+            }
+        });
+        this.addButton(new ButtonWidget(this.width / 2 + 4, 180, 150, 20, I18n.translate("jigsaw_block.generate", new Object[0]), buttonWidget -> this.generate()));
         this.joint = this.jigsaw.getJoint();
         int i = this.textRenderer.getStringWidth(I18n.translate("jigsaw_block.joint_label", new Object[0])) + 10;
-        this.jointRotationButton = this.addButton(new ButtonWidget(this.width / 2 - 152 + i, 170, 300 - i, 20, this.getLocalizedJointName(), buttonWidget -> {
+        this.jointRotationButton = this.addButton(new ButtonWidget(this.width / 2 - 152 + i, 150, 300 - i, 20, this.getLocalizedJointName(), buttonWidget -> {
             JigsawBlockEntity.Joint[] joints = JigsawBlockEntity.Joint.values();
             int i = (this.joint.ordinal() + 1) % joints.length;
             this.joint = joints[i];
@@ -108,12 +132,14 @@ extends Screen {
         String string2 = this.targetField.getText();
         String string3 = this.poolField.getText();
         String string4 = this.finalStateField.getText();
+        int i = this.generationDepth;
         JigsawBlockEntity.Joint joint = this.joint;
         this.init(client, width, height);
         this.nameField.setText(string);
         this.targetField.setText(string2);
         this.poolField.setText(string3);
         this.finalStateField.setText(string4);
+        this.generationDepth = i;
         this.joint = joint;
         this.jointRotationButton.setMessage(this.getLocalizedJointName());
     }
@@ -144,14 +170,14 @@ extends Screen {
         this.renderBackground();
         this.drawString(this.textRenderer, I18n.translate("jigsaw_block.pool", new Object[0]), this.width / 2 - 153, 10, 0xA0A0A0);
         this.poolField.render(mouseX, mouseY, delta);
-        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.name", new Object[0]), this.width / 2 - 153, 50, 0xA0A0A0);
+        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.name", new Object[0]), this.width / 2 - 153, 45, 0xA0A0A0);
         this.nameField.render(mouseX, mouseY, delta);
-        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.target", new Object[0]), this.width / 2 - 153, 90, 0xA0A0A0);
+        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.target", new Object[0]), this.width / 2 - 153, 80, 0xA0A0A0);
         this.targetField.render(mouseX, mouseY, delta);
-        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.final_state", new Object[0]), this.width / 2 - 153, 130, 0xA0A0A0);
+        this.drawString(this.textRenderer, I18n.translate("jigsaw_block.final_state", new Object[0]), this.width / 2 - 153, 115, 0xA0A0A0);
         this.finalStateField.render(mouseX, mouseY, delta);
         if (JigsawBlock.method_26378(this.jigsaw.getCachedState()).getAxis().isVertical()) {
-            this.drawString(this.textRenderer, I18n.translate("jigsaw_block.joint_label", new Object[0]), this.width / 2 - 153, 176, 0xFFFFFF);
+            this.drawString(this.textRenderer, I18n.translate("jigsaw_block.joint_label", new Object[0]), this.width / 2 - 153, 156, 0xFFFFFF);
         }
         super.render(mouseX, mouseY, delta);
     }

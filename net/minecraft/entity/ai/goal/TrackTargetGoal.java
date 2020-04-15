@@ -72,7 +72,7 @@ extends Goal {
     }
 
     protected double getFollowRange() {
-        return this.mob.method_26825(EntityAttributes.GENERIC_FOLLOW_RANGE);
+        return this.mob.getAttribute(EntityAttributes.GENERIC_FOLLOW_RANGE);
     }
 
     @Override

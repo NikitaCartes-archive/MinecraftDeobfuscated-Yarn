@@ -12,6 +12,7 @@ import net.minecraft.block.MushroomBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -35,6 +36,7 @@ import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.decorator.TrunkVineTreeDecorator;
 import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
+import net.minecraft.world.gen.feature.BastionRemnantFeatureConfig;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.BoulderFeatureConfig;
 import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
@@ -57,13 +59,14 @@ import net.minecraft.world.gen.feature.RandomBooleanFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
 import net.minecraft.world.gen.feature.RandomRandomFeatureConfig;
+import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.feature.SeagrassFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
+import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
-import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import net.minecraft.world.gen.foliage.AcaciaFoliagePlacer;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.PineFoliagePlacer;
@@ -222,7 +225,7 @@ public class DefaultBiomeFeatures {
     public static final BasaltColumnsFeatureConfig field_23855 = new BasaltColumnsFeatureConfig.Builder().reach(2, 3).height(5, 10).build();
     public static final NetherrackReplaceBlobsFeatureConfig field_23856 = new NetherrackReplaceBlobsFeatureConfig.Builder().minReachPos(new Vec3i(3, 3, 3)).maxReachPos(new Vec3i(7, 7, 7)).target(Blocks.NETHERRACK.getDefaultState()).state(Blocks.BASALT.getDefaultState()).build();
     public static final NetherrackReplaceBlobsFeatureConfig field_23857 = new NetherrackReplaceBlobsFeatureConfig.Builder().minReachPos(new Vec3i(3, 3, 3)).maxReachPos(new Vec3i(7, 7, 7)).target(Blocks.NETHERRACK.getDefaultState()).state(Blocks.BLACKSTONE.getDefaultState()).build();
-    public static final DeltaFeatureConfig field_23858 = new DeltaFeatureConfig.Builder().contents(Blocks.LAVA.getDefaultState()).radius(3, 6).rim(Blocks.MAGMA_BLOCK.getDefaultState(), 2).build();
+    public static final DeltaFeatureConfig field_23858 = new DeltaFeatureConfig.Builder().contents(Blocks.LAVA.getDefaultState()).radius(3, 7).rim(Blocks.MAGMA_BLOCK.getDefaultState(), 2).build();
     public static final HugeMushroomFeatureConfig HUGE_RED_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(new SimpleBlockStateProvider(RED_MUSHROOM_BLOCK), new SimpleBlockStateProvider(MUSHROOM_BLOCK), 2);
     public static final HugeMushroomFeatureConfig HUGE_BROWN_MUSHROOM_CONFIG = new HugeMushroomFeatureConfig(new SimpleBlockStateProvider(BROWN_MUSHROOM_BLOCK), new SimpleBlockStateProvider(MUSHROOM_BLOCK), 3);
     public static final BlockPileFeatureConfig CRIMSON_ROOTS_CONFIG = new BlockPileFeatureConfig(new WeightedBlockStateProvider().addState(Blocks.CRIMSON_ROOTS.getDefaultState(), 87).addState(Blocks.CRIMSON_FUNGUS.getDefaultState(), 11).addState(Blocks.WARPED_FUNGUS.getDefaultState(), 1));
@@ -249,12 +252,14 @@ public class DefaultBiomeFeatures {
         biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.DESERT_PYRAMID.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.JUNGLE_TEMPLE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.IGLOO.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
+        biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig()).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.SHIPWRECK.configure(new ShipwreckFeatureConfig(false)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.OCEAN_MONUMENT.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.WOODLAND_MANSION.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.9f)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         biome.addFeature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, Feature.BURIED_TREASURE.configure(new BuriedTreasureFeatureConfig(0.01f)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
-        biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.VILLAGE.configure(new VillageFeatureConfig("village/plains/town_centers", 6)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
+        biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.VILLAGE.configure(new StructurePoolFeatureConfig("village/plains/town_centers", 6)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
+        biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.BASTION_REMNANT.configure(new BastionRemnantFeatureConfig(BastionRemnantGenerator.START_POOLS_TO_SIZES)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
     }
 
     public static void addDefaultLakes(Biome biome) {

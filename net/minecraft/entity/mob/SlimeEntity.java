@@ -244,7 +244,7 @@ implements Monster {
     }
 
     protected float getDamageAmount() {
-        return (float)this.method_26825(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        return (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
     }
 
     @Override
@@ -497,7 +497,7 @@ implements Monster {
             }
             this.state = MoveControl.State.WAIT;
             if (this.entity.isOnGround()) {
-                this.entity.setMovementSpeed((float)(this.speed * this.entity.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+                this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
                 if (this.ticksUntilJump-- <= 0) {
                     this.ticksUntilJump = this.slime.getTicksUntilNextJump();
                     if (this.jumpOften) {
@@ -513,7 +513,7 @@ implements Monster {
                     this.entity.setMovementSpeed(0.0f);
                 }
             } else {
-                this.entity.setMovementSpeed((float)(this.speed * this.entity.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+                this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
             }
         }
     }

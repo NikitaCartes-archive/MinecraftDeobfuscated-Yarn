@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.structure.MineshaftGenerator;
@@ -14,6 +13,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.gen.ChunkRandom;
@@ -29,14 +29,11 @@ extends StructureFeature<MineshaftFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
-        ((ChunkRandom)random).setCarverSeed(chunkGenerator.getSeed(), chunkX, chunkZ);
-        if (chunkGenerator.hasStructure(biome, this)) {
-            MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
-            double d = mineshaftFeatureConfig.probability;
-            return random.nextDouble() < d;
-        }
-        return false;
+    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos) {
+        chunkRandom.setCarverSeed(chunkGenerator.getSeed(), chunkX, chunkZ);
+        MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
+        double d = mineshaftFeatureConfig.probability;
+        return chunkRandom.nextDouble() < d;
     }
 
     @Override
@@ -61,7 +58,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
         }
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
             MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, this.random, (x << 4) + 2, (z << 4) + 2, mineshaftFeatureConfig.type);
             this.children.add(mineshaftRoom);

@@ -60,6 +60,12 @@ extends BlockEntity {
     }
 
     @Override
+    @Environment(value=EnvType.CLIENT)
+    public double getSquaredRenderDistance() {
+        return 96.0;
+    }
+
+    @Override
     public CompoundTag toTag(CompoundTag tag) {
         super.toTag(tag);
         tag.putString("name", this.getStructureName());
@@ -93,9 +99,9 @@ extends BlockEntity {
         int j = MathHelper.clamp(tag.getInt("posY"), -32, 32);
         int k = MathHelper.clamp(tag.getInt("posZ"), -32, 32);
         this.offset = new BlockPos(i, j, k);
-        int l = MathHelper.clamp(tag.getInt("sizeX"), 0, 32);
-        int m = MathHelper.clamp(tag.getInt("sizeY"), 0, 32);
-        int n = MathHelper.clamp(tag.getInt("sizeZ"), 0, 32);
+        int l = MathHelper.clamp(tag.getInt("sizeX"), 0, 48);
+        int m = MathHelper.clamp(tag.getInt("sizeY"), 0, 48);
+        int n = MathHelper.clamp(tag.getInt("sizeZ"), 0, 48);
         this.size = new BlockPos(l, m, n);
         try {
             this.rotation = BlockRotation.valueOf(tag.getString("rotation"));

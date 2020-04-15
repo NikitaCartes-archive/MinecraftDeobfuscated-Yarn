@@ -27,15 +27,5 @@ public interface DedicatedServer {
     public String getPlugins();
 
     public String executeRconCommand(String var1);
-
-    public boolean isDebuggingEnabled();
-
-    public void info(String var1);
-
-    public void warn(String var1);
-
-    public void logError(String var1);
-
-    public void log(String var1);
 }
 

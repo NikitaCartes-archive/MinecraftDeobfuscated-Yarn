@@ -200,7 +200,7 @@ extends WaterCreatureEntity {
                 this.fish.setMovementSpeed(0.0f);
                 return;
             }
-            float f = (float)(this.speed * this.fish.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            float f = (float)(this.speed * this.fish.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             this.fish.setMovementSpeed(MathHelper.lerp(0.125f, this.fish.getMovementSpeed(), f));
             double d = this.targetX - this.fish.getX();
             double e = this.targetY - this.fish.getY();

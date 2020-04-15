@@ -52,23 +52,16 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class HoglinEntity
 extends AnimalEntity
 implements Monster,
 Hoglin {
-    private static final Logger LOGGER = LogManager.getLogger();
     private static final TrackedData<Boolean> BABY = DataTracker.registerData(HoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int movementCooldownTicks;
     private int timeInOverworld = 0;
     private boolean cannotBeHunted = false;
-    private static int field_22361 = 0;
-    private static int field_22362 = 0;
-    private static int field_22363 = 0;
-    private static int field_22364 = 0;
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super HoglinEntity>>> SENSOR_TYPES = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HOGLIN_SPECIFIC_SENSOR);
     protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULE_TYPES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, new MemoryModuleType[]{MemoryModuleType.AVOID_TARGET, MemoryModuleType.VISIBLE_ADULT_PIGLIN_COUNT, MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, MemoryModuleType.NEAREST_VISIBLE_ADULT_HOGLINS, MemoryModuleType.NEAREST_REPELLENT, MemoryModuleType.PACIFIED});
 
@@ -77,16 +70,6 @@ Hoglin {
         this.experiencePoints = 5;
         this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0f);
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0f);
-    }
-
-    @Override
-    public void onDeath(DamageSource source) {
-        super.onDeath(source);
-    }
-
-    @Override
-    public void remove() {
-        super.remove();
     }
 
     @Override
@@ -131,7 +114,7 @@ Hoglin {
 
     @Override
     protected Brain<?> deserializeBrain(Dynamic<?> data) {
-        return HoglinBrain.create(this, data);
+        return HoglinBrain.create(data);
     }
 
     public Brain<HoglinEntity> getBrain() {

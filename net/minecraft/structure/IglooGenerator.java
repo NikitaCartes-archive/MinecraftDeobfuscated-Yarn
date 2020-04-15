@@ -97,7 +97,7 @@ public class IglooGenerator {
         }
 
         @Override
-        public boolean generate(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos, BlockPos blockPos) {
+        public boolean generate(IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
             BlockPos blockPos5;
             BlockState blockState;
             StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirror(BlockMirror.NONE).setPosition((BlockPos)field_14408.get(this.template)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
@@ -106,7 +106,7 @@ public class IglooGenerator {
             int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos3.getX(), blockPos3.getZ());
             BlockPos blockPos4 = this.pos;
             this.pos = this.pos.add(0, i - 90 - 1, 0);
-            boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos);
+            boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
             if (this.template.equals(TOP_TEMPLATE) && !(blockState = world.getBlockState((blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && blockState.getBlock() != Blocks.LADDER) {
                 world.setBlockState(blockPos5, Blocks.SNOW_BLOCK.getDefaultState(), 3);
             }

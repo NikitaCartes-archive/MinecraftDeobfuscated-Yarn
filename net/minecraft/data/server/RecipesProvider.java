@@ -740,6 +740,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_BRICK_WALL, 6).input(Character.valueOf('#'), Blocks.POLISHED_BLACKSTONE_BRICKS).pattern("###").pattern("###").criterion("has_polished_blackstone_bricks", RecipesProvider.conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS)).offerTo(consumer);
         ShapelessRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_BUTTON).input(Blocks.POLISHED_BLACKSTONE).criterion("has_polished_blackstone", RecipesProvider.conditionsFromItem(Blocks.POLISHED_BLACKSTONE)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE).input(Character.valueOf('#'), Blocks.POLISHED_BLACKSTONE).pattern("##").criterion("has_polished_blackstone", RecipesProvider.conditionsFromItem(Blocks.POLISHED_BLACKSTONE)).offerTo(consumer);
+        ShapedRecipeJsonFactory.create(Blocks.CHAIN).input(Character.valueOf('I'), Items.IRON_INGOT).input(Character.valueOf('N'), Items.IRON_NUGGET).pattern("N").pattern("I").pattern("N").criterion("has_iron_nugget", RecipesProvider.conditionsFromItem(Items.IRON_NUGGET)).criterion("has_iron_ingot", RecipesProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(consumer);
         ComplexRecipeJsonFactory.create(RecipeSerializer.ARMOR_DYE).offerTo(consumer, "armor_dye");
         ComplexRecipeJsonFactory.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(consumer, "banner_duplicate");
         ComplexRecipeJsonFactory.create(RecipeSerializer.BOOK_CLONING).offerTo(consumer, "book_cloning");

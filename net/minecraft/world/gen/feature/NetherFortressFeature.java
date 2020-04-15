@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.NetherFortressGenerator;
@@ -14,9 +13,13 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -29,21 +32,23 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
-        int i = chunkX >> 4;
-        int j = chunkZ >> 4;
-        random.setSeed((long)(i ^ j << 4) ^ chunkGenerator.getSeed());
-        random.nextInt();
-        if (random.nextInt(3) != 0) {
-            return false;
-        }
-        if (chunkX != (i << 4) + 4 + random.nextInt(8)) {
-            return false;
-        }
-        if (chunkZ != (j << 4) + 4 + random.nextInt(8)) {
-            return false;
-        }
-        return chunkGenerator.hasStructure(biome, this);
+    protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+        return chunkGeneratorConfig.getNetherStructureSpacing();
+    }
+
+    @Override
+    protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
+        return chunkGenerationConfig.getNetherStructureSeparation();
+    }
+
+    @Override
+    protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
+        return chunkGeneratorConfig.getNetherStructureSeedModifier();
+    }
+
+    @Override
+    protected boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos) {
+        return chunkRandom.nextInt(6) < 2;
     }
 
     @Override
@@ -73,7 +78,7 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+        public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
             NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
             this.children.add(start);
             start.placeJigsaw(start, this.children, this.random);

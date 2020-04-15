@@ -261,6 +261,7 @@ public class SoundSystem {
     }
 
     public void play(SoundInstance soundInstance) {
+        boolean bl2;
         if (!this.started) {
             return;
         }
@@ -273,15 +274,6 @@ public class SoundSystem {
             if (unknownSounds.add(identifier)) {
                 LOGGER.warn(MARKER, "Unable to play unknown soundEvent: {}", (Object)identifier);
             }
-            return;
-        }
-        if (!this.listeners.isEmpty()) {
-            for (SoundInstanceListener soundInstanceListener : this.listeners) {
-                soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);
-            }
-        }
-        if (this.listener.getVolume() <= 0.0f) {
-            LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", (Object)identifier);
             return;
         }
         Sound sound = soundInstance.getSound();
@@ -302,9 +294,23 @@ public class SoundSystem {
             LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", (Object)sound.getIdentifier());
             return;
         }
-        boolean bl2 = SoundSystem.shouldRepeatInstantly(soundInstance);
-        boolean bl3 = sound.isStreamed();
         Vec3d vec3d = new Vec3d(soundInstance.getX(), soundInstance.getY(), soundInstance.getZ());
+        if (!this.listeners.isEmpty()) {
+            boolean bl3 = bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.method_27268().squaredDistanceTo(vec3d) < (double)(g * g);
+            if (bl2) {
+                for (SoundInstanceListener soundInstanceListener : this.listeners) {
+                    soundInstanceListener.onSoundPlayed(soundInstance, weightedSoundSet);
+                }
+            } else {
+                LOGGER.debug(MARKER, "Did not notify listeners of soundEvent: {}, it is too far away to hear", (Object)identifier);
+            }
+        }
+        if (this.listener.getVolume() <= 0.0f) {
+            LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", (Object)identifier);
+            return;
+        }
+        bl2 = SoundSystem.shouldRepeatInstantly(soundInstance);
+        boolean bl3 = sound.isStreamed();
         CompletableFuture<Channel.SourceManager> completableFuture = this.channel.createSource(sound.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
         Channel.SourceManager sourceManager = completableFuture.join();
         if (sourceManager == null) {

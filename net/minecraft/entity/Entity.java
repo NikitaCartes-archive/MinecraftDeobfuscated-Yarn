@@ -122,12 +122,12 @@ CommandOutput {
     protected static final Logger LOGGER = LogManager.getLogger();
     private static final AtomicInteger MAX_ENTITY_ID = new AtomicInteger();
     private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
-    private static final ImmutableMap<EntityPose, ImmutableList<Integer>> field_22417 = ImmutableMap.of(EntityPose.STANDING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.CROUCHING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.SWIMMING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1)));
+    private static final ImmutableMap<EntityPose, ImmutableList<Integer>> POSE_HEIGHTS = ImmutableMap.of(EntityPose.STANDING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.CROUCHING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.SWIMMING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1)));
     private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     private static double renderDistanceMultiplier = 1.0;
     private final EntityType<?> type;
     private int entityId = MAX_ENTITY_ID.incrementAndGet();
-    public boolean field_23807;
+    public boolean inanimate;
     private final List<Entity> passengerList = Lists.newArrayList();
     protected int ridingCooldown;
     @Nullable
@@ -2440,7 +2440,7 @@ CommandOutput {
             float f = Math.min(entityDimensions.width, 1.0f) / 2.0f;
             float g = 0.5f - f;
             float h = 0.5f + f;
-            Iterator iterator = field_22417.get((Object)entityPose).iterator();
+            Iterator iterator = POSE_HEIGHTS.get((Object)entityPose).iterator();
             while (iterator.hasNext()) {
                 int i = (Integer)iterator.next();
                 for (int[] js : is) {

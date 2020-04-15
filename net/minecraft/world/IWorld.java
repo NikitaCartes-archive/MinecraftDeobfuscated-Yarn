@@ -96,13 +96,13 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-        return EntityView.super.intersectsEntities(except, shape);
+    default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
+        return EntityView.super.intersectsEntities(entity, voxelShape);
     }
 
     @Override
-    default public BlockPos getTopPosition(Heightmap.Type type, BlockPos pos) {
-        return WorldView.super.getTopPosition(type, pos);
+    default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
+        return WorldView.super.getTopPosition(heightmap, pos);
     }
 }
 

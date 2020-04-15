@@ -407,7 +407,7 @@ extends AnimalEntity {
             double g = MathHelper.sqrt(d * d + e * e + f * f);
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
             this.turtle.bodyYaw = this.turtle.yaw = this.changeAngle(this.turtle.yaw, h, 90.0f);
-            float i = (float)(this.speed * this.turtle.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            float i = (float)(this.speed * this.turtle.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             this.turtle.setMovementSpeed(MathHelper.lerp(0.125f, this.turtle.getMovementSpeed(), i));
             this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * (e /= g) * 0.1, 0.0));
         }

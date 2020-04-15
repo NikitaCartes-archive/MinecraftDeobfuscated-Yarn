@@ -22,9 +22,11 @@ extends RconBase {
     private Socket socket;
     private final byte[] packetBuffer = new byte[1460];
     private final String password;
+    private final DedicatedServer field_23965;
 
     RconClient(DedicatedServer dedicatedServer, String string, Socket socket) {
-        super(dedicatedServer, "RCON Client");
+        super("RCON Client " + socket.getInetAddress());
+        this.field_23965 = dedicatedServer;
         this.socket = socket;
         try {
             this.socket.setSoTimeout(0);
@@ -32,7 +34,6 @@ extends RconBase {
             this.running = false;
         }
         this.password = string;
-        this.info("Rcon connection from: " + socket.getInetAddress());
     }
 
     /*
@@ -72,7 +73,7 @@ extends RconBase {
                         if (this.authenticated) {
                             String string2 = BufferHelper.getString(this.packetBuffer, j, i);
                             try {
-                                this.method_14789(l, this.server.executeRconCommand(string2));
+                                this.method_14789(l, this.field_23965.executeRconCommand(string2));
                             } catch (Exception exception) {
                                 this.method_14789(l, "Error executing: " + string2 + " (" + exception.getMessage() + ")");
                             }
@@ -92,6 +93,8 @@ extends RconBase {
             LOGGER.error("Exception whilst parsing RCON input", (Throwable)exception2);
         } finally {
             this.close();
+            LOGGER.info("Thread {} shutting down", (Object)this.description);
+            this.running = false;
         }
     }
 
@@ -123,8 +126,9 @@ extends RconBase {
 
     @Override
     public void stop() {
-        super.stop();
+        this.running = false;
         this.close();
+        super.stop();
     }
 
     private void close() {
@@ -134,7 +138,7 @@ extends RconBase {
         try {
             this.socket.close();
         } catch (IOException iOException) {
-            this.warn("IO: " + iOException.getMessage());
+            LOGGER.warn("Failed to close socket", (Throwable)iOException);
         }
         this.socket = null;
     }

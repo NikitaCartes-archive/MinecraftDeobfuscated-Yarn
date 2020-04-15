@@ -8,11 +8,11 @@ import com.mojang.datafixers.Dynamic;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5164;
+import net.minecraft.world.gen.surfacebuilder.AbstractNetherSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
 public class SoulSandValleySurfaceBuilder
-extends class_5164 {
+extends AbstractNetherSurfaceBuilder {
     private static final BlockState SOUL_SAND = Blocks.SOUL_SAND.getDefaultState();
     private static final BlockState SOUL_SOIL = Blocks.SOUL_SOIL.getDefaultState();
     private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();

@@ -13,6 +13,8 @@ import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
+import net.minecraft.world.gen.feature.RuinedPortalFeature;
+import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -23,6 +25,7 @@ extends Biome {
         this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
         this.addStructureFeature(Feature.BURIED_TREASURE.configure(new BuriedTreasureFeatureConfig(0.01f)));
         this.addStructureFeature(Feature.SHIPWRECK.configure(new ShipwreckFeatureConfig(true)));
+        this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD)));
         DefaultBiomeFeatures.addLandCarvers(this);
         DefaultBiomeFeatures.addDefaultStructures(this);
         DefaultBiomeFeatures.addDefaultLakes(this);

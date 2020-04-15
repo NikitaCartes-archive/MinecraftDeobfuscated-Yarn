@@ -351,6 +351,7 @@ public class Items {
     public static final Item RED_MUSHROOM_BLOCK = Items.register(Blocks.RED_MUSHROOM_BLOCK, ItemGroup.DECORATIONS);
     public static final Item MUSHROOM_STEM = Items.register(Blocks.MUSHROOM_STEM, ItemGroup.DECORATIONS);
     public static final Item IRON_BARS = Items.register(Blocks.IRON_BARS, ItemGroup.DECORATIONS);
+    public static final Item CHAIN = Items.register(Blocks.CHAIN, ItemGroup.DECORATIONS);
     public static final Item GLASS_PANE = Items.register(Blocks.GLASS_PANE, ItemGroup.DECORATIONS);
     public static final Item MELON = Items.register(Blocks.MELON, ItemGroup.BUILDING_BLOCKS);
     public static final Item VINE = Items.register(Blocks.VINE, ItemGroup.DECORATIONS);
@@ -1015,6 +1016,7 @@ public class Items {
     public static final Item MUSIC_DISC_WARD = Items.register("music_disc_ward", (Item)new MusicDiscItem(10, SoundEvents.MUSIC_DISC_WARD, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_11 = Items.register("music_disc_11", (Item)new MusicDiscItem(11, SoundEvents.MUSIC_DISC_11, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_WAIT = Items.register("music_disc_wait", (Item)new MusicDiscItem(12, SoundEvents.MUSIC_DISC_WAIT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
+    public static final Item MUSIC_DISC_PIGSTEP = Items.register("music_disc_pigstep", (Item)new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item TRIDENT = Items.register("trident", (Item)new TridentItem(new Item.Settings().maxDamage(250).group(ItemGroup.COMBAT)));
     public static final Item PHANTOM_MEMBRANE = Items.register("phantom_membrane", new Item(new Item.Settings().group(ItemGroup.BREWING)));
     public static final Item NAUTILUS_SHELL = Items.register("nautilus_shell", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));

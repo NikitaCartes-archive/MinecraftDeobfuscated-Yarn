@@ -74,7 +74,7 @@ Saddleable {
     public StriderEntity(EntityType<? extends StriderEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
-        this.field_23807 = true;
+        this.inanimate = true;
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
         this.setPathfindingPenalty(PathNodeType.LAVA, 0.0f);
         this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0f);
@@ -154,7 +154,7 @@ Saddleable {
     }
 
     @Override
-    public boolean method_26319() {
+    public boolean canWalkOnLava() {
         return true;
     }
 
@@ -210,12 +210,12 @@ Saddleable {
     }
 
     public float getSpeed() {
-        return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66f : 1.0f);
+        return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66f : 1.0f);
     }
 
     @Override
     public float getSaddledSpeed() {
-        return (float)this.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23f : 0.55f);
+        return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23f : 0.55f);
     }
 
     @Override
@@ -243,7 +243,7 @@ Saddleable {
         if (this.temptGoal != null && this.temptGoal.isActive() && this.random.nextInt(100) == 0) {
             this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0f, this.getSoundPitch());
         }
-        if (this.escapeDangerGoal != null && this.escapeDangerGoal.method_26337() && this.random.nextInt(60) == 0) {
+        if (this.escapeDangerGoal != null && this.escapeDangerGoal.isActive() && this.random.nextInt(60) == 0) {
             this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0f, this.getSoundPitch());
         }
         BlockState blockState = this.world.getBlockState(this.getBlockPos());
@@ -254,16 +254,16 @@ Saddleable {
             this.onGround = true;
         }
         super.tick();
-        this.method_26347();
+        this.updateFloating();
         this.checkBlockCollision();
     }
 
     @Override
-    protected boolean method_26323() {
+    protected boolean movesIndependently() {
         return true;
     }
 
-    public float method_26346() {
+    public float getBaseLavaHeight() {
         Box box = this.getBoundingBox();
         float f = -1.0f;
         float g = 0.0f;
@@ -278,11 +278,11 @@ Saddleable {
         return f + g;
     }
 
-    private void method_26347() {
+    private void updateFloating() {
         Vec3d vec3d = this.getVelocity();
         Box box = this.getBoundingBox();
         if (this.isInLava()) {
-            boolean bl = box.y1 <= (double)this.method_26346() - (this.isBaby() ? 0.0 : 0.25);
+            boolean bl = box.y1 <= (double)this.getBaseLavaHeight() - (this.isBaby() ? 0.0 : 0.25);
             this.setVelocity(vec3d.x, bl ? vec3d.y + 0.01 : -0.01, vec3d.z);
         }
     }
@@ -397,20 +397,20 @@ Saddleable {
         }
         MobEntityWithAi mobEntity = null;
         if (riderType == StriderData.RiderType.BABY_RIDER) {
-            StriderEntity striderEntity = EntityType.STRIDER.create(this.world);
+            StriderEntity striderEntity = EntityType.STRIDER.create(world.getWorld());
             if (striderEntity != null) {
                 mobEntity = striderEntity;
                 striderEntity.setBreedingAge(-24000);
             }
-        } else if (riderType == StriderData.RiderType.PIGLIN_RIDER && (zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(this.world)) != null) {
+        } else if (riderType == StriderData.RiderType.PIGLIN_RIDER && (zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.getWorld())) != null) {
             mobEntity = zombifiedPiglinEntity;
             this.saddle(null);
         }
         if (mobEntity != null) {
             mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
             mobEntity.initialize(world, difficulty, SpawnType.JOCKEY, null, null);
+            mobEntity.startRiding(this, true);
             world.spawnEntity(mobEntity);
-            mobEntity.startRiding(this);
         }
         return super.initialize(world, difficulty, spawnType, entityData, entityTag);
     }
@@ -433,11 +433,11 @@ Saddleable {
         }
 
         @Override
-        protected boolean method_26338(PathNodeType pathNodeType) {
-            if (pathNodeType == PathNodeType.LAVA || pathNodeType == PathNodeType.DAMAGE_FIRE || pathNodeType == PathNodeType.DANGER_FIRE) {
+        protected boolean canWalkOnPath(PathNodeType pathType) {
+            if (pathType == PathNodeType.LAVA || pathType == PathNodeType.DAMAGE_FIRE || pathType == PathNodeType.DANGER_FIRE) {
                 return true;
             }
-            return super.method_26338(pathNodeType);
+            return super.canWalkOnPath(pathType);
         }
 
         @Override

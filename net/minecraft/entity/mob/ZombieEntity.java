@@ -285,7 +285,7 @@ extends HostileEntity {
             if (livingEntity == null && source.getAttacker() instanceof LivingEntity) {
                 livingEntity = (LivingEntity)source.getAttacker();
             }
-            if (livingEntity != null && this.world.getDifficulty() == Difficulty.HARD && (double)this.random.nextFloat() < this.method_26825(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS) && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+            if (livingEntity != null && this.world.getDifficulty() == Difficulty.HARD && (double)this.random.nextFloat() < this.getAttribute(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS) && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
                 int i = MathHelper.floor(this.getX());
                 int j = MathHelper.floor(this.getY());
                 int k = MathHelper.floor(this.getZ());
@@ -462,8 +462,8 @@ extends HostileEntity {
                     chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
                     chickenEntity2.initialize(world, difficulty, SpawnType.JOCKEY, null, null);
                     chickenEntity2.setHasJockey(true);
-                    world.spawnEntity(chickenEntity2);
                     this.startRiding(chickenEntity2);
+                    world.spawnEntity(chickenEntity2);
                 }
             }
             this.setCanBreakDoors(this.shouldBreakDoors() && this.random.nextFloat() < f * 0.1f);

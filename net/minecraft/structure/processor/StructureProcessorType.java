@@ -3,6 +3,8 @@
  */
 package net.minecraft.structure.processor;
 
+import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
+import net.minecraft.structure.processor.BlockAgeStructureProcessor;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.structure.processor.GravityStructureProcessor;
@@ -21,6 +23,8 @@ extends DynamicDeserializer<StructureProcessor> {
     public static final StructureProcessorType JIGSAW_REPLACEMENT = StructureProcessorType.register("jigsaw_replacement", dynamic -> JigsawReplacementStructureProcessor.INSTANCE);
     public static final StructureProcessorType RULE = StructureProcessorType.register("rule", RuleStructureProcessor::new);
     public static final StructureProcessorType NOP = StructureProcessorType.register("nop", dynamic -> NopStructureProcessor.INSTANCE);
+    public static final StructureProcessorType BLOCK_AGE = StructureProcessorType.register("block_age", BlockAgeStructureProcessor::new);
+    public static final StructureProcessorType BLACKSTONE_REPLACE = StructureProcessorType.register("blackstone_replace", dynamic -> BlackstoneReplacementStructureProcessor.INSTANCE);
 
     public static StructureProcessorType register(String id, StructureProcessorType processor) {
         return Registry.register(Registry.STRUCTURE_PROCESSOR, id, processor);

@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -43,10 +44,7 @@ extends Feature<DefaultFeatureConfig> {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int l = 0; l < i * i; ++l) {
             mutable.set(blockPos).move(MathHelper.nextInt(random, -i, i), MathHelper.nextInt(random, -j, j), MathHelper.nextInt(random, -i, i));
-            while (iWorld.getBlockState((BlockPos)mutable.down()).isAir()) {
-                mutable.move(0, -1, 0);
-            }
-            if (TwistingVinesFeature.isNotSuitable(iWorld, mutable)) continue;
+            if (!TwistingVinesFeature.method_27220(iWorld, mutable) || TwistingVinesFeature.isNotSuitable(iWorld, mutable)) continue;
             int m = MathHelper.nextInt(random, 1, k);
             if (random.nextInt(6) == 0) {
                 m *= 2;
@@ -58,6 +56,16 @@ extends Feature<DefaultFeatureConfig> {
             int o = 25;
             TwistingVinesFeature.generateVineColumn(iWorld, random, mutable, m, 17, 25);
         }
+    }
+
+    private static boolean method_27220(IWorld iWorld, BlockPos.Mutable mutable) {
+        do {
+            mutable.move(0, -1, 0);
+            if (!World.isHeightInvalid(mutable)) continue;
+            return false;
+        } while (iWorld.getBlockState(mutable).isAir());
+        mutable.move(0, 1, 0);
+        return true;
     }
 
     public static void generateVineColumn(IWorld world, Random random, BlockPos.Mutable pos, int maxLength, int minAge, int maxAge) {
