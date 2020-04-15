@@ -12,6 +12,8 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.IcePatchFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
+import net.minecraft.world.gen.feature.RuinedPortalFeature;
+import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
@@ -33,6 +35,7 @@ public final class IceSpikesBiome extends Biome {
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL)));
 		this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
+		this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD)));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

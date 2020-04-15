@@ -779,7 +779,7 @@ public class ArmorStandEntity extends LivingEntity {
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (ARMOR_STAND_FLAGS.equals(data)) {
 			this.calculateDimensions();
-			this.field_23807 = !this.isMarker();
+			this.inanimate = !this.isMarker();
 		}
 
 		super.onTrackedDataSet(data);

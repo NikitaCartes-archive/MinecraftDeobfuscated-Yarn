@@ -100,7 +100,7 @@ public class ChunkPos {
 	}
 
 	public BlockPos getCenterBlockPos() {
-		return new BlockPos(this.x << 4, 0, this.z << 4);
+		return new BlockPos(this.getStartX(), 0, this.getStartZ());
 	}
 
 	public int method_24022(ChunkPos chunkPos) {

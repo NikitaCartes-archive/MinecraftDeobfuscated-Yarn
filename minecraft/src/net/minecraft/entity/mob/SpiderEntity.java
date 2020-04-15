@@ -154,8 +154,8 @@ public class SpiderEntity extends HostileEntity {
 			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
 			skeletonEntity.initialize(world, difficulty, spawnType, null, null);
-			world.spawnEntity(skeletonEntity);
 			skeletonEntity.startRiding(this);
+			world.spawnEntity(skeletonEntity);
 		}
 
 		if (entityData == null) {

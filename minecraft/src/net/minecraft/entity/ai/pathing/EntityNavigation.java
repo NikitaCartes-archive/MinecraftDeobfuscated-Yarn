@@ -49,7 +49,7 @@ public abstract class EntityNavigation {
 	public EntityNavigation(MobEntity mob, World world) {
 		this.entity = mob;
 		this.world = world;
-		int i = MathHelper.floor(mob.method_26825(EntityAttributes.GENERIC_FOLLOW_RANGE) * 16.0);
+		int i = MathHelper.floor(mob.getAttribute(EntityAttributes.GENERIC_FOLLOW_RANGE) * 16.0);
 		this.pathNodeNavigator = this.createPathNodeNavigator(i);
 	}
 
@@ -120,7 +120,7 @@ public abstract class EntityNavigation {
 			return this.currentPath;
 		} else {
 			this.world.getProfiler().push("pathfind");
-			float f = (float)this.entity.method_26825(EntityAttributes.GENERIC_FOLLOW_RANGE);
+			float f = (float)this.entity.getAttribute(EntityAttributes.GENERIC_FOLLOW_RANGE);
 			BlockPos blockPos = bl ? this.entity.getBlockPos().up() : this.entity.getBlockPos();
 			int i = (int)(f + (float)range);
 			ChunkCache chunkCache = new ChunkCache(this.world, blockPos.add(-i, -i, -i), blockPos.add(i, i, i));

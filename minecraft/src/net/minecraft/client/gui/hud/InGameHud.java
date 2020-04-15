@@ -721,7 +721,7 @@ public class InGameHud extends DrawableHelper {
 			int m = this.scaledWidth / 2 - 91;
 			int n = this.scaledWidth / 2 + 91;
 			int o = this.scaledHeight - 39;
-			float f = (float)playerEntity.method_26825(EntityAttributes.GENERIC_MAX_HEALTH);
+			float f = (float)playerEntity.getAttribute(EntityAttributes.GENERIC_MAX_HEALTH);
 			int p = MathHelper.ceil(playerEntity.getAbsorptionAmount());
 			int q = MathHelper.ceil((f + (float)p) / 2.0F / 10.0F);
 			int r = Math.max(10 - (q - 2), 3);

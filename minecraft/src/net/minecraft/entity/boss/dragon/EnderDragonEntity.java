@@ -86,7 +86,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	 */
 	private final PathNode[] pathNodes = new PathNode[24];
 	/**
-	 * An array of 24 bitflags, where node #i leads to #j iff (pathNodeConnections[i] & (1 << j)) != 0.
+	 * An array of 24 bitflags, where node #i leads to #j if and only if
+	 * {@code (pathNodeConnections[i] & (1 << j)) != 0}.
 	 */
 	private final int[] pathNodeConnections = new int[24];
 	private final PathMinHeap pathHeap = new PathMinHeap();

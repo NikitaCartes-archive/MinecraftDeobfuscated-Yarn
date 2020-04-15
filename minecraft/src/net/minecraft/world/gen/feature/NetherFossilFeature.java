@@ -13,7 +13,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 	public NetherFossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -21,7 +23,7 @@ public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureCon
 	}
 
 	@Override
-	protected int getSeedModifier() {
+	protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
 		return 14357921;
 	}
 
@@ -36,12 +38,12 @@ public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureCon
 	}
 
 	@Override
-	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
+	protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
 		return 2;
 	}
 
 	@Override
-	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
+	protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
 		return 1;
 	}
 
@@ -56,7 +58,7 @@ public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureCon
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			ChunkPos chunkPos = new ChunkPos(x, z);
 			int i = chunkPos.getStartX() + this.random.nextInt(16);
 			int j = chunkPos.getStartZ() + this.random.nextInt(16);

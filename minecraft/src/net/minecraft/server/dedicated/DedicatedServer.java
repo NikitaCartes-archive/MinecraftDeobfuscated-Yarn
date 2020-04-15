@@ -22,14 +22,4 @@ public interface DedicatedServer {
 	String getPlugins();
 
 	String executeRconCommand(String string);
-
-	boolean isDebuggingEnabled();
-
-	void info(String message);
-
-	void warn(String message);
-
-	void logError(String message);
-
-	void log(String message);
 }

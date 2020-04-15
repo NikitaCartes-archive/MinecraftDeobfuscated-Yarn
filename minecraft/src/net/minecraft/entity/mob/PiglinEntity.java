@@ -52,11 +52,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class PiglinEntity extends HostileEntity implements CrossbowUser {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -67,10 +64,6 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	private int conversionTicks = 0;
 	private final BasicInventory inventory = new BasicInventory(8);
 	private boolean field_23738 = false;
-	private static int field_22372 = 0;
-	private static int field_22373 = 0;
-	private static int field_22374 = 0;
-	private static int field_22375 = 0;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES,
 		SensorType.NEAREST_PLAYERS,
@@ -124,16 +117,6 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		this.experiencePoints = 5;
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
-	}
-
-	@Override
-	public void onDeath(DamageSource source) {
-		super.onDeath(source);
-	}
-
-	@Override
-	public void remove() {
-		super.remove();
 	}
 
 	@Override
@@ -209,8 +192,12 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		if (world.getRandom().nextFloat() < 0.2F) {
-			this.setBaby(true);
+		if (spawnType != SpawnType.STRUCTURE) {
+			if (world.getRandom().nextFloat() < 0.2F) {
+				this.setBaby(true);
+			} else if (this.isAdult()) {
+				this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
+			}
 		}
 
 		PiglinBrain.setHuntedRecently(this);
@@ -231,7 +218,6 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	@Override
 	protected void initEquipment(LocalDifficulty difficulty) {
 		if (this.isAdult()) {
-			this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
 			this.equipAtChance(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
 			this.equipAtChance(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
 			this.equipAtChance(EquipmentSlot.LEGS, new ItemStack(Items.GOLDEN_LEGGINGS));
@@ -304,7 +290,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		this.field_23738 = bl;
 	}
 
-	public boolean method_26952() {
+	protected boolean method_26952() {
 		return !this.field_23738;
 	}
 
@@ -480,8 +466,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 
 	@Override
 	public boolean startRiding(Entity entity, boolean force) {
-		int i = 3;
-		Entity entity2 = this.method_26089(entity, i);
+		Entity entity2 = this.method_26089(entity, 3);
 		return super.startRiding(entity2, force);
 	}
 

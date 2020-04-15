@@ -13,7 +13,7 @@ public interface Inventory extends Clearable {
 
 	/**
 	 * Fetches the stack currently stored at the given slot. If the slot is empty,
-	 * or is outside the bounds of this inventory, returns see {@link ItemStack.EMPTY}.
+	 * or is outside the bounds of this inventory, returns see {@link ItemStack#EMPTY}.
 	 */
 	ItemStack getStack(int slot);
 
@@ -38,7 +38,7 @@ public interface Inventory extends Clearable {
 	 * No slots may have more than this number of items. It is effectively the
 	 * stacking limit for this inventory's slots.
 	 * 
-	 * @return the max {@link net.minecraft.item.ItemStack#getCount() count} of item stacks in this inventory
+	 * @return the max {@link ItemStack#getCount() count} of item stacks in this inventory
 	 */
 	default int getMaxCountPerStack() {
 		return 64;

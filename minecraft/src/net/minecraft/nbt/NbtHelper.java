@@ -163,7 +163,7 @@ public final class NbtHelper {
 
 	/**
 	 * Deserializes a tag into a {@link UUID}.
-	 * The tag's data must have the same structure as the output of {@link #fromUuid}.
+	 * The tag's data must have the same structure as the output of {@link #fromUuidNew}.
 	 * 
 	 * @throws IllegalArgumentException if {@code tag} is not a valid representation of a UUID
 	 * @since 20w10a

@@ -28,6 +28,10 @@ public class StructureProcessorRule {
 		this(ruleTest, ruleTest2, AlwaysTruePosRuleTest.INSTANCE, blockState, null);
 	}
 
+	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, PosRuleTest posRuleTest, BlockState blockState) {
+		this(ruleTest, ruleTest2, posRuleTest, blockState, null);
+	}
+
 	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, PosRuleTest posRuleTest, BlockState blockState, @Nullable CompoundTag compoundTag) {
 		this.inputPredicate = ruleTest;
 		this.locationPredicate = ruleTest2;

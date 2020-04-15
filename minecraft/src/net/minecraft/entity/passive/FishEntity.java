@@ -199,7 +199,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 			}
 
 			if (this.state == MoveControl.State.MOVE_TO && !this.fish.getNavigation().isIdle()) {
-				float f = (float)(this.speed * this.fish.method_26825(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+				float f = (float)(this.speed * this.fish.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				this.fish.setMovementSpeed(MathHelper.lerp(0.125F, this.fish.getMovementSpeed(), f));
 				double d = this.targetX - this.fish.getX();
 				double e = this.targetY - this.fish.getY();

@@ -41,7 +41,8 @@ public class EmptyPoolElement extends StructurePoolElement {
 		BlockPos blockPos2,
 		BlockRotation blockRotation,
 		BlockBox blockBox,
-		Random random
+		Random random,
+		boolean bl
 	) {
 		return true;
 	}

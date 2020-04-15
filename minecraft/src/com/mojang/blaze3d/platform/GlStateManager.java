@@ -223,11 +223,11 @@ public class GlStateManager {
 	}
 
 	/**
-	 * Configures the frame buffer and populates {@link FrameBufferInfo} with the appropriate constants
+	 * Configures the frame buffer and populates {@link FramebufferInfo} with the appropriate constants
 	 * for the current GLCapabilities.
 	 * 
-	 * @return human-readable string representing the selected frame buffer technology.
-	 * @throws IllegalStateException if no known frame buffer technology is supported.
+	 * @return human-readable string representing the selected frame buffer technology
+	 * @throws IllegalStateException if no known frame buffer technology is supported
 	 */
 	public static String initFramebufferSupport(GLCapabilities capabilities) {
 		RenderSystem.assertThread(RenderSystem::isInInitPhase);

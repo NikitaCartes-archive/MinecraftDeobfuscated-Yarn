@@ -13,8 +13,10 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	public EndCityFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -22,34 +24,30 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.getConfig().getEndCityDistance();
-		int n = chunkGenerator.getConfig().getEndCitySeparation();
-		int o = i + m * k;
-		int p = j + m * l;
-		int q = o < 0 ? o - m + 1 : o;
-		int r = p < 0 ? p - m + 1 : p;
-		int s = q / m;
-		int t = r / m;
-		((ChunkRandom)random).setRegionSeed(chunkGenerator.getSeed(), s, t, 10387313);
-		s *= m;
-		t *= m;
-		s += (random.nextInt(m - n) + random.nextInt(m - n)) / 2;
-		t += (random.nextInt(m - n) + random.nextInt(m - n)) / 2;
-		return new ChunkPos(s, t);
+	protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+		return chunkGeneratorConfig.getEndCityDistance();
 	}
 
 	@Override
-	public boolean shouldStartAt(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, Random random, int chunkX, int chunkZ, Biome biome) {
-		ChunkPos chunkPos = this.getStart(chunkGenerator, random, chunkX, chunkZ, 0, 0);
-		if (chunkX != chunkPos.x || chunkZ != chunkPos.z) {
-			return false;
-		} else if (!chunkGenerator.hasStructure(biome, this)) {
-			return false;
-		} else {
-			int i = getGenerationHeight(chunkX, chunkZ, chunkGenerator);
-			return i >= 60;
-		}
+	protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
+		return chunkGenerationConfig.getEndCitySeparation();
+	}
+
+	@Override
+	protected int getSeedModifier(ChunkGeneratorConfig chunkGeneratorConfig) {
+		return 10387313;
+	}
+
+	@Override
+	protected boolean method_27219() {
+		return false;
+	}
+
+	@Override
+	protected boolean shouldStartAt(
+		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+	) {
+		return getGenerationHeight(chunkX, chunkZ, chunkGenerator) >= 60;
 	}
 
 	@Override
@@ -96,7 +94,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			BlockRotation blockRotation = BlockRotation.random(this.random);
 			int i = EndCityFeature.getGenerationHeight(x, z, chunkGenerator);
 			if (i >= 60) {

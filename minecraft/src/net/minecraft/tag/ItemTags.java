@@ -52,6 +52,7 @@ public class ItemTags {
 	public static final Tag.Identified<Item> FISHES = register("fishes");
 	public static final Tag.Identified<Item> SIGNS = register("signs");
 	public static final Tag.Identified<Item> MUSIC_DISCS = register("music_discs");
+	public static final Tag.Identified<Item> CREEPER_DROP_MUSIC_DISCS = register("creeper_drop_music_discs");
 	public static final Tag.Identified<Item> COALS = register("coals");
 	public static final Tag.Identified<Item> ARROWS = register("arrows");
 	public static final Tag.Identified<Item> LECTERN_BOOKS = register("lectern_books");
