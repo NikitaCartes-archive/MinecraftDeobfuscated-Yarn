@@ -9,6 +9,7 @@ import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -42,40 +43,40 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float delta) {
+	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
 		if (this.bounce > 0.0F) {
-			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
+			float g = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
-			RenderSystem.scalef(1.0F, f, 1.0F);
+			RenderSystem.scalef(1.0F, g, 1.0F);
 			RenderSystem.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
-		int i = this.u;
-		int j = this.v;
+		int k = this.u;
+		int l = this.v;
 		if (this.toggled) {
-			i += this.pressedUOffset;
+			k += this.pressedUOffset;
 		}
 
 		if (this.isHovered()) {
-			j += this.hoverVOffset;
+			l += this.hoverVOffset;
 		}
 
-		int k = this.x;
+		int m = this.x;
 		if (this.toggled) {
-			k -= 2;
+			m -= 2;
 		}
 
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.drawTexture(k, this.y, i, j, this.width, this.height);
+		this.drawTexture(matrixStack, m, this.y, k, l, this.width, this.height);
 		RenderSystem.enableDepthTest();
 		this.renderIcons(minecraftClient.getItemRenderer());
 		if (this.bounce > 0.0F) {
 			RenderSystem.popMatrix();
-			this.bounce -= delta;
+			this.bounce -= f;
 		}
 	}
 

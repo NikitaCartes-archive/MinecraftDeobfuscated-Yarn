@@ -15,12 +15,13 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -32,8 +33,8 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 public class PresetsScreen extends Screen {
 	private static final List<PresetsScreen.SuperflatPreset> presets = Lists.<PresetsScreen.SuperflatPreset>newArrayList();
 	private final CustomizeFlatLevelScreen parent;
-	private String shareText;
-	private String listText;
+	private Text shareText;
+	private Text listText;
 	private PresetsScreen.SuperflatPresetsListWidget listWidget;
 	private ButtonWidget selectPresetButton;
 	private TextFieldWidget customPresetField;
@@ -46,8 +47,8 @@ public class PresetsScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.shareText = I18n.translate("createWorld.customize.presets.share");
-		this.listText = I18n.translate("createWorld.customize.presets.list");
+		this.shareText = new TranslatableText("createWorld.customize.presets.share");
+		this.listText = new TranslatableText("createWorld.customize.presets.list");
 		this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
 		this.customPresetField.setMaxLength(1230);
 		this.customPresetField.setText(this.parent.getConfigString());
@@ -55,14 +56,12 @@ public class PresetsScreen extends Screen {
 		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget();
 		this.children.add(this.listWidget);
 		this.selectPresetButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("createWorld.customize.presets.select"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
 				this.parent.setConfigString(this.customPresetField.getText());
 				this.client.openScreen(this.parent);
 			})
 		);
-		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent))
-		);
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
 		this.updateSelectButton(this.listWidget.getSelected() != null);
 	}
 
@@ -89,17 +88,17 @@ public class PresetsScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.listWidget.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.listWidget.render(matrices, mouseX, mouseY, delta);
 		RenderSystem.pushMatrix();
 		RenderSystem.translatef(0.0F, 0.0F, 400.0F);
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 16777215);
-		this.drawString(this.textRenderer, this.shareText, 50, 30, 10526880);
-		this.drawString(this.textRenderer, this.listText, 50, 70, 10526880);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		this.method_27535(matrices, this.textRenderer, this.shareText, 50, 30, 10526880);
+		this.method_27535(matrices, this.textRenderer, this.listText, 50, 70, 10526880);
 		RenderSystem.popMatrix();
-		this.customPresetField.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+		this.customPresetField.render(matrices, mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	@Override
@@ -112,7 +111,7 @@ public class PresetsScreen extends Screen {
 		this.selectPresetButton.active = hasSelected || this.customPresetField.getText().length() > 1;
 	}
 
-	private static void addPreset(String name, ItemConvertible icon, Biome biome, List<String> structures, FlatChunkGeneratorLayer... layers) {
+	private static void addPreset(Text text, ItemConvertible icon, Biome biome, List<String> structures, FlatChunkGeneratorLayer... layers) {
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
 
 		for (int i = layers.length - 1; i >= 0; i--) {
@@ -126,12 +125,12 @@ public class PresetsScreen extends Screen {
 			flatChunkGeneratorConfig.getStructures().put(string, Maps.newHashMap());
 		}
 
-		presets.add(new PresetsScreen.SuperflatPreset(icon.asItem(), name, flatChunkGeneratorConfig.toString()));
+		presets.add(new PresetsScreen.SuperflatPreset(icon.asItem(), text, flatChunkGeneratorConfig.toString()));
 	}
 
 	static {
 		addPreset(
-			I18n.translate("createWorld.customize.preset.classic_flat"),
+			new TranslatableText("createWorld.customize.preset.classic_flat"),
 			Blocks.GRASS_BLOCK,
 			Biomes.PLAINS,
 			Arrays.asList("village"),
@@ -140,7 +139,7 @@ public class PresetsScreen extends Screen {
 			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 		);
 		addPreset(
-			I18n.translate("createWorld.customize.preset.tunnelers_dream"),
+			new TranslatableText("createWorld.customize.preset.tunnelers_dream"),
 			Blocks.STONE,
 			Biomes.MOUNTAINS,
 			Arrays.asList("biome_1", "dungeon", "decoration", "stronghold", "mineshaft"),
@@ -150,7 +149,7 @@ public class PresetsScreen extends Screen {
 			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 		);
 		addPreset(
-			I18n.translate("createWorld.customize.preset.water_world"),
+			new TranslatableText("createWorld.customize.preset.water_world"),
 			Items.WATER_BUCKET,
 			Biomes.DEEP_OCEAN,
 			Arrays.asList("biome_1", "oceanmonument"),
@@ -161,7 +160,7 @@ public class PresetsScreen extends Screen {
 			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 		);
 		addPreset(
-			I18n.translate("createWorld.customize.preset.overworld"),
+			new TranslatableText("createWorld.customize.preset.overworld"),
 			Blocks.GRASS,
 			Biomes.PLAINS,
 			Arrays.asList("village", "biome_1", "decoration", "stronghold", "mineshaft", "dungeon", "lake", "lava_lake", "pillager_outpost", "ruined_portal"),
@@ -171,7 +170,7 @@ public class PresetsScreen extends Screen {
 			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 		);
 		addPreset(
-			I18n.translate("createWorld.customize.preset.snowy_kingdom"),
+			new TranslatableText("createWorld.customize.preset.snowy_kingdom"),
 			Blocks.SNOW,
 			Biomes.SNOWY_TUNDRA,
 			Arrays.asList("village", "biome_1"),
@@ -182,7 +181,7 @@ public class PresetsScreen extends Screen {
 			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 		);
 		addPreset(
-			I18n.translate("createWorld.customize.preset.bottomless_pit"),
+			new TranslatableText("createWorld.customize.preset.bottomless_pit"),
 			Items.FEATHER,
 			Biomes.PLAINS,
 			Arrays.asList("village", "biome_1"),
@@ -191,7 +190,7 @@ public class PresetsScreen extends Screen {
 			new FlatChunkGeneratorLayer(2, Blocks.COBBLESTONE)
 		);
 		addPreset(
-			I18n.translate("createWorld.customize.preset.desert"),
+			new TranslatableText("createWorld.customize.preset.desert"),
 			Blocks.SAND,
 			Biomes.DESERT,
 			Arrays.asList("village", "biome_1", "decoration", "stronghold", "mineshaft", "dungeon"),
@@ -201,7 +200,7 @@ public class PresetsScreen extends Screen {
 			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 		);
 		addPreset(
-			I18n.translate("createWorld.customize.preset.redstone_ready"),
+			new TranslatableText("createWorld.customize.preset.redstone_ready"),
 			Items.REDSTONE,
 			Biomes.DESERT,
 			Collections.emptyList(),
@@ -210,7 +209,7 @@ public class PresetsScreen extends Screen {
 			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 		);
 		addPreset(
-			I18n.translate("createWorld.customize.preset.the_void"),
+			new TranslatableText("createWorld.customize.preset.the_void"),
 			Blocks.BARRIER,
 			Biomes.THE_VOID,
 			Arrays.asList("decoration"),
@@ -221,13 +220,17 @@ public class PresetsScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	static class SuperflatPreset {
 		public final Item icon;
-		public final String name;
+		public final Text name;
 		public final String config;
 
-		public SuperflatPreset(Item icon, String name, String config) {
+		public SuperflatPreset(Item icon, Text text, String config) {
 			this.icon = icon;
-			this.name = name;
+			this.name = text;
 			this.config = config;
+		}
+
+		public Text method_27571() {
+			return this.name;
 		}
 	}
 
@@ -246,7 +249,9 @@ public class PresetsScreen extends Screen {
 			if (superflatPresetEntry != null) {
 				NarratorManager.INSTANCE
 					.narrate(
-						new TranslatableText("narrator.select", ((PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(this.children().indexOf(superflatPresetEntry))).name)
+						new TranslatableText(
+								"narrator.select", ((PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(this.children().indexOf(superflatPresetEntry))).method_27571()
+							)
 							.getString()
 					);
 			}
@@ -279,10 +284,10 @@ public class PresetsScreen extends Screen {
 		@Environment(EnvType.CLIENT)
 		public class SuperflatPresetEntry extends AlwaysSelectedEntryListWidget.Entry<PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry> {
 			@Override
-			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
-				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(index);
-				this.method_2200(x, y, superflatPreset.icon);
-				PresetsScreen.this.textRenderer.draw(superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 16777215);
+			public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.presets.get(x);
+				this.method_2200(matrices, width, y, superflatPreset.icon);
+				PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(width + 18 + 5), (float)(y + 6), 16777215);
 			}
 
 			@Override
@@ -302,17 +307,17 @@ public class PresetsScreen extends Screen {
 				PresetsScreen.this.customPresetField.setCursorToStart();
 			}
 
-			private void method_2200(int i, int j, Item item) {
-				this.method_2198(i + 1, j + 1);
+			private void method_2200(MatrixStack matrixStack, int i, int j, Item item) {
+				this.method_2198(matrixStack, i + 1, j + 1);
 				RenderSystem.enableRescaleNormal();
 				PresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(item), i + 2, j + 2);
 				RenderSystem.disableRescaleNormal();
 			}
 
-			private void method_2198(int i, int j) {
+			private void method_2198(MatrixStack matrixStack, int i, int j) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				SuperflatPresetsListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_TEXTURE);
-				DrawableHelper.drawTexture(i, j, PresetsScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+				DrawableHelper.drawTexture(matrixStack, i, j, PresetsScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

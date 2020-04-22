@@ -10,8 +10,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsGetServerDetailsTask;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,9 +37,11 @@ public class RealmsTermsScreen extends RealmsScreen {
 	public void init() {
 		this.client.keyboard.enableRepeatEvents(true);
 		int i = this.width / 4 - 2;
-		this.addButton(new ButtonWidget(this.width / 4, row(12), i, 20, I18n.translate("mco.terms.buttons.agree"), buttonWidget -> this.agreedToTos()));
+		this.addButton(new ButtonWidget(this.width / 4, row(12), i, 20, new TranslatableText("mco.terms.buttons.agree"), buttonWidget -> this.agreedToTos()));
 		this.addButton(
-			new ButtonWidget(this.width / 2 + 4, row(12), i, 20, I18n.translate("mco.terms.buttons.disagree"), buttonWidget -> this.client.openScreen(this.field_22727))
+			new ButtonWidget(
+				this.width / 2 + 4, row(12), i, 20, new TranslatableText("mco.terms.buttons.disagree"), buttonWidget -> this.client.openScreen(this.field_22727)
+			)
 		);
 	}
 
@@ -84,23 +88,23 @@ public class RealmsTermsScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.textRenderer, I18n.translate("mco.terms.title"), this.width / 2, 17, 16777215);
-		this.textRenderer.draw(I18n.translate("mco.terms.sentence.1"), (float)(this.width / 2 - 120), (float)row(5), 16777215);
-		int i = this.textRenderer.getStringWidth(I18n.translate("mco.terms.sentence.1"));
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("mco.terms.title"), this.width / 2, 17, 16777215);
+		this.textRenderer.draw(matrices, I18n.translate("mco.terms.sentence.1"), (float)(this.width / 2 - 120), (float)row(5), 16777215);
+		int i = this.textRenderer.getWidth(I18n.translate("mco.terms.sentence.1"));
 		int j = this.width / 2 - 121 + i;
 		int k = row(5);
-		int l = j + this.textRenderer.getStringWidth("mco.terms.sentence.2") + 1;
+		int l = j + this.textRenderer.getWidth("mco.terms.sentence.2") + 1;
 		int m = k + 1 + 9;
 		if (j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m) {
 			this.onLink = true;
-			this.textRenderer.draw(" " + I18n.translate("mco.terms.sentence.2"), (float)(this.width / 2 - 120 + i), (float)row(5), 7107012);
+			this.textRenderer.draw(matrices, " " + I18n.translate("mco.terms.sentence.2"), (float)(this.width / 2 - 120 + i), (float)row(5), 7107012);
 		} else {
 			this.onLink = false;
-			this.textRenderer.draw(" " + I18n.translate("mco.terms.sentence.2"), (float)(this.width / 2 - 120 + i), (float)row(5), 3368635);
+			this.textRenderer.draw(matrices, " " + I18n.translate("mco.terms.sentence.2"), (float)(this.width / 2 - 120 + i), (float)row(5), 3368635);
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

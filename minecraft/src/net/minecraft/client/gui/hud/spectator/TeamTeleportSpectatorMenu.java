@@ -12,6 +12,7 @@ import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -51,9 +52,9 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public void renderIcon(float brightness, int alpha) {
+	public void renderIcon(MatrixStack matrixStack, float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-		DrawableHelper.drawTexture(0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
+		DrawableHelper.drawTexture(matrixStack, 0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
 	}
 
 	@Override
@@ -104,19 +105,19 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(MatrixStack matrixStack, float f, int i) {
 			Integer integer = this.team.getColor().getColorValue();
 			if (integer != null) {
-				float f = (float)(integer >> 16 & 0xFF) / 255.0F;
-				float g = (float)(integer >> 8 & 0xFF) / 255.0F;
-				float h = (float)(integer & 0xFF) / 255.0F;
-				DrawableHelper.fill(1, 1, 15, 15, MathHelper.packRgb(f * brightness, g * brightness, h * brightness) | alpha << 24);
+				float g = (float)(integer >> 16 & 0xFF) / 255.0F;
+				float h = (float)(integer >> 8 & 0xFF) / 255.0F;
+				float j = (float)(integer & 0xFF) / 255.0F;
+				DrawableHelper.fill(matrixStack, 1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
 			}
 
 			MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
-			RenderSystem.color4f(brightness, brightness, brightness, (float)alpha / 255.0F);
-			DrawableHelper.drawTexture(2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
-			DrawableHelper.drawTexture(2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
+			RenderSystem.color4f(f, f, f, (float)i / 255.0F);
+			DrawableHelper.drawTexture(matrixStack, 2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
+			DrawableHelper.drawTexture(matrixStack, 2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
 		}
 
 		@Override

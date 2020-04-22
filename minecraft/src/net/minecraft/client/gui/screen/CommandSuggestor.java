@@ -32,6 +32,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.text.Texts;
@@ -119,7 +120,7 @@ public class CommandSuggestor {
 				int i = 0;
 
 				for (Suggestion suggestion : suggestions.getList()) {
-					i = Math.max(i, this.textRenderer.getStringWidth(suggestion.getText()));
+					i = Math.max(i, this.textRenderer.getWidth(suggestion.getText()));
 				}
 
 				int j = MathHelper.clamp(
@@ -237,7 +238,7 @@ public class CommandSuggestor {
 		for (Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
 			if (!(entry.getKey() instanceof LiteralCommandNode)) {
 				list.add(formatting + (String)entry.getValue());
-				i = Math.max(i, this.textRenderer.getStringWidth((String)entry.getValue()));
+				i = Math.max(i, this.textRenderer.getWidth((String)entry.getValue()));
 			}
 		}
 
@@ -300,17 +301,17 @@ public class CommandSuggestor {
 		return stringBuilder.toString();
 	}
 
-	public void render(int mouseX, int mouseY) {
+	public void render(MatrixStack matrixStack, int i, int j) {
 		if (this.window != null) {
-			this.window.render(mouseX, mouseY);
+			this.window.render(matrixStack, i, j);
 		} else {
-			int i = 0;
+			int k = 0;
 
 			for (String string : this.messages) {
-				int j = this.chatScreenSized ? this.owner.height - 14 - 13 - 12 * i : 72 + 12 * i;
-				DrawableHelper.fill(this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
-				this.textRenderer.drawWithShadow(string, (float)this.x, (float)(j + 2), -1);
-				i++;
+				int l = this.chatScreenSized ? this.owner.height - 14 - 13 - 12 * k : 72 + 12 * k;
+				DrawableHelper.fill(matrixStack, this.x - 1, l, this.x + this.width + 1, l + 12, this.color);
+				this.textRenderer.drawWithShadow(matrixStack, string, (float)this.x, (float)(l + 2), -1);
+				k++;
 			}
 		}
 	}
@@ -340,20 +341,23 @@ public class CommandSuggestor {
 			this.select(0);
 		}
 
-		public void render(int mouseX, int mouseY) {
-			int i = Math.min(this.suggestions.getList().size(), CommandSuggestor.this.maxSuggestionSize);
-			int j = -5592406;
+		public void render(MatrixStack matrixStack, int i, int j) {
+			int k = Math.min(this.suggestions.getList().size(), CommandSuggestor.this.maxSuggestionSize);
+			int l = -5592406;
 			boolean bl = this.inWindowIndex > 0;
-			boolean bl2 = this.suggestions.getList().size() > this.inWindowIndex + i;
+			boolean bl2 = this.suggestions.getList().size() > this.inWindowIndex + k;
 			boolean bl3 = bl || bl2;
-			boolean bl4 = this.mouse.x != (float)mouseX || this.mouse.y != (float)mouseY;
+			boolean bl4 = this.mouse.x != (float)i || this.mouse.y != (float)j;
 			if (bl4) {
-				this.mouse = new Vec2f((float)mouseX, (float)mouseY);
+				this.mouse = new Vec2f((float)i, (float)j);
 			}
 
 			if (bl3) {
-				DrawableHelper.fill(this.area.getX(), this.area.getY() - 1, this.area.getX() + this.area.getWidth(), this.area.getY(), CommandSuggestor.this.color);
 				DrawableHelper.fill(
+					matrixStack, this.area.getX(), this.area.getY() - 1, this.area.getX() + this.area.getWidth(), this.area.getY(), CommandSuggestor.this.color
+				);
+				DrawableHelper.fill(
+					matrixStack,
 					this.area.getX(),
 					this.area.getY() + this.area.getHeight(),
 					this.area.getX() + this.area.getWidth(),
@@ -361,18 +365,23 @@ public class CommandSuggestor {
 					CommandSuggestor.this.color
 				);
 				if (bl) {
-					for (int k = 0; k < this.area.getWidth(); k++) {
-						if (k % 2 == 0) {
-							DrawableHelper.fill(this.area.getX() + k, this.area.getY() - 1, this.area.getX() + k + 1, this.area.getY(), -1);
+					for (int m = 0; m < this.area.getWidth(); m++) {
+						if (m % 2 == 0) {
+							DrawableHelper.fill(matrixStack, this.area.getX() + m, this.area.getY() - 1, this.area.getX() + m + 1, this.area.getY(), -1);
 						}
 					}
 				}
 
 				if (bl2) {
-					for (int kx = 0; kx < this.area.getWidth(); kx++) {
-						if (kx % 2 == 0) {
+					for (int mx = 0; mx < this.area.getWidth(); mx++) {
+						if (mx % 2 == 0) {
 							DrawableHelper.fill(
-								this.area.getX() + kx, this.area.getY() + this.area.getHeight(), this.area.getX() + kx + 1, this.area.getY() + this.area.getHeight() + 1, -1
+								matrixStack,
+								this.area.getX() + mx,
+								this.area.getY() + this.area.getHeight(),
+								this.area.getX() + mx + 1,
+								this.area.getY() + this.area.getHeight() + 1,
+								-1
 							);
 						}
 					}
@@ -381,17 +390,19 @@ public class CommandSuggestor {
 
 			boolean bl5 = false;
 
-			for (int l = 0; l < i; l++) {
-				Suggestion suggestion = (Suggestion)this.suggestions.getList().get(l + this.inWindowIndex);
+			for (int n = 0; n < k; n++) {
+				Suggestion suggestion = (Suggestion)this.suggestions.getList().get(n + this.inWindowIndex);
 				DrawableHelper.fill(
-					this.area.getX(), this.area.getY() + 12 * l, this.area.getX() + this.area.getWidth(), this.area.getY() + 12 * l + 12, CommandSuggestor.this.color
+					matrixStack,
+					this.area.getX(),
+					this.area.getY() + 12 * n,
+					this.area.getX() + this.area.getWidth(),
+					this.area.getY() + 12 * n + 12,
+					CommandSuggestor.this.color
 				);
-				if (mouseX > this.area.getX()
-					&& mouseX < this.area.getX() + this.area.getWidth()
-					&& mouseY > this.area.getY() + 12 * l
-					&& mouseY < this.area.getY() + 12 * l + 12) {
+				if (i > this.area.getX() && i < this.area.getX() + this.area.getWidth() && j > this.area.getY() + 12 * n && j < this.area.getY() + 12 * n + 12) {
 					if (bl4) {
-						this.select(l + this.inWindowIndex);
+						this.select(n + this.inWindowIndex);
 					}
 
 					bl5 = true;
@@ -399,14 +410,18 @@ public class CommandSuggestor {
 
 				CommandSuggestor.this.textRenderer
 					.drawWithShadow(
-						suggestion.getText(), (float)(this.area.getX() + 1), (float)(this.area.getY() + 2 + 12 * l), l + this.inWindowIndex == this.selection ? -256 : -5592406
+						matrixStack,
+						suggestion.getText(),
+						(float)(this.area.getX() + 1),
+						(float)(this.area.getY() + 2 + 12 * n),
+						n + this.inWindowIndex == this.selection ? -256 : -5592406
 					);
 			}
 
 			if (bl5) {
 				Message message = ((Suggestion)this.suggestions.getList().get(this.selection)).getTooltip();
 				if (message != null) {
-					CommandSuggestor.this.owner.renderTooltip(Texts.toText(message).asFormattedString(), mouseX, mouseY);
+					CommandSuggestor.this.owner.renderTooltip(matrixStack, Texts.toText(message), i, j);
 				}
 			}
 		}

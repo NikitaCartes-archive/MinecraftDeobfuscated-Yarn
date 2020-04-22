@@ -31,7 +31,7 @@ public final class BadlandsBiome extends Biome {
 		);
 		this.addStructureFeature(Feature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.MESA)));
 		this.addStructureFeature(Feature.STRONGHOLD.configure(FeatureConfig.DEFAULT));
-		this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.MOUNTAIN)));
+		this.addStructureFeature(Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD)));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

@@ -9,9 +9,14 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Lazy;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharModsCallbackI;
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;
@@ -81,16 +86,6 @@ public class InputUtil {
 		}
 	}
 
-	@Nullable
-	public static String getKeycodeName(int i) {
-		return GLFW.glfwGetKeyName(i, -1);
-	}
-
-	@Nullable
-	public static String getScancodeName(int i) {
-		return GLFW.glfwGetKeyName(-1, i);
-	}
-
 	static {
 		Lookup lookup = MethodHandles.lookup();
 		MethodType methodType = MethodType.methodType(boolean.class);
@@ -116,12 +111,14 @@ public class InputUtil {
 		private final String name;
 		private final InputUtil.Type type;
 		private final int keyCode;
+		private final Lazy<Text> field_24196;
 		private static final Map<String, InputUtil.KeyCode> NAMES = Maps.<String, InputUtil.KeyCode>newHashMap();
 
 		private KeyCode(String keyName, InputUtil.Type type, int i) {
 			this.name = keyName;
 			this.type = type;
 			this.keyCode = i;
+			this.field_24196 = new Lazy<>(() -> (Text)type.field_24197.apply(i, keyName));
 			NAMES.put(keyName, this);
 		}
 
@@ -135,6 +132,10 @@ public class InputUtil {
 
 		public String getName() {
 			return this.name;
+		}
+
+		public Text method_27445() {
+			return this.field_24196.get();
 		}
 
 		public boolean equals(Object o) {
@@ -159,46 +160,40 @@ public class InputUtil {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		KEYSYM("key.keyboard"),
-		SCANCODE("scancode"),
-		MOUSE("key.mouse");
+		KEYSYM("key.keyboard", (integer, string) -> {
+			String string2 = GLFW.glfwGetKeyName(integer, -1);
+			return (Text)(string2 != null ? new LiteralText(string2) : new TranslatableText(string));
+		}),
+		SCANCODE("scancode", (integer, string) -> {
+			String string2 = GLFW.glfwGetKeyName(-1, integer);
+			return (Text)(string2 != null ? new LiteralText(string2) : new TranslatableText(string));
+		}),
+		MOUSE("key.mouse", (integer, string) -> new TranslatableText(string));
 
-		private static final String[] mouseButtons = new String[]{"left", "middle", "right"};
 		private final Int2ObjectMap<InputUtil.KeyCode> map = new Int2ObjectOpenHashMap<>();
 		private final String name;
+		private final BiFunction<Integer, String, Text> field_24197;
 
 		private static void mapKey(InputUtil.Type type, String name, int keyCode) {
 			InputUtil.KeyCode keyCode2 = new InputUtil.KeyCode(name, type, keyCode);
 			type.map.put(keyCode, keyCode2);
 		}
 
-		private Type(String string2) {
+		private Type(String string2, BiFunction<Integer, String, Text> biFunction) {
 			this.name = string2;
+			this.field_24197 = biFunction;
 		}
 
 		public InputUtil.KeyCode createFromCode(int i) {
-			if (this.map.containsKey(i)) {
-				return this.map.get(i);
-			} else {
-				String string;
+			return this.map.computeIfAbsent(i, ix -> {
+				int j = ix;
 				if (this == MOUSE) {
-					if (i <= 2) {
-						string = "." + mouseButtons[i];
-					} else {
-						string = "." + (i + 1);
-					}
-				} else {
-					string = "." + i;
+					j = ix + 1;
 				}
 
-				InputUtil.KeyCode keyCode = new InputUtil.KeyCode(this.name + string, this, i);
-				this.map.put(i, keyCode);
-				return keyCode;
-			}
-		}
-
-		public String getName() {
-			return this.name;
+				String string = this.name + "." + j;
+				return new InputUtil.KeyCode(string, this, ix);
+			});
 		}
 
 		static {

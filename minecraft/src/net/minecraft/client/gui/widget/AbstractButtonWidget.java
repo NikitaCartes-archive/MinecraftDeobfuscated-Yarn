@@ -10,11 +10,14 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -26,7 +29,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	protected int height;
 	public int x;
 	public int y;
-	private String message;
+	private Text message;
 	private boolean wasHovered;
 	protected boolean hovered;
 	public boolean active = true;
@@ -35,12 +38,12 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	protected long nextNarration = Long.MAX_VALUE;
 	private boolean focused;
 
-	public AbstractButtonWidget(int x, int y, int width, int height, String message) {
+	public AbstractButtonWidget(int x, int y, int width, int height, Text text) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.message = message;
+		this.message = text;
 	}
 
 	public int getHeight() {
@@ -59,7 +62,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			if (this.wasHovered != this.isHovered()) {
@@ -75,7 +78,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			}
 
 			if (this.visible) {
-				this.renderButton(mouseX, mouseY, delta);
+				this.renderButton(matrices, mouseX, mouseY, delta);
 			}
 
 			this.narrate();
@@ -85,7 +88,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 
 	protected void narrate() {
 		if (this.active && this.isHovered() && Util.getMeasuringTimeMs() > this.nextNarration) {
-			String string = this.getNarrationMessage();
+			String string = this.getNarrationMessage().getString();
 			if (!string.isEmpty()) {
 				NarratorManager.INSTANCE.narrate(string);
 				this.nextNarration = Long.MAX_VALUE;
@@ -93,29 +96,29 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		}
 	}
 
-	protected String getNarrationMessage() {
-		return this.getMessage().isEmpty() ? "" : I18n.translate("gui.narrate.button", this.getMessage());
+	protected MutableText getNarrationMessage() {
+		return new TranslatableText("gui.narrate.button", this.getMessage());
 	}
 
-	public void renderButton(int mouseX, int mouseY, float delta) {
+	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
 		minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
-		int i = this.getYImage(this.isHovered());
+		int k = this.getYImage(this.isHovered());
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-		this.drawTexture(this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-		this.drawTexture(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-		this.renderBg(minecraftClient, mouseX, mouseY);
-		int j = this.active ? 16777215 : 10526880;
-		this.drawCenteredString(
-			textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24
+		this.drawTexture(matrixStack, this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
+		this.drawTexture(matrixStack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
+		this.renderBg(matrixStack, minecraftClient, i, j);
+		int l = this.active ? 16777215 : 10526880;
+		this.method_27534(
+			matrixStack, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0F) << 24
 		);
 	}
 
-	protected void renderBg(MinecraftClient client, int mouseX, int mouseY) {
+	protected void renderBg(MatrixStack matrixStack, MinecraftClient minecraftClient, int mouseY, int i) {
 	}
 
 	public void onClick(double mouseX, double mouseY) {
@@ -206,7 +209,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			&& mouseY < (double)(this.y + this.height);
 	}
 
-	public void renderToolTip(int mouseX, int mouseY) {
+	public void renderToolTip(MatrixStack matrixStack, int i, int j) {
 	}
 
 	public void playDownSound(SoundManager soundManager) {
@@ -225,19 +228,19 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		this.alpha = value;
 	}
 
-	public void setMessage(String value) {
-		if (!Objects.equals(value, this.message)) {
+	public void setMessage(Text text) {
+		if (!Objects.equals(text, this.message)) {
 			this.queueNarration(250);
 		}
 
-		this.message = value;
+		this.message = text;
 	}
 
 	public void queueNarration(int delay) {
 		this.nextNarration = Util.getMeasuringTimeMs() + (long)delay;
 	}
 
-	public String getMessage() {
+	public Text getMessage() {
 		return this.message;
 	}
 

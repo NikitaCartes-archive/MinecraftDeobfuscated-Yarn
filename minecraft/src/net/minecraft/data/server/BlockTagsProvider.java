@@ -265,6 +265,11 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.CRIMSON_PRESSURE_PLATE,
 				Blocks.WARPED_PRESSURE_PLATE
 			);
+		this.getOrCreateTagBuilder(BlockTags.STONE_PRESSURE_PLATES).add(Blocks.STONE_PRESSURE_PLATE, Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE);
+		this.getOrCreateTagBuilder(BlockTags.PRESSURE_PLATES)
+			.add(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE)
+			.addTag(BlockTags.WOODEN_PRESSURE_PLATES)
+			.addTag(BlockTags.STONE_PRESSURE_PLATES);
 		this.getOrCreateTagBuilder(BlockTags.STAIRS)
 			.add(
 				Blocks.OAK_STAIRS,
@@ -518,15 +523,17 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.add(Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK, Blocks.DIAMOND_BLOCK, Blocks.GOLD_BLOCK, Blocks.IRON_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.SOUL_SPEED_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.WALL_POST_OVERRIDE)
-			.add(Blocks.TORCH, Blocks.SOUL_FIRE_TORCH, Blocks.REDSTONE_TORCH, Blocks.TRIPWIRE)
-			.addTag(BlockTags.SIGNS);
+			.add(Blocks.TORCH, Blocks.SOUL_TORCH, Blocks.REDSTONE_TORCH, Blocks.TRIPWIRE)
+			.addTag(BlockTags.SIGNS)
+			.addTag(BlockTags.BANNERS)
+			.addTag(BlockTags.PRESSURE_PLATES);
 		this.getOrCreateTagBuilder(BlockTags.CLIMBABLE)
 			.add(Blocks.LADDER, Blocks.VINE, Blocks.SCAFFOLDING, Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT, Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT);
 		this.getOrCreateTagBuilder(BlockTags.PIGLIN_REPELLENTS)
 			.add(Blocks.SOUL_FIRE)
-			.add(Blocks.SOUL_FIRE_TORCH)
-			.add(Blocks.SOUL_FIRE_LANTERN)
-			.add(Blocks.SOUL_FIRE_WALL_TORCH)
+			.add(Blocks.SOUL_TORCH)
+			.add(Blocks.SOUL_LANTERN)
+			.add(Blocks.SOUL_WALL_TORCH)
 			.add(Blocks.SOUL_CAMPFIRE);
 		this.getOrCreateTagBuilder(BlockTags.HOGLIN_REPELLENTS)
 			.add(Blocks.WARPED_FUNGUS)

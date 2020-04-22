@@ -64,10 +64,10 @@ public final class FlowerForestBiome extends Biome {
 				.configure(
 					new RandomFeatureConfig(
 						ImmutableList.of(
-							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_WITH_BEEHIVES_CONFIG).withChance(0.2F),
-							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.FANCY_TREE_WITH_BEEHIVES_CONFIG).withChance(0.1F)
+							Feature.TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_WITH_BEEHIVES_CONFIG).withChance(0.2F),
+							Feature.TREE.configure(DefaultBiomeFeatures.FANCY_TREE_WITH_BEEHIVES_CONFIG).withChance(0.1F)
 						),
-						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_WITH_BEEHIVES_CONFIG)
+						Feature.TREE.configure(DefaultBiomeFeatures.OAK_TREE_WITH_BEEHIVES_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(6, 0.1F, 1)))

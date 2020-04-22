@@ -8,14 +8,18 @@ import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class BlobFoliagePlacer extends FoliagePlacer {
-	private final int height;
+	protected final int height;
+
+	protected BlobFoliagePlacer(int i, int j, int k, int l, int m, FoliagePlacerType<?> foliagePlacerType) {
+		super(i, j, k, l, foliagePlacerType);
+		this.height = m;
+	}
 
 	public BlobFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, int height) {
-		super(radius, randomRadius, offset, randomOffset, FoliagePlacerType.BLOB_FOLIAGE_PLACER);
-		this.height = height;
+		this(radius, randomRadius, offset, randomOffset, height, FoliagePlacerType.BLOB_FOLIAGE_PLACER);
 	}
 
 	public <T> BlobFoliagePlacer(Dynamic<T> data) {
@@ -29,42 +33,31 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	public void generate(
+	protected void generate(
 		ModifiableTestableWorld world,
 		Random random,
-		BranchedTreeFeatureConfig config,
+		TreeFeatureConfig treeFeatureConfig,
 		int trunkHeight,
-		BlockPos pos,
+		FoliagePlacer.class_5208 arg,
 		int foliageHeight,
 		int radius,
-		Set<BlockPos> leaves
+		Set<BlockPos> leaves,
+		int i
 	) {
-		int i = this.offset + random.nextInt(this.randomOffset + 1);
-
-		for (int j = foliageHeight + i; j >= i; j--) {
-			int k = Math.max(radius - 1 - (j - foliageHeight) / 2, 0);
-			this.generate(world, random, config, pos, foliageHeight, j, k, leaves);
+		for (int j = i; j >= i - foliageHeight; j--) {
+			int k = Math.max(radius + arg.method_27389() - 1 - j / 2, 0);
+			this.generate(world, random, treeFeatureConfig, arg.method_27388(), k, leaves, j, arg.method_27390());
 		}
 	}
 
 	@Override
-	public int getRadius(Random random, int baseHeight, BranchedTreeFeatureConfig config) {
-		return this.radius + random.nextInt(this.randomRadius + 1);
-	}
-
-	@Override
-	public int getHeight(Random random, int trunkHeight) {
+	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig treeFeatureConfig) {
 		return this.height;
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, int radius) {
-		return Math.abs(dx) == radius && Math.abs(dz) == radius && (random.nextInt(2) == 0 || dy == baseHeight);
-	}
-
-	@Override
-	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius) {
-		return radius == 0 ? 0 : 1;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
+		return baseHeight == dz && dy == dz && (random.nextInt(2) == 0 || dx == 0);
 	}
 
 	@Override

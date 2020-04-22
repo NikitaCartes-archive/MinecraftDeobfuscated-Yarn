@@ -188,7 +188,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		this.player.updatePositionAndAngles(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.yaw, this.player.pitch);
 		this.ticks++;
 		this.lastTickMovePacketsCount = this.movePacketsCount;
-		if (this.floating) {
+		if (this.floating && !this.player.isSleeping()) {
 			if (++this.floatingTicks > 80) {
 				LOGGER.warn("{} was kicked for floating too long!", this.player.getName().getString());
 				this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));

@@ -14,10 +14,12 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
@@ -28,8 +30,8 @@ import net.minecraft.world.level.LevelGeneratorType;
 public class CustomizeFlatLevelScreen extends Screen {
 	private final CreateWorldScreen parent;
 	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
-	private String tileText;
-	private String heightText;
+	private Text tileText;
+	private Text heightText;
 	private CustomizeFlatLevelScreen.SuperflatLayersListWidget layers;
 	private ButtonWidget widgetButtonRemoveLayer;
 
@@ -51,8 +53,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.tileText = I18n.translate("createWorld.customize.flat.tile");
-		this.heightText = I18n.translate("createWorld.customize.flat.height");
+		this.tileText = new TranslatableText("createWorld.customize.flat.tile");
+		this.heightText = new TranslatableText("createWorld.customize.flat.height");
 		this.layers = new CustomizeFlatLevelScreen.SuperflatLayersListWidget();
 		this.children.add(this.layers);
 		this.widgetButtonRemoveLayer = this.addButton(
@@ -61,7 +63,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				this.height - 52,
 				150,
 				20,
-				I18n.translate("createWorld.customize.flat.removeLayer"),
+				new TranslatableText("createWorld.customize.flat.removeLayer"),
 				buttonWidget -> {
 					if (this.method_2147()) {
 						List<FlatChunkGeneratorLayer> list = this.config.getLayers();
@@ -78,18 +80,18 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, I18n.translate("createWorld.customize.presets"), buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, new TranslatableText("createWorld.customize.presets"), buttonWidget -> {
 			this.client.openScreen(new PresetsScreen(this));
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
-		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
 			this.parent.generatorOptions = LevelGeneratorType.FLAT.loadOptions(this.config.toDynamic(NbtOps.INSTANCE));
 			this.client.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();
 		}));
-		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> {
 			this.client.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();
@@ -113,14 +115,14 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.layers.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 16777215);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.layers.render(matrices, mouseX, mouseY, delta);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		int i = this.width / 2 - 92 - 16;
-		this.drawString(this.textRenderer, this.tileText, i, 32, 16777215);
-		this.drawString(this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getStringWidth(this.heightText), 32, 16777215);
-		super.render(mouseX, mouseY, delta);
+		this.method_27535(matrices, this.textRenderer, this.tileText, i, 32, 16777215);
+		this.method_27535(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 16777215);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -189,10 +191,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 
 			@Override
-			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+			public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
 					.getLayers()
-					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - index - 1);
+					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - x - 1);
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
 				Block block = blockState.getBlock();
 				Item item = block.asItem();
@@ -205,20 +207,19 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 
 				ItemStack itemStack = new ItemStack(item);
-				String string = item.getName(itemStack).asFormattedString();
-				this.method_19375(x, y, itemStack);
-				CustomizeFlatLevelScreen.this.textRenderer.draw(string, (float)(x + 18 + 5), (float)(y + 3), 16777215);
-				String string2;
-				if (index == 0) {
-					string2 = I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness());
-				} else if (index == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1) {
-					string2 = I18n.translate("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness());
+				this.method_19375(matrices, width, y, itemStack);
+				CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, item.getName(itemStack), (float)(width + 18 + 5), (float)(y + 3), 16777215);
+				String string;
+				if (x == 0) {
+					string = I18n.translate("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness());
+				} else if (x == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1) {
+					string = I18n.translate("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness());
 				} else {
-					string2 = I18n.translate("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness());
+					string = I18n.translate("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness());
 				}
 
 				CustomizeFlatLevelScreen.this.textRenderer
-					.draw(string2, (float)(x + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getStringWidth(string2)), (float)(y + 3), 16777215);
+					.draw(matrices, string, (float)(width + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getWidth(string)), (float)(y + 3), 16777215);
 			}
 
 			@Override
@@ -232,20 +233,20 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			}
 
-			private void method_19375(int x, int y, ItemStack itemStack) {
-				this.method_19373(x + 1, y + 1);
+			private void method_19375(MatrixStack matrixStack, int i, int j, ItemStack itemStack) {
+				this.method_19373(matrixStack, i + 1, j + 1);
 				RenderSystem.enableRescaleNormal();
 				if (!itemStack.isEmpty()) {
-					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(itemStack, x + 2, y + 2);
+					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(itemStack, i + 2, j + 2);
 				}
 
 				RenderSystem.disableRescaleNormal();
 			}
 
-			private void method_19373(int x, int y) {
+			private void method_19373(MatrixStack matrixStack, int i, int j) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				SuperflatLayersListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_TEXTURE);
-				DrawableHelper.drawTexture(x, y, CustomizeFlatLevelScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+				DrawableHelper.drawTexture(matrixStack, i, j, CustomizeFlatLevelScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

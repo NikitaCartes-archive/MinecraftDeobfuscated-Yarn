@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -100,18 +101,18 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	@Override
 	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("B").formatted(RED);
-		Text text2 = new LiteralText("[").append(text).append(";");
+		MutableText mutableText = new LiteralText("[").append(text).append(";");
 
 		for (int i = 0; i < this.value.length; i++) {
-			Text text3 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
-			text2.append(" ").append(text3).append(text);
+			MutableText mutableText2 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
+			mutableText.append(" ").append(mutableText2).append(text);
 			if (i != this.value.length - 1) {
-				text2.append(",");
+				mutableText.append(",");
 			}
 		}
 
-		text2.append("]");
-		return text2;
+		mutableText.append("]");
+		return mutableText;
 	}
 
 	public byte[] getByteArray() {
@@ -126,7 +127,7 @@ public class ByteArrayTag extends AbstractListTag<ByteTag> {
 		return ByteTag.of(this.value[i]);
 	}
 
-	public ByteTag method_10606(int i, ByteTag byteTag) {
+	public ByteTag set(int i, ByteTag byteTag) {
 		byte b = this.value[i];
 		this.value[i] = byteTag.getByte();
 		return ByteTag.of(b);

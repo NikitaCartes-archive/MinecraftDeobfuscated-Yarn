@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
@@ -34,6 +33,7 @@ import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -53,7 +53,7 @@ public class MultiplayerServerListPinger {
 		ServerAddress serverAddress = ServerAddress.parse(entry.address);
 		final ClientConnection clientConnection = ClientConnection.connect(InetAddress.getByName(serverAddress.getAddress()), serverAddress.getPort(), false);
 		this.clientConnections.add(clientConnection);
-		entry.label = I18n.translate("multiplayer.status.pinging");
+		entry.label = new TranslatableText("multiplayer.status.pinging");
 		entry.ping = -1L;
 		entry.playerListSummary = null;
 		clientConnection.setPacketListener(
@@ -70,53 +70,41 @@ public class MultiplayerServerListPinger {
 						this.received = true;
 						ServerMetadata serverMetadata = packet.getServerMetadata();
 						if (serverMetadata.getDescription() != null) {
-							entry.label = serverMetadata.getDescription().asFormattedString();
+							entry.label = serverMetadata.getDescription();
 						} else {
-							entry.label = "";
+							entry.label = LiteralText.EMPTY;
 						}
 
 						if (serverMetadata.getVersion() != null) {
-							entry.version = serverMetadata.getVersion().getGameVersion();
+							entry.version = new LiteralText(serverMetadata.getVersion().getGameVersion());
 							entry.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
 						} else {
-							entry.version = I18n.translate("multiplayer.status.old");
+							entry.version = new TranslatableText("multiplayer.status.old");
 							entry.protocolVersion = 0;
 						}
 
 						if (serverMetadata.getPlayers() != null) {
-							entry.playerCountLabel = Formatting.GRAY
-								+ ""
-								+ serverMetadata.getPlayers().getOnlinePlayerCount()
-								+ ""
-								+ Formatting.DARK_GRAY
-								+ "/"
-								+ Formatting.GRAY
-								+ serverMetadata.getPlayers().getPlayerLimit();
+							entry.playerCountLabel = MultiplayerServerListPinger.method_27647(
+								serverMetadata.getPlayers().getOnlinePlayerCount(), serverMetadata.getPlayers().getPlayerLimit()
+							);
+							List<Text> list = Lists.<Text>newArrayList();
 							if (ArrayUtils.isNotEmpty(serverMetadata.getPlayers().getSample())) {
-								StringBuilder stringBuilder = new StringBuilder();
-
 								for (GameProfile gameProfile : serverMetadata.getPlayers().getSample()) {
-									if (stringBuilder.length() > 0) {
-										stringBuilder.append("\n");
-									}
-
-									stringBuilder.append(gameProfile.getName());
+									list.add(new LiteralText(gameProfile.getName()));
 								}
 
 								if (serverMetadata.getPlayers().getSample().length < serverMetadata.getPlayers().getOnlinePlayerCount()) {
-									if (stringBuilder.length() > 0) {
-										stringBuilder.append("\n");
-									}
-
-									stringBuilder.append(
-										I18n.translate("multiplayer.status.and_more", serverMetadata.getPlayers().getOnlinePlayerCount() - serverMetadata.getPlayers().getSample().length)
+									list.add(
+										new TranslatableText(
+											"multiplayer.status.and_more", serverMetadata.getPlayers().getOnlinePlayerCount() - serverMetadata.getPlayers().getSample().length
+										)
 									);
 								}
 
-								entry.playerListSummary = stringBuilder.toString();
+								entry.playerListSummary = list;
 							}
 						} else {
-							entry.playerCountLabel = Formatting.DARK_GRAY + I18n.translate("multiplayer.status.unknown");
+							entry.playerCountLabel = new TranslatableText("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
 						}
 
 						if (serverMetadata.getFavicon() != null) {
@@ -148,8 +136,8 @@ public class MultiplayerServerListPinger {
 				public void onDisconnected(Text reason) {
 					if (!this.sentQuery) {
 						MultiplayerServerListPinger.LOGGER.error("Can't ping {}: {}", entry.address, reason.getString());
-						entry.label = Formatting.DARK_RED + I18n.translate("multiplayer.status.cannot_connect");
-						entry.playerCountLabel = "";
+						entry.label = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+						entry.playerCountLabel = LiteralText.EMPTY;
 						MultiplayerServerListPinger.this.ping(entry);
 					}
 				}
@@ -224,9 +212,9 @@ public class MultiplayerServerListPinger {
 								int j = MathHelper.parseInt(strings[4], -1);
 								int k = MathHelper.parseInt(strings[5], -1);
 								serverInfo.protocolVersion = -1;
-								serverInfo.version = string2;
-								serverInfo.label = string3;
-								serverInfo.playerCountLabel = Formatting.GRAY + "" + j + "" + Formatting.DARK_GRAY + "/" + Formatting.GRAY + k;
+								serverInfo.version = new LiteralText(string2);
+								serverInfo.label = new LiteralText(string3);
+								serverInfo.playerCountLabel = MultiplayerServerListPinger.method_27647(j, k);
 							}
 						}
 
@@ -240,6 +228,13 @@ public class MultiplayerServerListPinger {
 				});
 			}
 		}).channel(NioSocketChannel.class).connect(serverAddress.getAddress(), serverAddress.getPort());
+	}
+
+	private static Text method_27647(int i, int j) {
+		return new LiteralText(Integer.toString(i))
+			.append(new LiteralText("/").formatted(Formatting.DARK_GRAY))
+			.append(Integer.toString(j))
+			.formatted(Formatting.GRAY);
 	}
 
 	public void tick() {

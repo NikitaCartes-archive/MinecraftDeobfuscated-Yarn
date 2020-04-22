@@ -1,16 +1,16 @@
 package net.minecraft.world.gen.trunk;
 
+import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
+import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class ForkingTrunkPlacer extends TrunkPlacer {
 	public ForkingTrunkPlacer(int baseHeight, int firstRandomHeight, int secondRandomHeight) {
@@ -22,17 +22,11 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 	}
 
 	@Override
-	public Map<BlockPos, Integer> generate(
-		ModifiableTestableWorld world,
-		Random random,
-		int trunkHeight,
-		BlockPos pos,
-		int foliageRadius,
-		Set<BlockPos> logs,
-		BlockBox box,
-		BranchedTreeFeatureConfig config
+	public List<FoliagePlacer.class_5208> generate(
+		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
-		Map<BlockPos, Integer> map = new Object2ObjectLinkedOpenHashMap<>();
+		method_27400(world, pos.down());
+		List<FoliagePlacer.class_5208> list = Lists.<FoliagePlacer.class_5208>newArrayList();
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		int i = trunkHeight - random.nextInt(4) - 1;
 		int j = 3 - random.nextInt(3);
@@ -49,12 +43,12 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 				j--;
 			}
 
-			if (AbstractTreeFeature.setLogBlockState(world, random, mutable.set(k, o, l), logs, box, config)) {
+			if (method_27402(world, random, mutable.set(k, o, l), set, blockBox, treeFeatureConfig)) {
 				m = o + 1;
 			}
 		}
 
-		map.put(new BlockPos(k, m, l), foliageRadius + 1);
+		list.add(new FoliagePlacer.class_5208(new BlockPos(k, m, l), 1, false));
 		k = pos.getX();
 		l = pos.getZ();
 		Direction direction2 = Direction.Type.HORIZONTAL.random(random);
@@ -68,7 +62,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 					int r = pos.getY() + q;
 					k += direction2.getOffsetX();
 					l += direction2.getOffsetZ();
-					if (AbstractTreeFeature.setLogBlockState(world, random, mutable.set(k, r, l), logs, box, config)) {
+					if (method_27402(world, random, mutable.set(k, r, l), set, blockBox, treeFeatureConfig)) {
 						m = r + 1;
 					}
 				}
@@ -77,10 +71,10 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 			}
 
 			if (m > 1) {
-				map.put(new BlockPos(k, m, l), foliageRadius);
+				list.add(new FoliagePlacer.class_5208(new BlockPos(k, m, l), 0, false));
 			}
 		}
 
-		return map;
+		return list;
 	}
 }

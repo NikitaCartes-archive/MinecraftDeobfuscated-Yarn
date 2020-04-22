@@ -5,10 +5,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,7 +21,10 @@ import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -45,7 +50,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 			}
 
 			@Override
-			public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
+			public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
 				BeaconScreen.this.primaryEffect = handler.getPrimaryEffect();
 				BeaconScreen.this.secondaryEffect = handler.getSecondaryEffect();
 				BeaconScreen.this.consumeGem = true;
@@ -119,39 +124,39 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	}
 
 	@Override
-	protected void drawForeground(int mouseX, int mouseY) {
-		this.drawCenteredString(this.textRenderer, I18n.translate("block.minecraft.beacon.primary"), 62, 10, 14737632);
-		this.drawCenteredString(this.textRenderer, I18n.translate("block.minecraft.beacon.secondary"), 169, 10, 14737632);
+	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+		this.drawCenteredString(matrixStack, this.textRenderer, I18n.translate("block.minecraft.beacon.primary"), 62, 10, 14737632);
+		this.drawCenteredString(matrixStack, this.textRenderer, I18n.translate("block.minecraft.beacon.secondary"), 169, 10, 14737632);
 
 		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
 			if (abstractButtonWidget.isHovered()) {
-				abstractButtonWidget.renderToolTip(mouseX - this.x, mouseY - this.y);
+				abstractButtonWidget.renderToolTip(matrixStack, i - this.x, j - this.y);
 				break;
 			}
 		}
 	}
 
 	@Override
-	protected void drawBackground(float delta, int mouseX, int mouseY) {
+	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int i = (this.width - this.backgroundWidth) / 2;
-		int j = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		int j = (this.width - this.backgroundWidth) / 2;
+		int k = (this.height - this.backgroundHeight) / 2;
+		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		this.itemRenderer.zOffset = 100.0F;
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), i + 41, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
-		this.itemRenderer.renderGuiItem(new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.NETHERITE_INGOT), j + 20, k + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.EMERALD), j + 41, k + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.DIAMOND), j + 41 + 22, k + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.GOLD_INGOT), j + 42 + 44, k + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.IRON_INGOT), j + 42 + 66, k + 109);
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		super.render(mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(mouseX, mouseY);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		super.render(matrices, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -159,28 +164,28 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		private boolean disabled;
 
 		protected BaseButtonWidget(int x, int y) {
-			super(x, y, 22, 22, "");
+			super(x, y, 22, 22, LiteralText.EMPTY);
 		}
 
 		@Override
-		public void renderButton(int mouseX, int mouseY, float delta) {
+		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconScreen.TEXTURE);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			int i = 219;
-			int j = 0;
+			int k = 219;
+			int l = 0;
 			if (!this.active) {
-				j += this.width * 2;
+				l += this.width * 2;
 			} else if (this.disabled) {
-				j += this.width * 1;
+				l += this.width * 1;
 			} else if (this.isHovered()) {
-				j += this.width * 3;
+				l += this.width * 3;
 			}
 
-			this.drawTexture(this.x, this.y, j, 219, this.width, this.height);
-			this.renderExtra();
+			this.drawTexture(matrixStack, this.x, this.y, l, 219, this.width, this.height);
+			this.renderExtra(matrixStack);
 		}
 
-		protected abstract void renderExtra();
+		protected abstract void renderExtra(MatrixStack matrixStack);
 
 		public boolean isDisabled() {
 			return this.disabled;
@@ -204,8 +209,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void renderToolTip(int mouseX, int mouseY) {
-			BeaconScreen.this.renderTooltip(I18n.translate("gui.cancel"), mouseX, mouseY);
+		public void renderToolTip(MatrixStack matrixStack, int i, int j) {
+			BeaconScreen.this.renderTooltip(matrixStack, ScreenTexts.CANCEL, i, j);
 		}
 	}
 
@@ -225,8 +230,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void renderToolTip(int mouseX, int mouseY) {
-			BeaconScreen.this.renderTooltip(I18n.translate("gui.done"), mouseX, mouseY);
+		public void renderToolTip(MatrixStack matrixStack, int i, int j) {
+			BeaconScreen.this.renderTooltip(matrixStack, ScreenTexts.DONE, i, j);
 		}
 	}
 
@@ -260,19 +265,19 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void renderToolTip(int mouseX, int mouseY) {
-			String string = I18n.translate(this.effect.getTranslationKey());
+		public void renderToolTip(MatrixStack matrixStack, int i, int j) {
+			MutableText mutableText = new TranslatableText(this.effect.getTranslationKey());
 			if (!this.primary && this.effect != StatusEffects.REGENERATION) {
-				string = string + " II";
+				mutableText.append("II");
 			}
 
-			BeaconScreen.this.renderTooltip(string, mouseX, mouseY);
+			BeaconScreen.this.renderTooltip(matrixStack, mutableText, i, j);
 		}
 
 		@Override
-		protected void renderExtra() {
+		protected void renderExtra(MatrixStack matrixStack) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(this.sprite.getAtlas().getId());
-			drawSprite(this.x + 2, this.y + 2, this.getZOffset(), 18, 18, this.sprite);
+			drawSprite(matrixStack, this.x + 2, this.y + 2, this.getZOffset(), 18, 18, this.sprite);
 		}
 	}
 
@@ -288,8 +293,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		protected void renderExtra() {
-			this.drawTexture(this.x + 2, this.y + 2, this.u, this.v, 18, 18);
+		protected void renderExtra(MatrixStack matrixStack) {
+			this.drawTexture(matrixStack, this.x + 2, this.y + 2, this.u, this.v, 18, 18);
 		}
 	}
 }

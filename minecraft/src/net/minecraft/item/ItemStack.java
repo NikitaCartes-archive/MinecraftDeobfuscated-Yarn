@@ -51,6 +51,7 @@ import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -75,13 +76,14 @@ public final class ItemStack {
 	public static final DecimalFormat MODIFIER_FORMAT = Util.make(
 		new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
 	);
+	private static final Style field_24092 = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
 	private int count;
 	private int cooldown;
 	@Deprecated
 	private final Item item;
 	private CompoundTag tag;
 	private boolean empty;
-	private ItemFrameEntity frame;
+	private Entity field_24093;
 	private CachedBlockPosition lastDestroyPos;
 	private boolean lastDestroyResult;
 	private CachedBlockPosition lastPlaceOnPos;
@@ -500,12 +502,12 @@ public final class ItemStack {
 	@Environment(EnvType.CLIENT)
 	public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
 		List<Text> list = Lists.<Text>newArrayList();
-		Text text = new LiteralText("").append(this.getName()).formatted(this.getRarity().formatting);
+		MutableText mutableText = new LiteralText("").append(this.getName()).formatted(this.getRarity().formatting);
 		if (this.hasCustomName()) {
-			text.formatted(Formatting.ITALIC);
+			mutableText.formatted(Formatting.ITALIC);
 		}
 
-		list.add(text);
+		list.add(mutableText);
 		if (!context.isAdvanced() && !this.hasCustomName() && this.getItem() == Items.FILLED_MAP) {
 			list.add(new LiteralText("#" + FilledMapItem.getMapId(this)).formatted(Formatting.GRAY));
 		}
@@ -541,9 +543,9 @@ public final class ItemStack {
 						String string = listTag.getString(j);
 
 						try {
-							Text text2 = Text.Serializer.fromJson(string);
-							if (text2 != null) {
-								list.add(Texts.setStyleIfAbsent(text2, new Style().setColor(Formatting.DARK_PURPLE).setItalic(true)));
+							MutableText mutableText2 = Text.Serializer.fromJson(string);
+							if (mutableText2 != null) {
+								list.add(Texts.setStyleIfAbsent(mutableText2, field_24092));
 							}
 						} catch (JsonParseException var19) {
 							compoundTag.remove("Lore");
@@ -556,20 +558,20 @@ public final class ItemStack {
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
 			if (!multimap.isEmpty() && (i & 2) == 0) {
-				list.add(new LiteralText(""));
+				list.add(LiteralText.EMPTY);
 				list.add(new TranslatableText("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
 
 				for (Entry<EntityAttribute, EntityAttributeModifier> entry : multimap.entries()) {
 					EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
-					double d = entityAttributeModifier.getAmount();
+					double d = entityAttributeModifier.getValue();
 					boolean bl = false;
 					if (player != null) {
 						if (entityAttributeModifier.getId() == Item.ATTACK_DAMAGE_MODIFIER_UUID) {
-							d += player.method_26826(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+							d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 							d += (double)EnchantmentHelper.getAttackDamage(this, EntityGroup.DEFAULT);
 							bl = true;
 						} else if (entityAttributeModifier.getId() == Item.ATTACK_SPEED_MODIFIER_UUID) {
-							d += player.method_26826(EntityAttributes.GENERIC_ATTACK_SPEED);
+							d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
 							bl = true;
 						}
 					}
@@ -627,7 +629,7 @@ public final class ItemStack {
 		if (this.hasTag() && this.tag.contains("CanDestroy", 9) && (i & 8) == 0) {
 			ListTag listTag2 = this.tag.getList("CanDestroy", 8);
 			if (!listTag2.isEmpty()) {
-				list.add(new LiteralText(""));
+				list.add(LiteralText.EMPTY);
 				list.add(new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
 
 				for (int k = 0; k < listTag2.size(); k++) {
@@ -639,7 +641,7 @@ public final class ItemStack {
 		if (this.hasTag() && this.tag.contains("CanPlaceOn", 9) && (i & 16) == 0) {
 			ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
 			if (!listTag2.isEmpty()) {
-				list.add(new LiteralText(""));
+				list.add(LiteralText.EMPTY);
 				list.add(new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
 
 				for (int k = 0; k < listTag2.size(); k++) {
@@ -731,16 +733,21 @@ public final class ItemStack {
 	}
 
 	public boolean isInFrame() {
-		return this.frame != null;
+		return this.field_24093 instanceof ItemFrameEntity;
 	}
 
-	public void setFrame(@Nullable ItemFrameEntity frame) {
-		this.frame = frame;
+	public void method_27320(@Nullable Entity entity) {
+		this.field_24093 = entity;
 	}
 
 	@Nullable
 	public ItemFrameEntity getFrame() {
-		return this.empty ? null : this.frame;
+		return this.field_24093 instanceof ItemFrameEntity ? (ItemFrameEntity)this.method_27319() : null;
+	}
+
+	@Nullable
+	public Entity method_27319() {
+		return !this.empty ? this.field_24093 : null;
 	}
 
 	public int getRepairCost() {
@@ -795,19 +802,18 @@ public final class ItemStack {
 	}
 
 	public Text toHoverableText() {
-		Text text = new LiteralText("").append(this.getName());
+		MutableText mutableText = new LiteralText("").append(this.getName());
 		if (this.hasCustomName()) {
-			text.formatted(Formatting.ITALIC);
+			mutableText.formatted(Formatting.ITALIC);
 		}
 
-		Text text2 = Texts.bracketed(text);
+		MutableText mutableText2 = Texts.bracketed(mutableText);
 		if (!this.empty) {
-			CompoundTag compoundTag = this.toTag(new CompoundTag());
-			text2.formatted(this.getRarity().formatting)
-				.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new LiteralText(compoundTag.toString()))));
+			mutableText2.formatted(this.getRarity().formatting)
+				.styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackContent(this))));
 		}
 
-		return text2;
+		return mutableText2;
 	}
 
 	private static boolean areBlocksEqual(CachedBlockPosition first, @Nullable CachedBlockPosition second) {

@@ -241,7 +241,7 @@ public class SnowyVillageData {
 				new StructurePool(
 					new Identifier("village/snowy/trees"),
 					new Identifier("empty"),
-					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG)), 1)),
+					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG)), 1)),
 					StructurePool.Projection.RIGID
 				)
 			);
@@ -254,7 +254,7 @@ public class SnowyVillageData {
 						new Pair<>(new LegacySinglePoolElement("village/snowy/snowy_lamp_post_01"), 4),
 						new Pair<>(new LegacySinglePoolElement("village/snowy/snowy_lamp_post_02"), 4),
 						new Pair<>(new LegacySinglePoolElement("village/snowy/snowy_lamp_post_03"), 1),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.SNOW_PILE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.BLUE_ICE_PILE_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 9)
@@ -271,7 +271,7 @@ public class SnowyVillageData {
 						new Pair<>(new LegacySinglePoolElement("village/snowy/snowy_lamp_post_01", immutableList), 1),
 						new Pair<>(new LegacySinglePoolElement("village/snowy/snowy_lamp_post_02", immutableList), 1),
 						new Pair<>(new LegacySinglePoolElement("village/snowy/snowy_lamp_post_03", immutableList), 1),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.SPRUCE_TREE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.SNOW_PILE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.BLUE_ICE_PILE_CONFIG)), 4),
 						Pair.of(EmptyPoolElement.INSTANCE, 7)

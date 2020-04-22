@@ -2,28 +2,15 @@ package net.minecraft.data.report;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.brigadier.CommandDispatcher;
-import java.io.File;
 import java.io.IOException;
-import java.net.Proxy;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
 import net.minecraft.command.arguments.ArgumentTypes;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.datafixer.Schemas;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.WorldGenerationProgressLogger;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.dedicated.MinecraftDedicatedServer;
-import net.minecraft.server.dedicated.ServerPropertiesLoader;
-import net.minecraft.util.UserCache;
-import net.minecraft.world.level.storage.LevelStorage;
 
 public class CommandSyntaxProvider implements DataProvider {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -35,18 +22,8 @@ public class CommandSyntaxProvider implements DataProvider {
 
 	@Override
 	public void run(DataCache cache) throws IOException {
-		YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
-		MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-		GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-		File file = new File(this.root.getOutput().toFile(), "tmp");
-		UserCache userCache = new UserCache(gameProfileRepository, new File(file, MinecraftServer.USER_CACHE_FILE.getName()));
-		ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(Paths.get("server.properties"));
-		LevelStorage.Session session = LevelStorage.create(file.toPath()).createSession("world");
-		MinecraftServer minecraftServer = new MinecraftDedicatedServer(
-			session, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new
-		);
 		Path path = this.root.getOutput().resolve("reports/commands.json");
-		CommandDispatcher<ServerCommandSource> commandDispatcher = minecraftServer.getCommandManager().getDispatcher();
+		CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(true).getDispatcher();
 		DataProvider.writeToPath(GSON, cache, ArgumentTypes.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
 	}
 

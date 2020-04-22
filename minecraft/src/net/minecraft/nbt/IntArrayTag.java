@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -110,17 +111,17 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	@Override
 	public Text toText(String indent, int depth) {
 		Text text = new LiteralText("I").formatted(RED);
-		Text text2 = new LiteralText("[").append(text).append(";");
+		MutableText mutableText = new LiteralText("[").append(text).append(";");
 
 		for (int i = 0; i < this.value.length; i++) {
-			text2.append(" ").append(new LiteralText(String.valueOf(this.value[i])).formatted(GOLD));
+			mutableText.append(" ").append(new LiteralText(String.valueOf(this.value[i])).formatted(GOLD));
 			if (i != this.value.length - 1) {
-				text2.append(",");
+				mutableText.append(",");
 			}
 		}
 
-		text2.append("]");
-		return text2;
+		mutableText.append("]");
+		return mutableText;
 	}
 
 	public int size() {
@@ -137,7 +138,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 		return IntTag.of(j);
 	}
 
-	public void method_10531(int i, IntTag intTag) {
+	public void add(int i, IntTag intTag) {
 		this.value = ArrayUtils.add(this.value, i, intTag.getInt());
 	}
 

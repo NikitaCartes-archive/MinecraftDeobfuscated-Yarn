@@ -5,6 +5,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class LogarithmicOption extends DoubleOption {
@@ -15,7 +16,7 @@ public class LogarithmicOption extends DoubleOption {
 		float f,
 		Function<GameOptions, Double> function,
 		BiConsumer<GameOptions, Double> biConsumer,
-		BiFunction<GameOptions, DoubleOption, String> biFunction
+		BiFunction<GameOptions, DoubleOption, Text> biFunction
 	) {
 		super(string, d, e, f, function, biConsumer, biFunction);
 	}

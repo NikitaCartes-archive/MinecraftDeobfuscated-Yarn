@@ -12,9 +12,11 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5195;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -299,6 +301,7 @@ public abstract class Biome {
 				CrashReport crashReport = CrashReport.create(var14, "Feature placement");
 				crashReport.addElement("Feature")
 					.add("Id", Registry.FEATURE.getId(configuredFeature.feature))
+					.add("Config", configuredFeature.config)
 					.add("Description", (CrashCallable<String>)(() -> configuredFeature.feature.toString()));
 				throw new CrashException(crashReport);
 			}
@@ -405,6 +408,11 @@ public abstract class Biome {
 		return this.effects.getAdditionsSound();
 	}
 
+	@Environment(EnvType.CLIENT)
+	public Optional<class_5195> method_27343() {
+		return this.effects.method_27345();
+	}
+
 	public final Biome.Category getCategory() {
 		return this.category;
 	}
@@ -417,12 +425,8 @@ public abstract class Biome {
 		return this.surfaceBuilder.getConfig();
 	}
 
-	public float getNoiseDistance(Biome.MixedNoisePoint from) {
-		return (Float)this.noisePoints
-			.stream()
-			.map(mixedNoisePoint2 -> mixedNoisePoint2.calculateDistanceTo(from))
-			.min(Float::compare)
-			.orElse(Float.POSITIVE_INFINITY);
+	public Stream<Biome.MixedNoisePoint> method_27342() {
+		return this.noisePoints.stream();
 	}
 
 	@Nullable
@@ -536,7 +540,7 @@ public abstract class Biome {
 				+ (this.humidity - other.humidity) * (this.humidity - other.humidity)
 				+ (this.altitude - other.altitude) * (this.altitude - other.altitude)
 				+ (this.weirdness - other.weirdness) * (this.weirdness - other.weirdness)
-				- (this.weight - other.weight) * (this.weight - other.weight);
+				+ (this.weight - other.weight) * (this.weight - other.weight);
 		}
 	}
 

@@ -495,13 +495,15 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		} else if (!block.isIn(BlockTags.FENCES)
 			&& !block.isIn(BlockTags.WALLS)
 			&& (!(block instanceof FenceGateBlock) || (Boolean)blockState.get(FenceGateBlock.OPEN))) {
-			FluidState fluidState = blockView.getFluidState(blockPos);
-			if (fluidState.matches(FluidTags.WATER)) {
-				return PathNodeType.WATER;
-			} else if (fluidState.matches(FluidTags.LAVA)) {
-				return PathNodeType.LAVA;
+			if (!blockState.canPathfindThrough(blockView, blockPos, NavigationType.LAND)) {
+				return PathNodeType.BLOCKED;
 			} else {
-				return blockState.canPathfindThrough(blockView, blockPos, NavigationType.LAND) ? PathNodeType.OPEN : PathNodeType.BLOCKED;
+				FluidState fluidState = blockView.getFluidState(blockPos);
+				if (fluidState.matches(FluidTags.WATER)) {
+					return PathNodeType.WATER;
+				} else {
+					return fluidState.matches(FluidTags.LAVA) ? PathNodeType.LAVA : PathNodeType.OPEN;
+				}
 			}
 		} else {
 			return PathNodeType.FENCE;

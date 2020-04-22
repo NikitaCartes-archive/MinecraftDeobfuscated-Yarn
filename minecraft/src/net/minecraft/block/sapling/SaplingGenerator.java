@@ -15,10 +15,10 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class SaplingGenerator {
 	@Nullable
-	protected abstract ConfiguredFeature<? extends TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl);
+	protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl);
 
 	public boolean generate(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
-		ConfiguredFeature<? extends TreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.method_24282(serverWorld, blockPos));
+		ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.method_24282(serverWorld, blockPos));
 		if (configuredFeature == null) {
 			return false;
 		} else {

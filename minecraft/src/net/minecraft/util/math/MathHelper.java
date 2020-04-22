@@ -263,7 +263,7 @@ public class MathHelper {
 		return i + 1;
 	}
 
-	private static boolean isPowerOfTwo(int i) {
+	public static boolean isPowerOfTwo(int i) {
 		return i != 0 && (i & i - 1) == 0;
 	}
 
@@ -274,21 +274,6 @@ public class MathHelper {
 
 	public static int log2(int i) {
 		return log2DeBruijn(i) - (isPowerOfTwo(i) ? 0 : 1);
-	}
-
-	public static int roundUp(int i, int j) {
-		if (j == 0) {
-			return 0;
-		} else if (i == 0) {
-			return j;
-		} else {
-			if (i < 0) {
-				j *= -1;
-			}
-
-			int k = i % j;
-			return k == 0 ? i : i + j - k;
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -595,6 +580,10 @@ public class MathHelper {
 	@Environment(EnvType.CLIENT)
 	public static float method_24504(float f, float g) {
 		return (Math.abs(f % g - g * 0.5F) - g * 0.25F) / (g * 0.25F);
+	}
+
+	public static float method_27285(float f) {
+		return f * f;
 	}
 
 	static {

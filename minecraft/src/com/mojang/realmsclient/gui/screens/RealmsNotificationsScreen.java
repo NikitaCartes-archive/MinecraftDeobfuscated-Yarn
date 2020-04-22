@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -87,47 +88,47 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (validClient) {
-			this.drawIcons(mouseX, mouseY);
+			this.drawIcons(matrices, mouseX, mouseY);
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private void drawIcons(int xm, int ym) {
-		int i = this.numberOfPendingInvites;
-		int j = 24;
-		int k = this.height / 4 + 48;
-		int l = this.width / 2 + 80;
-		int m = k + 48 + 2;
-		int n = 0;
+	private void drawIcons(MatrixStack matrixStack, int i, int j) {
+		int k = this.numberOfPendingInvites;
+		int l = 24;
+		int m = this.height / 4 + 48;
+		int n = this.width / 2 + 80;
+		int o = m + 48 + 2;
+		int p = 0;
 		if (hasUnreadNews) {
 			this.client.getTextureManager().bindTexture(field_22700);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(0.4F, 0.4F, 0.4F);
-			DrawableHelper.drawTexture((int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
+			DrawableHelper.drawTexture(matrixStack, (int)((double)(n + 2 - p) * 2.5), (int)((double)o * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
 			RenderSystem.popMatrix();
-			n += 14;
+			p += 14;
 		}
 
-		if (i != 0) {
+		if (k != 0) {
 			this.client.getTextureManager().bindTexture(field_22698);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			DrawableHelper.drawTexture(l - n, m - 6, 0.0F, 0.0F, 15, 25, 31, 25);
-			n += 16;
+			DrawableHelper.drawTexture(matrixStack, n - p, o - 6, 0.0F, 0.0F, 15, 25, 31, 25);
+			p += 16;
 		}
 
 		if (trialAvailable) {
 			this.client.getTextureManager().bindTexture(field_22699);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			int o = 0;
+			int q = 0;
 			if ((Util.getMeasuringTimeMs() / 800L & 1L) == 1L) {
-				o = 8;
+				q = 8;
 			}
 
-			DrawableHelper.drawTexture(l + 4 - n, m + 4, 0.0F, (float)o, 8, 8, 8, 16);
+			DrawableHelper.drawTexture(matrixStack, n + 4 - p, o + 4, 0.0F, (float)q, 8, 8, 8, 16);
 		}
 	}
 

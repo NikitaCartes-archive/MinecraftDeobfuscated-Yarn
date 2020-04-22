@@ -598,7 +598,7 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	private boolean method_26320(ItemStack itemStack, ItemStack itemStack2) {
+	public boolean method_26320(ItemStack itemStack, ItemStack itemStack2) {
 		if (itemStack.getDamage() >= itemStack2.getDamage() && (!itemStack.hasTag() || itemStack2.hasTag())) {
 			return itemStack.hasTag() && itemStack2.hasTag()
 				? itemStack.getTag().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
@@ -1030,6 +1030,9 @@ public abstract class MobEntity extends LivingEntity {
 				this.attachLeash(player, true);
 				itemStack.decrement(1);
 				return true;
+			} else if (itemStack.getItem() == Items.NAME_TAG) {
+				itemStack.useOnEntity(player, this, hand);
+				return true;
 			} else {
 				return this.interactMob(player, hand) ? true : super.interact(player, hand);
 			}
@@ -1266,8 +1269,8 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		float f = (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-		float g = (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		float g = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 		if (target instanceof LivingEntity) {
 			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
 			g += (float)EnchantmentHelper.getKnockback(this);

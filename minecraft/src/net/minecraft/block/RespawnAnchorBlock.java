@@ -49,7 +49,7 @@ public class RespawnAnchorBlock extends Block {
 			return ActionResult.SUCCESS;
 		} else if ((Integer)state.get(CHARGES) == 0) {
 			return ActionResult.PASS;
-		} else if (world.dimension.getType() != DimensionType.THE_NETHER) {
+		} else if (!method_27353(world)) {
 			if (!world.isClient) {
 				world.removeBlock(pos, false);
 				world.createExplosion(
@@ -86,6 +86,10 @@ public class RespawnAnchorBlock extends Block {
 
 			return state.get(CHARGES) < 4 ? ActionResult.PASS : ActionResult.CONSUME;
 		}
+	}
+
+	public static boolean method_27353(World world) {
+		return world.dimension.getType() == DimensionType.THE_NETHER;
 	}
 
 	public static void charge(World world, BlockPos pos, BlockState state) {

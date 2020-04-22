@@ -282,26 +282,22 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Override
 	public boolean interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		boolean bl = itemStack.getItem() == Items.NAME_TAG;
-		if (bl) {
-			itemStack.useOnEntity(player, this, hand);
-			return true;
-		} else if (itemStack.getItem() == Items.VILLAGER_SPAWN_EGG || !this.isAlive() || this.hasCustomer() || this.isSleeping()) {
+		if (itemStack.getItem() == Items.VILLAGER_SPAWN_EGG || !this.isAlive() || this.hasCustomer() || this.isSleeping()) {
 			return super.interactMob(player, hand);
 		} else if (this.isBaby()) {
 			this.sayNo();
 			return super.interactMob(player, hand);
 		} else {
-			boolean bl2 = this.getOffers().isEmpty();
+			boolean bl = this.getOffers().isEmpty();
 			if (hand == Hand.MAIN_HAND) {
-				if (bl2 && !this.world.isClient) {
+				if (bl && !this.world.isClient) {
 					this.sayNo();
 				}
 
 				player.incrementStat(Stats.TALKED_TO_VILLAGER);
 			}
 
-			if (bl2) {
+			if (bl) {
 				return super.interactMob(player, hand);
 			} else {
 				if (!this.world.isClient && !this.offers.isEmpty()) {

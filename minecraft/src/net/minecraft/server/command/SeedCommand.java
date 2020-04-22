@@ -20,10 +20,10 @@ public class SeedCommand {
 						Text text = Texts.bracketed(
 							new LiteralText(String.valueOf(l))
 								.styled(
-									style -> style.setColor(Formatting.GREEN)
-											.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(l)))
+									style -> style.withColor(Formatting.GREEN)
+											.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(l)))
 											.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.copy.click")))
-											.setInsertion(String.valueOf(l))
+											.withInsertion(String.valueOf(l))
 								)
 						);
 						commandContext.getSource().sendFeedback(new TranslatableText("commands.seed.success", text), false);

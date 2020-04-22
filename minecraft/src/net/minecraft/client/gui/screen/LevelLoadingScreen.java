@@ -5,8 +5,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -45,12 +45,12 @@ public class LevelLoadingScreen extends Screen {
 
 	@Override
 	public void removed() {
-		NarratorManager.INSTANCE.narrate(I18n.translate("narrator.loading.done"));
+		NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.loading.done").getString());
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
 		String string = MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%";
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.field_19101 > 2000L) {
@@ -61,33 +61,33 @@ public class LevelLoadingScreen extends Screen {
 		int i = this.width / 2;
 		int j = this.height / 2;
 		int k = 30;
-		drawChunkMap(this.progressProvider, i, j + 30, 2, 0);
-		this.drawCenteredString(this.textRenderer, string, i, j - 9 / 2 - 30, 16777215);
+		drawChunkMap(matrices, this.progressProvider, i, j + 30, 2, 0);
+		this.drawCenteredString(matrices, this.textRenderer, string, i, j - 9 / 2 - 30, 16777215);
 	}
 
-	public static void drawChunkMap(WorldGenerationProgressTracker progressProvider, int centerX, int centerY, int chunkSize, int i) {
-		int j = chunkSize + i;
-		int k = progressProvider.getCenterSize();
-		int l = k * j - i;
-		int m = progressProvider.getSize();
-		int n = m * j - i;
-		int o = centerX - n / 2;
-		int p = centerY - n / 2;
-		int q = l / 2 + 1;
-		int r = -16772609;
-		if (i != 0) {
-			fill(centerX - q, centerY - q, centerX - q + 1, centerY + q, -16772609);
-			fill(centerX + q - 1, centerY - q, centerX + q, centerY + q, -16772609);
-			fill(centerX - q, centerY - q, centerX + q, centerY - q + 1, -16772609);
-			fill(centerX - q, centerY + q - 1, centerX + q, centerY + q, -16772609);
+	public static void drawChunkMap(MatrixStack matrixStack, WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
+		int m = k + l;
+		int n = worldGenerationProgressTracker.getCenterSize();
+		int o = n * m - l;
+		int p = worldGenerationProgressTracker.getSize();
+		int q = p * m - l;
+		int r = i - q / 2;
+		int s = j - q / 2;
+		int t = o / 2 + 1;
+		int u = -16772609;
+		if (l != 0) {
+			fill(matrixStack, i - t, j - t, i - t + 1, j + t, -16772609);
+			fill(matrixStack, i + t - 1, j - t, i + t, j + t, -16772609);
+			fill(matrixStack, i - t, j - t, i + t, j - t + 1, -16772609);
+			fill(matrixStack, i - t, j + t - 1, i + t, j + t, -16772609);
 		}
 
-		for (int s = 0; s < m; s++) {
-			for (int t = 0; t < m; t++) {
-				ChunkStatus chunkStatus = progressProvider.getChunkStatus(s, t);
-				int u = o + s * j;
-				int v = p + t * j;
-				fill(u, v, u + chunkSize, v + chunkSize, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
+		for (int v = 0; v < p; v++) {
+			for (int w = 0; w < p; w++) {
+				ChunkStatus chunkStatus = worldGenerationProgressTracker.getChunkStatus(v, w);
+				int x = r + v * m;
+				int y = s + w * m;
+				fill(matrixStack, x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
 			}
 		}
 	}

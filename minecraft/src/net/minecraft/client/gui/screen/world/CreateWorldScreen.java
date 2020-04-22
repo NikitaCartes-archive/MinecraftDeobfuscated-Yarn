@@ -4,19 +4,25 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5219;
 import net.minecraft.client.gui.screen.CustomizeBuffetLevelScreen;
 import net.minecraft.client.gui.screen.CustomizeFlatLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -28,6 +34,8 @@ public class CreateWorldScreen extends Screen {
 	private CreateWorldScreen.Mode currentMode = CreateWorldScreen.Mode.SURVIVAL;
 	@Nullable
 	private CreateWorldScreen.Mode lastMode;
+	private Difficulty field_24289 = Difficulty.NORMAL;
+	private Difficulty field_24290 = Difficulty.NORMAL;
 	private boolean structures = true;
 	private boolean cheatsEnabled;
 	private boolean tweakedCheats;
@@ -37,20 +45,23 @@ public class CreateWorldScreen extends Screen {
 	private boolean moreOptionsOpen;
 	private ButtonWidget createLevelButton;
 	private ButtonWidget gameModeSwitchButton;
+	private ButtonWidget field_24286;
 	private ButtonWidget moreOptionsButton;
+	private ButtonWidget gameRulesButton;
 	private ButtonWidget generateStructuresButton;
 	private ButtonWidget generateBonusChestButton;
 	private ButtonWidget mapTypeSwitchButton;
 	private ButtonWidget enableCheatsButton;
 	private ButtonWidget customizeTypeButton;
-	private String firstGameModeDescriptionLine;
-	private String secondGameModeDescriptionLine;
+	private Text firstGameModeDescriptionLine;
+	private Text secondGameModeDescriptionLine;
 	private String seed;
 	private String levelName;
+	private GameRules gameRules = new GameRules();
 	private int generatorType;
 	public LevelGeneratorOptions generatorOptions = LevelGeneratorType.DEFAULT.getDefaultOptions();
 
-	public CreateWorldScreen(Screen parent) {
+	public CreateWorldScreen(@Nullable Screen parent) {
 		super(new TranslatableText("selectWorld.create"));
 		this.parent = parent;
 		this.seed = "";
@@ -66,10 +77,14 @@ public class CreateWorldScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.levelNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterName")) {
+		this.levelNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterName")) {
 			@Override
-			protected String getNarrationMessage() {
-				return super.getNarrationMessage() + ". " + I18n.translate("selectWorld.resultFolder") + " " + CreateWorldScreen.this.saveDirectoryName;
+			protected MutableText getNarrationMessage() {
+				return super.getNarrationMessage()
+					.append(". ")
+					.append(new TranslatableText("selectWorld.resultFolder"))
+					.append(" ")
+					.append(CreateWorldScreen.this.saveDirectoryName);
 			}
 		};
 		this.levelNameField.setText(this.levelName);
@@ -80,7 +95,7 @@ public class CreateWorldScreen extends Screen {
 		});
 		this.children.add(this.levelNameField);
 		this.gameModeSwitchButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 75, 115, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 155, 115, 150, 20, new TranslatableText("selectWorld.gameMode"), buttonWidget -> {
 				switch (this.currentMode) {
 					case SURVIVAL:
 						this.tweakDefaultsTo(CreateWorldScreen.Mode.HARDCORE);
@@ -95,43 +110,56 @@ public class CreateWorldScreen extends Screen {
 				buttonWidget.queueNarration(250);
 			}) {
 				@Override
-				public String getMessage() {
-					return I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + CreateWorldScreen.this.currentMode.translationSuffix);
+				public Text getMessage() {
+					return super.getMessage()
+						.shallowCopy()
+						.append(": ")
+						.append(new TranslatableText("selectWorld.gameMode." + CreateWorldScreen.this.currentMode.translationSuffix));
 				}
 
 				@Override
-				protected String getNarrationMessage() {
+				protected MutableText getNarrationMessage() {
 					return super.getNarrationMessage()
-						+ ". "
-						+ CreateWorldScreen.this.firstGameModeDescriptionLine
-						+ " "
-						+ CreateWorldScreen.this.secondGameModeDescriptionLine;
+						.append(". ")
+						.append(CreateWorldScreen.this.firstGameModeDescriptionLine)
+						.append(" ")
+						.append(CreateWorldScreen.this.secondGameModeDescriptionLine);
 				}
 			}
 		);
-		this.seedField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterSeed"));
+		this.field_24286 = this.addButton(new ButtonWidget(this.width / 2 + 5, 115, 150, 20, new TranslatableText("options.difficulty"), buttonWidget -> {
+			this.field_24289 = this.field_24289.method_27297();
+			this.field_24290 = this.field_24289;
+			buttonWidget.queueNarration(250);
+		}) {
+			@Override
+			public Text getMessage() {
+				return new TranslatableText("options.difficulty").append(": ").append(CreateWorldScreen.this.field_24290.getTranslatableName());
+			}
+		});
+		this.seedField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterSeed"));
 		this.seedField.setText(this.seed);
 		this.seedField.setChangedListener(string -> this.seed = this.seedField.getText());
 		this.children.add(this.seedField);
 		this.generateStructuresButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 155, 100, 150, 20, new TranslatableText("selectWorld.mapFeatures"), buttonWidget -> {
 				this.structures = !this.structures;
 				buttonWidget.queueNarration(250);
 			}) {
 				@Override
-				public String getMessage() {
-					return I18n.translate("selectWorld.mapFeatures") + ' ' + I18n.translate(CreateWorldScreen.this.structures ? "options.on" : "options.off");
+				public Text getMessage() {
+					return super.getMessage().shallowCopy().append(" ").append(ScreenTexts.getToggleText(CreateWorldScreen.this.structures));
 				}
 
 				@Override
-				protected String getNarrationMessage() {
-					return super.getNarrationMessage() + ". " + I18n.translate("selectWorld.mapFeatures.info");
+				protected MutableText getNarrationMessage() {
+					return super.getNarrationMessage().append(". ").append(new TranslatableText("selectWorld.mapFeatures.info"));
 				}
 			}
 		);
 		this.generateStructuresButton.visible = false;
 		this.mapTypeSwitchButton = this.addButton(
-			new ButtonWidget(this.width / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.mapType"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 + 5, 100, 150, 20, new TranslatableText("selectWorld.mapType"), buttonWidget -> {
 				this.generatorType++;
 				if (this.generatorType >= LevelGeneratorType.TYPES.length) {
 					this.generatorType = 0;
@@ -149,73 +177,88 @@ public class CreateWorldScreen extends Screen {
 				buttonWidget.queueNarration(250);
 			}) {
 				@Override
-				public String getMessage() {
-					return I18n.translate("selectWorld.mapType") + ' ' + I18n.translate(CreateWorldScreen.this.getLevelGeneratorType().getTranslationKey());
+				public Text getMessage() {
+					return super.getMessage().shallowCopy().append(" ").append(CreateWorldScreen.this.getLevelGeneratorType().getTranslationKey());
 				}
 
 				@Override
-				protected String getNarrationMessage() {
+				protected MutableText getNarrationMessage() {
 					LevelGeneratorType levelGeneratorType = CreateWorldScreen.this.getLevelGeneratorType();
 					return levelGeneratorType.hasInfo()
-						? super.getNarrationMessage() + ". " + I18n.translate(levelGeneratorType.getInfoTranslationKey())
+						? super.getNarrationMessage().append(". ").append(levelGeneratorType.getInfoTranslationKey())
 						: super.getNarrationMessage();
 				}
 			}
 		);
 		this.mapTypeSwitchButton.visible = false;
-		this.customizeTypeButton = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType"), buttonWidget -> {
-			if (this.getLevelGeneratorType() == LevelGeneratorType.FLAT) {
-				this.client.openScreen(new CustomizeFlatLevelScreen(this, this.generatorOptions));
-			}
+		this.customizeTypeButton = this.addButton(
+			new ButtonWidget(this.width / 2 + 5, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), buttonWidget -> {
+				if (this.getLevelGeneratorType() == LevelGeneratorType.FLAT) {
+					this.client.openScreen(new CustomizeFlatLevelScreen(this, this.generatorOptions));
+				}
 
-			if (this.getLevelGeneratorType() == LevelGeneratorType.BUFFET) {
-				this.client.openScreen(new CustomizeBuffetLevelScreen(this, this.generatorOptions));
-			}
-		}));
+				if (this.getLevelGeneratorType() == LevelGeneratorType.BUFFET) {
+					this.client.openScreen(new CustomizeBuffetLevelScreen(this, this.generatorOptions));
+				}
+			})
+		);
 		this.customizeTypeButton.visible = false;
 		this.enableCheatsButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 155, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), buttonWidget -> {
 				this.tweakedCheats = true;
 				this.cheatsEnabled = !this.cheatsEnabled;
 				buttonWidget.queueNarration(250);
 			}) {
 				@Override
-				public String getMessage() {
-					return I18n.translate("selectWorld.allowCommands")
-						+ ' '
-						+ I18n.translate(CreateWorldScreen.this.cheatsEnabled && !CreateWorldScreen.this.hardcore ? "options.on" : "options.off");
+				public Text getMessage() {
+					return super.getMessage()
+						.shallowCopy()
+						.append(" ")
+						.append(ScreenTexts.getToggleText(CreateWorldScreen.this.cheatsEnabled && !CreateWorldScreen.this.hardcore));
 				}
 
 				@Override
-				protected String getNarrationMessage() {
-					return super.getNarrationMessage() + ". " + I18n.translate("selectWorld.allowCommands.info");
+				protected MutableText getNarrationMessage() {
+					return super.getNarrationMessage().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"));
 				}
 			}
 		);
 		this.enableCheatsButton.visible = false;
 		this.generateBonusChestButton = this.addButton(
-			new ButtonWidget(this.width / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 + 5, 151, 150, 20, new TranslatableText("selectWorld.bonusItems"), buttonWidget -> {
 				this.bonusChest = !this.bonusChest;
 				buttonWidget.queueNarration(250);
 			}) {
 				@Override
-				public String getMessage() {
-					return I18n.translate("selectWorld.bonusItems")
-						+ ' '
-						+ I18n.translate(CreateWorldScreen.this.bonusChest && !CreateWorldScreen.this.hardcore ? "options.on" : "options.off");
+				public Text getMessage() {
+					return super.getMessage()
+						.shallowCopy()
+						.append(" ")
+						.append(ScreenTexts.getToggleText(CreateWorldScreen.this.bonusChest && !CreateWorldScreen.this.hardcore));
 				}
 			}
 		);
 		this.generateBonusChestButton.visible = false;
-		this.moreOptionsButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions"), buttonWidget -> this.toggleMoreOptions())
-		);
 		this.createLevelButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create"), buttonWidget -> this.createLevel())
+			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.createLevel())
 		);
 		this.createLevelButton.active = !this.levelName.isEmpty();
-		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent))
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+		this.moreOptionsButton = this.addButton(
+			new ButtonWidget(this.width / 2 + 5, 185, 150, 20, new TranslatableText("selectWorld.moreWorldOptions"), buttonWidget -> this.toggleMoreOptions())
+		);
+		this.gameRulesButton = this.addButton(
+			new ButtonWidget(
+				this.width / 2 - 155,
+				185,
+				150,
+				20,
+				new TranslatableText("selectWorld.gameRules"),
+				buttonWidget -> this.client.openScreen(new EditGameRulesScreen(this.gameRules.copy(), optional -> {
+						this.client.openScreen(this);
+						optional.ifPresent(gameRules -> this.gameRules = gameRules);
+					}))
+			)
 		);
 		this.setMoreOptionsOpen(this.moreOptionsOpen);
 		this.setInitialFocus(this.levelNameField);
@@ -228,8 +271,8 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void updateSettingsLabels() {
-		this.firstGameModeDescriptionLine = I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line1");
-		this.secondGameModeDescriptionLine = I18n.translate("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line2");
+		this.firstGameModeDescriptionLine = new TranslatableText("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line1");
+		this.secondGameModeDescriptionLine = new TranslatableText("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line2");
 	}
 
 	private void updateSaveFolderName() {
@@ -273,16 +316,33 @@ public class CreateWorldScreen extends Screen {
 				}
 			}
 
-			LevelInfo levelInfo = new LevelInfo(l, this.currentMode.defaultGameMode, this.structures, this.hardcore, this.generatorOptions);
-			if (this.bonusChest && !this.hardcore) {
-				levelInfo.setBonusChest();
+			LevelInfo levelInfo;
+			if (this.getLevelGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+				GameRules gameRules = new GameRules();
+				gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
+				levelInfo = new LevelInfo(this.levelNameField.getText().trim(), l, GameMode.SPECTATOR, false, false, Difficulty.PEACEFUL, this.generatorOptions, gameRules)
+					.enableCommands();
+			} else {
+				levelInfo = new LevelInfo(
+					this.levelNameField.getText().trim(),
+					l,
+					this.currentMode.defaultGameMode,
+					this.structures,
+					this.hardcore,
+					this.field_24290,
+					this.generatorOptions,
+					this.gameRules
+				);
+				if (this.bonusChest && !this.hardcore) {
+					levelInfo.setBonusChest();
+				}
+
+				if (this.cheatsEnabled && !this.hardcore) {
+					levelInfo.enableCommands();
+				}
 			}
 
-			if (this.cheatsEnabled && !this.hardcore) {
-				levelInfo.enableCommands();
-			}
-
-			this.client.startIntegratedServer(this.saveDirectoryName, this.levelNameField.getText().trim(), levelInfo);
+			this.client.startIntegratedServer(this.saveDirectoryName, levelInfo);
 		}
 	}
 
@@ -308,10 +368,14 @@ public class CreateWorldScreen extends Screen {
 			this.hardcore = true;
 			this.enableCheatsButton.active = false;
 			this.generateBonusChestButton.active = false;
+			this.field_24290 = Difficulty.HARD;
+			this.field_24286.active = false;
 		} else {
 			this.hardcore = false;
 			this.enableCheatsButton.active = true;
 			this.generateBonusChestButton.active = true;
+			this.field_24290 = this.field_24289;
+			this.field_24286.active = true;
 		}
 
 		this.currentMode = mode;
@@ -321,6 +385,7 @@ public class CreateWorldScreen extends Screen {
 	private void setMoreOptionsOpen(boolean moreOptionsOpen) {
 		this.moreOptionsOpen = moreOptionsOpen;
 		this.gameModeSwitchButton.visible = !this.moreOptionsOpen;
+		this.field_24286.visible = !this.moreOptionsOpen;
 		this.mapTypeSwitchButton.visible = this.moreOptionsOpen;
 		if (this.getLevelGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			this.gameModeSwitchButton.active = false;
@@ -348,10 +413,12 @@ public class CreateWorldScreen extends Screen {
 		this.seedField.setVisible(this.moreOptionsOpen);
 		this.levelNameField.setVisible(!this.moreOptionsOpen);
 		if (this.moreOptionsOpen) {
-			this.moreOptionsButton.setMessage(I18n.translate("gui.done"));
+			this.moreOptionsButton.setMessage(ScreenTexts.DONE);
 		} else {
-			this.moreOptionsButton.setMessage(I18n.translate("selectWorld.moreWorldOptions"));
+			this.moreOptionsButton.setMessage(new TranslatableText("selectWorld.moreWorldOptions"));
 		}
+
+		this.gameRulesButton.visible = !this.moreOptionsOpen;
 	}
 
 	@Override
@@ -376,25 +443,25 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, -1);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
 		if (this.moreOptionsOpen) {
-			this.drawString(this.textRenderer, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
-			this.drawString(this.textRenderer, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
+			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
+			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
 			if (this.generateStructuresButton.visible) {
-				this.drawString(this.textRenderer, I18n.translate("selectWorld.mapFeatures.info"), this.width / 2 - 150, 122, -6250336);
+				this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.mapFeatures.info"), this.width / 2 - 150, 122, -6250336);
 			}
 
 			if (this.enableCheatsButton.visible) {
-				this.drawString(this.textRenderer, I18n.translate("selectWorld.allowCommands.info"), this.width / 2 - 150, 172, -6250336);
+				this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.allowCommands.info"), this.width / 2 - 150, 172, -6250336);
 			}
 
-			this.seedField.render(mouseX, mouseY, delta);
-			if (this.getLevelGeneratorType().hasInfo()) {
+			this.seedField.render(matrices, mouseX, mouseY, delta);
+			if (LevelGeneratorType.TYPES[this.generatorType].hasInfo()) {
 				this.textRenderer
 					.drawTrimmed(
-						I18n.translate(this.getLevelGeneratorType().getInfoTranslationKey()),
+						this.getLevelGeneratorType().getInfoTranslationKey(),
 						this.mapTypeSwitchButton.x + 2,
 						this.mapTypeSwitchButton.y + 22,
 						this.mapTypeSwitchButton.getWidth(),
@@ -402,31 +469,37 @@ public class CreateWorldScreen extends Screen {
 					);
 			}
 		} else {
-			this.drawString(this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
-			this.drawString(this.textRenderer, I18n.translate("selectWorld.resultFolder") + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
-			this.levelNameField.render(mouseX, mouseY, delta);
-			this.drawCenteredString(this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2, 137, -6250336);
-			this.drawCenteredString(this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2, 149, -6250336);
+			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
+			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.resultFolder") + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
+			this.levelNameField.render(matrices, mouseX, mouseY, delta);
+			this.method_27534(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 155 + 75, 137, -6250336);
+			this.method_27534(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 155 + 75, 149, -6250336);
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	public void recreateLevel(LevelProperties levelProperties) {
-		this.levelName = levelProperties.getLevelName();
-		this.seed = Long.toString(levelProperties.getSeed());
-		this.generatorOptions = levelProperties.getGeneratorOptions();
+	public void recreateLevel(class_5219 arg) {
+		LevelInfo levelInfo = arg.method_27433();
+		this.levelName = levelInfo.method_27339();
+		this.seed = Long.toString(levelInfo.getSeed());
+		this.generatorOptions = levelInfo.getGeneratorOptions();
 		LevelGeneratorType levelGeneratorType = this.generatorOptions.getType() == LevelGeneratorType.CUSTOMIZED
 			? LevelGeneratorType.DEFAULT
-			: levelProperties.getGeneratorType();
+			: levelInfo.getGeneratorOptions().getType();
 		this.generatorType = levelGeneratorType.getId();
-		this.structures = levelProperties.hasStructures();
-		this.cheatsEnabled = levelProperties.areCommandsAllowed();
-		if (levelProperties.isHardcore()) {
+		this.structures = levelInfo.hasStructures();
+		this.cheatsEnabled = levelInfo.allowCommands();
+		this.tweakedCheats = true;
+		this.bonusChest = levelInfo.hasBonusChest();
+		this.field_24289 = levelInfo.method_27340();
+		this.field_24290 = this.field_24289;
+		this.gameRules.setAllValues(arg.getGameRules(), null);
+		if (levelInfo.isHardcore()) {
 			this.currentMode = CreateWorldScreen.Mode.HARDCORE;
-		} else if (levelProperties.getGameMode().isSurvivalLike()) {
+		} else if (levelInfo.getGameMode().isSurvivalLike()) {
 			this.currentMode = CreateWorldScreen.Mode.SURVIVAL;
-		} else if (levelProperties.getGameMode().isCreative()) {
+		} else if (levelInfo.getGameMode().isCreative()) {
 			this.currentMode = CreateWorldScreen.Mode.CREATIVE;
 		}
 	}

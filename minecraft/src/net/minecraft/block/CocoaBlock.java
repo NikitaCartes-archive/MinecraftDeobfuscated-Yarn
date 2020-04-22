@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -125,5 +126,10 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(FACING, AGE);
+	}
+
+	@Override
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		return false;
 	}
 }

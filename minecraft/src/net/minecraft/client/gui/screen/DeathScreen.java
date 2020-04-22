@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.Texts;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -35,7 +35,7 @@ public class DeathScreen extends Screen {
 				this.height / 4 + 72,
 				200,
 				20,
-				this.isHardcore ? I18n.translate("deathScreen.spectate") : I18n.translate("deathScreen.respawn"),
+				this.isHardcore ? new TranslatableText("deathScreen.spectate") : new TranslatableText("deathScreen.respawn"),
 				buttonWidgetx -> {
 					this.client.player.requestRespawn();
 					this.client.openScreen(null);
@@ -48,7 +48,7 @@ public class DeathScreen extends Screen {
 				this.height / 4 + 96,
 				200,
 				20,
-				I18n.translate("deathScreen.titleScreen"),
+				new TranslatableText("deathScreen.titleScreen"),
 				buttonWidgetx -> {
 					if (this.isHardcore) {
 						this.quitLevel();
@@ -56,9 +56,9 @@ public class DeathScreen extends Screen {
 						ConfirmScreen confirmScreen = new ConfirmScreen(
 							this::onConfirmQuit,
 							new TranslatableText("deathScreen.quit.confirm"),
-							new LiteralText(""),
-							I18n.translate("deathScreen.titleScreen"),
-							I18n.translate("deathScreen.respawn")
+							LiteralText.EMPTY,
+							new TranslatableText("deathScreen.titleScreen"),
+							new TranslatableText("deathScreen.respawn")
 						);
 						this.client.openScreen(confirmScreen);
 						confirmScreen.disableButtons(20);
@@ -99,27 +99,25 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.fillGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.fillGradient(matrices, 0, 0, this.width, this.height, 1615855616, -1602211792);
 		RenderSystem.pushMatrix();
 		RenderSystem.scalef(2.0F, 2.0F, 2.0F);
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2 / 2, 30, 16777215);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
 		RenderSystem.popMatrix();
 		if (this.message != null) {
-			this.drawCenteredString(this.textRenderer, this.message.asFormattedString(), this.width / 2, 85, 16777215);
+			this.method_27534(matrices, this.textRenderer, this.message, this.width / 2, 85, 16777215);
 		}
 
 		this.drawCenteredString(
-			this.textRenderer, I18n.translate("deathScreen.score") + ": " + Formatting.YELLOW + this.client.player.getScore(), this.width / 2, 100, 16777215
+			matrices, this.textRenderer, I18n.translate("deathScreen.score") + ": " + Formatting.YELLOW + this.client.player.getScore(), this.width / 2, 100, 16777215
 		);
 		if (this.message != null && mouseY > 85 && mouseY < 85 + 9) {
 			Text text = this.getTextComponentUnderMouse(mouseX);
-			if (text != null && text.getStyle().getHoverEvent() != null) {
-				this.renderTextHoverEffect(text, mouseX, mouseY);
-			}
+			this.renderTextHoverEffect(matrices, text, mouseX, mouseY);
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	@Nullable
@@ -127,22 +125,10 @@ public class DeathScreen extends Screen {
 		if (this.message == null) {
 			return null;
 		} else {
-			int i = this.client.textRenderer.getStringWidth(this.message.asFormattedString());
+			int i = this.client.textRenderer.getWidth(this.message);
 			int j = this.width / 2 - i / 2;
 			int k = this.width / 2 + i / 2;
-			int l = j;
-			if (mouseX >= j && mouseX <= k) {
-				for (Text text : this.message) {
-					l += this.client.textRenderer.getStringWidth(Texts.getRenderChatMessage(text.asString(), false));
-					if (l > mouseX) {
-						return text;
-					}
-				}
-
-				return null;
-			} else {
-				return null;
-			}
+			return mouseX >= j && mouseX <= k ? this.client.textRenderer.getTextHandler().trimToWidth(this.message, mouseX - j) : null;
 		}
 	}
 

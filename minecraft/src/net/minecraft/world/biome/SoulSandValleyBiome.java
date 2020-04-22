@@ -2,6 +2,7 @@ package net.minecraft.world.biome;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.sound.MusicType;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.particle.ParticleTypes;
@@ -15,7 +16,6 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.decorator.ChanceRangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.feature.BastionRemnantFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -45,10 +45,11 @@ public class SoulSandValleyBiome extends Biome {
 						.loopSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD, 6000, 8, 2.0))
 						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS, 0.0111))
+						.method_27346(MusicType.method_27283(SoundEvents.MUSIC_NETHER_SOUL_SAND_VALLEY))
 						.build()
 				)
 				.parent(null)
-				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.0F, 0.0F, 0.5F, 1.0F)))
+				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, -0.7F, 0.0F, 0.0F, 0.4F)))
 		);
 		this.addStructureFeature(Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT));
 		this.addStructureFeature(Feature.NETHER_FOSSIL.configure(FeatureConfig.DEFAULT));
@@ -62,19 +63,10 @@ public class SoulSandValleyBiome extends Biome {
 				.configure(DefaultBiomeFeatures.LAVA_SPRING_CONFIG)
 				.createDecoratedFeature(Decorator.COUNT_VERY_BIASED_RANGE.configure(new RangeDecoratorConfig(20, 8, 16, 256)))
 		);
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT));
+		this.addFeature(GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.NETHER_FOSSIL.configure(FeatureConfig.DEFAULT));
 		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.NETHER_FOSSIL.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
-		);
-		this.addFeature(
-			GenerationStep.Feature.UNDERGROUND_DECORATION,
-			Feature.RUINED_PORTAL
-				.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER))
-				.createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
+			GenerationStep.Feature.UNDERGROUND_DECORATION, Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER))
 		);
 		this.addFeature(
 			GenerationStep.Feature.UNDERGROUND_DECORATION,

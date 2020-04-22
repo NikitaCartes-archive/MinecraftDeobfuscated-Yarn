@@ -1,9 +1,12 @@
 package net.minecraft.client.font;
 
-import it.unimi.dsi.fastutil.chars.CharArraySet;
-import it.unimi.dsi.fastutil.chars.CharSet;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,7 +21,7 @@ public class TrueTypeFont implements Font {
 	private final ByteBuffer field_21839;
 	private final STBTTFontinfo info;
 	private final float oversample;
-	private final CharSet excludedCharacters = new CharArraySet();
+	private final IntSet excludedCharacters = new IntArraySet();
 	private final float shiftX;
 	private final float shiftY;
 	private final float scaleFactor;
@@ -28,7 +31,7 @@ public class TrueTypeFont implements Font {
 		this.field_21839 = byteBuffer;
 		this.info = sTBTTFontinfo;
 		this.oversample = g;
-		string.chars().forEach(ix -> this.excludedCharacters.add((char)(ix & 65535)));
+		string.codePoints().forEach(this.excludedCharacters::add);
 		this.shiftX = h * g;
 		this.shiftY = i * g;
 		this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(sTBTTFontinfo, f * g);
@@ -43,8 +46,8 @@ public class TrueTypeFont implements Font {
 	}
 
 	@Nullable
-	public TrueTypeFont.TtfGlyph getGlyph(char c) {
-		if (this.excludedCharacters.contains(c)) {
+	public TrueTypeFont.TtfGlyph getGlyph(int i) {
+		if (this.excludedCharacters.contains(i)) {
 			return null;
 		} else {
 			TrueTypeFont.TtfGlyph var13;
@@ -53,23 +56,23 @@ public class TrueTypeFont implements Font {
 				IntBuffer intBuffer2 = memoryStack.mallocInt(1);
 				IntBuffer intBuffer3 = memoryStack.mallocInt(1);
 				IntBuffer intBuffer4 = memoryStack.mallocInt(1);
-				int i = STBTruetype.stbtt_FindGlyphIndex(this.info, c);
-				if (i == 0) {
+				int j = STBTruetype.stbtt_FindGlyphIndex(this.info, i);
+				if (j == 0) {
 					return null;
 				}
 
 				STBTruetype.stbtt_GetGlyphBitmapBoxSubpixel(
-					this.info, i, this.scaleFactor, this.scaleFactor, this.shiftX, this.shiftY, intBuffer, intBuffer2, intBuffer3, intBuffer4
+					this.info, j, this.scaleFactor, this.scaleFactor, this.shiftX, this.shiftY, intBuffer, intBuffer2, intBuffer3, intBuffer4
 				);
-				int j = intBuffer3.get(0) - intBuffer.get(0);
-				int k = intBuffer4.get(0) - intBuffer2.get(0);
-				if (j == 0 || k == 0) {
+				int k = intBuffer3.get(0) - intBuffer.get(0);
+				int l = intBuffer4.get(0) - intBuffer2.get(0);
+				if (k == 0 || l == 0) {
 					return null;
 				}
 
 				IntBuffer intBuffer5 = memoryStack.mallocInt(1);
 				IntBuffer intBuffer6 = memoryStack.mallocInt(1);
-				STBTruetype.stbtt_GetGlyphHMetrics(this.info, i, intBuffer5, intBuffer6);
+				STBTruetype.stbtt_GetGlyphHMetrics(this.info, j, intBuffer5, intBuffer6);
 				var13 = new TrueTypeFont.TtfGlyph(
 					intBuffer.get(0),
 					intBuffer3.get(0),
@@ -77,7 +80,7 @@ public class TrueTypeFont implements Font {
 					-intBuffer4.get(0),
 					(float)intBuffer5.get(0) * this.scaleFactor,
 					(float)intBuffer6.get(0) * this.scaleFactor,
-					i
+					j
 				);
 			}
 
@@ -89,6 +92,13 @@ public class TrueTypeFont implements Font {
 	public void close() {
 		this.info.free();
 		MemoryUtil.memFree(this.field_21839);
+	}
+
+	@Override
+	public IntSet method_27442() {
+		return (IntSet)IntStream.range(0, 65535)
+			.filter(i -> !this.excludedCharacters.contains(i))
+			.collect(IntOpenHashSet::new, IntCollection::add, IntCollection::addAll);
 	}
 
 	@Environment(EnvType.CLIENT)

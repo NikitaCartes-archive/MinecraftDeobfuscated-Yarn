@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -24,46 +25,46 @@ public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 	}
 
 	@Override
-	protected void drawForeground(int mouseX, int mouseY) {
-		this.textRenderer.draw(this.title.asFormattedString(), 8.0F, 6.0F, 4210752);
-		this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
+	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+		this.textRenderer.draw(matrixStack, this.title, 8.0F, 6.0F, 4210752);
+		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(float delta, int mouseX, int mouseY) {
+	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int i = (this.width - this.backgroundWidth) / 2;
-		int j = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		int j = (this.width - this.backgroundWidth) / 2;
+		int k = (this.height - this.backgroundHeight) / 2;
+		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		if (this.entity instanceof AbstractDonkeyEntity) {
 			AbstractDonkeyEntity abstractDonkeyEntity = (AbstractDonkeyEntity)this.entity;
 			if (abstractDonkeyEntity.hasChest()) {
-				this.drawTexture(i + 79, j + 17, 0, this.backgroundHeight, abstractDonkeyEntity.method_6702() * 18, 54);
+				this.drawTexture(matrixStack, j + 79, k + 17, 0, this.backgroundHeight, abstractDonkeyEntity.method_6702() * 18, 54);
 			}
 		}
 
 		if (this.entity.canBeSaddled()) {
-			this.drawTexture(i + 7, j + 35 - 18, 18, this.backgroundHeight + 54, 18, 18);
+			this.drawTexture(matrixStack, j + 7, k + 35 - 18, 18, this.backgroundHeight + 54, 18, 18);
 		}
 
 		if (this.entity.canEquip()) {
 			if (this.entity instanceof LlamaEntity) {
-				this.drawTexture(i + 7, j + 35, 36, this.backgroundHeight + 54, 18, 18);
+				this.drawTexture(matrixStack, j + 7, k + 35, 36, this.backgroundHeight + 54, 18, 18);
 			} else {
-				this.drawTexture(i + 7, j + 35, 0, this.backgroundHeight + 54, 18, 18);
+				this.drawTexture(matrixStack, j + 7, k + 35, 0, this.backgroundHeight + 54, 18, 18);
 			}
 		}
 
-		InventoryScreen.drawEntity(i + 51, j + 60, 17, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.entity);
+		InventoryScreen.drawEntity(j + 51, k + 60, 17, (float)(j + 51) - this.mouseX, (float)(k + 75 - 50) - this.mouseY, this.entity);
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
 		this.mouseX = (float)mouseX;
 		this.mouseY = (float)mouseY;
-		super.render(mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(mouseX, mouseY);
+		super.render(matrices, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 }

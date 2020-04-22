@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5217;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.network.Packet;
@@ -43,7 +44,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 
 public class ServerChunkManager extends ChunkManager {
@@ -65,8 +66,8 @@ public class ServerChunkManager extends ChunkManager {
 	private final Chunk[] chunkCache = new Chunk[4];
 
 	public ServerChunkManager(
-		ServerWorld world,
-		File worldDirectory,
+		ServerWorld serverWorld,
+		LevelStorage.Session session,
 		DataFixer dataFixer,
 		StructureManager structureManager,
 		Executor workerExecutor,
@@ -76,17 +77,17 @@ public class ServerChunkManager extends ChunkManager {
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		Supplier<PersistentStateManager> supplier
 	) {
-		this.world = world;
-		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(world);
+		this.world = serverWorld;
+		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(serverWorld);
 		this.chunkGenerator = chunkGenerator;
 		this.serverThread = Thread.currentThread();
-		File file = world.getDimension().getType().getSaveDirectory(worldDirectory);
+		File file = session.method_27424(serverWorld.getDimension().getType());
 		File file2 = new File(file, "data");
 		file2.mkdirs();
 		this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
 		this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(
-			world,
-			worldDirectory,
+			serverWorld,
+			session,
 			dataFixer,
 			structureManager,
 			workerExecutor,
@@ -360,13 +361,13 @@ public class ServerChunkManager extends ChunkManager {
 		long l = this.world.getTime();
 		long m = l - this.lastMobSpawningTime;
 		this.lastMobSpawningTime = l;
-		LevelProperties levelProperties = this.world.getLevelProperties();
-		boolean bl = levelProperties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES;
+		class_5217 lv = this.world.getLevelProperties();
+		boolean bl = lv.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES;
 		boolean bl2 = this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING);
 		if (!bl) {
 			this.world.getProfiler().push("pollingChunks");
 			int i = this.world.getGameRules().getInt(GameRules.RANDOM_TICK_SPEED);
-			boolean bl3 = levelProperties.getTime() % 400L == 0L;
+			boolean bl3 = lv.getTime() % 400L == 0L;
 			this.world.getProfiler().push("naturalSpawnCount");
 			int j = this.ticketManager.getLevelCount();
 			EntityCategory[] entityCategorys = EntityCategory.values();

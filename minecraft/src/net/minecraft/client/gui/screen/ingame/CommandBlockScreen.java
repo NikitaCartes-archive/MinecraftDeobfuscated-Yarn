@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.CommandBlockExecutor;
 
@@ -37,18 +37,20 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	@Override
 	protected void init() {
 		super.init();
-		this.modeButton = this.addButton(new ButtonWidget(this.width / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence"), buttonWidget -> {
-			this.cycleType();
-			this.updateMode();
-		}));
+		this.modeButton = this.addButton(
+			new ButtonWidget(this.width / 2 - 50 - 100 - 4, 165, 100, 20, new TranslatableText("advMode.mode.sequence"), buttonWidget -> {
+				this.cycleType();
+				this.updateMode();
+			})
+		);
 		this.conditionalModeButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 50, 165, 100, 20, new TranslatableText("advMode.mode.unconditional"), buttonWidget -> {
 				this.conditional = !this.conditional;
 				this.updateConditionalMode();
 			})
 		);
 		this.redstoneTriggerButton = this.addButton(
-			new ButtonWidget(this.width / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 + 50 + 4, 165, 100, 20, new TranslatableText("advMode.mode.redstoneTriggered"), buttonWidget -> {
 				this.autoActivate = !this.autoActivate;
 				this.updateActivationMode();
 			})
@@ -111,13 +113,13 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	private void updateMode() {
 		switch (this.mode) {
 			case SEQUENCE:
-				this.modeButton.setMessage(I18n.translate("advMode.mode.sequence"));
+				this.modeButton.setMessage(new TranslatableText("advMode.mode.sequence"));
 				break;
 			case AUTO:
-				this.modeButton.setMessage(I18n.translate("advMode.mode.auto"));
+				this.modeButton.setMessage(new TranslatableText("advMode.mode.auto"));
 				break;
 			case REDSTONE:
-				this.modeButton.setMessage(I18n.translate("advMode.mode.redstone"));
+				this.modeButton.setMessage(new TranslatableText("advMode.mode.redstone"));
 		}
 	}
 
@@ -136,17 +138,17 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 
 	private void updateConditionalMode() {
 		if (this.conditional) {
-			this.conditionalModeButton.setMessage(I18n.translate("advMode.mode.conditional"));
+			this.conditionalModeButton.setMessage(new TranslatableText("advMode.mode.conditional"));
 		} else {
-			this.conditionalModeButton.setMessage(I18n.translate("advMode.mode.unconditional"));
+			this.conditionalModeButton.setMessage(new TranslatableText("advMode.mode.unconditional"));
 		}
 	}
 
 	private void updateActivationMode() {
 		if (this.autoActivate) {
-			this.redstoneTriggerButton.setMessage(I18n.translate("advMode.mode.autoexec.bat"));
+			this.redstoneTriggerButton.setMessage(new TranslatableText("advMode.mode.autoexec.bat"));
 		} else {
-			this.redstoneTriggerButton.setMessage(I18n.translate("advMode.mode.redstoneTriggered"));
+			this.redstoneTriggerButton.setMessage(new TranslatableText("advMode.mode.redstoneTriggered"));
 		}
 	}
 }

@@ -1,41 +1,48 @@
 package net.minecraft.world.biome.source;
 
+import com.mojang.datafixers.util.Pair;
 import java.util.Comparator;
-import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import net.minecraft.class_5216;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class MultiNoiseBiomeSource extends BiomeSource {
-	private final OctavePerlinNoiseSampler temperatureNoise;
-	private final OctavePerlinNoiseSampler humidityNoise;
-	private final OctavePerlinNoiseSampler hillinessNoise;
-	private final OctavePerlinNoiseSampler styleNoise;
+	private final class_5216 temperatureNoise;
+	private final class_5216 humidityNoise;
+	private final class_5216 hillinessNoise;
+	private final class_5216 styleNoise;
+	private final List<Pair<Biome.MixedNoisePoint, Biome>> field_24115;
+	private final boolean field_24116;
 
 	public MultiNoiseBiomeSource(MultiNoiseBiomeSourceConfig config) {
-		super(config.getBiomes());
+		super((Set<Biome>)config.method_27347().stream().map(Pair::getSecond).collect(Collectors.toSet()));
 		long l = config.getSeed();
-		this.temperatureNoise = new OctavePerlinNoiseSampler(new ChunkRandom(l), config.getTemperatureOctaves());
-		this.humidityNoise = new OctavePerlinNoiseSampler(new ChunkRandom(l + 1L), config.getHumidityOctaves());
-		this.hillinessNoise = new OctavePerlinNoiseSampler(new ChunkRandom(l + 2L), config.getHillinessOctaves());
-		this.styleNoise = new OctavePerlinNoiseSampler(new ChunkRandom(l + 3L), config.getStyleOctaves());
+		this.temperatureNoise = new class_5216(new ChunkRandom(l), config.getTemperatureOctaves());
+		this.humidityNoise = new class_5216(new ChunkRandom(l + 1L), config.getHumidityOctaves());
+		this.hillinessNoise = new class_5216(new ChunkRandom(l + 2L), config.getHillinessOctaves());
+		this.styleNoise = new class_5216(new ChunkRandom(l + 3L), config.getStyleOctaves());
+		this.field_24115 = config.method_27347();
+		this.field_24116 = config.method_27351();
 	}
 
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		double d = 1.0181268882175227;
-		double e = 1.0;
-		double f = (double)biomeX * 1.0181268882175227;
-		double g = (double)biomeZ * 1.0181268882175227;
-		double h = (double)biomeX * 1.0;
-		double i = (double)biomeZ * 1.0;
+		int i = this.field_24116 ? biomeY : 0;
 		Biome.MixedNoisePoint mixedNoisePoint = new Biome.MixedNoisePoint(
-			(float)((this.temperatureNoise.sample(f, 0.0, g) + this.temperatureNoise.sample(h, 0.0, i)) * 0.5),
-			(float)((this.humidityNoise.sample(f, 0.0, g) + this.humidityNoise.sample(h, 0.0, i)) * 0.5),
-			(float)((this.hillinessNoise.sample(f, 0.0, g) + this.hillinessNoise.sample(h, 0.0, i)) * 0.5),
-			(float)((this.styleNoise.sample(f, 0.0, g) + this.styleNoise.sample(h, 0.0, i)) * 0.5),
-			1.0F
+			(float)this.temperatureNoise.method_27406((double)biomeX, (double)i, (double)biomeZ),
+			(float)this.humidityNoise.method_27406((double)biomeX, (double)i, (double)biomeZ),
+			(float)this.hillinessNoise.method_27406((double)biomeX, (double)i, (double)biomeZ),
+			(float)this.styleNoise.method_27406((double)biomeX, (double)i, (double)biomeZ),
+			0.0F
 		);
-		return (Biome)this.biomes.stream().min(Comparator.comparing(biome -> biome.getNoiseDistance(mixedNoisePoint))).orElse(Biomes.THE_END);
+		return (Biome)this.field_24115
+			.stream()
+			.min(Comparator.comparing(pair -> ((Biome.MixedNoisePoint)pair.getFirst()).calculateDistanceTo(mixedNoisePoint)))
+			.map(Pair::getSecond)
+			.orElse(Biomes.THE_VOID);
 	}
 }

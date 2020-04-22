@@ -1,27 +1,24 @@
 package net.minecraft.client.font;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -29,7 +26,7 @@ import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.resource.SinglePreparationResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.profiler.DummyProfiler;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,9 +34,11 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class FontManager implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Map<Identifier, TextRenderer> textRenderers = Maps.<Identifier, TextRenderer>newHashMap();
+	public static final Identifier MISSING_STORAGE_ID = new Identifier("minecraft", "missing");
+	private final FontStorage missingStorage;
+	private final Map<Identifier, FontStorage> fontStorages = Maps.<Identifier, FontStorage>newHashMap();
 	private final TextureManager textureManager;
-	private boolean forceUnicodeFont;
+	private Map<Identifier, Identifier> idOverrides = ImmutableMap.of();
 	private final ResourceReloadListener resourceReloadListener = new SinglePreparationResourceReloadListener<Map<Identifier, List<Font>>>() {
 		protected Map<Identifier, List<Font>> prepare(ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
@@ -75,73 +74,79 @@ public class FontManager implements AutoCloseable {
 										try {
 											String string2 = JsonHelper.getString(jsonObject, "type");
 											FontType fontType = FontType.byId(string2);
-											if (!FontManager.this.forceUnicodeFont || fontType == FontType.LEGACY_UNICODE || !identifier2.equals(MinecraftClient.DEFAULT_TEXT_RENDERER_ID)) {
-												profiler.push(string2);
-												list.add(fontType.createLoader(jsonObject).load(resourceManager));
-												profiler.pop();
+											profiler.push(string2);
+											Font font = fontType.createLoader(jsonObject).load(resourceManager);
+											if (font != null) {
+												list.add(font);
 											}
-										} catch (RuntimeException var48) {
+
+											profiler.pop();
+										} catch (RuntimeException var49) {
 											FontManager.LOGGER
-												.warn("Unable to read definition '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var48.getMessage());
+												.warn("Unable to read definition '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var49.getMessage());
 										}
 									}
 
 									profiler.pop();
-								} catch (Throwable var49) {
-									var15 = var49;
-									throw var49;
+								} catch (Throwable var50) {
+									var15 = var50;
+									throw var50;
 								} finally {
 									if (reader != null) {
 										if (var15 != null) {
 											try {
 												reader.close();
-											} catch (Throwable var47) {
-												var15.addSuppressed(var47);
+											} catch (Throwable var48) {
+												var15.addSuppressed(var48);
 											}
 										} else {
 											reader.close();
 										}
 									}
 								}
-							} catch (Throwable var51) {
-								var13 = var51;
-								throw var51;
+							} catch (Throwable var52) {
+								var13 = var52;
+								throw var52;
 							} finally {
 								if (inputStream != null) {
 									if (var13 != null) {
 										try {
 											inputStream.close();
-										} catch (Throwable var46) {
-											var13.addSuppressed(var46);
+										} catch (Throwable var47) {
+											var13.addSuppressed(var47);
 										}
 									} else {
 										inputStream.close();
 									}
 								}
 							}
-						} catch (RuntimeException var53) {
+						} catch (RuntimeException var54) {
 							FontManager.LOGGER
-								.warn("Unable to load font '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var53.getMessage());
+								.warn("Unable to load font '{}' in fonts.json in resourcepack: '{}': {}", identifier2, resource.getResourcePackName(), var54.getMessage());
 						}
 
 						profiler.pop();
 					}
-				} catch (IOException var54) {
-					FontManager.LOGGER.warn("Unable to load font '{}' in fonts.json: {}", identifier2, var54.getMessage());
+				} catch (IOException var55) {
+					FontManager.LOGGER.warn("Unable to load font '{}' in fonts.json: {}", identifier2, var55.getMessage());
 				}
 
 				profiler.push("caching");
+				IntSet intSet = new IntOpenHashSet();
 
-				for (char c = 0; c < '\uffff'; c++) {
-					if (c != ' ') {
-						for (Font font : Lists.reverse(list)) {
-							if (font.getGlyph(c) != null) {
+				for (Font font2 : list) {
+					intSet.addAll(font2.method_27442());
+				}
+
+				intSet.forEach(ix -> {
+					if (ix != 32) {
+						for (Font fontx : Lists.reverse(list)) {
+							if (fontx.getGlyph(ix) != null) {
 								break;
 							}
 						}
 					}
-				}
-
+				});
 				profiler.pop();
 				profiler.pop();
 			}
@@ -152,20 +157,15 @@ public class FontManager implements AutoCloseable {
 
 		protected void apply(Map<Identifier, List<Font>> map, ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
-			profiler.push("reloading");
-			Stream.concat(FontManager.this.textRenderers.keySet().stream(), map.keySet().stream())
-				.distinct()
-				.forEach(
-					identifier -> {
-						List<Font> list = (List<Font>)map.getOrDefault(identifier, Collections.emptyList());
-						Collections.reverse(list);
-						((TextRenderer)FontManager.this.textRenderers
-								.computeIfAbsent(
-									identifier, identifierx -> new TextRenderer(FontManager.this.textureManager, new FontStorage(FontManager.this.textureManager, identifierx))
-								))
-							.setFonts(list);
-					}
-				);
+			profiler.push("closing");
+			FontManager.this.fontStorages.values().forEach(FontStorage::close);
+			FontManager.this.fontStorages.clear();
+			profiler.swap("reloading");
+			map.forEach((identifier, list) -> {
+				FontStorage fontStorage = new FontStorage(FontManager.this.textureManager, identifier);
+				fontStorage.setFonts(Lists.reverse(list));
+				FontManager.this.fontStorages.put(identifier, fontStorage);
+			});
 			profiler.pop();
 			profiler.endTick();
 		}
@@ -176,32 +176,17 @@ public class FontManager implements AutoCloseable {
 		}
 	};
 
-	public FontManager(TextureManager manager, boolean bl) {
+	public FontManager(TextureManager manager) {
 		this.textureManager = manager;
-		this.forceUnicodeFont = bl;
+		this.missingStorage = Util.make(new FontStorage(manager, MISSING_STORAGE_ID), fontStorage -> fontStorage.setFonts(Lists.<Font>newArrayList(new BlankFont())));
 	}
 
-	@Nullable
-	public TextRenderer getTextRenderer(Identifier identifier) {
-		return (TextRenderer)this.textRenderers.computeIfAbsent(identifier, identifierx -> {
-			TextRenderer textRenderer = new TextRenderer(this.textureManager, new FontStorage(this.textureManager, identifierx));
-			textRenderer.setFonts(Lists.<Font>newArrayList(new BlankFont()));
-			return textRenderer;
-		});
+	public void setIdOverrides(Map<Identifier, Identifier> overrides) {
+		this.idOverrides = overrides;
 	}
 
-	public void setForceUnicodeFont(boolean forceUnicodeFont, Executor prepareExecutor, Executor applyExecutor) {
-		if (forceUnicodeFont != this.forceUnicodeFont) {
-			this.forceUnicodeFont = forceUnicodeFont;
-			ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
-			ResourceReloadListener.Synchronizer synchronizer = new ResourceReloadListener.Synchronizer() {
-				@Override
-				public <T> CompletableFuture<T> whenPrepared(T preparedObject) {
-					return CompletableFuture.completedFuture(preparedObject);
-				}
-			};
-			this.resourceReloadListener.reload(synchronizer, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, prepareExecutor, applyExecutor);
-		}
+	public TextRenderer createTextRenderer() {
+		return new TextRenderer(identifier -> (FontStorage)this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(identifier, identifier), this.missingStorage));
 	}
 
 	public ResourceReloadListener getResourceReloadListener() {
@@ -209,6 +194,7 @@ public class FontManager implements AutoCloseable {
 	}
 
 	public void close() {
-		this.textRenderers.values().forEach(TextRenderer::close);
+		this.fontStorages.values().forEach(FontStorage::close);
+		this.missingStorage.close();
 	}
 }

@@ -168,7 +168,7 @@ public class StatusEffect {
 	}
 
 	public double adjustModifierAmount(int amplifier, EntityAttributeModifier modifier) {
-		return modifier.getAmount() * (double)(amplifier + 1);
+		return modifier.getValue() * (double)(amplifier + 1);
 	}
 
 	@Environment(EnvType.CLIENT)

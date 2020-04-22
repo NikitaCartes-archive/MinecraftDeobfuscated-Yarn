@@ -4,6 +4,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsObjectSelectionList;
 
 @Environment(EnvType.CLIENT)
@@ -20,18 +21,18 @@ public abstract class RealmsAcceptRejectButton {
 		this.y = y;
 	}
 
-	public void render(int offsetX, int offsetY, int mouseX, int mouseY) {
-		int i = offsetX + this.x;
-		int j = offsetY + this.y;
+	public void render(MatrixStack matrixStack, int i, int j, int k, int l) {
+		int m = i + this.x;
+		int n = j + this.y;
 		boolean bl = false;
-		if (mouseX >= i && mouseX <= i + this.width && mouseY >= j && mouseY <= j + this.height) {
+		if (k >= m && k <= m + this.width && l >= n && l <= n + this.height) {
 			bl = true;
 		}
 
-		this.render(i, j, bl);
+		this.render(matrixStack, m, n, bl);
 	}
 
-	protected abstract void render(int x, int y, boolean hovered);
+	protected abstract void render(MatrixStack matrixStack, int y, int i, boolean bl);
 
 	public int getRight() {
 		return this.x + this.width;
@@ -43,10 +44,12 @@ public abstract class RealmsAcceptRejectButton {
 
 	public abstract void handleClick(int index);
 
-	public static void render(List<RealmsAcceptRejectButton> buttons, RealmsObjectSelectionList<?> selectionList, int offsetX, int offsetY, int mouseX, int mouseY) {
-		for (RealmsAcceptRejectButton realmsAcceptRejectButton : buttons) {
-			if (selectionList.getRowWidth() > realmsAcceptRejectButton.getRight()) {
-				realmsAcceptRejectButton.render(offsetX, offsetY, mouseX, mouseY);
+	public static void render(
+		MatrixStack matrixStack, List<RealmsAcceptRejectButton> list, RealmsObjectSelectionList<?> realmsObjectSelectionList, int i, int j, int k, int l
+	) {
+		for (RealmsAcceptRejectButton realmsAcceptRejectButton : list) {
+			if (realmsObjectSelectionList.getRowWidth() > realmsAcceptRejectButton.getRight()) {
+				realmsAcceptRejectButton.render(matrixStack, i, j, k, l);
 			}
 		}
 	}

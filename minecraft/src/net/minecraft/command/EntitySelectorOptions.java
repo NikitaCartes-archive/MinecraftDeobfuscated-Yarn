@@ -95,7 +95,7 @@ public class EntitySelectorOptions {
 						entitySelectorReader.setSelectsName(true);
 					}
 
-					entitySelectorReader.setPredicate(entity -> entity.getName().asString().equals(string) != bl);
+					entitySelectorReader.setPredicate(entity -> entity.getName().getString().equals(string) != bl);
 				}
 			}, entitySelectorReader -> !entitySelectorReader.selectsName(), new TranslatableText("argument.entity.options.name.description"));
 			putOption("distance", entitySelectorReader -> {

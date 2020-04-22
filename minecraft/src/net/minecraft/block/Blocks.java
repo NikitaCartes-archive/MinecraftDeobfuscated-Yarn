@@ -132,7 +132,9 @@ public class Blocks {
 	public static final Block GOLD_ORE = register("gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
 	public static final Block IRON_ORE = register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
 	public static final Block COAL_ORE = register("coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
-	public static final Block NETHER_GOLD_ORE = register("nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
+	public static final Block NETHER_GOLD_ORE = register(
+		"nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F).sounds(BlockSoundGroup.field_24120))
+	);
 	public static final Block OAK_LOG = register("oak_log", createLogBlock(MaterialColor.WOOD, MaterialColor.SPRUCE));
 	public static final Block SPRUCE_LOG = register("spruce_log", createLogBlock(MaterialColor.SPRUCE, MaterialColor.BROWN));
 	public static final Block BIRCH_LOG = register("birch_log", createLogBlock(MaterialColor.SAND, MaterialColor.QUARTZ));
@@ -679,22 +681,17 @@ public class Blocks {
 	public static final Block POLISHED_BASALT = register(
 		"polished_basalt", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).strength(1.25F, 4.2F).sounds(BlockSoundGroup.BASALT))
 	);
-	public static final Block SOUL_FIRE_TORCH = register(
-		"soul_fire_torch",
+	public static final Block SOUL_TORCH = register(
+		"soul_torch",
 		new TorchBlock(
 			AbstractBlock.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(blockStatex -> 10).sounds(BlockSoundGroup.WOOD),
 			ParticleTypes.SOUL_FIRE_FLAME
 		)
 	);
-	public static final Block SOUL_FIRE_WALL_TORCH = register(
-		"soul_fire_wall_torch",
+	public static final Block SOUL_WALL_TORCH = register(
+		"soul_wall_torch",
 		new WallTorchBlock(
-			AbstractBlock.Settings.of(Material.PART)
-				.noCollision()
-				.breakInstantly()
-				.lightLevel(blockStatex -> 10)
-				.sounds(BlockSoundGroup.WOOD)
-				.dropsLike(SOUL_FIRE_TORCH),
+			AbstractBlock.Settings.of(Material.PART).noCollision().breakInstantly().lightLevel(blockStatex -> 10).sounds(BlockSoundGroup.WOOD).dropsLike(SOUL_TORCH),
 			ParticleTypes.SOUL_FIRE_FLAME
 		)
 	);
@@ -819,7 +816,7 @@ public class Blocks {
 		"iron_bars", new PaneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque())
 	);
 	public static final Block CHAIN = register(
-		"chain", new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque())
+		"chain", new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0F, 6.0F).sounds(BlockSoundGroup.field_24119).nonOpaque())
 	);
 	public static final Block GLASS_PANE = register(
 		"glass_pane", new PaneBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).nonOpaque())
@@ -2238,8 +2235,8 @@ public class Blocks {
 		"lantern",
 		new LanternBlock(AbstractBlock.Settings.of(Material.METAL).strength(3.5F).sounds(BlockSoundGroup.LANTERN).lightLevel(blockStatex -> 15).nonOpaque())
 	);
-	public static final Block SOUL_FIRE_LANTERN = register(
-		"soul_fire_lantern",
+	public static final Block SOUL_LANTERN = register(
+		"soul_lantern",
 		new LanternBlock(AbstractBlock.Settings.of(Material.METAL).strength(3.5F).sounds(BlockSoundGroup.LANTERN).lightLevel(blockStatex -> 10).nonOpaque())
 	);
 	public static final Block CAMPFIRE = register(
@@ -2524,7 +2521,9 @@ public class Blocks {
 	public static final Block POLISHED_BLACKSTONE_BRICK_WALL = register(
 		"polished_blackstone_brick_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS))
 	);
-	public static final Block GILDED_BLACKSTONE = register("gilded_blackstone", new Block(AbstractBlock.Settings.copy(BLACKSTONE)));
+	public static final Block GILDED_BLACKSTONE = register(
+		"gilded_blackstone", new Block(AbstractBlock.Settings.copy(BLACKSTONE).sounds(BlockSoundGroup.field_24121))
+	);
 	public static final Block POLISHED_BLACKSTONE_STAIRS = register(
 		"polished_blackstone_stairs", new StairsBlock(POLISHED_BLACKSTONE.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_BLACKSTONE))
 	);

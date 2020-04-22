@@ -324,6 +324,14 @@ public class ItemEntity extends Entity {
 		this.getDataTracker().set(STACK, stack);
 	}
 
+	@Override
+	public void onTrackedDataSet(TrackedData<?> data) {
+		super.onTrackedDataSet(data);
+		if (STACK.equals(data)) {
+			this.getStack().method_27320(this);
+		}
+	}
+
 	@Nullable
 	public UUID getOwner() {
 		return this.owner;
@@ -374,6 +382,11 @@ public class ItemEntity extends Entity {
 	public void setDespawnImmediately() {
 		this.setPickupDelayInfinite();
 		this.age = 5999;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public float method_27314(float f) {
+		return ((float)this.getAge() + f) / 20.0F + this.hoverHeight;
 	}
 
 	@Override

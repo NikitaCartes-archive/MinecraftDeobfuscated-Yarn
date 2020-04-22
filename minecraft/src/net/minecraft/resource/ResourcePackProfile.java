@@ -139,8 +139,8 @@ public class ResourcePackProfile implements AutoCloseable {
 	public Text getInformationText(boolean enabled) {
 		return Texts.bracketed(new LiteralText(this.name))
 			.styled(
-				style -> style.setColor(enabled ? Formatting.GREEN : Formatting.RED)
-						.setInsertion(StringArgumentType.escapeIfRequired(this.name))
+				style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED)
+						.withInsertion(StringArgumentType.escapeIfRequired(this.name))
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description)))
 			);
 	}

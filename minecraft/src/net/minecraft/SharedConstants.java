@@ -6,8 +6,6 @@ import com.mojang.datafixers.types.constant.NamespacedStringType;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 import java.time.Duration;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.command.TranslatableBuiltInExceptions;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
@@ -29,25 +27,6 @@ public class SharedConstants {
 			if (isValidChar(c)) {
 				stringBuilder.append(c);
 			}
-		}
-
-		return stringBuilder.toString();
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static String stripSupplementaryChars(String s) {
-		StringBuilder stringBuilder = new StringBuilder();
-		int i = 0;
-
-		while (i < s.length()) {
-			int j = s.codePointAt(i);
-			if (!Character.isSupplementaryCodePoint(j)) {
-				stringBuilder.appendCodePoint(j);
-			} else {
-				stringBuilder.append('�');
-			}
-
-			i = s.offsetByCodePoints(i, 1);
 		}
 
 		return stringBuilder.toString();

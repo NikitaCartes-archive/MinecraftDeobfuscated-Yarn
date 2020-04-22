@@ -13,10 +13,12 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -51,40 +53,29 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(
-			new ButtonWidget(
-				(this.width - 200) / 2,
-				40,
-				200,
-				20,
-				I18n.translate("createWorld.customize.buffet.generatortype")
-					+ " "
-					+ I18n.translate(Util.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength))),
-				buttonWidget -> {
-					this.biomeListLength++;
-					if (this.biomeListLength >= CHUNK_GENERATOR_TYPES.size()) {
-						this.biomeListLength = 0;
-					}
+		this.addButton(new ButtonWidget((this.width - 200) / 2, 40, 200, 20, method_27569(this.biomeListLength), buttonWidget -> {
+			this.biomeListLength++;
+			if (this.biomeListLength >= CHUNK_GENERATOR_TYPES.size()) {
+				this.biomeListLength = 0;
+			}
 
-					buttonWidget.setMessage(
-						I18n.translate("createWorld.customize.buffet.generatortype")
-							+ " "
-							+ I18n.translate(Util.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(this.biomeListLength)))
-					);
-				}
-			)
-		);
+			buttonWidget.setMessage(method_27569(this.biomeListLength));
+		}));
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
 		this.children.add(this.biomeSelectionList);
-		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
+		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
 			this.parent.generatorOptions = LevelGeneratorType.BUFFET.loadOptions(new Dynamic<>(NbtOps.INSTANCE, this.getGeneratorTag()));
 			this.client.openScreen(this.parent);
 		}));
-		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent))
-		);
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
 		this.initListSelectLogic();
 		this.refreshConfirmButton();
+	}
+
+	private static Text method_27569(int i) {
+		return new TranslatableText("createWorld.customize.buffet.generatortype")
+			.append(" ")
+			.append(new TranslatableText(Util.createTranslationKey("generator", (Identifier)CHUNK_GENERATOR_TYPES.get(i))));
 	}
 
 	private void initListSelectLogic() {
@@ -145,13 +136,13 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderDirtBackground(0);
-		this.biomeSelectionList.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 8, 16777215);
-		this.drawCenteredString(this.textRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
-		this.drawCenteredString(this.textRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
-		super.render(mouseX, mouseY, delta);
+		this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
+		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -199,9 +190,9 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			}
 
 			@Override
-			public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+			public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
 				BuffetBiomesListWidget.this.drawString(
-					CustomizeBuffetLevelScreen.this.textRenderer, Registry.BIOME.get(this.biome).getName().getString(), x + 5, y + 2, 16777215
+					matrices, CustomizeBuffetLevelScreen.this.textRenderer, Registry.BIOME.get(this.biome).getName().getString(), width + 5, y + 2, 16777215
 				);
 			}
 

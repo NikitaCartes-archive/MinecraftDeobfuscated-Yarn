@@ -4,23 +4,24 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class ConfirmChatLinkScreen extends ConfirmScreen {
-	private final String warning;
-	private final String copy;
+	private final Text warning;
+	private final Text copy;
 	private final String link;
 	private final boolean drawWarning;
 
 	public ConfirmChatLinkScreen(BooleanConsumer callback, String link, boolean trusted) {
 		super(callback, new TranslatableText(trusted ? "chat.link.confirmTrusted" : "chat.link.confirm"), new LiteralText(link));
-		this.yesTranslated = I18n.translate(trusted ? "chat.link.open" : "gui.yes");
-		this.noTranslated = I18n.translate(trusted ? "gui.cancel" : "gui.no");
-		this.copy = I18n.translate("chat.copy");
-		this.warning = I18n.translate("chat.link.warning");
+		this.yesTranslated = (Text)(trusted ? new TranslatableText("chat.link.open") : ScreenTexts.YES);
+		this.noTranslated = trusted ? ScreenTexts.CANCEL : ScreenTexts.NO;
+		this.copy = new TranslatableText("chat.copy");
+		this.warning = new TranslatableText("chat.link.warning");
 		this.drawWarning = !trusted;
 		this.link = link;
 	}
@@ -43,10 +44,10 @@ public class ConfirmChatLinkScreen extends ConfirmScreen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		super.render(matrices, mouseX, mouseY, delta);
 		if (this.drawWarning) {
-			this.drawCenteredString(this.textRenderer, this.warning, this.width / 2, 110, 16764108);
+			this.method_27534(matrices, this.textRenderer, this.warning, this.width / 2, 110, 16764108);
 		}
 	}
 }

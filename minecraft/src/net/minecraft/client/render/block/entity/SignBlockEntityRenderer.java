@@ -18,9 +18,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Direction;
@@ -67,17 +68,16 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		int n = (int)((double)NativeImage.method_24034(l) * 0.4);
 		int o = (int)((double)NativeImage.method_24035(l) * 0.4);
 		int p = NativeImage.method_24031(0, o, n, m);
+		int q = 20;
 
-		for (int q = 0; q < 4; q++) {
-			String string = signBlockEntity.getTextBeingEditedOnRow(q, text -> {
-				List<Text> list = Texts.wrapLines(text, 90, textRenderer, false, true);
-				return list.isEmpty() ? "" : ((Text)list.get(0)).asFormattedString();
+		for (int r = 0; r < 4; r++) {
+			Text text = signBlockEntity.getTextBeingEditedOnRow(r, textx -> {
+				List<Text> list = textRenderer.getTextHandler().wrapLines(textx, 90, Style.EMPTY, true);
+				return list.isEmpty() ? LiteralText.EMPTY : (Text)list.get(0);
 			});
-			if (string != null) {
-				float r = (float)(-textRenderer.getStringWidth(string) / 2);
-				textRenderer.draw(
-					string, r, (float)(q * 10 - signBlockEntity.text.length * 5), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i
-				);
+			if (text != null) {
+				float s = (float)(-textRenderer.getWidth(text) / 2);
+				textRenderer.draw(text, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
 			}
 		}
 

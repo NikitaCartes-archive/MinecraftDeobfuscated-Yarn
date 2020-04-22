@@ -670,7 +670,7 @@ public class TurtleEntity extends AnimalEntity {
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.turtle.yaw = this.changeAngle(this.turtle.yaw, h, 90.0F);
 				this.turtle.bodyYaw = this.turtle.yaw;
-				float i = (float)(this.speed * this.turtle.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+				float i = (float)(this.speed * this.turtle.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				this.turtle.setMovementSpeed(MathHelper.lerp(0.125F, this.turtle.getMovementSpeed(), i));
 				this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * e * 0.1, 0.0));
 			} else {

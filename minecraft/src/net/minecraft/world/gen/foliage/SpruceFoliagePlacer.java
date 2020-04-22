@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public class SpruceFoliagePlacer extends FoliagePlacer {
 	private final int field_23757;
@@ -32,27 +32,28 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	public void generate(
+	protected void generate(
 		ModifiableTestableWorld world,
 		Random random,
-		BranchedTreeFeatureConfig config,
+		TreeFeatureConfig treeFeatureConfig,
 		int trunkHeight,
-		BlockPos pos,
+		FoliagePlacer.class_5208 arg,
 		int foliageHeight,
 		int radius,
-		Set<BlockPos> leaves
+		Set<BlockPos> leaves,
+		int i
 	) {
-		int i = this.offset + random.nextInt(this.randomOffset + 1);
+		BlockPos blockPos = arg.method_27388();
 		int j = random.nextInt(2);
 		int k = 1;
 		int l = 0;
 
-		for (int m = foliageHeight + i; m >= 0; m--) {
-			this.generate(world, random, config, pos, foliageHeight, m, j, leaves);
+		for (int m = i; m >= -foliageHeight; m--) {
+			this.generate(world, random, treeFeatureConfig, blockPos, j, leaves, m, arg.method_27390());
 			if (j >= k) {
 				j = l;
 				l = 1;
-				k = Math.min(k + 1, radius);
+				k = Math.min(k + 1, radius + arg.method_27389());
 			} else {
 				j++;
 			}
@@ -60,23 +61,13 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	public int getRadius(Random random, int baseHeight, BranchedTreeFeatureConfig config) {
-		return this.radius + random.nextInt(this.randomRadius + 1);
-	}
-
-	@Override
-	public int getHeight(Random random, int trunkHeight) {
+	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig treeFeatureConfig) {
 		return trunkHeight - this.field_23757 - random.nextInt(this.field_23758 + 1);
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, int radius) {
-		return Math.abs(dx) == radius && Math.abs(dz) == radius && radius > 0;
-	}
-
-	@Override
-	public int getRadiusForPlacement(int trunkHeight, int baseHeight, int radius) {
-		return radius <= 1 ? 0 : 2;
+	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int dy, int dz, boolean bl) {
+		return baseHeight == dz && dy == dz && dz > 0;
 	}
 
 	@Override

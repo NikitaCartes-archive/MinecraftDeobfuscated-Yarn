@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.DoubleOptionSliderWidget;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -16,7 +17,7 @@ public class DoubleOption extends Option {
 	protected double max;
 	private final Function<GameOptions, Double> getter;
 	private final BiConsumer<GameOptions, Double> setter;
-	private final BiFunction<GameOptions, DoubleOption, String> displayStringGetter;
+	private final BiFunction<GameOptions, DoubleOption, Text> displayStringGetter;
 
 	public DoubleOption(
 		String key,
@@ -25,7 +26,7 @@ public class DoubleOption extends Option {
 		float step,
 		Function<GameOptions, Double> getter,
 		BiConsumer<GameOptions, Double> setter,
-		BiFunction<GameOptions, DoubleOption, String> displayStringGetter
+		BiFunction<GameOptions, DoubleOption, Text> displayStringGetter
 	) {
 		super(key);
 		this.min = min;
@@ -77,7 +78,7 @@ public class DoubleOption extends Option {
 		return (Double)this.getter.apply(options);
 	}
 
-	public String getDisplayString(GameOptions options) {
-		return (String)this.displayStringGetter.apply(options, this);
+	public Text getDisplayString(GameOptions options) {
+		return (Text)this.displayStringGetter.apply(options, this);
 	}
 }

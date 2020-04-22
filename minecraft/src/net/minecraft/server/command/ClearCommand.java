@@ -68,7 +68,7 @@ public class ClearCommand {
 
 		if (i == 0) {
 			if (targets.size() == 1) {
-				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)targets.iterator().next()).getName().asFormattedString());
+				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)targets.iterator().next()).getName());
 			} else {
 				throw FAILED_MULTIPLE_EXCEPTION.create(targets.size());
 			}

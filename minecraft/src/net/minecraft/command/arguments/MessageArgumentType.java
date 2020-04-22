@@ -13,6 +13,7 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 public class MessageArgumentType implements ArgumentType<MessageArgumentType.MessageFormat> {
@@ -47,27 +48,27 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
 		public Text format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
 			if (this.selectors.length != 0 && bl) {
-				Text text = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
+				MutableText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
 				int i = this.selectors[0].getStart();
 
 				for (MessageArgumentType.MessageSelector messageSelector : this.selectors) {
-					Text text2 = messageSelector.format(serverCommandSource);
+					Text text = messageSelector.format(serverCommandSource);
 					if (i < messageSelector.getStart()) {
-						text.append(this.contents.substring(i, messageSelector.getStart()));
+						mutableText.append(this.contents.substring(i, messageSelector.getStart()));
 					}
 
-					if (text2 != null) {
-						text.append(text2);
+					if (text != null) {
+						mutableText.append(text);
 					}
 
 					i = messageSelector.getEnd();
 				}
 
 				if (i < this.contents.length()) {
-					text.append(this.contents.substring(i, this.contents.length()));
+					mutableText.append(this.contents.substring(i, this.contents.length()));
 				}
 
-				return text;
+				return mutableText;
 			} else {
 				return new LiteralText(this.contents);
 			}

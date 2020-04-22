@@ -2216,7 +2216,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("#")
 			.criterion("has_stone_pickaxe", conditionsFromItem(Items.STONE_PICKAXE))
 			.offerTo(consumer);
-		ShapedRecipeJsonFactory.create(Blocks.SOUL_FIRE_TORCH, 4)
+		ShapedRecipeJsonFactory.create(Blocks.SOUL_TORCH, 4)
 			.input('X', Ingredient.ofItems(Items.COAL, Items.CHARCOAL))
 			.input('#', Items.STICK)
 			.input('S', ItemTags.SOUL_FIRE_BASE_BLOCKS)
@@ -2234,13 +2234,13 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_iron_nugget", conditionsFromItem(Items.IRON_NUGGET))
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(consumer);
-		ShapedRecipeJsonFactory.create(Blocks.SOUL_FIRE_LANTERN)
-			.input('#', Items.SOUL_FIRE_TORCH)
+		ShapedRecipeJsonFactory.create(Blocks.SOUL_LANTERN)
+			.input('#', Items.SOUL_TORCH)
 			.input('X', Items.IRON_NUGGET)
 			.pattern("XXX")
 			.pattern("X#X")
 			.pattern("XXX")
-			.criterion("has_soul_fire_torch", conditionsFromItem(Items.SOUL_FIRE_TORCH))
+			.criterion("has_soul_torch", conditionsFromItem(Items.SOUL_TORCH))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Blocks.TRAPPED_CHEST)
 			.input(Blocks.CHEST)

@@ -304,7 +304,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	public double getJumpStrength() {
-		return this.getAttribute(EntityAttributes.HORSE_JUMP_STRENGTH);
+		return this.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH);
 	}
 
 	@Nullable
@@ -708,7 +708,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 				this.flyingSpeed = this.getMovementSpeed() * 0.1F;
 				if (this.isLogicalSideForUpdatingMovement()) {
-					this.setMovementSpeed((float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+					this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 					super.travel(new Vec3d((double)f, movementInput.y, (double)g));
 				} else if (livingEntity instanceof PlayerEntity) {
 					this.setVelocity(Vec3d.ZERO);
@@ -801,16 +801,16 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	protected void setChildAttributes(PassiveEntity mate, HorseBaseEntity child) {
-		double d = this.method_26826(EntityAttributes.GENERIC_MAX_HEALTH)
-			+ mate.method_26826(EntityAttributes.GENERIC_MAX_HEALTH)
+		double d = this.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH)
+			+ mate.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH)
 			+ (double)this.getChildHealthBonus();
 		child.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(d / 3.0);
-		double e = this.method_26826(EntityAttributes.HORSE_JUMP_STRENGTH)
-			+ mate.method_26826(EntityAttributes.HORSE_JUMP_STRENGTH)
+		double e = this.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH)
+			+ mate.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH)
 			+ this.getChildJumpStrengthBonus();
 		child.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
-		double f = this.method_26826(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-			+ mate.method_26826(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+		double f = this.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+			+ mate.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
 			+ this.getChildMovementSpeedBonus();
 		child.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
 	}

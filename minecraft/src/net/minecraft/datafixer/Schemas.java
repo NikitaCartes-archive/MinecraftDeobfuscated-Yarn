@@ -9,6 +9,7 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5196;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
@@ -604,5 +605,31 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema112, "Added Zoglin", TypeReferences.ENTITY));
 		Schema schema113 = builder.addSchema(2523, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new RenameItemStackAttributesFix(schema113));
+		Schema schema114 = builder.addSchema(2527, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new class_5196(schema114));
+		Schema schema115 = builder.addSchema(2528, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			ItemNameFix.create(
+				schema115,
+				"Rename soul fire torch and soul fire lantern",
+				string -> ImmutableMap.of("minecraft:soul_fire_torch", "minecraft:soul_torch", "minecraft:soul_fire_lantern", "minecraft:soul_lantern")
+						.getOrDefault(string, string)
+			)
+		);
+		builder.addFixer(
+			BlockNameFix.create(
+				schema115,
+				"Rename soul fire torch and soul fire lantern",
+				string -> ImmutableMap.of(
+							"minecraft:soul_fire_torch",
+							"minecraft:soul_torch",
+							"minecraft:soul_fire_wall_torch",
+							"minecraft:soul_wall_torch",
+							"minecraft:soul_fire_lantern",
+							"minecraft:soul_lantern"
+						)
+						.getOrDefault(string, string)
+			)
+		);
 	}
 }

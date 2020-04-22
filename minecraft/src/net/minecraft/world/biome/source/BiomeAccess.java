@@ -34,6 +34,14 @@ public class BiomeAccess {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public Biome method_27344(BlockPos blockPos) {
+		int i = blockPos.getX() >> 2;
+		int j = blockPos.getY() >> 2;
+		int k = blockPos.getZ() >> 2;
+		return this.getBiomeForNoiseGen(i, j, k);
+	}
+
+	@Environment(EnvType.CLIENT)
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		return this.storage.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}

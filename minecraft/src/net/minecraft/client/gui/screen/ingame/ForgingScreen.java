@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ForgingScreenHandler;
@@ -38,27 +39,27 @@ public class ForgingScreen<T extends ForgingScreenHandler> extends HandledScreen
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		super.render(matrices, mouseX, mouseY, delta);
 		RenderSystem.disableBlend();
-		this.renderForeground(mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(mouseX, mouseY);
+		this.renderForeground(matrices, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
-	protected void renderForeground(int mouseX, int mouseY, float delta) {
+	protected void renderForeground(MatrixStack matrixStack, int mouseY, int i, float f) {
 	}
 
 	@Override
-	protected void drawBackground(float delta, int mouseX, int mouseY) {
+	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(this.texture);
-		int i = (this.width - this.backgroundWidth) / 2;
-		int j = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.drawTexture(i + 59, j + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+		int j = (this.width - this.backgroundWidth) / 2;
+		int k = (this.height - this.backgroundHeight) / 2;
+		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawTexture(matrixStack, j + 59, k + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
 		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(2).hasStack()) {
-			this.drawTexture(i + 99, j + 45, this.backgroundWidth, 0, 28, 21);
+			this.drawTexture(matrixStack, j + 99, k + 45, this.backgroundWidth, 0, 28, 21);
 		}
 	}
 
@@ -68,7 +69,7 @@ public class ForgingScreen<T extends ForgingScreenHandler> extends HandledScreen
 	}
 
 	@Override
-	public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
+	public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
 	}
 
 	@Override

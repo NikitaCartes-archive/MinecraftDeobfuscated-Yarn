@@ -59,8 +59,8 @@ public class Raid {
 	private static final TranslatableText EVENT_TEXT = new TranslatableText("event.minecraft.raid");
 	private static final TranslatableText VICTORY_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.victory");
 	private static final TranslatableText DEFEAT_SUFFIX_TEXT = new TranslatableText("event.minecraft.raid.defeat");
-	private static final Text VICTORY_TITLE = EVENT_TEXT.copy().append(" - ").append(VICTORY_SUFFIX_TEXT);
-	private static final Text DEFEAT_TITLE = EVENT_TEXT.copy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
+	private static final Text VICTORY_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(VICTORY_SUFFIX_TEXT);
+	private static final Text DEFEAT_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
 	private final Map<Integer, RaiderEntity> waveToCaptain = Maps.<Integer, RaiderEntity>newHashMap();
 	private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
 	private final Set<UUID> heroesOfTheVillage = Sets.<UUID>newHashSet();
@@ -276,7 +276,7 @@ public class Raid {
 					this.removeObsoleteRaiders();
 					if (i > 0) {
 						if (i <= 2) {
-							this.bar.setName(EVENT_TEXT.copy().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
+							this.bar.setName(EVENT_TEXT.shallowCopy().append(" - ").append(new TranslatableText("event.minecraft.raid.raiders_remaining", i)));
 						} else {
 							this.bar.setName(EVENT_TEXT);
 						}

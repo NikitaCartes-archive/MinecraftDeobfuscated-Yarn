@@ -6,8 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class BackupPromptScreen extends Screen {
@@ -15,11 +16,7 @@ public class BackupPromptScreen extends Screen {
 	protected final BackupPromptScreen.Callback callback;
 	private final Text subtitle;
 	private final boolean showEraseCacheCheckbox;
-	private final List<String> wrappedText = Lists.<String>newArrayList();
-	private final String eraseCacheText;
-	private final String confirmText;
-	private final String skipText;
-	private final String cancelText;
+	private final List<Text> wrappedText = Lists.<Text>newArrayList();
 	private CheckboxWidget eraseCacheCheckbox;
 
 	public BackupPromptScreen(Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
@@ -28,45 +25,53 @@ public class BackupPromptScreen extends Screen {
 		this.callback = callback;
 		this.subtitle = subtitle;
 		this.showEraseCacheCheckbox = showEraseCacheCheckBox;
-		this.eraseCacheText = I18n.translate("selectWorld.backupEraseCache");
-		this.confirmText = I18n.translate("selectWorld.backupJoinConfirmButton");
-		this.skipText = I18n.translate("selectWorld.backupJoinSkipButton");
-		this.cancelText = I18n.translate("gui.cancel");
 	}
 
 	@Override
 	protected void init() {
 		super.init();
 		this.wrappedText.clear();
-		this.wrappedText.addAll(this.textRenderer.wrapStringToWidthAsList(this.subtitle.asFormattedString(), this.width - 50));
+		this.wrappedText.addAll(this.textRenderer.wrapLines(this.subtitle, this.width - 50));
 		int i = (this.wrappedText.size() + 1) * 9;
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, this.confirmText, buttonWidget -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked()))
+			new ButtonWidget(
+				this.width / 2 - 155,
+				100 + i,
+				150,
+				20,
+				new TranslatableText("selectWorld.backupJoinConfirmButton"),
+				buttonWidget -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked())
+			)
 		);
 		this.addButton(
 			new ButtonWidget(
-				this.width / 2 - 155 + 160, 100 + i, 150, 20, this.skipText, buttonWidget -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked())
+				this.width / 2 - 155 + 160,
+				100 + i,
+				150,
+				20,
+				new TranslatableText("selectWorld.backupJoinSkipButton"),
+				buttonWidget -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked())
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, this.cancelText, buttonWidget -> this.client.openScreen(this.parent)));
-		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, this.eraseCacheText, false);
+		this.addButton(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, new TranslatableText("selectWorld.backupEraseCache"), false);
 		if (this.showEraseCacheCheckbox) {
 			this.addButton(this.eraseCacheCheckbox);
 		}
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 50, 16777215);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
 		int i = 70;
 
-		for (String string : this.wrappedText) {
-			this.drawCenteredString(this.textRenderer, string, this.width / 2, i, 16777215);
+		for (Text text : this.wrappedText) {
+			this.method_27534(matrices, this.textRenderer, text, this.width / 2, i, 16777215);
 			i += 9;
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	@Override

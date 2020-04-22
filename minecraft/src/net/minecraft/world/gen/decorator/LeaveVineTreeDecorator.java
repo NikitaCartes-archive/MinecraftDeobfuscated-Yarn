@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.Feature;
 
 public class LeaveVineTreeDecorator extends TreeDecorator {
 	public LeaveVineTreeDecorator() {
@@ -29,28 +29,28 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 		leavesPositions.forEach(blockPos -> {
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.west();
-				if (AbstractTreeFeature.isAir(world, blockPos2)) {
+				if (Feature.method_27370(world, blockPos2)) {
 					this.method_23467(world, blockPos2, VineBlock.EAST, set, box);
 				}
 			}
 
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.east();
-				if (AbstractTreeFeature.isAir(world, blockPos2)) {
+				if (Feature.method_27370(world, blockPos2)) {
 					this.method_23467(world, blockPos2, VineBlock.WEST, set, box);
 				}
 			}
 
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.north();
-				if (AbstractTreeFeature.isAir(world, blockPos2)) {
+				if (Feature.method_27370(world, blockPos2)) {
 					this.method_23467(world, blockPos2, VineBlock.SOUTH, set, box);
 				}
 			}
 
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.south();
-				if (AbstractTreeFeature.isAir(world, blockPos2)) {
+				if (Feature.method_27370(world, blockPos2)) {
 					this.method_23467(world, blockPos2, VineBlock.NORTH, set, box);
 				}
 			}
@@ -63,7 +63,7 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 		this.placeVine(modifiableTestableWorld, blockPos, booleanProperty, set, blockBox);
 		int i = 4;
 
-		for (BlockPos var7 = blockPos.down(); AbstractTreeFeature.isAir(modifiableTestableWorld, var7) && i > 0; i--) {
+		for (BlockPos var7 = blockPos.down(); Feature.method_27370(modifiableTestableWorld, var7) && i > 0; i--) {
 			this.placeVine(modifiableTestableWorld, var7, booleanProperty, set, blockBox);
 			var7 = var7.down();
 		}

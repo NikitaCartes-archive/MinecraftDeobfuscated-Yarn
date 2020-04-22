@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -18,7 +19,7 @@ public abstract class AbstractTeam {
 
 	public abstract String getName();
 
-	public abstract Text modifyText(Text text);
+	public abstract MutableText modifyText(Text text);
 
 	@Environment(EnvType.CLIENT)
 	public abstract boolean shouldShowFriendlyInvisibles();

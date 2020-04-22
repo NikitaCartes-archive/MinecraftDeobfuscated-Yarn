@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AlterGroundTreeDecorator extends TreeDecorator {
@@ -64,12 +64,12 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 	private void method_23463(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
 		for (int i = 2; i >= -3; i--) {
 			BlockPos blockPos2 = blockPos.up(i);
-			if (AbstractTreeFeature.isNaturalDirtOrGrass(modifiableTestableWorld, blockPos2)) {
+			if (Feature.method_27368(modifiableTestableWorld, blockPos2)) {
 				modifiableTestableWorld.setBlockState(blockPos2, this.field_21316.getBlockState(random, blockPos), 19);
 				break;
 			}
 
-			if (!AbstractTreeFeature.isAir(modifiableTestableWorld, blockPos2) && i < 0) {
+			if (!Feature.method_27370(modifiableTestableWorld, blockPos2) && i < 0) {
 				break;
 			}
 		}

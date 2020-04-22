@@ -22,10 +22,7 @@ import net.minecraft.world.gen.CatSpawner;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.PhantomSpawner;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.decorator.Decorator;
-import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.FillLayerFeatureConfig;
@@ -62,9 +59,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			if (configuredFeatures != null) {
 				for (ConfiguredFeature<?, ?> configuredFeature : configuredFeatures) {
 					flatChunkGeneratorBiome.addFeature((GenerationStep.Feature)FlatChunkGeneratorConfig.FEATURE_TO_GENERATION_STEP.get(configuredFeature), configuredFeature);
-					ConfiguredFeature<?, ?> configuredFeature2 = ((DecoratedFeatureConfig)configuredFeature.config).feature;
-					if (configuredFeature2.feature instanceof StructureFeature) {
-						StructureFeature<FeatureConfig> structureFeature = (StructureFeature<FeatureConfig>)configuredFeature2.feature;
+					if (configuredFeature.feature instanceof StructureFeature) {
+						StructureFeature<FeatureConfig> structureFeature = (StructureFeature<FeatureConfig>)configuredFeature.feature;
 						FeatureConfig featureConfig = biome.getStructureFeatureConfig(structureFeature);
 						FeatureConfig featureConfig2 = featureConfig != null
 							? featureConfig
@@ -96,10 +92,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			BlockState blockState = blockStates[i];
 			if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
 				this.config.removeLayerBlock(i);
-				flatChunkGeneratorBiome.addFeature(
-					GenerationStep.Feature.TOP_LAYER_MODIFICATION,
-					Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(i, blockState)).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT))
-				);
+				flatChunkGeneratorBiome.addFeature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(i, blockState)));
 			}
 		}
 
@@ -119,6 +112,11 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	@Override
 	protected Biome getDecorationBiome(BiomeAccess biomeAccess, BlockPos pos) {
 		return this.biome;
+	}
+
+	@Override
+	public boolean method_27367(StructureFeature<?> structureFeature) {
+		return this.biome.hasStructureFeature(structureFeature);
 	}
 
 	@Override

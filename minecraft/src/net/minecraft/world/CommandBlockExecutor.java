@@ -40,7 +40,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	public Text getLastOutput() {
-		return (Text)(this.lastOutput == null ? new LiteralText("") : this.lastOutput);
+		return this.lastOutput == null ? LiteralText.EMPTY : this.lastOutput;
 	}
 
 	public CompoundTag serialize(CompoundTag tag) {

@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5217;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -69,8 +70,6 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelInfo;
-import net.minecraft.world.level.LevelProperties;
 
 @Environment(EnvType.CLIENT)
 public class ClientWorld extends World {
@@ -91,19 +90,13 @@ public class ClientWorld extends World {
 
 	public ClientWorld(
 		ClientPlayNetworkHandler clientPlayNetworkHandler,
-		LevelInfo levelInfo,
+		class_5217 levelInfo,
 		DimensionType dimensionType,
 		int chunkLoadDistance,
 		Supplier<Profiler> supplier,
 		WorldRenderer worldRenderer
 	) {
-		super(
-			new LevelProperties(levelInfo, "MpServer"),
-			dimensionType,
-			(world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance),
-			supplier,
-			true
-		);
+		super(levelInfo, dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance), supplier, true);
 		this.netHandler = clientPlayNetworkHandler;
 		this.worldRenderer = worldRenderer;
 		this.setSpawnPos(new BlockPos(8, 64, 8));

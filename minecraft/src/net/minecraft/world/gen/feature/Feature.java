@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,6 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.StructureAccessor;
@@ -63,14 +65,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"bastion_remnant", new BastionRemnantFeature(BastionRemnantFeatureConfig::deserialize)
 	);
 	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = register("normal_tree", new OakTreeFeature(BranchedTreeFeatureConfig::deserialize));
-	public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = register("fancy_tree", new LargeOakTreeFeature(BranchedTreeFeatureConfig::deserialize));
-	public static final Feature<TreeFeatureConfig> JUNGLE_GROUND_BUSH = register("jungle_ground_bush", new JungleGroundBushFeature(TreeFeatureConfig::deserialize));
-	public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = register("dark_oak_tree", new DarkOakTreeFeature(MegaTreeFeatureConfig::deserialize));
-	public static final Feature<MegaTreeFeatureConfig> MEGA_JUNGLE_TREE = register(
-		"mega_jungle_tree", new MegaJungleTreeFeature(MegaTreeFeatureConfig::deserialize)
-	);
-	public static final Feature<MegaTreeFeatureConfig> MEGA_SPRUCE_TREE = register("mega_spruce_tree", new MegaPineTreeFeature(MegaTreeFeatureConfig::deserialize));
+	public static final Feature<TreeFeatureConfig> TREE = register("tree", new AbstractTreeFeature(TreeFeatureConfig::deserialize));
 	public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig::deserialize));
 	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig::deserialize));
 	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig::deserialize));
@@ -201,7 +196,15 @@ public abstract class Feature<FC extends FeatureConfig> {
 		return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
 	}
 
-	protected static boolean isDirt(Block block) {
+	public static boolean isDirt(Block block) {
 		return block == Blocks.DIRT || block == Blocks.GRASS_BLOCK || block == Blocks.PODZOL || block == Blocks.COARSE_DIRT || block == Blocks.MYCELIUM;
+	}
+
+	public static boolean method_27368(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> isDirt(blockState.getBlock()));
+	}
+
+	public static boolean method_27370(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir);
 	}
 }

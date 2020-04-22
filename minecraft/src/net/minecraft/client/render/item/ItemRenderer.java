@@ -255,7 +255,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 				fontRenderer.draw(
 					string,
-					(float)(x + 19 - 2 - fontRenderer.getStringWidth(string)),
+					(float)(x + 19 - 2 - fontRenderer.getWidth(string)),
 					(float)(y + 6 + 3),
 					16777215,
 					true,

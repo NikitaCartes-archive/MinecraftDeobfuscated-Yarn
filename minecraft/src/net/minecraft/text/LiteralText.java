@@ -1,6 +1,7 @@
 package net.minecraft.text;
 
 public class LiteralText extends BaseText {
+	public static final Text EMPTY = new LiteralText("");
 	private final String string;
 
 	public LiteralText(String string) {

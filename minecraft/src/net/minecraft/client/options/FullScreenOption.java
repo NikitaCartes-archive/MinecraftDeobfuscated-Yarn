@@ -4,10 +4,11 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.Monitor;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.client.util.Window;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class FullScreenOption extends DoubleOption {
@@ -33,11 +34,11 @@ public class FullScreenOption extends DoubleOption {
 			}
 		}, (gameOptions, doubleOption) -> {
 			if (monitor == null) {
-				return I18n.translate("options.fullscreen.unavailable");
+				return new TranslatableText("options.fullscreen.unavailable");
 			} else {
 				double d = doubleOption.get(gameOptions);
-				String string = doubleOption.getDisplayPrefix();
-				return d == -1.0 ? string + I18n.translate("options.fullscreen.current") : monitor.getVideoMode((int)d).toString();
+				MutableText mutableText = doubleOption.getDisplayPrefix();
+				return d == -1.0 ? mutableText.append(new TranslatableText("options.fullscreen.current")) : mutableText.append(monitor.getVideoMode((int)d).toString());
 			}
 		});
 	}

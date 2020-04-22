@@ -26,6 +26,6 @@ public class CreativeInventoryListener implements ScreenHandlerListener {
 	}
 
 	@Override
-	public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
+	public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
 	}
 }

@@ -6,13 +6,18 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateJigsawC2SPacket;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -77,35 +82,35 @@ public class JigsawBlockScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.onDone()));
-		this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.onCancel()));
-		this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 20, 300, 20, I18n.translate("jigsaw_block.pool"));
+		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, buttonWidget -> this.onDone()));
+		this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCancel()));
+		this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 20, 300, 20, new TranslatableText("jigsaw_block.pool"));
 		this.poolField.setMaxLength(128);
 		this.poolField.setText(this.jigsaw.getPool().toString());
 		this.poolField.setChangedListener(string -> this.updateDoneButtonState());
 		this.children.add(this.poolField);
-		this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 55, 300, 20, I18n.translate("jigsaw_block.name"));
+		this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 55, 300, 20, new TranslatableText("jigsaw_block.name"));
 		this.nameField.setMaxLength(128);
 		this.nameField.setText(this.jigsaw.getName().toString());
 		this.nameField.setChangedListener(string -> this.updateDoneButtonState());
 		this.children.add(this.nameField);
-		this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 90, 300, 20, I18n.translate("jigsaw_block.target"));
+		this.targetField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 90, 300, 20, new TranslatableText("jigsaw_block.target"));
 		this.targetField.setMaxLength(128);
 		this.targetField.setText(this.jigsaw.getTarget().toString());
 		this.targetField.setChangedListener(string -> this.updateDoneButtonState());
 		this.children.add(this.targetField);
-		this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 125, 300, 20, I18n.translate("jigsaw_block.final_state"));
+		this.finalStateField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 125, 300, 20, new TranslatableText("jigsaw_block.final_state"));
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.children.add(this.finalStateField);
-		this.addButton(new SliderWidget(this.width / 2 - 152, 180, 150, 20, "", 0.0) {
+		this.addButton(new SliderWidget(this.width / 2 - 152, 180, 150, 20, LiteralText.EMPTY, 0.0) {
 			{
 				this.updateMessage();
 			}
 
 			@Override
 			protected void updateMessage() {
-				this.setMessage(I18n.translate("jigsaw_block.levels") + JigsawBlockScreen.this.generationDepth);
+				this.setMessage(new TranslatableText("jigsaw_block.levels", JigsawBlockScreen.this.generationDepth));
 			}
 
 			@Override
@@ -113,9 +118,9 @@ public class JigsawBlockScreen extends Screen {
 				JigsawBlockScreen.this.generationDepth = MathHelper.floor(MathHelper.clampedLerp(0.0, 7.0, this.value));
 			}
 		});
-		this.addButton(new ButtonWidget(this.width / 2 + 4, 180, 150, 20, I18n.translate("jigsaw_block.generate"), buttonWidget -> this.generate()));
+		this.addButton(new ButtonWidget(this.width / 2 + 4, 180, 150, 20, new TranslatableText("jigsaw_block.generate"), buttonWidget -> this.generate()));
 		this.joint = this.jigsaw.getJoint();
-		int i = this.textRenderer.getStringWidth(I18n.translate("jigsaw_block.joint_label")) + 10;
+		int i = this.textRenderer.getWidth(I18n.translate("jigsaw_block.joint_label")) + 10;
 		this.jointRotationButton = this.addButton(new ButtonWidget(this.width / 2 - 152 + i, 150, 300 - i, 20, this.getLocalizedJointName(), buttonWidget -> {
 			JigsawBlockEntity.Joint[] joints = JigsawBlockEntity.Joint.values();
 			int ix = (this.joint.ordinal() + 1) % joints.length;
@@ -153,8 +158,8 @@ public class JigsawBlockScreen extends Screen {
 		this.jointRotationButton.setMessage(this.getLocalizedJointName());
 	}
 
-	private String getLocalizedJointName() {
-		return I18n.translate("jigsaw_block.joint." + this.joint.asString());
+	private Text getLocalizedJointName() {
+		return new TranslatableText("jigsaw_block.joint." + this.joint.asString());
 	}
 
 	@Override
@@ -175,20 +180,20 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawString(this.textRenderer, I18n.translate("jigsaw_block.pool"), this.width / 2 - 153, 10, 10526880);
-		this.poolField.render(mouseX, mouseY, delta);
-		this.drawString(this.textRenderer, I18n.translate("jigsaw_block.name"), this.width / 2 - 153, 45, 10526880);
-		this.nameField.render(mouseX, mouseY, delta);
-		this.drawString(this.textRenderer, I18n.translate("jigsaw_block.target"), this.width / 2 - 153, 80, 10526880);
-		this.targetField.render(mouseX, mouseY, delta);
-		this.drawString(this.textRenderer, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 115, 10526880);
-		this.finalStateField.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.pool"), this.width / 2 - 153, 10, 10526880);
+		this.poolField.render(matrices, mouseX, mouseY, delta);
+		this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.name"), this.width / 2 - 153, 45, 10526880);
+		this.nameField.render(matrices, mouseX, mouseY, delta);
+		this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.target"), this.width / 2 - 153, 80, 10526880);
+		this.targetField.render(matrices, mouseX, mouseY, delta);
+		this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 115, 10526880);
+		this.finalStateField.render(matrices, mouseX, mouseY, delta);
 		if (JigsawBlock.method_26378(this.jigsaw.getCachedState()).getAxis().isVertical()) {
-			this.drawString(this.textRenderer, I18n.translate("jigsaw_block.joint_label"), this.width / 2 - 153, 156, 16777215);
+			this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.joint_label"), this.width / 2 - 153, 156, 16777215);
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

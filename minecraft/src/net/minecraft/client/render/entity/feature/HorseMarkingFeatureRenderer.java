@@ -33,7 +33,7 @@ public class HorseMarkingFeatureRenderer extends FeatureRenderer<HorseEntity, Ho
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l
 	) {
 		Identifier identifier = (Identifier)TEXTURES.get(horseEntity.getMarking());
-		if (identifier != null) {
+		if (identifier != null && !horseEntity.isInvisible()) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(identifier));
 			this.getContextModel().render(matrixStack, vertexConsumer, i, LivingEntityRenderer.getOverlay(horseEntity, 0.0F), 1.0F, 1.0F, 1.0F, 1.0F);
 		}

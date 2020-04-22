@@ -7,28 +7,28 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ConfirmScreen extends Screen {
 	private final Text message;
-	private final List<String> messageSplit = Lists.<String>newArrayList();
-	protected String yesTranslated;
-	protected String noTranslated;
+	private final List<Text> messageSplit = Lists.<Text>newArrayList();
+	protected Text yesTranslated;
+	protected Text noTranslated;
 	private int buttonEnableTimer;
 	protected final BooleanConsumer callback;
 
 	public ConfirmScreen(BooleanConsumer callback, Text title, Text message) {
-		this(callback, title, message, I18n.translate("gui.yes"), I18n.translate("gui.no"));
+		this(callback, title, message, ScreenTexts.YES, ScreenTexts.NO);
 	}
 
-	public ConfirmScreen(BooleanConsumer callback, Text title, Text message, String yesTranslated, String noTranslated) {
+	public ConfirmScreen(BooleanConsumer callback, Text title, Text message, Text text, Text text2) {
 		super(title);
 		this.callback = callback;
 		this.message = message;
-		this.yesTranslated = yesTranslated;
-		this.noTranslated = noTranslated;
+		this.yesTranslated = text;
+		this.noTranslated = text2;
 	}
 
 	@Override
@@ -42,21 +42,21 @@ public class ConfirmScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
 		this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
 		this.messageSplit.clear();
-		this.messageSplit.addAll(this.textRenderer.wrapStringToWidthAsList(this.message.asFormattedString(), this.width - 50));
+		this.messageSplit.addAll(this.textRenderer.wrapLines(this.message, this.width - 50));
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 70, 16777215);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
 		int i = 90;
 
-		for (String string : this.messageSplit) {
-			this.drawCenteredString(this.textRenderer, string, this.width / 2, i, 16777215);
+		for (Text text : this.messageSplit) {
+			this.method_27534(matrices, this.textRenderer, text, this.width / 2, i, 16777215);
 			i += 9;
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	public void disableButtons(int i) {

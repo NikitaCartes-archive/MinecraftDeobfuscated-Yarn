@@ -322,7 +322,7 @@ public class PlainsVillageData {
 				new StructurePool(
 					new Identifier("village/plains/trees"),
 					new Identifier("empty"),
-					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)), 1)),
+					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)), 1)),
 					StructurePool.Projection.RIGID
 				)
 			);
@@ -333,7 +333,7 @@ public class PlainsVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new LegacySinglePoolElement("village/plains/plains_lamp_1"), 2),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)), 1),
 						new Pair<>(new FeaturePoolElement(Feature.FLOWER.configure(DefaultBiomeFeatures.PLAINS_FLOWER_CONFIG)), 1),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.HAY_PILE_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 2)
@@ -348,7 +348,7 @@ public class PlainsVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new LegacySinglePoolElement("village/plains/plains_lamp_1", immutableList), 1),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)), 1),
+						new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)), 1),
 						new Pair<>(new FeaturePoolElement(Feature.FLOWER.configure(DefaultBiomeFeatures.PLAINS_FLOWER_CONFIG)), 1),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.HAY_PILE_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 2)

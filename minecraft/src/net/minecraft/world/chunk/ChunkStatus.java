@@ -47,7 +47,7 @@ public class ChunkStatus {
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
-				if (serverWorld.getLevelProperties().hasStructures()) {
+				if (serverWorld.getLevelProperties().method_27420()) {
 					chunkGenerator.setStructureStarts(
 						serverWorld.getStructureAccessor(), serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, chunkGenerator, structureManager
 					);

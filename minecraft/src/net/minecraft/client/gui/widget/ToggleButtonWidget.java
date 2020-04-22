@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -16,7 +18,7 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 	protected int hoverVOffset;
 
 	public ToggleButtonWidget(int x, int y, int width, int height, boolean toggled) {
-		super(x, y, width, height, "");
+		super(x, y, width, height, LiteralText.EMPTY);
 		this.toggled = toggled;
 	}
 
@@ -42,21 +44,21 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float delta) {
+	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
-		int i = this.u;
-		int j = this.v;
+		int k = this.u;
+		int l = this.v;
 		if (this.toggled) {
-			i += this.pressedUOffset;
+			k += this.pressedUOffset;
 		}
 
 		if (this.isHovered()) {
-			j += this.hoverVOffset;
+			l += this.hoverVOffset;
 		}
 
-		this.drawTexture(this.x, this.y, i, j, this.width, this.height);
+		this.drawTexture(matrixStack, this.x, this.y, k, l, this.width, this.height);
 		RenderSystem.enableDepthTest();
 	}
 }

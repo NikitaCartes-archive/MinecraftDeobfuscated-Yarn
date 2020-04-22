@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -152,5 +153,10 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 			world.setBlockState(pos, state.with(PICKLES, Integer.valueOf(4)), 2);
 		}
+	}
+
+	@Override
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		return false;
 	}
 }

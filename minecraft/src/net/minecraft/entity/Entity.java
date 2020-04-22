@@ -69,7 +69,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -376,7 +376,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevPitch = this.pitch;
 		this.prevYaw = this.yaw;
 		this.tickNetherPortal();
-		this.attemptSprintingParticles();
+		if (this.method_27298()) {
+			this.spawnSprintingParticles();
+		}
+
 		this.updateWaterState();
 		this.updateSubmergedInWaterState();
 		this.updateSwimming();
@@ -566,7 +569,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 				throw new CrashException(crashReport);
 			}
 
-			this.setVelocity(this.getVelocity().multiply((double)this.getVelocityMultiplier(), 1.0, (double)this.getVelocityMultiplier()));
+			float i = this.getVelocityMultiplier();
+			this.setVelocity(this.getVelocity().multiply((double)i, 1.0, (double)i));
 			if (!this.world.doesAreaContainFireSource(this.getBoundingBox().contract(0.001)) && this.fireTicks <= 0) {
 				this.fireTicks = -this.getBurningDuration();
 			}
@@ -1030,10 +1034,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.world.getBlockState(this.getLandingPos());
 	}
 
-	public void attemptSprintingParticles() {
-		if (this.isSprinting() && !this.isTouchingWater()) {
-			this.spawnSprintingParticles();
-		}
+	public boolean method_27298() {
+		return this.isSprinting() && !this.isTouchingWater() && !this.isSpectator() && !this.isInSneakingPose() && !this.isInLava() && this.isAlive();
 	}
 
 	protected void spawnSprintingParticles() {
@@ -1625,6 +1627,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.stopRiding();
 			}
 
+			this.setPose(EntityPose.STANDING);
 			this.vehicle = entity;
 			this.vehicle.addPassenger(this);
 			return true;
@@ -2016,20 +2019,20 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.movementMultiplier = multiplier;
 	}
 
-	private static void removeClickEvents(Text textComponent) {
-		textComponent.styled(style -> style.setClickEvent(null)).getSiblings().forEach(Entity::removeClickEvents);
+	private static Text removeClickEvents(Text textComponent) {
+		MutableText mutableText = textComponent.shallowCopy().styled(style -> style.withClickEvent(null));
+
+		for (Text text : textComponent.getSiblings()) {
+			mutableText.append(removeClickEvents(text));
+		}
+
+		return mutableText;
 	}
 
 	@Override
 	public Text getName() {
 		Text text = this.getCustomName();
-		if (text != null) {
-			Text text2 = text.deepCopy();
-			removeClickEvents(text2);
-			return text2;
-		} else {
-			return this.getDefaultName();
-		}
+		return text != null ? removeClickEvents(text) : this.getDefaultName();
 	}
 
 	protected Text getDefaultName() {
@@ -2249,7 +2252,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	@Override
 	public Text getDisplayName() {
 		return Team.modifyText(this.getScoreboardTeam(), this.getName())
-			.styled(style -> style.setHoverEvent(this.getHoverEvent()).setInsertion(this.getUuidAsString()));
+			.styled(style -> style.setHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
 	}
 
 	public void setCustomName(@Nullable Text name) {
@@ -2339,15 +2342,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected HoverEvent getHoverEvent() {
-		CompoundTag compoundTag = new CompoundTag();
-		Identifier identifier = EntityType.getId(this.getType());
-		compoundTag.putString("id", this.getUuidAsString());
-		if (identifier != null) {
-			compoundTag.putString("type", identifier.toString());
-		}
-
-		compoundTag.putString("name", Text.Serializer.toJson(this.getName()));
-		return new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new LiteralText(compoundTag.toString()));
+		return new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new HoverEvent.EntityContent(this.getType(), this.getUuid(), this.getName()));
 	}
 
 	public boolean canBeSpectated(ServerPlayerEntity spectator) {

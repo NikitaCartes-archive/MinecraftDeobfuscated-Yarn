@@ -15,6 +15,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -68,13 +69,13 @@ public class FishBucketItem extends BucketItem {
 				}
 
 				tooltip.add(new TranslatableText(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
-				Text text = new TranslatableText(string);
+				MutableText mutableText = new TranslatableText(string);
 				if (!string.equals(string2)) {
-					text.append(", ").append(new TranslatableText(string2));
+					mutableText.append(", ").append(new TranslatableText(string2));
 				}
 
-				text.formatted(formattings);
-				tooltip.add(text);
+				mutableText.formatted(formattings);
+				tooltip.add(mutableText);
 			}
 		}
 	}

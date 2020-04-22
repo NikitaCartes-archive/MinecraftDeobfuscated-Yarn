@@ -28,12 +28,12 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	}
 
 	@Nullable
-	protected abstract ConfiguredFeature<? extends TreeFeatureConfig, ?> createLargeTreeFeature(Random random);
+	protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random random);
 
 	public boolean generateLargeTree(
 		ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j
 	) {
-		ConfiguredFeature<? extends TreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
+		ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
 		if (configuredFeature == null) {
 			return false;
 		} else {

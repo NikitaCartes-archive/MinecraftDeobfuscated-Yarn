@@ -23,4 +23,9 @@ public enum Arm {
 	public String toString() {
 		return this.optionName.getString();
 	}
+
+	@Environment(EnvType.CLIENT)
+	public Text method_27301() {
+		return this.optionName;
+	}
 }

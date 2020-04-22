@@ -8,6 +8,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -44,12 +45,10 @@ public class DirectConnectScreen extends Screen {
 	protected void init() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.selectServerButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, I18n.translate("selectServer.select"), buttonWidget -> this.saveAndClose())
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, new TranslatableText("selectServer.select"), buttonWidget -> this.saveAndClose())
 		);
-		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.callback.accept(false))
-		);
-		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 116, 200, 20, I18n.translate("addServer.enterIp"));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
+		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 116, 200, 20, new TranslatableText("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.setSelected(true);
 		this.addressField.setText(this.client.options.lastServer);
@@ -89,11 +88,11 @@ public class DirectConnectScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-		this.drawString(this.textRenderer, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 100, 10526880);
-		this.addressField.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		this.drawString(matrices, this.textRenderer, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 100, 10526880);
+		this.addressField.render(matrices, mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

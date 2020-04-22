@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -155,7 +156,7 @@ public class PotionUtil {
 			list.add(new TranslatableText("effect.none").formatted(Formatting.GRAY));
 		} else {
 			for (StatusEffectInstance statusEffectInstance : list2) {
-				Text text = new TranslatableText(statusEffectInstance.getTranslationKey());
+				MutableText mutableText = new TranslatableText(statusEffectInstance.getTranslationKey());
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
 				Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
 				if (!map.isEmpty()) {
@@ -171,30 +172,30 @@ public class PotionUtil {
 				}
 
 				if (statusEffectInstance.getAmplifier() > 0) {
-					text.append(" ").append(new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
+					mutableText.append(" ").append(new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
 				}
 
 				if (statusEffectInstance.getDuration() > 20) {
-					text.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
+					mutableText.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
 				}
 
-				list.add(text.formatted(statusEffect.getType().getFormatting()));
+				list.add(mutableText.formatted(statusEffect.getType().getFormatting()));
 			}
 		}
 
 		if (!list3.isEmpty()) {
-			list.add(new LiteralText(""));
+			list.add(LiteralText.EMPTY);
 			list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
 
 			for (Pair<EntityAttribute, EntityAttributeModifier> pair : list3) {
 				EntityAttributeModifier entityAttributeModifier3 = pair.getSecond();
-				double d = entityAttributeModifier3.getAmount();
+				double d = entityAttributeModifier3.getValue();
 				double e;
 				if (entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
 					&& entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
-					e = entityAttributeModifier3.getAmount();
+					e = entityAttributeModifier3.getValue();
 				} else {
-					e = entityAttributeModifier3.getAmount() * 100.0;
+					e = entityAttributeModifier3.getValue() * 100.0;
 				}
 
 				if (d > 0.0) {

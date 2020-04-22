@@ -47,7 +47,6 @@ import net.minecraft.client.options.ParticlesOption;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBuilder;
-import net.minecraft.client.render.chunk.ChunkOcclusionDataBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -105,7 +104,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -721,32 +719,15 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			this.needsTerrainUpdate = false;
 			this.visibleChunks.clear();
 			Queue<WorldRenderer.ChunkInfo> queue = Queues.<WorldRenderer.ChunkInfo>newArrayDeque();
-			Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5));
+			Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5) * (double)this.client.options.field_24214);
 			boolean bl = this.client.chunkCullingEnabled;
 			if (builtChunk != null) {
-				boolean bl2 = false;
-				WorldRenderer.ChunkInfo chunkInfo = new WorldRenderer.ChunkInfo(builtChunk, null, 0);
-				Set<Direction> set = this.getOpenChunkFaces(blockPos);
-				if (set.size() == 1) {
-					Vector3f vector3f = camera.getHorizontalPlane();
-					Direction direction = Direction.getFacing(vector3f.getX(), vector3f.getY(), vector3f.getZ()).getOpposite();
-					set.remove(direction);
+				if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
+					bl = false;
 				}
 
-				if (set.isEmpty()) {
-					bl2 = true;
-				}
-
-				if (bl2 && !spectator) {
-					this.visibleChunks.add(chunkInfo);
-				} else {
-					if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
-						bl = false;
-					}
-
-					builtChunk.setRebuildFrame(frame);
-					queue.add(chunkInfo);
-				}
+				builtChunk.setRebuildFrame(frame);
+				queue.add(new WorldRenderer.ChunkInfo(builtChunk, null, 0));
 			} else {
 				int j = blockPos.getY() > 0 ? 248 : 8;
 				int k = MathHelper.floor(vec3d.x / 16.0) * 16;
@@ -770,22 +751,22 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			this.client.getProfiler().push("iteration");
 
 			while (!queue.isEmpty()) {
-				WorldRenderer.ChunkInfo chunkInfo2 = (WorldRenderer.ChunkInfo)queue.poll();
-				ChunkBuilder.BuiltChunk builtChunk3 = chunkInfo2.chunk;
-				Direction direction2 = chunkInfo2.direction;
-				this.visibleChunks.add(chunkInfo2);
+				WorldRenderer.ChunkInfo chunkInfo = (WorldRenderer.ChunkInfo)queue.poll();
+				ChunkBuilder.BuiltChunk builtChunk3 = chunkInfo.chunk;
+				Direction direction = chunkInfo.direction;
+				this.visibleChunks.add(chunkInfo);
 
-				for (Direction direction3 : DIRECTIONS) {
-					ChunkBuilder.BuiltChunk builtChunk4 = this.getAdjacentChunk(blockPos2, builtChunk3, direction3);
-					if ((!bl || !chunkInfo2.canCull(direction3.getOpposite()))
-						&& (!bl || direction2 == null || builtChunk3.getData().isVisibleThrough(direction2.getOpposite(), direction3))
+				for (Direction direction2 : DIRECTIONS) {
+					ChunkBuilder.BuiltChunk builtChunk4 = this.getAdjacentChunk(blockPos2, builtChunk3, direction2);
+					if ((!bl || !chunkInfo.canCull(direction2.getOpposite()))
+						&& (!bl || direction == null || builtChunk3.getData().isVisibleThrough(direction.getOpposite(), direction2))
 						&& builtChunk4 != null
 						&& builtChunk4.shouldBuild()
 						&& builtChunk4.setRebuildFrame(frame)
 						&& frustum.isVisible(builtChunk4.boundingBox)) {
-						WorldRenderer.ChunkInfo chunkInfo3 = new WorldRenderer.ChunkInfo(builtChunk4, direction3, chunkInfo2.propagationLevel + 1);
-						chunkInfo3.updateCullingState(chunkInfo2.cullingState, direction3);
-						queue.add(chunkInfo3);
+						WorldRenderer.ChunkInfo chunkInfo2 = new WorldRenderer.ChunkInfo(builtChunk4, direction2, chunkInfo.propagationLevel + 1);
+						chunkInfo2.updateCullingState(chunkInfo.cullingState, direction2);
+						queue.add(chunkInfo2);
 					}
 				}
 			}
@@ -794,16 +775,16 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		}
 
 		this.client.getProfiler().swap("rebuildNear");
-		Set<ChunkBuilder.BuiltChunk> set2 = this.chunksToRebuild;
+		Set<ChunkBuilder.BuiltChunk> set = this.chunksToRebuild;
 		this.chunksToRebuild = Sets.<ChunkBuilder.BuiltChunk>newLinkedHashSet();
 
-		for (WorldRenderer.ChunkInfo chunkInfo2 : this.visibleChunks) {
-			ChunkBuilder.BuiltChunk builtChunk3 = chunkInfo2.chunk;
-			if (builtChunk3.needsRebuild() || set2.contains(builtChunk3)) {
+		for (WorldRenderer.ChunkInfo chunkInfo : this.visibleChunks) {
+			ChunkBuilder.BuiltChunk builtChunk3 = chunkInfo.chunk;
+			if (builtChunk3.needsRebuild() || set.contains(builtChunk3)) {
 				this.needsTerrainUpdate = true;
 				BlockPos blockPos3 = builtChunk3.getOrigin().add(8, 8, 8);
-				boolean bl3 = blockPos3.getSquaredDistance(blockPos) < 768.0;
-				if (!builtChunk3.needsImportantRebuild() && !bl3) {
+				boolean bl2 = blockPos3.getSquaredDistance(blockPos) < 768.0;
+				if (!builtChunk3.needsImportantRebuild() && !bl2) {
 					this.chunksToRebuild.add(builtChunk3);
 				} else {
 					this.client.getProfiler().push("build near");
@@ -814,22 +795,8 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			}
 		}
 
-		this.chunksToRebuild.addAll(set2);
+		this.chunksToRebuild.addAll(set);
 		this.client.getProfiler().pop();
-	}
-
-	private Set<Direction> getOpenChunkFaces(BlockPos pos) {
-		ChunkOcclusionDataBuilder chunkOcclusionDataBuilder = new ChunkOcclusionDataBuilder();
-		BlockPos blockPos = new BlockPos(pos.getX() >> 4 << 4, pos.getY() >> 4 << 4, pos.getZ() >> 4 << 4);
-		WorldChunk worldChunk = this.world.getWorldChunk(blockPos);
-
-		for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(15, 15, 15))) {
-			if (worldChunk.getBlockState(blockPos2).isOpaqueFullCube(this.world, blockPos2)) {
-				chunkOcclusionDataBuilder.markClosed(blockPos2);
-			}
-		}
-
-		return chunkOcclusionDataBuilder.getOpenFaces(pos);
 	}
 
 	@Nullable
@@ -2200,7 +2167,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		if (song != null) {
 			MusicDiscItem musicDiscItem = MusicDiscItem.bySound(song);
 			if (musicDiscItem != null) {
-				this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription().asFormattedString());
+				this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription());
 			}
 
 			SoundInstance var5 = PositionedSoundInstance.record(song, (float)songPosition.getX(), (float)songPosition.getY(), (float)songPosition.getZ());

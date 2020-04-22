@@ -3,13 +3,20 @@ package net.minecraft.client.gui.screen.ingame;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.font.TextHandler;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.render.BufferBuilder;
@@ -17,16 +24,25 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.Rect2i;
+import net.minecraft.client.util.SelectionManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 @Environment(EnvType.CLIENT)
 public class BookEditScreen extends Screen {
@@ -38,8 +54,16 @@ public class BookEditScreen extends Screen {
 	private int currentPage;
 	private final List<String> pages = Lists.<String>newArrayList();
 	private String title = "";
-	private int cursorIndex;
-	private int highlightTo;
+	private final SelectionManager field_24269 = new SelectionManager(
+		this::getCurrentPageContent,
+		this::setPageContent,
+		this::method_27595,
+		this::method_27584,
+		string -> string.length() < 1024 && this.textRenderer.getStringBoundedHeight(string, 114) <= 128
+	);
+	private final SelectionManager field_24270 = new SelectionManager(
+		() -> this.title, string -> this.title = string, this::method_27595, this::method_27584, string -> string.length() < 16
+	);
 	private long lastClickTime;
 	private int lastClickIndex = -1;
 	private PageTurnWidget nextPageButton;
@@ -49,6 +73,8 @@ public class BookEditScreen extends Screen {
 	private ButtonWidget finalizeButton;
 	private ButtonWidget cancelButton;
 	private final Hand hand;
+	@Nullable
+	private BookEditScreen.class_5233 field_24268 = BookEditScreen.class_5233.field_24271;
 
 	public BookEditScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
 		super(NarratorManager.EMPTY);
@@ -69,6 +95,16 @@ public class BookEditScreen extends Screen {
 		}
 	}
 
+	private void method_27584(String string) {
+		if (this.client != null) {
+			SelectionManager.setClipboard(this.client, string);
+		}
+	}
+
+	private String method_27595() {
+		return this.client != null ? SelectionManager.getClipboard(this.client) : "";
+	}
+
 	private int countPages() {
 		return this.pages.size();
 	}
@@ -81,22 +117,23 @@ public class BookEditScreen extends Screen {
 
 	@Override
 	protected void init() {
+		this.method_27577();
 		this.client.keyboard.enableRepeatEvents(true);
-		this.signButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton"), buttonWidget -> {
+		this.signButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, new TranslatableText("book.signButton"), buttonWidget -> {
 			this.signing = true;
 			this.updateButtons();
 		}));
-		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> {
+		this.doneButton = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, ScreenTexts.DONE, buttonWidget -> {
 			this.client.openScreen(null);
 			this.finalizeBook(false);
 		}));
-		this.finalizeButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton"), buttonWidget -> {
+		this.finalizeButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, new TranslatableText("book.finalizeButton"), buttonWidget -> {
 			if (this.signing) {
 				this.finalizeBook(true);
 				this.client.openScreen(null);
 			}
 		}));
-		this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+		this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, ScreenTexts.CANCEL, buttonWidget -> {
 			if (this.signing) {
 				this.signing = false;
 			}
@@ -110,44 +147,30 @@ public class BookEditScreen extends Screen {
 		this.updateButtons();
 	}
 
-	private String stripFromatting(String string) {
-		StringBuilder stringBuilder = new StringBuilder();
-
-		for (char c : string.toCharArray()) {
-			if (c != 167 && c != 127) {
-				stringBuilder.append(c);
-			}
-		}
-
-		return stringBuilder.toString();
-	}
-
 	private void openPreviousPage() {
 		if (this.currentPage > 0) {
 			this.currentPage--;
-			this.cursorIndex = 0;
-			this.highlightTo = this.cursorIndex;
 		}
 
 		this.updateButtons();
+		this.method_27577();
 	}
 
 	private void openNextPage() {
 		if (this.currentPage < this.countPages() - 1) {
 			this.currentPage++;
-			this.cursorIndex = 0;
-			this.highlightTo = this.cursorIndex;
+			this.field_24269.method_27566();
 		} else {
 			this.appendNewPage();
 			if (this.currentPage < this.countPages() - 1) {
 				this.currentPage++;
 			}
 
-			this.cursorIndex = 0;
-			this.highlightTo = this.cursorIndex;
+			this.field_24269.method_27566();
 		}
 
 		this.updateButtons();
+		this.method_27577();
 	}
 
 	@Override
@@ -202,8 +225,16 @@ public class BookEditScreen extends Screen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
+		} else if (this.signing) {
+			return this.keyPressedSignMode(keyCode, scanCode, modifiers);
 		} else {
-			return this.signing ? this.keyPressedSignMode(keyCode, scanCode, modifiers) : this.keyPressedEditMode(keyCode, scanCode, modifiers);
+			boolean bl = this.method_27592(keyCode, scanCode, modifiers);
+			if (bl) {
+				this.method_27577();
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
@@ -212,8 +243,8 @@ public class BookEditScreen extends Screen {
 		if (super.charTyped(chr, keyCode)) {
 			return true;
 		} else if (this.signing) {
-			if (this.title.length() < 16 && SharedConstants.isValidChar(chr)) {
-				this.title = this.title + Character.toString(chr);
+			boolean bl = this.field_24270.insert(chr);
+			if (bl) {
 				this.updateButtons();
 				this.dirty = true;
 				return true;
@@ -221,53 +252,50 @@ public class BookEditScreen extends Screen {
 				return false;
 			}
 		} else if (SharedConstants.isValidChar(chr)) {
-			this.writeString(Character.toString(chr));
+			this.field_24269.insert(Character.toString(chr));
+			this.method_27577();
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private boolean keyPressedEditMode(int keyCode, int scanCode, int modifiers) {
-		String string = this.getCurrentPageContent();
-		if (Screen.isSelectAll(keyCode)) {
-			this.highlightTo = 0;
-			this.cursorIndex = string.length();
+	private boolean method_27592(int i, int j, int k) {
+		if (Screen.isSelectAll(i)) {
+			this.field_24269.selectAll();
 			return true;
-		} else if (Screen.isCopy(keyCode)) {
-			this.client.keyboard.setClipboard(this.getHighlightedText());
+		} else if (Screen.isCopy(i)) {
+			this.field_24269.copy();
 			return true;
-		} else if (Screen.isPaste(keyCode)) {
-			this.writeString(this.stripFromatting(Formatting.strip(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
-			this.highlightTo = this.cursorIndex;
+		} else if (Screen.isPaste(i)) {
+			this.field_24269.paste();
 			return true;
-		} else if (Screen.isCut(keyCode)) {
-			this.client.keyboard.setClipboard(this.getHighlightedText());
-			this.removeHighlightedText();
+		} else if (Screen.isCut(i)) {
+			this.field_24269.cut();
 			return true;
 		} else {
-			switch (keyCode) {
+			switch (i) {
 				case 257:
 				case 335:
-					this.writeString("\n");
+					this.field_24269.insert("\n");
 					return true;
 				case 259:
-					this.applyBackspaceKey(string);
+					this.field_24269.delete(-1);
 					return true;
 				case 261:
-					this.applyDeleteKey(string);
+					this.field_24269.delete(1);
 					return true;
 				case 262:
-					this.applyRightArrowKey(string);
+					this.field_24269.moveCursor(1, Screen.hasShiftDown());
 					return true;
 				case 263:
-					this.applyLeftArrowKey(string);
+					this.field_24269.moveCursor(-1, Screen.hasShiftDown());
 					return true;
 				case 264:
-					this.applyDownArrowKey(string);
+					this.method_27598();
 					return true;
 				case 265:
-					this.applyUpArrowKey(string);
+					this.method_27597();
 					return true;
 				case 266:
 					this.previousPageButton.onPress();
@@ -276,10 +304,10 @@ public class BookEditScreen extends Screen {
 					this.nextPageButton.onPress();
 					return true;
 				case 268:
-					this.moveCursorToTop(string);
+					this.moveCursorToTop();
 					return true;
 				case 269:
-					this.moveCursorToBottom(string);
+					this.moveCursorToBottom();
 					return true;
 				default:
 					return false;
@@ -287,131 +315,31 @@ public class BookEditScreen extends Screen {
 		}
 	}
 
-	private void applyBackspaceKey(String content) {
-		if (!content.isEmpty()) {
-			if (this.highlightTo != this.cursorIndex) {
-				this.removeHighlightedText();
-			} else if (this.cursorIndex > 0) {
-				String string = new StringBuilder(content).deleteCharAt(Math.max(0, this.cursorIndex - 1)).toString();
-				this.setPageContent(string);
-				this.cursorIndex = Math.max(0, this.cursorIndex - 1);
-				this.highlightTo = this.cursorIndex;
-			}
-		}
+	private void method_27597() {
+		this.method_27580(-1);
 	}
 
-	private void applyDeleteKey(String content) {
-		if (!content.isEmpty()) {
-			if (this.highlightTo != this.cursorIndex) {
-				this.removeHighlightedText();
-			} else if (this.cursorIndex < content.length()) {
-				String string = new StringBuilder(content).deleteCharAt(Math.max(0, this.cursorIndex)).toString();
-				this.setPageContent(string);
-			}
-		}
+	private void method_27598() {
+		this.method_27580(1);
 	}
 
-	private void applyLeftArrowKey(String content) {
-		int i = this.textRenderer.isRightToLeft() ? 1 : -1;
-		if (Screen.hasControlDown()) {
-			this.cursorIndex = this.textRenderer.findWordEdge(content, i, this.cursorIndex, true);
-		} else {
-			this.cursorIndex = Math.max(0, this.cursorIndex + i);
-		}
-
-		if (!Screen.hasShiftDown()) {
-			this.highlightTo = this.cursorIndex;
-		}
+	private void method_27580(int i) {
+		int j = this.field_24269.getSelectionStart();
+		int k = this.method_27576().method_27601(j, i);
+		this.field_24269.method_27560(k, Screen.hasShiftDown());
 	}
 
-	private void applyRightArrowKey(String content) {
-		int i = this.textRenderer.isRightToLeft() ? -1 : 1;
-		if (Screen.hasControlDown()) {
-			this.cursorIndex = this.textRenderer.findWordEdge(content, i, this.cursorIndex, true);
-		} else {
-			this.cursorIndex = Math.min(content.length(), this.cursorIndex + i);
-		}
-
-		if (!Screen.hasShiftDown()) {
-			this.highlightTo = this.cursorIndex;
-		}
+	private void moveCursorToTop() {
+		int i = this.field_24269.getSelectionStart();
+		int j = this.method_27576().method_27600(i);
+		this.field_24269.method_27560(j, Screen.hasShiftDown());
 	}
 
-	private void applyUpArrowKey(String content) {
-		if (!content.isEmpty()) {
-			BookEditScreen.Position position = this.getCursorPositionForIndex(content, this.cursorIndex);
-			if (position.y == 0) {
-				this.cursorIndex = 0;
-				if (!Screen.hasShiftDown()) {
-					this.highlightTo = this.cursorIndex;
-				}
-			} else {
-				int i = this.getCharacterCountInFrontOfCursor(
-					content, new BookEditScreen.Position(position.x + this.getCharWidthInString(content, this.cursorIndex) / 3, position.y - 9)
-				);
-				if (i >= 0) {
-					this.cursorIndex = i;
-					if (!Screen.hasShiftDown()) {
-						this.highlightTo = this.cursorIndex;
-					}
-				}
-			}
-		}
-	}
-
-	private void applyDownArrowKey(String content) {
-		if (!content.isEmpty()) {
-			BookEditScreen.Position position = this.getCursorPositionForIndex(content, this.cursorIndex);
-			int i = this.textRenderer.getStringBoundedHeight(content + "" + Formatting.BLACK + "_", 114);
-			if (position.y + 9 == i) {
-				this.cursorIndex = content.length();
-				if (!Screen.hasShiftDown()) {
-					this.highlightTo = this.cursorIndex;
-				}
-			} else {
-				int j = this.getCharacterCountInFrontOfCursor(
-					content, new BookEditScreen.Position(position.x + this.getCharWidthInString(content, this.cursorIndex) / 3, position.y + 9)
-				);
-				if (j >= 0) {
-					this.cursorIndex = j;
-					if (!Screen.hasShiftDown()) {
-						this.highlightTo = this.cursorIndex;
-					}
-				}
-			}
-		}
-	}
-
-	private void moveCursorToTop(String content) {
-		this.cursorIndex = this.getCharacterCountInFrontOfCursor(content, new BookEditScreen.Position(0, this.getCursorPositionForIndex(content, this.cursorIndex).y));
-		if (!Screen.hasShiftDown()) {
-			this.highlightTo = this.cursorIndex;
-		}
-	}
-
-	private void moveCursorToBottom(String content) {
-		this.cursorIndex = this.getCharacterCountInFrontOfCursor(
-			content, new BookEditScreen.Position(113, this.getCursorPositionForIndex(content, this.cursorIndex).y)
-		);
-		if (!Screen.hasShiftDown()) {
-			this.highlightTo = this.cursorIndex;
-		}
-	}
-
-	private void removeHighlightedText() {
-		if (this.highlightTo != this.cursorIndex) {
-			String string = this.getCurrentPageContent();
-			int i = Math.min(this.cursorIndex, this.highlightTo);
-			int j = Math.max(this.cursorIndex, this.highlightTo);
-			String string2 = string.substring(0, i) + string.substring(j);
-			this.cursorIndex = i;
-			this.highlightTo = this.cursorIndex;
-			this.setPageContent(string2);
-		}
-	}
-
-	private int getCharWidthInString(String string, int index) {
-		return (int)this.textRenderer.getCharWidth(string.charAt(MathHelper.clamp(index, 0, string.length() - 1)));
+	private void moveCursorToBottom() {
+		BookEditScreen.class_5233 lv = this.method_27576();
+		int i = this.field_24269.getSelectionStart();
+		int j = lv.method_27604(i);
+		this.field_24269.method_27560(j, Screen.hasShiftDown());
 	}
 
 	private boolean keyPressedSignMode(int keyCode, int scanCode, int modifiers) {
@@ -425,11 +353,9 @@ public class BookEditScreen extends Screen {
 
 				return true;
 			case 259:
-				if (!this.title.isEmpty()) {
-					this.title = this.title.substring(0, this.title.length() - 1);
-					this.updateButtons();
-				}
-
+				this.field_24270.delete(-1);
+				this.updateButtons();
+				this.dirty = true;
 				return true;
 			default:
 				return false;
@@ -444,33 +370,19 @@ public class BookEditScreen extends Screen {
 		if (this.currentPage >= 0 && this.currentPage < this.pages.size()) {
 			this.pages.set(this.currentPage, newContent);
 			this.dirty = true;
-		}
-	}
-
-	private void writeString(String string) {
-		if (this.highlightTo != this.cursorIndex) {
-			this.removeHighlightedText();
-		}
-
-		String string2 = this.getCurrentPageContent();
-		this.cursorIndex = MathHelper.clamp(this.cursorIndex, 0, string2.length());
-		String string3 = new StringBuilder(string2).insert(this.cursorIndex, string).toString();
-		int i = this.textRenderer.getStringBoundedHeight(string3 + "" + Formatting.BLACK + "_", 114);
-		if (i <= 128 && string3.length() < 1024) {
-			this.setPageContent(string3);
-			this.highlightTo = this.cursorIndex = Math.min(this.getCurrentPageContent().length(), this.cursorIndex + string.length());
+			this.method_27577();
 		}
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
 		this.setFocused(null);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BookScreen.BOOK_TEXTURE);
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.drawTexture(i, 2, 0, 0, 192, 192);
+		this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			String string = this.title;
 			if (this.tickCounter / 6 % 2 == 0) {
@@ -481,101 +393,46 @@ public class BookEditScreen extends Screen {
 
 			String string2 = I18n.translate("book.editTitle");
 			int k = this.getStringWidth(string2);
-			this.textRenderer.draw(string2, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
+			this.textRenderer.draw(matrices, string2, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
 			int l = this.getStringWidth(string);
-			this.textRenderer.draw(string, (float)(i + 36 + (114 - l) / 2), 50.0F, 0);
+			this.textRenderer.draw(matrices, string, (float)(i + 36 + (114 - l) / 2), 50.0F, 0);
 			String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
 			int m = this.getStringWidth(string3);
-			this.textRenderer.draw(Formatting.DARK_GRAY + string3, (float)(i + 36 + (114 - m) / 2), 60.0F, 0);
-			String string4 = I18n.translate("book.finalizeWarning");
-			this.textRenderer.drawTrimmed(string4, i + 36, 82, 114, 0);
+			this.textRenderer.draw(matrices, Formatting.DARK_GRAY + string3, (float)(i + 36 + (114 - m) / 2), 60.0F, 0);
+			this.textRenderer.drawTrimmed(new TranslatableText("book.finalizeWarning"), i + 36, 82, 114, 0);
 		} else {
 			String string = I18n.translate("book.pageIndicator", this.currentPage + 1, this.countPages());
-			String string2 = this.getCurrentPageContent();
-			int k = this.getStringWidth(string);
-			this.textRenderer.draw(string, (float)(i - k + 192 - 44), 18.0F, 0);
-			this.textRenderer.drawTrimmed(string2, i + 36, 32, 114, 0);
-			this.drawHighlight(string2);
-			if (this.tickCounter / 6 % 2 == 0) {
-				BookEditScreen.Position position = this.getCursorPositionForIndex(string2, this.cursorIndex);
-				if (this.textRenderer.isRightToLeft()) {
-					this.localizePosition(position);
-					position.x = position.x - 4;
-				}
+			int n = this.getStringWidth(string);
+			this.textRenderer.draw(matrices, string, (float)(i - n + 192 - 44), 18.0F, 0);
+			BookEditScreen.class_5233 lv = this.method_27576();
 
-				this.translateRelativePositionToGlPosition(position);
-				if (this.cursorIndex < string2.length()) {
-					DrawableHelper.fill(position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
-				} else {
-					this.textRenderer.draw("_", (float)position.x, (float)position.y, 0);
-				}
+			for (BookEditScreen.Position position : lv.field_24276) {
+				this.textRenderer.draw(matrices, position.field_24280, (float)position.x, (float)position.y, -16777216);
 			}
+
+			this.method_27588(lv.field_24277);
+			this.method_27581(matrices, lv.field_24273, lv.field_24274);
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	private void method_27581(MatrixStack matrixStack, BookEditScreen.class_5234 arg, boolean bl) {
+		if (this.tickCounter / 6 % 2 == 0) {
+			arg = this.method_27590(arg);
+			if (!bl) {
+				DrawableHelper.fill(matrixStack, arg.field_24281, arg.field_24282 - 1, arg.field_24281 + 1, arg.field_24282 + 9, -16777216);
+			} else {
+				this.textRenderer.draw(matrixStack, "_", (float)arg.field_24281, (float)arg.field_24282, 0);
+			}
+		}
 	}
 
 	private int getStringWidth(String text) {
-		return this.textRenderer.getStringWidth(this.textRenderer.isRightToLeft() ? this.textRenderer.mirror(text) : text);
+		return this.textRenderer.getWidth(this.textRenderer.isRightToLeft() ? this.textRenderer.mirror(text) : text);
 	}
 
-	private int getCharacterCountForWidth(String text, int width) {
-		return this.textRenderer.getCharacterCountForWidth(text, width);
-	}
-
-	private String getHighlightedText() {
-		String string = this.getCurrentPageContent();
-		int i = Math.min(this.cursorIndex, this.highlightTo);
-		int j = Math.max(this.cursorIndex, this.highlightTo);
-		return string.substring(i, j);
-	}
-
-	private void drawHighlight(String content) {
-		if (this.highlightTo != this.cursorIndex) {
-			int i = Math.min(this.cursorIndex, this.highlightTo);
-			int j = Math.max(this.cursorIndex, this.highlightTo);
-			String string = content.substring(i, j);
-			int k = this.textRenderer.findWordEdge(content, 1, j, true);
-			String string2 = content.substring(i, k);
-			BookEditScreen.Position position = this.getCursorPositionForIndex(content, i);
-			BookEditScreen.Position position2 = new BookEditScreen.Position(position.x, position.y + 9);
-
-			while (!string.isEmpty()) {
-				int l = this.getCharacterCountForWidth(string2, 114 - position.x);
-				if (string.length() <= l) {
-					position2.x = position.x + this.getStringWidth(string);
-					this.drawHighlightRect(position, position2);
-					break;
-				}
-
-				l = Math.min(l, string.length() - 1);
-				String string3 = string.substring(0, l);
-				char c = string.charAt(l);
-				boolean bl = c == ' ' || c == '\n';
-				string = Formatting.getFormatAtEnd(string3) + string.substring(l + (bl ? 1 : 0));
-				string2 = Formatting.getFormatAtEnd(string3) + string2.substring(l + (bl ? 1 : 0));
-				position2.x = position.x + this.getStringWidth(string3 + " ");
-				this.drawHighlightRect(position, position2);
-				position.x = 0;
-				position.y = position.y + 9;
-				position2.y = position2.y + 9;
-			}
-		}
-	}
-
-	private void drawHighlightRect(BookEditScreen.Position position1, BookEditScreen.Position position2) {
-		BookEditScreen.Position position = new BookEditScreen.Position(position1.x, position1.y);
-		BookEditScreen.Position position3 = new BookEditScreen.Position(position2.x, position2.y);
-		if (this.textRenderer.isRightToLeft()) {
-			this.localizePosition(position);
-			this.localizePosition(position3);
-			int i = position3.x;
-			position3.x = position.x;
-			position.x = i;
-		}
-
-		this.translateRelativePositionToGlPosition(position);
-		this.translateRelativePositionToGlPosition(position3);
+	private void method_27588(Rect2i[] rect2is) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.color4f(0.0F, 0.0F, 255.0F, 255.0F);
@@ -583,193 +440,262 @@ public class BookEditScreen extends Screen {
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
-		bufferBuilder.vertex((double)position.x, (double)position3.y, 0.0).next();
-		bufferBuilder.vertex((double)position3.x, (double)position3.y, 0.0).next();
-		bufferBuilder.vertex((double)position3.x, (double)position.y, 0.0).next();
-		bufferBuilder.vertex((double)position.x, (double)position.y, 0.0).next();
+
+		for (Rect2i rect2i : rect2is) {
+			int i = rect2i.getX();
+			int j = rect2i.getY();
+			int k = i + rect2i.getWidth();
+			int l = j + rect2i.getHeight();
+			bufferBuilder.vertex((double)i, (double)l, 0.0).next();
+			bufferBuilder.vertex((double)k, (double)l, 0.0).next();
+			bufferBuilder.vertex((double)k, (double)j, 0.0).next();
+			bufferBuilder.vertex((double)i, (double)j, 0.0).next();
+		}
+
 		tessellator.draw();
 		RenderSystem.disableColorLogicOp();
 		RenderSystem.enableTexture();
 	}
 
-	private BookEditScreen.Position getCursorPositionForIndex(String content, int index) {
-		BookEditScreen.Position position = new BookEditScreen.Position();
-		int i = 0;
-		int j = 0;
-
-		for (String string = content; !string.isEmpty(); j = i) {
-			int k = this.getCharacterCountForWidth(string, 114);
-			if (string.length() <= k) {
-				String string2 = string.substring(0, Math.min(Math.max(index - j, 0), string.length()));
-				position.x = position.x + this.getStringWidth(string2);
-				break;
-			}
-
-			String string2 = string.substring(0, k);
-			char c = string.charAt(k);
-			boolean bl = c == ' ' || c == '\n';
-			string = Formatting.getFormatAtEnd(string2) + string.substring(k + (bl ? 1 : 0));
-			i += string2.length() + (bl ? 1 : 0);
-			if (i - 1 >= index) {
-				String string3 = string2.substring(0, Math.min(Math.max(index - j, 0), string2.length()));
-				position.x = position.x + this.getStringWidth(string3);
-				break;
-			}
-
-			position.y = position.y + 9;
-		}
-
-		return position;
+	private BookEditScreen.class_5234 method_27582(BookEditScreen.class_5234 arg) {
+		return new BookEditScreen.class_5234(arg.field_24281 - (this.width - 192) / 2 - 36, arg.field_24282 - 32);
 	}
 
-	private void localizePosition(BookEditScreen.Position position) {
-		if (this.textRenderer.isRightToLeft()) {
-			position.x = 114 - position.x;
-		}
-	}
-
-	private void translateGlPositionToRelativePosition(BookEditScreen.Position position) {
-		position.x = position.x - (this.width - 192) / 2 - 36;
-		position.y = position.y - 32;
-	}
-
-	private void translateRelativePositionToGlPosition(BookEditScreen.Position position) {
-		position.x = position.x + (this.width - 192) / 2 + 36;
-		position.y = position.y + 32;
-	}
-
-	private int getCharacterCountForStringWidth(String string, int width) {
-		if (width < 0) {
-			return 0;
-		} else {
-			float f = 0.0F;
-			boolean bl = false;
-			String string2 = string + " ";
-
-			for (int i = 0; i < string2.length(); i++) {
-				char c = string2.charAt(i);
-				float g = this.textRenderer.getCharWidth(c);
-				if (c == 167 && i < string2.length() - 1) {
-					c = string2.charAt(++i);
-					if (c == 'l' || c == 'L') {
-						bl = true;
-					} else if (c == 'r' || c == 'R') {
-						bl = false;
-					}
-
-					g = 0.0F;
-				}
-
-				float h = f;
-				f += g;
-				if (bl && g > 0.0F) {
-					f++;
-				}
-
-				if ((float)width >= h && (float)width < f) {
-					return i;
-				}
-			}
-
-			return (float)width >= f ? string2.length() - 1 : -1;
-		}
-	}
-
-	private int getCharacterCountInFrontOfCursor(String content, BookEditScreen.Position cursorPosition) {
-		int i = 16 * 9;
-		if (cursorPosition.y > i) {
-			return -1;
-		} else {
-			int j = Integer.MIN_VALUE;
-			int k = 9;
-			int l = 0;
-
-			for (String string = content; !string.isEmpty() && j < i; k += 9) {
-				int m = this.getCharacterCountForWidth(string, 114);
-				if (m < string.length()) {
-					String string2 = string.substring(0, m);
-					if (cursorPosition.y >= j && cursorPosition.y < k) {
-						int n = this.getCharacterCountForStringWidth(string2, cursorPosition.x);
-						return n < 0 ? -1 : l + n;
-					}
-
-					char c = string.charAt(m);
-					boolean bl = c == ' ' || c == '\n';
-					string = Formatting.getFormatAtEnd(string2) + string.substring(m + (bl ? 1 : 0));
-					l += string2.length() + (bl ? 1 : 0);
-				} else if (cursorPosition.y >= j && cursorPosition.y < k) {
-					int o = this.getCharacterCountForStringWidth(string, cursorPosition.x);
-					return o < 0 ? -1 : l + o;
-				}
-
-				j = k;
-			}
-
-			return content.length();
-		}
+	private BookEditScreen.class_5234 method_27590(BookEditScreen.class_5234 arg) {
+		return new BookEditScreen.class_5234(arg.field_24281 + (this.width - 192) / 2 + 36, arg.field_24282 + 32);
 	}
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (button == 0) {
 			long l = Util.getMeasuringTimeMs();
-			String string = this.getCurrentPageContent();
-			if (!string.isEmpty()) {
-				BookEditScreen.Position position = new BookEditScreen.Position((int)mouseX, (int)mouseY);
-				this.translateGlPositionToRelativePosition(position);
-				this.localizePosition(position);
-				int i = this.getCharacterCountInFrontOfCursor(string, position);
-				if (i >= 0) {
-					if (i != this.lastClickIndex || l - this.lastClickTime >= 250L) {
-						this.cursorIndex = i;
-						if (!Screen.hasShiftDown()) {
-							this.highlightTo = this.cursorIndex;
-						}
-					} else if (this.highlightTo == this.cursorIndex) {
-						this.highlightTo = this.textRenderer.findWordEdge(string, -1, i, false);
-						this.cursorIndex = this.textRenderer.findWordEdge(string, 1, i, false);
-					} else {
-						this.highlightTo = 0;
-						this.cursorIndex = this.getCurrentPageContent().length();
-					}
+			BookEditScreen.class_5233 lv = this.method_27576();
+			int i = lv.method_27602(this.textRenderer, this.method_27582(new BookEditScreen.class_5234((int)mouseX, (int)mouseY)));
+			if (i >= 0) {
+				if (i != this.lastClickIndex || l - this.lastClickTime >= 250L) {
+					this.field_24269.method_27560(i, Screen.hasShiftDown());
+				} else if (!this.field_24269.method_27568()) {
+					this.method_27589(i);
+				} else {
+					this.field_24269.selectAll();
 				}
 
-				this.lastClickIndex = i;
+				this.method_27577();
 			}
 
+			this.lastClickIndex = i;
 			this.lastClickTime = l;
 		}
 
 		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
+	private void method_27589(int i) {
+		String string = this.getCurrentPageContent();
+		this.field_24269.method_27548(TextHandler.moveCursorByWords(string, -1, i, false), TextHandler.moveCursorByWords(string, 1, i, false));
+	}
+
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		if (button == 0 && this.currentPage >= 0 && this.currentPage < this.pages.size()) {
-			String string = (String)this.pages.get(this.currentPage);
-			BookEditScreen.Position position = new BookEditScreen.Position((int)mouseX, (int)mouseY);
-			this.translateGlPositionToRelativePosition(position);
-			this.localizePosition(position);
-			int i = this.getCharacterCountInFrontOfCursor(string, position);
-			if (i >= 0) {
-				this.cursorIndex = i;
-			}
+		if (button == 0) {
+			BookEditScreen.class_5233 lv = this.method_27576();
+			int i = lv.method_27602(this.textRenderer, this.method_27582(new BookEditScreen.class_5234((int)mouseX, (int)mouseY)));
+			this.field_24269.method_27560(i, true);
+			this.method_27577();
 		}
 
 		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
 	}
 
-	@Environment(EnvType.CLIENT)
-	class Position {
-		private int x;
-		private int y;
-
-		Position() {
+	private BookEditScreen.class_5233 method_27576() {
+		if (this.field_24268 == null) {
+			this.field_24268 = this.method_27578();
 		}
 
-		Position(int x, int y) {
-			this.x = x;
-			this.y = y;
+		return this.field_24268;
+	}
+
+	private void method_27577() {
+		this.field_24268 = null;
+	}
+
+	private BookEditScreen.class_5233 method_27578() {
+		String string = this.getCurrentPageContent();
+		if (string.isEmpty()) {
+			return BookEditScreen.class_5233.field_24271;
+		} else {
+			String string2 = this.textRenderer.isRightToLeft() ? this.textRenderer.mirror(string) : string;
+			int i = this.field_24269.getSelectionStart();
+			int j = this.field_24269.getSelectionEnd();
+			IntList intList = new IntArrayList();
+			List<BookEditScreen.Position> list = Lists.<BookEditScreen.Position>newArrayList();
+			MutableInt mutableInt = new MutableInt();
+			MutableBoolean mutableBoolean = new MutableBoolean();
+			TextHandler textHandler = this.textRenderer.getTextHandler();
+			textHandler.wrapLines(string2, 114, Style.EMPTY, true, (style, ix, jx) -> {
+				int k = mutableInt.getAndIncrement();
+				String string2x = string2.substring(ix, jx);
+				mutableBoolean.setValue(string2x.endsWith("\n"));
+				String string3x = StringUtils.stripEnd(string2x, " \n");
+				int lx = k * 9;
+				BookEditScreen.class_5234 lvx = this.method_27590(new BookEditScreen.class_5234(0, lx));
+				intList.add(ix);
+				list.add(new BookEditScreen.Position(style, string3x, lvx.field_24281, lvx.field_24282));
+			});
+			int[] is = intList.toIntArray();
+			boolean bl = i == string2.length();
+			BookEditScreen.class_5234 lv;
+			if (bl && mutableBoolean.isTrue()) {
+				lv = new BookEditScreen.class_5234(0, list.size() * 9);
+			} else {
+				int k = method_27591(is, i);
+				int l = this.textRenderer.getWidth(string2.substring(is[k], i));
+				lv = new BookEditScreen.class_5234(l, k * 9);
+			}
+
+			List<Rect2i> list2 = Lists.<Rect2i>newArrayList();
+			if (i != j) {
+				int l = Math.min(i, j);
+				int m = Math.max(i, j);
+				int n = method_27591(is, l);
+				int o = method_27591(is, m);
+				if (n == o) {
+					int p = n * 9;
+					int q = is[n];
+					list2.add(this.method_27585(string2, textHandler, l, m, p, q));
+				} else {
+					int p = n + 1 > is.length ? string2.length() : is[n + 1];
+					list2.add(this.method_27585(string2, textHandler, l, p, n * 9, is[n]));
+
+					for (int q = n + 1; q < o; q++) {
+						int r = q * 9;
+						String string3 = string2.substring(is[q], is[q + 1]);
+						int s = (int)textHandler.getWidth(string3);
+						list2.add(this.method_27583(new BookEditScreen.class_5234(0, r), new BookEditScreen.class_5234(s, r + 9)));
+					}
+
+					list2.add(this.method_27585(string2, textHandler, is[o], m, o * 9, is[o]));
+				}
+			}
+
+			return new BookEditScreen.class_5233(
+				string2, lv, bl, is, (BookEditScreen.Position[])list.toArray(new BookEditScreen.Position[0]), (Rect2i[])list2.toArray(new Rect2i[0])
+			);
+		}
+	}
+
+	private static int method_27591(int[] is, int i) {
+		int j = Arrays.binarySearch(is, i);
+		return j < 0 ? -(j + 2) : j;
+	}
+
+	private Rect2i method_27585(String string, TextHandler textHandler, int i, int j, int k, int l) {
+		String string2 = string.substring(l, i);
+		String string3 = string.substring(l, j);
+		BookEditScreen.class_5234 lv = new BookEditScreen.class_5234((int)textHandler.getWidth(string2), k);
+		BookEditScreen.class_5234 lv2 = new BookEditScreen.class_5234((int)textHandler.getWidth(string3), k + 9);
+		return this.method_27583(lv, lv2);
+	}
+
+	private Rect2i method_27583(BookEditScreen.class_5234 arg, BookEditScreen.class_5234 arg2) {
+		BookEditScreen.class_5234 lv = this.method_27590(arg);
+		BookEditScreen.class_5234 lv2 = this.method_27590(arg2);
+		int i = Math.min(lv.field_24281, lv2.field_24281);
+		int j = Math.max(lv.field_24281, lv2.field_24281);
+		int k = Math.min(lv.field_24282, lv2.field_24282);
+		int l = Math.max(lv.field_24282, lv2.field_24282);
+		return new Rect2i(i, k, j - i, l - k);
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class Position {
+		private final Style field_24278;
+		private final String field_24279;
+		private final Text field_24280;
+		private final int x;
+		private final int y;
+
+		public Position(Style style, String string, int i, int j) {
+			this.field_24278 = style;
+			this.field_24279 = string;
+			this.x = i;
+			this.y = j;
+			this.field_24280 = new LiteralText(string).setStyle(style);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class class_5233 {
+		private static final BookEditScreen.class_5233 field_24271 = new BookEditScreen.class_5233(
+			"",
+			new BookEditScreen.class_5234(0, 0),
+			true,
+			new int[]{0},
+			new BookEditScreen.Position[]{new BookEditScreen.Position(Style.EMPTY, "", 0, 0)},
+			new Rect2i[0]
+		);
+		private final String field_24272;
+		private final BookEditScreen.class_5234 field_24273;
+		private final boolean field_24274;
+		private final int[] field_24275;
+		private final BookEditScreen.Position[] field_24276;
+		private final Rect2i[] field_24277;
+
+		public class_5233(String string, BookEditScreen.class_5234 arg, boolean bl, int[] is, BookEditScreen.Position[] positions, Rect2i[] rect2is) {
+			this.field_24272 = string;
+			this.field_24273 = arg;
+			this.field_24274 = bl;
+			this.field_24275 = is;
+			this.field_24276 = positions;
+			this.field_24277 = rect2is;
+		}
+
+		public int method_27602(TextRenderer textRenderer, BookEditScreen.class_5234 arg) {
+			int i = arg.field_24282 / 9;
+			if (i < 0) {
+				return 0;
+			} else if (i >= this.field_24276.length) {
+				return this.field_24272.length();
+			} else {
+				BookEditScreen.Position position = this.field_24276[i];
+				return this.field_24275[i] + textRenderer.getTextHandler().getTrimmedLength(position.field_24279, arg.field_24281, position.field_24278);
+			}
+		}
+
+		public int method_27601(int i, int j) {
+			int k = BookEditScreen.method_27591(this.field_24275, i);
+			int l = k + j;
+			int o;
+			if (0 <= l && l < this.field_24275.length) {
+				int m = i - this.field_24275[k];
+				int n = this.field_24276[l].field_24279.length();
+				o = this.field_24275[l] + Math.min(m, n);
+			} else {
+				o = i;
+			}
+
+			return o;
+		}
+
+		public int method_27600(int i) {
+			int j = BookEditScreen.method_27591(this.field_24275, i);
+			return this.field_24275[j];
+		}
+
+		public int method_27604(int i) {
+			int j = BookEditScreen.method_27591(this.field_24275, i);
+			return this.field_24275[j] + this.field_24276[j].field_24279.length();
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class class_5234 {
+		public final int field_24281;
+		public final int field_24282;
+
+		class_5234(int i, int j) {
+			this.field_24281 = i;
+			this.field_24282 = j;
 		}
 	}
 }

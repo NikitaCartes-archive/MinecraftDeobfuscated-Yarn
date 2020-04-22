@@ -85,7 +85,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	public BlockPos locateStructure(
 		ServerWorld serverWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks
 	) {
-		if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
+		if (!chunkGenerator.method_27367(this)) {
 			return null;
 		} else {
 			if (this.lastSeed != serverWorld.getSeed()) {

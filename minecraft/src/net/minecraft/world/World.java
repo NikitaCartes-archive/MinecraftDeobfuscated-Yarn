@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5217;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -65,7 +66,6 @@ import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -87,7 +87,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	public final Random random = new Random();
 	public final Dimension dimension;
 	protected final ChunkManager chunkManager;
-	protected final LevelProperties properties;
+	protected final class_5217 properties;
 	private final Supplier<Profiler> profiler;
 	public final boolean isClient;
 	protected boolean iteratingTickingBlockEntities;
@@ -95,7 +95,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	private final BiomeAccess biomeAccess;
 
 	protected World(
-		LevelProperties levelProperties,
+		class_5217 levelProperties,
 		DimensionType dimensionType,
 		BiFunction<World, Dimension, ChunkManager> chunkManagerProvider,
 		Supplier<Profiler> profiler,
@@ -109,7 +109,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		this.border = this.dimension.createWorldBorder();
 		this.thread = Thread.currentThread();
 		this.biomeAccess = new BiomeAccess(
-			this, isClient ? levelProperties.getSeed() : LevelProperties.sha256Hash(levelProperties.getSeed()), dimensionType.getBiomeAccessType()
+			this, isClient ? levelProperties.getSeed() : class_5217.method_27418(levelProperties.getSeed()), dimensionType.getBiomeAccessType()
 		);
 	}
 
@@ -1044,7 +1044,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Override
-	public LevelProperties getLevelProperties() {
+	public class_5217 getLevelProperties() {
 		return this.properties;
 	}
 

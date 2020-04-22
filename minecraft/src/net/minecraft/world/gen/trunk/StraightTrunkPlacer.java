@@ -1,15 +1,15 @@
 package net.minecraft.world.gen.trunk;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.Dynamic;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
+import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class StraightTrunkPlacer extends TrunkPlacer {
 	public StraightTrunkPlacer(int baseHeight, int firstRandomHeight, int secondRandomHeight) {
@@ -21,20 +21,15 @@ public class StraightTrunkPlacer extends TrunkPlacer {
 	}
 
 	@Override
-	public Map<BlockPos, Integer> generate(
-		ModifiableTestableWorld world,
-		Random random,
-		int trunkHeight,
-		BlockPos pos,
-		int foliageRadius,
-		Set<BlockPos> logs,
-		BlockBox box,
-		BranchedTreeFeatureConfig config
+	public List<FoliagePlacer.class_5208> generate(
+		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
+		method_27400(world, pos.down());
+
 		for (int i = 0; i < trunkHeight; i++) {
-			AbstractTreeFeature.setLogBlockState(world, random, pos.up(i), logs, box, config);
+			method_27402(world, random, pos.up(i), set, blockBox, treeFeatureConfig);
 		}
 
-		return ImmutableMap.of(pos.up(trunkHeight), foliageRadius);
+		return ImmutableList.of(new FoliagePlacer.class_5208(pos.up(trunkHeight), 0, false));
 	}
 }

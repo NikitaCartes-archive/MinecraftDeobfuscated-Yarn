@@ -3487,7 +3487,7 @@ public class BlockStateModelGenerator {
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
 		this.registerTorch(Blocks.TORCH, Blocks.WALL_TORCH);
-		this.registerTorch(Blocks.SOUL_FIRE_TORCH, Blocks.SOUL_FIRE_WALL_TORCH);
+		this.registerTorch(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH);
 		this.registerCubeWithCustomTexture(Blocks.CRAFTING_TABLE, Blocks.OAK_PLANKS, Texture::frontSideWithCustomBottom);
 		this.registerCubeWithCustomTexture(Blocks.FLETCHING_TABLE, Blocks.BIRCH_PLANKS, Texture::frontTopSide);
 		this.registerNetherrackBottomCustomTop(Blocks.CRIMSON_NYLIUM);
@@ -3495,7 +3495,7 @@ public class BlockStateModelGenerator {
 		this.registerFurnaceLikeOrientable(Blocks.DISPENSER);
 		this.registerFurnaceLikeOrientable(Blocks.DROPPER);
 		this.registerLantern(Blocks.LANTERN);
-		this.registerLantern(Blocks.SOUL_FIRE_LANTERN);
+		this.registerLantern(Blocks.SOUL_LANTERN);
 		this.registerAxisRotated(Blocks.BASALT, TexturedModel.CUBE_COLUMN);
 		this.registerAxisRotated(Blocks.POLISHED_BASALT, TexturedModel.CUBE_COLUMN);
 		this.registerAxisRotated(Blocks.BONE_BLOCK, TexturedModel.CUBE_COLUMN);

@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -68,13 +69,13 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		int i = this.x;
 		int j = this.y;
-		this.drawBackground(delta, mouseX, mouseY);
+		this.drawBackground(matrices, delta, mouseX, mouseY);
 		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableDepthTest();
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 		RenderSystem.pushMatrix();
 		RenderSystem.translatef((float)i, (float)j, 0.0F);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -88,7 +89,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		for (int m = 0; m < this.handler.slots.size(); m++) {
 			Slot slot = (Slot)this.handler.slots.get(m);
 			if (slot.doDrawHoveringEffect()) {
-				this.drawSlot(slot);
+				this.drawSlot(matrices, slot);
 			}
 
 			if (this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.doDrawHoveringEffect()) {
@@ -97,13 +98,13 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				int n = slot.x;
 				int o = slot.y;
 				RenderSystem.colorMask(true, true, true, false);
-				this.fillGradient(n, o, n + 16, o + 16, -2130706433, -2130706433);
+				this.fillGradient(matrices, n, o, n + 16, o + 16, -2130706433, -2130706433);
 				RenderSystem.colorMask(true, true, true, true);
 				RenderSystem.enableDepthTest();
 			}
 		}
 
-		this.drawForeground(mouseX, mouseY);
+		this.drawForeground(matrices, mouseX, mouseY);
 		PlayerInventory playerInventory = this.client.player.inventory;
 		ItemStack itemStack = this.touchDragStack.isEmpty() ? playerInventory.getCursorStack() : this.touchDragStack;
 		if (!itemStack.isEmpty()) {
@@ -142,9 +143,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		RenderSystem.enableDepthTest();
 	}
 
-	protected void drawMouseoverTooltip(int mouseX, int mouseY) {
+	protected void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j) {
 		if (this.client.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
-			this.renderTooltip(this.focusedSlot.getStack(), mouseX, mouseY);
+			this.renderTooltip(matrixStack, this.focusedSlot.getStack(), i, j);
 		}
 	}
 
@@ -158,12 +159,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		this.itemRenderer.zOffset = 0.0F;
 	}
 
-	protected void drawForeground(int mouseX, int mouseY) {
+	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
 	}
 
-	protected abstract void drawBackground(float delta, int mouseX, int mouseY);
+	protected abstract void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i);
 
-	private void drawSlot(Slot slot) {
+	private void drawSlot(MatrixStack matrixStack, Slot slot) {
 		int i = slot.x;
 		int j = slot.y;
 		ItemStack itemStack = slot.getStack();
@@ -201,14 +202,14 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			if (pair != null) {
 				Sprite sprite = (Sprite)this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
 				this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-				drawSprite(i, j, this.getZOffset(), 16, 16, sprite);
+				drawSprite(matrixStack, i, j, this.getZOffset(), 16, 16, sprite);
 				bl2 = true;
 			}
 		}
 
 		if (!bl2) {
 			if (bl) {
-				fill(i, j, i + 16, j + 16, -2130706433);
+				fill(matrixStack, i, j, i + 16, j + 16, -2130706433);
 			}
 
 			RenderSystem.enableDepthTest();

@@ -14,6 +14,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -72,7 +73,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	protected void updateItemPosition(int index, int x, int y, float delta) {
 	}
 
-	protected abstract void renderItem(int index, int x, int y, int itemHeight, int mouseX, int mouseY, float delta);
+	protected abstract void renderItem(MatrixStack matrixStack, int x, int y, int itemHeight, int mouseX, int mouseY, int i, float f);
 
 	protected void renderHeader(int x, int y, Tessellator tessellator) {
 	}
@@ -104,7 +105,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.renderBackground();
 			int i = this.getScrollbarPosition();
@@ -139,7 +140,7 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 				this.renderHeader(k, l, tessellator);
 			}
 
-			this.renderList(k, l, mouseX, mouseY, delta);
+			this.renderList(matrices, k, l, mouseX, mouseY, delta);
 			RenderSystem.disableDepthTest();
 			this.renderHoleBackground(0, this.top, 255, 255);
 			this.renderHoleBackground(this.bottom, this.height, 255, 255);
@@ -314,41 +315,41 @@ public abstract class ListWidget extends AbstractParentElement implements Drawab
 		return 220;
 	}
 
-	protected void renderList(int x, int y, int mouseX, int mouseY, float delta) {
-		int i = this.getItemCount();
+	protected void renderList(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
+		int m = this.getItemCount();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 
-		for (int j = 0; j < i; j++) {
-			int k = y + j * this.itemHeight + this.headerHeight;
-			int l = this.itemHeight - 4;
-			if (k > this.bottom || k + l < this.top) {
-				this.updateItemPosition(j, x, k, delta);
+		for (int n = 0; n < m; n++) {
+			int o = j + n * this.itemHeight + this.headerHeight;
+			int p = this.itemHeight - 4;
+			if (o > this.bottom || o + p < this.top) {
+				this.updateItemPosition(n, i, o, f);
 			}
 
-			if (this.renderSelection && this.isSelectedItem(j)) {
-				int m = this.left + this.width / 2 - this.getRowWidth() / 2;
-				int n = this.left + this.width / 2 + this.getRowWidth() / 2;
+			if (this.renderSelection && this.isSelectedItem(n)) {
+				int q = this.left + this.width / 2 - this.getRowWidth() / 2;
+				int r = this.left + this.width / 2 + this.getRowWidth() / 2;
 				RenderSystem.disableTexture();
-				float f = this.isFocused() ? 1.0F : 0.5F;
-				RenderSystem.color4f(f, f, f, 1.0F);
+				float g = this.isFocused() ? 1.0F : 0.5F;
+				RenderSystem.color4f(g, g, g, 1.0F);
 				bufferBuilder.begin(7, VertexFormats.POSITION);
-				bufferBuilder.vertex((double)m, (double)(k + l + 2), 0.0).next();
-				bufferBuilder.vertex((double)n, (double)(k + l + 2), 0.0).next();
-				bufferBuilder.vertex((double)n, (double)(k - 2), 0.0).next();
-				bufferBuilder.vertex((double)m, (double)(k - 2), 0.0).next();
+				bufferBuilder.vertex((double)q, (double)(o + p + 2), 0.0).next();
+				bufferBuilder.vertex((double)r, (double)(o + p + 2), 0.0).next();
+				bufferBuilder.vertex((double)r, (double)(o - 2), 0.0).next();
+				bufferBuilder.vertex((double)q, (double)(o - 2), 0.0).next();
 				tessellator.draw();
 				RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
 				bufferBuilder.begin(7, VertexFormats.POSITION);
-				bufferBuilder.vertex((double)(m + 1), (double)(k + l + 1), 0.0).next();
-				bufferBuilder.vertex((double)(n - 1), (double)(k + l + 1), 0.0).next();
-				bufferBuilder.vertex((double)(n - 1), (double)(k - 1), 0.0).next();
-				bufferBuilder.vertex((double)(m + 1), (double)(k - 1), 0.0).next();
+				bufferBuilder.vertex((double)(q + 1), (double)(o + p + 1), 0.0).next();
+				bufferBuilder.vertex((double)(r - 1), (double)(o + p + 1), 0.0).next();
+				bufferBuilder.vertex((double)(r - 1), (double)(o - 1), 0.0).next();
+				bufferBuilder.vertex((double)(q + 1), (double)(o - 1), 0.0).next();
 				tessellator.draw();
 				RenderSystem.enableTexture();
 			}
 
-			this.renderItem(j, x, k, l, mouseX, mouseY, delta);
+			this.renderItem(matrixStack, n, i, o, p, k, l, f);
 		}
 	}
 

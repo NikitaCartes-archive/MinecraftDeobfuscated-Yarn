@@ -32,7 +32,7 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 								try {
 									text = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
 									if (text == null) {
-										text = new LiteralText("");
+										text = LiteralText.EMPTY;
 									}
 								} catch (JsonParseException var6) {
 								}
@@ -58,7 +58,7 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 								text = new LiteralText(string);
 							}
 						} else {
-							text = new LiteralText("");
+							text = LiteralText.EMPTY;
 						}
 
 						return dynamicx.createString(Text.Serializer.toJson(text));

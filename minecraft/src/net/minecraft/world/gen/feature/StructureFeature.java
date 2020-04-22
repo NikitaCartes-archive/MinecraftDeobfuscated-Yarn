@@ -39,7 +39,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	public boolean generate(
 		IWorld world, StructureAccessor accessor, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, C config
 	) {
-		if (!world.getLevelProperties().hasStructures()) {
+		if (!world.getLevelProperties().method_27420()) {
 			return false;
 		} else {
 			int i = pos.getX() >> 4;
@@ -73,7 +73,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	public BlockPos locateStructure(
 		ServerWorld serverWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks
 	) {
-		if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
+		if (!chunkGenerator.method_27367(this)) {
 			return null;
 		} else {
 			StructureAccessor structureAccessor = serverWorld.getStructureAccessor();

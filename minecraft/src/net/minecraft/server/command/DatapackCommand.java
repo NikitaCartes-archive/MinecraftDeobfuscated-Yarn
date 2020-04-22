@@ -8,12 +8,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.List;
+import net.minecraft.class_5219;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 
 public class DatapackCommand {
 	private static final DynamicCommandExceptionType UNKNOWN_DATAPACK_EXCEPTION = new DynamicCommandExceptionType(
@@ -127,10 +126,10 @@ public class DatapackCommand {
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		packAdder.apply(list, container);
 		resourcePackManager.setEnabledProfiles(list);
-		LevelProperties levelProperties = source.getMinecraftServer().getWorld(DimensionType.OVERWORLD).getLevelProperties();
-		levelProperties.getEnabledDataPacks().clear();
-		resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> levelProperties.getEnabledDataPacks().add(resourcePackProfile.getName()));
-		levelProperties.getDisabledDataPacks().remove(container.getName());
+		class_5219 lv = source.getMinecraftServer().method_27728();
+		lv.getEnabledDataPacks().clear();
+		resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> lv.getEnabledDataPacks().add(resourcePackProfile.getName()));
+		lv.getDisabledDataPacks().remove(container.getName());
 		source.sendFeedback(new TranslatableText("commands.datapack.enable.success", container.getInformationText(true)), true);
 		source.getMinecraftServer().reload();
 		return resourcePackManager.getEnabledProfiles().size();
@@ -141,10 +140,10 @@ public class DatapackCommand {
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		list.remove(container);
 		resourcePackManager.setEnabledProfiles(list);
-		LevelProperties levelProperties = source.getMinecraftServer().getWorld(DimensionType.OVERWORLD).getLevelProperties();
-		levelProperties.getEnabledDataPacks().clear();
-		resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> levelProperties.getEnabledDataPacks().add(resourcePackProfile.getName()));
-		levelProperties.getDisabledDataPacks().add(container.getName());
+		class_5219 lv = source.getMinecraftServer().method_27728();
+		lv.getEnabledDataPacks().clear();
+		resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> lv.getEnabledDataPacks().add(resourcePackProfile.getName()));
+		lv.getDisabledDataPacks().add(container.getName());
 		source.sendFeedback(new TranslatableText("commands.datapack.disable.success", container.getInformationText(true)), true);
 		source.getMinecraftServer().reload();
 		return resourcePackManager.getEnabledProfiles().size();

@@ -12,13 +12,16 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ListWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -46,9 +49,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	public void init() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, I18n.translate("gui.back"), buttonWidget -> this.client.openScreen(this.lastScreen)
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen))
 		);
 		this.backupInfoList = new RealmsBackupInfoScreen.BackupInfoList(this.client);
 		this.addChild(this.backupInfoList);
@@ -71,35 +72,35 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.textRenderer, "Changes from last backup", this.width / 2, 10, 16777215);
-		this.backupInfoList.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.drawCenteredString(matrices, this.textRenderer, "Changes from last backup", this.width / 2, 10, 16777215);
+		this.backupInfoList.render(matrices, mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private String checkForSpecificMetadata(String key, String value) {
+	private Text checkForSpecificMetadata(String key, String value) {
 		String string = key.toLowerCase(Locale.ROOT);
 		if (string.contains("game") && string.contains("mode")) {
 			return this.gameModeMetadata(value);
 		} else {
-			return string.contains("game") && string.contains("difficulty") ? this.gameDifficultyMetadata(value) : value;
+			return (Text)(string.contains("game") && string.contains("difficulty") ? this.gameDifficultyMetadata(value) : new LiteralText(value));
 		}
 	}
 
-	private String gameDifficultyMetadata(String value) {
+	private Text gameDifficultyMetadata(String value) {
 		try {
-			return I18n.translate(RealmsSlotOptionsScreen.DIFFICULTIES[Integer.parseInt(value)]);
+			return RealmsSlotOptionsScreen.DIFFICULTIES[Integer.parseInt(value)];
 		} catch (Exception var3) {
-			return "UNKNOWN";
+			return new LiteralText("UNKNOWN");
 		}
 	}
 
-	private String gameModeMetadata(String value) {
+	private Text gameModeMetadata(String value) {
 		try {
-			return I18n.translate(RealmsSlotOptionsScreen.GAME_MODES[Integer.parseInt(value)]);
+			return RealmsSlotOptionsScreen.GAME_MODES[Integer.parseInt(value)];
 		} catch (Exception var3) {
-			return "UNKNOWN";
+			return new LiteralText("UNKNOWN");
 		}
 	}
 
@@ -115,12 +116,14 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 		}
 
 		@Override
-		protected void renderItem(int index, int x, int y, int itemHeight, int mouseX, int mouseY, float delta) {
-			String string = (String)RealmsBackupInfoScreen.this.keys.get(index);
+		protected void renderItem(MatrixStack matrixStack, int x, int y, int itemHeight, int mouseX, int mouseY, int i, float f) {
+			String string = (String)RealmsBackupInfoScreen.this.keys.get(x);
 			TextRenderer textRenderer = this.client.textRenderer;
-			this.drawString(textRenderer, string, this.width / 2 - 40, y, 10526880);
+			this.drawString(matrixStack, textRenderer, string, this.width / 2 - 40, itemHeight, 10526880);
 			String string2 = (String)RealmsBackupInfoScreen.this.backup.changeList.get(string);
-			this.drawString(textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(string, string2), this.width / 2 - 40, y + 12, 16777215);
+			this.method_27535(
+				matrixStack, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(string, string2), this.width / 2 - 40, itemHeight + 12, 16777215
+			);
 		}
 
 		@Override
@@ -133,7 +136,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(int mouseX, int mouseY, float delta) {
+		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			if (this.visible) {
 				this.renderBackground();
 				int i = this.getScrollbarPosition();
@@ -148,7 +151,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 					this.renderHeader(k, l, tessellator);
 				}
 
-				this.renderList(k, l, mouseX, mouseY, delta);
+				this.renderList(matrices, k, l, mouseX, mouseY, delta);
 				RenderSystem.disableDepthTest();
 				this.renderHoleBackground(0, this.top, 255, 255);
 				this.renderHoleBackground(this.bottom, this.height, 255, 255);

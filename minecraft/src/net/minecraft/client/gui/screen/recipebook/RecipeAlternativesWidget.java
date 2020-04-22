@@ -12,12 +12,14 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeGridAligner;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -124,7 +126,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.time += delta;
 			RenderSystem.enableBlend();
@@ -139,93 +141,45 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			int m = 4;
 			int n = 82;
 			int o = 208;
-			this.renderGrid(j, k, 24, 4, 82, 208);
+			this.renderGrid(matrices, j, k, 24, 4, 82, 208);
 			RenderSystem.disableBlend();
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
-				alternativeButtonWidget.render(mouseX, mouseY, delta);
+				alternativeButtonWidget.render(matrices, mouseX, mouseY, delta);
 			}
 
 			RenderSystem.popMatrix();
 		}
 	}
 
-	private void renderGrid(int columns, int rows, int squareSize, int borderSize, int u, int v) {
-		this.drawTexture(this.buttonX, this.buttonY, u, v, borderSize, borderSize);
-		this.drawTexture(this.buttonX + borderSize * 2 + columns * squareSize, this.buttonY, u + squareSize + borderSize, v, borderSize, borderSize);
-		this.drawTexture(this.buttonX, this.buttonY + borderSize * 2 + rows * squareSize, u, v + squareSize + borderSize, borderSize, borderSize);
-		this.drawTexture(
-			this.buttonX + borderSize * 2 + columns * squareSize,
-			this.buttonY + borderSize * 2 + rows * squareSize,
-			u + squareSize + borderSize,
-			v + squareSize + borderSize,
-			borderSize,
-			borderSize
-		);
+	private void renderGrid(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n) {
+		this.drawTexture(matrixStack, this.buttonX, this.buttonY, m, n, l, l);
+		this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY, m + k + l, n, l, l);
+		this.drawTexture(matrixStack, this.buttonX, this.buttonY + l * 2 + j * k, m, n + k + l, l, l);
+		this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l * 2 + j * k, m + k + l, n + k + l, l, l);
 
-		for (int i = 0; i < columns; i++) {
-			this.drawTexture(this.buttonX + borderSize + i * squareSize, this.buttonY, u + borderSize, v, squareSize, borderSize);
-			this.drawTexture(this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY, u + borderSize, v, borderSize, borderSize);
+		for (int o = 0; o < i; o++) {
+			this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY, m + l, n, k, l);
+			this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY, m + l, n, l, l);
 
-			for (int j = 0; j < rows; j++) {
-				if (i == 0) {
-					this.drawTexture(this.buttonX, this.buttonY + borderSize + j * squareSize, u, v + borderSize, borderSize, squareSize);
-					this.drawTexture(this.buttonX, this.buttonY + borderSize + (j + 1) * squareSize, u, v + borderSize, borderSize, borderSize);
+			for (int p = 0; p < j; p++) {
+				if (o == 0) {
+					this.drawTexture(matrixStack, this.buttonX, this.buttonY + l + p * k, m, n + l, l, k);
+					this.drawTexture(matrixStack, this.buttonX, this.buttonY + l + (p + 1) * k, m, n + l, l, l);
 				}
 
-				this.drawTexture(
-					this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize + j * squareSize, u + borderSize, v + borderSize, squareSize, squareSize
-				);
-				this.drawTexture(
-					this.buttonX + borderSize + (i + 1) * squareSize, this.buttonY + borderSize + j * squareSize, u + borderSize, v + borderSize, borderSize, squareSize
-				);
-				this.drawTexture(
-					this.buttonX + borderSize + i * squareSize, this.buttonY + borderSize + (j + 1) * squareSize, u + borderSize, v + borderSize, squareSize, borderSize
-				);
-				this.drawTexture(
-					this.buttonX + borderSize + (i + 1) * squareSize - 1,
-					this.buttonY + borderSize + (j + 1) * squareSize - 1,
-					u + borderSize,
-					v + borderSize,
-					borderSize + 1,
-					borderSize + 1
-				);
-				if (i == columns - 1) {
-					this.drawTexture(
-						this.buttonX + borderSize * 2 + columns * squareSize,
-						this.buttonY + borderSize + j * squareSize,
-						u + squareSize + borderSize,
-						v + borderSize,
-						borderSize,
-						squareSize
-					);
-					this.drawTexture(
-						this.buttonX + borderSize * 2 + columns * squareSize,
-						this.buttonY + borderSize + (j + 1) * squareSize,
-						u + squareSize + borderSize,
-						v + borderSize,
-						borderSize,
-						borderSize
-					);
+				this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l + p * k, m + l, n + l, k, k);
+				this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY + l + p * k, m + l, n + l, l, k);
+				this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l + (p + 1) * k, m + l, n + l, k, l);
+				this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k - 1, this.buttonY + l + (p + 1) * k - 1, m + l, n + l, l + 1, l + 1);
+				if (o == i - 1) {
+					this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l + p * k, m + k + l, n + l, l, k);
+					this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l + (p + 1) * k, m + k + l, n + l, l, l);
 				}
 			}
 
-			this.drawTexture(
-				this.buttonX + borderSize + i * squareSize,
-				this.buttonY + borderSize * 2 + rows * squareSize,
-				u + borderSize,
-				v + squareSize + borderSize,
-				squareSize,
-				borderSize
-			);
-			this.drawTexture(
-				this.buttonX + borderSize + (i + 1) * squareSize,
-				this.buttonY + borderSize * 2 + rows * squareSize,
-				u + borderSize,
-				v + squareSize + borderSize,
-				borderSize,
-				borderSize
-			);
+			this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, k, l);
+			this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, l, l);
 		}
 	}
 
@@ -244,7 +198,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		protected final List<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot> slots = Lists.<RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot>newArrayList();
 
 		public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean isCraftable) {
-			super(x, y, 200, 20, "");
+			super(x, y, 200, 20, LiteralText.EMPTY);
 			this.width = 24;
 			this.height = 24;
 			this.recipe = recipe;
@@ -265,30 +219,30 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		}
 
 		@Override
-		public void renderButton(int mouseX, int mouseY, float delta) {
+		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
 			RenderSystem.enableAlphaTest();
 			RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(RecipeAlternativesWidget.BG_TEX);
-			int i = 152;
+			int k = 152;
 			if (!this.isCraftable) {
-				i += 26;
+				k += 26;
 			}
 
-			int j = RecipeAlternativesWidget.this.furnace ? 130 : 78;
+			int l = RecipeAlternativesWidget.this.furnace ? 130 : 78;
 			if (this.isHovered()) {
-				j += 26;
+				l += 26;
 			}
 
-			this.drawTexture(this.x, this.y, i, j, this.width, this.height);
+			this.drawTexture(matrixStack, this.x, this.y, k, l, this.width, this.height);
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.slots) {
 				RenderSystem.pushMatrix();
-				float f = 0.42F;
-				int k = (int)((float)(this.x + inputSlot.y) / 0.42F - 3.0F);
-				int l = (int)((float)(this.y + inputSlot.x) / 0.42F - 3.0F);
+				float g = 0.42F;
+				int m = (int)((float)(this.x + inputSlot.y) / 0.42F - 3.0F);
+				int n = (int)((float)(this.y + inputSlot.x) / 0.42F - 3.0F);
 				RenderSystem.scalef(0.42F, 0.42F, 1.0F);
 				RecipeAlternativesWidget.this.client
 					.getItemRenderer()
-					.renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], k, l);
+					.renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], m, n);
 				RenderSystem.popMatrix();
 			}
 

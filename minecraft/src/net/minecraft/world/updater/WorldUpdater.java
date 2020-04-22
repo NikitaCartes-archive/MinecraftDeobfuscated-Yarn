@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenCustomHashMap;
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5219;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -25,9 +27,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.RegionFile;
 import net.minecraft.world.storage.VersionedChunkStorage;
@@ -39,9 +39,9 @@ public class WorldUpdater {
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private final String levelName;
 	private final boolean eraseCache;
-	private final WorldSaveHandler worldSaveHandler;
+	private final LevelStorage.Session field_24083;
 	private final Thread updateThread;
-	private final File worldDirectory;
+	private final DataFixer field_24084;
 	private volatile boolean keepUpgradingChunks = true;
 	private volatile boolean isDone;
 	private volatile float progress;
@@ -53,15 +53,13 @@ public class WorldUpdater {
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
-	public WorldUpdater(LevelStorage.Session session, LevelProperties properties, boolean eraseCache) {
-		this.levelName = properties.getLevelName();
-		this.eraseCache = eraseCache;
-		this.worldSaveHandler = session.createSaveHandler(null);
-		this.worldSaveHandler.saveWorld(properties);
-		this.persistentStateManager = new PersistentStateManager(
-			new File(DimensionType.OVERWORLD.getSaveDirectory(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
-		);
-		this.worldDirectory = this.worldSaveHandler.getWorldDir();
+	public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, class_5219 arg, boolean bl) {
+		this.levelName = arg.getLevelName();
+		this.eraseCache = bl;
+		this.field_24084 = dataFixer;
+		this.field_24083 = session;
+		session.method_27425(arg);
+		this.persistentStateManager = new PersistentStateManager(new File(this.field_24083.method_27424(DimensionType.OVERWORLD), "data"), dataFixer);
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
@@ -81,7 +79,6 @@ public class WorldUpdater {
 	}
 
 	private void updateWorld() {
-		File file = this.worldSaveHandler.getWorldDir();
 		this.totalChunkCount = 0;
 		Builder<DimensionType, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
 
@@ -99,8 +96,8 @@ public class WorldUpdater {
 			Builder<DimensionType, VersionedChunkStorage> builder2 = ImmutableMap.builder();
 
 			for (DimensionType dimensionType2 : DimensionType.getAll()) {
-				File file2 = dimensionType2.getSaveDirectory(file);
-				builder2.put(dimensionType2, new VersionedChunkStorage(new File(file2, "region"), this.worldSaveHandler.getDataFixer(), true));
+				File file = this.field_24083.method_27424(dimensionType2);
+				builder2.put(dimensionType2, new VersionedChunkStorage(new File(file, "region"), this.field_24084, true));
 			}
 
 			ImmutableMap<DimensionType, VersionedChunkStorage> immutableMap2 = builder2.build();
@@ -142,15 +139,15 @@ public class WorldUpdater {
 									bl2 = true;
 								}
 							}
-						} catch (CrashException var24) {
-							Throwable throwable = var24.getCause();
+						} catch (CrashException var23) {
+							Throwable throwable = var23.getCause();
 							if (!(throwable instanceof IOException)) {
-								throw var24;
+								throw var23;
 							}
 
 							LOGGER.error("Error upgrading chunk {}", chunkPos, throwable);
-						} catch (IOException var25) {
-							LOGGER.error("Error upgrading chunk {}", chunkPos, var25);
+						} catch (IOException var24) {
+							LOGGER.error("Error upgrading chunk {}", chunkPos, var24);
 						}
 
 						if (bl2) {
@@ -178,8 +175,8 @@ public class WorldUpdater {
 			for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
 				try {
 					versionedChunkStorage2.close();
-				} catch (IOException var23) {
-					LOGGER.error("Error upgrading chunk", (Throwable)var23);
+				} catch (IOException var22) {
+					LOGGER.error("Error upgrading chunk", (Throwable)var22);
 				}
 			}
 
@@ -191,7 +188,7 @@ public class WorldUpdater {
 	}
 
 	private List<ChunkPos> getChunkPositions(DimensionType dimensionType) {
-		File file = dimensionType.getSaveDirectory(this.worldDirectory);
+		File file = this.field_24083.method_27424(dimensionType);
 		File file2 = new File(file, "region");
 		File[] files = file2.listFiles((filex, string) -> string.endsWith(".mca"));
 		if (files == null) {

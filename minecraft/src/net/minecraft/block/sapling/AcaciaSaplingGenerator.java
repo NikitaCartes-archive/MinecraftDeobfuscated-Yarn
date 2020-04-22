@@ -10,7 +10,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 public class AcaciaSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	@Override
-	protected ConfiguredFeature<? extends TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
-		return Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG);
+	protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
+		return Feature.TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG);
 	}
 }

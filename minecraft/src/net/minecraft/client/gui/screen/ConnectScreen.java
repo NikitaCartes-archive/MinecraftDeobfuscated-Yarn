@@ -9,8 +9,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
@@ -124,7 +124,7 @@ public class ConnectScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, buttonWidget -> {
 			this.connectingCancelled = true;
 			if (this.connection != null) {
 				this.connection.disconnect(new TranslatableText("connect.aborted"));
@@ -135,15 +135,15 @@ public class ConnectScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.narratorTimer > 2000L) {
 			this.narratorTimer = l;
 			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
 		}
 
-		this.drawCenteredString(this.textRenderer, this.status.asFormattedString(), this.width / 2, this.height / 2 - 50, 16777215);
-		super.render(mouseX, mouseY, delta);
+		this.method_27534(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

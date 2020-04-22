@@ -33,11 +33,10 @@ public class MessageCommand {
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text message) {
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.sendSystemMessage(
-				new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message.deepCopy())
-					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC})
+				new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC})
 			);
 			source.sendFeedback(
-				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), message.deepCopy())
+				new TranslatableText("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), message)
 					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
 				false
 			);

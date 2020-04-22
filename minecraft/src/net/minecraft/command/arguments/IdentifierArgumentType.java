@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.recipe.Recipe;
@@ -15,6 +16,7 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
@@ -25,6 +27,7 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		object -> new TranslatableText("recipe.notFound", object)
 	);
 	private static final DynamicCommandExceptionType field_21506 = new DynamicCommandExceptionType(object -> new TranslatableText("predicate.unknown", object));
+	private static final DynamicCommandExceptionType field_24267 = new DynamicCommandExceptionType(object -> new TranslatableText("attribute.unknown", object));
 
 	public static IdentifierArgumentType identifier() {
 		return new IdentifierArgumentType();
@@ -55,6 +58,11 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		} else {
 			return lootCondition;
 		}
+	}
+
+	public static EntityAttribute method_27575(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		Identifier identifier = commandContext.getArgument(string, Identifier.class);
+		return (EntityAttribute)Registry.ATTRIBUTES.getOrEmpty(identifier).orElseThrow(() -> field_24267.create(identifier));
 	}
 
 	public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {

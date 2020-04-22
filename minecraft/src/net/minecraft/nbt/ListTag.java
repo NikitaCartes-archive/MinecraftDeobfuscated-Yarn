@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 public class ListTag extends AbstractListTag<Tag> {
@@ -282,42 +283,42 @@ public class ListTag extends AbstractListTag<Tag> {
 			return new LiteralText("[]");
 		} else if (NBT_NUMBER_TYPES.contains(this.type) && this.size() <= 8) {
 			String string = ", ";
-			Text text = new LiteralText("[");
+			MutableText mutableText = new LiteralText("[");
 
 			for (int i = 0; i < this.value.size(); i++) {
 				if (i != 0) {
-					text.append(", ");
+					mutableText.append(", ");
 				}
 
-				text.append(((Tag)this.value.get(i)).toText());
+				mutableText.append(((Tag)this.value.get(i)).toText());
 			}
 
-			text.append("]");
-			return text;
+			mutableText.append("]");
+			return mutableText;
 		} else {
-			Text text2 = new LiteralText("[");
+			MutableText mutableText2 = new LiteralText("[");
 			if (!indent.isEmpty()) {
-				text2.append("\n");
+				mutableText2.append("\n");
 			}
 
 			String string2 = String.valueOf(',');
 
 			for (int i = 0; i < this.value.size(); i++) {
-				Text text3 = new LiteralText(Strings.repeat(indent, depth + 1));
-				text3.append(((Tag)this.value.get(i)).toText(indent, depth + 1));
+				MutableText mutableText3 = new LiteralText(Strings.repeat(indent, depth + 1));
+				mutableText3.append(((Tag)this.value.get(i)).toText(indent, depth + 1));
 				if (i != this.value.size() - 1) {
-					text3.append(string2).append(indent.isEmpty() ? " " : "\n");
+					mutableText3.append(string2).append(indent.isEmpty() ? " " : "\n");
 				}
 
-				text2.append(text3);
+				mutableText2.append(mutableText3);
 			}
 
 			if (!indent.isEmpty()) {
-				text2.append("\n").append(Strings.repeat(indent, depth));
+				mutableText2.append("\n").append(Strings.repeat(indent, depth));
 			}
 
-			text2.append("]");
-			return text2;
+			mutableText2.append("]");
+			return mutableText2;
 		}
 	}
 

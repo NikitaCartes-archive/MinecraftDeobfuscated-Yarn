@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_5217;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -114,7 +115,6 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -599,14 +599,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			ServerWorld serverWorld = this.server.getWorld(dimensionType);
 			this.dimension = newDimension;
 			ServerWorld serverWorld2 = this.server.getWorld(newDimension);
-			LevelProperties levelProperties = serverWorld2.getLevelProperties();
+			class_5217 lv = serverWorld2.getLevelProperties();
 			this.networkHandler
-				.sendPacket(
-					new PlayerRespawnS2CPacket(
-						newDimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), this.interactionManager.getGameMode()
-					)
-				);
-			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+				.sendPacket(new PlayerRespawnS2CPacket(newDimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode()));
+			this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
 			serverWorld.removePlayer(this);
@@ -947,8 +943,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	@Override
-	public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
-		this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, propertyId, value));
+	public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+		this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
 	}
 
 	@Override
@@ -1331,14 +1327,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		} else {
 			ServerWorld serverWorld = this.getServerWorld();
 			this.dimension = targetWorld.dimension.getType();
-			LevelProperties levelProperties = targetWorld.getLevelProperties();
+			class_5217 lv = targetWorld.getLevelProperties();
 			this.networkHandler
-				.sendPacket(
-					new PlayerRespawnS2CPacket(
-						this.dimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), this.interactionManager.getGameMode()
-					)
-				);
-			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+				.sendPacket(new PlayerRespawnS2CPacket(this.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode()));
+			this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
 			this.server.getPlayerManager().sendCommandTree(this);
 			serverWorld.removePlayer(this);
 			this.removed = false;

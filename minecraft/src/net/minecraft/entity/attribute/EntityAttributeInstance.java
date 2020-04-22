@@ -106,6 +106,16 @@ public class EntityAttributeInstance {
 		}
 	}
 
+	public boolean tryRemoveModifier(UUID uuid) {
+		EntityAttributeModifier entityAttributeModifier = this.getModifier(uuid);
+		if (entityAttributeModifier != null && this.persistentModifiers.contains(entityAttributeModifier)) {
+			this.removeModifier(entityAttributeModifier);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	@Environment(EnvType.CLIENT)
 	public void clearModifiers() {
 		for (EntityAttributeModifier entityAttributeModifier : this.getModifiers()) {
@@ -126,17 +136,17 @@ public class EntityAttributeInstance {
 		double d = this.getBaseValue();
 
 		for (EntityAttributeModifier entityAttributeModifier : this.getModifiersByOperation(EntityAttributeModifier.Operation.ADDITION)) {
-			d += entityAttributeModifier.getAmount();
+			d += entityAttributeModifier.getValue();
 		}
 
 		double e = d;
 
 		for (EntityAttributeModifier entityAttributeModifier2 : this.getModifiersByOperation(EntityAttributeModifier.Operation.MULTIPLY_BASE)) {
-			e += d * entityAttributeModifier2.getAmount();
+			e += d * entityAttributeModifier2.getValue();
 		}
 
 		for (EntityAttributeModifier entityAttributeModifier2 : this.getModifiersByOperation(EntityAttributeModifier.Operation.MULTIPLY_TOTAL)) {
-			e *= 1.0 + entityAttributeModifier2.getAmount();
+			e *= 1.0 + entityAttributeModifier2.getValue();
 		}
 
 		return this.type.clamp(e);

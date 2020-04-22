@@ -2,9 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,13 +28,9 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.nbt.Tag;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -75,9 +69,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		for (int i = 0; i < this.buttons.size(); i++) {
-			((AbstractButtonWidget)this.buttons.get(i)).render(mouseX, mouseY, delta);
+			((AbstractButtonWidget)this.buttons.get(i)).render(matrices, mouseX, mouseY, delta);
 		}
 	}
 
@@ -116,85 +110,75 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		return element;
 	}
 
-	protected void renderTooltip(ItemStack stack, int x, int y) {
-		this.renderTooltip(this.getTooltipFromItem(stack), x, y);
+	protected void renderTooltip(MatrixStack matrixStack, ItemStack itemStack, int i, int j) {
+		this.renderTooltip(matrixStack, this.getTooltipFromItem(itemStack), i, j);
 	}
 
-	public List<String> getTooltipFromItem(ItemStack stack) {
-		List<Text> list = stack.getTooltip(
-			this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
-		);
-		List<String> list2 = Lists.<String>newArrayList();
-
-		for (Text text : list) {
-			list2.add(text.asFormattedString());
-		}
-
-		return list2;
+	public List<Text> getTooltipFromItem(ItemStack stack) {
+		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
 	}
 
-	public void renderTooltip(String text, int x, int y) {
-		this.renderTooltip(Arrays.asList(text), x, y);
+	public void renderTooltip(MatrixStack matrixStack, Text text, int i, int j) {
+		this.renderTooltip(matrixStack, Arrays.asList(text), i, j);
 	}
 
-	public void renderTooltip(List<String> text, int x, int y) {
-		if (!text.isEmpty()) {
+	public void renderTooltip(MatrixStack matrixStack, List<Text> list, int i, int j) {
+		if (!list.isEmpty()) {
 			RenderSystem.disableRescaleNormal();
 			RenderSystem.disableDepthTest();
-			int i = 0;
+			int k = 0;
 
-			for (String string : text) {
-				int j = this.textRenderer.getStringWidth(string);
-				if (j > i) {
-					i = j;
+			for (Text text : list) {
+				int l = this.textRenderer.getWidth(text);
+				if (l > k) {
+					k = l;
 				}
 			}
 
-			int k = x + 12;
-			int l = y - 12;
-			int m = 8;
-			if (text.size() > 1) {
-				m += 2 + (text.size() - 1) * 10;
+			int m = i + 12;
+			int n = j - 12;
+			int o = 8;
+			if (list.size() > 1) {
+				o += 2 + (list.size() - 1) * 10;
 			}
 
-			if (k + i > this.width) {
-				k -= 28 + i;
+			if (m + k > this.width) {
+				m -= 28 + k;
 			}
 
-			if (l + m + 6 > this.height) {
-				l = this.height - m - 6;
+			if (n + o + 6 > this.height) {
+				n = this.height - o - 6;
 			}
 
 			this.setZOffset(300);
 			this.itemRenderer.zOffset = 300.0F;
-			int n = -267386864;
-			this.fillGradient(k - 3, l - 4, k + i + 3, l - 3, -267386864, -267386864);
-			this.fillGradient(k - 3, l + m + 3, k + i + 3, l + m + 4, -267386864, -267386864);
-			this.fillGradient(k - 3, l - 3, k + i + 3, l + m + 3, -267386864, -267386864);
-			this.fillGradient(k - 4, l - 3, k - 3, l + m + 3, -267386864, -267386864);
-			this.fillGradient(k + i + 3, l - 3, k + i + 4, l + m + 3, -267386864, -267386864);
-			int o = 1347420415;
-			int p = 1344798847;
-			this.fillGradient(k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 1347420415, 1344798847);
-			this.fillGradient(k + i + 2, l - 3 + 1, k + i + 3, l + m + 3 - 1, 1347420415, 1344798847);
-			this.fillGradient(k - 3, l - 3, k + i + 3, l - 3 + 1, 1347420415, 1347420415);
-			this.fillGradient(k - 3, l + m + 2, k + i + 3, l + m + 3, 1344798847, 1344798847);
-			MatrixStack matrixStack = new MatrixStack();
+			int p = -267386864;
+			this.fillGradient(matrixStack, m - 3, n - 4, m + k + 3, n - 3, -267386864, -267386864);
+			this.fillGradient(matrixStack, m - 3, n + o + 3, m + k + 3, n + o + 4, -267386864, -267386864);
+			this.fillGradient(matrixStack, m - 3, n - 3, m + k + 3, n + o + 3, -267386864, -267386864);
+			this.fillGradient(matrixStack, m - 4, n - 3, m - 3, n + o + 3, -267386864, -267386864);
+			this.fillGradient(matrixStack, m + k + 3, n - 3, m + k + 4, n + o + 3, -267386864, -267386864);
+			int q = 1347420415;
+			int r = 1344798847;
+			this.fillGradient(matrixStack, m - 3, n - 3 + 1, m - 3 + 1, n + o + 3 - 1, 1347420415, 1344798847);
+			this.fillGradient(matrixStack, m + k + 2, n - 3 + 1, m + k + 3, n + o + 3 - 1, 1347420415, 1344798847);
+			this.fillGradient(matrixStack, m - 3, n - 3, m + k + 3, n - 3 + 1, 1347420415, 1347420415);
+			this.fillGradient(matrixStack, m - 3, n + o + 2, m + k + 3, n + o + 3, 1344798847, 1344798847);
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 			matrixStack.translate(0.0, 0.0, (double)this.itemRenderer.zOffset);
 			Matrix4f matrix4f = matrixStack.peek().getModel();
 
-			for (int q = 0; q < text.size(); q++) {
-				String string2 = (String)text.get(q);
-				if (string2 != null) {
-					this.textRenderer.draw(string2, (float)k, (float)l, -1, true, matrix4f, immediate, false, 0, 15728880);
+			for (int s = 0; s < list.size(); s++) {
+				Text text2 = (Text)list.get(s);
+				if (text2 != null) {
+					this.textRenderer.draw(text2, (float)m, (float)n, -1, true, matrix4f, immediate, false, 0, 15728880);
 				}
 
-				if (q == 0) {
-					l += 2;
+				if (s == 0) {
+					n += 2;
 				}
 
-				l += 10;
+				n += 10;
 			}
 
 			immediate.draw();
@@ -205,48 +189,24 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	protected void renderTextHoverEffect(Text text, int x, int y) {
+	protected void renderTextHoverEffect(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
 		if (text != null && text.getStyle().getHoverEvent() != null) {
 			HoverEvent hoverEvent = text.getStyle().getHoverEvent();
-			if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ITEM) {
-				ItemStack itemStack = ItemStack.EMPTY;
-
-				try {
-					Tag tag = StringNbtReader.parse(hoverEvent.getValue().getString());
-					if (tag instanceof CompoundTag) {
-						itemStack = ItemStack.fromTag((CompoundTag)tag);
+			HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
+			if (itemStackContent != null) {
+				this.renderTooltip(matrixStack, itemStackContent.asStack(), i, j);
+			} else {
+				HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
+				if (entityContent != null) {
+					if (this.client.options.advancedItemTooltips) {
+						this.renderTooltip(matrixStack, entityContent.asTooltip(), i, j);
 					}
-				} catch (CommandSyntaxException var10) {
-				}
-
-				if (itemStack.isEmpty()) {
-					this.renderTooltip(Formatting.RED + "Invalid Item!", x, y);
 				} else {
-					this.renderTooltip(itemStack, x, y);
-				}
-			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ENTITY) {
-				if (this.client.options.advancedItemTooltips) {
-					try {
-						CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
-						List<String> list = Lists.<String>newArrayList();
-						Text text2 = Text.Serializer.fromJson(compoundTag.getString("name"));
-						if (text2 != null) {
-							list.add(text2.asFormattedString());
-						}
-
-						if (compoundTag.contains("type", 8)) {
-							String string = compoundTag.getString("type");
-							list.add("Type: " + string);
-						}
-
-						list.add(compoundTag.getString("id"));
-						this.renderTooltip(list, x, y);
-					} catch (CommandSyntaxException | JsonSyntaxException var9) {
-						this.renderTooltip(Formatting.RED + "Invalid Entity!", x, y);
+					Text text2 = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
+					if (text2 != null) {
+						this.renderTooltip(matrixStack, this.client.textRenderer.wrapLines(text2, Math.max(this.width / 2, 200)), i, j);
 					}
 				}
-			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
-				this.renderTooltip(this.client.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().asFormattedString(), Math.max(this.width / 2, 200)), x, y);
 			}
 		}
 	}
@@ -347,15 +307,15 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public void removed() {
 	}
 
-	public void renderBackground() {
-		this.renderBackground(0);
+	public void renderBackground(MatrixStack matrixStack) {
+		this.renderBackground(matrixStack, 0);
 	}
 
-	public void renderBackground(int alpha) {
+	public void renderBackground(MatrixStack matrixStack, int i) {
 		if (this.client.world != null) {
-			this.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
+			this.fillGradient(matrixStack, 0, 0, this.width, this.height, -1072689136, -804253680);
 		} else {
-			this.renderDirtBackground(alpha);
+			this.renderDirtBackground(i);
 		}
 	}
 

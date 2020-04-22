@@ -16,7 +16,9 @@ public class BlockTags {
 	public static final Tag.Identified<Block> WOODEN_STAIRS = register("wooden_stairs");
 	public static final Tag.Identified<Block> WOODEN_SLABS = register("wooden_slabs");
 	public static final Tag.Identified<Block> WOODEN_FENCES = register("wooden_fences");
+	public static final Tag.Identified<Block> PRESSURE_PLATES = register("pressure_plates");
 	public static final Tag.Identified<Block> WOODEN_PRESSURE_PLATES = register("wooden_pressure_plates");
+	public static final Tag.Identified<Block> STONE_PRESSURE_PLATES = register("stone_pressure_plates");
 	public static final Tag.Identified<Block> WOODEN_TRAPDOORS = register("wooden_trapdoors");
 	public static final Tag.Identified<Block> DOORS = register("doors");
 	public static final Tag.Identified<Block> SAPLINGS = register("saplings");

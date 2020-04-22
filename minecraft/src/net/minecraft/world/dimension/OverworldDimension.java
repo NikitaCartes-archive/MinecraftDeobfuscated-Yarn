@@ -28,7 +28,7 @@ public class OverworldDimension extends Dimension {
 
 	@Override
 	public ChunkGenerator<? extends ChunkGeneratorConfig> createChunkGenerator() {
-		return (ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getLevelProperties().getGeneratorOptions().createChunkGenerator(this.world);
+		return (ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getLevelProperties().method_27421().createChunkGenerator(this.world);
 	}
 
 	@Nullable

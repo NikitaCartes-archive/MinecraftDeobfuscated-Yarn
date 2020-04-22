@@ -3,6 +3,7 @@ package net.minecraft.entity.attribute;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.util.registry.Registry;
@@ -31,6 +32,15 @@ public class DefaultAttributeContainer {
 		return this.require(attribute).getBaseValue();
 	}
 
+	public double getModifierValue(EntityAttribute attribute, UUID uuid) {
+		EntityAttributeModifier entityAttributeModifier = this.require(attribute).getModifier(uuid);
+		if (entityAttributeModifier == null) {
+			throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + Registry.ATTRIBUTES.getId(attribute));
+		} else {
+			return entityAttributeModifier.getValue();
+		}
+	}
+
 	@Nullable
 	public EntityAttributeInstance createOverride(Consumer<EntityAttributeInstance> updateCallback, EntityAttribute attribute) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(attribute);
@@ -45,6 +55,15 @@ public class DefaultAttributeContainer {
 
 	public static DefaultAttributeContainer.Builder builder() {
 		return new DefaultAttributeContainer.Builder();
+	}
+
+	public boolean method_27310(EntityAttribute entityAttribute) {
+		return this.instances.containsKey(entityAttribute);
+	}
+
+	public boolean method_27309(EntityAttribute entityAttribute, UUID uUID) {
+		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(entityAttribute);
+		return entityAttributeInstance != null && entityAttributeInstance.getModifier(uUID) != null;
 	}
 
 	public static class Builder {

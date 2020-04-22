@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
@@ -51,7 +52,7 @@ public class FireworkChargeItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Text appendColors(Text line, int[] colors) {
+	private static Text appendColors(MutableText line, int[] colors) {
 		for (int i = 0; i < colors.length; i++) {
 			if (i > 0) {
 				line.append(", ");

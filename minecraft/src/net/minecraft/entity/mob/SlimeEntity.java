@@ -250,7 +250,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	protected float getDamageAmount() {
-		return (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override
@@ -473,7 +473,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			} else {
 				this.state = MoveControl.State.WAIT;
 				if (this.entity.isOnGround()) {
-					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
 					if (this.ticksUntilJump-- <= 0) {
 						this.ticksUntilJump = this.slime.getTicksUntilNextJump();
 						if (this.jumpOften) {
@@ -490,7 +490,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 						this.entity.setMovementSpeed(0.0F);
 					}
 				} else {
-					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
+					this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
 				}
 			}
 		}

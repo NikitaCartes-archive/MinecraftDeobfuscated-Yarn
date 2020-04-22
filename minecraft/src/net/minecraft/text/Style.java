@@ -7,289 +7,435 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
 
+/**
+ * The style of a {@link Text}, representing cosmetic attributes. It includes
+ * font, formatting, click/hover events (actions), color, etc.
+ * 
+ * <p>A style is immutable.</p>
+ * 
+ * @see Text
+ */
 public class Style {
-	private Style parent;
-	private Formatting color;
-	private Boolean bold;
-	private Boolean italic;
-	private Boolean underline;
-	private Boolean strikethrough;
-	private Boolean obfuscated;
-	private ClickEvent clickEvent;
-	private HoverEvent hoverEvent;
-	private String insertion;
-	private static final Style ROOT = new Style() {
-		@Nullable
-		@Override
-		public Formatting getColor() {
-			return null;
-		}
-
-		@Override
-		public boolean isBold() {
-			return false;
-		}
-
-		@Override
-		public boolean isItalic() {
-			return false;
-		}
-
-		@Override
-		public boolean isStrikethrough() {
-			return false;
-		}
-
-		@Override
-		public boolean isUnderlined() {
-			return false;
-		}
-
-		@Override
-		public boolean isObfuscated() {
-			return false;
-		}
-
-		@Nullable
-		@Override
-		public ClickEvent getClickEvent() {
-			return null;
-		}
-
-		@Nullable
-		@Override
-		public HoverEvent getHoverEvent() {
-			return null;
-		}
-
-		@Nullable
-		@Override
-		public String getInsertion() {
-			return null;
-		}
-
-		@Override
-		public Style setColor(Formatting color) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Style setBold(Boolean bold) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Style setItalic(Boolean italic) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Style setStrikethrough(Boolean strikethrough) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Style setUnderline(Boolean underline) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Style setObfuscated(Boolean obfuscated) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Style setClickEvent(ClickEvent clickEvent) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Style setHoverEvent(HoverEvent clickEvent) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public Style setParent(Style parent) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public String toString() {
-			return "Style.ROOT";
-		}
-
-		@Override
-		public Style deepCopy() {
-			return this;
-		}
-
-		@Override
-		public Style copy() {
-			return this;
-		}
-
-		@Override
-		public String asString() {
-			return "";
-		}
-	};
-
+	/**
+	 * The identifier for the default font of a style.
+	 */
+	public static final Identifier DEFAULT_FONT_ID = new Identifier("minecraft", "default");
+	/**
+	 * An empty style.
+	 */
+	public static final Style EMPTY = new Style(null, null, null, null, null, null, null, null, null, null);
 	@Nullable
-	public Formatting getColor() {
-		return this.color == null ? this.getParent().getColor() : this.color;
+	private final TextColor color;
+	@Nullable
+	private final Boolean bold;
+	@Nullable
+	private final Boolean italic;
+	@Nullable
+	private final Boolean underlined;
+	@Nullable
+	private final Boolean strikethrough;
+	@Nullable
+	private final Boolean obfuscated;
+	@Nullable
+	private final ClickEvent clickEvent;
+	@Nullable
+	private final HoverEvent hoverEvent;
+	@Nullable
+	private final String insertion;
+	@Nullable
+	private final Identifier font;
+
+	private Style(
+		@Nullable TextColor color,
+		@Nullable Boolean bold,
+		@Nullable Boolean italic,
+		@Nullable Boolean underlined,
+		@Nullable Boolean strikethrough,
+		@Nullable Boolean obfuscated,
+		@Nullable ClickEvent clickEvent,
+		@Nullable HoverEvent hoverEvent,
+		@Nullable String insertion,
+		@Nullable Identifier font
+	) {
+		this.color = color;
+		this.bold = bold;
+		this.italic = italic;
+		this.underlined = underlined;
+		this.strikethrough = strikethrough;
+		this.obfuscated = obfuscated;
+		this.clickEvent = clickEvent;
+		this.hoverEvent = hoverEvent;
+		this.insertion = insertion;
+		this.font = font;
 	}
 
+	/**
+	 * Returns the color of this style.
+	 */
+	@Nullable
+	public TextColor getColor() {
+		return this.color;
+	}
+
+	/**
+	 * Returns whether the style has bold formatting.
+	 * 
+	 * @see Formatting#BOLD
+	 */
 	public boolean isBold() {
-		return this.bold == null ? this.getParent().isBold() : this.bold;
+		return this.bold == Boolean.TRUE;
 	}
 
+	/**
+	 * Returns whether the style has italic formatting.
+	 * 
+	 * @see Formatting#ITALIC
+	 */
 	public boolean isItalic() {
-		return this.italic == null ? this.getParent().isItalic() : this.italic;
+		return this.italic == Boolean.TRUE;
 	}
 
+	/**
+	 * Returns whether the style has strikethrough formatting.
+	 * 
+	 * @see Formatting#STRIKETHROUGH
+	 */
 	public boolean isStrikethrough() {
-		return this.strikethrough == null ? this.getParent().isStrikethrough() : this.strikethrough;
+		return this.strikethrough == Boolean.TRUE;
 	}
 
+	/**
+	 * Returns whether the style has underline formatting.
+	 * 
+	 * @see Formatting#UNDERLINE
+	 */
 	public boolean isUnderlined() {
-		return this.underline == null ? this.getParent().isUnderlined() : this.underline;
+		return this.underlined == Boolean.TRUE;
 	}
 
+	/**
+	 * Returns whether the style has obfuscated formatting.
+	 * 
+	 * @see Formatting#OBFUSCATED
+	 */
 	public boolean isObfuscated() {
-		return this.obfuscated == null ? this.getParent().isObfuscated() : this.obfuscated;
+		return this.obfuscated == Boolean.TRUE;
 	}
 
+	/**
+	 * Returns if this is the empty style.
+	 * 
+	 * @see #EMPTY
+	 */
 	public boolean isEmpty() {
-		return this.bold == null
-			&& this.italic == null
-			&& this.strikethrough == null
-			&& this.underline == null
-			&& this.obfuscated == null
-			&& this.color == null
-			&& this.clickEvent == null
-			&& this.hoverEvent == null
-			&& this.insertion == null;
+		return this == EMPTY;
 	}
 
+	/**
+	 * Returns the click event of this style.
+	 */
 	@Nullable
 	public ClickEvent getClickEvent() {
-		return this.clickEvent == null ? this.getParent().getClickEvent() : this.clickEvent;
+		return this.clickEvent;
 	}
 
+	/**
+	 * Returns the hover event of this style.
+	 */
 	@Nullable
 	public HoverEvent getHoverEvent() {
-		return this.hoverEvent == null ? this.getParent().getHoverEvent() : this.hoverEvent;
+		return this.hoverEvent;
 	}
 
+	/**
+	 * Returns the insertion text of the style.
+	 * 
+	 * <p>An insertion is inserted when a piece of text clicked while shift key
+	 * is down in the chat HUD.</p>
+	 */
 	@Nullable
 	public String getInsertion() {
-		return this.insertion == null ? this.getParent().getInsertion() : this.insertion;
+		return this.insertion;
 	}
 
-	public Style setColor(Formatting color) {
-		this.color = color;
-		return this;
+	/**
+	 * Returns the font of this style.
+	 */
+	public Identifier getFont() {
+		return this.font != null ? this.font : DEFAULT_FONT_ID;
 	}
 
-	public Style setBold(Boolean bold) {
-		this.bold = bold;
-		return this;
+	/**
+	 * Returns a new style with the color provided and all other attributes of
+	 * this style.
+	 * 
+	 * @param color the new color
+	 */
+	public Style withColor(@Nullable TextColor color) {
+		return new Style(
+			color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
+		);
 	}
 
-	public Style setItalic(Boolean italic) {
-		this.italic = italic;
-		return this;
+	/**
+	 * Returns a new style with the color provided and all other attributes of
+	 * this style.
+	 * 
+	 * @param color the new color
+	 */
+	public Style withColor(@Nullable Formatting color) {
+		return this.withColor(color != null ? TextColor.fromFormatting(color) : null);
 	}
 
-	public Style setStrikethrough(Boolean strikethrough) {
-		this.strikethrough = strikethrough;
-		return this;
+	/**
+	 * Returns a new style with the bold attribute provided and all other
+	 * attributes of this style.
+	 * 
+	 * @param bold the new bold property
+	 */
+	public Style withBold(@Nullable Boolean bold) {
+		return new Style(
+			this.color, bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
+		);
 	}
 
-	public Style setUnderline(Boolean underline) {
-		this.underline = underline;
-		return this;
+	/**
+	 * Returns a new style with the italic attribute provided and all other
+	 * attributes of this style.
+	 * 
+	 * @param italic the new italic property
+	 */
+	public Style withItalic(@Nullable Boolean italic) {
+		return new Style(
+			this.color, this.bold, italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, this.font
+		);
 	}
 
-	public Style setObfuscated(Boolean obfuscated) {
-		this.obfuscated = obfuscated;
-		return this;
+	/**
+	 * Returns a new style with the click event provided and all other
+	 * attributes of this style.
+	 * 
+	 * @param clickEvent the new click event
+	 */
+	public Style withClickEvent(@Nullable ClickEvent clickEvent) {
+		return new Style(
+			this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, clickEvent, this.hoverEvent, this.insertion, this.font
+		);
 	}
 
-	public Style setClickEvent(ClickEvent clickEvent) {
-		this.clickEvent = clickEvent;
-		return this;
+	/**
+	 * Returns a new style with the hover event provided and all other
+	 * attributes of this style.
+	 * 
+	 * @param hoverEvent the new hover event
+	 */
+	public Style setHoverEvent(@Nullable HoverEvent hoverEvent) {
+		return new Style(
+			this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, hoverEvent, this.insertion, this.font
+		);
 	}
 
-	public Style setHoverEvent(HoverEvent clickEvent) {
-		this.hoverEvent = clickEvent;
-		return this;
+	/**
+	 * Returns a new style with the insertion provided and all other
+	 * attributes of this style.
+	 * 
+	 * @param insertion the new insertion string
+	 */
+	public Style withInsertion(@Nullable String insertion) {
+		return new Style(
+			this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, insertion, this.font
+		);
 	}
 
-	public Style setInsertion(String insertion) {
-		this.insertion = insertion;
-		return this;
+	/**
+	 * Returns a new style with the font provided and all other
+	 * attributes of this style.
+	 * 
+	 * @param font the new font
+	 */
+	@Environment(EnvType.CLIENT)
+	public Style withFont(@Nullable Identifier font) {
+		return new Style(
+			this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion, font
+		);
 	}
 
-	public Style setParent(Style parent) {
-		this.parent = parent;
-		return this;
-	}
-
-	public String asString() {
-		if (this.isEmpty()) {
-			return this.parent != null ? this.parent.asString() : "";
-		} else {
-			StringBuilder stringBuilder = new StringBuilder();
-			if (this.getColor() != null) {
-				stringBuilder.append(this.getColor());
-			}
-
-			if (this.isBold()) {
-				stringBuilder.append(Formatting.BOLD);
-			}
-
-			if (this.isItalic()) {
-				stringBuilder.append(Formatting.ITALIC);
-			}
-
-			if (this.isUnderlined()) {
-				stringBuilder.append(Formatting.UNDERLINE);
-			}
-
-			if (this.isObfuscated()) {
-				stringBuilder.append(Formatting.OBFUSCATED);
-			}
-
-			if (this.isStrikethrough()) {
-				stringBuilder.append(Formatting.STRIKETHROUGH);
-			}
-
-			return stringBuilder.toString();
+	/**
+	 * Returns a new style with the formatting provided and all other
+	 * attributes of this style.
+	 * 
+	 * @param formatting the new formatting
+	 */
+	public Style withFormatting(Formatting formatting) {
+		TextColor textColor = this.color;
+		Boolean boolean_ = this.bold;
+		Boolean boolean2 = this.italic;
+		Boolean boolean3 = this.strikethrough;
+		Boolean boolean4 = this.underlined;
+		Boolean boolean5 = this.obfuscated;
+		switch (formatting) {
+			case OBFUSCATED:
+				boolean5 = true;
+				break;
+			case BOLD:
+				boolean_ = true;
+				break;
+			case STRIKETHROUGH:
+				boolean3 = true;
+				break;
+			case UNDERLINE:
+				boolean4 = true;
+				break;
+			case ITALIC:
+				boolean2 = true;
+				break;
+			case RESET:
+				return EMPTY;
+			default:
+				textColor = TextColor.fromFormatting(formatting);
 		}
+
+		return new Style(textColor, boolean_, boolean2, boolean4, boolean3, boolean5, this.clickEvent, this.hoverEvent, this.insertion, this.font);
 	}
 
-	private Style getParent() {
-		return this.parent == null ? ROOT : this.parent;
+	/**
+	 * Returns a new style with the formatting provided and some applicable
+	 * attributes of this style.
+	 * 
+	 * <p>When a color formatting is passed for {@code formatting}, the other
+	 * formattings, including bold, italic, strikethrough, underlined, and
+	 * obfuscated, are all removed.</p>
+	 * 
+	 * @param formatting the new formatting
+	 */
+	@Environment(EnvType.CLIENT)
+	public Style withExclusiveFormatting(Formatting formatting) {
+		TextColor textColor = this.color;
+		Boolean boolean_ = this.bold;
+		Boolean boolean2 = this.italic;
+		Boolean boolean3 = this.strikethrough;
+		Boolean boolean4 = this.underlined;
+		Boolean boolean5 = this.obfuscated;
+		switch (formatting) {
+			case OBFUSCATED:
+				boolean5 = true;
+				break;
+			case BOLD:
+				boolean_ = true;
+				break;
+			case STRIKETHROUGH:
+				boolean3 = true;
+				break;
+			case UNDERLINE:
+				boolean4 = true;
+				break;
+			case ITALIC:
+				boolean2 = true;
+				break;
+			case RESET:
+				return EMPTY;
+			default:
+				boolean5 = false;
+				boolean_ = false;
+				boolean3 = false;
+				boolean4 = false;
+				boolean2 = false;
+				textColor = TextColor.fromFormatting(formatting);
+		}
+
+		return new Style(textColor, boolean_, boolean2, boolean4, boolean3, boolean5, this.clickEvent, this.hoverEvent, this.insertion, this.font);
+	}
+
+	/**
+	 * Returns a new style with the formattings provided and all other
+	 * attributes of this style.
+	 * 
+	 * @param formattings an array of new formattings
+	 */
+	public Style withFormatting(Formatting... formattings) {
+		TextColor textColor = this.color;
+		Boolean boolean_ = this.bold;
+		Boolean boolean2 = this.italic;
+		Boolean boolean3 = this.strikethrough;
+		Boolean boolean4 = this.underlined;
+		Boolean boolean5 = this.obfuscated;
+
+		for (Formatting formatting : formattings) {
+			switch (formatting) {
+				case OBFUSCATED:
+					boolean5 = true;
+					break;
+				case BOLD:
+					boolean_ = true;
+					break;
+				case STRIKETHROUGH:
+					boolean3 = true;
+					break;
+				case UNDERLINE:
+					boolean4 = true;
+					break;
+				case ITALIC:
+					boolean2 = true;
+					break;
+				case RESET:
+					return EMPTY;
+				default:
+					textColor = TextColor.fromFormatting(formatting);
+			}
+		}
+
+		return new Style(textColor, boolean_, boolean2, boolean4, boolean3, boolean5, this.clickEvent, this.hoverEvent, this.insertion, this.font);
+	}
+
+	/**
+	 * Returns a new style with the undefined attributes of this style filled
+	 * by the {@code parent} style.
+	 * 
+	 * @param parent the parent style
+	 */
+	public Style withParent(Style parent) {
+		if (this == EMPTY) {
+			return parent;
+		} else {
+			return parent == EMPTY
+				? this
+				: new Style(
+					this.color != null ? this.color : parent.color,
+					this.bold != null ? this.bold : parent.bold,
+					this.italic != null ? this.italic : parent.italic,
+					this.underlined != null ? this.underlined : parent.underlined,
+					this.strikethrough != null ? this.strikethrough : parent.strikethrough,
+					this.obfuscated != null ? this.obfuscated : parent.obfuscated,
+					this.clickEvent != null ? this.clickEvent : parent.clickEvent,
+					this.hoverEvent != null ? this.hoverEvent : parent.hoverEvent,
+					this.insertion != null ? this.insertion : parent.insertion,
+					this.font != null ? this.font : parent.font
+				);
+		}
 	}
 
 	public String toString() {
-		return "Style{hasParent="
-			+ (this.parent != null)
-			+ ", color="
+		return "Style{ color="
 			+ this.color
 			+ ", bold="
 			+ this.bold
 			+ ", italic="
 			+ this.italic
 			+ ", underlined="
-			+ this.underline
+			+ this.underlined
+			+ ", strikethrough="
+			+ this.strikethrough
 			+ ", obfuscated="
 			+ this.obfuscated
 			+ ", clickEvent="
@@ -298,6 +444,8 @@ public class Style {
 			+ this.getHoverEvent()
 			+ ", insertion="
 			+ this.getInsertion()
+			+ ", font="
+			+ this.getFont()
 			+ '}';
 	}
 
@@ -309,114 +457,113 @@ public class Style {
 		} else {
 			Style style = (Style)obj;
 			return this.isBold() == style.isBold()
-				&& this.getColor() == style.getColor()
+				&& Objects.equals(this.getColor(), style.getColor())
 				&& this.isItalic() == style.isItalic()
 				&& this.isObfuscated() == style.isObfuscated()
 				&& this.isStrikethrough() == style.isStrikethrough()
 				&& this.isUnderlined() == style.isUnderlined()
-				&& (this.getClickEvent() != null ? this.getClickEvent().equals(style.getClickEvent()) : style.getClickEvent() == null)
-				&& (this.getHoverEvent() != null ? this.getHoverEvent().equals(style.getHoverEvent()) : style.getHoverEvent() == null)
-				&& (this.getInsertion() != null ? this.getInsertion().equals(style.getInsertion()) : style.getInsertion() == null);
+				&& Objects.equals(this.getClickEvent(), style.getClickEvent())
+				&& Objects.equals(this.getHoverEvent(), style.getHoverEvent())
+				&& Objects.equals(this.getInsertion(), style.getInsertion())
+				&& Objects.equals(this.getFont(), style.getFont());
 		}
 	}
 
 	public int hashCode() {
 		return Objects.hash(
-			new Object[]{this.color, this.bold, this.italic, this.underline, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion}
+			new Object[]{this.color, this.bold, this.italic, this.underlined, this.strikethrough, this.obfuscated, this.clickEvent, this.hoverEvent, this.insertion}
 		);
 	}
 
-	public Style deepCopy() {
-		Style style = new Style();
-		style.bold = this.bold;
-		style.italic = this.italic;
-		style.strikethrough = this.strikethrough;
-		style.underline = this.underline;
-		style.obfuscated = this.obfuscated;
-		style.color = this.color;
-		style.clickEvent = this.clickEvent;
-		style.hoverEvent = this.hoverEvent;
-		style.parent = this.parent;
-		style.insertion = this.insertion;
-		return style;
-	}
-
-	public Style copy() {
-		Style style = new Style();
-		style.setBold(this.isBold());
-		style.setItalic(this.isItalic());
-		style.setStrikethrough(this.isStrikethrough());
-		style.setUnderline(this.isUnderlined());
-		style.setObfuscated(this.isObfuscated());
-		style.setColor(this.getColor());
-		style.setClickEvent(this.getClickEvent());
-		style.setHoverEvent(this.getHoverEvent());
-		style.setInsertion(this.getInsertion());
-		return style;
-	}
-
+	/**
+	 * A JSON serializer for {@link Style}.
+	 */
 	public static class Serializer implements JsonDeserializer<Style>, JsonSerializer<Style> {
 		@Nullable
 		public Style deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonObject()) {
-				Style style = new Style();
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
 				if (jsonObject == null) {
 					return null;
 				} else {
-					if (jsonObject.has("bold")) {
-						style.bold = jsonObject.get("bold").getAsBoolean();
-					}
-
-					if (jsonObject.has("italic")) {
-						style.italic = jsonObject.get("italic").getAsBoolean();
-					}
-
-					if (jsonObject.has("underlined")) {
-						style.underline = jsonObject.get("underlined").getAsBoolean();
-					}
-
-					if (jsonObject.has("strikethrough")) {
-						style.strikethrough = jsonObject.get("strikethrough").getAsBoolean();
-					}
-
-					if (jsonObject.has("obfuscated")) {
-						style.obfuscated = jsonObject.get("obfuscated").getAsBoolean();
-					}
-
-					if (jsonObject.has("color")) {
-						style.color = jsonDeserializationContext.deserialize(jsonObject.get("color"), Formatting.class);
-					}
-
-					if (jsonObject.has("insertion")) {
-						style.insertion = jsonObject.get("insertion").getAsString();
-					}
-
-					if (jsonObject.has("clickEvent")) {
-						JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "clickEvent");
-						String string = JsonHelper.getString(jsonObject2, "action", null);
-						ClickEvent.Action action = string == null ? null : ClickEvent.Action.byName(string);
-						String string2 = JsonHelper.getString(jsonObject2, "value", null);
-						if (action != null && string2 != null && action.isUserDefinable()) {
-							style.clickEvent = new ClickEvent(action, string2);
-						}
-					}
-
-					if (jsonObject.has("hoverEvent")) {
-						JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "hoverEvent");
-						String string = JsonHelper.getString(jsonObject2, "action", null);
-						HoverEvent.Action action2 = string == null ? null : HoverEvent.Action.byName(string);
-						Text text = jsonDeserializationContext.deserialize(jsonObject2.get("value"), Text.class);
-						if (action2 != null && text != null && action2.isUserDefinable()) {
-							style.hoverEvent = new HoverEvent(action2, text);
-						}
-					}
-
-					return style;
+					Boolean boolean_ = parseNullableBoolean(jsonObject, "bold");
+					Boolean boolean2 = parseNullableBoolean(jsonObject, "italic");
+					Boolean boolean3 = parseNullableBoolean(jsonObject, "underlined");
+					Boolean boolean4 = parseNullableBoolean(jsonObject, "strikethrough");
+					Boolean boolean5 = parseNullableBoolean(jsonObject, "obfuscated");
+					TextColor textColor = parseColor(jsonObject);
+					String string = parseInsertion(jsonObject);
+					ClickEvent clickEvent = getClickEvent(jsonObject);
+					HoverEvent hoverEvent = getHoverEvent(jsonObject);
+					Identifier identifier = getFont(jsonObject);
+					return new Style(textColor, boolean_, boolean2, boolean3, boolean4, boolean5, clickEvent, hoverEvent, string, identifier);
 				}
 			} else {
 				return null;
 			}
+		}
+
+		@Nullable
+		private static Identifier getFont(JsonObject root) {
+			if (root.has("font")) {
+				String string = JsonHelper.getString(root, "font");
+
+				try {
+					return new Identifier(string);
+				} catch (InvalidIdentifierException var3) {
+					throw new JsonSyntaxException("Invalid font name: " + string);
+				}
+			} else {
+				return null;
+			}
+		}
+
+		@Nullable
+		private static HoverEvent getHoverEvent(JsonObject root) {
+			if (root.has("hoverEvent")) {
+				JsonObject jsonObject = JsonHelper.getObject(root, "hoverEvent");
+				HoverEvent hoverEvent = HoverEvent.fromJson(jsonObject);
+				if (hoverEvent != null && hoverEvent.getAction().isParsable()) {
+					return hoverEvent;
+				}
+			}
+
+			return null;
+		}
+
+		@Nullable
+		private static ClickEvent getClickEvent(JsonObject root) {
+			if (root.has("clickEvent")) {
+				JsonObject jsonObject = JsonHelper.getObject(root, "clickEvent");
+				String string = JsonHelper.getString(jsonObject, "action", null);
+				ClickEvent.Action action = string == null ? null : ClickEvent.Action.byName(string);
+				String string2 = JsonHelper.getString(jsonObject, "value", null);
+				if (action != null && string2 != null && action.isUserDefinable()) {
+					return new ClickEvent(action, string2);
+				}
+			}
+
+			return null;
+		}
+
+		@Nullable
+		private static String parseInsertion(JsonObject root) {
+			return JsonHelper.getString(root, "insertion", null);
+		}
+
+		@Nullable
+		private static TextColor parseColor(JsonObject root) {
+			if (root.has("color")) {
+				String string = JsonHelper.getString(root, "color");
+				return TextColor.parse(string);
+			} else {
+				return null;
+			}
+		}
+
+		@Nullable
+		private static Boolean parseNullableBoolean(JsonObject root, String key) {
+			return root.has(key) ? root.get(key).getAsBoolean() : null;
 		}
 
 		@Nullable
@@ -433,8 +580,8 @@ public class Style {
 					jsonObject.addProperty("italic", style.italic);
 				}
 
-				if (style.underline != null) {
-					jsonObject.addProperty("underlined", style.underline);
+				if (style.underlined != null) {
+					jsonObject.addProperty("underlined", style.underlined);
 				}
 
 				if (style.strikethrough != null) {
@@ -446,7 +593,7 @@ public class Style {
 				}
 
 				if (style.color != null) {
-					jsonObject.add("color", jsonSerializationContext.serialize(style.color));
+					jsonObject.addProperty("color", style.color.getName());
 				}
 
 				if (style.insertion != null) {
@@ -461,10 +608,11 @@ public class Style {
 				}
 
 				if (style.hoverEvent != null) {
-					JsonObject jsonObject2 = new JsonObject();
-					jsonObject2.addProperty("action", style.hoverEvent.getAction().getName());
-					jsonObject2.add("value", jsonSerializationContext.serialize(style.hoverEvent.getValue()));
-					jsonObject.add("hoverEvent", jsonObject2);
+					jsonObject.add("hoverEvent", style.hoverEvent.toJson());
+				}
+
+				if (style.font != null) {
+					jsonObject.addProperty("font", style.font.toString());
 				}
 
 				return jsonObject;

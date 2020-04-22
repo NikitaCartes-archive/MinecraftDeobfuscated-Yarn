@@ -243,11 +243,11 @@ public class ExecuteCommand {
 						.suggests(BossBarCommand.suggestionProvider)
 						.then(
 							CommandManager.literal("value")
-								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.createBossBar(commandContext), true, requestResult))
+								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.getBossBar(commandContext), true, requestResult))
 						)
 						.then(
 							CommandManager.literal("max")
-								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.createBossBar(commandContext), false, requestResult))
+								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.getBossBar(commandContext), false, requestResult))
 						)
 				)
 		);

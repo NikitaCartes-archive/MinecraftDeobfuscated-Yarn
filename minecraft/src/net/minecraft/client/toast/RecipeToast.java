@@ -6,6 +6,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 
@@ -20,28 +21,28 @@ public class RecipeToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(ToastManager manager, long currentTime) {
+	public Toast.Visibility draw(MatrixStack matrixStack, ToastManager toastManager, long l) {
 		if (this.justUpdated) {
-			this.startTime = currentTime;
+			this.startTime = l;
 			this.justUpdated = false;
 		}
 
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.HIDE;
 		} else {
-			manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+			toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-			manager.drawTexture(0, 0, 0, 32, 160, 32);
-			manager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
-			manager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
-			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(currentTime / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
+			toastManager.drawTexture(matrixStack, 0, 0, 0, 32, 160, 32);
+			toastManager.getGame().textRenderer.draw(matrixStack, I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
+			toastManager.getGame().textRenderer.draw(matrixStack, I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
+			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(l / Math.max(1L, 5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
 			ItemStack itemStack = recipe.getRecipeKindIcon();
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(0.6F, 0.6F, 1.0F);
-			manager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
+			toastManager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
 			RenderSystem.popMatrix();
-			manager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
-			return currentTime - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
+			toastManager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
+			return l - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		}
 	}
 

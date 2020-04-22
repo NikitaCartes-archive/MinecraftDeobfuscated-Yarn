@@ -68,30 +68,6 @@ public enum Formatting {
 		this.stringValue = "§" + code;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public static String getFormatAtEnd(String string) {
-		StringBuilder stringBuilder = new StringBuilder();
-		int i = -1;
-		int j = string.length();
-
-		while ((i = string.indexOf(167, i + 1)) != -1) {
-			if (i < j - 1) {
-				Formatting formatting = byCode(string.charAt(i + 1));
-				if (formatting != null) {
-					if (formatting.affectsGlyphWidth()) {
-						stringBuilder.setLength(0);
-					}
-
-					if (formatting != RESET) {
-						stringBuilder.append(formatting);
-					}
-				}
-			}
-		}
-
-		return stringBuilder.toString();
-	}
-
 	public int getColorIndex() {
 		return this.colorIndex;
 	}
@@ -105,14 +81,8 @@ public enum Formatting {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public Integer getColorValue() {
 		return this.colorValue;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean affectsGlyphWidth() {
-		return !this.modifier;
 	}
 
 	public String getName() {

@@ -89,6 +89,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -929,6 +930,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
+	@Override
+	protected boolean method_27303() {
+		return !this.abilities.flying && super.method_27303();
+	}
+
 	public void openEditSignScreen(SignBlockEntity sign) {
 	}
 
@@ -1063,7 +1069,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void attack(Entity target) {
 		if (target.isAttackable()) {
 			if (!target.handleAttack(this)) {
-				float f = (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+				float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 				float g;
 				if (target instanceof LivingEntity) {
 					g = EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
@@ -1304,14 +1310,14 @@ public abstract class PlayerEntity extends LivingEntity {
 	public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, boolean bl, boolean bl2) {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
-		if (block instanceof RespawnAnchorBlock && (Integer)blockState.get(RespawnAnchorBlock.CHARGES) > 0) {
+		if (block instanceof RespawnAnchorBlock && (Integer)blockState.get(RespawnAnchorBlock.CHARGES) > 0 && RespawnAnchorBlock.method_27353(world)) {
 			Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
 			if (!bl2 && optional.isPresent()) {
 				world.setBlockState(pos, blockState.with(RespawnAnchorBlock.CHARGES, Integer.valueOf((Integer)blockState.get(RespawnAnchorBlock.CHARGES) - 1)), 3);
 			}
 
 			return optional;
-		} else if (block instanceof BedBlock) {
+		} else if (block instanceof BedBlock && BedBlock.method_27352(world, pos)) {
 			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, 0);
 		} else if (!bl) {
 			return Optional.empty();
@@ -1419,7 +1425,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public float getMovementSpeed() {
-		return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 	}
 
 	public void increaseTravelMotionStats(double dx, double dy, double dz) {
@@ -1782,20 +1788,20 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public Text getDisplayName() {
-		Text text = Team.modifyText(this.getScoreboardTeam(), this.getName());
-		return this.addTellClickEvent(text);
+		MutableText mutableText = Team.modifyText(this.getScoreboardTeam(), this.getName());
+		return this.addTellClickEvent(mutableText);
 	}
 
 	public Text getNameAndUuid() {
 		return new LiteralText("").append(this.getName()).append(" (").append(this.gameProfile.getId().toString()).append(")");
 	}
 
-	private Text addTellClickEvent(Text component) {
+	private MutableText addTellClickEvent(MutableText component) {
 		String string = this.getGameProfile().getName();
 		return component.styled(
-			style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + string + " "))
+			style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tell " + string + " "))
 					.setHoverEvent(this.getHoverEvent())
-					.setInsertion(string)
+					.withInsertion(string)
 		);
 	}
 
@@ -1936,7 +1942,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public float getAttackCooldownProgressPerTick() {
-		return (float)(1.0 / this.getAttribute(EntityAttributes.GENERIC_ATTACK_SPEED) * 20.0);
+		return (float)(1.0 / this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED) * 20.0);
 	}
 
 	public float getAttackCooldownProgress(float baseTime) {
@@ -1957,7 +1963,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public float getLuck() {
-		return (float)this.getAttribute(EntityAttributes.GENERIC_LUCK);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_LUCK);
 	}
 
 	public boolean isCreativeLevelTwoOp() {

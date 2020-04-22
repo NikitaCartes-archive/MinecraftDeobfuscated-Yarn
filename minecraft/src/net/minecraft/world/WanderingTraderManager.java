@@ -3,6 +3,7 @@ package net.minecraft.world;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_5217;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.SpawnType;
@@ -13,7 +14,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -27,14 +27,14 @@ public class WanderingTraderManager {
 	public WanderingTraderManager(ServerWorld world) {
 		this.world = world;
 		this.spawnTimer = 1200;
-		LevelProperties levelProperties = world.getLevelProperties();
-		this.spawnDelay = levelProperties.getWanderingTraderSpawnDelay();
-		this.spawnChance = levelProperties.getWanderingTraderSpawnChance();
+		class_5217 lv = world.getLevelProperties();
+		this.spawnDelay = lv.getWanderingTraderSpawnDelay();
+		this.spawnChance = lv.getWanderingTraderSpawnChance();
 		if (this.spawnDelay == 0 && this.spawnChance == 0) {
 			this.spawnDelay = 24000;
-			levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
+			lv.setWanderingTraderSpawnDelay(this.spawnDelay);
 			this.spawnChance = 25;
-			levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
+			lv.setWanderingTraderSpawnChance(this.spawnChance);
 		}
 	}
 
@@ -42,15 +42,15 @@ public class WanderingTraderManager {
 		if (this.world.getGameRules().getBoolean(GameRules.DO_TRADER_SPAWNING)) {
 			if (--this.spawnTimer <= 0) {
 				this.spawnTimer = 1200;
-				LevelProperties levelProperties = this.world.getLevelProperties();
+				class_5217 lv = this.world.getLevelProperties();
 				this.spawnDelay -= 1200;
-				levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
+				lv.setWanderingTraderSpawnDelay(this.spawnDelay);
 				if (this.spawnDelay <= 0) {
 					this.spawnDelay = 24000;
 					if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 						int i = this.spawnChance;
 						this.spawnChance = MathHelper.clamp(this.spawnChance + 25, 25, 75);
-						levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
+						lv.setWanderingTraderSpawnChance(this.spawnChance);
 						if (this.random.nextInt(100) <= i) {
 							if (this.method_18018()) {
 								this.spawnChance = 25;

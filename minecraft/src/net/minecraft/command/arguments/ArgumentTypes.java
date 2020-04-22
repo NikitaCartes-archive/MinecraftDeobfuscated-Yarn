@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5242;
 import net.minecraft.command.arguments.serialize.ArgumentSerializer;
 import net.minecraft.command.arguments.serialize.ConstantArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
@@ -81,6 +82,7 @@ public class ArgumentTypes {
 		register("entity_summon", EntitySummonArgumentType.class, new ConstantArgumentSerializer(EntitySummonArgumentType::entitySummon));
 		register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer(DimensionArgumentType::dimension));
 		register("time", TimeArgumentType.class, new ConstantArgumentSerializer(TimeArgumentType::time));
+		register("uuid", class_5242.class, new ConstantArgumentSerializer(class_5242::method_27643));
 		if (SharedConstants.isDevelopment) {
 			register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer(TestFunctionArgumentType::testFunction));
 			register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer(TestClassArgumentType::testClass));

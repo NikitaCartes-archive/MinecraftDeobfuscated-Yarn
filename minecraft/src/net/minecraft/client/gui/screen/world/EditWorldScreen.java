@@ -7,19 +7,22 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5218;
+import net.minecraft.class_5219;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +51,7 @@ public class EditWorldScreen extends Screen {
 	protected void init() {
 		this.client.keyboard.enableRepeatEvents(true);
 		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20, I18n.translate("selectWorld.edit.resetIcon"), buttonWidgetx -> {
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), buttonWidgetx -> {
 				FileUtils.deleteQuietly(this.field_23777.getIconFile());
 				buttonWidgetx.active = false;
 			})
@@ -59,33 +62,35 @@ public class EditWorldScreen extends Screen {
 				this.height / 4 + 48 + 5,
 				200,
 				20,
-				I18n.translate("selectWorld.edit.openFolder"),
-				buttonWidgetx -> Util.getOperatingSystem().open(this.field_23777.getDirectory().toFile())
+				new TranslatableText("selectWorld.edit.openFolder"),
+				buttonWidgetx -> Util.getOperatingSystem().open(this.field_23777.getDirectory(class_5218.field_24188).toFile())
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, I18n.translate("selectWorld.edit.backup"), buttonWidgetx -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, new TranslatableText("selectWorld.edit.backup"), buttonWidgetx -> {
 			boolean bl = backupLevel(this.field_23777);
 			this.callback.accept(!bl);
 		}));
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20, I18n.translate("selectWorld.edit.backupFolder"), buttonWidgetx -> {
-			LevelStorage levelStorage = this.client.getLevelStorage();
-			Path path = levelStorage.getBackupsDirectory();
+		this.addButton(
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20, new TranslatableText("selectWorld.edit.backupFolder"), buttonWidgetx -> {
+				LevelStorage levelStorage = this.client.getLevelStorage();
+				Path path = levelStorage.getBackupsDirectory();
 
-			try {
-				Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
-			} catch (IOException var5) {
-				throw new RuntimeException(var5);
-			}
+				try {
+					Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
+				} catch (IOException var5) {
+					throw new RuntimeException(var5);
+				}
 
-			Util.getOperatingSystem().open(path.toFile());
-		}));
+				Util.getOperatingSystem().open(path.toFile());
+			})
+		);
 		this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 100,
 				this.height / 4 + 120 + 5,
 				200,
 				20,
-				I18n.translate("selectWorld.edit.optimize"),
+				new TranslatableText("selectWorld.edit.optimize"),
 				buttonWidgetx -> this.client.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
 						if (bl) {
 							backupLevel(this.field_23777);
@@ -96,15 +101,13 @@ public class EditWorldScreen extends Screen {
 			)
 		);
 		this.saveButton = this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, I18n.translate("selectWorld.edit.save"), buttonWidgetx -> this.commit())
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), buttonWidgetx -> this.commit())
 		);
-		this.addButton(
-			new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, I18n.translate("gui.cancel"), buttonWidgetx -> this.callback.accept(false))
-		);
+		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, buttonWidgetx -> this.callback.accept(false)));
 		buttonWidget.active = this.field_23777.getIconFile().isFile();
-		LevelProperties levelProperties = this.field_23777.readLevelProperties();
-		String string = levelProperties == null ? "" : levelProperties.getLevelName();
-		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 53, 200, 20, I18n.translate("selectWorld.enterName"));
+		class_5219 lv = this.field_23777.readLevelProperties();
+		String string = lv == null ? "" : lv.getLevelName();
+		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 53, 200, 20, new TranslatableText("selectWorld.enterName"));
 		this.levelNameTextField.setText(string);
 		this.levelNameTextField.setChangedListener(stringx -> this.saveButton.active = !stringx.trim().isEmpty());
 		this.children.add(this.levelNameTextField);
@@ -163,11 +166,11 @@ public class EditWorldScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 20, 16777215);
-		this.drawString(this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 40, 10526880);
-		this.levelNameTextField.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 40, 10526880);
+		this.levelNameTextField.render(matrices, mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

@@ -1,6 +1,7 @@
 package net.minecraft.world.level.storage;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixer;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -20,21 +21,25 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.SignStyle;
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5218;
+import net.minecraft.class_5219;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.ProgressListener;
+import net.minecraft.util.Util;
 import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -96,17 +101,17 @@ public class LevelStorage {
 						continue;
 					}
 
-					LevelProperties levelProperties = this.readLevelProperties(file);
-					if (levelProperties != null && (levelProperties.getVersion() == 19132 || levelProperties.getVersion() == 19133)) {
-						boolean bl2 = levelProperties.getVersion() != this.getCurrentVersion();
-						String string2 = levelProperties.getLevelName();
+					class_5219 lv = this.readLevelProperties(file);
+					if (lv != null && (lv.getVersion() == 19132 || lv.getVersion() == 19133)) {
+						boolean bl2 = lv.getVersion() != this.getCurrentVersion();
+						String string2 = lv.getLevelName();
 						if (StringUtils.isEmpty(string2)) {
 							string2 = string;
 						}
 
 						long l = 0L;
 						File file2 = new File(file, "icon.png");
-						list.add(new LevelSummary(levelProperties, string, string2, 0L, bl2, bl, file2));
+						list.add(new LevelSummary(lv, string, string2, 0L, bl2, bl, file2));
 					}
 				}
 			}
@@ -120,15 +125,15 @@ public class LevelStorage {
 	}
 
 	@Nullable
-	private LevelProperties readLevelProperties(File file) {
+	private class_5219 readLevelProperties(File file) {
 		if (!file.exists()) {
 			return null;
 		} else {
 			File file2 = new File(file, "level.dat");
 			if (file2.exists()) {
-				LevelProperties levelProperties = readLevelProperties(file2, this.dataFixer);
-				if (levelProperties != null) {
-					return levelProperties;
+				class_5219 lv = readLevelProperties(file2, this.dataFixer);
+				if (lv != null) {
+					return lv;
 				}
 			}
 
@@ -138,7 +143,7 @@ public class LevelStorage {
 	}
 
 	@Nullable
-	public static LevelProperties readLevelProperties(File file, DataFixer dataFixer) {
+	public static class_5219 readLevelProperties(File file, DataFixer dataFixer) {
 		try {
 			CompoundTag compoundTag = NbtIo.readCompressed(new FileInputStream(file));
 			CompoundTag compoundTag2 = compoundTag.getCompound("Data");
@@ -187,10 +192,11 @@ public class LevelStorage {
 		private final SessionLock lock;
 		private final Path directory;
 		private final String directoryName;
+		private final Map<class_5218, Path> field_24190 = Maps.<class_5218, Path>newHashMap();
 
-		public Session(String directoryName) throws IOException {
-			this.directoryName = directoryName;
-			this.directory = LevelStorage.this.savesDirectory.resolve(directoryName);
+		public Session(String string) throws IOException {
+			this.directoryName = string;
+			this.directory = LevelStorage.this.savesDirectory.resolve(string);
 			this.lock = SessionLock.create(this.directory);
 		}
 
@@ -198,8 +204,12 @@ public class LevelStorage {
 			return this.directoryName;
 		}
 
-		public Path getDirectory() {
-			return this.directory;
+		public Path getDirectory(class_5218 arg) {
+			return (Path)this.field_24190.computeIfAbsent(arg, argx -> this.directory.resolve(argx.method_27423()));
+		}
+
+		public File method_27424(DimensionType dimensionType) {
+			return dimensionType.getSaveDirectory(this.directory.toFile());
 		}
 
 		private void checkValid() {
@@ -208,14 +218,14 @@ public class LevelStorage {
 			}
 		}
 
-		public WorldSaveHandler createSaveHandler(@Nullable MinecraftServer server) {
+		public WorldSaveHandler method_27427() {
 			this.checkValid();
-			return new WorldSaveHandler(LevelStorage.this.savesDirectory.toFile(), this.directoryName, server, LevelStorage.this.dataFixer);
+			return new WorldSaveHandler(this, LevelStorage.this.dataFixer);
 		}
 
 		public boolean needsConversion() {
-			LevelProperties levelProperties = this.readLevelProperties();
-			return levelProperties != null && levelProperties.getVersion() != LevelStorage.this.getCurrentVersion();
+			class_5219 lv = this.readLevelProperties();
+			return lv != null && lv.getVersion() != LevelStorage.this.getCurrentVersion();
 		}
 
 		public boolean convert(ProgressListener progressListener) {
@@ -224,9 +234,30 @@ public class LevelStorage {
 		}
 
 		@Nullable
-		public LevelProperties readLevelProperties() {
+		public class_5219 readLevelProperties() {
 			this.checkValid();
 			return LevelStorage.this.readLevelProperties(this.directory.toFile());
+		}
+
+		public void method_27425(class_5219 arg) {
+			this.method_27426(arg, null);
+		}
+
+		public void method_27426(class_5219 arg, @Nullable CompoundTag compoundTag) {
+			File file = this.directory.toFile();
+			CompoundTag compoundTag2 = arg.cloneWorldTag(compoundTag);
+			CompoundTag compoundTag3 = new CompoundTag();
+			compoundTag3.put("Data", compoundTag2);
+
+			try {
+				File file2 = File.createTempFile("level", ".dat", file);
+				NbtIo.writeCompressed(compoundTag3, new FileOutputStream(file2));
+				File file3 = new File(file, "level.dat_old");
+				File file4 = new File(file, "level.dat");
+				Util.method_27760(file4, file2, file3);
+			} catch (Exception var9) {
+				LevelStorage.LOGGER.error("Failed to save level {}", file, var9);
+			}
 		}
 
 		public File getIconFile() {
@@ -301,28 +332,27 @@ public class LevelStorage {
 		@Environment(EnvType.CLIENT)
 		public long createBackup() throws IOException {
 			this.checkValid();
-			final Path path = this.getDirectory();
 			String string = LocalDateTime.now().format(LevelStorage.TIME_FORMATTER) + "_" + this.directoryName;
-			Path path2 = LevelStorage.this.getBackupsDirectory();
+			Path path = LevelStorage.this.getBackupsDirectory();
 
 			try {
-				Files.createDirectories(Files.exists(path2, new LinkOption[0]) ? path2.toRealPath() : path2);
-			} catch (IOException var17) {
-				throw new RuntimeException(var17);
+				Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
+			} catch (IOException var16) {
+				throw new RuntimeException(var16);
 			}
 
-			Path path3 = path2.resolve(FileNameUtil.getNextUniqueName(path2, string, ".zip"));
-			final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path3)));
-			Throwable var6 = null;
+			Path path2 = path.resolve(FileNameUtil.getNextUniqueName(path, string, ".zip"));
+			final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path2)));
+			Throwable var5 = null;
 
 			try {
-				final Path path4 = Paths.get(this.directoryName);
-				Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+				final Path path3 = Paths.get(this.directoryName);
+				Files.walkFileTree(this.directory, new SimpleFileVisitor<Path>() {
 					public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
 						if (path.endsWith("session.lock")) {
 							return FileVisitResult.CONTINUE;
 						} else {
-							String string = path4.resolve(path.relativize(path)).toString().replace('\\', '/');
+							String string = path3.resolve(Session.this.directory.relativize(path)).toString().replace('\\', '/');
 							ZipEntry zipEntry = new ZipEntry(string);
 							zipOutputStream.putNextEntry(zipEntry);
 							com.google.common.io.Files.asByteSource(path.toFile()).copyTo(zipOutputStream);
@@ -331,16 +361,16 @@ public class LevelStorage {
 						}
 					}
 				});
-			} catch (Throwable var16) {
-				var6 = var16;
-				throw var16;
+			} catch (Throwable var15) {
+				var5 = var15;
+				throw var15;
 			} finally {
 				if (zipOutputStream != null) {
-					if (var6 != null) {
+					if (var5 != null) {
 						try {
 							zipOutputStream.close();
-						} catch (Throwable var15) {
-							var6.addSuppressed(var15);
+						} catch (Throwable var14) {
+							var5.addSuppressed(var14);
 						}
 					} else {
 						zipOutputStream.close();
@@ -348,7 +378,7 @@ public class LevelStorage {
 				}
 			}
 
-			return Files.size(path3);
+			return Files.size(path2);
 		}
 
 		public void close() throws IOException {

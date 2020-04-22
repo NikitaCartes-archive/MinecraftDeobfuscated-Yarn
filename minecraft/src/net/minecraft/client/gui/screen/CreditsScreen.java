@@ -3,6 +3,8 @@ package net.minecraft.client.gui.screen;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,7 +18,11 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.Resource;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
@@ -29,10 +35,12 @@ public class CreditsScreen extends Screen {
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
+	private static final String field_24260 = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 	private final boolean endCredits;
 	private final Runnable finishAction;
 	private float time;
-	private List<String> credits;
+	private List<Text> credits;
+	private IntSet field_24261;
 	private int creditsHeight;
 	private float speed = 0.5F;
 
@@ -68,11 +76,11 @@ public class CreditsScreen extends Screen {
 	@Override
 	protected void init() {
 		if (this.credits == null) {
-			this.credits = Lists.<String>newArrayList();
+			this.credits = Lists.<Text>newArrayList();
+			this.field_24261 = new IntOpenHashSet();
 			Resource resource = null;
 
 			try {
-				String string = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 				int i = 274;
 				if (this.endCredits) {
 					resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
@@ -80,43 +88,58 @@ public class CreditsScreen extends Screen {
 					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 					Random random = new Random(8124371L);
 
-					String string2;
-					while ((string2 = bufferedReader.readLine()) != null) {
-						string2 = string2.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+					String string;
+					while ((string = bufferedReader.readLine()) != null) {
+						string = string.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
 
-						while (string2.contains(string)) {
-							int j = string2.indexOf(string);
-							String string3 = string2.substring(0, j);
-							String string4 = string2.substring(j + string.length());
-							string2 = string3 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
+						int j;
+						while ((j = string.indexOf(field_24260)) != -1) {
+							String string2 = string.substring(0, j);
+							String string3 = string.substring(j + field_24260.length());
+							string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
 						}
 
-						this.credits.addAll(this.client.textRenderer.wrapStringToWidthAsList(string2, 274));
-						this.credits.add("");
+						this.credits.addAll(this.client.textRenderer.getTextHandler().wrapLines(string, 274, Style.EMPTY));
+						this.credits.add(LiteralText.EMPTY);
 					}
 
 					inputStream.close();
 
 					for (int j = 0; j < 8; j++) {
-						this.credits.add("");
+						this.credits.add(LiteralText.EMPTY);
 					}
 				}
 
 				InputStream inputStream = this.client.getResourceManager().getResource(new Identifier("texts/credits.txt")).getInputStream();
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
-				String string5;
-				while ((string5 = bufferedReader.readLine()) != null) {
-					string5 = string5.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-					string5 = string5.replaceAll("\t", "    ");
-					this.credits.addAll(this.client.textRenderer.wrapStringToWidthAsList(string5, 274));
-					this.credits.add("");
+				String string4;
+				while ((string4 = bufferedReader.readLine()) != null) {
+					string4 = string4.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+					string4 = string4.replaceAll("\t", "    ");
+					boolean bl;
+					if (string4.startsWith("[C]")) {
+						string4 = string4.substring(3);
+						bl = true;
+					} else {
+						bl = false;
+					}
+
+					for (Text text : this.client.textRenderer.getTextHandler().wrapLines(string4, 274, Style.EMPTY)) {
+						if (bl) {
+							this.field_24261.add(this.credits.size());
+						}
+
+						this.credits.add(text);
+					}
+
+					this.credits.add(LiteralText.EMPTY);
 				}
 
 				inputStream.close();
 				this.creditsHeight = this.credits.size() * 12;
-			} catch (Exception var14) {
-				LOGGER.error("Couldn't load credits", (Throwable)var14);
+			} catch (Exception var13) {
+				LOGGER.error("Couldn't load credits", (Throwable)var13);
 			} finally {
 				IOUtils.closeQuietly(resource);
 			}
@@ -153,7 +176,7 @@ public class CreditsScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(mouseX, mouseY, delta);
 		int i = 274;
 		int j = this.width / 2 - 137;
@@ -165,10 +188,10 @@ public class CreditsScreen extends Screen {
 		this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableAlphaTest();
-		this.drawTexture(j, k, 0, 0, 155, 44);
-		this.drawTexture(j + 155, k, 0, 45, 155, 44);
+		this.drawTexture(matrices, j, k, 0, 0, 155, 44);
+		this.drawTexture(matrices, j + 155, k, 0, 45, 155, 44);
 		this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
-		drawTexture(j + 88, k + 37, 0.0F, 0.0F, 98, 14, 128, 16);
+		drawTexture(matrices, j + 88, k + 37, 0.0F, 0.0F, 98, 14, 128, 16);
 		RenderSystem.disableAlphaTest();
 		int l = k + 100;
 
@@ -181,12 +204,12 @@ public class CreditsScreen extends Screen {
 			}
 
 			if ((float)l + f + 12.0F + 8.0F > 0.0F && (float)l + f < (float)this.height) {
-				String string = (String)this.credits.get(m);
-				if (string.startsWith("[C]")) {
-					this.textRenderer.drawWithShadow(string.substring(3), (float)(j + (274 - this.textRenderer.getStringWidth(string.substring(3))) / 2), (float)l, 16777215);
+				Text text = (Text)this.credits.get(m);
+				if (this.field_24261.contains(m)) {
+					this.textRenderer.drawWithShadow(matrices, text, (float)(j + (274 - this.textRenderer.getWidth(text)) / 2), (float)l, 16777215);
 				} else {
 					this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0F));
-					this.textRenderer.drawWithShadow(string, (float)j, (float)l, 16777215);
+					this.textRenderer.drawWithShadow(matrices, text, (float)j, (float)l, 16777215);
 				}
 			}
 
@@ -208,6 +231,6 @@ public class CreditsScreen extends Screen {
 		bufferBuilder.vertex(0.0, 0.0, (double)this.getZOffset()).texture(0.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		tessellator.draw();
 		RenderSystem.disableBlend();
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

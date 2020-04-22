@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
@@ -55,9 +56,9 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public void renderIcon(float brightness, int alpha) {
+	public void renderIcon(MatrixStack matrixStack, float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-		DrawableHelper.drawTexture(0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
+		DrawableHelper.drawTexture(matrixStack, 0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
 	}
 
 	@Override

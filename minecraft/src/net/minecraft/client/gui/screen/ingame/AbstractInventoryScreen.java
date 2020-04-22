@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
@@ -40,14 +41,14 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		super.render(matrices, mouseX, mouseY, delta);
 		if (this.drawStatusEffects) {
-			this.drawStatusEffects();
+			this.drawStatusEffects(matrices);
 		}
 	}
 
-	private void drawStatusEffects() {
+	private void drawStatusEffects(MatrixStack matrixStack) {
 		int i = this.x - 124;
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
 		if (!collection.isEmpty()) {
@@ -58,49 +59,49 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 			}
 
 			Iterable<StatusEffectInstance> iterable = Ordering.natural().sortedCopy(collection);
-			this.drawStatusEffectBackgrounds(i, j, iterable);
-			this.drawStatusEffectSprites(i, j, iterable);
-			this.drawStatusEffectDescriptions(i, j, iterable);
+			this.drawStatusEffectBackgrounds(matrixStack, i, j, iterable);
+			this.drawStatusEffectSprites(matrixStack, i, j, iterable);
+			this.drawStatusEffectDescriptions(matrixStack, i, j, iterable);
 		}
 	}
 
-	private void drawStatusEffectBackgrounds(int x, int yIncrement, Iterable<StatusEffectInstance> effects) {
+	private void drawStatusEffectBackgrounds(MatrixStack matrixStack, int i, int j, Iterable<StatusEffectInstance> iterable) {
 		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-		int i = this.y;
+		int k = this.y;
 
-		for (StatusEffectInstance statusEffectInstance : effects) {
+		for (StatusEffectInstance statusEffectInstance : iterable) {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.drawTexture(x, i, 0, 166, 140, 32);
-			i += yIncrement;
+			this.drawTexture(matrixStack, i, k, 0, 166, 140, 32);
+			k += j;
 		}
 	}
 
-	private void drawStatusEffectSprites(int x, int yIncrement, Iterable<StatusEffectInstance> effects) {
+	private void drawStatusEffectSprites(MatrixStack matrixStack, int i, int j, Iterable<StatusEffectInstance> iterable) {
 		StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
-		int i = this.y;
+		int k = this.y;
 
-		for (StatusEffectInstance statusEffectInstance : effects) {
+		for (StatusEffectInstance statusEffectInstance : iterable) {
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
 			Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
 			this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-			drawSprite(x + 6, i + 7, this.getZOffset(), 18, 18, sprite);
-			i += yIncrement;
+			drawSprite(matrixStack, i + 6, k + 7, this.getZOffset(), 18, 18, sprite);
+			k += j;
 		}
 	}
 
-	private void drawStatusEffectDescriptions(int x, int yIncrement, Iterable<StatusEffectInstance> effects) {
-		int i = this.y;
+	private void drawStatusEffectDescriptions(MatrixStack matrixStack, int i, int j, Iterable<StatusEffectInstance> iterable) {
+		int k = this.y;
 
-		for (StatusEffectInstance statusEffectInstance : effects) {
+		for (StatusEffectInstance statusEffectInstance : iterable) {
 			String string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey());
 			if (statusEffectInstance.getAmplifier() >= 1 && statusEffectInstance.getAmplifier() <= 9) {
 				string = string + ' ' + I18n.translate("enchantment.level." + (statusEffectInstance.getAmplifier() + 1));
 			}
 
-			this.textRenderer.drawWithShadow(string, (float)(x + 10 + 18), (float)(i + 6), 16777215);
+			this.textRenderer.drawWithShadow(matrixStack, string, (float)(i + 10 + 18), (float)(k + 6), 16777215);
 			String string2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0F);
-			this.textRenderer.drawWithShadow(string2, (float)(x + 10 + 18), (float)(i + 6 + 10), 8355711);
-			i += yIncrement;
+			this.textRenderer.drawWithShadow(matrixStack, string2, (float)(i + 10 + 18), (float)(k + 6 + 10), 8355711);
+			k += j;
 		}
 	}
 }

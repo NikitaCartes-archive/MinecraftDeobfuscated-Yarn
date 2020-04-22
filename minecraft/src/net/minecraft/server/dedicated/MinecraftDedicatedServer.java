@@ -2,13 +2,10 @@ package net.minecraft.server.dedicated;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.JsonOps;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,11 +16,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5219;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -37,7 +34,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -48,13 +44,10 @@ import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorOptions;
-import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,12 +60,12 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private final ServerCommandOutput rconCommandOutput;
 	private RconServer rconServer;
 	private final ServerPropertiesLoader propertiesLoader;
-	private GameMode defaultGameMode;
 	@Nullable
 	private DedicatedServerGui gui;
 
 	public MinecraftDedicatedServer(
 		LevelStorage.Session session,
+		class_5219 arg,
 		ServerPropertiesLoader serverPropertiesLoader,
 		DataFixer dataFixer,
 		MinecraftSessionService minecraftSessionService,
@@ -82,6 +75,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	) {
 		super(
 			session,
+			arg,
 			Proxy.NO_PROXY,
 			dataFixer,
 			new CommandManager(true),
@@ -144,8 +138,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			this.setServerIp(serverPropertiesHandler.serverIp);
 		}
 
-		this.setSpawnAnimals(serverPropertiesHandler.spawnAnimals);
-		this.setSpawnNpcs(serverPropertiesHandler.spawnNpcs);
 		this.setPvpEnabled(serverPropertiesHandler.pvp);
 		this.setFlightEnabled(serverPropertiesHandler.allowFlight);
 		this.setResourcePack(serverPropertiesHandler.resourcePack, this.createResourcePackHash());
@@ -153,8 +145,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.setForceGameMode(serverPropertiesHandler.forceGameMode);
 		super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
 		this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
-		this.defaultGameMode = serverPropertiesHandler.gameMode;
-		LOGGER.info("Default game type: {}", this.defaultGameMode);
+		this.field_24372.setGameMode(serverPropertiesHandler.gameMode);
+		LOGGER.info("Default game type: {}", serverPropertiesHandler.gameMode);
 		InetAddress inetAddress = null;
 		if (!this.getServerIp().isEmpty()) {
 			inetAddress = InetAddress.getByName(this.getServerIp());
@@ -170,9 +162,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 		try {
 			this.getNetworkIo().bind(inetAddress, this.getServerPort());
-		} catch (IOException var18) {
+		} catch (IOException var10) {
 			LOGGER.warn("**** FAILED TO BIND TO PORT!");
-			LOGGER.warn("The exception was: {}", var18.toString());
+			LOGGER.warn("The exception was: {}", var10.toString());
 			LOGGER.warn("Perhaps a server is already running on that port?");
 			return false;
 		}
@@ -193,34 +185,17 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (!ServerConfigHandler.checkSuccess(this)) {
 			return false;
 		} else {
-			this.setPlayerManager(new DedicatedPlayerManager(this));
+			this.setPlayerManager(new DedicatedPlayerManager(this, this.field_24371));
 			long l = Util.getMeasuringTimeNano();
-			String string = serverPropertiesHandler.levelSeed;
-			String string2 = serverPropertiesHandler.generatorSettings;
-			long m = new Random().nextLong();
-			if (!string.isEmpty()) {
-				try {
-					long n = Long.parseLong(string);
-					if (n != 0L) {
-						m = n;
-					}
-				} catch (NumberFormatException var17) {
-					m = (long)string.hashCode();
-				}
-			}
-
-			LevelGeneratorType levelGeneratorType = serverPropertiesHandler.levelType;
 			this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
 			SkullBlockEntity.setUserCache(this.getUserCache());
 			SkullBlockEntity.setSessionService(this.getSessionService());
 			UserCache.setUseRemote(this.isOnlineMode());
 			LOGGER.info("Preparing level \"{}\"", this.getLevelName());
-			JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();
-			LevelGeneratorOptions levelGeneratorOptions = levelGeneratorType.loadOptions(new Dynamic<>(JsonOps.INSTANCE, jsonObject));
-			this.loadWorld(this.session.getDirectoryName(), m, levelGeneratorOptions);
-			long o = Util.getMeasuringTimeNano() - l;
-			String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
-			LOGGER.info("Done ({})! For help, type \"help\"", string3);
+			this.loadWorld();
+			long m = Util.getMeasuringTimeNano() - l;
+			String string = String.format(Locale.ROOT, "%.3fs", (double)m / 1.0E9);
+			LOGGER.info("Done ({})! For help, type \"help\"", string);
 			if (serverPropertiesHandler.announcePlayerAchievements != null) {
 				this.getGameRules().get(GameRules.ANNOUNCE_ADVANCEMENTS).set(serverPropertiesHandler.announcePlayerAchievements, this);
 			}
@@ -254,6 +229,21 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		}
 	}
 
+	@Override
+	public boolean shouldSpawnAnimals() {
+		return this.getProperties().spawnAnimals && super.shouldSpawnAnimals();
+	}
+
+	@Override
+	public boolean isMonsterSpawningEnabled() {
+		return this.propertiesLoader.getPropertiesHandler().spawnMonsters && super.isMonsterSpawningEnabled();
+	}
+
+	@Override
+	public boolean shouldSpawnNpcs() {
+		return this.propertiesLoader.getPropertiesHandler().spawnNpcs && super.shouldSpawnNpcs();
+	}
+
 	public String createResourcePackHash() {
 		ServerPropertiesHandler serverPropertiesHandler = this.propertiesLoader.getPropertiesHandler();
 		String string;
@@ -281,29 +271,13 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public void setDefaultGameMode(GameMode gameMode) {
-		super.setDefaultGameMode(gameMode);
-		this.defaultGameMode = gameMode;
-	}
-
-	@Override
 	public ServerPropertiesHandler getProperties() {
 		return this.propertiesLoader.getPropertiesHandler();
 	}
 
 	@Override
-	public boolean shouldGenerateStructures() {
-		return this.getProperties().generateStructures;
-	}
-
-	@Override
-	public GameMode getDefaultGameMode() {
-		return this.defaultGameMode;
-	}
-
-	@Override
-	public Difficulty getDefaultDifficulty() {
-		return this.getProperties().difficulty;
+	public void method_27731() {
+		this.setDifficulty(this.getProperties().difficulty, true);
 	}
 
 	@Override
@@ -349,11 +323,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public boolean isNetherAllowed() {
 		return this.getProperties().allowNether;
-	}
-
-	@Override
-	public boolean isMonsterSpawningEnabled() {
-		return this.getProperties().spawnMonsters;
 	}
 
 	@Override

@@ -84,7 +84,7 @@ public class TrackedDataHandlerRegistry {
 		}
 
 		public Text copy(Text text) {
-			return text.deepCopy();
+			return text;
 		}
 	};
 	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = new TrackedDataHandler<Optional<Text>>() {
@@ -102,7 +102,7 @@ public class TrackedDataHandlerRegistry {
 		}
 
 		public Optional<Text> copy(Optional<Text> optional) {
-			return optional.isPresent() ? Optional.of(((Text)optional.get()).deepCopy()) : Optional.empty();
+			return optional;
 		}
 	};
 	public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>() {

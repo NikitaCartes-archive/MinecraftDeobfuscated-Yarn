@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5217;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -108,7 +109,6 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
@@ -119,7 +119,6 @@ import net.minecraft.world.PortalForcer;
 import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.WanderingTraderManager;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
@@ -135,8 +134,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelInfo;
-import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.logging.log4j.LogManager;
@@ -151,7 +149,6 @@ public class ServerWorld extends World {
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
 	boolean inEntityTick;
 	private final MinecraftServer server;
-	private final WorldSaveHandler worldSaveHandler;
 	public boolean savingDisabled;
 	private boolean allPlayersSleeping;
 	private int idleTimeout;
@@ -173,8 +170,8 @@ public class ServerWorld extends World {
 	public ServerWorld(
 		MinecraftServer server,
 		Executor workerExecutor,
-		WorldSaveHandler worldSaveHandler,
-		LevelProperties properties,
+		LevelStorage.Session session,
+		class_5217 properties,
 		DimensionType dimensionType,
 		WorldGenerationProgressListener worldGenerationProgressListener
 	) {
@@ -183,9 +180,9 @@ public class ServerWorld extends World {
 			dimensionType,
 			(world, dimension) -> new ServerChunkManager(
 					(ServerWorld)world,
-					worldSaveHandler.getWorldDir(),
-					worldSaveHandler.getDataFixer(),
-					worldSaveHandler.getStructureManager(),
+					session,
+					server.getDataFixer(),
+					server.method_27727(),
 					workerExecutor,
 					dimension.createChunkGenerator(),
 					server.getPlayerManager().getViewDistance(),
@@ -196,7 +193,6 @@ public class ServerWorld extends World {
 			server::getProfiler,
 			false
 		);
-		this.worldSaveHandler = worldSaveHandler;
 		this.server = server;
 		this.portalForcer = new PortalForcer(this);
 		this.calculateAmbientDarkness();
@@ -303,10 +299,6 @@ public class ServerWorld extends World {
 
 			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(7, this.rainGradient));
 			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(8, this.thunderGradient));
-		}
-
-		if (this.getLevelProperties().isHardcore() && this.getDifficulty() != Difficulty.HARD) {
-			this.getLevelProperties().setDifficulty(Difficulty.HARD);
 		}
 
 		if (this.allPlayersSleeping
@@ -639,7 +631,7 @@ public class ServerWorld extends World {
 		return !this.server.isSpawnProtected(this, pos, player) && this.getWorldBorder().contains(pos);
 	}
 
-	public void init(LevelInfo levelInfo) {
+	public void init(boolean bl) {
 		if (!this.dimension.canPlayersSleep()) {
 			this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.getChunkManager().getChunkGenerator().getSpawnHeight()));
 		} else if (this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
@@ -654,11 +646,11 @@ public class ServerWorld extends World {
 				LOGGER.warn("Unable to find spawn biome");
 			}
 
-			boolean bl = false;
+			boolean bl2 = false;
 
 			for (Block block : BlockTags.VALID_SPAWN.values()) {
 				if (biomeSource.getTopMaterials().contains(block.getDefaultState())) {
-					bl = true;
+					bl2 = true;
 					break;
 				}
 			}
@@ -672,7 +664,7 @@ public class ServerWorld extends World {
 
 			for (int n = 0; n < 1024; n++) {
 				if (i > -16 && i <= 16 && j > -16 && j <= 16) {
-					BlockPos blockPos2 = this.dimension.getSpawningBlockInChunk(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl);
+					BlockPos blockPos2 = this.dimension.getSpawningBlockInChunk(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl2);
 					if (blockPos2 != null) {
 						this.properties.setSpawnPos(blockPos2);
 						break;
@@ -689,7 +681,7 @@ public class ServerWorld extends World {
 				j += l;
 			}
 
-			if (levelInfo.hasBonusChest()) {
+			if (bl) {
 				this.placeBonusChest();
 			}
 		}
@@ -1140,7 +1132,7 @@ public class ServerWorld extends World {
 	}
 
 	public StructureManager getStructureManager() {
-		return this.worldSaveHandler.getStructureManager();
+		return this.server.method_27727();
 	}
 
 	public <T extends ParticleEffect> int spawnParticles(
@@ -1193,7 +1185,7 @@ public class ServerWorld extends World {
 
 	@Nullable
 	public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
-		return this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
+		return !this.properties.method_27420() ? null : this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
 	}
 
 	@Nullable
@@ -1223,10 +1215,6 @@ public class ServerWorld extends World {
 	@Override
 	public boolean isSavingDisabled() {
 		return this.savingDisabled;
-	}
-
-	public WorldSaveHandler getSaveHandler() {
-		return this.worldSaveHandler;
 	}
 
 	public PersistentStateManager getPersistentStateManager() {

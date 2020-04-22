@@ -178,11 +178,11 @@ public class TestCommand {
 			String string2 = structureBlockBlockEntity.getStructurePath();
 			Text text = new LiteralText(string)
 				.setStyle(
-					new Style()
-						.setBold(true)
-						.setColor(Formatting.GREEN)
+					Style.EMPTY
+						.withBold(true)
+						.withColor(Formatting.GREEN)
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard")))
-						.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");"))
+						.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");"))
 				);
 			source.sendFeedback(new LiteralText("Position relative to " + string2 + ": ").append(text), false);
 			DebugInfoSender.addGameTestMarker(serverWorld, new BlockPos(blockPos), string, -2147418368, 10000);

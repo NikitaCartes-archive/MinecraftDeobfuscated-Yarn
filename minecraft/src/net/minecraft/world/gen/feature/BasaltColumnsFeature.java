@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.feature;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
@@ -15,6 +16,19 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
+	private static final ImmutableList<Block> field_24132 = ImmutableList.of(
+		Blocks.LAVA,
+		Blocks.BEDROCK,
+		Blocks.MAGMA_BLOCK,
+		Blocks.SOUL_SAND,
+		Blocks.NETHER_BRICKS,
+		Blocks.NETHER_BRICK_FENCE,
+		Blocks.NETHER_BRICK_STAIRS,
+		Blocks.NETHER_WART,
+		Blocks.CHEST,
+		Blocks.SPAWNER
+	);
+
 	public BasaltColumnsFeature(Function<Dynamic<?>, ? extends BasaltColumnsFeatureConfig> function) {
 		super(function);
 	}
@@ -90,8 +104,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 			if (method_27095(iWorld, i, mutable)) {
 				BlockState blockState = iWorld.getBlockState(mutable.move(Direction.DOWN));
 				mutable.move(Direction.UP);
-				Block block = blockState.getBlock();
-				if (block != Blocks.LAVA && block != Blocks.BEDROCK && block != Blocks.MAGMA_BLOCK && !blockState.isAir()) {
+				if (!blockState.isAir() && !field_24132.contains(blockState.getBlock())) {
 					return mutable;
 				}
 			}
@@ -106,7 +119,12 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 	private static BlockPos method_27098(IWorld iWorld, BlockPos.Mutable mutable, int i) {
 		while (mutable.getY() < iWorld.getHeight() && i > 0) {
 			i--;
-			if (iWorld.getBlockState(mutable).isAir()) {
+			BlockState blockState = iWorld.getBlockState(mutable);
+			if (field_24132.contains(blockState.getBlock())) {
+				return null;
+			}
+
+			if (blockState.isAir()) {
 				return mutable;
 			}
 

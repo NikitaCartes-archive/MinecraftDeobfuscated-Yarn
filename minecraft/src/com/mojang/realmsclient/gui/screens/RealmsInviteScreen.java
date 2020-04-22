@@ -5,11 +5,14 @@ import com.mojang.realmsclient.dto.RealmsServer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,16 +41,14 @@ public class RealmsInviteScreen extends RealmsScreen {
 	public void init() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.field_22696 = new TextFieldWidget(
-			this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, I18n.translate("mco.configure.world.invite.profile.name")
+			this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, new TranslatableText("mco.configure.world.invite.profile.name")
 		);
 		this.addChild(this.field_22696);
 		this.setInitialFocus(this.field_22696);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, I18n.translate("mco.configure.world.buttons.invite"), buttonWidget -> this.onInvite())
+			new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.buttons.invite"), buttonWidget -> this.onInvite())
 		);
-		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.lastScreen))
-		);
+		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.lastScreen)));
 	}
 
 	@Override
@@ -92,14 +93,14 @@ public class RealmsInviteScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.textRenderer.draw(I18n.translate("mco.configure.world.invite.profile.name"), (float)(this.width / 2 - 100), (float)row(1), 10526880);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.textRenderer.draw(matrices, I18n.translate("mco.configure.world.invite.profile.name"), (float)(this.width / 2 - 100), (float)row(1), 10526880);
 		if (this.showError) {
-			this.drawCenteredString(this.textRenderer, this.errorMsg, this.width / 2, row(5), 16711680);
+			this.drawCenteredString(matrices, this.textRenderer, this.errorMsg, this.width / 2, row(5), 16711680);
 		}
 
-		this.field_22696.render(mouseX, mouseY, delta);
-		super.render(mouseX, mouseY, delta);
+		this.field_22696.render(matrices, mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

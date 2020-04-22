@@ -63,7 +63,7 @@ public class RestoreTask extends LongRunningTask {
 				}
 
 				LOGGER.error("Couldn't restore backup", (Throwable)var6);
-				this.error(var6.getLocalizedMessage());
+				this.method_27453(var6.getLocalizedMessage());
 				return;
 			}
 		}
