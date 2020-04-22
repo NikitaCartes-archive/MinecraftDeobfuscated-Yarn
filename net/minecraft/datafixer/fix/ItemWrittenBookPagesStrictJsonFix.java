@@ -33,12 +33,12 @@ extends DataFix {
             String string = dynamic.asString("");
             Text text = null;
             if ("null".equals(string) || StringUtils.isEmpty(string)) {
-                text = new LiteralText("");
+                text = LiteralText.EMPTY;
             } else if (string.charAt(0) == '\"' && string.charAt(string.length() - 1) == '\"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
                 try {
                     text = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
                     if (text == null) {
-                        text = new LiteralText("");
+                        text = LiteralText.EMPTY;
                     }
                 } catch (JsonParseException jsonParseException) {
                     // empty catch block

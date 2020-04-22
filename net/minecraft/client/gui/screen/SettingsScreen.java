@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.VideoOptionsScreen;
 import net.minecraft.client.gui.screen.options.AccessibilityScreen;
 import net.minecraft.client.gui.screen.options.ChatOptionsScreen;
@@ -20,9 +21,10 @@ import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 
@@ -37,7 +39,7 @@ extends Screen {
     private Difficulty difficulty;
 
     public SettingsScreen(Screen parent, GameOptions gameOptions) {
-        super(new TranslatableText("options.title", new Object[0]));
+        super(new TranslatableText("options.title"));
         this.parent = parent;
         this.settings = gameOptions;
     }
@@ -60,7 +62,7 @@ extends Screen {
             }));
             if (this.client.isIntegratedServerRunning() && !this.client.world.getLevelProperties().isHardcore()) {
                 this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
-                this.lockDifficultyButton = this.addButton(new LockButtonWidget(this.difficultyButton.x + this.difficultyButton.getWidth(), this.difficultyButton.y, buttonWidget -> this.client.openScreen(new ConfirmScreen(this::lockDifficulty, new TranslatableText("difficulty.lock.title", new Object[0]), new TranslatableText("difficulty.lock.question", new TranslatableText("options.difficulty." + this.client.world.getLevelProperties().getDifficulty().getName(), new Object[0]))))));
+                this.lockDifficultyButton = this.addButton(new LockButtonWidget(this.difficultyButton.x + this.difficultyButton.getWidth(), this.difficultyButton.y, buttonWidget -> this.client.openScreen(new ConfirmScreen(this::lockDifficulty, new TranslatableText("difficulty.lock.title"), new TranslatableText("difficulty.lock.question", new TranslatableText("options.difficulty." + this.client.world.getLevelProperties().getDifficulty().getName()))))));
                 this.lockDifficultyButton.setLocked(this.client.world.getLevelProperties().isDifficultyLocked());
                 this.lockDifficultyButton.active = !this.lockDifficultyButton.isLocked();
                 this.difficultyButton.active = !this.lockDifficultyButton.isLocked();
@@ -74,19 +76,19 @@ extends Screen {
                 buttonWidget.setMessage(Option.REALMS_NOTIFICATIONS.getDisplayString(this.settings));
             }));
         }
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, I18n.translate("options.skinCustomisation", new Object[0]), buttonWidget -> this.client.openScreen(new SkinOptionsScreen(this, this.settings))));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, I18n.translate("options.sounds", new Object[0]), buttonWidget -> this.client.openScreen(new SoundOptionsScreen(this, this.settings))));
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 72 - 6, 150, 20, I18n.translate("options.video", new Object[0]), buttonWidget -> this.client.openScreen(new VideoOptionsScreen(this, this.settings))));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 72 - 6, 150, 20, I18n.translate("options.controls", new Object[0]), buttonWidget -> this.client.openScreen(new ControlsOptionsScreen(this, this.settings))));
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20, I18n.translate("options.language", new Object[0]), buttonWidget -> this.client.openScreen(new LanguageOptionsScreen((Screen)this, this.settings, this.client.getLanguageManager()))));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 96 - 6, 150, 20, I18n.translate("options.chat.title", new Object[0]), buttonWidget -> this.client.openScreen(new ChatOptionsScreen(this, this.settings))));
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, I18n.translate("options.resourcepack", new Object[0]), buttonWidget -> this.client.openScreen(new ResourcePackOptionsScreen(this, this.settings))));
-        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20, I18n.translate("options.accessibility.title", new Object[0]), buttonWidget -> this.client.openScreen(new AccessibilityScreen(this, this.settings))));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.client.openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, new TranslatableText("options.skinCustomisation"), buttonWidget -> this.client.openScreen(new SkinOptionsScreen(this, this.settings))));
+        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, new TranslatableText("options.sounds"), buttonWidget -> this.client.openScreen(new SoundOptionsScreen(this, this.settings))));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 72 - 6, 150, 20, new TranslatableText("options.video"), buttonWidget -> this.client.openScreen(new VideoOptionsScreen(this, this.settings))));
+        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 72 - 6, 150, 20, new TranslatableText("options.controls"), buttonWidget -> this.client.openScreen(new ControlsOptionsScreen(this, this.settings))));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20, new TranslatableText("options.language"), buttonWidget -> this.client.openScreen(new LanguageOptionsScreen((Screen)this, this.settings, this.client.getLanguageManager()))));
+        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 96 - 6, 150, 20, new TranslatableText("options.chat.title"), buttonWidget -> this.client.openScreen(new ChatOptionsScreen(this, this.settings))));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, new TranslatableText("options.resourcepack"), buttonWidget -> this.client.openScreen(new ResourcePackOptionsScreen(this, this.settings))));
+        this.addButton(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20, new TranslatableText("options.accessibility.title"), buttonWidget -> this.client.openScreen(new AccessibilityScreen(this, this.settings))));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(this.parent)));
     }
 
-    public String getDifficultyButtonText(Difficulty difficulty) {
-        return new TranslatableText("options.difficulty", new Object[0]).append(": ").append(difficulty.getTranslatableName()).asFormattedString();
+    private Text getDifficultyButtonText(Difficulty difficulty) {
+        return new TranslatableText("options.difficulty").append(": ").append(difficulty.getTranslatableName());
     }
 
     private void lockDifficulty(boolean difficultyLocked) {
@@ -105,10 +107,10 @@ extends Screen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
-        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 15, 0xFFFFFF);
-        super.render(mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
+        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 15, 0xFFFFFF);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 }
 

@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenCustomHashMap;
@@ -21,6 +22,7 @@ import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5219;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -28,9 +30,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.RegionFile;
 import net.minecraft.world.storage.VersionedChunkStorage;
@@ -42,9 +42,9 @@ public class WorldUpdater {
     private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
     private final String levelName;
     private final boolean eraseCache;
-    private final WorldSaveHandler worldSaveHandler;
+    private final LevelStorage.Session field_24083;
     private final Thread updateThread;
-    private final File worldDirectory;
+    private final DataFixer field_24084;
     private volatile boolean keepUpgradingChunks = true;
     private volatile boolean isDone;
     private volatile float progress;
@@ -52,21 +52,21 @@ public class WorldUpdater {
     private volatile int upgradedChunkCount;
     private volatile int skippedChunkCount;
     private final Object2FloatMap<DimensionType> dimensionProgress = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap(Util.identityHashStrategy()));
-    private volatile Text status = new TranslatableText("optimizeWorld.stage.counting", new Object[0]);
+    private volatile Text status = new TranslatableText("optimizeWorld.stage.counting");
     private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
     private final PersistentStateManager persistentStateManager;
 
-    public WorldUpdater(LevelStorage.Session session, LevelProperties properties, boolean eraseCache) {
-        this.levelName = properties.getLevelName();
-        this.eraseCache = eraseCache;
-        this.worldSaveHandler = session.createSaveHandler(null);
-        this.worldSaveHandler.saveWorld(properties);
-        this.persistentStateManager = new PersistentStateManager(new File(DimensionType.OVERWORLD.getSaveDirectory(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer());
-        this.worldDirectory = this.worldSaveHandler.getWorldDir();
+    public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, class_5219 arg, boolean bl) {
+        this.levelName = arg.getLevelName();
+        this.eraseCache = bl;
+        this.field_24084 = dataFixer;
+        this.field_24083 = session;
+        session.method_27425(arg);
+        this.persistentStateManager = new PersistentStateManager(new File(this.field_24083.method_27424(DimensionType.OVERWORLD), "data"), dataFixer);
         this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
         this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
             LOGGER.error("Error upgrading world", throwable);
-            this.status = new TranslatableText("optimizeWorld.stage.failed", new Object[0]);
+            this.status = new TranslatableText("optimizeWorld.stage.failed");
             this.isDone = true;
         });
         this.updateThread.start();
@@ -82,7 +82,6 @@ public class WorldUpdater {
     }
 
     private void updateWorld() {
-        File file = this.worldSaveHandler.getWorldDir();
         this.totalChunkCount = 0;
         ImmutableMap.Builder<DimensionType, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
         for (DimensionType dimensionType : DimensionType.getAll()) {
@@ -98,12 +97,12 @@ public class WorldUpdater {
         ImmutableMap immutableMap = builder.build();
         ImmutableMap.Builder<DimensionType, VersionedChunkStorage> builder2 = ImmutableMap.builder();
         for (DimensionType dimensionType2 : DimensionType.getAll()) {
-            File file2 = dimensionType2.getSaveDirectory(file);
-            builder2.put(dimensionType2, new VersionedChunkStorage(new File(file2, "region"), this.worldSaveHandler.getDataFixer(), true));
+            File file = this.field_24083.method_27424(dimensionType2);
+            builder2.put(dimensionType2, new VersionedChunkStorage(new File(file, "region"), this.field_24084, true));
         }
         ImmutableMap immutableMap2 = builder2.build();
         long l = Util.getMeasuringTimeMs();
-        this.status = new TranslatableText("optimizeWorld.stage.upgrading", new Object[0]);
+        this.status = new TranslatableText("optimizeWorld.stage.upgrading");
         while (this.keepUpgradingChunks) {
             boolean bl = false;
             float g = 0.0f;
@@ -160,7 +159,7 @@ public class WorldUpdater {
             if (bl) continue;
             this.keepUpgradingChunks = false;
         }
-        this.status = new TranslatableText("optimizeWorld.stage.finished", new Object[0]);
+        this.status = new TranslatableText("optimizeWorld.stage.finished");
         for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
             try {
                 versionedChunkStorage2.close();
@@ -175,7 +174,7 @@ public class WorldUpdater {
     }
 
     private List<ChunkPos> getChunkPositions(DimensionType dimensionType) {
-        File file2 = dimensionType.getSaveDirectory(this.worldDirectory);
+        File file2 = this.field_24083.method_27424(dimensionType);
         File file22 = new File(file2, "region");
         File[] files = file22.listFiles((file, string) -> string.endsWith(".mca"));
         if (files == null) {

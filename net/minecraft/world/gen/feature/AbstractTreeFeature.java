@@ -9,10 +9,11 @@ import com.mojang.datafixers.Dynamic;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
+import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,6 +27,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
@@ -35,36 +37,26 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
+import net.minecraft.world.gen.foliage.FoliagePlacer;
 
-public abstract class AbstractTreeFeature<T extends TreeFeatureConfig>
-extends Feature<T> {
-    public AbstractTreeFeature(Function<Dynamic<?>, ? extends T> function) {
+public class AbstractTreeFeature
+extends Feature<TreeFeatureConfig> {
+    public AbstractTreeFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> function) {
         super(function);
     }
 
-    protected static boolean canTreeReplace(TestableWorld world, BlockPos pos) {
+    public static boolean canTreeReplace(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> {
             Block block = state.getBlock();
-            return state.isAir() || state.isIn(BlockTags.LEAVES) || AbstractTreeFeature.isDirt(block) || block.isIn(BlockTags.LOGS) || block.isIn(BlockTags.SAPLINGS) || block == Blocks.VINE;
+            return state.isAir() || state.isIn(BlockTags.LEAVES) || AbstractTreeFeature.isDirt(block) || block.isIn(BlockTags.LOGS) || block.isIn(BlockTags.SAPLINGS) || block == Blocks.VINE || block == Blocks.WATER;
         });
     }
 
-    public static boolean isAir(TestableWorld world, BlockPos pos) {
-        return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
-    }
-
-    protected static boolean isNaturalDirt(TestableWorld world, BlockPos pos) {
-        return world.testBlockState(pos, state -> {
-            Block block = state.getBlock();
-            return AbstractTreeFeature.isDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM;
-        });
-    }
-
-    protected static boolean isVine(TestableWorld world, BlockPos pos) {
+    private static boolean isVine(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> state.getBlock() == Blocks.VINE);
     }
 
-    public static boolean isWater(TestableWorld world, BlockPos pos) {
+    private static boolean isWater(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> state.getBlock() == Blocks.WATER);
     }
 
@@ -72,46 +64,74 @@ extends Feature<T> {
         return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
     }
 
-    public static boolean isNaturalDirtOrGrass(TestableWorld world, BlockPos pos) {
-        return world.testBlockState(pos, state -> AbstractTreeFeature.isDirt(state.getBlock()));
-    }
-
-    protected static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
+    private static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> {
             Block block = state.getBlock();
             return AbstractTreeFeature.isDirt(block) || block == Blocks.FARMLAND;
         });
     }
 
-    public static boolean isReplaceablePlant(TestableWorld world, BlockPos pos) {
+    private static boolean isReplaceablePlant(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> {
             Material material = state.getMaterial();
             return material == Material.REPLACEABLE_PLANT;
         });
     }
 
-    protected void setToDirt(ModifiableTestableWorld world, BlockPos pos) {
-        if (!AbstractTreeFeature.isNaturalDirt(world, pos)) {
-            this.setBlockState(world, pos, Blocks.DIRT.getDefaultState());
-        }
+    public static void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
+        world.setBlockState(pos, state, 19);
     }
 
-    public static boolean setLogBlockState(ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> trunkPositions, BlockBox box, TreeFeatureConfig config) {
-        if (AbstractTreeFeature.isAirOrLeaves(world, pos) || AbstractTreeFeature.isReplaceablePlant(world, pos) || AbstractTreeFeature.isWater(world, pos)) {
-            AbstractTreeFeature.setBlockState(world, pos, config.trunkProvider.getBlockState(random, pos), box);
-            trunkPositions.add(pos.toImmutable());
-            return true;
-        }
-        return false;
+    public static boolean method_27371(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+        return AbstractTreeFeature.isAirOrLeaves(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isReplaceablePlant(modifiableTestableWorld, blockPos) || AbstractTreeFeature.isWater(modifiableTestableWorld, blockPos);
     }
 
-    protected boolean setLeavesBlockState(ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> leavesPositions, BlockBox box, TreeFeatureConfig config) {
-        if (AbstractTreeFeature.isAirOrLeaves(world, pos) || AbstractTreeFeature.isReplaceablePlant(world, pos) || AbstractTreeFeature.isWater(world, pos)) {
-            AbstractTreeFeature.setBlockState(world, pos, config.leavesProvider.getBlockState(random, pos), box);
-            leavesPositions.add(pos.toImmutable());
-            return true;
+    private boolean generate(ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, Set<BlockPos> leavesPositions, BlockBox box, TreeFeatureConfig config) {
+        int p;
+        BlockPos blockPos;
+        int o;
+        int i = config.field_24136.getHeight(random);
+        int j = config.field_24135.getHeight(random, i, config);
+        int k = i - j;
+        int l = config.field_24135.getRadius(random, k);
+        if (!config.skipFluidCheck) {
+            int m = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
+            int n = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
+            if (n - m > config.baseHeight) {
+                return false;
+            }
+            o = config.field_24139 == Heightmap.Type.OCEAN_FLOOR ? m : (config.field_24139 == Heightmap.Type.WORLD_SURFACE ? n : world.getTopPosition(config.field_24139, pos).getY());
+            blockPos = new BlockPos(pos.getX(), o, pos.getZ());
+        } else {
+            blockPos = pos;
         }
-        return false;
+        if (blockPos.getY() < 1 || blockPos.getY() + i + 1 > 256) {
+            return false;
+        }
+        if (!AbstractTreeFeature.isDirtOrGrass(world, blockPos.down())) {
+            return false;
+        }
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        OptionalInt optionalInt = config.field_24137.method_27377();
+        o = i;
+        for (p = 0; p <= i + 1; ++p) {
+            int q = config.field_24137.method_27378(i, p);
+            block1: for (int r = -q; r <= q; ++r) {
+                for (int s = -q; s <= q; ++s) {
+                    mutable.set(blockPos, r, p, s);
+                    if (AbstractTreeFeature.canTreeReplace(world, mutable) && (config.field_24138 || !AbstractTreeFeature.isVine(world, mutable))) continue;
+                    if (optionalInt.isPresent() && p - 1 >= optionalInt.getAsInt() + 1) {
+                        o = p - 2;
+                        continue block1;
+                    }
+                    return false;
+                }
+            }
+        }
+        p = o;
+        List<FoliagePlacer.class_5208> list = config.field_24136.generate(world, random, p, blockPos, logPositions, box, config);
+        list.forEach(arg -> treeFeatureConfig.field_24135.method_27385(world, random, config, p, (FoliagePlacer.class_5208)arg, j, l, leavesPositions));
+        return true;
     }
 
     @Override
@@ -119,17 +139,8 @@ extends Feature<T> {
         AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
     }
 
-    protected static final void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state, BlockBox box) {
-        AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
-        box.encompass(new BlockBox(pos, pos));
-    }
-
-    private static void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, state, 19);
-    }
-
     @Override
-    public final boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, T treeFeatureConfig) {
+    public final boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
         HashSet<BlockPos> set = Sets.newHashSet();
         HashSet<BlockPos> set2 = Sets.newHashSet();
         HashSet<BlockPos> set3 = Sets.newHashSet();
@@ -138,12 +149,12 @@ extends Feature<T> {
         if (blockBox.minX > blockBox.maxX || !bl || set.isEmpty()) {
             return false;
         }
-        if (!((TreeFeatureConfig)treeFeatureConfig).decorators.isEmpty()) {
+        if (!treeFeatureConfig.decorators.isEmpty()) {
             ArrayList<BlockPos> list = Lists.newArrayList(set);
             ArrayList<BlockPos> list2 = Lists.newArrayList(set2);
             list.sort(Comparator.comparingInt(Vec3i::getY));
             list2.sort(Comparator.comparingInt(Vec3i::getY));
-            ((TreeFeatureConfig)treeFeatureConfig).decorators.forEach(decorator -> decorator.generate(iWorld, random, list, list2, set3, blockBox));
+            treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(iWorld, random, list, list2, set3, blockBox));
         }
         VoxelSet voxelSet = this.placeLogsAndLeaves(iWorld, blockBox, set, set3);
         Structure.updateCorner(iWorld, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
@@ -199,7 +210,5 @@ extends Feature<T> {
         }
         return voxelSet;
     }
-
-    protected abstract boolean generate(ModifiableTestableWorld var1, Random var2, BlockPos var3, Set<BlockPos> var4, Set<BlockPos> var5, BlockBox var6, T var7);
 }
 

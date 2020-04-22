@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class SmithingTableBlock
 extends CraftingTableBlock {
-    private static final TranslatableText SCREEN_TITLE = new TranslatableText("container.upgrade", new Object[0]);
+    private static final TranslatableText SCREEN_TITLE = new TranslatableText("container.upgrade");
 
     protected SmithingTableBlock(AbstractBlock.Settings settings) {
         super(settings);

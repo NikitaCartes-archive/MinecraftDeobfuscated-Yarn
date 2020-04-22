@@ -20,6 +20,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -147,18 +148,18 @@ implements Drawable {
     protected void clickedHeader(int x, int y) {
     }
 
-    protected void renderHeader(int x, int y, Tessellator tessellator) {
+    protected void renderHeader(MatrixStack matrixStack, int y, int i, Tessellator tessellator) {
     }
 
-    protected void renderBackground() {
+    protected void renderBackground(MatrixStack matrixStack) {
     }
 
-    protected void renderDecorations(int mouseX, int mouseY) {
+    protected void renderDecorations(MatrixStack matrixStack, int i, int j) {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
         int i = this.getScrollbarPositionX();
         int j = i + 6;
         Tessellator tessellator = Tessellator.getInstance();
@@ -175,9 +176,9 @@ implements Drawable {
         int k = this.getRowLeft();
         int l = this.top + 4 - (int)this.getScrollAmount();
         if (this.renderHeader) {
-            this.renderHeader(k, l, tessellator);
+            this.renderHeader(matrices, k, l, tessellator);
         }
-        this.renderList(k, l, mouseX, mouseY, delta);
+        this.renderList(matrices, k, l, mouseX, mouseY, delta);
         RenderSystem.disableDepthTest();
         this.renderHoleBackground(0, this.top, 255, 255);
         this.renderHoleBackground(this.bottom, this.height, 255, 255);
@@ -226,7 +227,7 @@ implements Drawable {
             bufferBuilder.vertex(i, p, 0.0).texture(0.0f, 0.0f).color(192, 192, 192, 255).next();
             tessellator.draw();
         }
-        this.renderDecorations(mouseX, mouseY);
+        this.renderDecorations(matrices, mouseX, mouseY);
         RenderSystem.enableTexture();
         RenderSystem.shadeModel(7424);
         RenderSystem.enableAlphaTest();
@@ -361,42 +362,42 @@ implements Drawable {
         return mouseY >= (double)this.top && mouseY <= (double)this.bottom && mouseX >= (double)this.left && mouseX <= (double)this.right;
     }
 
-    protected void renderList(int x, int y, int mouseX, int mouseY, float delta) {
-        int i = this.getItemCount();
+    protected void renderList(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
+        int m = this.getItemCount();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        for (int j = 0; j < i; ++j) {
-            int p;
-            int k = this.getRowTop(j);
-            int l = this.getRowBottom(j);
-            if (l < this.top || k > this.bottom) continue;
-            int m = y + j * this.itemHeight + this.headerHeight;
-            int n = this.itemHeight - 4;
-            E entry = this.getEntry(j);
-            int o = this.getRowWidth();
-            if (this.renderSelection && this.isSelectedItem(j)) {
-                p = this.left + this.width / 2 - o / 2;
-                int q = this.left + this.width / 2 + o / 2;
+        for (int n = 0; n < m; ++n) {
+            int t;
+            int o = this.getRowTop(n);
+            int p = this.getRowBottom(n);
+            if (p < this.top || o > this.bottom) continue;
+            int q = j + n * this.itemHeight + this.headerHeight;
+            int r = this.itemHeight - 4;
+            E entry = this.getEntry(n);
+            int s = this.getRowWidth();
+            if (this.renderSelection && this.isSelectedItem(n)) {
+                t = this.left + this.width / 2 - s / 2;
+                int u = this.left + this.width / 2 + s / 2;
                 RenderSystem.disableTexture();
-                float f = this.isFocused() ? 1.0f : 0.5f;
-                RenderSystem.color4f(f, f, f, 1.0f);
+                float g = this.isFocused() ? 1.0f : 0.5f;
+                RenderSystem.color4f(g, g, g, 1.0f);
                 bufferBuilder.begin(7, VertexFormats.POSITION);
-                bufferBuilder.vertex(p, m + n + 2, 0.0).next();
-                bufferBuilder.vertex(q, m + n + 2, 0.0).next();
-                bufferBuilder.vertex(q, m - 2, 0.0).next();
-                bufferBuilder.vertex(p, m - 2, 0.0).next();
+                bufferBuilder.vertex(t, q + r + 2, 0.0).next();
+                bufferBuilder.vertex(u, q + r + 2, 0.0).next();
+                bufferBuilder.vertex(u, q - 2, 0.0).next();
+                bufferBuilder.vertex(t, q - 2, 0.0).next();
                 tessellator.draw();
                 RenderSystem.color4f(0.0f, 0.0f, 0.0f, 1.0f);
                 bufferBuilder.begin(7, VertexFormats.POSITION);
-                bufferBuilder.vertex(p + 1, m + n + 1, 0.0).next();
-                bufferBuilder.vertex(q - 1, m + n + 1, 0.0).next();
-                bufferBuilder.vertex(q - 1, m - 1, 0.0).next();
-                bufferBuilder.vertex(p + 1, m - 1, 0.0).next();
+                bufferBuilder.vertex(t + 1, q + r + 1, 0.0).next();
+                bufferBuilder.vertex(u - 1, q + r + 1, 0.0).next();
+                bufferBuilder.vertex(u - 1, q - 1, 0.0).next();
+                bufferBuilder.vertex(t + 1, q - 1, 0.0).next();
                 tessellator.draw();
                 RenderSystem.enableTexture();
             }
-            p = this.getRowLeft();
-            ((Entry)entry).render(j, k, p, o, n, mouseX, mouseY, this.isMouseOver(mouseX, mouseY) && Objects.equals(this.getEntryAtPosition(mouseX, mouseY), entry), delta);
+            t = this.getRowLeft();
+            ((Entry)entry).render(matrixStack, n, o, t, s, r, k, l, this.isMouseOver(k, l) && Objects.equals(this.getEntryAtPosition(k, l), entry), f);
         }
     }
 
@@ -515,7 +516,7 @@ implements Drawable {
         @Deprecated
         EntryListWidget<E> list;
 
-        public abstract void render(int var1, int var2, int var3, int var4, int var5, int var6, int var7, boolean var8, float var9);
+        public abstract void render(MatrixStack var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, boolean var9, float var10);
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {

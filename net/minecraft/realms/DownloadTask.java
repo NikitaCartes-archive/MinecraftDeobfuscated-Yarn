@@ -64,7 +64,7 @@ extends LongRunningTask {
                     return;
                 }
                 LOGGER.error("Couldn't download world data", (Throwable)exception);
-                this.error(exception.getLocalizedMessage());
+                this.method_27453(exception.getLocalizedMessage());
                 return;
             }
         }

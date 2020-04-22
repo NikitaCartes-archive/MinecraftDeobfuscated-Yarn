@@ -222,26 +222,20 @@ VillagerDataContainer {
 
     @Override
     public boolean interactMob(PlayerEntity player, Hand hand) {
-        boolean bl;
         ItemStack itemStack = player.getStackInHand(hand);
-        boolean bl2 = bl = itemStack.getItem() == Items.NAME_TAG;
-        if (bl) {
-            itemStack.useOnEntity(player, this, hand);
-            return true;
-        }
         if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isSleeping()) {
             if (this.isBaby()) {
                 this.sayNo();
                 return super.interactMob(player, hand);
             }
-            boolean bl22 = this.getOffers().isEmpty();
+            boolean bl = this.getOffers().isEmpty();
             if (hand == Hand.MAIN_HAND) {
-                if (bl22 && !this.world.isClient) {
+                if (bl && !this.world.isClient) {
                     this.sayNo();
                 }
                 player.incrementStat(Stats.TALKED_TO_VILLAGER);
             }
-            if (bl22) {
+            if (bl) {
                 return super.interactMob(player, hand);
             }
             if (!this.world.isClient && !this.offers.isEmpty()) {
@@ -581,7 +575,7 @@ VillagerDataContainer {
 
     @Override
     protected Text getDefaultName() {
-        return new TranslatableText(this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath(), new Object[0]);
+        return new TranslatableText(this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
     }
 
     @Override

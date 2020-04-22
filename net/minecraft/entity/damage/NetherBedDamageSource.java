@@ -8,6 +8,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
@@ -22,7 +23,7 @@ extends DamageSource {
 
     @Override
     public Text getDeathMessage(LivingEntity entity) {
-        Text text = Texts.bracketed(new TranslatableText("death.attack.badRespawnPoint.link", new Object[0])).styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://bugs.mojang.com/browse/MCPE-28723")).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("MCPE-28723"))));
+        MutableText text = Texts.bracketed(new TranslatableText("death.attack.badRespawnPoint.link")).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://bugs.mojang.com/browse/MCPE-28723")).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("MCPE-28723"))));
         return new TranslatableText("death.attack.badRespawnPoint.message", entity.getDisplayName(), text);
     }
 }

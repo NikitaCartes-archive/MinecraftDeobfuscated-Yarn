@@ -38,7 +38,7 @@ extends FeatureRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, HorseEntity horseEntity, float f, float g, float h, float j, float k, float l) {
         Identifier identifier = TEXTURES.get((Object)horseEntity.getMarking());
-        if (identifier == null) {
+        if (identifier == null || horseEntity.isInvisible()) {
             return;
         }
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(identifier));

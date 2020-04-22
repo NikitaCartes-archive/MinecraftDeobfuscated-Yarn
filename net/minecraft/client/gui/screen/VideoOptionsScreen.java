@@ -6,24 +6,25 @@ package net.minecraft.client.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.FullScreenOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class VideoOptionsScreen
 extends GameOptionsScreen {
     private ButtonListWidget list;
-    private static final Option[] OPTIONS = new Option[]{Option.GRAPHICS, Option.RENDER_DISTANCE, Option.AO, Option.FRAMERATE_LIMIT, Option.VSYNC, Option.VIEW_BOBBING, Option.GUI_SCALE, Option.ATTACK_INDICATOR, Option.GAMMA, Option.CLOUDS, Option.FULLSCREEN, Option.PARTICLES, Option.MIPMAP_LEVELS, Option.ENTITY_SHADOWS};
+    private static final Option[] OPTIONS = new Option[]{Option.GRAPHICS, Option.RENDER_DISTANCE, Option.AO, Option.FRAMERATE_LIMIT, Option.VSYNC, Option.VIEW_BOBBING, Option.GUI_SCALE, Option.ATTACK_INDICATOR, Option.GAMMA, Option.CLOUDS, Option.FULLSCREEN, Option.PARTICLES, Option.MIPMAP_LEVELS, Option.ENTITY_SHADOWS, Option.field_24213};
     private int mipmapLevels;
 
     public VideoOptionsScreen(Screen parent, GameOptions options) {
-        super(parent, options, new TranslatableText("options.videoTitle", new Object[0]));
+        super(parent, options, new TranslatableText("options.videoTitle"));
     }
 
     @Override
@@ -34,7 +35,7 @@ extends GameOptionsScreen {
         this.list.addSingleOptionEntry(Option.BIOME_BLEND_RADIUS);
         this.list.addAll(OPTIONS);
         this.children.add(this.list);
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done", new Object[0]), button -> {
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
             this.client.options.write();
             this.client.getWindow().applyVideoMode();
             this.client.openScreen(this.parent);
@@ -78,11 +79,11 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
-        this.list.render(mouseX, mouseY, delta);
-        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 5, 0xFFFFFF);
-        super.render(mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
+        this.list.render(matrices, mouseX, mouseY, delta);
+        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 5, 0xFFFFFF);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 }
 

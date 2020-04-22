@@ -10,6 +10,7 @@ import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -36,8 +37,8 @@ extends Item {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Text getDescription() {
-        return new TranslatableText(this.getTranslationKey() + ".desc", new Object[0]);
+    public MutableText getDescription() {
+        return new TranslatableText(this.getTranslationKey() + ".desc");
     }
 }
 

@@ -7,11 +7,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class BooleanOption
@@ -50,8 +51,8 @@ extends Option {
         });
     }
 
-    public String getDisplayString(GameOptions options) {
-        return this.getDisplayPrefix() + I18n.translate(this.get(options) ? "options.on" : "options.off", new Object[0]);
+    public Text getDisplayString(GameOptions options) {
+        return this.getDisplayPrefix().append(ScreenTexts.getToggleText(this.get(options)));
     }
 }
 

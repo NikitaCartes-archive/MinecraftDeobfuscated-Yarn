@@ -22,8 +22,8 @@ import net.minecraft.util.math.MathHelper;
 public class OperationArgumentType
 implements ArgumentType<Operation> {
     private static final Collection<String> EXAMPLES = Arrays.asList("=", ">", "<");
-    private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.invalid", new Object[0]));
-    private static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.div0", new Object[0]));
+    private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.invalid"));
+    private static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("arguments.operation.div0"));
 
     public static OperationArgumentType operation() {
         return new OperationArgumentType();

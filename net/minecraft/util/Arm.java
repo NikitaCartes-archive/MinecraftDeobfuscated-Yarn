@@ -9,8 +9,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public enum Arm {
-    LEFT(new TranslatableText("options.mainHand.left", new Object[0])),
-    RIGHT(new TranslatableText("options.mainHand.right", new Object[0]));
+    LEFT(new TranslatableText("options.mainHand.left")),
+    RIGHT(new TranslatableText("options.mainHand.right"));
 
     private final Text optionName;
 
@@ -28,6 +28,11 @@ public enum Arm {
 
     public String toString() {
         return this.optionName.getString();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Text method_27301() {
+        return this.optionName;
     }
 }
 

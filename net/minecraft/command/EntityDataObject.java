@@ -26,7 +26,7 @@ import net.minecraft.text.TranslatableText;
 
 public class EntityDataObject
 implements DataCommandObject {
-    private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.entity.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.entity.invalid"));
     public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = string -> new DataCommand.ObjectType((String)string){
         final /* synthetic */ String field_13802;
         {

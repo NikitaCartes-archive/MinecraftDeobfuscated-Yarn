@@ -63,7 +63,7 @@ implements Packet<ClientPlayPacketListener> {
             buf.writeVarInt(entry.getModifiers().size());
             for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {
                 buf.writeUuid(entityAttributeModifier.getId());
-                buf.writeDouble(entityAttributeModifier.getAmount());
+                buf.writeDouble(entityAttributeModifier.getValue());
                 buf.writeByte(entityAttributeModifier.getOperation().getId());
             }
         }

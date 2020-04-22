@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -24,7 +25,7 @@ public abstract class AbstractTeam {
 
     public abstract String getName();
 
-    public abstract Text modifyText(Text var1);
+    public abstract MutableText modifyText(Text var1);
 
     @Environment(value=EnvType.CLIENT)
     public abstract boolean shouldShowFriendlyInvisibles();
@@ -64,7 +65,7 @@ public abstract class AbstractTeam {
         }
 
         public Text getTranslationKey() {
-            return new TranslatableText("team.collision." + this.name, new Object[0]);
+            return new TranslatableText("team.collision." + this.name);
         }
 
         static {
@@ -93,7 +94,7 @@ public abstract class AbstractTeam {
         }
 
         public Text getTranslationKey() {
-            return new TranslatableText("team.visibility." + this.name, new Object[0]);
+            return new TranslatableText("team.visibility." + this.name);
         }
 
         static {

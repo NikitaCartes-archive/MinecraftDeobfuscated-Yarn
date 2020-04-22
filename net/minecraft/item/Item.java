@@ -194,7 +194,7 @@ implements ItemConvertible {
 
     @Environment(value=EnvType.CLIENT)
     public Text getName() {
-        return new TranslatableText(this.getTranslationKey(), new Object[0]);
+        return new TranslatableText(this.getTranslationKey());
     }
 
     public String toString() {
@@ -258,7 +258,7 @@ implements ItemConvertible {
     }
 
     public Text getName(ItemStack stack) {
-        return new TranslatableText(this.getTranslationKey(stack), new Object[0]);
+        return new TranslatableText(this.getTranslationKey(stack));
     }
 
     public boolean hasEnchantmentGlint(ItemStack stack) {

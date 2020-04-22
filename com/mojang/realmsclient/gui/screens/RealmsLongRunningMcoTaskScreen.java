@@ -9,22 +9,26 @@ import com.mojang.realmsclient.gui.LongRunningTask;
 import java.util.HashSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5221;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsLongRunningMcoTaskScreen
-extends RealmsScreen {
+extends RealmsScreen
+implements class_5221 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Screen parent;
     private volatile String title = "";
     private volatile boolean error;
-    private volatile String errorMessage;
+    private volatile Text errorMessage;
     private volatile boolean aborted;
     private int animTicks;
     private final LongRunningTask task;
@@ -60,7 +64,7 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.task.init();
-        this.addButton(new ButtonWidget(this.width / 2 - 106, RealmsLongRunningMcoTaskScreen.row(12), 212, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.cancelOrBackButtonClicked()));
+        this.addButton(new ButtonWidget(this.width / 2 - 106, RealmsLongRunningMcoTaskScreen.row(12), 212, 20, ScreenTexts.CANCEL, buttonWidget -> this.cancelOrBackButtonClicked()));
     }
 
     private void cancelOrBackButtonClicked() {
@@ -70,24 +74,25 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
-        this.drawCenteredString(this.textRenderer, this.title, this.width / 2, RealmsLongRunningMcoTaskScreen.row(3), 0xFFFFFF);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
+        this.drawCenteredString(matrices, this.textRenderer, this.title, this.width / 2, RealmsLongRunningMcoTaskScreen.row(3), 0xFFFFFF);
         if (!this.error) {
-            this.drawCenteredString(this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
+            this.drawCenteredString(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
         }
         if (this.error) {
-            this.drawCenteredString(this.textRenderer, this.errorMessage, this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0xFF0000);
+            this.method_27534(matrices, this.textRenderer, this.errorMessage, this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0xFF0000);
         }
-        super.render(mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
-    public void setError(String error) {
+    @Override
+    public void error(Text text) {
         this.error = true;
-        this.errorMessage = error;
-        Realms.narrateNow(error);
+        this.errorMessage = text;
+        Realms.narrateNow(text.getString());
         this.onError();
-        this.addButton(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.back", new Object[0]), buttonWidget -> this.cancelOrBackButtonClicked()));
+        this.addButton(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, buttonWidget -> this.cancelOrBackButtonClicked()));
     }
 
     public void onError() {

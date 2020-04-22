@@ -24,7 +24,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public CombatEventS2CPacket(DamageTracker damageTracker, Type type) {
-        this(damageTracker, type, new LiteralText(""));
+        this(damageTracker, type, LiteralText.EMPTY);
     }
 
     public CombatEventS2CPacket(DamageTracker damageTracker, Type type, Text deathMessage) {

@@ -25,6 +25,7 @@ import net.minecraft.util.Language;
 import net.minecraft.util.logging.DebugPrintStreamLogger;
 import net.minecraft.util.logging.PrintStreamLogger;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,12 +55,25 @@ public class Bootstrap {
         Bootstrap.setOutputStreams();
     }
 
-    private static <T> void collectMissingTranslations(Registry<T> registry, Function<T, String> keyExtractor, Set<String> translationKeys) {
+    private static <T> void collectMissingTranslations(Iterable<T> iterable, Function<T, String> keyExtractor, Set<String> translationKeys) {
         Language language = Language.getInstance();
-        registry.iterator().forEachRemaining(object -> {
+        iterable.forEach(object -> {
             String string = (String)keyExtractor.apply(object);
             if (!language.hasTranslation(string)) {
                 translationKeys.add(string);
+            }
+        });
+    }
+
+    private static void method_27732(final Set<String> set) {
+        final Language language = Language.getInstance();
+        GameRules.forEachType(new GameRules.RuleTypeConsumer(){
+
+            @Override
+            public <T extends GameRules.Rule<T>> void accept(GameRules.RuleKey<T> key, GameRules.RuleType<T> type) {
+                if (!language.hasTranslation(key.getTranslationKey())) {
+                    set.add(key.getName());
+                }
             }
         });
     }
@@ -74,6 +88,7 @@ public class Bootstrap {
         Bootstrap.collectMissingTranslations(Registry.BIOME, Biome::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.BLOCK, Block::getTranslationKey, set);
         Bootstrap.collectMissingTranslations(Registry.CUSTOM_STAT, identifier -> "stat." + identifier.toString().replace(':', '.'), set);
+        Bootstrap.method_27732(set);
         return set;
     }
 

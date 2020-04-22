@@ -210,12 +210,12 @@ Saddleable {
     }
 
     public float getSpeed() {
-        return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66f : 1.0f);
+        return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66f : 1.0f);
     }
 
     @Override
     public float getSaddledSpeed() {
-        return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23f : 0.55f);
+        return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23f : 0.55f);
     }
 
     @Override
@@ -364,17 +364,13 @@ Saddleable {
     public boolean interactMob(PlayerEntity player, Hand hand) {
         boolean bl = this.isBreedingItem(player.getStackInHand(hand));
         if (!super.interactMob(player, hand)) {
-            ItemStack itemStack = player.getStackInHand(hand);
-            if (itemStack.getItem() == Items.NAME_TAG) {
-                itemStack.useOnEntity(player, this, hand);
-                return true;
-            }
             if (this.isSaddled() && !this.hasPassengers() && !this.isBaby()) {
                 if (!this.world.isClient) {
                     player.startRiding(this);
                 }
                 return true;
             }
+            ItemStack itemStack = player.getStackInHand(hand);
             return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
         }
         if (bl && !this.isSilent()) {

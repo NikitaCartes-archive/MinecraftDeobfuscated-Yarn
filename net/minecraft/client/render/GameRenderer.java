@@ -404,11 +404,10 @@ AutoCloseable {
         }
         int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
         int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
-        MatrixStack matrixStack = new MatrixStack();
         RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
         if (tick && this.client.world != null) {
             this.client.getProfiler().push("level");
-            this.renderWorld(tickDelta, startTime, matrixStack);
+            this.renderWorld(tickDelta, startTime, new MatrixStack());
             if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
                 this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
                 if (!this.client.getServer().hasIconFile()) {
@@ -438,19 +437,20 @@ AutoCloseable {
         RenderSystem.loadIdentity();
         RenderSystem.translatef(0.0f, 0.0f, -2000.0f);
         DiffuseLighting.enableGuiDepthLighting();
+        MatrixStack matrixStack = new MatrixStack();
         if (tick && this.client.world != null) {
             this.client.getProfiler().swap("gui");
             if (!this.client.options.hudHidden || this.client.currentScreen != null) {
                 RenderSystem.defaultAlphaFunc();
                 this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickDelta);
-                this.client.inGameHud.render(tickDelta);
+                this.client.inGameHud.render(matrixStack, tickDelta);
                 RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
             }
             this.client.getProfiler().pop();
         }
         if (this.client.overlay != null) {
             try {
-                this.client.overlay.render(i, j, this.client.getLastFrameDuration());
+                this.client.overlay.render(matrixStack, i, j, this.client.getLastFrameDuration());
             } catch (Throwable throwable) {
                 CrashReport crashReport = CrashReport.create(throwable, "Rendering overlay");
                 CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
@@ -460,7 +460,7 @@ AutoCloseable {
         }
         if (this.client.currentScreen != null) {
             try {
-                this.client.currentScreen.render(i, j, this.client.getLastFrameDuration());
+                this.client.currentScreen.render(matrixStack, i, j, this.client.getLastFrameDuration());
             } catch (Throwable throwable) {
                 CrashReport crashReport = CrashReport.create(throwable, "Rendering screen");
                 CrashReportSection crashReportSection = crashReport.addElement("Screen render details");

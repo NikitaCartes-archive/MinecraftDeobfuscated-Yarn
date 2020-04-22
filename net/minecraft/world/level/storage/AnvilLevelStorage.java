@@ -12,11 +12,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import net.minecraft.class_5218;
+import net.minecraft.class_5219;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.BiomeSourceType;
@@ -26,7 +27,6 @@ import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSourceConfig;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.AlphaChunkIo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.RegionFile;
@@ -41,9 +41,9 @@ public class AnvilLevelStorage {
         ArrayList<File> list = Lists.newArrayList();
         ArrayList<File> list2 = Lists.newArrayList();
         ArrayList<File> list3 = Lists.newArrayList();
-        File file = session.getDirectory().toFile();
-        File file2 = DimensionType.THE_NETHER.getSaveDirectory(file);
-        File file3 = DimensionType.THE_END.getSaveDirectory(file);
+        File file = session.method_27424(DimensionType.OVERWORLD);
+        File file2 = session.method_27424(DimensionType.THE_NETHER);
+        File file3 = session.method_27424(DimensionType.THE_END);
         LOGGER.info("Scanning folders...");
         AnvilLevelStorage.addRegionFiles(file, list);
         if (file2.exists()) {
@@ -54,36 +54,27 @@ public class AnvilLevelStorage {
         }
         int i = list.size() + list2.size() + list3.size();
         LOGGER.info("Total conversion count is {}", (Object)i);
-        LevelProperties levelProperties = session.readLevelProperties();
-        long l = levelProperties != null ? levelProperties.getSeed() : 0L;
+        class_5219 lv = session.readLevelProperties();
+        long l = lv != null ? lv.getSeed() : 0L;
         BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
         BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
-        BiomeSource biomeSource = levelProperties != null && levelProperties.getGeneratorType() == LevelGeneratorType.FLAT ? biomeSourceType.applyConfig(biomeSourceType.getConfig(levelProperties.getSeed()).setBiome(Biomes.PLAINS)) : biomeSourceType2.applyConfig(biomeSourceType2.getConfig(l));
+        BiomeSource biomeSource = lv != null && lv.method_27437(DimensionType.OVERWORLD).getGeneratorType() == LevelGeneratorType.FLAT ? biomeSourceType.applyConfig(biomeSourceType.getConfig(lv.getSeed()).setBiome(Biomes.PLAINS)) : biomeSourceType2.applyConfig(biomeSourceType2.getConfig(l));
         AnvilLevelStorage.convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
         AnvilLevelStorage.convertRegions(new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig(l).setBiome(Biomes.NETHER_WASTES)), list.size(), i, progressListener);
         AnvilLevelStorage.convertRegions(new File(file3, "region"), list3, biomeSourceType.applyConfig(biomeSourceType.getConfig(l).setBiome(Biomes.THE_END)), list.size() + list2.size(), i, progressListener);
-        levelProperties.setVersion(19133);
-        if (levelProperties.getGeneratorType() == LevelGeneratorType.DEFAULT_1_1) {
-            levelProperties.setGeneratorOptions(LevelGeneratorType.DEFAULT.getDefaultOptions());
-        }
-        AnvilLevelStorage.makeMcrLevelDatBackup(file);
-        WorldSaveHandler worldSaveHandler = session.createSaveHandler(null);
-        worldSaveHandler.saveWorld(levelProperties);
+        AnvilLevelStorage.makeMcrLevelDatBackup(session);
+        session.method_27425(lv);
         return true;
     }
 
-    private static void makeMcrLevelDatBackup(File file) {
+    private static void makeMcrLevelDatBackup(LevelStorage.Session session) {
+        File file = session.getDirectory(class_5218.field_24184).toFile();
         if (!file.exists()) {
             LOGGER.warn("Unable to create level.dat_mcr backup");
             return;
         }
-        File file2 = new File(file, "level.dat");
-        if (!file2.exists()) {
-            LOGGER.warn("Unable to create level.dat_mcr backup");
-            return;
-        }
-        File file3 = new File(file, "level.dat_mcr");
-        if (!file2.renameTo(file3)) {
+        File file2 = new File(file.getParent(), "level.dat_mcr");
+        if (!file.renameTo(file2)) {
             LOGGER.warn("Unable to create level.dat_mcr backup");
         }
     }

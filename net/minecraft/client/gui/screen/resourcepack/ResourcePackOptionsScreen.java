@@ -9,6 +9,7 @@ import java.util.Collections;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.screen.resourcepack.AvailableResourcePackListWidget;
 import net.minecraft.client.gui.screen.resourcepack.ResourcePackListWidget;
@@ -17,6 +18,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.ClientResourcePackProfile;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -29,13 +31,13 @@ extends GameOptionsScreen {
     private boolean dirty;
 
     public ResourcePackOptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, new TranslatableText("resourcePack.title", new Object[0]));
+        super(parent, gameOptions, new TranslatableText("resourcePack.title"));
     }
 
     @Override
     protected void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, I18n.translate("resourcePack.openFolder", new Object[0]), buttonWidget -> Util.getOperatingSystem().open(this.client.getResourcePackDir())));
-        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
+        this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("resourcePack.openFolder"), buttonWidget -> Util.getOperatingSystem().open(this.client.getResourcePackDir())));
+        this.addButton(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, buttonWidget -> {
             if (this.dirty) {
                 ArrayList<ClientResourcePackProfile> list = Lists.newArrayList();
                 for (ResourcePackListWidget.ResourcePackEntry resourcePackEntry : this.enabledPacks.children()) {
@@ -108,13 +110,13 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderDirtBackground(0);
-        this.availablePacks.render(mouseX, mouseY, delta);
-        this.enabledPacks.render(mouseX, mouseY, delta);
-        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 16, 0xFFFFFF);
-        this.drawCenteredString(this.textRenderer, I18n.translate("resourcePack.folderInfo", new Object[0]), this.width / 2 - 77, this.height - 26, 0x808080);
-        super.render(mouseX, mouseY, delta);
+        this.availablePacks.render(matrices, mouseX, mouseY, delta);
+        this.enabledPacks.render(matrices, mouseX, mouseY, delta);
+        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
+        this.drawCenteredString(matrices, this.textRenderer, I18n.translate("resourcePack.folderInfo", new Object[0]), this.width / 2 - 77, this.height - 26, 0x808080);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     public void markDirty() {

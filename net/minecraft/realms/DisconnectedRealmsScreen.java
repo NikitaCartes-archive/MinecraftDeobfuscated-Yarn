@@ -8,18 +8,22 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class DisconnectedRealmsScreen
 extends RealmsScreen {
     private final String title;
     private final Text reason;
-    private List<String> lines;
+    @Nullable
+    private List<Text> lines;
     private final Screen parent;
     private int textHeight;
 
@@ -35,9 +39,9 @@ extends RealmsScreen {
         minecraftClient.setConnectedToRealms(false);
         minecraftClient.getResourcePackDownloader().clear();
         Realms.narrateNow(this.title + ": " + this.reason.getString());
-        this.lines = this.textRenderer.wrapStringToWidthAsList(this.reason.asFormattedString(), this.width - 50);
+        this.lines = this.textRenderer.wrapLines(this.reason, this.width - 50);
         this.textHeight = this.lines.size() * this.textRenderer.fontHeight;
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 2 + this.textHeight / 2 + this.textRenderer.fontHeight, 200, 20, I18n.translate("gui.back", new Object[0]), buttonWidget -> MinecraftClient.getInstance().openScreen(this.parent)));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 2 + this.textHeight / 2 + this.textRenderer.fontHeight, 200, 20, ScreenTexts.BACK, buttonWidget -> minecraftClient.openScreen(this.parent)));
     }
 
     @Override
@@ -50,17 +54,17 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
-        this.drawCenteredString(this.textRenderer, this.title, this.width / 2, this.height / 2 - this.textHeight / 2 - this.textRenderer.fontHeight * 2, 0xAAAAAA);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
+        this.drawCenteredString(matrices, this.textRenderer, this.title, this.width / 2, this.height / 2 - this.textHeight / 2 - this.textRenderer.fontHeight * 2, 0xAAAAAA);
         int i = this.height / 2 - this.textHeight / 2;
         if (this.lines != null) {
-            for (String string : this.lines) {
-                this.drawCenteredString(this.textRenderer, string, this.width / 2, i, 0xFFFFFF);
+            for (Text text : this.lines) {
+                this.method_27534(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
                 i += this.textRenderer.fontHeight;
             }
         }
-        super.render(mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 }
 

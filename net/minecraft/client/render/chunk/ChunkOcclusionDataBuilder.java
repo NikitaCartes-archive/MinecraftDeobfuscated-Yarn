@@ -64,10 +64,6 @@ public class ChunkOcclusionDataBuilder {
         return chunkOcclusionData;
     }
 
-    public Set<Direction> getOpenFaces(BlockPos pos) {
-        return this.getOpenFaces(ChunkOcclusionDataBuilder.pack(pos));
-    }
-
     private Set<Direction> getOpenFaces(int pos) {
         EnumSet<Direction> set = EnumSet.noneOf(Direction.class);
         IntArrayFIFOQueue intPriorityQueue = new IntArrayFIFOQueue();

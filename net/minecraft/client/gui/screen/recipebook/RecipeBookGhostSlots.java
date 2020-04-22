@@ -12,6 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -51,27 +52,27 @@ public class RecipeBookGhostSlots {
         this.recipe = recipe;
     }
 
-    public void draw(MinecraftClient client, int x, int y, boolean isBig, float lastFrameDuration) {
+    public void draw(MatrixStack matrixStack, MinecraftClient minecraftClient, int i, int j, boolean bl, float f) {
         if (!Screen.hasControlDown()) {
-            this.time += lastFrameDuration;
+            this.time += f;
         }
-        for (int i = 0; i < this.slots.size(); ++i) {
-            GhostInputSlot ghostInputSlot = this.slots.get(i);
-            int j = ghostInputSlot.getX() + x;
-            int k = ghostInputSlot.getY() + y;
-            if (i == 0 && isBig) {
-                DrawableHelper.fill(j - 4, k - 4, j + 20, k + 20, 0x30FF0000);
+        for (int k = 0; k < this.slots.size(); ++k) {
+            GhostInputSlot ghostInputSlot = this.slots.get(k);
+            int l = ghostInputSlot.getX() + i;
+            int m = ghostInputSlot.getY() + j;
+            if (k == 0 && bl) {
+                DrawableHelper.fill(matrixStack, l - 4, m - 4, l + 20, m + 20, 0x30FF0000);
             } else {
-                DrawableHelper.fill(j, k, j + 16, k + 16, 0x30FF0000);
+                DrawableHelper.fill(matrixStack, l, m, l + 16, m + 16, 0x30FF0000);
             }
             ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
-            ItemRenderer itemRenderer = client.getItemRenderer();
-            itemRenderer.renderGuiItem(client.player, itemStack, j, k);
+            ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
+            itemRenderer.renderGuiItem(minecraftClient.player, itemStack, l, m);
             RenderSystem.depthFunc(516);
-            DrawableHelper.fill(j, k, j + 16, k + 16, 0x30FFFFFF);
+            DrawableHelper.fill(matrixStack, l, m, l + 16, m + 16, 0x30FFFFFF);
             RenderSystem.depthFunc(515);
-            if (i != 0) continue;
-            itemRenderer.renderGuiItemOverlay(client.textRenderer, itemStack, j, k);
+            if (k != 0) continue;
+            itemRenderer.renderGuiItemOverlay(minecraftClient.textRenderer, itemStack, l, m);
         }
     }
 

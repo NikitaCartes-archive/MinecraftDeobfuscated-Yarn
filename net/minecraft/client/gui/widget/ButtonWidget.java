@@ -6,14 +6,15 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class ButtonWidget
 extends AbstractPressableButtonWidget {
     protected final PressAction onPress;
 
-    public ButtonWidget(int x, int y, int width, int height, String message, PressAction onPress) {
-        super(x, y, width, height, message);
+    public ButtonWidget(int x, int y, int width, int height, Text text, PressAction onPress) {
+        super(x, y, width, height, text);
         this.onPress = onPress;
     }
 

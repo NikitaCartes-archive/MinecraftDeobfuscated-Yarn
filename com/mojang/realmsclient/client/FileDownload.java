@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5218;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
@@ -289,7 +290,7 @@ public class FileDownload {
             }
             try (LevelStorage.Session session = storage.createSession(string);){
                 session.save(string.trim());
-                Path path = session.getDirectory().resolve("level.dat");
+                Path path = session.getDirectory(class_5218.field_24184);
                 FileDownload.readNbtFile(path.toFile());
             } catch (IOException iOException) {
                 LOGGER.error("Failed to rename unpacked realms level {}", (Object)string, (Object)iOException);

@@ -92,13 +92,7 @@ extends AbstractTraderEntity {
 
     @Override
     public boolean interactMob(PlayerEntity player, Hand hand) {
-        boolean bl;
         ItemStack itemStack = player.getStackInHand(hand);
-        boolean bl2 = bl = itemStack.getItem() == Items.NAME_TAG;
-        if (bl) {
-            itemStack.useOnEntity(player, this, hand);
-            return true;
-        }
         if (itemStack.getItem() != Items.VILLAGER_SPAWN_EGG && this.isAlive() && !this.hasCustomer() && !this.isBaby()) {
             if (hand == Hand.MAIN_HAND) {
                 player.incrementStat(Stats.TALKED_TO_VILLAGER);

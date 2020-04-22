@@ -29,6 +29,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceBlock
@@ -73,6 +74,7 @@ extends BlockWithEntity {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof AbstractFurnaceBlockEntity) {
             ItemScatterer.spawn(world, pos, (Inventory)((AbstractFurnaceBlockEntity)blockEntity));
+            ((AbstractFurnaceBlockEntity)blockEntity).method_27354(world, Vec3d.method_24953(pos));
             world.updateComparators(pos, this);
         }
         super.onBlockRemoved(state, world, pos, newState, notify);

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.class_5218;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.BanEntry;
 import net.minecraft.server.BannedIpEntry;
@@ -414,7 +415,7 @@ public class ServerConfigHandler {
     }
 
     private static File getLevelPlayersFolder(MinecraftServer server) {
-        return server.method_27050().resolve("players").toFile();
+        return server.method_27050(class_5218.field_24183).toFile();
     }
 
     private static void markFileConverted(File file) {

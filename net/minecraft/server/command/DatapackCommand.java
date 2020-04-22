@@ -15,6 +15,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.class_5219;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.server.command.CommandManager;
@@ -22,8 +23,6 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 
 public class DatapackCommand {
     private static final DynamicCommandExceptionType UNKNOWN_DATAPACK_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.datapack.unknown", object));
@@ -41,10 +40,10 @@ public class DatapackCommand {
         ArrayList<ResourcePackProfile> list = Lists.newArrayList(resourcePackManager.getEnabledProfiles());
         packAdder.apply(list, container);
         resourcePackManager.setEnabledProfiles(list);
-        LevelProperties levelProperties = source.getMinecraftServer().getWorld(DimensionType.OVERWORLD).getLevelProperties();
-        levelProperties.getEnabledDataPacks().clear();
-        resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> levelProperties.getEnabledDataPacks().add(resourcePackProfile.getName()));
-        levelProperties.getDisabledDataPacks().remove(container.getName());
+        class_5219 lv = source.getMinecraftServer().method_27728();
+        lv.getEnabledDataPacks().clear();
+        resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> lv.getEnabledDataPacks().add(resourcePackProfile.getName()));
+        lv.getDisabledDataPacks().remove(container.getName());
         source.sendFeedback(new TranslatableText("commands.datapack.enable.success", container.getInformationText(true)), true);
         source.getMinecraftServer().reload();
         return resourcePackManager.getEnabledProfiles().size();
@@ -55,10 +54,10 @@ public class DatapackCommand {
         ArrayList<ResourcePackProfile> list = Lists.newArrayList(resourcePackManager.getEnabledProfiles());
         list.remove(container);
         resourcePackManager.setEnabledProfiles(list);
-        LevelProperties levelProperties = source.getMinecraftServer().getWorld(DimensionType.OVERWORLD).getLevelProperties();
-        levelProperties.getEnabledDataPacks().clear();
-        resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> levelProperties.getEnabledDataPacks().add(resourcePackProfile.getName()));
-        levelProperties.getDisabledDataPacks().add(container.getName());
+        class_5219 lv = source.getMinecraftServer().method_27728();
+        lv.getEnabledDataPacks().clear();
+        resourcePackManager.getEnabledProfiles().forEach(resourcePackProfile -> lv.getEnabledDataPacks().add(resourcePackProfile.getName()));
+        lv.getDisabledDataPacks().add(container.getName());
         source.sendFeedback(new TranslatableText("commands.datapack.disable.success", container.getInformationText(true)), true);
         source.getMinecraftServer().reload();
         return resourcePackManager.getEnabledProfiles().size();
@@ -71,7 +70,7 @@ public class DatapackCommand {
     private static int executeListAvailable(ServerCommandSource source) {
         ResourcePackManager<ResourcePackProfile> resourcePackManager = source.getMinecraftServer().getDataPackManager();
         if (resourcePackManager.getDisabledProfiles().isEmpty()) {
-            source.sendFeedback(new TranslatableText("commands.datapack.list.available.none", new Object[0]), false);
+            source.sendFeedback(new TranslatableText("commands.datapack.list.available.none"), false);
         } else {
             source.sendFeedback(new TranslatableText("commands.datapack.list.available.success", resourcePackManager.getDisabledProfiles().size(), Texts.join(resourcePackManager.getDisabledProfiles(), resourcePackProfile -> resourcePackProfile.getInformationText(false))), false);
         }
@@ -81,7 +80,7 @@ public class DatapackCommand {
     private static int executeListEnabled(ServerCommandSource source) {
         ResourcePackManager<ResourcePackProfile> resourcePackManager = source.getMinecraftServer().getDataPackManager();
         if (resourcePackManager.getEnabledProfiles().isEmpty()) {
-            source.sendFeedback(new TranslatableText("commands.datapack.list.enabled.none", new Object[0]), false);
+            source.sendFeedback(new TranslatableText("commands.datapack.list.enabled.none"), false);
         } else {
             source.sendFeedback(new TranslatableText("commands.datapack.list.enabled.success", resourcePackManager.getEnabledProfiles().size(), Texts.join(resourcePackManager.getEnabledProfiles(), resourcePackProfile -> resourcePackProfile.getInformationText(true))), false);
         }

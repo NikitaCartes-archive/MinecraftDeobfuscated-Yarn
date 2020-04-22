@@ -31,7 +31,7 @@ public enum GameMode {
     }
 
     public Text getTranslatableName() {
-        return new TranslatableText("gameMode." + this.name, new Object[0]);
+        return new TranslatableText("gameMode." + this.name);
     }
 
     public void setAbilitites(PlayerAbilities abilities) {

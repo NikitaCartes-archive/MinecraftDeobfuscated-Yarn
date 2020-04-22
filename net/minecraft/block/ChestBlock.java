@@ -123,7 +123,7 @@ implements Waterloggable {
                     if (chestBlockEntity2.hasCustomName()) {
                         return chestBlockEntity2.getDisplayName();
                     }
-                    return new TranslatableText("container.chestDouble", new Object[0]);
+                    return new TranslatableText("container.chestDouble");
                 }
             });
         }

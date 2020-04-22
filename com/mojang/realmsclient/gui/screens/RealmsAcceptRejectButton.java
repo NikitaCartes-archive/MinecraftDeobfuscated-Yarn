@@ -7,6 +7,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsObjectSelectionList;
 
 @Environment(value=EnvType.CLIENT)
@@ -23,17 +24,17 @@ public abstract class RealmsAcceptRejectButton {
         this.y = y;
     }
 
-    public void render(int offsetX, int offsetY, int mouseX, int mouseY) {
-        int i = offsetX + this.x;
-        int j = offsetY + this.y;
+    public void render(MatrixStack matrixStack, int i, int j, int k, int l) {
+        int m = i + this.x;
+        int n = j + this.y;
         boolean bl = false;
-        if (mouseX >= i && mouseX <= i + this.width && mouseY >= j && mouseY <= j + this.height) {
+        if (k >= m && k <= m + this.width && l >= n && l <= n + this.height) {
             bl = true;
         }
-        this.render(i, j, bl);
+        this.render(matrixStack, m, n, bl);
     }
 
-    protected abstract void render(int var1, int var2, boolean var3);
+    protected abstract void render(MatrixStack var1, int var2, int var3, boolean var4);
 
     public int getRight() {
         return this.x + this.width;
@@ -45,10 +46,10 @@ public abstract class RealmsAcceptRejectButton {
 
     public abstract void handleClick(int var1);
 
-    public static void render(List<RealmsAcceptRejectButton> buttons, RealmsObjectSelectionList<?> selectionList, int offsetX, int offsetY, int mouseX, int mouseY) {
-        for (RealmsAcceptRejectButton realmsAcceptRejectButton : buttons) {
-            if (selectionList.getRowWidth() <= realmsAcceptRejectButton.getRight()) continue;
-            realmsAcceptRejectButton.render(offsetX, offsetY, mouseX, mouseY);
+    public static void render(MatrixStack matrixStack, List<RealmsAcceptRejectButton> list, RealmsObjectSelectionList<?> realmsObjectSelectionList, int i, int j, int k, int l) {
+        for (RealmsAcceptRejectButton realmsAcceptRejectButton : list) {
+            if (realmsObjectSelectionList.getRowWidth() <= realmsAcceptRejectButton.getRight()) continue;
+            realmsAcceptRejectButton.render(matrixStack, i, j, k, l);
         }
     }
 

@@ -13,7 +13,7 @@ import net.minecraft.text.TranslatableText;
 public class AvailableResourcePackListWidget
 extends ResourcePackListWidget {
     public AvailableResourcePackListWidget(MinecraftClient client, int width, int height) {
-        super(client, width, height, new TranslatableText("resourcePack.available.title", new Object[0]));
+        super(client, width, height, new TranslatableText("resourcePack.available.title"));
     }
 }
 

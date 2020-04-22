@@ -227,7 +227,7 @@ extends HostileEntity {
         }
 
         private double method_6995() {
-            return this.blaze.getAttribute(EntityAttributes.GENERIC_FOLLOW_RANGE);
+            return this.blaze.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
         }
     }
 }

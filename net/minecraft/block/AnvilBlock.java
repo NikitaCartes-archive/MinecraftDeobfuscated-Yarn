@@ -48,7 +48,7 @@ extends FallingBlock {
     private static final VoxelShape Z_FACE_SHAPE = Block.createCuboidShape(3.0, 10.0, 0.0, 13.0, 16.0, 16.0);
     private static final VoxelShape X_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, X_STEP_SHAPE, X_STEM_SHAPE, X_FACE_SHAPE);
     private static final VoxelShape Z_AXIS_SHAPE = VoxelShapes.union(BASE_SHAPE, Z_STEP_SHAPE, Z_STEM_SHAPE, Z_FACE_SHAPE);
-    private static final TranslatableText TITLE = new TranslatableText("container.repair", new Object[0]);
+    private static final TranslatableText TITLE = new TranslatableText("container.repair");
 
     public AnvilBlock(AbstractBlock.Settings settings) {
         super(settings);

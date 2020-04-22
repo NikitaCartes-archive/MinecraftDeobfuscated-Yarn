@@ -160,13 +160,13 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
     public void setStructureStarts(StructureAccessor structureAccessor, BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator<?> chunkGenerator, StructureManager structureManager) {
         for (StructureFeature structureFeature : Feature.STRUCTURES.values()) {
-            if (!chunkGenerator.getBiomeSource().hasStructureFeature(structureFeature)) continue;
+            if (!chunkGenerator.method_27367(structureFeature)) continue;
             StructureStart structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), structureFeature, chunk);
             int i = structureStart != null ? structureStart.getReferences() : 0;
             ChunkRandom chunkRandom = new ChunkRandom();
             ChunkPos chunkPos = chunk.getPos();
             StructureStart structureStart2 = StructureStart.DEFAULT;
-            Biome biome = biomeAccess.getBiome(new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
+            Biome biome = chunkGenerator.getDecorationBiome(biomeAccess, new BlockPos(chunkPos.getStartX() + 9, 0, chunkPos.getStartZ() + 9));
             if (structureFeature.method_27217(biomeAccess, chunkGenerator, chunkRandom, chunkPos.x, chunkPos.z, biome)) {
                 StructureStart structureStart3 = structureFeature.getStructureStartFactory().create(structureFeature, chunkPos.x, chunkPos.z, BlockBox.empty(), i, chunkGenerator.getSeed());
                 structureStart3.init(this, structureManager, chunkPos.x, chunkPos.z, biome);
@@ -174,6 +174,10 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
             }
             structureAccessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), structureFeature, structureStart2, chunk);
         }
+    }
+
+    public boolean method_27367(StructureFeature<?> structureFeature) {
+        return this.getBiomeSource().hasStructureFeature(structureFeature);
     }
 
     public void addStructureReferences(IWorld world, StructureAccessor structureAccessor, Chunk chunk) {

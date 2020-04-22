@@ -279,34 +279,34 @@ extends AbstractListTag<Tag> {
         }
         if (NBT_NUMBER_TYPES.contains(this.type) && this.size() <= 8) {
             String string = ", ";
-            LiteralText text = new LiteralText("[");
+            LiteralText mutableText = new LiteralText("[");
             for (int i = 0; i < this.value.size(); ++i) {
                 if (i != 0) {
-                    text.append(", ");
+                    mutableText.append(", ");
                 }
-                text.append(this.value.get(i).toText());
+                mutableText.append(this.value.get(i).toText());
             }
-            text.append("]");
-            return text;
+            mutableText.append("]");
+            return mutableText;
         }
-        LiteralText text2 = new LiteralText("[");
+        LiteralText mutableText2 = new LiteralText("[");
         if (!indent.isEmpty()) {
-            text2.append("\n");
+            mutableText2.append("\n");
         }
         String string2 = String.valueOf(',');
         for (int i = 0; i < this.value.size(); ++i) {
-            LiteralText text3 = new LiteralText(Strings.repeat(indent, depth + 1));
-            text3.append(this.value.get(i).toText(indent, depth + 1));
+            LiteralText mutableText3 = new LiteralText(Strings.repeat(indent, depth + 1));
+            mutableText3.append(this.value.get(i).toText(indent, depth + 1));
             if (i != this.value.size() - 1) {
-                text3.append(string2).append(indent.isEmpty() ? " " : "\n");
+                mutableText3.append(string2).append(indent.isEmpty() ? " " : "\n");
             }
-            text2.append(text3);
+            mutableText2.append(mutableText3);
         }
         if (!indent.isEmpty()) {
-            text2.append("\n").append(Strings.repeat(indent, depth));
+            mutableText2.append("\n").append(Strings.repeat(indent, depth));
         }
-        text2.append("]");
-        return text2;
+        mutableText2.append("]");
+        return mutableText2;
     }
 
     public int getElementType() {

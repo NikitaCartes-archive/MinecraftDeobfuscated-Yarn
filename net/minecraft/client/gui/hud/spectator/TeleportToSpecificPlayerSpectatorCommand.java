@@ -14,6 +14,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.text.LiteralText;
@@ -44,11 +45,11 @@ implements SpectatorMenuCommand {
     }
 
     @Override
-    public void renderIcon(float brightness, int alpha) {
+    public void renderIcon(MatrixStack matrixStack, float f, int i) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, (float)alpha / 255.0f);
-        DrawableHelper.drawTexture(2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
-        DrawableHelper.drawTexture(2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
+        RenderSystem.color4f(1.0f, 1.0f, 1.0f, (float)i / 255.0f);
+        DrawableHelper.drawTexture(matrixStack, 2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
+        DrawableHelper.drawTexture(matrixStack, 2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
     }
 
     @Override

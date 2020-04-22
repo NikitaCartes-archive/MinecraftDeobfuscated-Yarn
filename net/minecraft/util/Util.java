@@ -292,6 +292,41 @@ public class Util {
         return array[random.nextInt(array.length)];
     }
 
+    public static void method_27760(File file, File file2, File file3) {
+        if (file3.exists()) {
+            file3.delete();
+        }
+        file.renameTo(file3);
+        if (file.exists()) {
+            file.delete();
+        }
+        file2.renameTo(file);
+        if (file2.exists()) {
+            file2.delete();
+        }
+    }
+
+    /**
+     * Moves the {@code cursor} in the {@code string} by a {@code delta} amount.
+     * Skips surrogate characters.
+     */
+    @Environment(value=EnvType.CLIENT)
+    public static int moveCursor(String string, int cursor, int delta) {
+        int i = string.length();
+        if (delta >= 0) {
+            for (int j = 0; cursor < i && j < delta; ++j) {
+                if (!Character.isHighSurrogate(string.charAt(cursor++)) || cursor >= i || !Character.isLowSurrogate(string.charAt(cursor))) continue;
+                ++cursor;
+            }
+        } else {
+            for (int j = delta; cursor > 0 && j < 0; ++j) {
+                if (!Character.isLowSurrogate(string.charAt(--cursor)) || cursor <= 0 || !Character.isHighSurrogate(string.charAt(cursor - 1))) continue;
+                --cursor;
+            }
+        }
+        return cursor;
+    }
+
     static enum IdentityHashStrategy implements Hash.Strategy<Object>
     {
         INSTANCE;

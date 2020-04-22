@@ -81,7 +81,7 @@ Tickable {
 
     @Override
     protected Text getContainerName() {
-        return new TranslatableText("container.brewing", new Object[0]);
+        return new TranslatableText("container.brewing");
     }
 
     @Override

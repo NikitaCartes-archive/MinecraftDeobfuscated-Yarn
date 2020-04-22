@@ -24,7 +24,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.Feature;
 
 public class BeehiveTreeDecorator
 extends TreeDecorator {
@@ -52,7 +52,7 @@ extends TreeDecorator {
         }
         BlockPos blockPos2 = (BlockPos)list.get(random.nextInt(list.size()));
         BlockPos blockPos22 = blockPos2.offset(direction);
-        if (!AbstractTreeFeature.isAir(world, blockPos22) || !AbstractTreeFeature.isAir(world, blockPos22.offset(Direction.SOUTH))) {
+        if (!Feature.method_27370(world, blockPos22) || !Feature.method_27370(world, blockPos22.offset(Direction.SOUTH))) {
             return;
         }
         BlockState blockState = (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);

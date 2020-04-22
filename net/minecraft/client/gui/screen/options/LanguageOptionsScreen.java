@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.options.GameOptionsScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -17,6 +18,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +31,7 @@ extends GameOptionsScreen {
     private ButtonWidget doneButton;
 
     public LanguageOptionsScreen(Screen parent, GameOptions options, LanguageManager languageManager) {
-        super(parent, options, new TranslatableText("options.language", new Object[0]));
+        super(parent, options, new TranslatableText("options.language"));
         this.languageManager = languageManager;
     }
 
@@ -43,14 +45,14 @@ extends GameOptionsScreen {
             buttonWidget.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
             this.client.onResolutionChanged();
         }));
-        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> {
+        this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, ScreenTexts.DONE, buttonWidget -> {
             LanguageSelectionListWidget.LanguageEntry languageEntry = (LanguageSelectionListWidget.LanguageEntry)this.languageSelectionList.getSelected();
             if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
                 this.languageManager.setLanguage(languageEntry.languageDefinition);
                 this.gameOptions.language = languageEntry.languageDefinition.getCode();
                 this.client.reloadResources();
                 this.textRenderer.setRightToLeft(this.languageManager.isRightToLeft());
-                this.doneButton.setMessage(I18n.translate("gui.done", new Object[0]));
+                this.doneButton.setMessage(ScreenTexts.DONE);
                 this.forceUnicodeButton.setMessage(Option.FORCE_UNICODE_FONT.getDisplayString(this.gameOptions));
                 this.gameOptions.write();
             }
@@ -60,11 +62,11 @@ extends GameOptionsScreen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.languageSelectionList.render(mouseX, mouseY, delta);
-        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 16, 0xFFFFFF);
-        this.drawCenteredString(this.textRenderer, "(" + I18n.translate("options.languageWarning", new Object[0]) + ")", this.width / 2, this.height - 56, 0x808080);
-        super.render(mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.languageSelectionList.render(matrices, mouseX, mouseY, delta);
+        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
+        this.drawCenteredString(matrices, this.textRenderer, "(" + I18n.translate("options.languageWarning", new Object[0]) + ")", this.width / 2, this.height - 56, 0x808080);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -102,8 +104,8 @@ extends GameOptionsScreen {
         }
 
         @Override
-        protected void renderBackground() {
-            LanguageOptionsScreen.this.renderBackground();
+        protected void renderBackground(MatrixStack matrixStack) {
+            LanguageOptionsScreen.this.renderBackground(matrixStack);
         }
 
         @Override
@@ -121,9 +123,9 @@ extends GameOptionsScreen {
             }
 
             @Override
-            public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
+            public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
                 LanguageOptionsScreen.this.textRenderer.setRightToLeft(true);
-                LanguageSelectionListWidget.this.drawCenteredString(LanguageOptionsScreen.this.textRenderer, this.languageDefinition.toString(), LanguageSelectionListWidget.this.width / 2, y + 1, 0xFFFFFF);
+                LanguageSelectionListWidget.this.drawCenteredString(matrices, LanguageOptionsScreen.this.textRenderer, this.languageDefinition.toString(), LanguageSelectionListWidget.this.width / 2, y + 1, 0xFFFFFF);
                 LanguageOptionsScreen.this.textRenderer.setRightToLeft(LanguageOptionsScreen.this.languageManager.getLanguage().isRightToLeft());
             }
 

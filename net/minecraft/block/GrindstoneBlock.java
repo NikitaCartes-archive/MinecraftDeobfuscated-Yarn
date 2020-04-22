@@ -98,7 +98,7 @@ extends WallMountedBlock {
     public static final VoxelShape field_16360 = VoxelShapes.union(field_16398, field_16353);
     public static final VoxelShape field_16389 = VoxelShapes.union(field_16395, field_16360);
     public static final VoxelShape EAST_WEST_HANGING_SHAPE = VoxelShapes.union(field_16389, Block.createCuboidShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
-    private static final TranslatableText TITLE = new TranslatableText("container.grindstone_title", new Object[0]);
+    private static final TranslatableText TITLE = new TranslatableText("container.grindstone_title");
 
     protected GrindstoneBlock(AbstractBlock.Settings settings) {
         super(settings);

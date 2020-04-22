@@ -4,23 +4,26 @@
 package net.minecraft.text;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 public abstract class BaseText
-implements Text {
+implements MutableText {
     protected final List<Text> siblings = Lists.newArrayList();
-    private Style style;
+    private Style style = Style.EMPTY;
 
     @Override
-    public Text append(Text text) {
-        text.getStyle().setParent(this.getStyle());
+    public MutableText append(Text text) {
         this.siblings.add(text);
         return this;
+    }
+
+    @Override
+    public String asString() {
+        return "";
     }
 
     @Override
@@ -29,28 +32,25 @@ implements Text {
     }
 
     @Override
-    public Text setStyle(Style style) {
+    public MutableText setStyle(Style style) {
         this.style = style;
-        for (Text text : this.siblings) {
-            text.getStyle().setParent(this.getStyle());
-        }
         return this;
     }
 
     @Override
     public Style getStyle() {
-        if (this.style == null) {
-            this.style = new Style();
-            for (Text text : this.siblings) {
-                text.getStyle().setParent(this.style);
-            }
-        }
         return this.style;
     }
 
     @Override
-    public Stream<Text> stream() {
-        return Streams.concat(Stream.of(this), this.siblings.stream().flatMap(Text::stream));
+    public abstract BaseText copy();
+
+    @Override
+    public final MutableText shallowCopy() {
+        BaseText baseText = this.copy();
+        baseText.siblings.addAll(this.siblings);
+        baseText.setStyle(this.style);
+        return baseText;
     }
 
     public boolean equals(Object obj) {
@@ -59,7 +59,7 @@ implements Text {
         }
         if (obj instanceof BaseText) {
             BaseText baseText = (BaseText)obj;
-            return this.siblings.equals(baseText.siblings) && this.getStyle().equals(baseText.getStyle());
+            return this.siblings.equals(baseText.siblings) && Objects.equals(this.getStyle(), baseText.getStyle());
         }
         return false;
     }
@@ -70,6 +70,11 @@ implements Text {
 
     public String toString() {
         return "BaseComponent{style=" + this.style + ", siblings=" + this.siblings + '}';
+    }
+
+    @Override
+    public /* synthetic */ MutableText copy() {
+        return this.copy();
     }
 }
 

@@ -567,7 +567,7 @@ extends LivingEntity {
         return false;
     }
 
-    private boolean method_26320(ItemStack itemStack, ItemStack itemStack2) {
+    public boolean method_26320(ItemStack itemStack, ItemStack itemStack2) {
         if (itemStack.getDamage() < itemStack2.getDamage() || itemStack.hasTag() && !itemStack2.hasTag()) {
             return true;
         }
@@ -999,6 +999,10 @@ extends LivingEntity {
             itemStack.decrement(1);
             return true;
         }
+        if (itemStack.getItem() == Items.NAME_TAG) {
+            itemStack.useOnEntity(player, this, hand);
+            return true;
+        }
         if (this.interactMob(player, hand)) {
             return true;
         }
@@ -1229,8 +1233,8 @@ extends LivingEntity {
     public boolean tryAttack(Entity target) {
         boolean bl;
         int i;
-        float f = (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        float g = (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+        float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        float g = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
         if (target instanceof LivingEntity) {
             f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
             g += (float)EnchantmentHelper.getKnockback(this);

@@ -302,9 +302,9 @@ public class Items {
     public static final Item DARK_OAK_PRESSURE_PLATE = Items.register(Blocks.DARK_OAK_PRESSURE_PLATE, ItemGroup.REDSTONE);
     public static final Item CRIMSON_PRESSURE_PLATE = Items.register(Blocks.CRIMSON_PRESSURE_PLATE, ItemGroup.REDSTONE);
     public static final Item WARPED_PRESSURE_PLATE = Items.register(Blocks.WARPED_PRESSURE_PLATE, ItemGroup.REDSTONE);
+    public static final Item POLISHED_BLACKSTONE_PRESSURE_PLATE = Items.register(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE, ItemGroup.REDSTONE);
     public static final Item REDSTONE_ORE = Items.register(Blocks.REDSTONE_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item REDSTONE_TORCH = Items.register(new WallStandingBlockItem(Blocks.REDSTONE_TORCH, Blocks.REDSTONE_WALL_TORCH, new Item.Settings().group(ItemGroup.REDSTONE)));
-    public static final Item STONE_BUTTON = Items.register(Blocks.STONE_BUTTON, ItemGroup.REDSTONE);
     public static final Item SNOW = Items.register(Blocks.SNOW, ItemGroup.DECORATIONS);
     public static final Item ICE = Items.register(Blocks.ICE, ItemGroup.BUILDING_BLOCKS);
     public static final Item SNOW_BLOCK = Items.register(Blocks.SNOW_BLOCK, ItemGroup.BUILDING_BLOCKS);
@@ -326,7 +326,7 @@ public class Items {
     public static final Item SOUL_SOIL = Items.register(Blocks.SOUL_SOIL, ItemGroup.BUILDING_BLOCKS);
     public static final Item BASALT = Items.register(Blocks.BASALT, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_BASALT = Items.register(Blocks.POLISHED_BASALT, ItemGroup.BUILDING_BLOCKS);
-    public static final Item SOUL_FIRE_TORCH = Items.register(new WallStandingBlockItem(Blocks.SOUL_FIRE_TORCH, Blocks.SOUL_FIRE_WALL_TORCH, new Item.Settings().group(ItemGroup.DECORATIONS)));
+    public static final Item SOUL_TORCH = Items.register(new WallStandingBlockItem(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item GLOWSTONE = Items.register(Blocks.GLOWSTONE, ItemGroup.BUILDING_BLOCKS);
     public static final Item JACK_O_LANTERN = Items.register(Blocks.JACK_O_LANTERN, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_TRAPDOOR = Items.register(Blocks.OAK_TRAPDOOR, ItemGroup.REDSTONE);
@@ -404,6 +404,10 @@ public class Items {
     public static final Item SANDSTONE_WALL = Items.register(Blocks.SANDSTONE_WALL, ItemGroup.DECORATIONS);
     public static final Item END_STONE_BRICK_WALL = Items.register(Blocks.END_STONE_BRICK_WALL, ItemGroup.DECORATIONS);
     public static final Item DIORITE_WALL = Items.register(Blocks.DIORITE_WALL, ItemGroup.DECORATIONS);
+    public static final Item BLACKSTONE_WALL = Items.register(Blocks.BLACKSTONE_WALL, ItemGroup.DECORATIONS);
+    public static final Item POLISHED_BLACKSTONE_WALL = Items.register(Blocks.POLISHED_BLACKSTONE_WALL, ItemGroup.DECORATIONS);
+    public static final Item POLISHED_BLACKSTONE_BRICK_WALL = Items.register(Blocks.POLISHED_BLACKSTONE_BRICK_WALL, ItemGroup.DECORATIONS);
+    public static final Item STONE_BUTTON = Items.register(Blocks.STONE_BUTTON, ItemGroup.REDSTONE);
     public static final Item OAK_BUTTON = Items.register(Blocks.OAK_BUTTON, ItemGroup.REDSTONE);
     public static final Item SPRUCE_BUTTON = Items.register(Blocks.SPRUCE_BUTTON, ItemGroup.REDSTONE);
     public static final Item BIRCH_BUTTON = Items.register(Blocks.BIRCH_BUTTON, ItemGroup.REDSTONE);
@@ -412,6 +416,7 @@ public class Items {
     public static final Item DARK_OAK_BUTTON = Items.register(Blocks.DARK_OAK_BUTTON, ItemGroup.REDSTONE);
     public static final Item CRIMSON_BUTTON = Items.register(Blocks.CRIMSON_BUTTON, ItemGroup.REDSTONE);
     public static final Item WARPED_BUTTON = Items.register(Blocks.WARPED_BUTTON, ItemGroup.REDSTONE);
+    public static final Item POLISHED_BLACKSTONE_BUTTON = Items.register(Blocks.POLISHED_BLACKSTONE_BUTTON, ItemGroup.REDSTONE);
     public static final Item ANVIL = Items.register(Blocks.ANVIL, ItemGroup.DECORATIONS);
     public static final Item CHIPPED_ANVIL = Items.register(Blocks.CHIPPED_ANVIL, ItemGroup.DECORATIONS);
     public static final Item DAMAGED_ANVIL = Items.register(Blocks.DAMAGED_ANVIL, ItemGroup.DECORATIONS);
@@ -682,6 +687,8 @@ public class Items {
     public static final Item DIAMOND = Items.register("diamond", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item IRON_INGOT = Items.register("iron_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item GOLD_INGOT = Items.register("gold_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    public static final Item NETHERITE_INGOT = Items.register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
+    public static final Item NETHERITE_SCRAP = Items.register("netherite_scrap", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
     public static final Item IRON_SWORD = Items.register("iron_sword", (Item)new SwordItem(ToolMaterials.IRON, 3, -2.4f, new Item.Settings().group(ItemGroup.COMBAT)));
     public static final Item WOODEN_SWORD = Items.register("wooden_sword", (Item)new SwordItem(ToolMaterials.WOOD, 3, -2.4f, new Item.Settings().group(ItemGroup.COMBAT)));
     public static final Item WOODEN_SHOVEL = Items.register("wooden_shovel", (Item)new ShovelItem(ToolMaterials.WOOD, 1.5f, -3.0f, new Item.Settings().group(ItemGroup.TOOLS)));
@@ -1042,7 +1049,7 @@ public class Items {
     public static final Item STONECUTTER = Items.register(Blocks.STONECUTTER, ItemGroup.DECORATIONS);
     public static final Item BELL = Items.register(Blocks.BELL, ItemGroup.DECORATIONS);
     public static final Item LANTERN = Items.register(Blocks.LANTERN, ItemGroup.DECORATIONS);
-    public static final Item SOUL_FIRE_LANTERN = Items.register(Blocks.SOUL_FIRE_LANTERN, ItemGroup.DECORATIONS);
+    public static final Item SOUL_LANTERN = Items.register(Blocks.SOUL_LANTERN, ItemGroup.DECORATIONS);
     public static final Item SWEET_BERRIES = Items.register("sweet_berries", (Item)new AliasedBlockItem(Blocks.SWEET_BERRY_BUSH, new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.SWEET_BERRIES)));
     public static final Item CAMPFIRE = Items.register(Blocks.CAMPFIRE, ItemGroup.DECORATIONS);
     public static final Item SOUL_CAMPFIRE = Items.register(Blocks.SOUL_CAMPFIRE, ItemGroup.DECORATIONS);
@@ -1056,26 +1063,19 @@ public class Items {
     public static final Item LODESTONE = Items.register(Blocks.LODESTONE, ItemGroup.DECORATIONS);
     public static final Item NETHERITE_BLOCK = Items.register(new BlockItem(Blocks.NETHERITE_BLOCK, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
     public static final Item ANCIENT_DEBRIS = Items.register(new BlockItem(Blocks.ANCIENT_DEBRIS, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS).fireproof()));
-    public static final Item NETHERITE_INGOT = Items.register("netherite_ingot", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
-    public static final Item NETHERITE_SCRAP = Items.register("netherite_scrap", new Item(new Item.Settings().group(ItemGroup.MATERIALS).fireproof()));
     public static final Item TARGET = Items.register(Blocks.TARGET, ItemGroup.REDSTONE);
     public static final Item CRYING_OBSIDIAN = Items.register(Blocks.CRYING_OBSIDIAN, ItemGroup.BUILDING_BLOCKS);
     public static final Item BLACKSTONE = Items.register(Blocks.BLACKSTONE, ItemGroup.BUILDING_BLOCKS);
     public static final Item BLACKSTONE_SLAB = Items.register(Blocks.BLACKSTONE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item BLACKSTONE_STAIRS = Items.register(Blocks.BLACKSTONE_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item BLACKSTONE_WALL = Items.register(Blocks.BLACKSTONE_WALL, ItemGroup.BUILDING_BLOCKS);
     public static final Item GILDED_BLACKSTONE = Items.register(Blocks.GILDED_BLACKSTONE, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_BLACKSTONE = Items.register(Blocks.POLISHED_BLACKSTONE, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_BLACKSTONE_SLAB = Items.register(Blocks.POLISHED_BLACKSTONE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_BLACKSTONE_STAIRS = Items.register(Blocks.POLISHED_BLACKSTONE_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item POLISHED_BLACKSTONE_WALL = Items.register(Blocks.POLISHED_BLACKSTONE_WALL, ItemGroup.BUILDING_BLOCKS);
-    public static final Item POLISHED_BLACKSTONE_BUTTON = Items.register(Blocks.POLISHED_BLACKSTONE_BUTTON, ItemGroup.REDSTONE);
-    public static final Item POLISHED_BLACKSTONE_PRESSURE_PLATE = Items.register(Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE, ItemGroup.REDSTONE);
     public static final Item CHISELED_POLISHED_BLACKSTONE = Items.register(Blocks.CHISELED_POLISHED_BLACKSTONE, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_BLACKSTONE_BRICKS = Items.register(Blocks.POLISHED_BLACKSTONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_BLACKSTONE_BRICK_SLAB = Items.register(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_BLACKSTONE_BRICK_STAIRS = Items.register(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item POLISHED_BLACKSTONE_BRICK_WALL = Items.register(Blocks.POLISHED_BLACKSTONE_BRICK_WALL, ItemGroup.BUILDING_BLOCKS);
     public static final Item CRACKED_POLISHED_BLACKSTONE_BRICKS = Items.register(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item RESPAWN_ANCHOR = Items.register(Blocks.RESPAWN_ANCHOR, ItemGroup.DECORATIONS);
 

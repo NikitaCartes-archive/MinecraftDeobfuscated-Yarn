@@ -11,8 +11,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Lazy;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharModsCallbackI;
@@ -81,16 +86,6 @@ public class InputUtil {
         }
     }
 
-    @Nullable
-    public static String getKeycodeName(int i) {
-        return GLFW.glfwGetKeyName(i, -1);
-    }
-
-    @Nullable
-    public static String getScancodeName(int i) {
-        return GLFW.glfwGetKeyName(-1, i);
-    }
-
     static {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodType methodType = MethodType.methodType(Boolean.TYPE);
@@ -114,12 +109,14 @@ public class InputUtil {
         private final String name;
         private final Type type;
         private final int keyCode;
+        private final Lazy<Text> field_24196;
         private static final Map<String, KeyCode> NAMES = Maps.newHashMap();
 
         private KeyCode(String keyName, Type type, int i) {
             this.name = keyName;
             this.type = type;
             this.keyCode = i;
+            this.field_24196 = new Lazy<Text>(() -> (Text)type.field_24197.apply(i, keyName));
             NAMES.put(keyName, this);
         }
 
@@ -133,6 +130,10 @@ public class InputUtil {
 
         public String getName() {
             return this.name;
+        }
+
+        public Text method_27445() {
+            return this.field_24196.get();
         }
 
         public boolean equals(Object o) {
@@ -157,35 +158,39 @@ public class InputUtil {
 
     @Environment(value=EnvType.CLIENT)
     public static enum Type {
-        KEYSYM("key.keyboard"),
-        SCANCODE("scancode"),
-        MOUSE("key.mouse");
+        KEYSYM("key.keyboard", (integer, string) -> {
+            String string2 = GLFW.glfwGetKeyName(integer, -1);
+            return string2 != null ? new LiteralText(string2) : new TranslatableText((String)string);
+        }),
+        SCANCODE("scancode", (integer, string) -> {
+            String string2 = GLFW.glfwGetKeyName(-1, integer);
+            return string2 != null ? new LiteralText(string2) : new TranslatableText((String)string);
+        }),
+        MOUSE("key.mouse", (integer, string) -> new TranslatableText((String)string));
 
-        private static final String[] mouseButtons;
         private final Int2ObjectMap<KeyCode> map = new Int2ObjectOpenHashMap<KeyCode>();
         private final String name;
+        private final BiFunction<Integer, String, Text> field_24197;
 
         private static void mapKey(Type type, String name, int keyCode) {
             KeyCode keyCode2 = new KeyCode(name, type, keyCode);
             type.map.put(keyCode, keyCode2);
         }
 
-        private Type(String string2) {
+        private Type(String string2, BiFunction<Integer, String, Text> biFunction) {
             this.name = string2;
+            this.field_24197 = biFunction;
         }
 
-        public KeyCode createFromCode(int i) {
-            if (this.map.containsKey(i)) {
-                return (KeyCode)this.map.get(i);
-            }
-            String string = this == MOUSE ? (i <= 2 ? "." + mouseButtons[i] : "." + (i + 1)) : "." + i;
-            KeyCode keyCode = new KeyCode(this.name + string, this, i);
-            this.map.put(i, keyCode);
-            return keyCode;
-        }
-
-        public String getName() {
-            return this.name;
+        public KeyCode createFromCode(int i2) {
+            return this.map.computeIfAbsent(i2, i -> {
+                int j = i;
+                if (this == MOUSE) {
+                    ++j;
+                }
+                String string = this.name + "." + j;
+                return new KeyCode(string, this, i);
+            });
         }
 
         static {
@@ -318,7 +323,6 @@ public class InputUtil {
             Type.mapKey(KEYSYM, "key.keyboard.print.screen", 283);
             Type.mapKey(KEYSYM, "key.keyboard.world.1", 161);
             Type.mapKey(KEYSYM, "key.keyboard.world.2", 162);
-            mouseButtons = new String[]{"left", "middle", "right"};
         }
     }
 }

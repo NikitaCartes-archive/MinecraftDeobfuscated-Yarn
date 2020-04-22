@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
+import net.minecraft.class_5217;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -28,7 +29,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.level.LevelProperties;
 import org.jetbrains.annotations.Nullable;
 
 public interface IWorld
@@ -56,7 +56,7 @@ ModifiableTestableWorld {
 
     public World getWorld();
 
-    public LevelProperties getLevelProperties();
+    public class_5217 getLevelProperties();
 
     public LocalDifficulty getLocalDifficulty(BlockPos var1);
 

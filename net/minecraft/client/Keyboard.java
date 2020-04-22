@@ -57,11 +57,11 @@ public class Keyboard {
     }
 
     private void debugWarn(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix", new Object[0]).formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
     }
 
     private void debugError(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix", new Object[0]).formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
     }
 
     private boolean processF3(int key) {
@@ -127,19 +127,19 @@ public class Keyboard {
             case 81: {
                 this.debugWarn("debug.help.message", new Object[0]);
                 ChatHud chatHud = this.client.inGameHud.getChatHud();
-                chatHud.addMessage(new TranslatableText("debug.reload_chunks.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.show_hitboxes.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.copy_location.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.clear_chat.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.cycle_renderdistance.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.chunk_boundaries.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.advanced_tooltips.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.inspect.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.creative_spectator.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.pause_focus.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.help.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.reload_resourcepacks.help", new Object[0]));
-                chatHud.addMessage(new TranslatableText("debug.pause.help", new Object[0]));
+                chatHud.addMessage(new TranslatableText("debug.reload_chunks.help"));
+                chatHud.addMessage(new TranslatableText("debug.show_hitboxes.help"));
+                chatHud.addMessage(new TranslatableText("debug.copy_location.help"));
+                chatHud.addMessage(new TranslatableText("debug.clear_chat.help"));
+                chatHud.addMessage(new TranslatableText("debug.cycle_renderdistance.help"));
+                chatHud.addMessage(new TranslatableText("debug.chunk_boundaries.help"));
+                chatHud.addMessage(new TranslatableText("debug.advanced_tooltips.help"));
+                chatHud.addMessage(new TranslatableText("debug.inspect.help"));
+                chatHud.addMessage(new TranslatableText("debug.creative_spectator.help"));
+                chatHud.addMessage(new TranslatableText("debug.pause_focus.help"));
+                chatHud.addMessage(new TranslatableText("debug.help.help"));
+                chatHud.addMessage(new TranslatableText("debug.reload_resourcepacks.help"));
+                chatHud.addMessage(new TranslatableText("debug.pause.help"));
                 return true;
             }
             case 84: {

@@ -24,7 +24,7 @@ import net.minecraft.world.GameMode;
 @Environment(value=EnvType.CLIENT)
 public class PunchTreeTutorialStepHandler
 implements TutorialStepHandler {
-    private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title", new Object[0]);
+    private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title");
     private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
     private final TutorialManager manager;
     private TutorialToast field_5637;

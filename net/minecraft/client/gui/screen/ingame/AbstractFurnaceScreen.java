@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.recipebook.AbstractFurnaceRecipeBookScree
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.AbstractFurnaceScreenHandler;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -55,41 +56,40 @@ implements RecipeBookProvider {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
         if (this.recipeBook.isOpen() && this.narrow) {
-            this.drawBackground(delta, mouseX, mouseY);
-            this.recipeBook.render(mouseX, mouseY, delta);
+            this.drawBackground(matrices, delta, mouseX, mouseY);
+            this.recipeBook.render(matrices, mouseX, mouseY, delta);
         } else {
-            this.recipeBook.render(mouseX, mouseY, delta);
-            super.render(mouseX, mouseY, delta);
-            this.recipeBook.drawGhostSlots(this.x, this.y, true, delta);
+            this.recipeBook.render(matrices, mouseX, mouseY, delta);
+            super.render(matrices, mouseX, mouseY, delta);
+            this.recipeBook.drawGhostSlots(matrices, this.x, this.y, true, delta);
         }
-        this.drawMouseoverTooltip(mouseX, mouseY);
-        this.recipeBook.drawTooltip(this.x, this.y, mouseX, mouseY);
+        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+        this.recipeBook.drawTooltip(matrices, this.x, this.y, mouseX, mouseY);
     }
 
     @Override
-    protected void drawForeground(int mouseX, int mouseY) {
-        String string = this.title.asFormattedString();
-        this.textRenderer.draw(string, this.backgroundWidth / 2 - this.textRenderer.getStringWidth(string) / 2, 6.0f, 0x404040);
-        this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0f, this.backgroundHeight - 96 + 2, 0x404040);
+    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+        this.textRenderer.draw(matrixStack, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0f, 0x404040);
+        this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
     }
 
     @Override
-    protected void drawBackground(float delta, int mouseX, int mouseY) {
-        int k;
+    protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+        int l;
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(this.background);
-        int i = this.x;
-        int j = this.y;
-        this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        int j = this.x;
+        int k = this.y;
+        this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
         if (((AbstractFurnaceScreenHandler)this.handler).isBurning()) {
-            k = ((AbstractFurnaceScreenHandler)this.handler).getFuelProgress();
-            this.drawTexture(i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
+            l = ((AbstractFurnaceScreenHandler)this.handler).getFuelProgress();
+            this.drawTexture(matrixStack, j + 56, k + 36 + 12 - l, 176, 12 - l, 14, l + 1);
         }
-        k = ((AbstractFurnaceScreenHandler)this.handler).getCookProgress();
-        this.drawTexture(i + 79, j + 34, 176, 14, k + 1, 16);
+        l = ((AbstractFurnaceScreenHandler)this.handler).getCookProgress();
+        this.drawTexture(matrixStack, j + 79, k + 34, 176, 14, l + 1, 16);
     }
 
     @Override

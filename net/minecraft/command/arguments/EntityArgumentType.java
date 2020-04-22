@@ -29,12 +29,12 @@ import net.minecraft.text.TranslatableText;
 public class EntityArgumentType
 implements ArgumentType<EntitySelector> {
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "@e", "@e[type=foo]", "dd12be42-52a9-4a91-a8a1-11c01849e498");
-    public static final SimpleCommandExceptionType TOO_MANY_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.toomany", new Object[0]));
-    public static final SimpleCommandExceptionType TOO_MANY_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.player.toomany", new Object[0]));
-    public static final SimpleCommandExceptionType PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.player.entities", new Object[0]));
-    public static final SimpleCommandExceptionType ENTITY_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.notfound.entity", new Object[0]));
-    public static final SimpleCommandExceptionType PLAYER_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.notfound.player", new Object[0]));
-    public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.selector.not_allowed", new Object[0]));
+    public static final SimpleCommandExceptionType TOO_MANY_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.toomany"));
+    public static final SimpleCommandExceptionType TOO_MANY_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.player.toomany"));
+    public static final SimpleCommandExceptionType PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.player.entities"));
+    public static final SimpleCommandExceptionType ENTITY_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.notfound.entity"));
+    public static final SimpleCommandExceptionType PLAYER_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.notfound.player"));
+    public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.entity.selector.not_allowed"));
     private final boolean singleTarget;
     private final boolean playersOnly;
 

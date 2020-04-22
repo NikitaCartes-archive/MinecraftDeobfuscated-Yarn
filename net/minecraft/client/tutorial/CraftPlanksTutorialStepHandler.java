@@ -22,8 +22,8 @@ import net.minecraft.world.GameMode;
 @Environment(value=EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler
 implements TutorialStepHandler {
-    private static final Text TITLE = new TranslatableText("tutorial.craft_planks.title", new Object[0]);
-    private static final Text DESCRIPTION = new TranslatableText("tutorial.craft_planks.description", new Object[0]);
+    private static final Text TITLE = new TranslatableText("tutorial.craft_planks.title");
+    private static final Text DESCRIPTION = new TranslatableText("tutorial.craft_planks.description");
     private final TutorialManager manager;
     private TutorialToast toast;
     private int ticks;

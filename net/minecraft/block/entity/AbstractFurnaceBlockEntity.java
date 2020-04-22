@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.AbstractFurnaceBlock;
@@ -40,6 +41,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractFurnaceBlockEntity
@@ -448,27 +451,32 @@ Tickable {
     }
 
     public void dropExperience(PlayerEntity player) {
-        ArrayList<Recipe<?>> list = Lists.newArrayList();
-        for (Object2IntMap.Entry entry : this.recipesUsed.object2IntEntrySet()) {
-            player.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
-                list.add((Recipe<?>)recipe);
-                AbstractFurnaceBlockEntity.dropExperience(player, entry.getIntValue(), ((AbstractCookingRecipe)recipe).getExperience());
-            });
-        }
+        List<Recipe<?>> list = this.method_27354(player.world, player.getPos());
         player.unlockRecipes(list);
         this.recipesUsed.clear();
     }
 
-    private static void dropExperience(PlayerEntity player, int totalExperience, float experienceFraction) {
-        int i = MathHelper.floor((float)totalExperience * experienceFraction);
-        float f = MathHelper.fractionalPart((float)totalExperience * experienceFraction);
-        if (f != 0.0f && Math.random() < (double)f) {
-            ++i;
+    public List<Recipe<?>> method_27354(World world, Vec3d vec3d) {
+        ArrayList<Recipe<?>> list = Lists.newArrayList();
+        for (Object2IntMap.Entry entry : this.recipesUsed.object2IntEntrySet()) {
+            world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
+                list.add((Recipe<?>)recipe);
+                AbstractFurnaceBlockEntity.dropExperience(world, vec3d, entry.getIntValue(), ((AbstractCookingRecipe)recipe).getExperience());
+            });
         }
-        while (i > 0) {
-            int j = ExperienceOrbEntity.roundToOrbSize(i);
-            i -= j;
-            player.world.spawnEntity(new ExperienceOrbEntity(player.world, player.getX(), player.getY() + 0.5, player.getZ() + 0.5, j));
+        return list;
+    }
+
+    private static void dropExperience(World world, Vec3d vec3d, int i, float f) {
+        int j = MathHelper.floor((float)i * f);
+        float g = MathHelper.fractionalPart((float)i * f);
+        if (g != 0.0f && Math.random() < (double)g) {
+            ++j;
+        }
+        while (j > 0) {
+            int k = ExperienceOrbEntity.roundToOrbSize(j);
+            j -= k;
+            world.spawnEntity(new ExperienceOrbEntity(world, vec3d.x, vec3d.y, vec3d.z, k));
         }
     }
 

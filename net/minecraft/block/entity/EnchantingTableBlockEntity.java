@@ -108,7 +108,7 @@ Tickable {
         if (this.customName != null) {
             return this.customName;
         }
-        return new TranslatableText("container.enchant", new Object[0]);
+        return new TranslatableText("container.enchant");
     }
 
     public void setCustomName(@Nullable Text value) {

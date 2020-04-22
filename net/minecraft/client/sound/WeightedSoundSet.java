@@ -28,7 +28,7 @@ implements SoundContainer<Sound> {
 
     public WeightedSoundSet(Identifier id, @Nullable String subtitle) {
         this.id = id;
-        this.subtitle = subtitle == null ? null : new TranslatableText(subtitle, new Object[0]);
+        this.subtitle = subtitle == null ? null : new TranslatableText(subtitle);
     }
 
     @Override

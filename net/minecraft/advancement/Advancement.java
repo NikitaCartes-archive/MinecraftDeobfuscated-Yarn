@@ -28,6 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -60,8 +61,8 @@ public class Advancement {
         } else {
             Text text = display.getTitle();
             Formatting formatting = display.getFrame().getTitleFormat();
-            Text text2 = text.deepCopy().formatted(formatting).append("\n").append(display.getDescription());
-            Text text3 = text.deepCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
+            MutableText text2 = text.shallowCopy().formatted(formatting).append("\n").append(display.getDescription());
+            MutableText text3 = text.shallowCopy().styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
             this.text = new LiteralText("[").append(text3).append("]").formatted(formatting);
         }
     }

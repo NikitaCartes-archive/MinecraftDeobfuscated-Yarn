@@ -142,7 +142,7 @@ extends GolemEntity {
     }
 
     private float getAttackDamage() {
-        return (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
     }
 
     @Override
@@ -150,7 +150,7 @@ extends GolemEntity {
         this.attackTicksLeft = 10;
         this.world.sendEntityStatus(this, (byte)4);
         float f = this.getAttackDamage();
-        float g = f > 0.0f ? f / 2.0f + (float)this.random.nextInt((int)f) : 0.0f;
+        float g = (int)f > 0 ? f / 2.0f + (float)this.random.nextInt((int)f) : f;
         boolean bl = target.damage(DamageSource.mob(this), g);
         if (bl) {
             target.setVelocity(target.getVelocity().add(0.0, 0.4f, 0.0));

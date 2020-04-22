@@ -19,7 +19,7 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
 public class SpectateCommand {
-    private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.spectate.self", new Object[0]));
+    private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.spectate.self"));
     private static final DynamicCommandExceptionType NOT_SPECTATOR_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.spectate.not_spectator", object));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -37,7 +37,7 @@ public class SpectateCommand {
         if (entity != null) {
             source.sendFeedback(new TranslatableText("commands.spectate.success.started", entity.getDisplayName()), false);
         } else {
-            source.sendFeedback(new TranslatableText("commands.spectate.success.stopped", new Object[0]), false);
+            source.sendFeedback(new TranslatableText("commands.spectate.success.stopped"), false);
         }
         return 1;
     }

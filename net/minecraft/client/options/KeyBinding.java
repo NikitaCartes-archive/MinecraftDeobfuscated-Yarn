@@ -6,7 +6,6 @@ package net.minecraft.client.options;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
@@ -14,6 +13,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
@@ -126,10 +127,10 @@ implements Comparable<KeyBinding> {
         return categoryOrderMap.get(this.category).compareTo(categoryOrderMap.get(keyBinding.category));
     }
 
-    public static Supplier<String> getLocalizedName(String id) {
+    public static Supplier<Text> getLocalizedName(String id) {
         KeyBinding keyBinding = keysById.get(id);
         if (keyBinding == null) {
-            return () -> id;
+            return () -> new TranslatableText(id);
         }
         return keyBinding::getLocalizedName;
     }
@@ -153,25 +154,8 @@ implements Comparable<KeyBinding> {
         return this.keyCode.getCategory() == InputUtil.Type.MOUSE && this.keyCode.getKeyCode() == code;
     }
 
-    public String getLocalizedName() {
-        String string = this.keyCode.getName();
-        int i = this.keyCode.getKeyCode();
-        String string2 = null;
-        switch (this.keyCode.getCategory()) {
-            case KEYSYM: {
-                string2 = InputUtil.getKeycodeName(i);
-                break;
-            }
-            case SCANCODE: {
-                string2 = InputUtil.getScancodeName(i);
-                break;
-            }
-            case MOUSE: {
-                String string3 = I18n.translate(string, new Object[0]);
-                string2 = Objects.equals(string3, string) ? I18n.translate(InputUtil.Type.MOUSE.getName(), i + 1) : string3;
-            }
-        }
-        return string2 == null ? I18n.translate(string, new Object[0]) : string2;
+    public Text getLocalizedName() {
+        return this.keyCode.method_27445();
     }
 
     public boolean isDefault() {

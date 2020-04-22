@@ -421,6 +421,9 @@ extends PathNodeMaker {
         if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block instanceof FenceGateBlock && !blockState.get(FenceGateBlock.OPEN).booleanValue()) {
             return PathNodeType.FENCE;
         }
+        if (!blockState.canPathfindThrough(blockView, blockPos, NavigationType.LAND)) {
+            return PathNodeType.BLOCKED;
+        }
         FluidState fluidState = blockView.getFluidState(blockPos);
         if (fluidState.matches(FluidTags.WATER)) {
             return PathNodeType.WATER;
@@ -428,10 +431,7 @@ extends PathNodeMaker {
         if (fluidState.matches(FluidTags.LAVA)) {
             return PathNodeType.LAVA;
         }
-        if (blockState.canPathfindThrough(blockView, blockPos, NavigationType.LAND)) {
-            return PathNodeType.OPEN;
-        }
-        return PathNodeType.BLOCKED;
+        return PathNodeType.OPEN;
     }
 
     private static boolean method_27138(BlockState blockState) {

@@ -207,10 +207,10 @@ public class DebugRenderer {
         }
         RenderSystem.depthMask(true);
         RenderSystem.scalef(-1.0f, 1.0f, 1.0f);
-        float g = center ? (float)(-textRenderer.getStringWidth(string)) / 2.0f : 0.0f;
+        float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0f : 0.0f;
         RenderSystem.enableAlphaTest();
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        textRenderer.draw(string, g -= offset / size, 0.0f, color, false, AffineTransformation.identity().getMatrix(), immediate, visibleThroughObjects, 0, 0xF000F0);
+        textRenderer.draw(string, g -= offset / size, 0.0f, color, false, AffineTransformation.identity().getMatrix(), (VertexConsumerProvider)immediate, visibleThroughObjects, 0, 0xF000F0);
         immediate.draw();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableDepthTest();

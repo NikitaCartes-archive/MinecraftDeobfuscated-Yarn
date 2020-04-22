@@ -43,7 +43,7 @@ public class StopSoundCommand {
         } else if (sound != null) {
             source.sendFeedback(new TranslatableText("commands.stopsound.success.sourceless.sound", sound), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.stopsound.success.sourceless.any", new Object[0]), true);
+            source.sendFeedback(new TranslatableText("commands.stopsound.success.sourceless.any"), true);
         }
         return targets.size();
     }

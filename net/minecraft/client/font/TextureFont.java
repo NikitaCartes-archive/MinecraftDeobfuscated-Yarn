@@ -7,8 +7,10 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
-import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +33,11 @@ public class TextureFont
 implements Font {
     private static final Logger LOGGER = LogManager.getLogger();
     private final NativeImage image;
-    private final Char2ObjectMap<TextureFontGlyph> glyphs;
+    private final Int2ObjectMap<TextureFontGlyph> glyphs;
 
-    public TextureFont(NativeImage image, Char2ObjectMap<TextureFontGlyph> glyphs) {
+    private TextureFont(NativeImage image, Int2ObjectMap<TextureFontGlyph> int2ObjectMap) {
         this.image = image;
-        this.glyphs = glyphs;
+        this.glyphs = int2ObjectMap;
     }
 
     @Override
@@ -45,8 +47,13 @@ implements Font {
 
     @Override
     @Nullable
-    public RenderableGlyph getGlyph(char character) {
-        return (RenderableGlyph)this.glyphs.get(character);
+    public RenderableGlyph getGlyph(int i) {
+        return (RenderableGlyph)this.glyphs.get(i);
+    }
+
+    @Override
+    public IntSet method_27442() {
+        return IntSets.unmodifiable(this.glyphs.keySet());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -112,11 +119,11 @@ implements Font {
     public static class Loader
     implements FontLoader {
         private final Identifier filename;
-        private final List<String> chars;
+        private final List<int[]> chars;
         private final int height;
         private final int ascent;
 
-        public Loader(Identifier id, int height, int ascent, List<String> chars) {
+        public Loader(Identifier id, int height, int ascent, List<int[]> chars) {
             this.filename = new Identifier(id.getNamespace(), "textures/" + id.getPath());
             this.chars = chars;
             this.height = height;
@@ -129,18 +136,18 @@ implements Font {
             if (j > i) {
                 throw new JsonParseException("Ascent " + j + " higher than height " + i);
             }
-            ArrayList<String> list = Lists.newArrayList();
+            ArrayList<int[]> list = Lists.newArrayList();
             JsonArray jsonArray = JsonHelper.getArray(json, "chars");
             for (int k = 0; k < jsonArray.size(); ++k) {
-                int m;
                 int l;
                 String string = JsonHelper.asString(jsonArray.get(k), "chars[" + k + "]");
-                if (k > 0 && (l = string.length()) != (m = ((String)list.get(0)).length())) {
-                    throw new JsonParseException("Elements of chars have to be the same length (found: " + l + ", expected: " + m + "), pad with space or \\u0000");
+                int[] is = string.codePoints().toArray();
+                if (k > 0 && is.length != (l = ((int[])list.get(0)).length)) {
+                    throw new JsonParseException("Elements of chars have to be the same length (found: " + is.length + ", expected: " + l + "), pad with space or \\u0000");
                 }
-                list.add(string);
+                list.add(is);
             }
-            if (list.isEmpty() || ((String)list.get(0)).isEmpty()) {
+            if (list.isEmpty() || ((int[])list.get(0)).length == 0) {
                 throw new JsonParseException("Expected to find data in chars, found none.");
             }
             return new Loader(new Identifier(JsonHelper.getString(json, "file")), i, j, list);
@@ -158,25 +165,30 @@ implements Font {
                 NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
                 int i = nativeImage.getWidth();
                 int j = nativeImage.getHeight();
-                int k = i / this.chars.get(0).length();
+                int k = i / this.chars.get(0).length;
                 int l = j / this.chars.size();
                 float f = (float)this.height / (float)l;
-                Char2ObjectOpenHashMap<TextureFontGlyph> char2ObjectMap = new Char2ObjectOpenHashMap<TextureFontGlyph>();
+                Int2ObjectOpenHashMap<TextureFontGlyph> int2ObjectMap = new Int2ObjectOpenHashMap<TextureFontGlyph>();
                 int m = 0;
                 while (true) {
-                    String string;
+                    int n;
+                    int[] nArray;
+                    int n2;
                     if (m < this.chars.size()) {
-                        string = this.chars.get(m);
+                        n2 = 0;
+                        nArray = this.chars.get(m);
+                        n = nArray.length;
                     } else {
-                        TextureFont textureFont = new TextureFont(nativeImage, char2ObjectMap);
+                        TextureFont textureFont = new TextureFont(nativeImage, int2ObjectMap);
                         return textureFont;
                     }
-                    for (int n = 0; n < string.length(); ++n) {
-                        int o;
+                    for (int i2 = 0; i2 < n; ++i2) {
+                        int q;
                         TextureFontGlyph textureFontGlyph;
-                        char c = string.charAt(n);
-                        if (c == '\u0000' || c == ' ' || (textureFontGlyph = char2ObjectMap.put(c, new TextureFontGlyph(f, nativeImage, n * k, m * l, k, l, (int)(0.5 + (double)((float)(o = this.findCharacterStartX(nativeImage, k, l, n, m)) * f)) + 1, this.ascent))) == null) continue;
-                        LOGGER.warn("Codepoint '{}' declared multiple times in {}", (Object)Integer.toHexString(c), (Object)this.filename);
+                        int o = nArray[i2];
+                        int p = n2++;
+                        if (o == 0 || o == 32 || (textureFontGlyph = int2ObjectMap.put(o, new TextureFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)(q = this.findCharacterStartX(nativeImage, k, l, p, m)) * f)) + 1, this.ascent))) == null) continue;
+                        LOGGER.warn("Codepoint '{}' declared multiple times in {}", (Object)Integer.toHexString(o), (Object)this.filename);
                     }
                     ++m;
                 }

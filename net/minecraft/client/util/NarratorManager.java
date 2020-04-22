@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class NarratorManager
 implements ClientChatListener {
-    public static final Text EMPTY = new LiteralText("");
+    public static final Text EMPTY = LiteralText.EMPTY;
     private static final Logger LOGGER = LogManager.getLogger();
     public static final NarratorManager INSTANCE = new NarratorManager();
     private final Narrator narrator = Narrator.getNarrator();
@@ -60,16 +60,16 @@ implements ClientChatListener {
 
     public void addToast(NarratorOption option) {
         this.clear();
-        this.narrator.say(new TranslatableText("options.narrator", new Object[0]).getString() + " : " + new TranslatableText(option.getTranslationKey(), new Object[0]).getString(), true);
+        this.narrator.say(new TranslatableText("options.narrator").append(" : ").append(option.getTranslationKey()).getString(), true);
         ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
         if (this.narrator.active()) {
             if (option == NarratorOption.OFF) {
-                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled", new Object[0]), null);
+                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled"), null);
             } else {
-                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.enabled", new Object[0]), new TranslatableText(option.getTranslationKey(), new Object[0]));
+                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.enabled"), option.getTranslationKey());
             }
         } else {
-            SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled", new Object[0]), new TranslatableText("options.narrator.notavailable", new Object[0]));
+            SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled"), new TranslatableText("options.narrator.notavailable"));
         }
     }
 

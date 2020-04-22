@@ -31,6 +31,7 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
@@ -91,27 +92,27 @@ extends DrawableHelper {
         this.chunk = null;
     }
 
-    public void render() {
+    public void render(MatrixStack matrixStack) {
         this.client.getProfiler().push("debug");
         RenderSystem.pushMatrix();
         Entity entity = this.client.getCameraEntity();
         this.blockHit = entity.rayTrace(20.0, 0.0f, false);
         this.fluidHit = entity.rayTrace(20.0, 0.0f, true);
-        this.renderLeftText();
-        this.renderRightText();
+        this.renderLeftText(matrixStack);
+        this.renderRightText(matrixStack);
         RenderSystem.popMatrix();
         if (this.client.options.debugTpsEnabled) {
             int i = this.client.getWindow().getScaledWidth();
-            this.drawMetricsData(this.client.getMetricsData(), 0, i / 2, true);
+            this.drawMetricsData(matrixStack, this.client.getMetricsData(), 0, i / 2, true);
             IntegratedServer integratedServer = this.client.getServer();
             if (integratedServer != null) {
-                this.drawMetricsData(integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
+                this.drawMetricsData(matrixStack, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
             }
         }
         this.client.getProfiler().pop();
     }
 
-    protected void renderLeftText() {
+    protected void renderLeftText(MatrixStack matrixStack) {
         List<String> list = this.getLeftText();
         list.add("");
         boolean bl = this.client.getServer() != null;
@@ -121,25 +122,25 @@ extends DrawableHelper {
             String string = list.get(i);
             if (Strings.isNullOrEmpty(string)) continue;
             int j = this.fontRenderer.fontHeight;
-            int k = this.fontRenderer.getStringWidth(string);
+            int k = this.fontRenderer.getWidth(string);
             int l = 2;
             int m = 2 + j * i;
-            DebugHud.fill(1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
-            this.fontRenderer.draw(string, 2.0f, m, 0xE0E0E0);
+            DebugHud.fill(matrixStack, 1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
+            this.fontRenderer.draw(matrixStack, string, 2.0f, (float)m, 0xE0E0E0);
         }
     }
 
-    protected void renderRightText() {
+    protected void renderRightText(MatrixStack matrixStack) {
         List<String> list = this.getRightText();
         for (int i = 0; i < list.size(); ++i) {
             String string = list.get(i);
             if (Strings.isNullOrEmpty(string)) continue;
             int j = this.fontRenderer.fontHeight;
-            int k = this.fontRenderer.getStringWidth(string);
+            int k = this.fontRenderer.getWidth(string);
             int l = this.client.getWindow().getScaledWidth() - 2 - k;
             int m = 2 + j * i;
-            DebugHud.fill(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
-            this.fontRenderer.draw(string, l, m, 0xE0E0E0);
+            DebugHud.fill(matrixStack, l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
+            this.fontRenderer.draw(matrixStack, string, (float)l, (float)m, 0xE0E0E0);
         }
     }
 
@@ -357,7 +358,7 @@ extends DrawableHelper {
         return property.getName() + ": " + string;
     }
 
-    private void drawMetricsData(MetricsData metricsData, int i, int j, boolean bl) {
+    private void drawMetricsData(MatrixStack matrixStack, MetricsData metricsData, int i, int j, boolean bl) {
         int t;
         RenderSystem.disableDepthTest();
         int k = metricsData.getStartIndex();
@@ -378,7 +379,7 @@ extends DrawableHelper {
             q += (long)u;
         }
         t = this.client.getWindow().getScaledHeight();
-        DebugHud.fill(i, t - 60, i + p, t, -1873784752);
+        DebugHud.fill(matrixStack, i, t - 60, i + p, t, -1873784752);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
@@ -405,29 +406,29 @@ extends DrawableHelper {
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         if (bl) {
-            DebugHud.fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
-            this.fontRenderer.draw("60 FPS", i + 2, t - 30 + 2, 0xE0E0E0);
-            this.drawHorizontalLine(i, i + p - 1, t - 30, -1);
-            DebugHud.fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-            this.fontRenderer.draw("30 FPS", i + 2, t - 60 + 2, 0xE0E0E0);
-            this.drawHorizontalLine(i, i + p - 1, t - 60, -1);
+            DebugHud.fill(matrixStack, i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
+            this.fontRenderer.draw(matrixStack, "60 FPS", (float)(i + 2), (float)(t - 30 + 2), 0xE0E0E0);
+            this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 30, -1);
+            DebugHud.fill(matrixStack, i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+            this.fontRenderer.draw(matrixStack, "30 FPS", (float)(i + 2), (float)(t - 60 + 2), 0xE0E0E0);
+            this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 60, -1);
         } else {
-            DebugHud.fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
-            this.fontRenderer.draw("20 TPS", i + 2, t - 60 + 2, 0xE0E0E0);
-            this.drawHorizontalLine(i, i + p - 1, t - 60, -1);
+            DebugHud.fill(matrixStack, i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+            this.fontRenderer.draw(matrixStack, "20 TPS", (float)(i + 2), (float)(t - 60 + 2), 0xE0E0E0);
+            this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 60, -1);
         }
-        this.drawHorizontalLine(i, i + p - 1, t - 1, -1);
-        this.drawVerticalLine(i, t - 60, t, -1);
-        this.drawVerticalLine(i + p - 1, t - 60, t, -1);
+        this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 1, -1);
+        this.drawVerticalLine(matrixStack, i, t - 60, t, -1);
+        this.drawVerticalLine(matrixStack, i + p - 1, t - 60, t, -1);
         if (bl && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
-            this.drawHorizontalLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
+            this.drawHorizontalLine(matrixStack, i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
         }
         String string = r + " ms min";
         String string2 = q / (long)p + " ms avg";
         String string3 = s + " ms max";
-        this.fontRenderer.drawWithShadow(string, i + 2, t - 60 - this.fontRenderer.fontHeight, 0xE0E0E0);
-        this.fontRenderer.drawWithShadow(string2, i + p / 2 - this.fontRenderer.getStringWidth(string2) / 2, t - 60 - this.fontRenderer.fontHeight, 0xE0E0E0);
-        this.fontRenderer.drawWithShadow(string3, i + p - this.fontRenderer.getStringWidth(string3), t - 60 - this.fontRenderer.fontHeight, 0xE0E0E0);
+        this.fontRenderer.drawWithShadow(matrixStack, string, (float)(i + 2), (float)(t - 60 - this.fontRenderer.fontHeight), 0xE0E0E0);
+        this.fontRenderer.drawWithShadow(matrixStack, string2, (float)(i + p / 2 - this.fontRenderer.getWidth(string2) / 2), (float)(t - 60 - this.fontRenderer.fontHeight), 0xE0E0E0);
+        this.fontRenderer.drawWithShadow(matrixStack, string3, (float)(i + p - this.fontRenderer.getWidth(string3)), (float)(t - 60 - this.fontRenderer.fontHeight), 0xE0E0E0);
         RenderSystem.enableDepthTest();
     }
 

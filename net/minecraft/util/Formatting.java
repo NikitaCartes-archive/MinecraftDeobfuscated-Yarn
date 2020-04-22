@@ -70,23 +70,6 @@ public enum Formatting {
         this.stringValue = "\u00a7" + code;
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public static String getFormatAtEnd(String string) {
-        StringBuilder stringBuilder = new StringBuilder();
-        int i = -1;
-        int j = string.length();
-        while ((i = string.indexOf(167, i + 1)) != -1) {
-            Formatting formatting;
-            if (i >= j - 1 || (formatting = Formatting.byCode(string.charAt(i + 1))) == null) continue;
-            if (formatting.affectsGlyphWidth()) {
-                stringBuilder.setLength(0);
-            }
-            if (formatting == RESET) continue;
-            stringBuilder.append((Object)formatting);
-        }
-        return stringBuilder.toString();
-    }
-
     public int getColorIndex() {
         return this.colorIndex;
     }
@@ -100,14 +83,8 @@ public enum Formatting {
     }
 
     @Nullable
-    @Environment(value=EnvType.CLIENT)
     public Integer getColorValue() {
         return this.colorValue;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public boolean affectsGlyphWidth() {
-        return !this.modifier;
     }
 
     public String getName() {

@@ -5,6 +5,8 @@ package net.minecraft.world;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +31,7 @@ public enum Difficulty {
     }
 
     public Text getTranslatableName() {
-        return new TranslatableText("options.difficulty." + this.name, new Object[0]);
+        return new TranslatableText("options.difficulty." + this.name);
     }
 
     public static Difficulty byOrdinal(int ordinal) {
@@ -47,6 +49,11 @@ public enum Difficulty {
 
     public String getName() {
         return this.name;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Difficulty method_27297() {
+        return BY_NAME[(this.id + 1) % BY_NAME.length];
     }
 
     static {

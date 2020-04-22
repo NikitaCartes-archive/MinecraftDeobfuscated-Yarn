@@ -16,7 +16,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.decorator.TreeDecorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.Feature;
 
 public class TrunkVineTreeDecorator
 extends TreeDecorator {
@@ -32,16 +32,16 @@ extends TreeDecorator {
     public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
         logPositions.forEach(blockPos -> {
             BlockPos blockPos2;
-            if (random.nextInt(3) > 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.west())) {
+            if (random.nextInt(3) > 0 && Feature.method_27370(world, blockPos2 = blockPos.west())) {
                 this.placeVine(world, blockPos2, VineBlock.EAST, set, box);
             }
-            if (random.nextInt(3) > 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.east())) {
+            if (random.nextInt(3) > 0 && Feature.method_27370(world, blockPos2 = blockPos.east())) {
                 this.placeVine(world, blockPos2, VineBlock.WEST, set, box);
             }
-            if (random.nextInt(3) > 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.north())) {
+            if (random.nextInt(3) > 0 && Feature.method_27370(world, blockPos2 = blockPos.north())) {
                 this.placeVine(world, blockPos2, VineBlock.SOUTH, set, box);
             }
-            if (random.nextInt(3) > 0 && AbstractTreeFeature.isAir(world, blockPos2 = blockPos.south())) {
+            if (random.nextInt(3) > 0 && Feature.method_27370(world, blockPos2 = blockPos.south())) {
                 this.placeVine(world, blockPos2, VineBlock.NORTH, set, box);
             }
         });

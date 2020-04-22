@@ -94,7 +94,7 @@ Tickable {
 
     @Override
     protected Text getContainerName() {
-        return new TranslatableText("container.hopper", new Object[0]);
+        return new TranslatableText("container.hopper");
     }
 
     @Override

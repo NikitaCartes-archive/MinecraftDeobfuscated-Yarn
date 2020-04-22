@@ -24,7 +24,7 @@ public class BanListCommand {
 
     private static int execute(ServerCommandSource source, Collection<? extends BanEntry<?>> targets) {
         if (targets.isEmpty()) {
-            source.sendFeedback(new TranslatableText("commands.banlist.none", new Object[0]), false);
+            source.sendFeedback(new TranslatableText("commands.banlist.none"), false);
         } else {
             source.sendFeedback(new TranslatableText("commands.banlist.list", targets.size()), false);
             for (BanEntry<?> banEntry : targets) {

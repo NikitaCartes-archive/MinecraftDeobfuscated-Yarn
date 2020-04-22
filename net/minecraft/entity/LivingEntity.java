@@ -284,6 +284,9 @@ extends Entity {
         if (this.firstUpdate) {
             this.getSleepingPosition().ifPresent(this::setPositionInBed);
         }
+        if (this.method_27302()) {
+            this.method_25937();
+        }
         super.baseTick();
         this.world.getProfiler().push("livingEntityBaseTick");
         boolean bl = this instanceof PlayerEntity;
@@ -364,12 +367,8 @@ extends Entity {
         this.world.getProfiler().pop();
     }
 
-    @Override
-    public void attemptSprintingParticles() {
-        super.attemptSprintingParticles();
-        if (!this.isSpectator() && EnchantmentHelper.hasSoulSpeed(this) && this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS) && this.getVelocity().x != 0.0 && this.getVelocity().z != 0.0 && this.age % 5 == 0) {
-            this.method_25937();
-        }
+    public boolean method_27302() {
+        return this.age % 5 == 0 && this.getVelocity().x != 0.0 && this.getVelocity().z != 0.0 && !this.isSpectator() && EnchantmentHelper.hasSoulSpeed(this) && this.method_27303();
     }
 
     protected void method_25937() {
@@ -379,10 +378,13 @@ extends Entity {
         this.playSound(SoundEvents.PARTICLE_SOUL_ESCAPE, f, 0.6f + this.random.nextFloat() * 0.4f);
     }
 
+    protected boolean method_27303() {
+        return this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS);
+    }
+
     @Override
     protected float getVelocityMultiplier() {
-        int i = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this);
-        if (this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS) && i > 0) {
+        if (this.method_27303() && EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this) > 0) {
             return 1.0f;
         }
         return super.getVelocityMultiplier();
@@ -399,7 +401,7 @@ extends Entity {
             if (entityAttributeInstance.getModifier(SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID) != null) {
                 entityAttributeInstance.removeModifier(SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID);
             }
-            if ((j = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this)) > 0 && this.getLandingBlockState().isIn(BlockTags.SOUL_SPEED_BLOCKS)) {
+            if ((j = EnchantmentHelper.getEquipmentLevel(Enchantments.SOUL_SPEED, this)) > 0 && this.method_27303()) {
                 entityAttributeInstance.addTemporaryModifier(new EntityAttributeModifier(SOUL_SPEED_BOOST_ATTRIBUTE_MODIFIER_ID, "Soul speed boost", (double)(0.03f * (1.0f + (float)j * 0.35f)), EntityAttributeModifier.Operation.ADDITION));
                 if (this.getRandom().nextFloat() < 0.04f) {
                     ItemStack itemStack = this.getEquippedStack(EquipmentSlot.FEET);
@@ -1120,7 +1122,7 @@ extends Entity {
     }
 
     public void takeKnockback(float f, double d, double e) {
-        if ((f = (float)((double)f * (1.0 - this.getAttribute(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)))) <= 0.0f) {
+        if ((f = (float)((double)f * (1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)))) <= 0.0f) {
             return;
         }
         this.velocityDirty = true;
@@ -1239,7 +1241,7 @@ extends Entity {
     }
 
     public int getArmor() {
-        return MathHelper.floor(this.getAttribute(EntityAttributes.GENERIC_ARMOR));
+        return MathHelper.floor(this.getAttributeValue(EntityAttributes.GENERIC_ARMOR));
     }
 
     protected void damageArmor(DamageSource source, float amount) {
@@ -1251,7 +1253,7 @@ extends Entity {
     protected float applyArmorToDamage(DamageSource source, float amount) {
         if (!source.bypassesArmor()) {
             this.damageArmor(source, amount);
-            amount = DamageUtil.getDamageLeft(amount, this.getArmor(), (float)this.getAttribute(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
+            amount = DamageUtil.getDamageLeft(amount, this.getArmor(), (float)this.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
         }
         return amount;
     }
@@ -1322,7 +1324,7 @@ extends Entity {
     }
 
     public final float getMaximumHealth() {
-        return (float)this.getAttribute(EntityAttributes.GENERIC_MAX_HEALTH);
+        return (float)this.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH);
     }
 
     public final int getStuckArrowCount() {
@@ -1490,12 +1492,12 @@ extends Entity {
         return this.getAttributes().getCustomInstance(attribute);
     }
 
-    public double getAttribute(EntityAttribute entityAttribute) {
-        return this.getAttributes().getValue(entityAttribute);
+    public double getAttributeValue(EntityAttribute attribute) {
+        return this.getAttributes().getValue(attribute);
     }
 
-    public double method_26826(EntityAttribute entityAttribute) {
-        return this.getAttributes().getBaseValue(entityAttribute);
+    public double getAttributeBaseValue(EntityAttribute attribute) {
+        return this.getAttributes().getBaseValue(attribute);
     }
 
     public AttributeContainer getAttributes() {
@@ -1709,7 +1711,7 @@ extends Entity {
                     vec3d3 = this.method_26317(d, bl, vec3d3);
                     this.setVelocity(vec3d3.x * 0.546000063419342, vec3d3.y, vec3d3.z * 0.546000063419342);
                     if (this.horizontalCollision && this.doesNotCollide(vec3d3.x, vec3d3.y + (double)0.6f - this.getY() + this.prevY, vec3d3.z)) {
-                        this.setVelocity(vec3d3.x, 0.3f, vec3d3.z);
+                        this.setVelocity(vec3d3.x * 0.546000063419342, 0.3f, vec3d3.z * 0.546000063419342);
                     }
                 } else {
                     double e = this.getY();
@@ -2245,7 +2247,7 @@ extends Entity {
 
     @Override
     protected void scheduleVelocityUpdate() {
-        this.velocityModified = this.random.nextDouble() >= this.getAttribute(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+        this.velocityModified = this.random.nextDouble() >= this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
     }
 
     @Override

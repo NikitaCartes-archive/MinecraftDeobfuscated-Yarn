@@ -19,7 +19,7 @@ import net.minecraft.text.TranslatableText;
 public class RotationArgumentType
 implements ArgumentType<PosArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~-5 ~5");
-    public static final SimpleCommandExceptionType INCOMPLETE_ROTATION_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.rotation.incomplete", new Object[0]));
+    public static final SimpleCommandExceptionType INCOMPLETE_ROTATION_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.rotation.incomplete"));
 
     public static RotationArgumentType rotation() {
         return new RotationArgumentType();

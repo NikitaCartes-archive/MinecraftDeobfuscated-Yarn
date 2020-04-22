@@ -11,6 +11,7 @@ import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 public class ByteTag
@@ -96,7 +97,7 @@ extends AbstractNumberTag {
 
     @Override
     public Text toText(String indent, int depth) {
-        Text text = new LiteralText("b").formatted(RED);
+        MutableText text = new LiteralText("b").formatted(RED);
         return new LiteralText(String.valueOf(this.value)).append(text).formatted(GOLD);
     }
 

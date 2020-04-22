@@ -21,7 +21,7 @@ public class WeatherCommand {
         source.getWorld().getLevelProperties().setThunderTime(0);
         source.getWorld().getLevelProperties().setRaining(false);
         source.getWorld().getLevelProperties().setThundering(false);
-        source.sendFeedback(new TranslatableText("commands.weather.set.clear", new Object[0]), true);
+        source.sendFeedback(new TranslatableText("commands.weather.set.clear"), true);
         return duration;
     }
 
@@ -31,7 +31,7 @@ public class WeatherCommand {
         source.getWorld().getLevelProperties().setThunderTime(duration);
         source.getWorld().getLevelProperties().setRaining(true);
         source.getWorld().getLevelProperties().setThundering(false);
-        source.sendFeedback(new TranslatableText("commands.weather.set.rain", new Object[0]), true);
+        source.sendFeedback(new TranslatableText("commands.weather.set.rain"), true);
         return duration;
     }
 
@@ -41,7 +41,7 @@ public class WeatherCommand {
         source.getWorld().getLevelProperties().setThunderTime(duration);
         source.getWorld().getLevelProperties().setRaining(true);
         source.getWorld().getLevelProperties().setThundering(true);
-        source.sendFeedback(new TranslatableText("commands.weather.set.thunder", new Object[0]), true);
+        source.sendFeedback(new TranslatableText("commands.weather.set.thunder"), true);
         return duration;
     }
 }

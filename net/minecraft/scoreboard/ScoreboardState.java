@@ -12,6 +12,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.PersistentState;
@@ -55,14 +56,14 @@ extends PersistentState {
         for (int i = 0; i < listTag.size(); ++i) {
             AbstractTeam.CollisionRule collisionRule;
             AbstractTeam.VisibilityRule visibilityRule;
-            Text text2;
+            MutableText text2;
             CompoundTag compoundTag = listTag.getCompound(i);
             String string = compoundTag.getString("Name");
             if (string.length() > 16) {
                 string = string.substring(0, 16);
             }
             Team team = this.scoreboard.addTeam(string);
-            Text text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
+            MutableText text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
             if (text != null) {
                 team.setDisplayName(text);
             }
@@ -117,7 +118,7 @@ extends PersistentState {
                 if (string.length() > 16) {
                     string = string.substring(0, 16);
                 }
-                Text text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
+                MutableText text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
                 ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(compoundTag.getString("RenderType"));
                 this.scoreboard.addObjective(string, (ScoreboardCriterion)scoreboardCriterion, text, renderType);
             });

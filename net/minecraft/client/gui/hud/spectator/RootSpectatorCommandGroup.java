@@ -31,7 +31,7 @@ implements SpectatorMenuCommandGroup {
 
     @Override
     public Text getPrompt() {
-        return new TranslatableText("spectatorMenu.root.prompt", new Object[0]);
+        return new TranslatableText("spectatorMenu.root.prompt");
     }
 }
 

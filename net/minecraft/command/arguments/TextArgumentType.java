@@ -12,6 +12,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -34,7 +35,7 @@ implements ArgumentType<Text> {
     @Override
     public Text parse(StringReader stringReader) throws CommandSyntaxException {
         try {
-            Text text = Text.Serializer.fromJson(stringReader);
+            MutableText text = Text.Serializer.fromJson(stringReader);
             if (text == null) {
                 throw INVALID_COMPONENT_EXCEPTION.createWithContext(stringReader, "empty");
             }

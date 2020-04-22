@@ -353,7 +353,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerForSelfDrop(Blocks.SOUL_SOIL);
         this.registerForSelfDrop(Blocks.BASALT);
         this.registerForSelfDrop(Blocks.POLISHED_BASALT);
-        this.registerForSelfDrop(Blocks.SOUL_FIRE_TORCH);
+        this.registerForSelfDrop(Blocks.SOUL_TORCH);
         this.registerForSelfDrop(Blocks.CARVED_PUMPKIN);
         this.registerForSelfDrop(Blocks.JACK_O_LANTERN);
         this.registerForSelfDrop(Blocks.REPEATER);
@@ -763,7 +763,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.registerWithFunction(Blocks.STONECUTTER, BlockLootTableGenerator::createForNameableContainer);
         this.registerWithFunction(Blocks.BELL, BlockLootTableGenerator::create);
         this.registerWithFunction(Blocks.LANTERN, BlockLootTableGenerator::create);
-        this.registerWithFunction(Blocks.SOUL_FIRE_LANTERN, BlockLootTableGenerator::create);
+        this.registerWithFunction(Blocks.SOUL_LANTERN, BlockLootTableGenerator::create);
         this.registerWithFunction(Blocks.SHULKER_BOX, BlockLootTableGenerator::createForShulkerBox);
         this.registerWithFunction(Blocks.BLACK_SHULKER_BOX, BlockLootTableGenerator::createForShulkerBox);
         this.registerWithFunction(Blocks.BLUE_SHULKER_BOX, BlockLootTableGenerator::createForShulkerBox);

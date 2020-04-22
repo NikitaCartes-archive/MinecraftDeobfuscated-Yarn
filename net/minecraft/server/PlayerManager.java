@@ -22,6 +22,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.RespawnAnchorBlock;
+import net.minecraft.class_5217;
+import net.minecraft.class_5218;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -81,11 +83,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.PlayerSaveHandler;
+import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -106,7 +107,7 @@ public abstract class PlayerManager {
     private final Whitelist whitelist = new Whitelist(WHITELIST_FILE);
     private final Map<UUID, ServerStatHandler> statisticsMap = Maps.newHashMap();
     private final Map<UUID, PlayerAdvancementTracker> advancementTrackers = Maps.newHashMap();
-    private PlayerSaveHandler saveHandler;
+    private final WorldSaveHandler saveHandler;
     private boolean whitelistEnabled;
     protected final int maxPlayers;
     private int viewDistance;
@@ -114,9 +115,10 @@ public abstract class PlayerManager {
     private boolean cheatsAllowed;
     private int latencyUpdateTimer;
 
-    public PlayerManager(MinecraftServer server, int maxPlayers) {
+    public PlayerManager(MinecraftServer server, WorldSaveHandler worldSaveHandler, int i) {
         this.server = server;
-        this.maxPlayers = maxPlayers;
+        this.maxPlayers = i;
+        this.saveHandler = worldSaveHandler;
         this.getUserBanList().setEnabled(true);
         this.getIpBanList().setEnabled(true);
     }
@@ -138,15 +140,15 @@ public abstract class PlayerManager {
             string2 = connection.getAddress().toString();
         }
         LOGGER.info("{}[{}] logged in with entity id {} at ({}, {}, {})", (Object)player.getName().getString(), (Object)string2, (Object)player.getEntityId(), (Object)player.getX(), (Object)player.getY(), (Object)player.getZ());
-        LevelProperties levelProperties = serverWorld.getLevelProperties();
+        class_5217 lv = serverWorld.getLevelProperties();
         this.setGameMode(player, null, serverWorld);
         ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player);
         GameRules gameRules = serverWorld.getGameRules();
         boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
         boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
-        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getEntityId(), player.interactionManager.getGameMode(), LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.isHardcore(), serverWorld.dimension.getType(), this.getMaxPlayerCount(), levelProperties.getGeneratorType(), this.viewDistance, bl2, !bl));
+        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getEntityId(), player.interactionManager.getGameMode(), class_5217.method_27418(lv.getSeed()), lv.isHardcore(), serverWorld.dimension.getType(), this.getMaxPlayerCount(), lv.getGeneratorType(), this.viewDistance, bl2, !bl));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
-        serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+        serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
         serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.abilities));
         serverPlayNetworkHandler.sendPacket(new HeldItemChangeS2CPacket(player.inventory.selectedSlot));
         serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
@@ -156,8 +158,8 @@ public abstract class PlayerManager {
         player.getRecipeBook().sendInitRecipesPacket(player);
         this.sendScoreboard(serverWorld.getScoreboard(), player);
         this.server.forcePlayerSampleUpdate();
-        TranslatableText text = player.getGameProfile().getName().equalsIgnoreCase(string) ? new TranslatableText("multiplayer.player.joined", player.getDisplayName()) : new TranslatableText("multiplayer.player.joined.renamed", player.getDisplayName(), string);
-        this.sendToAll(text.formatted(Formatting.YELLOW));
+        TranslatableText mutableText = player.getGameProfile().getName().equalsIgnoreCase(string) ? new TranslatableText("multiplayer.player.joined", player.getDisplayName()) : new TranslatableText("multiplayer.player.joined.renamed", player.getDisplayName(), string);
+        this.sendToAll(mutableText.formatted(Formatting.YELLOW));
         serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch);
         this.players.add(player);
         this.playerMap.put(player.getUuid(), player);
@@ -218,7 +220,6 @@ public abstract class PlayerManager {
     }
 
     public void setMainWorld(ServerWorld world) {
-        this.saveHandler = world.getSaveHandler();
         world.getWorldBorder().addListener(new WorldBorderListener(){
 
             @Override
@@ -259,7 +260,7 @@ public abstract class PlayerManager {
     @Nullable
     public CompoundTag loadPlayerData(ServerPlayerEntity player) {
         CompoundTag compoundTag2;
-        CompoundTag compoundTag = this.server.getWorld(DimensionType.OVERWORLD).getLevelProperties().getPlayerData();
+        CompoundTag compoundTag = this.server.method_27728().getPlayerData();
         if (player.getName().getString().equals(this.server.getUserName()) && compoundTag != null) {
             compoundTag2 = compoundTag;
             player.fromTag(compoundTag2);
@@ -317,25 +318,25 @@ public abstract class PlayerManager {
     public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
         if (this.bannedProfiles.contains(gameProfile)) {
             BannedPlayerEntry bannedPlayerEntry = (BannedPlayerEntry)this.bannedProfiles.get(gameProfile);
-            TranslatableText text = new TranslatableText("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
+            TranslatableText mutableText = new TranslatableText("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
             if (bannedPlayerEntry.getExpiryDate() != null) {
-                text.append(new TranslatableText("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
+                mutableText.append(new TranslatableText("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
             }
-            return text;
+            return mutableText;
         }
         if (!this.isWhitelisted(gameProfile)) {
-            return new TranslatableText("multiplayer.disconnect.not_whitelisted", new Object[0]);
+            return new TranslatableText("multiplayer.disconnect.not_whitelisted");
         }
         if (this.bannedIps.isBanned(socketAddress)) {
             BannedIpEntry bannedIpEntry = this.bannedIps.get(socketAddress);
-            TranslatableText text = new TranslatableText("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
+            TranslatableText mutableText = new TranslatableText("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
             if (bannedIpEntry.getExpiryDate() != null) {
-                text.append(new TranslatableText("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
+                mutableText.append(new TranslatableText("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
             }
-            return text;
+            return mutableText;
         }
         if (this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameProfile)) {
-            return new TranslatableText("multiplayer.disconnect.server_full", new Object[0]);
+            return new TranslatableText("multiplayer.disconnect.server_full");
         }
         return null;
     }
@@ -353,7 +354,7 @@ public abstract class PlayerManager {
             list.add(serverPlayerEntity2);
         }
         for (ServerPlayerEntity serverPlayerEntity : list) {
-            serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login", new Object[0]));
+            serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login"));
         }
         ServerPlayerInteractionManager serverPlayerInteractionManager = this.server.isDemo() ? new DemoServerPlayerInteractionManager(this.server.getWorld(DimensionType.OVERWORLD)) : new ServerPlayerInteractionManager(this.server.getWorld(DimensionType.OVERWORLD));
         return new ServerPlayerEntity(this.server, this.server.getWorld(DimensionType.OVERWORLD), profile, serverPlayerInteractionManager);
@@ -389,11 +390,11 @@ public abstract class PlayerManager {
         while (!serverWorld.doesNotCollide(serverPlayerEntity) && serverPlayerEntity.getY() < 256.0) {
             serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
         }
-        LevelProperties levelProperties = serverPlayerEntity.world.getLevelProperties();
-        serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.dimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), serverPlayerEntity.interactionManager.getGameMode()));
+        class_5217 lv = serverPlayerEntity.world.getLevelProperties();
+        serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), serverPlayerEntity.interactionManager.getGameMode()));
         serverPlayerEntity.networkHandler.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch);
         serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld.getSpawnPos()));
-        serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+        serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
         serverPlayerEntity.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity.experienceProgress, serverPlayerEntity.totalExperience, serverPlayerEntity.experienceLevel));
         this.sendWorldInfo(serverPlayerEntity, serverWorld);
         this.sendCommandTree(serverPlayerEntity);
@@ -630,7 +631,7 @@ public abstract class PlayerManager {
 
     public void disconnectAllPlayers() {
         for (int i = 0; i < this.players.size(); ++i) {
-            this.players.get((int)i).networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.server_shutdown", new Object[0]));
+            this.players.get((int)i).networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.server_shutdown"));
         }
     }
 
@@ -650,7 +651,7 @@ public abstract class PlayerManager {
         ServerStatHandler serverStatHandler2 = serverStatHandler = uUID == null ? null : this.statisticsMap.get(uUID);
         if (serverStatHandler == null) {
             File file3;
-            File file = new File(this.server.getWorld(DimensionType.OVERWORLD).getSaveHandler().getWorldDir(), "stats");
+            File file = this.server.method_27050(class_5218.field_24181).toFile();
             File file2 = new File(file, uUID + ".json");
             if (!file2.exists() && (file3 = new File(file, player.getName().getString() + ".json")).exists() && file3.isFile()) {
                 file3.renameTo(file2);
@@ -665,7 +666,7 @@ public abstract class PlayerManager {
         UUID uUID = player.getUuid();
         PlayerAdvancementTracker playerAdvancementTracker = this.advancementTrackers.get(uUID);
         if (playerAdvancementTracker == null) {
-            File file = new File(this.server.getWorld(DimensionType.OVERWORLD).getSaveHandler().getWorldDir(), "advancements");
+            File file = this.server.method_27050(class_5218.field_24180).toFile();
             File file2 = new File(file, uUID + ".json");
             playerAdvancementTracker = new PlayerAdvancementTracker(this.server, file2, player);
             this.advancementTrackers.put(uUID, playerAdvancementTracker);

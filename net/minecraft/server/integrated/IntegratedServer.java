@@ -16,12 +16,12 @@ import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5219;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.server.LanServerPinger;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.integrated.IntegratedPlayerManager;
@@ -30,13 +30,7 @@ import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.snooper.Snooper;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.WorldSaveHandler;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorOptions;
-import net.minecraft.world.level.LevelInfo;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,57 +40,30 @@ public class IntegratedServer
 extends MinecraftServer {
     private static final Logger LOGGER = LogManager.getLogger();
     private final MinecraftClient client;
-    private final LevelInfo levelInfo;
     private boolean paused;
     private int lanPort = -1;
     private LanServerPinger lanPinger;
     private UUID localPlayerUuid;
 
-    public IntegratedServer(MinecraftClient client, LevelStorage.Session session, String displayName, LevelInfo levelInfo, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(session, client.getNetworkProxy(), client.getDataFixer(), new CommandManager(false), minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
-        this.setUserName(client.getSession().getUsername());
-        this.setServerName(displayName);
+    public IntegratedServer(MinecraftClient client, LevelStorage.Session session, class_5219 arg, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(session, arg, client.getNetworkProxy(), client.getDataFixer(), new CommandManager(false), minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
+        this.setServerName(client.getSession().getUsername());
         this.setDemo(client.isDemo());
-        this.setBonusChest(levelInfo.hasBonusChest());
         this.setWorldHeight(256);
-        this.setPlayerManager(new IntegratedPlayerManager(this));
+        this.setPlayerManager(new IntegratedPlayerManager(this, this.field_24371));
         this.client = client;
-        this.levelInfo = this.isDemo() ? MinecraftServer.DEMO_LEVEL_INFO : levelInfo;
-    }
-
-    @Override
-    public void loadWorld(String string, long l, LevelGeneratorOptions levelGeneratorOptions) {
-        this.method_27052();
-        WorldSaveHandler worldSaveHandler = this.session.createSaveHandler(this);
-        this.loadWorldResourcePack(this.session.getDirectoryName(), worldSaveHandler);
-        LevelProperties levelProperties = worldSaveHandler.readProperties();
-        if (levelProperties == null) {
-            levelProperties = new LevelProperties(this.levelInfo, string);
-        } else {
-            levelProperties.setLevelName(string);
-        }
-        levelProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
-        this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
-        WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
-        this.createWorlds(worldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
-        if (this.getWorld(DimensionType.OVERWORLD).getLevelProperties().getDifficulty() == null) {
-            this.setDifficulty(this.client.options.difficulty, true);
-        }
-        this.prepareStartRegion(worldGenerationProgressListener);
     }
 
     @Override
     public boolean setupServer() {
         LOGGER.info("Starting integrated minecraft server version " + SharedConstants.getGameVersion().getName());
         this.setOnlineMode(true);
-        this.setSpawnAnimals(true);
-        this.setSpawnNpcs(true);
         this.setPvpEnabled(true);
         this.setFlightEnabled(true);
         LOGGER.info("Generating keypair");
         this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
-        this.loadWorld(this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorOptions());
-        this.setMotd(this.getUserName() + " - " + this.getWorld(DimensionType.OVERWORLD).getLevelProperties().getLevelName());
+        this.loadWorld();
+        this.setMotd(this.getUserName() + " - " + this.method_27728().getLevelName());
         return true;
     }
 
@@ -121,26 +88,6 @@ extends MinecraftServer {
             LOGGER.info("Changing view distance to {}, from {}", (Object)i, (Object)this.getPlayerManager().getViewDistance());
             this.getPlayerManager().setViewDistance(i);
         }
-    }
-
-    @Override
-    public boolean shouldGenerateStructures() {
-        return false;
-    }
-
-    @Override
-    public GameMode getDefaultGameMode() {
-        return this.levelInfo.getGameMode();
-    }
-
-    @Override
-    public Difficulty getDefaultDifficulty() {
-        return this.client.world.getLevelProperties().getDifficulty();
-    }
-
-    @Override
-    public boolean isHardcore() {
-        return this.levelInfo.isHardcore();
     }
 
     @Override

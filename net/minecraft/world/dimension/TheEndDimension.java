@@ -29,7 +29,7 @@ extends Dimension {
 
     public TheEndDimension(World world, DimensionType type) {
         super(world, type, 0.0f);
-        CompoundTag compoundTag = world.getLevelProperties().getWorldData(DimensionType.THE_END);
+        CompoundTag compoundTag = world.getLevelProperties().getWorldData();
         this.enderDragonFight = world instanceof ServerWorld ? new EnderDragonFight((ServerWorld)world, compoundTag.getCompound("DragonFight")) : null;
     }
 
@@ -118,7 +118,7 @@ extends Dimension {
         if (this.enderDragonFight != null) {
             compoundTag.put("DragonFight", this.enderDragonFight.toTag());
         }
-        this.world.getLevelProperties().setWorldData(DimensionType.THE_END, compoundTag);
+        this.world.getLevelProperties().setWorldData(compoundTag);
     }
 
     @Override

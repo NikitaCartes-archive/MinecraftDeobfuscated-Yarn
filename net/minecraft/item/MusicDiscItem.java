@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -71,8 +72,8 @@ extends Item {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Text getDescription() {
-        return new TranslatableText(this.getTranslationKey() + ".desc", new Object[0]);
+    public MutableText getDescription() {
+        return new TranslatableText(this.getTranslationKey() + ".desc");
     }
 
     @Nullable

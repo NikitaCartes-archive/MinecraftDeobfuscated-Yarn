@@ -4,7 +4,7 @@
 package net.minecraft.block.entity;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -19,6 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -29,10 +30,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class SignBlockEntity
 extends BlockEntity {
-    public final Text[] text = new Text[]{new LiteralText(""), new LiteralText(""), new LiteralText(""), new LiteralText("")};
+    private final Text[] text = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
     private boolean editable = true;
     private PlayerEntity editor;
-    private final String[] textBeingEdited = new String[4];
+    private final Text[] textBeingEdited = new Text[4];
     private DyeColor textColor = DyeColor.BLACK;
 
     public SignBlockEntity() {
@@ -57,7 +58,7 @@ extends BlockEntity {
         this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
         for (int i = 0; i < 4; ++i) {
             String string = tag.getString("Text" + (i + 1));
-            Text text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
+            MutableText text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
             if (this.world instanceof ServerWorld) {
                 try {
                     this.text[i] = Texts.parse(this.getCommandSource(null), text, null, 0);
@@ -83,9 +84,9 @@ extends BlockEntity {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public String getTextBeingEditedOnRow(int row, Function<Text, String> function) {
+    public Text getTextBeingEditedOnRow(int row, UnaryOperator<Text> unaryOperator) {
         if (this.textBeingEdited[row] == null && this.text[row] != null) {
-            this.textBeingEdited[row] = function.apply(this.text[row]);
+            this.textBeingEdited[row] = (Text)unaryOperator.apply(this.text[row]);
         }
         return this.textBeingEdited[row];
     }

@@ -49,7 +49,7 @@ extends LongRunningTask {
                     return;
                 }
                 LOGGER.error("Couldn't start mini game!");
-                this.error(exception.toString());
+                this.method_27453(exception.toString());
             }
         }
     }

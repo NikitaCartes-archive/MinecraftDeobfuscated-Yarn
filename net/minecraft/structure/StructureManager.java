@@ -5,7 +5,6 @@ package net.minecraft.structure;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixer;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,6 +16,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
+import net.minecraft.class_5218;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
@@ -29,6 +29,7 @@ import net.minecraft.structure.Structure;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -41,10 +42,10 @@ implements SynchronousResourceReloadListener {
     private final MinecraftServer server;
     private final Path generatedPath;
 
-    public StructureManager(MinecraftServer server, File worldDir, DataFixer dataFixer) {
+    public StructureManager(MinecraftServer server, LevelStorage.Session session, DataFixer dataFixer) {
         this.server = server;
         this.dataFixer = dataFixer;
-        this.generatedPath = worldDir.toPath().resolve("generated").normalize();
+        this.generatedPath = session.getDirectory(class_5218.field_24185).normalize();
         server.getDataManager().registerListener(this);
     }
 

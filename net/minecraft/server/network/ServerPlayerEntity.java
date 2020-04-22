@@ -20,6 +20,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_5217;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -98,6 +99,7 @@ import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
@@ -121,7 +123,6 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -446,7 +447,7 @@ implements ScreenHandlerListener {
                     int i = 256;
                     String string = text.asTruncatedString(256);
                     TranslatableText text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
-                    Text text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
+                    MutableText text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
                     this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text3));
                 }
             });
@@ -564,9 +565,9 @@ implements ScreenHandlerListener {
         ServerWorld serverWorld = this.server.getWorld(dimensionType);
         this.dimension = newDimension;
         ServerWorld serverWorld2 = this.server.getWorld(newDimension);
-        LevelProperties levelProperties = serverWorld2.getLevelProperties();
-        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(newDimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
-        this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+        class_5217 lv = serverWorld2.getLevelProperties();
+        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(newDimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode()));
+        this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
         PlayerManager playerManager = this.server.getPlayerManager();
         playerManager.sendCommandTree(this);
         serverWorld.removePlayer(this);
@@ -819,7 +820,7 @@ implements ScreenHandlerListener {
         ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.inventory, this);
         if (screenHandler == null) {
             if (this.isSpectator()) {
-                this.sendMessage(new TranslatableText("container.spectatorCantOpen", new Object[0]).formatted(Formatting.RED), true);
+                this.sendMessage((Text)new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
             }
             return OptionalInt.empty();
         }
@@ -887,8 +888,8 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
-        this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, propertyId, value));
+    public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+        this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
     }
 
     @Override
@@ -1129,7 +1130,7 @@ implements ScreenHandlerListener {
             if (!(future.isSuccess() || type != MessageType.GAME_INFO && type != MessageType.SYSTEM)) {
                 int i = 256;
                 String string = message.asTruncatedString(256);
-                Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
+                MutableText text2 = new LiteralText(string).formatted(Formatting.YELLOW);
                 this.networkHandler.sendPacket(new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM));
             }
         });
@@ -1261,9 +1262,9 @@ implements ScreenHandlerListener {
         } else {
             ServerWorld serverWorld = this.getServerWorld();
             this.dimension = targetWorld.dimension.getType();
-            LevelProperties levelProperties = targetWorld.getLevelProperties();
-            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, LevelProperties.sha256Hash(levelProperties.getSeed()), levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
-            this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+            class_5217 lv = targetWorld.getLevelProperties();
+            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode()));
+            this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
             this.server.getPlayerManager().sendCommandTree(this);
             serverWorld.removePlayer(this);
             this.removed = false;
@@ -1296,7 +1297,7 @@ implements ScreenHandlerListener {
             boolean bl2;
             boolean bl3 = bl2 = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
             if (bl && !bl2) {
-                this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn", new Object[0]));
+                this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn"));
             }
             this.spawnPointPosition = pos;
             this.spawnPointDimension = dimension;

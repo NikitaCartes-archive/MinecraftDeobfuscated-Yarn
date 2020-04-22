@@ -11,11 +11,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
@@ -36,7 +37,7 @@ extends Screen {
     private ClientConnection connection;
     private boolean connectingCancelled;
     private final Screen parent;
-    private Text status = new TranslatableText("connect.connecting", new Object[0]);
+    private Text status = new TranslatableText("connect.connecting");
     private long narratorTimer = -1L;
 
     public ConnectScreen(Screen parent, MinecraftClient client, ServerInfo entry) {
@@ -115,25 +116,25 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> {
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, buttonWidget -> {
             this.connectingCancelled = true;
             if (this.connection != null) {
-                this.connection.disconnect(new TranslatableText("connect.aborted", new Object[0]));
+                this.connection.disconnect(new TranslatableText("connect.aborted"));
             }
             this.client.openScreen(this.parent);
         }));
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
         long l = Util.getMeasuringTimeMs();
         if (l - this.narratorTimer > 2000L) {
             this.narratorTimer = l;
-            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining", new Object[0]).getString());
+            NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
         }
-        this.drawCenteredString(this.textRenderer, this.status.asFormattedString(), this.width / 2, this.height / 2 - 50, 0xFFFFFF);
-        super.render(mouseX, mouseY, delta);
+        this.method_27534(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 }
 

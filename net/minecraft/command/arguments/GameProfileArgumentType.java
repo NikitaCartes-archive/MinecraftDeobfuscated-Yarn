@@ -29,7 +29,7 @@ import net.minecraft.text.TranslatableText;
 public class GameProfileArgumentType
 implements ArgumentType<GameProfileArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "dd12be42-52a9-4a91-a8a1-11c01849e498", "@e");
-    public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.player.unknown", new Object[0]));
+    public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.player.unknown"));
 
     public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
         return commandContext.getArgument(string, GameProfileArgument.class).getNames(commandContext.getSource());

@@ -42,7 +42,7 @@ extends AbstractMinecartEntity {
     protected void initDataTracker() {
         super.initDataTracker();
         this.getDataTracker().startTracking(COMMAND, "");
-        this.getDataTracker().startTracking(LAST_OUTPUT, new LiteralText(""));
+        this.getDataTracker().startTracking(LAST_OUTPUT, LiteralText.EMPTY);
     }
 
     @Override

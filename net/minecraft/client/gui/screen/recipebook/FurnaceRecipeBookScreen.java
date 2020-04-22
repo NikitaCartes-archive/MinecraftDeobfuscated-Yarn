@@ -9,6 +9,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.client.gui.screen.recipebook.AbstractFurnaceRecipeBookScreen;
 import net.minecraft.item.Item;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class FurnaceRecipeBookScreen
@@ -34,8 +36,8 @@ extends AbstractFurnaceRecipeBookScreen {
     }
 
     @Override
-    protected String getToggleCraftableButtonText() {
-        return "gui.recipebook.toggleRecipes.smeltable";
+    protected Text getToggleCraftableButtonText() {
+        return new TranslatableText("gui.recipebook.toggleRecipes.smeltable");
     }
 
     @Override

@@ -348,7 +348,7 @@ extends NetworkSyncedItem {
                 tooltip.add(new TranslatableText("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
                 tooltip.add(new TranslatableText("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
             } else {
-                tooltip.add(new TranslatableText("filled_map.unknown", new Object[0]).formatted(Formatting.GRAY));
+                tooltip.add(new TranslatableText("filled_map.unknown").formatted(Formatting.GRAY));
             }
         }
     }

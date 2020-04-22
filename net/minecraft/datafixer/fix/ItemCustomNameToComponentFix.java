@@ -32,7 +32,7 @@ extends DataFix {
             } else {
                 Optional<String> optional3 = dynamic.get("LocName").asString();
                 if (optional3.isPresent()) {
-                    dynamic = dynamic.set("Name", dynamic.createString(Text.Serializer.toJson(new TranslatableText(optional3.get(), new Object[0]))));
+                    dynamic = dynamic.set("Name", dynamic.createString(Text.Serializer.toJson(new TranslatableText(optional3.get()))));
                     dynamic = dynamic.remove("LocName");
                 }
             }

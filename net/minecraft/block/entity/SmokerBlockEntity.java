@@ -21,7 +21,7 @@ extends AbstractFurnaceBlockEntity {
 
     @Override
     protected Text getContainerName() {
-        return new TranslatableText("container.smoker", new Object[0]);
+        return new TranslatableText("container.smoker");
     }
 
     @Override

@@ -18,7 +18,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -71,7 +70,6 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBuilder;
-import net.minecraft.client.render.chunk.ChunkOcclusionDataBuilder;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -128,7 +126,6 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -649,14 +646,14 @@ AutoCloseable {
         if (!hasForcedFrustum && this.needsTerrainUpdate) {
             this.needsTerrainUpdate = false;
             this.visibleChunks.clear();
-            ArrayDeque queue = Queues.newArrayDeque();
-            Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5));
+            ArrayDeque<ChunkInfo> queue = Queues.newArrayDeque();
+            Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5) * (double)this.client.options.field_24214);
             boolean bl = this.client.chunkCullingEnabled;
             if (builtChunk == null) {
                 int j = blockPos.getY() > 0 ? 248 : 8;
                 int k = MathHelper.floor(vec3d.x / 16.0) * 16;
                 int l = MathHelper.floor(vec3d.z / 16.0) * 16;
-                ArrayList<ChunkInfo> list = Lists.newArrayList();
+                Direction[] list = Lists.newArrayList();
                 for (int m = -this.renderDistance; m <= this.renderDistance; ++m) {
                     for (int n = -this.renderDistance; n <= this.renderDistance; ++n) {
                         ChunkBuilder.BuiltChunk builtChunk2 = this.chunks.getRenderedChunk(new BlockPos(k + (m << 4) + 8, j, l + (n << 4) + 8));
@@ -666,56 +663,41 @@ AutoCloseable {
                     }
                 }
                 list.sort(Comparator.comparingDouble(chunkInfo -> blockPos.getSquaredDistance(((ChunkInfo)chunkInfo).chunk.getOrigin().add(8, 8, 8))));
-                queue.addAll(list);
+                queue.addAll((Collection<ChunkInfo>)list);
             } else {
-                boolean bl2 = false;
-                ChunkInfo chunkInfo2 = new ChunkInfo(builtChunk, null, 0);
-                Set<Direction> set = this.getOpenChunkFaces(blockPos);
-                if (set.size() == 1) {
-                    Direction[] vector3f = camera.getHorizontalPlane();
-                    Direction direction = Direction.getFacing(vector3f.getX(), vector3f.getY(), vector3f.getZ()).getOpposite();
-                    set.remove(direction);
+                if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
+                    bl = false;
                 }
-                if (set.isEmpty()) {
-                    bl2 = true;
-                }
-                if (!bl2 || spectator) {
-                    if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
-                        bl = false;
-                    }
-                    builtChunk.setRebuildFrame(frame);
-                    queue.add(chunkInfo2);
-                } else {
-                    this.visibleChunks.add(chunkInfo2);
-                }
+                builtChunk.setRebuildFrame(frame);
+                queue.add(new ChunkInfo(builtChunk, null, 0));
             }
             this.client.getProfiler().push("iteration");
             while (!queue.isEmpty()) {
                 ChunkInfo chunkInfo2 = (ChunkInfo)queue.poll();
                 ChunkBuilder.BuiltChunk builtChunk3 = chunkInfo2.chunk;
-                Direction direction2 = chunkInfo2.direction;
+                Direction direction = chunkInfo2.direction;
                 this.visibleChunks.add(chunkInfo2);
-                for (Direction direction3 : DIRECTIONS) {
-                    ChunkBuilder.BuiltChunk builtChunk4 = this.getAdjacentChunk(blockPos2, builtChunk3, direction3);
-                    if (bl && chunkInfo2.canCull(direction3.getOpposite()) || bl && direction2 != null && !builtChunk3.getData().isVisibleThrough(direction2.getOpposite(), direction3) || builtChunk4 == null || !builtChunk4.shouldBuild() || !builtChunk4.setRebuildFrame(frame) || !frustum.isVisible(builtChunk4.boundingBox)) continue;
-                    ChunkInfo chunkInfo3 = new ChunkInfo(builtChunk4, direction3, chunkInfo2.propagationLevel + 1);
-                    chunkInfo3.updateCullingState(chunkInfo2.cullingState, direction3);
-                    queue.add(chunkInfo3);
+                for (Direction direction2 : DIRECTIONS) {
+                    ChunkBuilder.BuiltChunk builtChunk4 = this.getAdjacentChunk(blockPos2, builtChunk3, direction2);
+                    if (bl && chunkInfo2.canCull(direction2.getOpposite()) || bl && direction != null && !builtChunk3.getData().isVisibleThrough(direction.getOpposite(), direction2) || builtChunk4 == null || !builtChunk4.shouldBuild() || !builtChunk4.setRebuildFrame(frame) || !frustum.isVisible(builtChunk4.boundingBox)) continue;
+                    ChunkInfo chunkInfo22 = new ChunkInfo(builtChunk4, direction2, chunkInfo2.propagationLevel + 1);
+                    chunkInfo22.updateCullingState(chunkInfo2.cullingState, direction2);
+                    queue.add(chunkInfo22);
                 }
             }
             this.client.getProfiler().pop();
         }
         this.client.getProfiler().swap("rebuildNear");
-        Set<ChunkBuilder.BuiltChunk> set2 = this.chunksToRebuild;
+        Set<ChunkBuilder.BuiltChunk> set = this.chunksToRebuild;
         this.chunksToRebuild = Sets.newLinkedHashSet();
-        for (ChunkInfo chunkInfo2 : this.visibleChunks) {
-            boolean bl3;
-            ChunkBuilder.BuiltChunk builtChunk3 = chunkInfo2.chunk;
-            if (!builtChunk3.needsRebuild() && !set2.contains(builtChunk3)) continue;
+        for (ChunkInfo chunkInfo3 : this.visibleChunks) {
+            boolean bl2;
+            ChunkBuilder.BuiltChunk builtChunk3 = chunkInfo3.chunk;
+            if (!builtChunk3.needsRebuild() && !set.contains(builtChunk3)) continue;
             this.needsTerrainUpdate = true;
             BlockPos blockPos3 = builtChunk3.getOrigin().add(8, 8, 8);
-            boolean bl = bl3 = blockPos3.getSquaredDistance(blockPos) < 768.0;
-            if (builtChunk3.needsImportantRebuild() || bl3) {
+            boolean bl = bl2 = blockPos3.getSquaredDistance(blockPos) < 768.0;
+            if (builtChunk3.needsImportantRebuild() || bl2) {
                 this.client.getProfiler().push("build near");
                 this.chunkBuilder.rebuild(builtChunk3);
                 builtChunk3.cancelRebuild();
@@ -724,19 +706,8 @@ AutoCloseable {
             }
             this.chunksToRebuild.add(builtChunk3);
         }
-        this.chunksToRebuild.addAll(set2);
+        this.chunksToRebuild.addAll(set);
         this.client.getProfiler().pop();
-    }
-
-    private Set<Direction> getOpenChunkFaces(BlockPos pos) {
-        ChunkOcclusionDataBuilder chunkOcclusionDataBuilder = new ChunkOcclusionDataBuilder();
-        BlockPos blockPos = new BlockPos(pos.getX() >> 4 << 4, pos.getY() >> 4 << 4, pos.getZ() >> 4 << 4);
-        WorldChunk worldChunk = this.world.getWorldChunk(blockPos);
-        for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(15, 15, 15))) {
-            if (!worldChunk.getBlockState(blockPos2).isOpaqueFullCube(this.world, blockPos2)) continue;
-            chunkOcclusionDataBuilder.markClosed(blockPos2);
-        }
-        return chunkOcclusionDataBuilder.getOpenFaces(pos);
     }
 
     @Nullable
@@ -1848,7 +1819,7 @@ AutoCloseable {
         if (song != null) {
             MusicDiscItem musicDiscItem = MusicDiscItem.bySound(song);
             if (musicDiscItem != null) {
-                this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription().asFormattedString());
+                this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription());
             }
             soundInstance = PositionedSoundInstance.record(song, songPosition.getX(), songPosition.getY(), songPosition.getZ());
             this.playingSongs.put(songPosition, soundInstance);

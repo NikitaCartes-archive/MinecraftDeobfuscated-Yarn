@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class ResourcePackProfile
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(new TranslatableText("resourcePack.broken_assets", new Object[0]).formatted(Formatting.RED, Formatting.ITALIC), SharedConstants.getGameVersion().getPackVersion());
+    private static final PackResourceMetadata BROKEN_PACK_META = new PackResourceMetadata(new TranslatableText("resourcePack.broken_assets").formatted(Formatting.RED, Formatting.ITALIC), SharedConstants.getGameVersion().getPackVersion());
     private final String name;
     private final Supplier<ResourcePack> packGetter;
     private final Text displayName;
@@ -88,7 +88,7 @@ implements AutoCloseable {
     }
 
     public Text getInformationText(boolean enabled) {
-        return Texts.bracketed(new LiteralText(this.name)).styled(style -> style.setColor(enabled ? Formatting.GREEN : Formatting.RED).setInsertion(StringArgumentType.escapeIfRequired(this.name)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description))));
+        return Texts.bracketed(new LiteralText(this.name)).styled(style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED).withInsertion(StringArgumentType.escapeIfRequired(this.name)).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description))));
     }
 
     public ResourcePackCompatibility getCompatibility() {

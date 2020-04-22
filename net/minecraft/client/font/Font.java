@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.font;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.Closeable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,8 +18,10 @@ extends Closeable {
     }
 
     @Nullable
-    default public RenderableGlyph getGlyph(char character) {
+    default public RenderableGlyph getGlyph(int i) {
         return null;
     }
+
+    public IntSet method_27442();
 }
 

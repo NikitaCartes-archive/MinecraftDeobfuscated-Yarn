@@ -15,11 +15,13 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
+import net.minecraft.class_5195;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.entity.EntityCategory;
@@ -269,7 +271,7 @@ public abstract class Biome {
                 configuredFeature.generate(iWorld, structureAccessor, chunkGenerator, chunkRandom, blockPos);
             } catch (Exception exception) {
                 CrashReport crashReport = CrashReport.create(exception, "Feature placement");
-                crashReport.addElement("Feature").add("Id", Registry.FEATURE.getId((Feature<?>)configuredFeature.feature)).add("Description", () -> configuredFeature.feature.toString());
+                crashReport.addElement("Feature").add("Id", Registry.FEATURE.getId((Feature<?>)configuredFeature.feature)).add("Config", configuredFeature.config).add("Description", () -> configuredFeature.feature.toString());
                 throw new CrashException(crashReport);
             }
             ++i;
@@ -322,7 +324,7 @@ public abstract class Biome {
     }
 
     public Text getName() {
-        return new TranslatableText(this.getTranslationKey(), new Object[0]);
+        return new TranslatableText(this.getTranslationKey());
     }
 
     public String getTranslationKey() {
@@ -374,6 +376,11 @@ public abstract class Biome {
         return this.effects.getAdditionsSound();
     }
 
+    @Environment(value=EnvType.CLIENT)
+    public Optional<class_5195> method_27343() {
+        return this.effects.method_27345();
+    }
+
     public final Category getCategory() {
         return this.category;
     }
@@ -386,8 +393,8 @@ public abstract class Biome {
         return this.surfaceBuilder.getConfig();
     }
 
-    public float getNoiseDistance(MixedNoisePoint from) {
-        return this.noisePoints.stream().map(mixedNoisePoint2 -> Float.valueOf(mixedNoisePoint2.calculateDistanceTo(from))).min(Float::compare).orElse(Float.valueOf(Float.POSITIVE_INFINITY)).floatValue();
+    public Stream<MixedNoisePoint> method_27342() {
+        return this.noisePoints.stream();
     }
 
     @Nullable
@@ -439,7 +446,7 @@ public abstract class Biome {
         }
 
         public float calculateDistanceTo(MixedNoisePoint other) {
-            return (this.temperature - other.temperature) * (this.temperature - other.temperature) + (this.humidity - other.humidity) * (this.humidity - other.humidity) + (this.altitude - other.altitude) * (this.altitude - other.altitude) + (this.weirdness - other.weirdness) * (this.weirdness - other.weirdness) - (this.weight - other.weight) * (this.weight - other.weight);
+            return (this.temperature - other.temperature) * (this.temperature - other.temperature) + (this.humidity - other.humidity) * (this.humidity - other.humidity) + (this.altitude - other.altitude) * (this.altitude - other.altitude) + (this.weirdness - other.weirdness) * (this.weirdness - other.weirdness) + (this.weight - other.weight) * (this.weight - other.weight);
         }
     }
 

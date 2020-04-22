@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -54,6 +55,15 @@ public class AttributeContainer {
         return this.custom.computeIfAbsent(attribute, entityAttribute -> this.fallback.createOverride(this::updateTrackedStatus, (EntityAttribute)entityAttribute));
     }
 
+    public boolean hasAttribute(EntityAttribute attribute) {
+        return this.custom.get(attribute) != null || this.fallback.method_27310(attribute);
+    }
+
+    public boolean hasModifierForAttribute(EntityAttribute attribute, UUID uuid) {
+        EntityAttributeInstance entityAttributeInstance = this.custom.get(attribute);
+        return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid) != null : this.fallback.method_27309(attribute, uuid);
+    }
+
     public double getValue(EntityAttribute attribute) {
         EntityAttributeInstance entityAttributeInstance = this.custom.get(attribute);
         return entityAttributeInstance != null ? entityAttributeInstance.getValue() : this.fallback.getValue(attribute);
@@ -62,6 +72,11 @@ public class AttributeContainer {
     public double getBaseValue(EntityAttribute attribute) {
         EntityAttributeInstance entityAttributeInstance = this.custom.get(attribute);
         return entityAttributeInstance != null ? entityAttributeInstance.getBaseValue() : this.fallback.getBaseValue(attribute);
+    }
+
+    public double getModifierValue(EntityAttribute attribute, UUID uuid) {
+        EntityAttributeInstance entityAttributeInstance = this.custom.get(attribute);
+        return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid).getValue() : this.fallback.getModifierValue(attribute, uuid);
     }
 
     public void removeModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {

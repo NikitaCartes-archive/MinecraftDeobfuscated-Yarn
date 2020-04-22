@@ -36,6 +36,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -88,9 +89,15 @@ extends BlockWithEntity {
         }
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ShulkerBoxBlockEntity) {
-            Direction direction = state.get(FACING);
+            boolean bl;
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-            if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED && world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction))) {
+            if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
+                Direction direction = state.get(FACING);
+                bl = world.doesNotCollide(ShulkerLidCollisions.getLidCollisionBox(pos, direction));
+            } else {
+                bl = true;
+            }
+            if (bl) {
                 player.openHandledScreen(shulkerBoxBlockEntity);
                 player.incrementStat(Stats.OPEN_SHULKER_BOX);
                 PiglinBrain.onGoldBlockBroken(player);
@@ -187,9 +194,9 @@ extends BlockWithEntity {
                     ++j;
                     if (i > 4) continue;
                     ++i;
-                    Text text = itemStack.getName().deepCopy();
-                    text.append(" x").append(String.valueOf(itemStack.getCount()));
-                    tooltip.add(text);
+                    MutableText mutableText = itemStack.getName().shallowCopy();
+                    mutableText.append(" x").append(String.valueOf(itemStack.getCount()));
+                    tooltip.add(mutableText);
                 }
                 if (j - i > 0) {
                     tooltip.add(new TranslatableText("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));

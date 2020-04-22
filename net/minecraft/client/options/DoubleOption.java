@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.DoubleOptionSliderWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -22,9 +23,9 @@ extends Option {
     protected double max;
     private final Function<GameOptions, Double> getter;
     private final BiConsumer<GameOptions, Double> setter;
-    private final BiFunction<GameOptions, DoubleOption, String> displayStringGetter;
+    private final BiFunction<GameOptions, DoubleOption, Text> displayStringGetter;
 
-    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, String> displayStringGetter) {
+    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter) {
         super(key);
         this.min = min;
         this.max = max;
@@ -74,7 +75,7 @@ extends Option {
         return this.getter.apply(options);
     }
 
-    public String getDisplayString(GameOptions options) {
+    public Text getDisplayString(GameOptions options) {
         return this.displayStringGetter.apply(options, this);
     }
 }

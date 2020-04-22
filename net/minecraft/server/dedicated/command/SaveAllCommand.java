@@ -13,21 +13,21 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 
 public class SaveAllCommand {
-    private static final SimpleCommandExceptionType SAVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.save.failed", new Object[0]));
+    private static final SimpleCommandExceptionType SAVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.save.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("save-all").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))).executes(commandContext -> SaveAllCommand.saveAll((ServerCommandSource)commandContext.getSource(), false))).then(CommandManager.literal("flush").executes(commandContext -> SaveAllCommand.saveAll((ServerCommandSource)commandContext.getSource(), true))));
     }
 
     private static int saveAll(ServerCommandSource source, boolean flush) throws CommandSyntaxException {
-        source.sendFeedback(new TranslatableText("commands.save.saving", new Object[0]), false);
+        source.sendFeedback(new TranslatableText("commands.save.saving"), false);
         MinecraftServer minecraftServer = source.getMinecraftServer();
         minecraftServer.getPlayerManager().saveAllPlayerData();
         boolean bl = minecraftServer.save(true, flush, true);
         if (!bl) {
             throw SAVE_FAILED_EXCEPTION.create();
         }
-        source.sendFeedback(new TranslatableText("commands.save.success", new Object[0]), true);
+        source.sendFeedback(new TranslatableText("commands.save.success"), true);
         return 1;
     }
 }

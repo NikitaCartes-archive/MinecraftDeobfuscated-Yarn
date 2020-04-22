@@ -16,7 +16,7 @@ extends DispenserBlockEntity {
 
     @Override
     protected Text getContainerName() {
-        return new TranslatableText("container.dropper", new Object[0]);
+        return new TranslatableText("container.dropper");
     }
 }
 

@@ -20,158 +20,191 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.Optional;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.NbtText;
 import net.minecraft.text.ScoreText;
 import net.minecraft.text.SelectorText;
 import net.minecraft.text.Style;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
+import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A text. Can be converted to and from JSON format.
+ * 
+ * <p>Each text has a tree structure, embodying all its {@link
+ * #getSiblings() siblings}. To iterate contents in the text and all
+ * its siblings, call {@code visit} methods.</p>
+ * 
+ * <p>This interface does not expose mutation operations. For mutation,
+ * refer to {@link MutableText}.</p>
+ * 
+ * @see MutableText
+ */
 public interface Text
-extends Message,
-Iterable<Text> {
-    public Text setStyle(Style var1);
+extends Message {
+    /**
+     * An {@link Optional} that indicates a text visitor should be terminated.
+     * 
+     * @see Visitor#accept(String)
+     * @see StyledVisitor#accept(Style, String)
+     */
+    public static final Optional<Unit> TERMINATE_VISIT = Optional.of(Unit.INSTANCE);
 
+    /**
+     * Returns the style of this text.
+     */
     public Style getStyle();
 
-    default public Text append(String text) {
-        return this.append(new LiteralText(text));
-    }
-
-    public Text append(Text var1);
-
+    /**
+     * Returns the string representation of this text itself, excluding siblings.
+     */
     public String asString();
 
+    /**
+     * Returns the full string representation of this text, including siblings.
+     * 
+     * {@inheritDoc}
+     */
     @Override
     default public String getString() {
         StringBuilder stringBuilder = new StringBuilder();
-        this.stream().forEach(text -> stringBuilder.append(text.asString()));
+        this.visit(string -> {
+            stringBuilder.append(string);
+            return Optional.empty();
+        });
         return stringBuilder.toString();
     }
 
+    /**
+     * Returns the full string representation of this text, truncated beyond
+     * the supplied {@code length}.
+     * 
+     * @param length the max length allowed for the string representation of the text
+     */
     default public String asTruncatedString(int length) {
-        int i;
         StringBuilder stringBuilder = new StringBuilder();
-        Iterator iterator = this.stream().iterator();
-        while (iterator.hasNext() && (i = length - stringBuilder.length()) > 0) {
-            String string = ((Text)iterator.next()).asString();
-            stringBuilder.append(string.length() <= i ? string : string.substring(0, i));
-        }
-        return stringBuilder.toString();
-    }
-
-    default public String asFormattedString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        String string = "";
-        Iterator iterator = this.stream().iterator();
-        while (iterator.hasNext()) {
-            Text text = (Text)iterator.next();
-            String string2 = text.asString();
-            if (string2.isEmpty()) continue;
-            String string3 = text.getStyle().asString();
-            if (!string3.equals(string)) {
-                if (!string.isEmpty()) {
-                    stringBuilder.append((Object)Formatting.RESET);
-                }
-                stringBuilder.append(string3);
-                string = string3;
+        this.visit(string -> {
+            int j = length - stringBuilder.length();
+            if (j <= 0) {
+                return TERMINATE_VISIT;
             }
-            stringBuilder.append(string2);
-        }
-        if (!string.isEmpty()) {
-            stringBuilder.append((Object)Formatting.RESET);
-        }
+            stringBuilder.append(string.length() <= j ? string : string.substring(0, j));
+            return Optional.empty();
+        });
         return stringBuilder.toString();
     }
 
+    /**
+     * Returns the siblings of this text.
+     */
     public List<Text> getSiblings();
 
-    public Stream<Text> stream();
+    /**
+     * Copies the text itself, excluding the styles or siblings.
+     */
+    public MutableText copy();
 
-    default public Stream<Text> streamCopied() {
-        return this.stream().map(Text::copyWithoutChildren);
-    }
+    /**
+     * Copies the text itself, the style, and the siblings.
+     * 
+     * <p>A shallow copy is made for the siblings.</p>
+     */
+    public MutableText shallowCopy();
 
-    @Override
-    default public Iterator<Text> iterator() {
-        return this.streamCopied().iterator();
-    }
-
-    public Text copy();
-
-    default public Text deepCopy() {
-        Text text = this.copy();
-        text.setStyle(this.getStyle().deepCopy());
-        for (Text text2 : this.getSiblings()) {
-            text.append(text2.deepCopy());
+    /**
+     * Visits the code points of in each {@link Text#asString() partial string}
+     * representation of {@code text} and its siblings, applying the formatting
+     * codes within.
+     * 
+     * <p>The visit is in forward direction.</p>
+     * 
+     * @return {@code true} if the full string was visited, or {@code false} indicating
+     * the {@code visitor} terminated half-way
+     * @see Text#visit(Text.StyledVisitor, Style)
+     * 
+     * @param visitor the styled text visitor
+     * @param style the starting style
+     */
+    @Environment(value=EnvType.CLIENT)
+    default public <T> Optional<T> visit(StyledVisitor<T> visitor, Style style) {
+        Style style2 = this.getStyle().withParent(style);
+        Optional<T> optional = this.visitSelf(visitor, style2);
+        if (optional.isPresent()) {
+            return optional;
         }
-        return text;
-    }
-
-    default public Text styled(Consumer<Style> transformer) {
-        transformer.accept(this.getStyle());
-        return this;
-    }
-
-    default public Text formatted(Formatting ... formatting) {
-        for (Formatting formatting2 : formatting) {
-            this.formatted(formatting2);
+        for (Text text : this.getSiblings()) {
+            Optional<T> optional2 = text.visit(visitor, style2);
+            if (!optional2.isPresent()) continue;
+            return optional2;
         }
-        return this;
+        return Optional.empty();
     }
 
-    default public Text formatted(Formatting formatting) {
-        Style style = this.getStyle();
-        if (formatting.isColor()) {
-            style.setColor(formatting);
+    /**
+     * Visits this text and its siblings.
+     * 
+     * <p>When the visitor returns a {@link Optional#isPresent() non-empty
+     * optional} during visit, the visit is immediately terminated and the
+     * result is returned.</p>
+     * 
+     * @return what the visitor returns, or {@link Optional#empty()} if the
+     * visitor always returned {@code Optional.empty()}.
+     * 
+     * @param visitor the text visitor
+     */
+    default public <T> Optional<T> visit(Visitor<T> visitor) {
+        Optional<T> optional = this.visitSelf(visitor);
+        if (optional.isPresent()) {
+            return optional;
         }
-        if (formatting.isModifier()) {
-            switch (formatting) {
-                case OBFUSCATED: {
-                    style.setObfuscated(true);
-                    break;
-                }
-                case BOLD: {
-                    style.setBold(true);
-                    break;
-                }
-                case STRIKETHROUGH: {
-                    style.setStrikethrough(true);
-                    break;
-                }
-                case UNDERLINE: {
-                    style.setUnderline(true);
-                    break;
-                }
-                case ITALIC: {
-                    style.setItalic(true);
-                    break;
-                }
-            }
+        for (Text text : this.getSiblings()) {
+            Optional<T> optional2 = text.visit(visitor);
+            if (!optional2.isPresent()) continue;
+            return optional2;
         }
-        return this;
+        return Optional.empty();
     }
 
-    public static Text copyWithoutChildren(Text text) {
-        Text text2 = text.copy();
-        text2.setStyle(text.getStyle().copy());
-        return text2;
+    /**
+     * Visits the text itself.
+     * 
+     * @see #visit(StyledVisitor, Style)
+     * @return the visitor's return value
+     * 
+     * @param visitor the visitor
+     * @param style the current style
+     */
+    @Environment(value=EnvType.CLIENT)
+    default public <T> Optional<T> visitSelf(StyledVisitor<T> visitor, Style style) {
+        return visitor.accept(style, this.asString());
+    }
+
+    /**
+     * Visits the text itself.
+     * 
+     * @see #visit(Visitor)
+     * @return the visitor's return value
+     * 
+     * @param visitor the visitor
+     */
+    default public <T> Optional<T> visitSelf(Visitor<T> visitor) {
+        return visitor.accept(this.asString());
     }
 
     public static class Serializer
-    implements JsonDeserializer<Text>,
+    implements JsonDeserializer<MutableText>,
     JsonSerializer<Text> {
         private static final Gson GSON = Util.make(() -> {
             GsonBuilder gsonBuilder = new GsonBuilder();
@@ -208,7 +241,7 @@ Iterable<Text> {
          * Lifted jumps to return sites
          */
         @Override
-        public Text deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             void var5_19;
             if (jsonElement.isJsonPrimitive()) {
                 return new LiteralText(jsonElement.getAsString());
@@ -232,15 +265,12 @@ Iterable<Text> {
                         }
                         TranslatableText translatableText = new TranslatableText(string, objects);
                     } else {
-                        TranslatableText translatableText = new TranslatableText(string, new Object[0]);
+                        TranslatableText translatableText = new TranslatableText(string);
                     }
                 } else if (jsonObject.has("score")) {
                     JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "score");
                     if (!jsonObject2.has("name") || !jsonObject2.has("objective")) throw new JsonParseException("A score component needs a least a name and an objective");
                     ScoreText scoreText = new ScoreText(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
-                    if (jsonObject2.has("value")) {
-                        scoreText.setScore(JsonHelper.getString(jsonObject2, "value"));
-                    }
                 } else if (jsonObject.has("selector")) {
                     SelectorText selectorText = new SelectorText(JsonHelper.getString(jsonObject, "selector"));
                 } else if (jsonObject.has("keybind")) {
@@ -272,12 +302,12 @@ Iterable<Text> {
             JsonArray jsonArray3 = jsonElement.getAsJsonArray();
             Object var5_18 = null;
             for (JsonElement jsonElement2 : jsonArray3) {
-                Text text2 = this.deserialize(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
+                MutableText mutableText2 = this.deserialize(jsonElement2, jsonElement2.getClass(), jsonDeserializationContext);
                 if (var5_19 == null) {
-                    Text text = text2;
+                    MutableText mutableText = mutableText2;
                     continue;
                 }
-                var5_19.append(text2);
+                var5_19.append(mutableText2);
             }
             return var5_19;
         }
@@ -331,7 +361,6 @@ Iterable<Text> {
                 JsonObject jsonObject2 = new JsonObject();
                 jsonObject2.addProperty("name", scoreText.getName());
                 jsonObject2.addProperty("objective", scoreText.getObjective());
-                jsonObject2.addProperty("value", scoreText.asString());
                 jsonObject.add("score", jsonObject2);
                 return jsonObject;
             } else if (text instanceof SelectorText) {
@@ -358,7 +387,7 @@ Iterable<Text> {
                 } else {
                     if (!(text instanceof NbtText.StorageNbtText)) throw new IllegalArgumentException("Don't know how to serialize " + text + " as a Component");
                     NbtText.StorageNbtText storageNbtText = (NbtText.StorageNbtText)text;
-                    jsonObject.addProperty("storage", storageNbtText.method_23728().toString());
+                    jsonObject.addProperty("storage", storageNbtText.getId().toString());
                 }
             }
             return jsonObject;
@@ -373,27 +402,27 @@ Iterable<Text> {
         }
 
         @Nullable
-        public static Text fromJson(String json) {
-            return JsonHelper.deserialize(GSON, json, Text.class, false);
+        public static MutableText fromJson(String json) {
+            return JsonHelper.deserialize(GSON, json, MutableText.class, false);
         }
 
         @Nullable
-        public static Text fromJson(JsonElement json) {
-            return GSON.fromJson(json, Text.class);
+        public static MutableText fromJson(JsonElement json) {
+            return GSON.fromJson(json, MutableText.class);
         }
 
         @Nullable
-        public static Text fromLenientJson(String json) {
-            return JsonHelper.deserialize(GSON, json, Text.class, true);
+        public static MutableText fromLenientJson(String json) {
+            return JsonHelper.deserialize(GSON, json, MutableText.class, true);
         }
 
-        public static Text fromJson(com.mojang.brigadier.StringReader reader) {
+        public static MutableText fromJson(com.mojang.brigadier.StringReader reader) {
             try {
                 JsonReader jsonReader = new JsonReader(new StringReader(reader.getRemaining()));
                 jsonReader.setLenient(false);
-                Text text = GSON.getAdapter(Text.class).read(jsonReader);
+                MutableText mutableText = GSON.getAdapter(MutableText.class).read(jsonReader);
                 reader.setCursor(reader.getCursor() + Serializer.getPosition(jsonReader));
-                return text;
+                return mutableText;
             } catch (IOException | StackOverflowError throwable) {
                 throw new JsonParseException(throwable);
             }
@@ -416,6 +445,15 @@ Iterable<Text> {
         public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
             return this.deserialize(json, type, context);
         }
+    }
+
+    public static interface Visitor<T> {
+        public Optional<T> accept(String var1);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static interface StyledVisitor<T> {
+        public Optional<T> accept(Style var1, String var2);
     }
 }
 

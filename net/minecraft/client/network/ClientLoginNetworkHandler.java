@@ -62,7 +62,7 @@ implements ClientLoginPacketListener {
         PublicKey publicKey = packet.getPublicKey();
         String string = new BigInteger(NetworkEncryptionUtils.generateServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
         LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, packet.getNonce());
-        this.statusConsumer.accept(new TranslatableText("connect.authorizing", new Object[0]));
+        this.statusConsumer.accept(new TranslatableText("connect.authorizing"));
         NetworkUtils.downloadExecutor.submit(() -> {
             Text text = this.joinServerSession(string);
             if (text != null) {
@@ -73,7 +73,7 @@ implements ClientLoginPacketListener {
                     return;
                 }
             }
-            this.statusConsumer.accept(new TranslatableText("connect.encrypting", new Object[0]));
+            this.statusConsumer.accept(new TranslatableText("connect.encrypting"));
             this.connection.send(loginKeyC2SPacket, future -> this.connection.setupEncryption(secretKey));
         });
     }
@@ -83,9 +83,9 @@ implements ClientLoginPacketListener {
         try {
             this.getSessionService().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), serverId);
         } catch (AuthenticationUnavailableException authenticationUnavailableException) {
-            return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.serversUnavailable", new Object[0]));
+            return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.serversUnavailable"));
         } catch (InvalidCredentialsException invalidCredentialsException) {
-            return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.invalidSession", new Object[0]));
+            return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.invalidSession"));
         } catch (AuthenticationException authenticationException) {
             return new TranslatableText("disconnect.loginFailedInfo", authenticationException.getMessage());
         }
@@ -98,7 +98,7 @@ implements ClientLoginPacketListener {
 
     @Override
     public void onLoginSuccess(LoginSuccessS2CPacket packet) {
-        this.statusConsumer.accept(new TranslatableText("connect.joining", new Object[0]));
+        this.statusConsumer.accept(new TranslatableText("connect.joining"));
         this.profile = packet.getProfile();
         this.connection.setState(NetworkState.PLAY);
         this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentGui, this.connection, this.profile));
@@ -132,7 +132,7 @@ implements ClientLoginPacketListener {
 
     @Override
     public void onQueryRequest(LoginQueryRequestS2CPacket packet) {
-        this.statusConsumer.accept(new TranslatableText("connect.negotiating", new Object[0]));
+        this.statusConsumer.accept(new TranslatableText("connect.negotiating"));
         this.connection.send(new LoginQueryResponseC2SPacket(packet.getQueryId(), null));
     }
 }

@@ -24,6 +24,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.realms.RealmsConnectTask;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsGetServerDetailsTask
@@ -66,13 +68,13 @@ extends LongRunningTask {
                     break;
                 }
                 bl22 = true;
-                this.error(realmsServiceException.toString());
+                this.method_27453(realmsServiceException.toString());
                 LOGGER.error("Couldn't connect to world", (Throwable)realmsServiceException);
                 break;
             } catch (Exception exception) {
                 bl22 = true;
                 LOGGER.error("Couldn't connect to world", (Throwable)exception);
-                this.error(exception.getLocalizedMessage());
+                this.method_27453(exception.getLocalizedMessage());
                 break;
             }
             if (bl2) break;
@@ -82,27 +84,23 @@ extends LongRunningTask {
             RealmsGetServerDetailsTask.setScreen(new RealmsTermsScreen(this.lastScreen, this.mainScreen, this.server));
         } else if (bl4) {
             if (this.server.ownerUUID.equals(MinecraftClient.getInstance().getSession().getUuid())) {
-                RealmsBrokenWorldScreen realmsBrokenWorldScreen = new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id);
-                if (this.server.worldType == RealmsServer.WorldType.MINIGAME) {
-                    realmsBrokenWorldScreen.setTitle(I18n.translate("mco.brokenworld.minigame.title", new Object[0]));
-                }
-                RealmsGetServerDetailsTask.setScreen(realmsBrokenWorldScreen);
+                RealmsGetServerDetailsTask.setScreen(new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME));
             } else {
-                RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(I18n.translate("mco.brokenworld.nonowner.title", new Object[0]), I18n.translate("mco.brokenworld.nonowner.error", new Object[0]), this.lastScreen));
+                RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(new TranslatableText("mco.brokenworld.nonowner.title"), new TranslatableText("mco.brokenworld.nonowner.error"), this.lastScreen));
             }
         } else if (!this.aborted() && !bl22) {
             if (bl2) {
                 RealmsServerAddress realmsServerAddress2 = realmsServerAddress;
                 if (realmsServerAddress2.resourcePackUrl != null && realmsServerAddress2.resourcePackHash != null) {
-                    String string = I18n.translate("mco.configure.world.resourcepack.question.line1", new Object[0]);
-                    String string2 = I18n.translate("mco.configure.world.resourcepack.question.line2", new Object[0]);
+                    TranslatableText text = new TranslatableText("mco.configure.world.resourcepack.question.line1");
+                    TranslatableText text2 = new TranslatableText("mco.configure.world.resourcepack.question.line2");
                     RealmsGetServerDetailsTask.setScreen(new RealmsLongConfirmationScreen(bl -> {
                         try {
                             if (bl) {
                                 Function<Throwable, Void> function = throwable -> {
                                     MinecraftClient.getInstance().getResourcePackDownloader().clear();
                                     LOGGER.error(throwable);
-                                    RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen("Failed to download resource pack!", this.lastScreen));
+                                    RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
                                     return null;
                                 };
                                 try {
@@ -118,12 +116,12 @@ extends LongRunningTask {
                                 this.connectLock.unlock();
                             }
                         }
-                    }, RealmsLongConfirmationScreen.Type.Info, string, string2, true));
+                    }, RealmsLongConfirmationScreen.Type.Info, text, text2, true));
                 } else {
                     this.setScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, realmsServerAddress2)));
                 }
             } else {
-                this.error(I18n.translate("mco.errorMessage.connectionFailure", new Object[0]));
+                this.error(new TranslatableText("mco.errorMessage.connectionFailure"));
             }
         }
     }

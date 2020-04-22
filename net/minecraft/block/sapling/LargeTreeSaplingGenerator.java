@@ -30,7 +30,7 @@ extends SaplingGenerator {
     }
 
     @Nullable
-    protected abstract ConfiguredFeature<? extends TreeFeatureConfig, ?> createLargeTreeFeature(Random var1);
+    protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random var1);
 
     public boolean generateLargeTree(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
         ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);

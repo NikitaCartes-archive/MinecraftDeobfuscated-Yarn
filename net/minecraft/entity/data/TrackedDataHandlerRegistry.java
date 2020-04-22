@@ -128,7 +128,7 @@ public class TrackedDataHandlerRegistry {
 
         @Override
         public Text copy(Text text) {
-            return text.deepCopy();
+            return text;
         }
 
         @Override
@@ -155,7 +155,7 @@ public class TrackedDataHandlerRegistry {
 
         @Override
         public Optional<Text> copy(Optional<Text> optional) {
-            return optional.isPresent() ? Optional.of(optional.get().deepCopy()) : Optional.empty();
+            return optional;
         }
 
         @Override

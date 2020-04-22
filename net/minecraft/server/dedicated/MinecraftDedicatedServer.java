@@ -5,13 +5,10 @@ package net.minecraft.server.dedicated;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.JsonOps;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -22,11 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_5219;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
@@ -48,7 +45,6 @@ import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -58,13 +54,10 @@ import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorOptions;
-import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,12 +73,11 @@ implements DedicatedServer {
     private final ServerCommandOutput rconCommandOutput;
     private RconServer rconServer;
     private final ServerPropertiesLoader propertiesLoader;
-    private GameMode defaultGameMode;
     @Nullable
     private DedicatedServerGui gui;
 
-    public MinecraftDedicatedServer(LevelStorage.Session session, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(session, Proxy.NO_PROXY, dataFixer, new CommandManager(true), minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
+    public MinecraftDedicatedServer(LevelStorage.Session session, class_5219 arg, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(session, arg, Proxy.NO_PROXY, dataFixer, new CommandManager(true), minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new ServerCommandOutput(this);
         new Thread("Server Infinisleeper"){
@@ -144,8 +136,6 @@ implements DedicatedServer {
             this.setPreventProxyConnections(serverPropertiesHandler.preventProxyConnections);
             this.setServerIp(serverPropertiesHandler.serverIp);
         }
-        this.setSpawnAnimals(serverPropertiesHandler.spawnAnimals);
-        this.setSpawnNpcs(serverPropertiesHandler.spawnNpcs);
         this.setPvpEnabled(serverPropertiesHandler.pvp);
         this.setFlightEnabled(serverPropertiesHandler.allowFlight);
         this.setResourcePack(serverPropertiesHandler.resourcePack, this.createResourcePackHash());
@@ -153,8 +143,8 @@ implements DedicatedServer {
         this.setForceGameMode(serverPropertiesHandler.forceGameMode);
         super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
         this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
-        this.defaultGameMode = serverPropertiesHandler.gameMode;
-        LOGGER.info("Default game type: {}", (Object)this.defaultGameMode);
+        this.field_24372.setGameMode(serverPropertiesHandler.gameMode);
+        LOGGER.info("Default game type: {}", (Object)serverPropertiesHandler.gameMode);
         InetAddress inetAddress = null;
         if (!this.getServerIp().isEmpty()) {
             inetAddress = InetAddress.getByName(this.getServerIp());
@@ -185,33 +175,17 @@ implements DedicatedServer {
         if (!ServerConfigHandler.checkSuccess(this)) {
             return false;
         }
-        this.setPlayerManager(new DedicatedPlayerManager(this));
+        this.setPlayerManager(new DedicatedPlayerManager(this, this.field_24371));
         long l = Util.getMeasuringTimeNano();
-        String string = serverPropertiesHandler.levelSeed;
-        String string2 = serverPropertiesHandler.generatorSettings;
-        long m = new Random().nextLong();
-        if (!string.isEmpty()) {
-            try {
-                long n = Long.parseLong(string);
-                if (n != 0L) {
-                    m = n;
-                }
-            } catch (NumberFormatException numberFormatException) {
-                m = string.hashCode();
-            }
-        }
-        LevelGeneratorType levelGeneratorType = serverPropertiesHandler.levelType;
         this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
         SkullBlockEntity.setUserCache(this.getUserCache());
         SkullBlockEntity.setSessionService(this.getSessionService());
         UserCache.setUseRemote(this.isOnlineMode());
         LOGGER.info("Preparing level \"{}\"", (Object)this.getLevelName());
-        JsonObject jsonObject = !string2.isEmpty() ? JsonHelper.deserialize(string2) : new JsonObject();
-        LevelGeneratorOptions levelGeneratorOptions = levelGeneratorType.loadOptions(new Dynamic<JsonObject>(JsonOps.INSTANCE, jsonObject));
-        this.loadWorld(this.session.getDirectoryName(), m, levelGeneratorOptions);
-        long o = Util.getMeasuringTimeNano() - l;
-        String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
-        LOGGER.info("Done ({})! For help, type \"help\"", (Object)string3);
+        this.loadWorld();
+        long m = Util.getMeasuringTimeNano() - l;
+        String string = String.format(Locale.ROOT, "%.3fs", (double)m / 1.0E9);
+        LOGGER.info("Done ({})! For help, type \"help\"", (Object)string);
         if (serverPropertiesHandler.announcePlayerAchievements != null) {
             this.getGameRules().get(GameRules.ANNOUNCE_ADVANCEMENTS).set(serverPropertiesHandler.announcePlayerAchievements, this);
         }
@@ -239,6 +213,21 @@ implements DedicatedServer {
         return true;
     }
 
+    @Override
+    public boolean shouldSpawnAnimals() {
+        return this.getProperties().spawnAnimals && super.shouldSpawnAnimals();
+    }
+
+    @Override
+    public boolean isMonsterSpawningEnabled() {
+        return this.propertiesLoader.getPropertiesHandler().spawnMonsters && super.isMonsterSpawningEnabled();
+    }
+
+    @Override
+    public boolean shouldSpawnNpcs() {
+        return this.propertiesLoader.getPropertiesHandler().spawnNpcs && super.shouldSpawnNpcs();
+    }
+
     public String createResourcePackHash() {
         String string;
         ServerPropertiesHandler serverPropertiesHandler = this.propertiesLoader.getPropertiesHandler();
@@ -263,29 +252,13 @@ implements DedicatedServer {
     }
 
     @Override
-    public void setDefaultGameMode(GameMode gameMode) {
-        super.setDefaultGameMode(gameMode);
-        this.defaultGameMode = gameMode;
-    }
-
-    @Override
     public ServerPropertiesHandler getProperties() {
         return this.propertiesLoader.getPropertiesHandler();
     }
 
     @Override
-    public boolean shouldGenerateStructures() {
-        return this.getProperties().generateStructures;
-    }
-
-    @Override
-    public GameMode getDefaultGameMode() {
-        return this.defaultGameMode;
-    }
-
-    @Override
-    public Difficulty getDefaultDifficulty() {
-        return this.getProperties().difficulty;
+    public void method_27731() {
+        this.setDifficulty(this.getProperties().difficulty, true);
     }
 
     @Override
@@ -332,11 +305,6 @@ implements DedicatedServer {
     @Override
     public boolean isNetherAllowed() {
         return this.getProperties().allowNether;
-    }
-
-    @Override
-    public boolean isMonsterSpawningEnabled() {
-        return this.getProperties().spawnMonsters;
     }
 
     @Override

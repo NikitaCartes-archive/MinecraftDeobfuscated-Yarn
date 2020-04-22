@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
@@ -46,14 +47,14 @@ extends HandledScreen<T> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        super.render(mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        super.render(matrices, mouseX, mouseY, delta);
         if (this.drawStatusEffects) {
-            this.drawStatusEffects();
+            this.drawStatusEffects(matrices);
         }
     }
 
-    private void drawStatusEffects() {
+    private void drawStatusEffects(MatrixStack matrixStack) {
         int i = this.x - 124;
         Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
         if (collection.isEmpty()) {
@@ -65,44 +66,44 @@ extends HandledScreen<T> {
             j = 132 / (collection.size() - 1);
         }
         List<StatusEffectInstance> iterable = Ordering.natural().sortedCopy(collection);
-        this.drawStatusEffectBackgrounds(i, j, iterable);
-        this.drawStatusEffectSprites(i, j, iterable);
-        this.drawStatusEffectDescriptions(i, j, iterable);
+        this.drawStatusEffectBackgrounds(matrixStack, i, j, iterable);
+        this.drawStatusEffectSprites(matrixStack, i, j, iterable);
+        this.drawStatusEffectDescriptions(matrixStack, i, j, iterable);
     }
 
-    private void drawStatusEffectBackgrounds(int x, int yIncrement, Iterable<StatusEffectInstance> effects) {
+    private void drawStatusEffectBackgrounds(MatrixStack matrixStack, int i, int j, Iterable<StatusEffectInstance> iterable) {
         this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-        int i = this.y;
-        for (StatusEffectInstance statusEffectInstance : effects) {
+        int k = this.y;
+        for (StatusEffectInstance statusEffectInstance : iterable) {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.drawTexture(x, i, 0, 166, 140, 32);
-            i += yIncrement;
+            this.drawTexture(matrixStack, i, k, 0, 166, 140, 32);
+            k += j;
         }
     }
 
-    private void drawStatusEffectSprites(int x, int yIncrement, Iterable<StatusEffectInstance> effects) {
+    private void drawStatusEffectSprites(MatrixStack matrixStack, int i, int j, Iterable<StatusEffectInstance> iterable) {
         StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
-        int i = this.y;
-        for (StatusEffectInstance statusEffectInstance : effects) {
+        int k = this.y;
+        for (StatusEffectInstance statusEffectInstance : iterable) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
             this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-            AbstractInventoryScreen.drawSprite(x + 6, i + 7, this.getZOffset(), 18, 18, sprite);
-            i += yIncrement;
+            AbstractInventoryScreen.drawSprite(matrixStack, i + 6, k + 7, this.getZOffset(), 18, 18, sprite);
+            k += j;
         }
     }
 
-    private void drawStatusEffectDescriptions(int x, int yIncrement, Iterable<StatusEffectInstance> effects) {
-        int i = this.y;
-        for (StatusEffectInstance statusEffectInstance : effects) {
+    private void drawStatusEffectDescriptions(MatrixStack matrixStack, int i, int j, Iterable<StatusEffectInstance> iterable) {
+        int k = this.y;
+        for (StatusEffectInstance statusEffectInstance : iterable) {
             String string = I18n.translate(statusEffectInstance.getEffectType().getTranslationKey(), new Object[0]);
             if (statusEffectInstance.getAmplifier() >= 1 && statusEffectInstance.getAmplifier() <= 9) {
                 string = string + ' ' + I18n.translate("enchantment.level." + (statusEffectInstance.getAmplifier() + 1), new Object[0]);
             }
-            this.textRenderer.drawWithShadow(string, x + 10 + 18, i + 6, 0xFFFFFF);
+            this.textRenderer.drawWithShadow(matrixStack, string, (float)(i + 10 + 18), (float)(k + 6), 0xFFFFFF);
             String string2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0f);
-            this.textRenderer.drawWithShadow(string2, x + 10 + 18, i + 6 + 10, 0x7F7F7F);
-            i += yIncrement;
+            this.textRenderer.drawWithShadow(matrixStack, string2, (float)(i + 10 + 18), (float)(k + 6 + 10), 0x7F7F7F);
+            k += j;
         }
     }
 }

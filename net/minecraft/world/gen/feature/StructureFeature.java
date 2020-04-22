@@ -44,7 +44,7 @@ extends Feature<C> {
 
     @Override
     public boolean generate(IWorld world, StructureAccessor accessor, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, C config) {
-        if (!world.getLevelProperties().hasStructures()) {
+        if (!world.getLevelProperties().method_27420()) {
             return false;
         }
         int i = pos.getX() >> 4;
@@ -71,7 +71,7 @@ extends Feature<C> {
 
     @Nullable
     public BlockPos locateStructure(ServerWorld serverWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks) {
-        if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
+        if (!chunkGenerator.method_27367(this)) {
             return null;
         }
         StructureAccessor structureAccessor = serverWorld.getStructureAccessor();

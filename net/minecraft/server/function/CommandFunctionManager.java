@@ -191,7 +191,7 @@ implements SynchronousResourceReloadListener {
     }
 
     public ServerCommandSource getCommandFunctionSource() {
-        return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.server.getFunctionPermissionLevel(), "", new LiteralText(""), this.server, null);
+        return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.server.getFunctionPermissionLevel(), "", LiteralText.EMPTY, this.server, null);
     }
 
     public TagContainer<CommandFunction> getTags() {

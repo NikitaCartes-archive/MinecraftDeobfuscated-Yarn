@@ -5,6 +5,7 @@ package net.minecraft.world;
 
 import java.util.Optional;
 import java.util.Random;
+import net.minecraft.class_5217;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.SpawnType;
@@ -18,7 +19,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
@@ -33,14 +33,14 @@ public class WanderingTraderManager {
     public WanderingTraderManager(ServerWorld world) {
         this.world = world;
         this.spawnTimer = 1200;
-        LevelProperties levelProperties = world.getLevelProperties();
-        this.spawnDelay = levelProperties.getWanderingTraderSpawnDelay();
-        this.spawnChance = levelProperties.getWanderingTraderSpawnChance();
+        class_5217 lv = world.getLevelProperties();
+        this.spawnDelay = lv.getWanderingTraderSpawnDelay();
+        this.spawnChance = lv.getWanderingTraderSpawnChance();
         if (this.spawnDelay == 0 && this.spawnChance == 0) {
             this.spawnDelay = 24000;
-            levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
+            lv.setWanderingTraderSpawnDelay(this.spawnDelay);
             this.spawnChance = 25;
-            levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
+            lv.setWanderingTraderSpawnChance(this.spawnChance);
         }
     }
 
@@ -52,9 +52,9 @@ public class WanderingTraderManager {
             return;
         }
         this.spawnTimer = 1200;
-        LevelProperties levelProperties = this.world.getLevelProperties();
+        class_5217 lv = this.world.getLevelProperties();
         this.spawnDelay -= 1200;
-        levelProperties.setWanderingTraderSpawnDelay(this.spawnDelay);
+        lv.setWanderingTraderSpawnDelay(this.spawnDelay);
         if (this.spawnDelay > 0) {
             return;
         }
@@ -64,7 +64,7 @@ public class WanderingTraderManager {
         }
         int i = this.spawnChance;
         this.spawnChance = MathHelper.clamp(this.spawnChance + 25, 25, 75);
-        levelProperties.setWanderingTraderSpawnChance(this.spawnChance);
+        lv.setWanderingTraderSpawnChance(this.spawnChance);
         if (this.random.nextInt(100) > i) {
             return;
         }

@@ -148,10 +148,10 @@ public class PotionUtil {
         List<StatusEffectInstance> list2 = PotionUtil.getPotionEffects(stack);
         ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.newArrayList();
         if (list2.isEmpty()) {
-            list.add(new TranslatableText("effect.none", new Object[0]).formatted(Formatting.GRAY));
+            list.add(new TranslatableText("effect.none").formatted(Formatting.GRAY));
         } else {
             for (StatusEffectInstance statusEffectInstance : list2) {
-                TranslatableText text = new TranslatableText(statusEffectInstance.getTranslationKey(), new Object[0]);
+                TranslatableText mutableText = new TranslatableText(statusEffectInstance.getTranslationKey());
                 StatusEffect statusEffect = statusEffectInstance.getEffectType();
                 Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
                 if (!map.isEmpty()) {
@@ -162,27 +162,27 @@ public class PotionUtil {
                     }
                 }
                 if (statusEffectInstance.getAmplifier() > 0) {
-                    text.append(" ").append(new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier(), new Object[0]));
+                    mutableText.append(" ").append(new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
                 }
                 if (statusEffectInstance.getDuration() > 20) {
-                    text.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
+                    mutableText.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
                 }
-                list.add(text.formatted(statusEffect.getType().getFormatting()));
+                list.add(mutableText.formatted(statusEffect.getType().getFormatting()));
             }
         }
         if (!list3.isEmpty()) {
-            list.add(new LiteralText(""));
-            list.add(new TranslatableText("potion.whenDrank", new Object[0]).formatted(Formatting.DARK_PURPLE));
+            list.add(LiteralText.EMPTY);
+            list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
             for (Pair pair : list3) {
                 EntityAttributeModifier entityAttributeModifier3 = (EntityAttributeModifier)pair.getSecond();
-                double d = entityAttributeModifier3.getAmount();
-                double e = entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? entityAttributeModifier3.getAmount() * 100.0 : entityAttributeModifier3.getAmount();
+                double d = entityAttributeModifier3.getValue();
+                double e = entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? entityAttributeModifier3.getValue() * 100.0 : entityAttributeModifier3.getValue();
                 if (d > 0.0) {
-                    list.add(new TranslatableText("attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e), new TranslatableText(((EntityAttribute)pair.getFirst()).getTranslationKey(), new Object[0])).formatted(Formatting.BLUE));
+                    list.add(new TranslatableText("attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e), new TranslatableText(((EntityAttribute)pair.getFirst()).getTranslationKey())).formatted(Formatting.BLUE));
                     continue;
                 }
                 if (!(d < 0.0)) continue;
-                list.add(new TranslatableText("attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e *= -1.0), new TranslatableText(((EntityAttribute)pair.getFirst()).getTranslationKey(), new Object[0])).formatted(Formatting.RED));
+                list.add(new TranslatableText("attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(), ItemStack.MODIFIER_FORMAT.format(e *= -1.0), new TranslatableText(((EntityAttribute)pair.getFirst()).getTranslationKey())).formatted(Formatting.RED));
             }
         }
     }

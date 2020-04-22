@@ -45,7 +45,7 @@ implements CommandOutput {
     }
 
     public Text getLastOutput() {
-        return this.lastOutput == null ? new LiteralText("") : this.lastOutput;
+        return this.lastOutput == null ? LiteralText.EMPTY : this.lastOutput;
     }
 
     public CompoundTag serialize(CompoundTag tag) {

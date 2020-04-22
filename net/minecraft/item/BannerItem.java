@@ -43,7 +43,7 @@ extends WallStandingBlockItem {
             DyeColor dyeColor = DyeColor.byId(compoundTag2.getInt("Color"));
             BannerPattern bannerPattern = BannerPattern.byId(compoundTag2.getString("Pattern"));
             if (bannerPattern == null) continue;
-            tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName(), new Object[0]).formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + '.' + dyeColor.getName()).formatted(Formatting.GRAY));
         }
     }
 

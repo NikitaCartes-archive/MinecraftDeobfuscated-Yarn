@@ -18,6 +18,7 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommandGroup;
 import net.minecraft.client.gui.hud.spectator.TeleportToSpecificPlayerSpectatorCommand;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
@@ -47,7 +48,7 @@ SpectatorMenuCommand {
 
     @Override
     public Text getPrompt() {
-        return new TranslatableText("spectatorMenu.teleport.prompt", new Object[0]);
+        return new TranslatableText("spectatorMenu.teleport.prompt");
     }
 
     @Override
@@ -57,13 +58,13 @@ SpectatorMenuCommand {
 
     @Override
     public Text getName() {
-        return new TranslatableText("spectatorMenu.teleport", new Object[0]);
+        return new TranslatableText("spectatorMenu.teleport");
     }
 
     @Override
-    public void renderIcon(float brightness, int alpha) {
+    public void renderIcon(MatrixStack matrixStack, float f, int i) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-        DrawableHelper.drawTexture(0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
+        DrawableHelper.drawTexture(matrixStack, 0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
     }
 
     @Override

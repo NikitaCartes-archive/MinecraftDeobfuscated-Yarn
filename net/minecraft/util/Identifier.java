@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Identifier
 implements Comparable<Identifier> {
-    private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
     protected final String namespace;
     protected final String path;
 

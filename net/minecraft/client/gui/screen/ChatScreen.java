@@ -10,9 +10,11 @@ import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.CommandSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -33,11 +35,11 @@ extends Screen {
     protected void init() {
         this.client.keyboard.enableRepeatEvents(true);
         this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size();
-        this.chatField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, I18n.translate("chat.editBox", new Object[0])){
+        this.chatField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, (Text)new TranslatableText("chat.editBox")){
 
             @Override
-            protected String getNarrationMessage() {
-                return super.getNarrationMessage() + ChatScreen.this.commandSuggestor.method_23958();
+            protected MutableText getNarrationMessage() {
+                return super.getNarrationMessage().append(ChatScreen.this.commandSuggestor.method_23958());
             }
         };
         this.chatField.setMaxLength(256);
@@ -182,17 +184,17 @@ extends Screen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.setFocused(this.chatField);
         this.chatField.setSelected(true);
-        ChatScreen.fill(2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
-        this.chatField.render(mouseX, mouseY, delta);
-        this.commandSuggestor.render(mouseX, mouseY);
+        ChatScreen.fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
+        this.chatField.render(matrices, mouseX, mouseY, delta);
+        this.commandSuggestor.render(matrices, mouseX, mouseY);
         Text text = this.client.inGameHud.getChatHud().getText(mouseX, mouseY);
         if (text != null && text.getStyle().getHoverEvent() != null) {
-            this.renderTextHoverEffect(text, mouseX, mouseY);
+            this.renderTextHoverEffect(matrices, text, mouseX, mouseY);
         }
-        super.render(mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override

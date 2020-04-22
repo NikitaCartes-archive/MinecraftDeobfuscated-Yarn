@@ -39,11 +39,11 @@ import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 
 public class ScoreboardCommand {
-    private static final SimpleCommandExceptionType OBJECTIVES_ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.add.duplicate", new Object[0]));
-    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADYEMPTY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.display.alreadyEmpty", new Object[0]));
-    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADYSET_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.display.alreadySet", new Object[0]));
-    private static final SimpleCommandExceptionType PLAYERS_ENABLE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.players.enable.failed", new Object[0]));
-    private static final SimpleCommandExceptionType PLAYERS_ENABLE_INVALID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.players.enable.invalid", new Object[0]));
+    private static final SimpleCommandExceptionType OBJECTIVES_ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.add.duplicate"));
+    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADYEMPTY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.display.alreadyEmpty"));
+    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADYSET_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.display.alreadySet"));
+    private static final SimpleCommandExceptionType PLAYERS_ENABLE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.players.enable.failed"));
+    private static final SimpleCommandExceptionType PLAYERS_ENABLE_INVALID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.players.enable.invalid"));
     private static final Dynamic2CommandExceptionType PLAYERS_GET_NULL_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.scoreboard.players.get.null", object, object2));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -202,7 +202,7 @@ public class ScoreboardCommand {
     private static int executeListPlayers(ServerCommandSource source) {
         Collection<String> collection = source.getMinecraftServer().getScoreboard().getKnownPlayers();
         if (collection.isEmpty()) {
-            source.sendFeedback(new TranslatableText("commands.scoreboard.players.list.empty", new Object[0]), false);
+            source.sendFeedback(new TranslatableText("commands.scoreboard.players.list.empty"), false);
         } else {
             source.sendFeedback(new TranslatableText("commands.scoreboard.players.list.success", collection.size(), Texts.joinOrdered(collection)), false);
         }
@@ -282,7 +282,7 @@ public class ScoreboardCommand {
     private static int executeListObjectives(ServerCommandSource source) {
         Collection<ScoreboardObjective> collection = source.getMinecraftServer().getScoreboard().getObjectives();
         if (collection.isEmpty()) {
-            source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.list.empty", new Object[0]), false);
+            source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.list.empty"), false);
         } else {
             source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.list.success", collection.size(), Texts.join(collection, ScoreboardObjective::toHoverableText)), false);
         }

@@ -14,14 +14,15 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.world.WorldSaveHandler;
 
 @Environment(value=EnvType.CLIENT)
 public class IntegratedPlayerManager
 extends PlayerManager {
     private CompoundTag userData;
 
-    public IntegratedPlayerManager(IntegratedServer integratedServer) {
-        super(integratedServer, 8);
+    public IntegratedPlayerManager(IntegratedServer integratedServer, WorldSaveHandler worldSaveHandler) {
+        super(integratedServer, worldSaveHandler, 8);
         this.setViewDistance(10);
     }
 
@@ -36,7 +37,7 @@ extends PlayerManager {
     @Override
     public Text checkCanJoin(SocketAddress socketAddress, GameProfile gameProfile) {
         if (gameProfile.getName().equalsIgnoreCase(this.getServer().getUserName()) && this.getPlayer(gameProfile.getName()) != null) {
-            return new TranslatableText("multiplayer.disconnect.name_taken", new Object[0]);
+            return new TranslatableText("multiplayer.disconnect.name_taken");
         }
         return super.checkCanJoin(socketAddress, gameProfile);
     }

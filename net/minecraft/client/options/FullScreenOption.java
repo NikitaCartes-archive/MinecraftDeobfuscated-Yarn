@@ -8,10 +8,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.options.DoubleOption;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.Monitor;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.client.util.Window;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -39,14 +40,14 @@ extends DoubleOption {
             }
         }, (gameOptions, doubleOption) -> {
             if (monitor == null) {
-                return I18n.translate("options.fullscreen.unavailable", new Object[0]);
+                return new TranslatableText("options.fullscreen.unavailable");
             }
             double d = doubleOption.get((GameOptions)gameOptions);
-            String string = doubleOption.getDisplayPrefix();
+            MutableText mutableText = doubleOption.getDisplayPrefix();
             if (d == -1.0) {
-                return string + I18n.translate("options.fullscreen.current", new Object[0]);
+                return mutableText.append(new TranslatableText("options.fullscreen.current"));
             }
-            return monitor.getVideoMode((int)d).toString();
+            return mutableText.append(monitor.getVideoMode((int)d).toString());
         });
     }
 }

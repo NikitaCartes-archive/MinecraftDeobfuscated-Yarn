@@ -294,7 +294,7 @@ extends Entity {
         if (text != null) {
             return text;
         }
-        return new TranslatableText(this.getStack().getTranslationKey(), new Object[0]);
+        return new TranslatableText(this.getStack().getTranslationKey());
     }
 
     @Override
@@ -318,6 +318,14 @@ extends Entity {
 
     public void setStack(ItemStack stack) {
         this.getDataTracker().set(STACK, stack);
+    }
+
+    @Override
+    public void onTrackedDataSet(TrackedData<?> data) {
+        super.onTrackedDataSet(data);
+        if (STACK.equals(data)) {
+            this.getStack().method_27320(this);
+        }
     }
 
     @Nullable
@@ -370,6 +378,11 @@ extends Entity {
     public void setDespawnImmediately() {
         this.setPickupDelayInfinite();
         this.age = 5999;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public float method_27314(float f) {
+        return ((float)this.getAge() + f) / 20.0f + this.hoverHeight;
     }
 
     @Override

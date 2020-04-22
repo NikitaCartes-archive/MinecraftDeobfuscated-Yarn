@@ -12,11 +12,14 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -32,7 +35,7 @@ extends AbstractButtonWidget {
     private int currentResultIndex;
 
     public AnimatedResultButton() {
-        super(0, 0, 25, 25, "");
+        super(0, 0, 25, 25, LiteralText.EMPTY);
     }
 
     public void showResultCollection(RecipeResultCollection recipeResultCollection, RecipeBookResults recipeBookResults) {
@@ -58,40 +61,40 @@ extends AbstractButtonWidget {
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float delta) {
+    public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
         boolean bl;
         if (!Screen.hasControlDown()) {
-            this.time += delta;
+            this.time += f;
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(BG_TEX);
-        int i = 29;
+        int k = 29;
         if (!this.results.hasCraftableRecipes()) {
-            i += 25;
+            k += 25;
         }
-        int j = 206;
+        int l = 206;
         if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
-            j += 25;
+            l += 25;
         }
         boolean bl2 = bl = this.bounce > 0.0f;
         if (bl) {
-            float f = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
+            float g = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
             RenderSystem.pushMatrix();
             RenderSystem.translatef(this.x + 8, this.y + 12, 0.0f);
-            RenderSystem.scalef(f, f, 1.0f);
+            RenderSystem.scalef(g, g, 1.0f);
             RenderSystem.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
-            this.bounce -= delta;
+            this.bounce -= f;
         }
-        this.drawTexture(this.x, this.y, i, j, this.width, this.height);
+        this.drawTexture(matrixStack, this.x, this.y, k, l, this.width, this.height);
         List<Recipe<?>> list = this.getResults();
         this.currentResultIndex = MathHelper.floor(this.time / 30.0f) % list.size();
         ItemStack itemStack = list.get(this.currentResultIndex).getOutput();
-        int k = 4;
+        int m = 4;
         if (this.results.hasSingleOutput() && this.getResults().size() > 1) {
-            minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k + 1, this.y + k + 1);
-            --k;
+            minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m + 1, this.y + m + 1);
+            --m;
         }
-        minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k, this.y + k);
+        minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + m, this.y + m);
         if (bl) {
             RenderSystem.popMatrix();
         }
@@ -114,11 +117,11 @@ extends AbstractButtonWidget {
         return list.get(this.currentResultIndex);
     }
 
-    public List<String> getTooltip(Screen screen) {
+    public List<Text> getTooltip(Screen screen) {
         ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput();
-        List<String> list = screen.getTooltipFromItem(itemStack);
+        List<Text> list = screen.getTooltipFromItem(itemStack);
         if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
-            list.add(I18n.translate("gui.recipebook.moreRecipes", new Object[0]));
+            list.add(new TranslatableText("gui.recipebook.moreRecipes"));
         }
         return list;
     }

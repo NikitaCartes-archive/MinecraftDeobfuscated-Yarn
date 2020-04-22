@@ -180,7 +180,7 @@ extends WaterCreatureEntity {
 
     @Override
     public boolean tryAttack(Entity target) {
-        boolean bl = target.damage(DamageSource.mob(this), (int)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+        boolean bl = target.damage(DamageSource.mob(this), (int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
         if (bl) {
             this.dealDamage(this, target);
             this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0f, 1.0f);
@@ -598,7 +598,7 @@ extends WaterCreatureEntity {
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
             this.dolphin.bodyYaw = this.dolphin.yaw = this.changeAngle(this.dolphin.yaw, h, 10.0f);
             this.dolphin.headYaw = this.dolphin.yaw;
-            float i = (float)(this.speed * this.dolphin.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            float i = (float)(this.speed * this.dolphin.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             if (this.dolphin.isTouchingWater()) {
                 this.dolphin.setMovementSpeed(i * 0.02f);
                 float j = -((float)(MathHelper.atan2(e, MathHelper.sqrt(d * d + f * f)) * 57.2957763671875));

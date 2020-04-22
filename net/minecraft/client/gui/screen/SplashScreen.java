@@ -14,6 +14,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadMonitor;
@@ -46,7 +47,7 @@ extends Overlay {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         float h;
         int k;
         float g;
@@ -60,20 +61,20 @@ extends Overlay {
         float f2 = g = this.prepareCompleteTime > -1L ? (float)(l - this.prepareCompleteTime) / 500.0f : -1.0f;
         if (f >= 1.0f) {
             if (this.client.currentScreen != null) {
-                this.client.currentScreen.render(0, 0, delta);
+                this.client.currentScreen.render(matrices, 0, 0, delta);
             }
             k = MathHelper.ceil((1.0f - MathHelper.clamp(f - 1.0f, 0.0f, 1.0f)) * 255.0f);
-            SplashScreen.fill(0, 0, i, j, 0xFFFFFF | k << 24);
+            SplashScreen.fill(matrices, 0, 0, i, j, 0xFFFFFF | k << 24);
             h = 1.0f - MathHelper.clamp(f - 1.0f, 0.0f, 1.0f);
         } else if (this.reloading) {
             if (this.client.currentScreen != null && g < 1.0f) {
-                this.client.currentScreen.render(mouseX, mouseY, delta);
+                this.client.currentScreen.render(matrices, mouseX, mouseY, delta);
             }
             k = MathHelper.ceil(MathHelper.clamp((double)g, 0.15, 1.0) * 255.0);
-            SplashScreen.fill(0, 0, i, j, 0xFFFFFF | k << 24);
+            SplashScreen.fill(matrices, 0, 0, i, j, 0xFFFFFF | k << 24);
             h = MathHelper.clamp(g, 0.0f, 1.0f);
         } else {
-            SplashScreen.fill(0, 0, i, j, -1);
+            SplashScreen.fill(matrices, 0, 0, i, j, -1);
             h = 1.0f;
         }
         k = (this.client.getWindow().getScaledWidth() - 256) / 2;
@@ -81,11 +82,11 @@ extends Overlay {
         this.client.getTextureManager().bindTexture(LOGO);
         RenderSystem.enableBlend();
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, h);
-        this.drawTexture(k, m, 0, 0, 256, 256);
+        this.drawTexture(matrices, k, m, 0, 0, 256, 256);
         float n = this.reloadMonitor.getProgress();
         this.progress = MathHelper.clamp(this.progress * 0.95f + n * 0.050000012f, 0.0f, 1.0f);
         if (f < 1.0f) {
-            this.renderProgressBar(i / 2 - 150, j / 4 * 3, i / 2 + 150, j / 4 * 3 + 10, 1.0f - MathHelper.clamp(f, 0.0f, 1.0f));
+            this.renderProgressBar(matrices, i / 2 - 150, j / 4 * 3, i / 2 + 150, j / 4 * 3 + 10, 1.0f - MathHelper.clamp(f, 0.0f, 1.0f));
         }
         if (f >= 2.0f) {
             this.client.setOverlay(null);
@@ -104,11 +105,11 @@ extends Overlay {
         }
     }
 
-    private void renderProgressBar(int minX, int minY, int maxX, int maxY, float progress) {
-        int i = MathHelper.ceil((float)(maxX - minX - 1) * this.progress);
-        SplashScreen.fill(minX - 1, minY - 1, maxX + 1, maxY + 1, 0xFF000000 | Math.round((1.0f - progress) * 255.0f) << 16 | Math.round((1.0f - progress) * 255.0f) << 8 | Math.round((1.0f - progress) * 255.0f));
-        SplashScreen.fill(minX, minY, maxX, maxY, -1);
-        SplashScreen.fill(minX + 1, minY + 1, minX + i, maxY - 1, 0xFF000000 | (int)MathHelper.lerp(1.0f - progress, 226.0f, 255.0f) << 16 | (int)MathHelper.lerp(1.0f - progress, 40.0f, 255.0f) << 8 | (int)MathHelper.lerp(1.0f - progress, 55.0f, 255.0f));
+    private void renderProgressBar(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
+        int m = MathHelper.ceil((float)(k - i - 1) * this.progress);
+        SplashScreen.fill(matrixStack, i - 1, j - 1, k + 1, l + 1, 0xFF000000 | Math.round((1.0f - f) * 255.0f) << 16 | Math.round((1.0f - f) * 255.0f) << 8 | Math.round((1.0f - f) * 255.0f));
+        SplashScreen.fill(matrixStack, i, j, k, l, -1);
+        SplashScreen.fill(matrixStack, i + 1, j + 1, i + m, l - 1, 0xFF000000 | (int)MathHelper.lerp(1.0f - f, 226.0f, 255.0f) << 16 | (int)MathHelper.lerp(1.0f - f, 40.0f, 255.0f) << 8 | (int)MathHelper.lerp(1.0f - f, 55.0f, 255.0f));
     }
 
     @Override

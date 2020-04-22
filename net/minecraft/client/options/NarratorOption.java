@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -18,19 +20,19 @@ public enum NarratorOption {
 
     private static final NarratorOption[] VALUES;
     private final int id;
-    private final String translationKey;
+    private final Text field_24212;
 
     private NarratorOption(int id, String translationKey) {
         this.id = id;
-        this.translationKey = translationKey;
+        this.field_24212 = new TranslatableText(translationKey);
     }
 
     public int getId() {
         return this.id;
     }
 
-    public String getTranslationKey() {
-        return this.translationKey;
+    public Text getTranslationKey() {
+        return this.field_24212;
     }
 
     public static NarratorOption byId(int id) {

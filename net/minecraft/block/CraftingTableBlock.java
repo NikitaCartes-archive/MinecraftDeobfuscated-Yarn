@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class CraftingTableBlock
 extends Block {
-    private static final Text TITLE = new TranslatableText("container.crafting", new Object[0]);
+    private static final Text TITLE = new TranslatableText("container.crafting");
 
     protected CraftingTableBlock(AbstractBlock.Settings settings) {
         super(settings);

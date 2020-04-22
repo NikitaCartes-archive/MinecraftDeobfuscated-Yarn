@@ -21,6 +21,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
@@ -81,7 +82,7 @@ extends Item {
             if (!ChatUtil.isEmpty(string)) {
                 tooltip.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.GRAY));
             }
-            tooltip.add(new TranslatableText("book.generation." + compoundTag.getInt("generation"), new Object[0]).formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("book.generation." + compoundTag.getInt("generation")).formatted(Formatting.GRAY));
         }
     }
 
@@ -115,7 +116,7 @@ extends Item {
         }
         ListTag listTag = compoundTag.getList("pages", 8);
         for (int i = 0; i < listTag.size(); ++i) {
-            Text text;
+            MutableText text;
             String string = listTag.getString(i);
             try {
                 text = Text.Serializer.fromLenientJson(string);

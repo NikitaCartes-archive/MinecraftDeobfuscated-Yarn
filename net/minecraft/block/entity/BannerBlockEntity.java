@@ -73,7 +73,7 @@ implements Nameable {
         if (this.customName != null) {
             return this.customName;
         }
-        return new TranslatableText("block.minecraft.banner", new Object[0]);
+        return new TranslatableText("block.minecraft.banner");
     }
 
     @Override

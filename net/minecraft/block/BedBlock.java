@@ -91,7 +91,7 @@ implements BlockEntityProvider {
         if (state.get(PART) != BedPart.HEAD && (state = world.getBlockState(pos = pos.offset(state.get(FACING)))).getBlock() != this) {
             return ActionResult.CONSUME;
         }
-        if (!world.dimension.canPlayersSleep() || world.getBiome(pos) == Biomes.NETHER_WASTES) {
+        if (!BedBlock.method_27352(world, pos)) {
             world.removeBlock(pos, false);
             BlockPos blockPos = pos.offset(state.get(FACING).getOpposite());
             if (world.getBlockState(blockPos).getBlock() == this) {
@@ -102,7 +102,7 @@ implements BlockEntityProvider {
         }
         if (state.get(OCCUPIED).booleanValue()) {
             if (!this.isFree(world, pos)) {
-                player.sendMessage(new TranslatableText("block.minecraft.bed.occupied", new Object[0]), true);
+                player.sendMessage(new TranslatableText("block.minecraft.bed.occupied"), true);
             }
             return ActionResult.SUCCESS;
         }
@@ -112,6 +112,10 @@ implements BlockEntityProvider {
             }
         });
         return ActionResult.SUCCESS;
+    }
+
+    public static boolean method_27352(World world, BlockPos blockPos) {
+        return world.dimension.canPlayersSleep() && world.getBiome(blockPos) != Biomes.NETHER_WASTES;
     }
 
     private boolean isFree(World world, BlockPos pos) {

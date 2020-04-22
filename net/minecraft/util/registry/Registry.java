@@ -16,6 +16,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_5202;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -102,6 +103,7 @@ implements IndexedIterable<T> {
     public static final Registry<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPE = Registry.create("foliage_placer_type", () -> FoliagePlacerType.BLOB_FOLIAGE_PLACER);
     public static final Registry<TrunkPlacerType<?>> TRUNK_PLACER_TYPE = Registry.create("trunk_placer_type", () -> TrunkPlacerType.STRAIGHT_TRUNK_PLACER);
     public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = Registry.create("tree_decorator_type", () -> TreeDecoratorType.LEAVE_VINE);
+    public static final Registry<class_5202<?>> FEATURE_SIZE_TYPE = Registry.create("feature_size_type", () -> class_5202.field_24147);
     public static final Registry<ParticleType<? extends ParticleEffect>> PARTICLE_TYPE = Registry.create("particle_type", () -> ParticleTypes.BLOCK);
     public static final Registry<BiomeSourceType<?, ?>> BIOME_SOURCE_TYPE = Registry.create("biome_source_type", () -> BiomeSourceType.VANILLA_LAYERED);
     public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = Registry.create("block_entity_type", () -> BlockEntityType.FURNACE);

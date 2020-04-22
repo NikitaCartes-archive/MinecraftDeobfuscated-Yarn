@@ -15,6 +15,7 @@ import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -115,16 +116,16 @@ extends AbstractListTag<ByteTag> {
 
     @Override
     public Text toText(String indent, int depth) {
-        Text text = new LiteralText("B").formatted(RED);
-        Text text2 = new LiteralText("[").append(text).append(";");
+        MutableText text = new LiteralText("B").formatted(RED);
+        MutableText mutableText = new LiteralText("[").append(text).append(";");
         for (int i = 0; i < this.value.length; ++i) {
-            Text text3 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
-            text2.append(" ").append(text3).append(text);
+            MutableText mutableText2 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
+            mutableText.append(" ").append(mutableText2).append(text);
             if (i == this.value.length - 1) continue;
-            text2.append(",");
+            mutableText.append(",");
         }
-        text2.append("]");
-        return text2;
+        mutableText.append("]");
+        return mutableText;
     }
 
     public byte[] getByteArray() {
@@ -141,7 +142,8 @@ extends AbstractListTag<ByteTag> {
         return ByteTag.of(this.value[i]);
     }
 
-    public ByteTag method_10606(int i, ByteTag byteTag) {
+    @Override
+    public ByteTag set(int i, ByteTag byteTag) {
         byte b = this.value[i];
         this.value[i] = byteTag.getByte();
         return ByteTag.of(b);
@@ -194,7 +196,7 @@ extends AbstractListTag<ByteTag> {
 
     @Override
     public /* synthetic */ Tag set(int i, Tag tag) {
-        return this.method_10606(i, (ByteTag)tag);
+        return this.set(i, (ByteTag)tag);
     }
 
     @Override
@@ -209,7 +211,7 @@ extends AbstractListTag<ByteTag> {
 
     @Override
     public /* synthetic */ Object set(int i, Object object) {
-        return this.method_10606(i, (ByteTag)object);
+        return this.set(i, (ByteTag)object);
     }
 
     @Override

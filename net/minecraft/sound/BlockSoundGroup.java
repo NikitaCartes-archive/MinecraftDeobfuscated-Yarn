@@ -52,6 +52,9 @@ public class BlockSoundGroup {
     public static final BlockSoundGroup NETHERITE = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_NETHERITE_BLOCK_BREAK, SoundEvents.BLOCK_NETHERITE_BLOCK_STEP, SoundEvents.BLOCK_NETHERITE_BLOCK_PLACE, SoundEvents.BLOCK_NETHERITE_BLOCK_HIT, SoundEvents.BLOCK_NETHERITE_BLOCK_FALL);
     public static final BlockSoundGroup ANCIENT_DEBRIS = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_ANCIENT_DEBRIS_BREAK, SoundEvents.BLOCK_ANCIENT_DEBRIS_STEP, SoundEvents.BLOCK_ANCIENT_DEBRIS_PLACE, SoundEvents.BLOCK_ANCIENT_DEBRIS_HIT, SoundEvents.BLOCK_ANCIENT_DEBRIS_FALL);
     public static final BlockSoundGroup LODESTONE = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_LODESTONE_BREAK, SoundEvents.BLOCK_LODESTONE_STEP, SoundEvents.BLOCK_LODESTONE_PLACE, SoundEvents.BLOCK_LODESTONE_HIT, SoundEvents.BLOCK_LODESTONE_FALL);
+    public static final BlockSoundGroup field_24119 = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_CHAIN_BREAK, SoundEvents.BLOCK_CHAIN_STEP, SoundEvents.BLOCK_CHAIN_PLACE, SoundEvents.BLOCK_CHAIN_HIT, SoundEvents.BLOCK_CHAIN_FALL);
+    public static final BlockSoundGroup field_24120 = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_NETHER_GOLD_ORE_BREAK, SoundEvents.BLOCK_NETHER_GOLD_ORE_STEP, SoundEvents.BLOCK_NETHER_GOLD_ORE_PLACE, SoundEvents.BLOCK_NETHER_GOLD_ORE_HIT, SoundEvents.BLOCK_NETHER_GOLD_ORE_FALL);
+    public static final BlockSoundGroup field_24121 = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_GILDED_BLACKSTONE_BREAK, SoundEvents.BLOCK_GILDED_BLACKSTONE_STEP, SoundEvents.BLOCK_GILDED_BLACKSTONE_PLACE, SoundEvents.BLOCK_GILDED_BLACKSTONE_HIT, SoundEvents.BLOCK_GILDED_BLACKSTONE_FALL);
     public final float volume;
     public final float pitch;
     private final SoundEvent breakSound;

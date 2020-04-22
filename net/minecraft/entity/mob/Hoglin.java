@@ -15,7 +15,7 @@ public interface Hoglin {
     public int getMovementCooldownTicks();
 
     public static boolean tryAttack(LivingEntity livingEntity, LivingEntity livingEntity2) {
-        float f = (float)livingEntity.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        float f = (float)livingEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         float g = !livingEntity.isBaby() && (int)f > 0 ? f / 2.0f + (float)livingEntity.world.random.nextInt((int)f) : f;
         boolean bl = livingEntity2.damage(DamageSource.mob(livingEntity), g);
         if (bl) {
@@ -29,8 +29,8 @@ public interface Hoglin {
 
     public static void knockback(LivingEntity livingEntity, LivingEntity livingEntity2) {
         double e;
-        double d = livingEntity.getAttribute(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
-        double f = d - (e = livingEntity2.getAttribute(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+        double d = livingEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+        double f = d - (e = livingEntity2.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
         if (f <= 0.0) {
             return;
         }

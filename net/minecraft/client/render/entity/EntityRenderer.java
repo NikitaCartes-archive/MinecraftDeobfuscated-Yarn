@@ -13,6 +13,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -63,7 +64,7 @@ public abstract class EntityRenderer<T extends Entity> {
         if (!this.hasLabel(entity)) {
             return;
         }
-        this.renderLabelIfPresent(entity, ((Entity)entity).getDisplayName().asFormattedString(), matrices, vertexConsumers, light);
+        this.renderLabelIfPresent(entity, ((Entity)entity).getDisplayName(), matrices, vertexConsumers, light);
     }
 
     /**
@@ -81,14 +82,14 @@ public abstract class EntityRenderer<T extends Entity> {
         return this.dispatcher.getTextRenderer();
     }
 
-    protected void renderLabelIfPresent(T entity, String label, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         double d = this.dispatcher.getSquaredDistanceToCamera((Entity)entity);
         if (d > 4096.0) {
             return;
         }
         boolean bl = !((Entity)entity).isSneaky();
         float f = ((Entity)entity).getHeight() + 0.5f;
-        int i = "deadmau5".equals(label) ? -10 : 0;
+        int i = "deadmau5".equals(text.getString()) ? -10 : 0;
         matrices.push();
         matrices.translate(0.0, f, 0.0);
         matrices.multiply(this.dispatcher.getRotation());
@@ -97,10 +98,10 @@ public abstract class EntityRenderer<T extends Entity> {
         float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
         int j = (int)(g * 255.0f) << 24;
         TextRenderer textRenderer = this.getFontRenderer();
-        float h = -textRenderer.getStringWidth(label) / 2;
-        textRenderer.draw(label, h, i, 0x20FFFFFF, false, matrix4f, vertexConsumers, bl, j, light);
+        float h = -textRenderer.getWidth(text) / 2;
+        textRenderer.draw(text, h, (float)i, 0x20FFFFFF, false, matrix4f, vertexConsumers, bl, j, light);
         if (bl) {
-            textRenderer.draw(label, h, i, -1, false, matrix4f, vertexConsumers, false, 0, light);
+            textRenderer.draw(text, h, (float)i, -1, false, matrix4f, vertexConsumers, false, 0, light);
         }
         matrices.pop();
     }

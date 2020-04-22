@@ -126,7 +126,7 @@ public class StatusEffect {
     }
 
     public Text getName() {
-        return new TranslatableText(this.getTranslationKey(), new Object[0]);
+        return new TranslatableText(this.getTranslationKey());
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -168,7 +168,7 @@ public class StatusEffect {
     }
 
     public double adjustModifierAmount(int amplifier, EntityAttributeModifier modifier) {
-        return modifier.getAmount() * (double)(amplifier + 1);
+        return modifier.getValue() * (double)(amplifier + 1);
     }
 
     @Environment(value=EnvType.CLIENT)

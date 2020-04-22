@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.gen.feature;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DeltaFeature
 extends Feature<DeltaFeatureConfig> {
+    private static final ImmutableList<Block> field_24133 = ImmutableList.of(Blocks.BEDROCK, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER);
     private static final Direction[] field_23883 = Direction.values();
 
     private static int method_27104(Random random, DeltaFeatureConfig deltaFeatureConfig) {
@@ -65,7 +67,11 @@ extends Feature<DeltaFeatureConfig> {
     }
 
     private static boolean method_27103(IWorld iWorld, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
-        if (iWorld.getBlockState(blockPos).getBlock() == deltaFeatureConfig.contents.getBlock()) {
+        Block block = iWorld.getBlockState(blockPos).getBlock();
+        if (block == deltaFeatureConfig.contents.getBlock()) {
+            return false;
+        }
+        if (field_24133.contains(block)) {
             return false;
         }
         for (Direction direction : field_23883) {

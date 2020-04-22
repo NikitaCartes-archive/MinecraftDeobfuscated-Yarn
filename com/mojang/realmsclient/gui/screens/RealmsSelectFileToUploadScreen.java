@@ -15,13 +15,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsLabel;
 import net.minecraft.realms.RealmsObjectSelectionList;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.logging.log4j.LogManager;
@@ -77,18 +81,18 @@ extends RealmsScreen {
             this.loadLevelList();
         } catch (Exception exception) {
             LOGGER.error("Couldn't load level list", (Throwable)exception);
-            this.client.openScreen(new RealmsGenericErrorScreen("Unable to load worlds", exception.getMessage(), this.lastScreen));
+            this.client.openScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), new LiteralText(exception.getMessage()), this.lastScreen));
             return;
         }
         this.worldLang = I18n.translate("selectWorld.world", new Object[0]);
         this.conversionLang = I18n.translate("selectWorld.conversion", new Object[0]);
         this.addChild(this.worldSelectionList);
-        this.uploadButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, I18n.translate("mco.upload.button.name", new Object[0]), buttonWidget -> this.upload()));
+        this.uploadButton = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, new TranslatableText("mco.upload.button.name"), buttonWidget -> this.upload()));
         this.uploadButton.active = this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size();
-        this.addButton(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, I18n.translate("gui.back", new Object[0]), buttonWidget -> this.client.openScreen(this.lastScreen)));
-        this.titleLabel = this.addChild(new RealmsLabel(I18n.translate("mco.upload.select.world.title", new Object[0]), this.width / 2, 13, 0xFFFFFF));
-        this.subtitleLabel = this.addChild(new RealmsLabel(I18n.translate("mco.upload.select.world.subtitle", new Object[0]), this.width / 2, RealmsSelectFileToUploadScreen.row(-1), 0xA0A0A0));
-        this.field_20063 = this.levelList.isEmpty() ? this.addChild(new RealmsLabel(I18n.translate("mco.upload.select.world.none", new Object[0]), this.width / 2, this.height / 2 - 20, 0xFFFFFF)) : null;
+        this.addButton(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen)));
+        this.titleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.title"), this.width / 2, 13, 0xFFFFFF));
+        this.subtitleLabel = this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.subtitle"), this.width / 2, RealmsSelectFileToUploadScreen.row(-1), 0xA0A0A0));
+        this.field_20063 = this.levelList.isEmpty() ? this.addChild(new RealmsLabel(new TranslatableText("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 0xFFFFFF)) : null;
         this.narrateLabels();
     }
 
@@ -105,15 +109,15 @@ extends RealmsScreen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
-        this.worldSelectionList.render(mouseX, mouseY, delta);
-        this.titleLabel.render(this);
-        this.subtitleLabel.render(this);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
+        this.worldSelectionList.render(matrices, mouseX, mouseY, delta);
+        this.titleLabel.render(this, matrices);
+        this.subtitleLabel.render(this, matrices);
         if (this.field_20063 != null) {
-            this.field_20063.render(this);
+            this.field_20063.render(this, matrices);
         }
-        super.render(mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override
@@ -143,8 +147,8 @@ extends RealmsScreen {
         }
 
         @Override
-        public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
-            this.renderItem(this.field_22718, index, x, y);
+        public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+            this.renderItem(matrices, this.field_22718, x, width, y);
         }
 
         @Override
@@ -153,7 +157,7 @@ extends RealmsScreen {
             return true;
         }
 
-        protected void renderItem(LevelSummary levelSummary, int i, int x, int y) {
+        protected void renderItem(MatrixStack matrixStack, LevelSummary levelSummary, int i, int j, int k) {
             String string = levelSummary.getDisplayName();
             if (string == null || string.isEmpty()) {
                 string = RealmsSelectFileToUploadScreen.this.worldLang + " " + (i + 1);
@@ -173,9 +177,9 @@ extends RealmsScreen {
                     string3 = string3 + ", " + I18n.translate("selectWorld.cheats", new Object[0]);
                 }
             }
-            RealmsSelectFileToUploadScreen.this.textRenderer.draw(string, x + 2, y + 1, 0xFFFFFF);
-            RealmsSelectFileToUploadScreen.this.textRenderer.draw(string2, x + 2, y + 12, 0x808080);
-            RealmsSelectFileToUploadScreen.this.textRenderer.draw(string3, x + 2, y + 12 + 10, 0x808080);
+            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, string, (float)(j + 2), (float)(k + 1), 0xFFFFFF);
+            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, string2, (float)(j + 2), (float)(k + 12), 0x808080);
+            RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrixStack, string3, (float)(j + 2), (float)(k + 12 + 10), 0x808080);
         }
     }
 
@@ -201,8 +205,8 @@ extends RealmsScreen {
         }
 
         @Override
-        public void renderBackground() {
-            RealmsSelectFileToUploadScreen.this.renderBackground();
+        public void renderBackground(MatrixStack matrixStack) {
+            RealmsSelectFileToUploadScreen.this.renderBackground(matrixStack);
         }
 
         @Override

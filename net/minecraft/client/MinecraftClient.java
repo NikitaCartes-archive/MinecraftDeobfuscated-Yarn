@@ -3,6 +3,7 @@
  */
 package net.minecraft.client;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -42,6 +43,8 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_5195;
+import net.minecraft.class_5219;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -121,6 +124,7 @@ import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchableContainer;
 import net.minecraft.client.search.TextSearchableContainer;
 import net.minecraft.client.sound.MusicTracker;
+import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.PlayerSkinProvider;
@@ -134,6 +138,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
@@ -205,12 +210,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.dimension.TheEndDimension;
-import net.minecraft.world.dimension.TheNetherDimension;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -226,7 +227,8 @@ WindowEventHandler {
     private static MinecraftClient instance;
     private static final Logger LOGGER;
     public static final boolean IS_SYSTEM_MAC;
-    public static final Identifier DEFAULT_TEXT_RENDERER_ID;
+    public static final Identifier DEFAULT_FONT_ID;
+    public static final Identifier UNICODE_FONT_ID;
     public static final Identifier ALT_TEXT_RENDERER_ID;
     private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE;
     private final File resourcePackDir;
@@ -367,7 +369,7 @@ WindowEventHandler {
         }
         Bootstrap.initialize();
         Bootstrap.logMissing();
-        KeybindText.i18n = KeyBinding::getLocalizedName;
+        KeybindText.setTranslator(KeyBinding::getLocalizedName);
         this.dataFixer = Schemas.getFixer();
         this.toastManager = new ToastManager(this);
         this.tutorialManager = new TutorialManager(this);
@@ -410,14 +412,10 @@ WindowEventHandler {
         this.splashTextLoader = new SplashTextResourceSupplier(this.session);
         this.resourceManager.registerListener(this.splashTextLoader);
         this.musicTracker = new MusicTracker(this);
-        this.fontManager = new FontManager(this.textureManager, this.forcesUnicodeFont());
+        this.fontManager = new FontManager(this.textureManager);
+        this.textRenderer = this.fontManager.createTextRenderer();
         this.resourceManager.registerListener(this.fontManager.getResourceReloadListener());
-        TextRenderer textRenderer = this.fontManager.getTextRenderer(DEFAULT_TEXT_RENDERER_ID);
-        if (textRenderer == null) {
-            throw new IllegalStateException("Default font is null");
-        }
-        this.textRenderer = textRenderer;
-        this.textRenderer.setRightToLeft(this.languageManager.isRightToLeft());
+        this.initFont(this.forcesUnicodeFont());
         this.resourceManager.registerListener(new GrassColormapResourceSupplier());
         this.resourceManager.registerListener(new FoliageColormapResourceSupplier());
         this.window.setPhase("Startup");
@@ -518,7 +516,7 @@ WindowEventHandler {
             this.options.write();
             this.reloadResources().thenRun(() -> {
                 ToastManager toastManager = this.getToastManager();
-                SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail", new Object[0]), text);
+                SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), text);
             });
         } else {
             Util.throwUnchecked(throwable);
@@ -564,6 +562,11 @@ WindowEventHandler {
             this.cleanUpAfterCrash();
             MinecraftClient.printCrashReport(crashReport);
         }
+    }
+
+    void initFont(boolean forcesUnicode) {
+        this.fontManager.setIdOverrides(forcesUnicode ? ImmutableMap.of(DEFAULT_FONT_ID, UNICODE_FONT_ID) : ImmutableMap.of());
+        this.textRenderer.setRightToLeft(this.languageManager.isRightToLeft());
     }
 
     private void initializeSearchableContainers() {
@@ -697,7 +700,7 @@ WindowEventHandler {
             item.appendStacks(ItemGroup.SEARCH, defaultedList);
             for (ItemStack itemStack : defaultedList) {
                 String string = itemStack.getTranslationKey();
-                String string2 = new TranslatableText(string, new Object[0]).getString();
+                String string2 = new TranslatableText(string).getString();
                 if (!string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) continue;
                 LOGGER.debug("Missing translation for: {} {} {}", (Object)itemStack, (Object)string, (Object)itemStack.getItem());
             }
@@ -844,12 +847,12 @@ WindowEventHandler {
             this.profiler.swap("gameRenderer");
             this.gameRenderer.render(this.paused ? this.pausedTickDelta : this.renderTickCounter.tickDelta, l, tick);
             this.profiler.swap("toasts");
-            this.toastManager.draw();
+            this.toastManager.draw(new MatrixStack());
             this.profiler.pop();
         }
         if (this.tickProfilerResult != null) {
             this.profiler.push("fpsPie");
-            this.drawProfilerResults(this.tickProfilerResult);
+            this.drawProfilerResults(new MatrixStack(), this.tickProfilerResult);
             this.profiler.pop();
         }
         this.profiler.push("blit");
@@ -958,7 +961,7 @@ WindowEventHandler {
             if (this.isIntegratedServerRunning && this.server != null) {
                 this.server.stop(true);
             }
-            this.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel", new Object[0])));
+            this.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
         } catch (Throwable throwable) {
             // empty catch block
         }
@@ -987,7 +990,7 @@ WindowEventHandler {
         }
     }
 
-    private void drawProfilerResults(ProfileResult profileResult) {
+    private void drawProfilerResults(MatrixStack matrixStack, ProfileResult profileResult) {
         int m;
         List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
         ProfilerTiming profilerTiming = list.remove(0);
@@ -1055,9 +1058,9 @@ WindowEventHandler {
         }
         string2 = string.isEmpty() ? string2 + "ROOT " : string2 + string + ' ';
         m = 0xFFFFFF;
-        this.textRenderer.drawWithShadow(string2, j - 160, k - 80 - 16, 0xFFFFFF);
+        this.textRenderer.drawWithShadow(matrixStack, string2, (float)(j - 160), (float)(k - 80 - 16), 0xFFFFFF);
         string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-        this.textRenderer.drawWithShadow(string2, j + 160 - this.textRenderer.getStringWidth(string2), k - 80 - 16, 0xFFFFFF);
+        this.textRenderer.drawWithShadow(matrixStack, string2, (float)(j + 160 - this.textRenderer.getWidth(string2)), (float)(k - 80 - 16), 0xFFFFFF);
         for (int r = 0; r < list.size(); ++r) {
             ProfilerTiming profilerTiming3 = list.get(r);
             StringBuilder stringBuilder = new StringBuilder();
@@ -1067,11 +1070,11 @@ WindowEventHandler {
                 stringBuilder.append("[").append(r + 1).append("] ");
             }
             String string3 = stringBuilder.append(profilerTiming3.name).toString();
-            this.textRenderer.drawWithShadow(string3, j - 160, k + 80 + r * 8 + 20, profilerTiming3.getColor());
+            this.textRenderer.drawWithShadow(matrixStack, string3, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
             string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
-            this.textRenderer.drawWithShadow(string3, j + 160 - 50 - this.textRenderer.getStringWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
+            this.textRenderer.drawWithShadow(matrixStack, string3, (float)(j + 160 - 50 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
             string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
-            this.textRenderer.drawWithShadow(string3, j + 160 - this.textRenderer.getStringWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
+            this.textRenderer.drawWithShadow(matrixStack, string3, (float)(j + 160 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
         }
     }
 
@@ -1283,7 +1286,6 @@ WindowEventHandler {
         this.soundManager.tick(this.paused);
         if (this.world != null) {
             if (!this.paused) {
-                this.world.setMobSpawnOptions(this.world.getDifficulty() != Difficulty.PEACEFUL, true);
                 this.tutorialManager.tick();
                 try {
                     this.world.tick(() -> true);
@@ -1401,7 +1403,8 @@ WindowEventHandler {
         this.handleBlockBreaking(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
     }
 
-    public void startIntegratedServer(String name, String displayName, @Nullable LevelInfo levelInfo) {
+    public void startIntegratedServer(String name, @Nullable LevelInfo levelInfo) {
+        String string;
         LevelStorage.Session session;
         this.disconnect();
         try {
@@ -1412,14 +1415,16 @@ WindowEventHandler {
             this.openScreen(null);
             return;
         }
-        WorldSaveHandler worldSaveHandler = session.createSaveHandler(null);
-        LevelProperties levelProperties = worldSaveHandler.readProperties();
-        if (levelProperties == null && levelInfo != null) {
-            levelProperties = new LevelProperties(levelInfo, name);
-            worldSaveHandler.saveWorld(levelProperties);
-        }
-        if (levelInfo == null) {
-            levelInfo = new LevelInfo(levelProperties);
+        class_5219 lv = session.readLevelProperties();
+        if (lv == null) {
+            if (levelInfo == null) {
+                throw new IllegalStateException("Requested world creation without any settings");
+            }
+            lv = new LevelProperties(levelInfo);
+            string = levelInfo.method_27339();
+            session.method_27425(lv);
+        } else {
+            string = lv.getLevelName();
         }
         this.worldGenProgressTracker.set(null);
         try {
@@ -1430,7 +1435,7 @@ WindowEventHandler {
             SkullBlockEntity.setUserCache(userCache);
             SkullBlockEntity.setSessionService(minecraftSessionService);
             UserCache.setUseRemote(false);
-            this.server = new IntegratedServer(this, session, displayName, levelInfo, minecraftSessionService, gameProfileRepository, userCache, i -> {
+            this.server = new IntegratedServer(this, session, lv, minecraftSessionService, gameProfileRepository, userCache, i -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
                 worldGenerationProgressTracker.start();
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
@@ -1442,7 +1447,7 @@ WindowEventHandler {
             CrashReport crashReport = CrashReport.create(throwable, "Starting integrated server");
             CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
             crashReportSection.add("Level ID", name);
-            crashReportSection.add("Level Name", displayName);
+            crashReportSection.add("Level Name", string);
             throw new CrashException(crashReport);
         }
         while (this.worldGenProgressTracker.get() == null) {
@@ -1474,7 +1479,7 @@ WindowEventHandler {
 
     public void joinWorld(ClientWorld clientWorld) {
         ProgressScreen progressScreen = new ProgressScreen();
-        progressScreen.method_15412(new TranslatableText("connect.joining", new Object[0]));
+        progressScreen.method_15412(new TranslatableText("connect.joining"));
         this.reset(progressScreen);
         this.world = clientWorld;
         this.setWorld(clientWorld);
@@ -1864,45 +1869,27 @@ WindowEventHandler {
         return this.soundManager;
     }
 
-    public MusicTracker.MusicType getMusicType() {
+    public class_5195 getMusicType() {
         if (this.currentScreen instanceof CreditsScreen) {
-            return MusicTracker.MusicType.CREDITS;
+            return MusicType.field_5578;
         }
         if (this.player != null) {
-            if (this.player.world.dimension instanceof TheNetherDimension) {
-                Biome biome = this.player.world.getBiomeAccess().getBiome(this.player.getX(), this.player.getY(), this.player.getZ());
-                if (biome == Biomes.BASALT_DELTAS) {
-                    return MusicTracker.MusicType.BASALT_DELTAS;
-                }
-                if (biome == Biomes.NETHER_WASTES) {
-                    return MusicTracker.MusicType.NETHER_WASTES;
-                }
-                if (biome == Biomes.SOUL_SAND_VALLEY) {
-                    return MusicTracker.MusicType.SOUL_SAND_VALLEY;
-                }
-                if (biome == Biomes.CRIMSON_FOREST) {
-                    return MusicTracker.MusicType.CRIMSON_FOREST;
-                }
-                if (biome == Biomes.WARPED_FOREST) {
-                    return MusicTracker.MusicType.WARPED_FOREST;
-                }
-            }
             if (this.player.world.dimension instanceof TheEndDimension) {
                 if (this.inGameHud.getBossBarHud().shouldPlayDragonMusic()) {
-                    return MusicTracker.MusicType.END_BOSS;
+                    return MusicType.field_5580;
                 }
-                return MusicTracker.MusicType.END;
+                return MusicType.field_5583;
             }
             Biome.Category category = this.player.world.getBiome(this.player.getBlockPos()).getCategory();
-            if (this.musicTracker.isPlayingType(MusicTracker.MusicType.UNDER_WATER) || this.player.isSubmergedInWater() && !this.musicTracker.isPlayingType(MusicTracker.MusicType.GAME) && (category == Biome.Category.OCEAN || category == Biome.Category.RIVER)) {
-                return MusicTracker.MusicType.UNDER_WATER;
+            if (this.musicTracker.isPlayingType(MusicType.field_5576) || this.player.isSubmergedInWater() && (category == Biome.Category.OCEAN || category == Biome.Category.RIVER)) {
+                return MusicType.field_5576;
             }
             if (this.player.abilities.creativeMode && this.player.abilities.allowFlying) {
-                return MusicTracker.MusicType.CREATIVE;
+                return MusicType.field_5581;
             }
-            return MusicTracker.MusicType.GAME;
+            return this.world.getBiomeAccess().method_27344(this.player.getBlockPos()).method_27343().orElse(MusicType.field_5586);
         }
-        return MusicTracker.MusicType.MENU;
+        return MusicType.field_5585;
     }
 
     public MinecraftSessionService getSessionService() {
@@ -2014,10 +2001,6 @@ WindowEventHandler {
         return this.bakedModelManager;
     }
 
-    public FontManager getFontManager() {
-        return this.fontManager;
-    }
-
     public PaintingManager getPaintingManager() {
         return this.paintingManager;
     }
@@ -2087,7 +2070,8 @@ WindowEventHandler {
     static {
         LOGGER = LogManager.getLogger();
         IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
-        DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
+        DEFAULT_FONT_ID = new Identifier("default");
+        UNICODE_FONT_ID = new Identifier("uniform");
         ALT_TEXT_RENDERER_ID = new Identifier("alt");
         COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
         memoryReservedForCrash = new byte[0xA00000];

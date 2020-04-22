@@ -9,6 +9,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +31,7 @@ public class MapBannerMarker {
     public static MapBannerMarker fromNbt(CompoundTag tag) {
         BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
         DyeColor dyeColor = DyeColor.byName(tag.getString("Color"), DyeColor.WHITE);
-        Text text = tag.contains("Name") ? Text.Serializer.fromJson(tag.getString("Name")) : null;
+        MutableText text = tag.contains("Name") ? Text.Serializer.fromJson(tag.getString("Name")) : null;
         return new MapBannerMarker(blockPos, dyeColor, text);
     }
 

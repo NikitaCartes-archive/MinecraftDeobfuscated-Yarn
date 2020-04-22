@@ -16,6 +16,7 @@ import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -124,16 +125,16 @@ extends AbstractListTag<LongTag> {
 
     @Override
     public Text toText(String indent, int depth) {
-        Text text = new LiteralText("L").formatted(RED);
-        Text text2 = new LiteralText("[").append(text).append(";");
+        MutableText text = new LiteralText("L").formatted(RED);
+        MutableText mutableText = new LiteralText("[").append(text).append(";");
         for (int i = 0; i < this.value.length; ++i) {
-            Text text3 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
-            text2.append(" ").append(text3).append(text);
+            MutableText mutableText2 = new LiteralText(String.valueOf(this.value[i])).formatted(GOLD);
+            mutableText.append(" ").append(mutableText2).append(text);
             if (i == this.value.length - 1) continue;
-            text2.append(",");
+            mutableText.append(",");
         }
-        text2.append("]");
-        return text2;
+        mutableText.append("]");
+        return mutableText;
     }
 
     public long[] getLongArray() {
@@ -157,7 +158,8 @@ extends AbstractListTag<LongTag> {
         return LongTag.of(l);
     }
 
-    public void method_10531(int i, LongTag longTag) {
+    @Override
+    public void add(int i, LongTag longTag) {
         this.value = ArrayUtils.add(this.value, i, longTag.getLong());
     }
 
@@ -197,7 +199,7 @@ extends AbstractListTag<LongTag> {
 
     @Override
     public /* synthetic */ void add(int i, Tag tag) {
-        this.method_10531(i, (LongTag)tag);
+        this.add(i, (LongTag)tag);
     }
 
     @Override
@@ -217,7 +219,7 @@ extends AbstractListTag<LongTag> {
 
     @Override
     public /* synthetic */ void add(int i, Object object) {
-        this.method_10531(i, (LongTag)object);
+        this.add(i, (LongTag)object);
     }
 
     @Override

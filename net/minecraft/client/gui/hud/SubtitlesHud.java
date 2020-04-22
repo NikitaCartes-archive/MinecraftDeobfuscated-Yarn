@@ -14,6 +14,8 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundInstanceListener;
 import net.minecraft.client.sound.WeightedSoundSet;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -30,7 +32,7 @@ implements SoundInstanceListener {
         this.client = client;
     }
 
-    public void render() {
+    public void render(MatrixStack matrixStack) {
         if (!this.enabled && this.client.options.showSubtitles) {
             this.client.getSoundManager().registerListener(this);
             this.enabled = true;
@@ -57,12 +59,12 @@ implements SoundInstanceListener {
                 iterator.remove();
                 continue;
             }
-            j = Math.max(j, this.client.textRenderer.getStringWidth(subtitleEntry.getText()));
+            j = Math.max(j, this.client.textRenderer.getWidth(subtitleEntry.getText()));
         }
-        j += this.client.textRenderer.getStringWidth("<") + this.client.textRenderer.getStringWidth(" ") + this.client.textRenderer.getStringWidth(">") + this.client.textRenderer.getStringWidth(" ");
+        j += this.client.textRenderer.getWidth("<") + this.client.textRenderer.getWidth(" ") + this.client.textRenderer.getWidth(">") + this.client.textRenderer.getWidth(" ");
         for (SubtitleEntry subtitleEntry : this.entries) {
             int k = 255;
-            String string = subtitleEntry.getText();
+            Text text = subtitleEntry.getText();
             Vec3d vec3d5 = subtitleEntry.getPosition().subtract(vec3d).normalize();
             double d = -vec3d4.dotProduct(vec3d5);
             double e = -vec3d2.dotProduct(vec3d5);
@@ -71,22 +73,22 @@ implements SoundInstanceListener {
             int m = this.client.textRenderer.fontHeight;
             int n = m / 2;
             float f = 1.0f;
-            int o = this.client.textRenderer.getStringWidth(string);
+            int o = this.client.textRenderer.getWidth(text);
             int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0f));
             int q = p << 16 | p << 8 | p;
             RenderSystem.pushMatrix();
             RenderSystem.translatef((float)this.client.getWindow().getScaledWidth() - (float)l * 1.0f - 2.0f, (float)(this.client.getWindow().getScaledHeight() - 30) - (float)(i * (m + 1)) * 1.0f, 0.0f);
             RenderSystem.scalef(1.0f, 1.0f, 1.0f);
-            SubtitlesHud.fill(-l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8f));
+            SubtitlesHud.fill(matrixStack, -l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8f));
             RenderSystem.enableBlend();
             if (!bl) {
                 if (d > 0.0) {
-                    this.client.textRenderer.draw(">", l - this.client.textRenderer.getStringWidth(">"), -n, q + -16777216);
+                    this.client.textRenderer.draw(matrixStack, ">", (float)(l - this.client.textRenderer.getWidth(">")), (float)(-n), q + -16777216);
                 } else if (d < 0.0) {
-                    this.client.textRenderer.draw("<", -l, -n, q + -16777216);
+                    this.client.textRenderer.draw(matrixStack, "<", (float)(-l), (float)(-n), q + -16777216);
                 }
             }
-            this.client.textRenderer.draw(string, -o / 2, -n, q + -16777216);
+            this.client.textRenderer.draw(matrixStack, text, (float)(-o / 2), (float)(-n), q + -16777216);
             RenderSystem.popMatrix();
             ++i;
         }
@@ -99,30 +101,30 @@ implements SoundInstanceListener {
         if (soundSet.getSubtitle() == null) {
             return;
         }
-        String string = soundSet.getSubtitle().asFormattedString();
+        Text text = soundSet.getSubtitle();
         if (!this.entries.isEmpty()) {
             for (SubtitleEntry subtitleEntry : this.entries) {
-                if (!subtitleEntry.getText().equals(string)) continue;
+                if (!subtitleEntry.getText().equals(text)) continue;
                 subtitleEntry.reset(new Vec3d(sound.getX(), sound.getY(), sound.getZ()));
                 return;
             }
         }
-        this.entries.add(new SubtitleEntry(string, new Vec3d(sound.getX(), sound.getY(), sound.getZ())));
+        this.entries.add(new SubtitleEntry(text, new Vec3d(sound.getX(), sound.getY(), sound.getZ())));
     }
 
     @Environment(value=EnvType.CLIENT)
     public class SubtitleEntry {
-        private final String text;
+        private final Text text;
         private long time;
         private Vec3d pos;
 
-        public SubtitleEntry(String text, Vec3d pos) {
+        public SubtitleEntry(Text text, Vec3d pos) {
             this.text = text;
             this.pos = pos;
             this.time = Util.getMeasuringTimeMs();
         }
 
-        public String getText() {
+        public Text getText() {
             return this.text;
         }
 

@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -30,21 +31,21 @@ implements Toast {
     }
 
     @Override
-    public Toast.Visibility draw(ToastManager manager, long currentTime) {
+    public Toast.Visibility draw(MatrixStack matrixStack, ToastManager toastManager, long l) {
         if (this.justUpdated) {
-            this.startTime = currentTime;
+            this.startTime = l;
             this.justUpdated = false;
         }
-        manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+        toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
         RenderSystem.color3f(1.0f, 1.0f, 1.0f);
-        manager.drawTexture(0, 0, 0, 64, 160, 32);
+        toastManager.drawTexture(matrixStack, 0, 0, 0, 64, 160, 32);
         if (this.description == null) {
-            manager.getGame().textRenderer.draw(this.title, 18.0f, 12.0f, -256);
+            toastManager.getGame().textRenderer.draw(matrixStack, this.title, 18.0f, 12.0f, -256);
         } else {
-            manager.getGame().textRenderer.draw(this.title, 18.0f, 7.0f, -256);
-            manager.getGame().textRenderer.draw(this.description, 18.0f, 18.0f, -1);
+            toastManager.getGame().textRenderer.draw(matrixStack, this.title, 18.0f, 7.0f, -256);
+            toastManager.getGame().textRenderer.draw(matrixStack, this.description, 18.0f, 18.0f, -1);
         }
-        return currentTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+        return l - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
     }
 
     public void setContent(Text title, @Nullable Text description) {
@@ -71,11 +72,11 @@ implements Toast {
     }
 
     public static void method_27023(MinecraftClient minecraftClient, String string) {
-        SystemToast.method_27024(minecraftClient.getToastManager(), Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.access_failure", new Object[0]), new LiteralText(string));
+        SystemToast.method_27024(minecraftClient.getToastManager(), Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.access_failure"), new LiteralText(string));
     }
 
     public static void method_27025(MinecraftClient minecraftClient, String string) {
-        SystemToast.method_27024(minecraftClient.getToastManager(), Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.delete_failure", new Object[0]), new LiteralText(string));
+        SystemToast.method_27024(minecraftClient.getToastManager(), Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.delete_failure"), new LiteralText(string));
     }
 
     @Override

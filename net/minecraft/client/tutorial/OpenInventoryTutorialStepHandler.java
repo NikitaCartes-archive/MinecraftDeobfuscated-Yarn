@@ -16,7 +16,7 @@ import net.minecraft.world.GameMode;
 @Environment(value=EnvType.CLIENT)
 public class OpenInventoryTutorialStepHandler
 implements TutorialStepHandler {
-    private static final Text TITLE = new TranslatableText("tutorial.open_inventory.title", new Object[0]);
+    private static final Text TITLE = new TranslatableText("tutorial.open_inventory.title");
     private static final Text DESCRIPTION = new TranslatableText("tutorial.open_inventory.description", TutorialManager.getKeybindName("inventory"));
     private final TutorialManager manager;
     private TutorialToast field_5642;

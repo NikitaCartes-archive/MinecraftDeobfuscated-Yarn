@@ -265,7 +265,7 @@ extends TameableEntity {
     }
 
     private float getAttackDamage() {
-        return (float)this.getAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
     }
 
     @Override

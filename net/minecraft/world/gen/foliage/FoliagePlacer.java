@@ -13,16 +13,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public abstract class FoliagePlacer
 implements DynamicSerializable {
-    protected final int radius;
-    protected final int randomRadius;
-    protected final int offset;
-    protected final int randomOffset;
-    protected final FoliagePlacerType<?> type;
+    private final int radius;
+    private final int randomRadius;
+    private final int offset;
+    private final int randomOffset;
+    private final FoliagePlacerType<?> type;
 
     public FoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, FoliagePlacerType<?> type) {
         this.radius = radius;
@@ -32,43 +32,51 @@ implements DynamicSerializable {
         this.type = type;
     }
 
+    public void method_27385(ModifiableTestableWorld modifiableTestableWorld, Random random, TreeFeatureConfig treeFeatureConfig, int i, class_5208 arg, int j, int k, Set<BlockPos> set) {
+        this.generate(modifiableTestableWorld, random, treeFeatureConfig, i, arg, j, k, set, this.method_27386(random));
+    }
+
     /**
      * This is the main method used to generate foliage.
      */
-    public abstract void generate(ModifiableTestableWorld var1, Random var2, BranchedTreeFeatureConfig var3, int var4, BlockPos var5, int var6, int var7, Set<BlockPos> var8);
+    protected abstract void generate(ModifiableTestableWorld var1, Random var2, TreeFeatureConfig var3, int var4, class_5208 var5, int var6, int var7, Set<BlockPos> var8, int var9);
 
-    public abstract int getHeight(Random var1, int var2);
+    public abstract int getHeight(Random var1, int var2, TreeFeatureConfig var3);
 
-    public abstract int getRadius(Random var1, int var2, BranchedTreeFeatureConfig var3);
-
-    protected abstract boolean isInvalidForLeaves(Random var1, int var2, int var3, int var4, int var5, int var6);
-
-    /**
-     * This method is used to ensure that a tree can place foliage when it generates.
-     * 
-     * <p>It runs for every y-level of the tree being generated.
-     * 
-     * @param trunkHeight the height of the trunk
-     * @param baseHeight the height of the full tree
-     * @param radius the radius of the foliage
-     */
-    public abstract int getRadiusForPlacement(int var1, int var2, int var3);
-
-    protected void generate(ModifiableTestableWorld world, Random random, BranchedTreeFeatureConfig config, BlockPos pos, int baseHeight, int y, int radius, Set<BlockPos> leaves) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int i = -radius; i <= radius; ++i) {
-            for (int j = -radius; j <= radius; ++j) {
-                if (this.isInvalidForLeaves(random, baseHeight, i, y, j, radius)) continue;
-                mutable.set(i + pos.getX(), y + pos.getY() - baseHeight, j + pos.getZ());
-                this.placeLeaves(world, random, mutable, config, leaves);
-            }
-        }
+    public int getRadius(Random random, int baseHeight) {
+        return this.radius + random.nextInt(this.randomRadius + 1);
     }
 
-    protected void placeLeaves(ModifiableTestableWorld world, Random random, BlockPos pos, BranchedTreeFeatureConfig config, Set<BlockPos> leaves) {
-        if (AbstractTreeFeature.isAirOrLeaves(world, pos) || AbstractTreeFeature.isReplaceablePlant(world, pos) || AbstractTreeFeature.isWater(world, pos)) {
-            world.setBlockState(pos, config.leavesProvider.getBlockState(random, pos), 19);
-            leaves.add(pos.toImmutable());
+    private int method_27386(Random random) {
+        return this.offset + random.nextInt(this.randomOffset + 1);
+    }
+
+    protected abstract boolean isInvalidForLeaves(Random var1, int var2, int var3, int var4, int var5, boolean var6);
+
+    protected boolean method_27387(Random random, int i, int j, int k, int l, boolean bl) {
+        int n;
+        int m;
+        if (bl) {
+            m = Math.min(Math.abs(i), Math.abs(i - 1));
+            n = Math.min(Math.abs(k), Math.abs(k - 1));
+        } else {
+            m = Math.abs(i);
+            n = Math.abs(k);
+        }
+        return this.isInvalidForLeaves(random, m, j, n, l, bl);
+    }
+
+    protected void generate(ModifiableTestableWorld modifiableTestableWorld, Random random, TreeFeatureConfig treeFeatureConfig, BlockPos blockPos, int baseHeight, Set<BlockPos> set, int i, boolean bl) {
+        int j = bl ? 1 : 0;
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (int k = -baseHeight; k <= baseHeight + j; ++k) {
+            for (int l = -baseHeight; l <= baseHeight + j; ++l) {
+                if (this.method_27387(random, k, i, l, baseHeight, bl)) continue;
+                mutable.set(blockPos, k, i, l);
+                if (!AbstractTreeFeature.method_27371(modifiableTestableWorld, mutable)) continue;
+                modifiableTestableWorld.setBlockState(mutable, treeFeatureConfig.leavesProvider.getBlockState(random, mutable), 19);
+                set.add(mutable.toImmutable());
+            }
         }
     }
 
@@ -77,6 +85,30 @@ implements DynamicSerializable {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
         builder.put(ops.createString("type"), ops.createString(Registry.FOLIAGE_PLACER_TYPE.getId(this.type).toString())).put(ops.createString("radius"), ops.createInt(this.radius)).put(ops.createString("radius_random"), ops.createInt(this.randomRadius)).put(ops.createString("offset"), ops.createInt(this.offset)).put(ops.createString("offset_random"), ops.createInt(this.randomOffset));
         return new Dynamic<T>(ops, ops.createMap(builder.build())).getValue();
+    }
+
+    public static final class class_5208 {
+        private final BlockPos field_24158;
+        private final int field_24159;
+        private final boolean field_24160;
+
+        public class_5208(BlockPos blockPos, int i, boolean bl) {
+            this.field_24158 = blockPos;
+            this.field_24159 = i;
+            this.field_24160 = bl;
+        }
+
+        public BlockPos method_27388() {
+            return this.field_24158;
+        }
+
+        public int method_27389() {
+            return this.field_24159;
+        }
+
+        public boolean method_27390() {
+            return this.field_24160;
+        }
     }
 }
 

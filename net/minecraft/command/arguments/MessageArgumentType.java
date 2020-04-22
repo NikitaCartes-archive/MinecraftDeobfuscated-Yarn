@@ -83,22 +83,22 @@ implements ArgumentType<MessageFormat> {
             if (this.selectors.length == 0 || !bl) {
                 return new LiteralText(this.contents);
             }
-            LiteralText text = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
+            LiteralText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
             int i = this.selectors[0].getStart();
             for (MessageSelector messageSelector : this.selectors) {
-                Text text2 = messageSelector.format(serverCommandSource);
+                Text text = messageSelector.format(serverCommandSource);
                 if (i < messageSelector.getStart()) {
-                    text.append(this.contents.substring(i, messageSelector.getStart()));
+                    mutableText.append(this.contents.substring(i, messageSelector.getStart()));
                 }
-                if (text2 != null) {
-                    text.append(text2);
+                if (text != null) {
+                    mutableText.append(text);
                 }
                 i = messageSelector.getEnd();
             }
             if (i < this.contents.length()) {
-                text.append(this.contents.substring(i, this.contents.length()));
+                mutableText.append(this.contents.substring(i, this.contents.length()));
             }
-            return text;
+            return mutableText;
         }
 
         public static MessageFormat parse(StringReader stringReader, boolean bl) throws CommandSyntaxException {

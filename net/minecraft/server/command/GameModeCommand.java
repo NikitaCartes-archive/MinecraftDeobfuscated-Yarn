@@ -27,7 +27,7 @@ public class GameModeCommand {
     }
 
     private static void setGameMode(ServerCommandSource source, ServerPlayerEntity player, GameMode gameMode) {
-        TranslatableText text = new TranslatableText("gameMode." + gameMode.getName(), new Object[0]);
+        TranslatableText text = new TranslatableText("gameMode." + gameMode.getName());
         if (source.getEntity() == player) {
             source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
         } else {

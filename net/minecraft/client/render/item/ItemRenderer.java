@@ -231,7 +231,7 @@ implements SynchronousResourceReloadListener {
             String string = amountText == null ? String.valueOf(stack.getCount()) : amountText;
             matrixStack.translate(0.0, 0.0, this.zOffset + 200.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            fontRenderer.draw(string, x + 19 - 2 - fontRenderer.getStringWidth(string), y + 6 + 3, 0xFFFFFF, true, matrixStack.peek().getModel(), immediate, false, 0, 0xF000F0);
+            fontRenderer.draw(string, (float)(x + 19 - 2 - fontRenderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getModel(), (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
             immediate.draw();
         }
         if (stack.isDamaged()) {

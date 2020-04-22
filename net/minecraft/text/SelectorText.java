@@ -11,8 +11,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.ParsableText;
-import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ implements ParsableText {
     }
 
     @Override
-    public Text parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+    public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
         if (source == null || this.selector == null) {
             return new LiteralText("");
         }
@@ -77,7 +77,12 @@ implements ParsableText {
     }
 
     @Override
-    public /* synthetic */ Text copy() {
+    public /* synthetic */ BaseText copy() {
+        return this.copy();
+    }
+
+    @Override
+    public /* synthetic */ MutableText copy() {
         return this.copy();
     }
 }

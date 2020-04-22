@@ -17,6 +17,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
@@ -86,7 +87,7 @@ extends ConditionalLootFunction {
 
         @Override
         public SetNameLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            Text text = Text.Serializer.fromJson(jsonObject.get("name"));
+            MutableText text = Text.Serializer.fromJson(jsonObject.get("name"));
             LootContext.EntityTarget entityTarget = JsonHelper.deserialize(jsonObject, "entity", null, jsonDeserializationContext, LootContext.EntityTarget.class);
             return new SetNameLootFunction(lootConditions, text, entityTarget);
         }

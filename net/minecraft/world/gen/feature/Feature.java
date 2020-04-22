@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.function.Function;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,12 +21,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.TestableWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.AbstractPileFeature;
+import net.minecraft.world.gen.feature.AbstractTreeFeature;
 import net.minecraft.world.gen.feature.BambooFeature;
 import net.minecraft.world.gen.feature.BasaltColumnsFeature;
 import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
@@ -36,7 +39,6 @@ import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.BlueIceFeature;
 import net.minecraft.world.gen.feature.BonusChestFeature;
 import net.minecraft.world.gen.feature.BoulderFeatureConfig;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
 import net.minecraft.world.gen.feature.BuriedTreasureFeature;
 import net.minecraft.world.gen.feature.BuriedTreasureFeatureConfig;
 import net.minecraft.world.gen.feature.ChorusPlantFeature;
@@ -44,7 +46,6 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.CoralClawFeature;
 import net.minecraft.world.gen.feature.CoralMushroomFeature;
 import net.minecraft.world.gen.feature.CoralTreeFeature;
-import net.minecraft.world.gen.feature.DarkOakTreeFeature;
 import net.minecraft.world.gen.feature.DecoratedFeature;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.DecoratedFlowerFeature;
@@ -83,14 +84,9 @@ import net.minecraft.world.gen.feature.IcePatchFeatureConfig;
 import net.minecraft.world.gen.feature.IceSpikeFeature;
 import net.minecraft.world.gen.feature.IcebergFeature;
 import net.minecraft.world.gen.feature.IglooFeature;
-import net.minecraft.world.gen.feature.JungleGroundBushFeature;
 import net.minecraft.world.gen.feature.JungleTempleFeature;
 import net.minecraft.world.gen.feature.KelpFeature;
 import net.minecraft.world.gen.feature.LakeFeature;
-import net.minecraft.world.gen.feature.LargeOakTreeFeature;
-import net.minecraft.world.gen.feature.MegaJungleTreeFeature;
-import net.minecraft.world.gen.feature.MegaPineTreeFeature;
-import net.minecraft.world.gen.feature.MegaTreeFeatureConfig;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.NetherForestVegetationFeature;
@@ -100,7 +96,6 @@ import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeature;
 import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
 import net.minecraft.world.gen.feature.NoOpFeature;
 import net.minecraft.world.gen.feature.NoSurfaceOreFeature;
-import net.minecraft.world.gen.feature.OakTreeFeature;
 import net.minecraft.world.gen.feature.OceanMonumentFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
@@ -162,12 +157,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final StructureFeature<DefaultFeatureConfig> NETHER_FOSSIL = Feature.register("nether_fossil", new NetherFossilFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
     public static final StructureFeature<BastionRemnantFeatureConfig> BASTION_REMNANT = Feature.register("bastion_remnant", new BastionRemnantFeature((Function<Dynamic<?>, ? extends BastionRemnantFeatureConfig>)((Function<Dynamic<?>, BastionRemnantFeatureConfig>)BastionRemnantFeatureConfig::deserialize)));
     public static final Feature<DefaultFeatureConfig> NO_OP = Feature.register("no_op", new NoOpFeature((Function<Dynamic<?>, ? extends DefaultFeatureConfig>)((Function<Dynamic<?>, DefaultFeatureConfig>)DefaultFeatureConfig::deserialize)));
-    public static final Feature<BranchedTreeFeatureConfig> NORMAL_TREE = Feature.register("normal_tree", new OakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize)));
-    public static final Feature<BranchedTreeFeatureConfig> FANCY_TREE = Feature.register("fancy_tree", new LargeOakTreeFeature((Function<Dynamic<?>, ? extends BranchedTreeFeatureConfig>)((Function<Dynamic<?>, BranchedTreeFeatureConfig>)BranchedTreeFeatureConfig::deserialize)));
-    public static final Feature<TreeFeatureConfig> JUNGLE_GROUND_BUSH = Feature.register("jungle_ground_bush", new JungleGroundBushFeature((Function<Dynamic<?>, ? extends TreeFeatureConfig>)((Function<Dynamic<?>, TreeFeatureConfig>)TreeFeatureConfig::deserialize)));
-    public static final Feature<MegaTreeFeatureConfig> DARK_OAK_TREE = Feature.register("dark_oak_tree", new DarkOakTreeFeature((Function<Dynamic<?>, ? extends MegaTreeFeatureConfig>)((Function<Dynamic<?>, MegaTreeFeatureConfig>)MegaTreeFeatureConfig::deserialize)));
-    public static final Feature<MegaTreeFeatureConfig> MEGA_JUNGLE_TREE = Feature.register("mega_jungle_tree", new MegaJungleTreeFeature((Function<Dynamic<?>, ? extends MegaTreeFeatureConfig>)((Function<Dynamic<?>, MegaTreeFeatureConfig>)MegaTreeFeatureConfig::deserialize)));
-    public static final Feature<MegaTreeFeatureConfig> MEGA_SPRUCE_TREE = Feature.register("mega_spruce_tree", new MegaPineTreeFeature((Function<Dynamic<?>, ? extends MegaTreeFeatureConfig>)((Function<Dynamic<?>, MegaTreeFeatureConfig>)MegaTreeFeatureConfig::deserialize)));
+    public static final Feature<TreeFeatureConfig> TREE = Feature.register("tree", new AbstractTreeFeature((Function<Dynamic<?>, ? extends TreeFeatureConfig>)((Function<Dynamic<?>, TreeFeatureConfig>)TreeFeatureConfig::deserialize)));
     public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = Feature.register("flower", new DefaultFlowerFeature((Function<Dynamic<?>, ? extends RandomPatchFeatureConfig>)((Function<Dynamic<?>, RandomPatchFeatureConfig>)RandomPatchFeatureConfig::deserialize)));
     public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = Feature.register("random_patch", new RandomPatchFeature((Function<Dynamic<?>, ? extends RandomPatchFeatureConfig>)((Function<Dynamic<?>, RandomPatchFeatureConfig>)RandomPatchFeatureConfig::deserialize)));
     public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = Feature.register("block_pile", new AbstractPileFeature((Function<Dynamic<?>, ? extends BlockPileFeatureConfig>)((Function<Dynamic<?>, BlockPileFeatureConfig>)BlockPileFeatureConfig::deserialize)));
@@ -276,8 +266,16 @@ public abstract class Feature<FC extends FeatureConfig> {
         return block == Blocks.STONE || block == Blocks.GRANITE || block == Blocks.DIORITE || block == Blocks.ANDESITE;
     }
 
-    protected static boolean isDirt(Block block) {
+    public static boolean isDirt(Block block) {
         return block == Blocks.DIRT || block == Blocks.GRASS_BLOCK || block == Blocks.PODZOL || block == Blocks.COARSE_DIRT || block == Blocks.MYCELIUM;
+    }
+
+    public static boolean method_27368(TestableWorld testableWorld, BlockPos blockPos) {
+        return testableWorld.testBlockState(blockPos, blockState -> Feature.isDirt(blockState.getBlock()));
+    }
+
+    public static boolean method_27370(TestableWorld testableWorld, BlockPos blockPos) {
+        return testableWorld.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir);
     }
 }
 

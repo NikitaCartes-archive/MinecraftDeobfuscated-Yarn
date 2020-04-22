@@ -288,6 +288,9 @@ public class PiglinBrain {
         if (PiglinBrain.hasBeenHitByPlayer(piglin) && piglin.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET)) {
             return false;
         }
+        if (PiglinBrain.acceptsForBarter(item)) {
+            return PiglinBrain.doesNotHaveGoldInOffHand(piglin);
+        }
         boolean bl = piglin.method_27085(stack);
         if (item == Items.GOLD_NUGGET) {
             return bl;

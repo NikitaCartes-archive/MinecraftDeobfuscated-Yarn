@@ -4,8 +4,8 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import java.util.Set;
+import com.mojang.datafixers.util.Pair;
+import java.util.List;
 import java.util.stream.IntStream;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSourceConfig;
@@ -13,23 +13,28 @@ import net.minecraft.world.biome.source.BiomeSourceConfig;
 public class MultiNoiseBiomeSourceConfig
 implements BiomeSourceConfig {
     private final long seed;
-    private ImmutableList<Integer> temperatureOctaves = IntStream.rangeClosed(-8, -1).boxed().collect(ImmutableList.toImmutableList());
-    private ImmutableList<Integer> humidityOctaves = IntStream.rangeClosed(-8, -1).boxed().collect(ImmutableList.toImmutableList());
-    private ImmutableList<Integer> hillinessOctaves = IntStream.rangeClosed(-9, -1).boxed().collect(ImmutableList.toImmutableList());
-    private ImmutableList<Integer> styleOctaves = IntStream.rangeClosed(-8, -1).boxed().collect(ImmutableList.toImmutableList());
-    private Set<Biome> biomes = ImmutableSet.of();
+    private ImmutableList<Integer> temperatureOctaves = IntStream.rangeClosed(-7, -6).boxed().collect(ImmutableList.toImmutableList());
+    private ImmutableList<Integer> humidityOctaves = IntStream.rangeClosed(-7, -6).boxed().collect(ImmutableList.toImmutableList());
+    private ImmutableList<Integer> hillinessOctaves = IntStream.rangeClosed(-7, -6).boxed().collect(ImmutableList.toImmutableList());
+    private ImmutableList<Integer> styleOctaves = IntStream.rangeClosed(-7, -6).boxed().collect(ImmutableList.toImmutableList());
+    private boolean field_24117;
+    private List<Pair<Biome.MixedNoisePoint, Biome>> field_24118 = ImmutableList.of();
 
     public MultiNoiseBiomeSourceConfig(long seed) {
         this.seed = seed;
     }
 
-    public MultiNoiseBiomeSourceConfig withBiomes(Set<Biome> biomes) {
-        this.biomes = biomes;
+    public MultiNoiseBiomeSourceConfig withBiomes(List<Biome> list) {
+        return this.method_27350(list.stream().flatMap(biome -> biome.method_27342().map(mixedNoisePoint -> Pair.of(mixedNoisePoint, biome))).collect(ImmutableList.toImmutableList()));
+    }
+
+    public MultiNoiseBiomeSourceConfig method_27350(List<Pair<Biome.MixedNoisePoint, Biome>> list) {
+        this.field_24118 = list;
         return this;
     }
 
-    public Set<Biome> getBiomes() {
-        return this.biomes;
+    public List<Pair<Biome.MixedNoisePoint, Biome>> method_27347() {
+        return this.field_24118;
     }
 
     public long getSeed() {
@@ -50,6 +55,10 @@ implements BiomeSourceConfig {
 
     public ImmutableList<Integer> getStyleOctaves() {
         return this.styleOctaves;
+    }
+
+    public boolean method_27351() {
+        return this.field_24117;
     }
 }
 

@@ -39,7 +39,7 @@ implements RecipeBookProvider {
     private boolean isMouseDown;
 
     public InventoryScreen(PlayerEntity player) {
-        super(player.playerScreenHandler, player.inventory, new TranslatableText("container.crafting", new Object[0]));
+        super(player.playerScreenHandler, player.inventory, new TranslatableText("container.crafting"));
         this.passEvents = true;
     }
 
@@ -75,37 +75,36 @@ implements RecipeBookProvider {
     }
 
     @Override
-    protected void drawForeground(int mouseX, int mouseY) {
-        this.textRenderer.draw(this.title.asFormattedString(), 97.0f, 8.0f, 0x404040);
+    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+        this.textRenderer.draw(matrixStack, this.title, 97.0f, 8.0f, 0x404040);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
         boolean bl = this.drawStatusEffects = !this.recipeBook.isOpen();
         if (this.recipeBook.isOpen() && this.isNarrow) {
-            this.drawBackground(delta, mouseX, mouseY);
-            this.recipeBook.render(mouseX, mouseY, delta);
+            this.drawBackground(matrices, delta, mouseX, mouseY);
+            this.recipeBook.render(matrices, mouseX, mouseY, delta);
         } else {
-            this.recipeBook.render(mouseX, mouseY, delta);
-            super.render(mouseX, mouseY, delta);
-            this.recipeBook.drawGhostSlots(this.x, this.y, false, delta);
+            this.recipeBook.render(matrices, mouseX, mouseY, delta);
+            super.render(matrices, mouseX, mouseY, delta);
+            this.recipeBook.drawGhostSlots(matrices, this.x, this.y, false, delta);
         }
-        this.drawMouseoverTooltip(mouseX, mouseY);
-        this.recipeBook.drawTooltip(this.x, this.y, mouseX, mouseY);
+        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+        this.recipeBook.drawTooltip(matrices, this.x, this.y, mouseX, mouseY);
         this.mouseX = mouseX;
         this.mouseY = mouseY;
-        this.focusOn(this.recipeBook);
     }
 
     @Override
-    protected void drawBackground(float delta, int mouseX, int mouseY) {
+    protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
-        int i = this.x;
-        int j = this.y;
-        this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-        InventoryScreen.drawEntity(i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.client.player);
+        int j = this.x;
+        int k = this.y;
+        this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        InventoryScreen.drawEntity(j + 51, k + 75, 30, (float)(j + 51) - this.mouseX, (float)(k + 75 - 50) - this.mouseY, this.client.player);
     }
 
     public static void drawEntity(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity) {

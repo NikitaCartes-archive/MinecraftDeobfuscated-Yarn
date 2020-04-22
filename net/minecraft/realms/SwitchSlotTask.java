@@ -47,7 +47,7 @@ extends LongRunningTask {
                     return;
                 }
                 LOGGER.error("Couldn't switch world!");
-                this.error(exception.toString());
+                this.method_27453(exception.toString());
             }
         }
     }

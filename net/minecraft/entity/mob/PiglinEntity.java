@@ -399,14 +399,17 @@ implements CrossbowUser {
 
     @Override
     protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2) {
+        if (PiglinBrain.isGoldenItem(itemStack.getItem()) && PiglinBrain.isGoldenItem(itemStack2.getItem())) {
+            return super.method_26320(itemStack, itemStack2);
+        }
+        if (PiglinBrain.isGoldenItem(itemStack.getItem())) {
+            return true;
+        }
         if (PiglinBrain.isGoldenItem(itemStack2.getItem())) {
             return false;
         }
         if (this.isAdult() && itemStack2.getItem() == Items.CROSSBOW) {
             return false;
-        }
-        if (PiglinBrain.isGoldenItem(itemStack.getItem())) {
-            return true;
         }
         return super.isBetterItemFor(itemStack, itemStack2);
     }

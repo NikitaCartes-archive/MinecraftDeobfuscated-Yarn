@@ -20,9 +20,9 @@ import net.minecraft.util.Formatting;
 public class TeamS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private String teamName = "";
-    private Text displayName = new LiteralText("");
-    private Text prefix = new LiteralText("");
-    private Text suffix = new LiteralText("");
+    private Text displayName = LiteralText.EMPTY;
+    private Text prefix = LiteralText.EMPTY;
+    private Text suffix = LiteralText.EMPTY;
     private String nameTagVisibilityRule;
     private String collisionRule;
     private Formatting color;

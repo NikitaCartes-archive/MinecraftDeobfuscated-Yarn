@@ -11,14 +11,15 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class CyclingOption
 extends Option {
     private final BiConsumer<GameOptions, Integer> setter;
-    private final BiFunction<GameOptions, CyclingOption, String> messageProvider;
+    private final BiFunction<GameOptions, CyclingOption, Text> messageProvider;
 
-    public CyclingOption(String key, BiConsumer<GameOptions, Integer> setter, BiFunction<GameOptions, CyclingOption, String> messageProvider) {
+    public CyclingOption(String key, BiConsumer<GameOptions, Integer> setter, BiFunction<GameOptions, CyclingOption, Text> messageProvider) {
         super(key);
         this.setter = setter;
         this.messageProvider = messageProvider;
@@ -37,7 +38,7 @@ extends Option {
         });
     }
 
-    public String getMessage(GameOptions options) {
+    public Text getMessage(GameOptions options) {
         return this.messageProvider.apply(options, this);
     }
 }

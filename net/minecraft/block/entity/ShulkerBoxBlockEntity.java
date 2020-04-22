@@ -208,7 +208,7 @@ Tickable {
 
     @Override
     protected Text getContainerName() {
-        return new TranslatableText("container.shulkerBox", new Object[0]);
+        return new TranslatableText("container.shulkerBox");
     }
 
     @Override

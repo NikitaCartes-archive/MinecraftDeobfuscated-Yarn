@@ -5,13 +5,14 @@ package net.minecraft.client.gui.screen.ingame;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.util.List;
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.BufferBuilder;
@@ -23,15 +24,13 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.Texts;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
@@ -42,18 +41,22 @@ extends Screen {
     private int ticksSinceOpened;
     private int currentRow;
     private SelectionManager selectionManager;
+    private final String[] field_24285 = Util.make(new String[4], strings -> Arrays.fill(strings, ""));
 
-    public SignEditScreen(SignBlockEntity sign) {
-        super(new TranslatableText("sign.edit", new Object[0]));
-        this.sign = sign;
+    public SignEditScreen(SignBlockEntity signBlockEntity) {
+        super(new TranslatableText("sign.edit"));
+        this.sign = signBlockEntity;
     }
 
     @Override
     protected void init() {
         this.client.keyboard.enableRepeatEvents(true);
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.finishEditing()));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, ScreenTexts.DONE, buttonWidget -> this.finishEditing()));
         this.sign.setEditable(false);
-        this.selectionManager = new SelectionManager(this.client, () -> this.sign.getTextOnRow(this.currentRow).getString(), string -> this.sign.setTextOnRow(this.currentRow, new LiteralText((String)string)), 90);
+        this.selectionManager = new SelectionManager(() -> this.field_24285[this.currentRow], string -> {
+            this.field_24285[this.currentRow] = string;
+            this.sign.setTextOnRow(this.currentRow, new LiteralText((String)string));
+        }, SelectionManager.makeClipboardGetter(this.client), SelectionManager.makeClipboardSetter(this.client), string -> this.client.textRenderer.getWidth((String)string) <= 90);
     }
 
     @Override
@@ -109,98 +112,92 @@ extends Screen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        int r;
-        int q;
-        String string;
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        int p;
         int o;
+        String string;
+        int m;
         DiffuseLighting.disableGuiDepthLighting();
-        this.renderBackground();
-        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 40, 0xFFFFFF);
-        MatrixStack matrixStack = new MatrixStack();
-        matrixStack.push();
-        matrixStack.translate(this.width / 2, 0.0, 50.0);
+        this.renderBackground(matrices);
+        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 40, 0xFFFFFF);
+        matrices.push();
+        matrices.translate(this.width / 2, 0.0, 50.0);
         float f = 93.75f;
-        matrixStack.scale(93.75f, -93.75f, 93.75f);
-        matrixStack.translate(0.0, -1.3125, 0.0);
+        matrices.scale(93.75f, -93.75f, 93.75f);
+        matrices.translate(0.0, -1.3125, 0.0);
         BlockState blockState = this.sign.getCachedState();
         boolean bl = blockState.getBlock() instanceof SignBlock;
         if (!bl) {
-            matrixStack.translate(0.0, -0.3125, 0.0);
+            matrices.translate(0.0, -0.3125, 0.0);
         }
         boolean bl2 = this.ticksSinceOpened / 6 % 2 == 0;
         float g = 0.6666667f;
-        matrixStack.push();
-        matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
+        matrices.push();
+        matrices.scale(0.6666667f, -0.6666667f, -0.6666667f);
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
         SpriteIdentifier spriteIdentifier = SignBlockEntityRenderer.getModelTexture(blockState.getBlock());
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.field_21525::getLayer);
-        this.field_21525.field.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
+        this.field_21525.field.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
         if (bl) {
-            this.field_21525.foot.render(matrixStack, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
+            this.field_21525.foot.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
         }
-        matrixStack.pop();
+        matrices.pop();
         float h = 0.010416667f;
-        matrixStack.translate(0.0, 0.3333333432674408, 0.046666666865348816);
-        matrixStack.scale(0.010416667f, -0.010416667f, 0.010416667f);
+        matrices.translate(0.0, 0.3333333432674408, 0.046666666865348816);
+        matrices.scale(0.010416667f, -0.010416667f, 0.010416667f);
         int i = this.sign.getTextColor().getSignColor();
-        String[] strings = new String[4];
-        for (int j = 0; j < strings.length; ++j) {
-            strings[j] = this.sign.getTextBeingEditedOnRow(j, text -> {
-                List<Text> list = Texts.wrapLines(text, 90, this.client.textRenderer, false, true);
-                return list.isEmpty() ? "" : list.get(0).asFormattedString();
-            });
-        }
-        Matrix4f matrix4f = matrixStack.peek().getModel();
-        int k = this.selectionManager.getSelectionStart();
-        int l = this.selectionManager.getSelectionEnd();
-        int m = this.client.textRenderer.isRightToLeft() ? -1 : 1;
-        int n = this.currentRow * 10 - this.sign.text.length * 5;
-        for (o = 0; o < strings.length; ++o) {
-            string = strings[o];
+        int j = this.selectionManager.getSelectionStart();
+        int k = this.selectionManager.getSelectionEnd();
+        int l = this.currentRow * 10 - this.field_24285.length * 5;
+        Matrix4f matrix4f = matrices.peek().getModel();
+        for (m = 0; m < this.field_24285.length; ++m) {
+            string = this.field_24285[m];
             if (string == null) continue;
-            float p = -this.client.textRenderer.getStringWidth(string) / 2;
-            this.client.textRenderer.draw(string, p, o * 10 - this.sign.text.length * 5, i, false, matrix4f, immediate, false, 0, 0xF000F0);
-            if (o != this.currentRow || k < 0 || !bl2) continue;
-            q = this.client.textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(k, string.length()), 0)));
-            r = (q - this.client.textRenderer.getStringWidth(string) / 2) * m;
-            if (k < string.length()) continue;
-            this.client.textRenderer.draw("_", r, n, i, false, matrix4f, immediate, false, 0, 0xF000F0);
+            if (this.textRenderer.isRightToLeft()) {
+                string = this.textRenderer.mirror(string);
+            }
+            float n = -this.client.textRenderer.getWidth(string) / 2;
+            this.client.textRenderer.draw(string, n, m * 10 - this.field_24285.length * 5, i, false, matrix4f, immediate, false, 0, 0xF000F0, false);
+            if (m != this.currentRow || j < 0 || !bl2) continue;
+            o = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
+            p = o - this.client.textRenderer.getWidth(string) / 2;
+            if (j < string.length()) continue;
+            this.client.textRenderer.draw("_", p, l, i, false, matrix4f, immediate, false, 0, 0xF000F0, false);
         }
         immediate.draw();
-        for (o = 0; o < strings.length; ++o) {
-            string = strings[o];
-            if (string == null || o != this.currentRow || k < 0) continue;
-            int s = this.client.textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(k, string.length()), 0)));
-            q = (s - this.client.textRenderer.getStringWidth(string) / 2) * m;
-            if (bl2 && k < string.length()) {
-                SignEditScreen.fill(matrix4f, q, n - 1, q + 1, n + this.client.textRenderer.fontHeight, 0xFF000000 | i);
+        for (m = 0; m < this.field_24285.length; ++m) {
+            string = this.field_24285[m];
+            if (string == null || m != this.currentRow || j < 0) continue;
+            int q = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
+            o = q - this.client.textRenderer.getWidth(string) / 2;
+            if (bl2 && j < string.length()) {
+                SignEditScreen.fill(matrices, o, l - 1, o + 1, l + this.client.textRenderer.fontHeight, 0xFF000000 | i);
             }
-            if (l == k) continue;
-            r = Math.min(k, l);
-            int t = Math.max(k, l);
-            int u = (this.client.textRenderer.getStringWidth(string.substring(0, r)) - this.client.textRenderer.getStringWidth(string) / 2) * m;
-            int v = (this.client.textRenderer.getStringWidth(string.substring(0, t)) - this.client.textRenderer.getStringWidth(string) / 2) * m;
-            int w = Math.min(u, v);
-            int x = Math.max(u, v);
+            if (k == j) continue;
+            p = Math.min(j, k);
+            int r = Math.max(j, k);
+            int s = this.client.textRenderer.getWidth(string.substring(0, p)) - this.client.textRenderer.getWidth(string) / 2;
+            int t = this.client.textRenderer.getWidth(string.substring(0, r)) - this.client.textRenderer.getWidth(string) / 2;
+            int u = Math.min(s, t);
+            int v = Math.max(s, t);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
             RenderSystem.disableTexture();
             RenderSystem.enableColorLogicOp();
             RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
             bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-            bufferBuilder.vertex(matrix4f, w, n + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
-            bufferBuilder.vertex(matrix4f, x, n + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
-            bufferBuilder.vertex(matrix4f, x, n, 0.0f).color(0, 0, 255, 255).next();
-            bufferBuilder.vertex(matrix4f, w, n, 0.0f).color(0, 0, 255, 255).next();
+            bufferBuilder.vertex(matrix4f, u, l + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
+            bufferBuilder.vertex(matrix4f, v, l + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
+            bufferBuilder.vertex(matrix4f, v, l, 0.0f).color(0, 0, 255, 255).next();
+            bufferBuilder.vertex(matrix4f, u, l, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.end();
             BufferRenderer.draw(bufferBuilder);
             RenderSystem.disableColorLogicOp();
             RenderSystem.enableTexture();
         }
-        matrixStack.pop();
+        matrices.pop();
         DiffuseLighting.enableGuiDepthLighting();
-        super.render(mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 }
 

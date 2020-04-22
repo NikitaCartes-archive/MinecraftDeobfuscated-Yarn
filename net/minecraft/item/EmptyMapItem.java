@@ -27,13 +27,13 @@ extends NetworkSyncedItem {
         if (!user.abilities.creativeMode) {
             itemStack2.decrement(1);
         }
+        user.incrementStat(Stats.USED.getOrCreateStat(this));
         if (itemStack2.isEmpty()) {
             return TypedActionResult.success(itemStack);
         }
         if (!user.inventory.insertStack(itemStack.copy())) {
             user.dropItem(itemStack, false);
         }
-        user.incrementStat(Stats.USED.getOrCreateStat(this));
         return TypedActionResult.success(itemStack2);
     }
 }

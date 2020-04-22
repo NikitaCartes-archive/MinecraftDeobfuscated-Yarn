@@ -39,7 +39,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType
             double g = bl ? d : d - 1.0;
             double h = bl2 ? e : e - 1.0;
             double s = bl3 ? f : f - 1.0;
-            ds[o] = VoronoiBiomeAccessType.calcChance(seed, p, q, r, g, h, s);
+            ds[o] = VoronoiBiomeAccessType.calcSquaredDistance(seed, p, q, r, g, h, s);
         }
         o = 0;
         double t = ds[0];
@@ -54,7 +54,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType
         return storage.getBiomeForNoiseGen(u, p, q);
     }
 
-    private static double calcChance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
+    private static double calcSquaredDistance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
         long l = seed;
         l = SeedMixer.mixSeed(l, x);
         l = SeedMixer.mixSeed(l, y);
@@ -67,7 +67,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType
         double e = VoronoiBiomeAccessType.distribute(l);
         l = SeedMixer.mixSeed(l, seed);
         double f = VoronoiBiomeAccessType.distribute(l);
-        return VoronoiBiomeAccessType.sqr(zFraction + f) + VoronoiBiomeAccessType.sqr(yFraction + e) + VoronoiBiomeAccessType.sqr(xFraction + d);
+        return VoronoiBiomeAccessType.square(zFraction + f) + VoronoiBiomeAccessType.square(yFraction + e) + VoronoiBiomeAccessType.square(xFraction + d);
     }
 
     private static double distribute(long seed) {
@@ -75,7 +75,7 @@ public enum VoronoiBiomeAccessType implements BiomeAccessType
         return (d - 0.5) * 0.9;
     }
 
-    private static double sqr(double d) {
+    private static double square(double d) {
         return d * d;
     }
 }

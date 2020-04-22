@@ -15,8 +15,10 @@ import net.minecraft.client.gui.screen.resourcepack.SelectedResourcePackListWidg
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.ClientResourcePackProfile;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -26,8 +28,8 @@ import net.minecraft.util.Identifier;
 public abstract class ResourcePackListWidget
 extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     private static final Identifier RESOURCE_PACKS_LOCATION = new Identifier("textures/gui/resource_packs.png");
-    private static final Text INCOMPATIBLE = new TranslatableText("resourcePack.incompatible", new Object[0]);
-    private static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("resourcePack.incompatible.confirm.title", new Object[0]);
+    private static final Text INCOMPATIBLE = new TranslatableText("resourcePack.incompatible");
+    private static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("resourcePack.incompatible.confirm.title");
     protected final MinecraftClient client;
     private final Text title;
 
@@ -41,9 +43,9 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     }
 
     @Override
-    protected void renderHeader(int x, int y, Tessellator tessellator) {
-        Text text = new LiteralText("").append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
-        this.client.textRenderer.draw(text.asFormattedString(), x + this.width / 2 - this.client.textRenderer.getStringWidth(text.asFormattedString()) / 2, Math.min(this.top + 3, y), 0xFFFFFF);
+    protected void renderHeader(MatrixStack matrixStack, int y, int i, Tessellator tessellator) {
+        MutableText text = new LiteralText("").append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
+        this.client.textRenderer.draw(matrixStack, text, (float)(y + this.width / 2 - this.client.textRenderer.getWidth(text) / 2), (float)Math.min(this.top + 3, i), 0xFFFFFF);
     }
 
     @Override
@@ -93,78 +95,73 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             return this.pack.getCompatibility();
         }
 
-        protected String getDescription() {
-            return this.pack.getDescription().asFormattedString();
-        }
-
-        protected String getDisplayName() {
-            return this.pack.getDisplayName().asFormattedString();
-        }
-
         public ClientResourcePackProfile getPack() {
             return this.pack;
         }
 
         @Override
-        public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
-            int i;
+        public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+            int j;
             ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
             if (!resourcePackCompatibility.isCompatible()) {
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                DrawableHelper.fill(x - 1, y - 1, x + width - 9, y + height + 1, -8978432);
+                DrawableHelper.fill(matrices, width - 1, y - 1, width + height - 9, y + mouseX + 1, -8978432);
             }
             this.drawIcon();
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 32, 32, 32, 32);
-            String string = this.getDisplayName();
-            String string2 = this.getDescription();
-            if (this.isMoveable() && (this.client.options.touchscreen || hovering)) {
+            DrawableHelper.drawTexture(matrices, width, y, 0.0f, 0.0f, 32, 32, 32, 32);
+            Text text = this.pack.getDisplayName();
+            Text text2 = this.pack.getDescription();
+            if (this.isMoveable() && (this.client.options.touchscreen || bl)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_LOCATION);
-                DrawableHelper.fill(x, y, x + 32, y + 32, -1601138544);
+                DrawableHelper.fill(matrices, width, y, width + 32, y + 32, -1601138544);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                i = mouseX - x;
-                int j = mouseY - y;
+                j = mouseY - width;
+                int k = i - y;
                 if (!resourcePackCompatibility.isCompatible()) {
-                    string = INCOMPATIBLE.asFormattedString();
-                    string2 = resourcePackCompatibility.getNotification().asFormattedString();
+                    text = INCOMPATIBLE;
+                    text2 = resourcePackCompatibility.getNotification();
                 }
                 if (this.isSelectable()) {
-                    if (i < 32) {
-                        DrawableHelper.drawTexture(x, y, 0.0f, 32.0f, 32, 32, 256, 256);
+                    if (j < 32) {
+                        DrawableHelper.drawTexture(matrices, width, y, 0.0f, 32.0f, 32, 32, 256, 256);
                     } else {
-                        DrawableHelper.drawTexture(x, y, 0.0f, 0.0f, 32, 32, 256, 256);
+                        DrawableHelper.drawTexture(matrices, width, y, 0.0f, 0.0f, 32, 32, 256, 256);
                     }
                 } else {
                     if (this.isRemovable()) {
-                        if (i < 16) {
-                            DrawableHelper.drawTexture(x, y, 32.0f, 32.0f, 32, 32, 256, 256);
+                        if (j < 16) {
+                            DrawableHelper.drawTexture(matrices, width, y, 32.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.drawTexture(x, y, 32.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.drawTexture(matrices, width, y, 32.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                     if (this.canMoveUp()) {
-                        if (i < 32 && i > 16 && j < 16) {
-                            DrawableHelper.drawTexture(x, y, 96.0f, 32.0f, 32, 32, 256, 256);
+                        if (j < 32 && j > 16 && k < 16) {
+                            DrawableHelper.drawTexture(matrices, width, y, 96.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.drawTexture(x, y, 96.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.drawTexture(matrices, width, y, 96.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                     if (this.canMoveDown()) {
-                        if (i < 32 && i > 16 && j > 16) {
-                            DrawableHelper.drawTexture(x, y, 64.0f, 32.0f, 32, 32, 256, 256);
+                        if (j < 32 && j > 16 && k > 16) {
+                            DrawableHelper.drawTexture(matrices, width, y, 64.0f, 32.0f, 32, 32, 256, 256);
                         } else {
-                            DrawableHelper.drawTexture(x, y, 64.0f, 0.0f, 32, 32, 256, 256);
+                            DrawableHelper.drawTexture(matrices, width, y, 64.0f, 0.0f, 32, 32, 256, 256);
                         }
                     }
                 }
             }
-            if ((i = this.client.textRenderer.getStringWidth(string)) > 157) {
-                string = this.client.textRenderer.trimToWidth(string, 157 - this.client.textRenderer.getStringWidth("...")) + "...";
+            if ((j = this.client.textRenderer.getWidth(text)) > 157) {
+                MutableText text3 = this.client.textRenderer.trimToWidth(text, 157 - this.client.textRenderer.getWidth("...")).append("...");
+                this.client.textRenderer.drawWithShadow(matrices, text3, (float)(width + 32 + 2), (float)(y + 1), 0xFFFFFF);
+            } else {
+                this.client.textRenderer.drawWithShadow(matrices, text, (float)(width + 32 + 2), (float)(y + 1), 0xFFFFFF);
             }
-            this.client.textRenderer.drawWithShadow(string, x + 32 + 2, y + 1, 0xFFFFFF);
-            List<String> list = this.client.textRenderer.wrapStringToWidthAsList(string2, 157);
-            for (int k = 0; k < 2 && k < list.size(); ++k) {
-                this.client.textRenderer.drawWithShadow(list.get(k), x + 32 + 2, y + 12 + 10 * k, 0x808080);
+            this.client.textRenderer.drawWithShadow(matrices, text, (float)(width + 32 + 2), (float)(y + 1), 0xFFFFFF);
+            List<Text> list = this.client.textRenderer.wrapLines(text2, 157);
+            for (int l = 0; l < 2 && l < list.size(); ++l) {
+                this.client.textRenderer.drawWithShadow(matrices, list.get(l), (float)(width + 32 + 2), (float)(y + 12 + 10 * l), 0x808080);
             }
         }
 

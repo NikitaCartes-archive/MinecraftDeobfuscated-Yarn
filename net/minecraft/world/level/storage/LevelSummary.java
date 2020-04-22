@@ -7,13 +7,17 @@ import java.io.File;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_5219;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelProperties;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class LevelSummary
@@ -32,22 +36,24 @@ implements Comparable<LevelSummary> {
     private final LevelGeneratorType generatorType;
     private final boolean locked;
     private final File file;
+    @Nullable
+    private Text field_24191;
 
-    public LevelSummary(LevelProperties properties, String name, String displayName, long size, boolean requiresConversion, boolean locked, File file) {
+    public LevelSummary(class_5219 arg, String name, String displayName, long size, boolean requiresConversion, boolean locked, File file) {
         this.name = name;
         this.displayName = displayName;
         this.locked = locked;
         this.file = file;
-        this.lastPlayed = properties.getLastPlayed();
+        this.lastPlayed = arg.getLastPlayed();
         this.getSizeOnDisk = size;
-        this.gameMode = properties.getGameMode();
+        this.gameMode = arg.getGameMode();
         this.requiresConversion = requiresConversion;
-        this.hardcore = properties.isHardcore();
-        this.commandsAllowed = properties.areCommandsAllowed();
-        this.versionName = properties.getVersionName();
-        this.versionId = properties.getVersionId();
-        this.snapshot = properties.isVersionSnapshot();
-        this.generatorType = properties.getGeneratorType();
+        this.hardcore = arg.isHardcore();
+        this.commandsAllowed = arg.areCommandsAllowed();
+        this.versionName = arg.getVersionName();
+        this.versionId = arg.getVersionId();
+        this.snapshot = arg.isVersionSnapshot();
+        this.generatorType = arg.method_27437(DimensionType.OVERWORLD).getGeneratorType();
     }
 
     public String getName() {
@@ -93,9 +99,9 @@ implements Comparable<LevelSummary> {
         return this.commandsAllowed;
     }
 
-    public Text getVersion() {
+    public MutableText getVersion() {
         if (ChatUtil.isEmpty(this.versionName)) {
-            return new TranslatableText("selectWorld.versionUnknown", new Object[0]);
+            return new TranslatableText("selectWorld.versionUnknown");
         }
         return new LiteralText(this.versionName);
     }
@@ -118,6 +124,36 @@ implements Comparable<LevelSummary> {
 
     public boolean isLocked() {
         return this.locked;
+    }
+
+    public Text method_27429() {
+        if (this.field_24191 == null) {
+            this.field_24191 = this.method_27430();
+        }
+        return this.field_24191;
+    }
+
+    private Text method_27430() {
+        MutableText mutableText;
+        if (this.isLocked()) {
+            return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+        }
+        if (this.requiresConversion()) {
+            return new TranslatableText("selectWorld.conversion");
+        }
+        MutableText mutableText2 = mutableText = this.isHardcore() ? new LiteralText("").append(new TranslatableText("gameMode.hardcore").formatted(Formatting.DARK_RED)) : new TranslatableText("gameMode." + this.getGameMode().getName());
+        if (this.hasCheats()) {
+            mutableText.append(", ").append(new TranslatableText("selectWorld.cheats"));
+        }
+        MutableText mutableText22 = this.getVersion();
+        MutableText mutableText3 = new LiteralText(", ").append(new TranslatableText("selectWorld.version")).append(" ");
+        if (this.isDifferentVersion()) {
+            mutableText3.append(mutableText22.formatted(this.isFutureLevel() ? Formatting.RED : Formatting.ITALIC));
+        } else {
+            mutableText3.append(mutableText22);
+        }
+        mutableText.append(mutableText3);
+        return mutableText;
     }
 
     @Override

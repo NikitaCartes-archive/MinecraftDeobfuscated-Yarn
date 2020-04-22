@@ -75,7 +75,7 @@ extends AnimalEntity {
 
     public RabbitEntity(EntityType<? extends RabbitEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
-        this.jumpControl = new RabbitJumpControl(this);
+        this.jumpControl = new class_5197(this);
         this.moveControl = new RabbitMoveControl(this);
         this.setSpeed(0.0);
     }
@@ -170,7 +170,7 @@ extends AnimalEntity {
             }
         }
         if (this.onGround) {
-            RabbitJumpControl rabbitJumpControl;
+            class_5197 lv;
             LivingEntity livingEntity;
             if (!this.lastOnGround) {
                 this.setJumping(false);
@@ -182,7 +182,7 @@ extends AnimalEntity {
                 this.startJump();
                 this.lastOnGround = true;
             }
-            if (!(rabbitJumpControl = (RabbitJumpControl)this.jumpControl).isActive()) {
+            if (!(lv = (class_5197)this.jumpControl).method_27312()) {
                 if (this.moveControl.isMoving() && this.ticksUntilJump == 0) {
                     Path path = this.navigation.getCurrentPath();
                     Vec3d vec3d = new Vec3d(this.moveControl.getTargetX(), this.moveControl.getTargetY(), this.moveControl.getTargetZ());
@@ -192,7 +192,7 @@ extends AnimalEntity {
                     this.lookTowards(vec3d.x, vec3d.z);
                     this.startJump();
                 }
-            } else if (!rabbitJumpControl.method_6625()) {
+            } else if (!lv.method_27313()) {
                 this.method_6611();
             }
         }
@@ -200,7 +200,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public void attemptSprintingParticles() {
+    public boolean method_27298() {
+        return false;
     }
 
     private void lookTowards(double x, double z) {
@@ -208,11 +209,11 @@ extends AnimalEntity {
     }
 
     private void method_6611() {
-        ((RabbitJumpControl)this.jumpControl).method_6623(true);
+        ((class_5197)this.jumpControl).method_27311(true);
     }
 
     private void method_6621() {
-        ((RabbitJumpControl)this.jumpControl).method_6623(false);
+        ((class_5197)this.jumpControl).method_27311(false);
     }
 
     private void scheduleJump() {
@@ -327,7 +328,7 @@ extends AnimalEntity {
             this.targetSelector.add(2, new FollowTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
             this.targetSelector.add(2, new FollowTargetGoal<WolfEntity>((MobEntity)this, WolfEntity.class, true));
             if (!this.hasCustomName()) {
-                this.setCustomName(new TranslatableText(Util.createTranslationKey("entity", KILLER_BUNNY), new Object[0]));
+                this.setCustomName(new TranslatableText(Util.createTranslationKey("entity", KILLER_BUNNY)));
             }
         }
         this.dataTracker.set(RABBIT_TYPE, rabbitType);
@@ -505,7 +506,7 @@ extends AnimalEntity {
 
         @Override
         public void tick() {
-            if (this.rabbit.onGround && !this.rabbit.jumping && !((RabbitJumpControl)this.rabbit.jumpControl).isActive()) {
+            if (this.rabbit.onGround && !this.rabbit.jumping && !((class_5197)this.rabbit.jumpControl).method_27312()) {
                 this.rabbit.setSpeed(0.0);
             } else if (this.isMoving()) {
                 this.rabbit.setSpeed(this.field_6858);
@@ -525,32 +526,32 @@ extends AnimalEntity {
         }
     }
 
-    public class RabbitJumpControl
+    public class class_5197
     extends JumpControl {
-        private final RabbitEntity rabbit;
-        private boolean field_6856;
+        private final RabbitEntity field_24090;
+        private boolean field_24091;
 
-        public RabbitJumpControl(RabbitEntity owner) {
-            super(owner);
-            this.rabbit = owner;
+        public class_5197(RabbitEntity rabbitEntity2) {
+            super(rabbitEntity2);
+            this.field_24090 = rabbitEntity2;
         }
 
-        public boolean isActive() {
+        public boolean method_27312() {
             return this.active;
         }
 
-        public boolean method_6625() {
-            return this.field_6856;
+        public boolean method_27313() {
+            return this.field_24091;
         }
 
-        public void method_6623(boolean bl) {
-            this.field_6856 = bl;
+        public void method_27311(boolean bl) {
+            this.field_24091 = bl;
         }
 
         @Override
         public void tick() {
             if (this.active) {
-                this.rabbit.startJump();
+                this.field_24090.startJump();
                 this.active = false;
             }
         }

@@ -20,6 +20,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5217;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -74,8 +75,6 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelInfo;
-import net.minecraft.world.level.LevelProperties;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -96,8 +95,8 @@ extends World {
         object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
     });
 
-    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, int chunkLoadDistance, Supplier<Profiler> supplier, WorldRenderer worldRenderer) {
-        super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance), supplier, true);
+    public ClientWorld(ClientPlayNetworkHandler clientPlayNetworkHandler, class_5217 levelInfo, DimensionType dimensionType, int chunkLoadDistance, Supplier<Profiler> supplier, WorldRenderer worldRenderer) {
+        super(levelInfo, dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance), supplier, true);
         this.netHandler = clientPlayNetworkHandler;
         this.worldRenderer = worldRenderer;
         this.setSpawnPos(new BlockPos(8, 64, 8));
@@ -294,7 +293,7 @@ extends World {
 
     @Override
     public void disconnect() {
-        this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting", new Object[0]));
+        this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
     }
 
     public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int i) {

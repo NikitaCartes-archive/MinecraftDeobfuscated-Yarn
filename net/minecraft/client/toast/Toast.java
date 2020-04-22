@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.toast.ToastManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -17,7 +18,7 @@ public interface Toast {
     public static final Identifier TOASTS_TEX = new Identifier("textures/gui/toasts.png");
     public static final Object field_2208 = new Object();
 
-    public Visibility draw(ToastManager var1, long var2);
+    public Visibility draw(MatrixStack var1, ToastManager var2, long var3);
 
     default public Object getType() {
         return field_2208;

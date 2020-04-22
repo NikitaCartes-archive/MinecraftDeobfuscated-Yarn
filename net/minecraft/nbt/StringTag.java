@@ -11,6 +11,7 @@ import net.minecraft.nbt.PositionTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 public class StringTag
@@ -104,7 +105,7 @@ implements Tag {
     public Text toText(String indent, int depth) {
         String string = StringTag.escape(this.value);
         String string2 = string.substring(0, 1);
-        Text text = new LiteralText(string.substring(1, string.length() - 1)).formatted(GREEN);
+        MutableText text = new LiteralText(string.substring(1, string.length() - 1)).formatted(GREEN);
         return new LiteralText(string2).append(text).append(string2);
     }
 

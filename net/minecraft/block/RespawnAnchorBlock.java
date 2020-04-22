@@ -58,7 +58,7 @@ extends Block {
         if (state.get(CHARGES) == 0) {
             return ActionResult.PASS;
         }
-        if (world.dimension.getType() == DimensionType.THE_NETHER) {
+        if (RespawnAnchorBlock.method_27353(world)) {
             ServerPlayerEntity serverPlayerEntity;
             if (!(world.isClient || (serverPlayerEntity = (ServerPlayerEntity)player).getSpawnPointDimension() == world.dimension.getType() && serverPlayerEntity.getSpawnPointPosition().equals(pos))) {
                 serverPlayerEntity.setSpawnPoint(world.dimension.getType(), pos, false, true);
@@ -72,6 +72,10 @@ extends Block {
             world.createExplosion(null, DamageSource.netherBed(), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
         }
         return ActionResult.SUCCESS;
+    }
+
+    public static boolean method_27353(World world) {
+        return world.dimension.getType() == DimensionType.THE_NETHER;
     }
 
     public static void charge(World world, BlockPos pos, BlockState state) {

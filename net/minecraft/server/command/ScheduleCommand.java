@@ -31,7 +31,7 @@ import net.minecraft.world.timer.FunctionTimerCallback;
 import net.minecraft.world.timer.Timer;
 
 public class ScheduleCommand {
-    private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.schedule.same_tick", new Object[0]));
+    private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.schedule.same_tick"));
     private static final DynamicCommandExceptionType field_20853 = new DynamicCommandExceptionType(object -> new TranslatableText("commands.schedule.cleared.failure", object));
     private static final SuggestionProvider<ServerCommandSource> field_20854 = (commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(((ServerCommandSource)commandContext.getSource()).getWorld().getLevelProperties().getScheduledEvents().method_22592(), suggestionsBuilder);
 

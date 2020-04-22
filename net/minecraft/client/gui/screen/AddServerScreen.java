@@ -10,10 +10,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
 
@@ -44,7 +47,7 @@ extends Screen {
     };
 
     public AddServerScreen(Screen parent, BooleanConsumer callback, ServerInfo server) {
-        super(new TranslatableText("addServer.title", new Object[0]));
+        super(new TranslatableText("addServer.title"));
         this.parent = parent;
         this.callback = callback;
         this.server = server;
@@ -59,24 +62,28 @@ extends Screen {
     @Override
     protected void init() {
         this.client.keyboard.enableRepeatEvents(true);
-        this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, I18n.translate("addServer.enterName", new Object[0]));
+        this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, new TranslatableText("addServer.enterName"));
         this.serverNameField.setSelected(true);
         this.serverNameField.setText(this.server.name);
         this.serverNameField.setChangedListener(this::onClose);
         this.children.add(this.serverNameField);
-        this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp", new Object[0]));
+        this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 106, 200, 20, new TranslatableText("addServer.enterIp"));
         this.addressField.setMaxLength(128);
         this.addressField.setText(this.server.address);
         this.addressField.setTextPredicate(this.addressTextFilter);
         this.addressField.setChangedListener(this::onClose);
         this.children.add(this.addressField);
-        this.resourcePackOptionButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, I18n.translate("addServer.resourcePack", new Object[0]) + ": " + this.server.getResourcePack().getName().asFormattedString(), buttonWidget -> {
+        this.resourcePackOptionButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, AddServerScreen.method_27570(this.server.getResourcePack()), buttonWidget -> {
             this.server.setResourcePackState(ServerInfo.ResourcePackState.values()[(this.server.getResourcePack().ordinal() + 1) % ServerInfo.ResourcePackState.values().length]);
-            this.resourcePackOptionButton.setMessage(I18n.translate("addServer.resourcePack", new Object[0]) + ": " + this.server.getResourcePack().getName().asFormattedString());
+            this.resourcePackOptionButton.setMessage(AddServerScreen.method_27570(this.server.getResourcePack()));
         }));
-        this.buttonAdd = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, I18n.translate("addServer.add", new Object[0]), buttonWidget -> this.addAndClose()));
-        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, I18n.translate("gui.cancel", new Object[0]), buttonWidget -> this.callback.accept(false)));
+        this.buttonAdd = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, new TranslatableText("addServer.add"), buttonWidget -> this.addAndClose()));
+        this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
         this.updateButtonActiveState();
+    }
+
+    private static Text method_27570(ServerInfo.ResourcePackState resourcePackState) {
+        return new TranslatableText("addServer.resourcePack").append(": ").append(resourcePackState.getName());
     }
 
     @Override
@@ -116,14 +123,14 @@ extends Screen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
-        this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 17, 0xFFFFFF);
-        this.drawString(this.textRenderer, I18n.translate("addServer.enterName", new Object[0]), this.width / 2 - 100, 53, 0xA0A0A0);
-        this.drawString(this.textRenderer, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 94, 0xA0A0A0);
-        this.serverNameField.render(mouseX, mouseY, delta);
-        this.addressField.render(mouseX, mouseY, delta);
-        super.render(mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
+        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 17, 0xFFFFFF);
+        this.drawString(matrices, this.textRenderer, I18n.translate("addServer.enterName", new Object[0]), this.width / 2 - 100, 53, 0xA0A0A0);
+        this.drawString(matrices, this.textRenderer, I18n.translate("addServer.enterIp", new Object[0]), this.width / 2 - 100, 94, 0xA0A0A0);
+        this.serverNameField.render(matrices, mouseX, mouseY, delta);
+        this.addressField.render(matrices, mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 }
 

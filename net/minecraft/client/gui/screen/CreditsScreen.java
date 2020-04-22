@@ -6,6 +6,8 @@ package net.minecraft.client.gui.screen;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.InputStream;
@@ -21,7 +23,11 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.Resource;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
@@ -35,10 +41,12 @@ extends Screen {
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
+    private static final String field_24260 = "" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + (Object)((Object)Formatting.GREEN) + (Object)((Object)Formatting.AQUA);
     private final boolean endCredits;
     private final Runnable finishAction;
     private float time;
-    private List<String> credits;
+    private List<Text> credits;
+    private IntSet field_24261;
     private int creditsHeight;
     private float speed = 0.5f;
 
@@ -80,43 +88,54 @@ extends Screen {
             return;
         }
         this.credits = Lists.newArrayList();
+        this.field_24261 = new IntOpenHashSet();
         Resource resource = null;
         try {
-            String string5;
+            String string4;
             BufferedReader bufferedReader;
             InputStream inputStream;
-            String string = "" + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + (Object)((Object)Formatting.GREEN) + (Object)((Object)Formatting.AQUA);
             int i = 274;
             if (this.endCredits) {
                 int j;
-                String string2;
+                String string;
                 resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
                 inputStream = resource.getInputStream();
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                 Random random = new Random(8124371L);
-                while ((string2 = bufferedReader.readLine()) != null) {
-                    string2 = string2.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-                    while (string2.contains(string)) {
-                        j = string2.indexOf(string);
-                        String string3 = string2.substring(0, j);
-                        String string4 = string2.substring(j + string.length());
-                        string2 = string3 + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
+                while ((string = bufferedReader.readLine()) != null) {
+                    string = string.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+                    while ((j = string.indexOf(field_24260)) != -1) {
+                        String string2 = string.substring(0, j);
+                        String string3 = string.substring(j + field_24260.length());
+                        string = string2 + (Object)((Object)Formatting.WHITE) + (Object)((Object)Formatting.OBFUSCATED) + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
                     }
-                    this.credits.addAll(this.client.textRenderer.wrapStringToWidthAsList(string2, 274));
-                    this.credits.add("");
+                    this.credits.addAll(this.client.textRenderer.getTextHandler().wrapLines(string, 274, Style.EMPTY));
+                    this.credits.add(LiteralText.EMPTY);
                 }
                 inputStream.close();
                 for (j = 0; j < 8; ++j) {
-                    this.credits.add("");
+                    this.credits.add(LiteralText.EMPTY);
                 }
             }
             inputStream = this.client.getResourceManager().getResource(new Identifier("texts/credits.txt")).getInputStream();
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            while ((string5 = bufferedReader.readLine()) != null) {
-                string5 = string5.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
-                string5 = string5.replaceAll("\t", "    ");
-                this.credits.addAll(this.client.textRenderer.wrapStringToWidthAsList(string5, 274));
-                this.credits.add("");
+            while ((string4 = bufferedReader.readLine()) != null) {
+                boolean bl;
+                string4 = string4.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+                if ((string4 = string4.replaceAll("\t", "    ")).startsWith("[C]")) {
+                    string4 = string4.substring(3);
+                    bl = true;
+                } else {
+                    bl = false;
+                }
+                List<Text> list = this.client.textRenderer.getTextHandler().wrapLines(string4, 274, Style.EMPTY);
+                for (Text text : list) {
+                    if (bl) {
+                        this.field_24261.add(this.credits.size());
+                    }
+                    this.credits.add(text);
+                }
+                this.credits.add(LiteralText.EMPTY);
             }
             inputStream.close();
             this.creditsHeight = this.credits.size() * 12;
@@ -156,7 +175,7 @@ extends Screen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         int m;
         this.renderBackground(mouseX, mouseY, delta);
         int i = 274;
@@ -169,10 +188,10 @@ extends Screen {
         this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableAlphaTest();
-        this.drawTexture(j, k, 0, 0, 155, 44);
-        this.drawTexture(j + 155, k, 0, 45, 155, 44);
+        this.drawTexture(matrices, j, k, 0, 0, 155, 44);
+        this.drawTexture(matrices, j + 155, k, 0, 45, 155, 44);
         this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
-        CreditsScreen.drawTexture(j + 88, k + 37, 0.0f, 0.0f, 98, 14, 128, 16);
+        CreditsScreen.drawTexture(matrices, j + 88, k + 37, 0.0f, 0.0f, 98, 14, 128, 16);
         RenderSystem.disableAlphaTest();
         int l = k + 100;
         for (m = 0; m < this.credits.size(); ++m) {
@@ -181,12 +200,12 @@ extends Screen {
                 RenderSystem.translatef(0.0f, -g, 0.0f);
             }
             if ((float)l + f + 12.0f + 8.0f > 0.0f && (float)l + f < (float)this.height) {
-                String string = this.credits.get(m);
-                if (string.startsWith("[C]")) {
-                    this.textRenderer.drawWithShadow(string.substring(3), j + (274 - this.textRenderer.getStringWidth(string.substring(3))) / 2, l, 0xFFFFFF);
+                Text text = this.credits.get(m);
+                if (this.field_24261.contains(m)) {
+                    this.textRenderer.drawWithShadow(matrices, text, (float)(j + (274 - this.textRenderer.getWidth(text)) / 2), (float)l, 0xFFFFFF);
                 } else {
                     this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0f));
-                    this.textRenderer.drawWithShadow(string, j, l, 0xFFFFFF);
+                    this.textRenderer.drawWithShadow(matrices, text, (float)j, (float)l, 0xFFFFFF);
                 }
             }
             l += 12;
@@ -206,7 +225,7 @@ extends Screen {
         bufferBuilder.vertex(0.0, 0.0, this.getZOffset()).texture(0.0f, 0.0f).color(1.0f, 1.0f, 1.0f, 1.0f).next();
         tessellator.draw();
         RenderSystem.disableBlend();
-        super.render(mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 }
 

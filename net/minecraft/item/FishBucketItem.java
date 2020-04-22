@@ -67,16 +67,16 @@ extends BucketItem {
             String string2 = "color.minecraft." + TropicalFishEntity.getPatternDyeColor(i);
             for (int j = 0; j < TropicalFishEntity.COMMON_VARIANTS.length; ++j) {
                 if (i != TropicalFishEntity.COMMON_VARIANTS[j]) continue;
-                tooltip.add(new TranslatableText(TropicalFishEntity.getToolTipForVariant(j), new Object[0]).formatted(formattings));
+                tooltip.add(new TranslatableText(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
                 return;
             }
-            tooltip.add(new TranslatableText(TropicalFishEntity.getTranslationKey(i), new Object[0]).formatted(formattings));
-            TranslatableText text = new TranslatableText(string, new Object[0]);
+            tooltip.add(new TranslatableText(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
+            TranslatableText mutableText = new TranslatableText(string);
             if (!string.equals(string2)) {
-                text.append(", ").append(new TranslatableText(string2, new Object[0]));
+                mutableText.append(", ").append(new TranslatableText(string2));
             }
-            text.formatted(formattings);
-            tooltip.add(text);
+            mutableText.formatted(formattings);
+            tooltip.add(mutableText);
         }
     }
 }

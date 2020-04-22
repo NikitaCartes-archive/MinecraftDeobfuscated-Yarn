@@ -8,6 +8,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -25,10 +28,10 @@ extends ButtonWidget {
     }
 
     public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction) {
-        this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, "");
+        this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, LiteralText.EMPTY);
     }
 
-    public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction, String text) {
+    public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction, Text text) {
         super(x, y, width, height, text, pressAction);
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
@@ -44,15 +47,15 @@ extends ButtonWidget {
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float delta) {
+    public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(this.texture);
         RenderSystem.disableDepthTest();
-        int i = this.v;
+        int k = this.v;
         if (this.isHovered()) {
-            i += this.hoveredVOffset;
+            k += this.hoveredVOffset;
         }
-        TexturedButtonWidget.drawTexture(this.x, this.y, this.u, i, this.width, this.height, this.textureWidth, this.textureHeight);
+        TexturedButtonWidget.drawTexture(matrixStack, this.x, this.y, this.u, k, this.width, this.height, this.textureWidth, this.textureHeight);
         RenderSystem.enableDepthTest();
     }
 }

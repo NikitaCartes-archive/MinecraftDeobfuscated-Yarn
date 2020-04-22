@@ -42,6 +42,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_5217;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityInteraction;
@@ -116,7 +117,6 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
@@ -128,7 +128,6 @@ import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.WanderingTraderManager;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
@@ -144,8 +143,7 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelInfo;
-import net.minecraft.world.level.LevelProperties;
+import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.logging.log4j.LogManager;
@@ -163,7 +161,6 @@ extends World {
     private final List<ServerPlayerEntity> players = Lists.newArrayList();
     boolean inEntityTick;
     private final MinecraftServer server;
-    private final WorldSaveHandler worldSaveHandler;
     public boolean savingDisabled;
     private boolean allPlayersSleeping;
     private int idleTimeout;
@@ -178,9 +175,8 @@ extends World {
     private final WanderingTraderManager wanderingTraderManager;
     private final StructureAccessor structureAccessor = new StructureAccessor();
 
-    public ServerWorld(MinecraftServer server, Executor workerExecutor, WorldSaveHandler worldSaveHandler, LevelProperties properties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener) {
-        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, worldSaveHandler.getWorldDir(), worldSaveHandler.getDataFixer(), worldSaveHandler.getStructureManager(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), server::getProfiler, false);
-        this.worldSaveHandler = worldSaveHandler;
+    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, class_5217 properties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener) {
+        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, session, server.getDataFixer(), server.method_27727(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), server::getProfiler, false);
         this.server = server;
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
@@ -267,9 +263,6 @@ extends World {
             }
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(7, this.rainGradient));
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(8, this.thunderGradient));
-        }
-        if (this.getLevelProperties().isHardcore() && this.getDifficulty() != Difficulty.HARD) {
-            this.getLevelProperties().setDifficulty(Difficulty.HARD);
         }
         if (this.allPlayersSleeping && this.players.stream().noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && !serverPlayerEntity.isSleepingLongEnough())) {
             this.allPlayersSleeping = false;
@@ -562,7 +555,7 @@ extends World {
         return !this.server.isSpawnProtected(this, pos, player) && this.getWorldBorder().contains(pos);
     }
 
-    public void init(LevelInfo levelInfo) {
+    public void init(boolean bl) {
         ChunkPos chunkPos;
         if (!this.dimension.canPlayersSleep()) {
             this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.getChunkManager().getChunkGenerator().getSpawnHeight()));
@@ -580,10 +573,10 @@ extends World {
         if (blockPos == null) {
             LOGGER.warn("Unable to find spawn biome");
         }
-        boolean bl = false;
+        boolean bl2 = false;
         for (Block block : BlockTags.VALID_SPAWN.values()) {
             if (!biomeSource.getTopMaterials().contains(block.getDefaultState())) continue;
-            bl = true;
+            bl2 = true;
             break;
         }
         this.properties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, this.getChunkManager().getChunkGenerator().getSpawnHeight(), 8));
@@ -594,7 +587,7 @@ extends World {
         int m = 32;
         for (int n = 0; n < 1024; ++n) {
             BlockPos blockPos2;
-            if (i > -16 && i <= 16 && j > -16 && j <= 16 && (blockPos2 = this.dimension.getSpawningBlockInChunk(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl)) != null) {
+            if (i > -16 && i <= 16 && j > -16 && j <= 16 && (blockPos2 = this.dimension.getSpawningBlockInChunk(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl2)) != null) {
                 this.properties.setSpawnPos(blockPos2);
                 break;
             }
@@ -606,7 +599,7 @@ extends World {
             i += k;
             j += l;
         }
-        if (levelInfo.hasBonusChest()) {
+        if (bl) {
             this.placeBonusChest();
         }
     }
@@ -627,11 +620,11 @@ extends World {
             return;
         }
         if (progressListener != null) {
-            progressListener.method_15412(new TranslatableText("menu.savingLevel", new Object[0]));
+            progressListener.method_15412(new TranslatableText("menu.savingLevel"));
         }
         this.saveLevel();
         if (progressListener != null) {
-            progressListener.method_15414(new TranslatableText("menu.savingChunks", new Object[0]));
+            progressListener.method_15414(new TranslatableText("menu.savingChunks"));
         }
         serverChunkManager.save(flush);
     }
@@ -964,7 +957,7 @@ extends World {
     }
 
     public StructureManager getStructureManager() {
-        return this.worldSaveHandler.getStructureManager();
+        return this.server.method_27727();
     }
 
     public <T extends ParticleEffect> int spawnParticles(T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
@@ -1008,6 +1001,9 @@ extends World {
 
     @Nullable
     public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
+        if (!this.properties.method_27420()) {
+            return null;
+        }
         return this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
     }
 
@@ -1035,10 +1031,6 @@ extends World {
     @Override
     public boolean isSavingDisabled() {
         return this.savingDisabled;
-    }
-
-    public WorldSaveHandler getSaveHandler() {
-        return this.worldSaveHandler;
     }
 
     public PersistentStateManager getPersistentStateManager() {

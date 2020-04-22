@@ -19,6 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
@@ -140,8 +141,8 @@ implements AutoCloseable {
                 matrixStack.pop();
                 if (mapIcon.getText() != null) {
                     TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-                    String string = mapIcon.getText().asFormattedString();
-                    float p = textRenderer.getStringWidth(string);
+                    Text text = mapIcon.getText();
+                    float p = textRenderer.getWidth(text);
                     float f2 = 25.0f / p;
                     textRenderer.getClass();
                     float q = MathHelper.clamp(f2, 0.0f, 6.0f / 9.0f);
@@ -149,7 +150,7 @@ implements AutoCloseable {
                     matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f - p * q / 2.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f + 4.0f, -0.025f);
                     matrixStack.scale(q, q, 1.0f);
                     matrixStack.translate(0.0, 0.0, -0.1f);
-                    textRenderer.draw(string, 0.0f, 0.0f, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
+                    textRenderer.draw(text, 0.0f, 0.0f, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
                     matrixStack.pop();
                 }
                 ++l;

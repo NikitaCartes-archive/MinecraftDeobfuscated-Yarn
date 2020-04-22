@@ -26,10 +26,10 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.SearchManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.recipe.Ingredient;
@@ -38,6 +38,8 @@ import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeGridAligner;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,7 +90,7 @@ RecipeGridAligner<Ingredient> {
         this.client.player.inventory.populateRecipeFinder(this.recipeFinder);
         this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
         String string = this.searchField != null ? this.searchField.getText() : "";
-        this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, this.client.textRenderer.fontHeight + 5, I18n.translate("itemGroup.search", new Object[0]));
+        this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, this.client.textRenderer.fontHeight + 5, new TranslatableText("itemGroup.search"));
         this.searchField.setMaxLength(50);
         this.searchField.setHasBorder(false);
         this.searchField.setVisible(true);
@@ -211,7 +213,7 @@ RecipeGridAligner<Ingredient> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if (!this.isOpen()) {
             return;
         }
@@ -221,35 +223,35 @@ RecipeGridAligner<Ingredient> {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         int i = (this.parentWidth - 147) / 2 - this.leftOffset;
         int j = (this.parentHeight - 166) / 2;
-        this.drawTexture(i, j, 1, 1, 147, 166);
-        this.searchField.render(mouseX, mouseY, delta);
+        this.drawTexture(matrices, i, j, 1, 1, 147, 166);
+        this.searchField.render(matrices, mouseX, mouseY, delta);
         for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
-            recipeGroupButtonWidget.render(mouseX, mouseY, delta);
+            recipeGroupButtonWidget.render(matrices, mouseX, mouseY, delta);
         }
-        this.toggleCraftableButton.render(mouseX, mouseY, delta);
-        this.recipesArea.draw(i, j, mouseX, mouseY, delta);
+        this.toggleCraftableButton.render(matrices, mouseX, mouseY, delta);
+        this.recipesArea.draw(matrices, i, j, mouseX, mouseY, delta);
         RenderSystem.popMatrix();
     }
 
-    public void drawTooltip(int left, int top, int mouseX, int mouseY) {
+    public void drawTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {
         if (!this.isOpen()) {
             return;
         }
-        this.recipesArea.drawTooltip(mouseX, mouseY);
+        this.recipesArea.drawTooltip(matrixStack, k, l);
         if (this.toggleCraftableButton.isHovered()) {
-            String string = this.getCraftableButtonText();
+            Text text = this.getCraftableButtonText();
             if (this.client.currentScreen != null) {
-                this.client.currentScreen.renderTooltip(string, mouseX, mouseY);
+                this.client.currentScreen.renderTooltip(matrixStack, text, k, l);
             }
         }
-        this.drawGhostSlotTooltip(left, top, mouseX, mouseY);
+        this.drawGhostSlotTooltip(matrixStack, i, j, k, l);
     }
 
-    protected String getCraftableButtonText() {
-        return I18n.translate(this.toggleCraftableButton.isToggled() ? "gui.recipebook.toggleRecipes.craftable" : "gui.recipebook.toggleRecipes.all", new Object[0]);
+    protected Text getCraftableButtonText() {
+        return new TranslatableText(this.toggleCraftableButton.isToggled() ? "gui.recipebook.toggleRecipes.craftable" : "gui.recipebook.toggleRecipes.all");
     }
 
-    private void drawGhostSlotTooltip(int i, int j, int k, int l) {
+    private void drawGhostSlotTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {
         ItemStack itemStack = null;
         for (int m = 0; m < this.ghostSlots.getSlotCount(); ++m) {
             RecipeBookGhostSlots.GhostInputSlot ghostInputSlot = this.ghostSlots.getSlot(m);
@@ -259,12 +261,12 @@ RecipeGridAligner<Ingredient> {
             itemStack = ghostInputSlot.getCurrentItemStack();
         }
         if (itemStack != null && this.client.currentScreen != null) {
-            this.client.currentScreen.renderTooltip(this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
+            this.client.currentScreen.renderTooltip(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
         }
     }
 
-    public void drawGhostSlots(int left, int top, boolean isBig, float lastFrameDuration) {
-        this.ghostSlots.draw(this.client, left, top, isBig, lastFrameDuration);
+    public void drawGhostSlots(MatrixStack matrixStack, int i, int j, boolean bl, float f) {
+        this.ghostSlots.draw(matrixStack, this.client, i, j, bl, f);
     }
 
     @Override

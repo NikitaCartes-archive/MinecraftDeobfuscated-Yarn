@@ -465,7 +465,7 @@ Nameable {
 
     @Override
     public Text getName() {
-        return new TranslatableText("container.inventory", new Object[0]);
+        return new TranslatableText("container.inventory");
     }
 
     public boolean isUsingEffectiveTool(BlockState state) {

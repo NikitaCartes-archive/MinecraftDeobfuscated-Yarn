@@ -4,10 +4,12 @@
 package net.minecraft.text;
 
 import net.minecraft.text.BaseText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 public class LiteralText
 extends BaseText {
+    public static final Text EMPTY = new LiteralText("");
     private final String string;
 
     public LiteralText(String string) {
@@ -46,7 +48,12 @@ extends BaseText {
     }
 
     @Override
-    public /* synthetic */ Text copy() {
+    public /* synthetic */ BaseText copy() {
+        return this.copy();
+    }
+
+    @Override
+    public /* synthetic */ MutableText copy() {
         return this.copy();
     }
 }

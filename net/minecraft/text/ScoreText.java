@@ -16,9 +16,9 @@ import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.BaseText;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.ParsableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.ChatUtil;
 import org.jetbrains.annotations.Nullable;
 
 public class ScoreText
@@ -28,19 +28,24 @@ implements ParsableText {
     @Nullable
     private final EntitySelector selector;
     private final String objective;
-    private String score = "";
+
+    @Nullable
+    private static EntitySelector parseEntitySelector(String name) {
+        try {
+            return new EntitySelectorReader(new StringReader(name)).read();
+        } catch (CommandSyntaxException commandSyntaxException) {
+            return null;
+        }
+    }
 
     public ScoreText(String name, String objective) {
+        this(name, ScoreText.parseEntitySelector(name), objective);
+    }
+
+    private ScoreText(String name, @Nullable EntitySelector selector, String objective) {
         this.name = name;
+        this.selector = selector;
         this.objective = objective;
-        EntitySelector entitySelector = null;
-        try {
-            EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(name));
-            entitySelector = entitySelectorReader.read();
-        } catch (CommandSyntaxException commandSyntaxException) {
-            // empty catch block
-        }
-        this.selector = entitySelector;
     }
 
     public String getName() {
@@ -51,62 +56,41 @@ implements ParsableText {
         return this.objective;
     }
 
-    public void setScore(String score) {
-        this.score = score;
-    }
-
-    @Override
-    public String asString() {
-        return this.score;
-    }
-
-    private void parse(ServerCommandSource source) {
-        MinecraftServer minecraftServer = source.getMinecraftServer();
-        if (minecraftServer != null && ChatUtil.isEmpty(this.score)) {
-            ScoreboardObjective scoreboardObjective;
-            ServerScoreboard scoreboard = minecraftServer.getScoreboard();
-            if (scoreboard.playerHasObjective(this.name, scoreboardObjective = scoreboard.getNullableObjective(this.objective))) {
-                ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(this.name, scoreboardObjective);
-                this.setScore(String.format("%d", scoreboardPlayerScore.getScore()));
-            } else {
-                this.score = "";
+    private String getPlayerName(ServerCommandSource source) throws CommandSyntaxException {
+        List<? extends Entity> list;
+        if (this.selector != null && !(list = this.selector.getEntities(source)).isEmpty()) {
+            if (list.size() != 1) {
+                throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.create();
             }
+            return list.get(0).getEntityName();
         }
+        return this.name;
+    }
+
+    private String getScore(String playerName, ServerCommandSource source) {
+        ScoreboardObjective scoreboardObjective;
+        ServerScoreboard scoreboard;
+        MinecraftServer minecraftServer = source.getMinecraftServer();
+        if (minecraftServer != null && (scoreboard = minecraftServer.getScoreboard()).playerHasObjective(playerName, scoreboardObjective = scoreboard.getNullableObjective(this.objective))) {
+            ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(playerName, scoreboardObjective);
+            return Integer.toString(scoreboardPlayerScore.getScore());
+        }
+        return "";
     }
 
     @Override
     public ScoreText copy() {
-        ScoreText scoreText = new ScoreText(this.name, this.objective);
-        scoreText.setScore(this.score);
-        return scoreText;
+        return new ScoreText(this.name, this.selector, this.objective);
     }
 
-    /*
-     * Enabled force condition propagation
-     * Lifted jumps to return sites
-     */
     @Override
-    public Text parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
-        String string;
+    public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
         if (source == null) {
-            return this.copy();
+            return new LiteralText("");
         }
-        if (this.selector != null) {
-            List<? extends Entity> list = this.selector.getEntities(source);
-            if (list.isEmpty()) {
-                string = this.name;
-            } else {
-                if (list.size() != 1) throw EntityArgumentType.TOO_MANY_ENTITIES_EXCEPTION.create();
-                string = list.get(0).getEntityName();
-            }
-        } else {
-            string = this.name;
-        }
+        String string = this.getPlayerName(source);
         String string2 = sender != null && string.equals("*") ? sender.getEntityName() : string;
-        ScoreText scoreText = new ScoreText(string2, this.objective);
-        scoreText.setScore(this.score);
-        scoreText.parse(source);
-        return scoreText;
+        return new LiteralText(this.getScore(string2, source));
     }
 
     @Override
@@ -127,7 +111,12 @@ implements ParsableText {
     }
 
     @Override
-    public /* synthetic */ Text copy() {
+    public /* synthetic */ BaseText copy() {
+        return this.copy();
+    }
+
+    @Override
+    public /* synthetic */ MutableText copy() {
         return this.copy();
     }
 }

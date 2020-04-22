@@ -23,6 +23,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.ParsableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -62,11 +63,6 @@ implements ParsableText {
 
     protected abstract Stream<CompoundTag> toNbt(ServerCommandSource var1) throws CommandSyntaxException;
 
-    @Override
-    public String asString() {
-        return "";
-    }
-
     public String getPath() {
         return this.rawPath;
     }
@@ -76,7 +72,7 @@ implements ParsableText {
     }
 
     @Override
-    public Text parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+    public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
         if (source == null || this.path == null) {
             return new LiteralText("");
         }
@@ -90,11 +86,11 @@ implements ParsableText {
         if (this.interpret) {
             return stream.flatMap(text -> {
                 try {
-                    Text text2 = Text.Serializer.fromJson(text);
-                    return Stream.of(Texts.parse(source, text2, sender, depth));
+                    MutableText mutableText = Text.Serializer.fromJson(text);
+                    return Stream.of(Texts.parse(source, mutableText, sender, depth));
                 } catch (Exception exception) {
                     LOGGER.warn("Failed to parse component: " + text, (Throwable)exception);
-                    return Stream.of(new Text[0]);
+                    return Stream.of(new MutableText[0]);
                 }
             }).reduce((a, b) -> a.append(", ").append((Text)b)).orElse(new LiteralText(""));
         }
@@ -110,17 +106,17 @@ implements ParsableText {
             this.id = id;
         }
 
-        public StorageNbtText(String rawPath, @Nullable NbtPathArgumentType.NbtPath nbtPath, boolean interpret, Identifier id) {
-            super(rawPath, nbtPath, interpret);
+        public StorageNbtText(String rawPath, @Nullable NbtPathArgumentType.NbtPath path, boolean interpret, Identifier id) {
+            super(rawPath, path, interpret);
             this.id = id;
         }
 
-        public Identifier method_23728() {
+        public Identifier getId() {
             return this.id;
         }
 
         @Override
-        public Text copy() {
+        public StorageNbtText copy() {
             return new StorageNbtText(this.rawPath, this.path, this.interpret, this.id);
         }
 
@@ -145,6 +141,16 @@ implements ParsableText {
         @Override
         public String toString() {
             return "StorageNbtComponent{id='" + this.id + '\'' + "path='" + this.rawPath + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+        }
+
+        @Override
+        public /* synthetic */ BaseText copy() {
+            return this.copy();
+        }
+
+        @Override
+        public /* synthetic */ MutableText copy() {
+            return this.copy();
         }
     }
 
@@ -181,7 +187,7 @@ implements ParsableText {
         }
 
         @Override
-        public Text copy() {
+        public BlockNbtText copy() {
             return new BlockNbtText(this.rawPath, this.path, this.interpret, this.rawPos, this.pos);
         }
 
@@ -211,6 +217,16 @@ implements ParsableText {
         @Override
         public String toString() {
             return "BlockPosArgument{pos='" + this.rawPos + '\'' + "path='" + this.rawPath + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+        }
+
+        @Override
+        public /* synthetic */ BaseText copy() {
+            return this.copy();
+        }
+
+        @Override
+        public /* synthetic */ MutableText copy() {
+            return this.copy();
         }
     }
 
@@ -247,7 +263,7 @@ implements ParsableText {
         }
 
         @Override
-        public Text copy() {
+        public EntityNbtText copy() {
             return new EntityNbtText(this.rawPath, this.path, this.interpret, this.rawSelector, this.selector);
         }
 
@@ -275,6 +291,16 @@ implements ParsableText {
         @Override
         public String toString() {
             return "EntityNbtComponent{selector='" + this.rawSelector + '\'' + "path='" + this.rawPath + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
+        }
+
+        @Override
+        public /* synthetic */ BaseText copy() {
+            return this.copy();
+        }
+
+        @Override
+        public /* synthetic */ MutableText copy() {
+            return this.copy();
         }
     }
 }

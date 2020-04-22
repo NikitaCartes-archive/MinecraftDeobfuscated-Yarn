@@ -31,9 +31,9 @@ import net.minecraft.nbt.TagReader;
 import net.minecraft.text.TranslatableText;
 
 public class StringNbtReader {
-    public static final SimpleCommandExceptionType TRAILING = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.trailing", new Object[0]));
-    public static final SimpleCommandExceptionType EXPECTED_KEY = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.expected.key", new Object[0]));
-    public static final SimpleCommandExceptionType EXPECTED_VALUE = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.expected.value", new Object[0]));
+    public static final SimpleCommandExceptionType TRAILING = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.trailing"));
+    public static final SimpleCommandExceptionType EXPECTED_KEY = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.expected.key"));
+    public static final SimpleCommandExceptionType EXPECTED_VALUE = new SimpleCommandExceptionType(new TranslatableText("argument.nbt.expected.value"));
     public static final Dynamic2CommandExceptionType LIST_MIXED = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.nbt.list.mixed", object, object2));
     public static final Dynamic2CommandExceptionType ARRAY_MIXED = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("argument.nbt.array.mixed", object, object2));
     public static final DynamicCommandExceptionType ARRAY_INVALID = new DynamicCommandExceptionType(object -> new TranslatableText("argument.nbt.array.invalid", object));

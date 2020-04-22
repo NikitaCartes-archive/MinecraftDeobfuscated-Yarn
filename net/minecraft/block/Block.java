@@ -38,6 +38,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -314,8 +315,8 @@ implements ItemConvertible {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Text getName() {
-        return new TranslatableText(this.getTranslationKey(), new Object[0]);
+    public MutableText getName() {
+        return new TranslatableText(this.getTranslationKey());
     }
 
     public String getTranslationKey() {

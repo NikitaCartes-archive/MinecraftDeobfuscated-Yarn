@@ -236,7 +236,7 @@ NamedScreenHandlerFactory {
 
     @Override
     public Text getDisplayName() {
-        return new TranslatableText("container.lectern", new Object[0]);
+        return new TranslatableText("container.lectern");
     }
 }
 

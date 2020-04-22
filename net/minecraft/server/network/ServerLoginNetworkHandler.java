@@ -67,7 +67,7 @@ implements ServerLoginPacketListener {
             this.player = null;
         }
         if (this.loginTicks++ == 600) {
-            this.disconnect(new TranslatableText("multiplayer.disconnect.slow_login", new Object[0]));
+            this.disconnect(new TranslatableText("multiplayer.disconnect.slow_login"));
         }
     }
 
@@ -159,7 +159,7 @@ implements ServerLoginPacketListener {
                         ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     } else {
-                        ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.unverified_username", new Object[0]));
+                        ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.unverified_username"));
                         LOGGER.error("Username '{}' tried to join with an invalid session", (Object)gameProfile.getName());
                     }
                 } catch (AuthenticationUnavailableException authenticationUnavailableException) {
@@ -168,7 +168,7 @@ implements ServerLoginPacketListener {
                         ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     }
-                    ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.authservers_down", new Object[0]));
+                    ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.authservers_down"));
                     LOGGER.error("Couldn't verify username because servers are unavailable");
                 }
             }
@@ -185,7 +185,7 @@ implements ServerLoginPacketListener {
 
     @Override
     public void onQueryResponse(LoginQueryResponseC2SPacket packet) {
-        this.disconnect(new TranslatableText("multiplayer.disconnect.unexpected_query_response", new Object[0]));
+        this.disconnect(new TranslatableText("multiplayer.disconnect.unexpected_query_response"));
     }
 
     protected GameProfile toOfflineProfile(GameProfile profile) {

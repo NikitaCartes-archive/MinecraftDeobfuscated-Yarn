@@ -23,6 +23,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_5217;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -72,7 +73,6 @@ import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.level.LevelGeneratorType;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -97,14 +97,14 @@ AutoCloseable {
     public final Random random = new Random();
     public final Dimension dimension;
     protected final ChunkManager chunkManager;
-    protected final LevelProperties properties;
+    protected final class_5217 properties;
     private final Supplier<Profiler> profiler;
     public final boolean isClient;
     protected boolean iteratingTickingBlockEntities;
     private final WorldBorder border;
     private final BiomeAccess biomeAccess;
 
-    protected World(LevelProperties levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> chunkManagerProvider, Supplier<Profiler> profiler, boolean isClient) {
+    protected World(class_5217 levelProperties, DimensionType dimensionType, BiFunction<World, Dimension, ChunkManager> chunkManagerProvider, Supplier<Profiler> profiler, boolean isClient) {
         this.profiler = profiler;
         this.properties = levelProperties;
         this.dimension = dimensionType.create(this);
@@ -112,7 +112,7 @@ AutoCloseable {
         this.isClient = isClient;
         this.border = this.dimension.createWorldBorder();
         this.thread = Thread.currentThread();
-        this.biomeAccess = new BiomeAccess(this, isClient ? levelProperties.getSeed() : LevelProperties.sha256Hash(levelProperties.getSeed()), dimensionType.getBiomeAccessType());
+        this.biomeAccess = new BiomeAccess(this, isClient ? levelProperties.getSeed() : class_5217.method_27418(levelProperties.getSeed()), dimensionType.getBiomeAccessType());
     }
 
     @Override
@@ -949,7 +949,7 @@ AutoCloseable {
     }
 
     @Override
-    public LevelProperties getLevelProperties() {
+    public class_5217 getLevelProperties() {
         return this.properties;
     }
 

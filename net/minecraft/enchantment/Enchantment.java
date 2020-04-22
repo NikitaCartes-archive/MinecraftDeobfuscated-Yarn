@@ -108,16 +108,16 @@ public abstract class Enchantment {
     }
 
     public Text getName(int level) {
-        TranslatableText text = new TranslatableText(this.getTranslationKey(), new Object[0]);
+        TranslatableText mutableText = new TranslatableText(this.getTranslationKey());
         if (this.isCursed()) {
-            text.formatted(Formatting.RED);
+            mutableText.formatted(Formatting.RED);
         } else {
-            text.formatted(Formatting.GRAY);
+            mutableText.formatted(Formatting.GRAY);
         }
         if (level != 1 || this.getMaximumLevel() != 1) {
-            text.append(" ").append(new TranslatableText("enchantment.level." + level, new Object[0]));
+            mutableText.append(" ").append(new TranslatableText("enchantment.level." + level));
         }
-        return text;
+        return mutableText;
     }
 
     public boolean isAcceptableItem(ItemStack stack) {

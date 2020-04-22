@@ -13,7 +13,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.dimension.DimensionType;
 
 public class DifficultyCommand {
     private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.difficulty.failure", object));
@@ -32,7 +31,7 @@ public class DifficultyCommand {
 
     public static int execute(ServerCommandSource source, Difficulty difficulty) throws CommandSyntaxException {
         MinecraftServer minecraftServer = source.getMinecraftServer();
-        if (minecraftServer.getWorld(DimensionType.OVERWORLD).getDifficulty() == difficulty) {
+        if (minecraftServer.method_27728().getDifficulty() == difficulty) {
             throw FAILURE_EXCEPTION.create(difficulty.getName());
         }
         minecraftServer.setDifficulty(difficulty, true);

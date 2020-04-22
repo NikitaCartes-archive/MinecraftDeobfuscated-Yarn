@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -74,16 +75,16 @@ implements ScreenHandlerProvider<T> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         ItemStack itemStack;
         int o;
         int n;
         int i = this.x;
         int j = this.y;
-        this.drawBackground(delta, mouseX, mouseY);
+        this.drawBackground(matrices, delta, mouseX, mouseY);
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableDepthTest();
-        super.render(mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
         RenderSystem.pushMatrix();
         RenderSystem.translatef(i, j, 0.0f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -96,7 +97,7 @@ implements ScreenHandlerProvider<T> {
         for (int m = 0; m < ((ScreenHandler)this.handler).slots.size(); ++m) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(m);
             if (slot.doDrawHoveringEffect()) {
-                this.drawSlot(slot);
+                this.drawSlot(matrices, slot);
             }
             if (!this.isPointOverSlot(slot, mouseX, mouseY) || !slot.doDrawHoveringEffect()) continue;
             this.focusedSlot = slot;
@@ -104,11 +105,11 @@ implements ScreenHandlerProvider<T> {
             n = slot.x;
             o = slot.y;
             RenderSystem.colorMask(true, true, true, false);
-            this.fillGradient(n, o, n + 16, o + 16, -2130706433, -2130706433);
+            this.fillGradient(matrices, n, o, n + 16, o + 16, -2130706433, -2130706433);
             RenderSystem.colorMask(true, true, true, true);
             RenderSystem.enableDepthTest();
         }
-        this.drawForeground(mouseX, mouseY);
+        this.drawForeground(matrices, mouseX, mouseY);
         PlayerInventory playerInventory = this.client.player.inventory;
         ItemStack itemStack2 = itemStack = this.touchDragStack.isEmpty() ? playerInventory.getCursorStack() : this.touchDragStack;
         if (!itemStack.isEmpty()) {
@@ -143,9 +144,9 @@ implements ScreenHandlerProvider<T> {
         RenderSystem.enableDepthTest();
     }
 
-    protected void drawMouseoverTooltip(int mouseX, int mouseY) {
+    protected void drawMouseoverTooltip(MatrixStack matrixStack, int i, int j) {
         if (this.client.player.inventory.getCursorStack().isEmpty() && this.focusedSlot != null && this.focusedSlot.hasStack()) {
-            this.renderTooltip(this.focusedSlot.getStack(), mouseX, mouseY);
+            this.renderTooltip(matrixStack, this.focusedSlot.getStack(), i, j);
         }
     }
 
@@ -159,12 +160,12 @@ implements ScreenHandlerProvider<T> {
         this.itemRenderer.zOffset = 0.0f;
     }
 
-    protected void drawForeground(int mouseX, int mouseY) {
+    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
     }
 
-    protected abstract void drawBackground(float var1, int var2, int var3);
+    protected abstract void drawBackground(MatrixStack var1, float var2, int var3, int var4);
 
-    private void drawSlot(Slot slot) {
+    private void drawSlot(MatrixStack matrixStack, Slot slot) {
         Pair<Identifier, Identifier> pair;
         int i = slot.x;
         int j = slot.y;
@@ -199,12 +200,12 @@ implements ScreenHandlerProvider<T> {
         if (itemStack.isEmpty() && slot.doDrawHoveringEffect() && (pair = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
             this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-            HandledScreen.drawSprite(i, j, this.getZOffset(), 16, 16, sprite);
+            HandledScreen.drawSprite(matrixStack, i, j, this.getZOffset(), 16, 16, sprite);
             bl2 = true;
         }
         if (!bl2) {
             if (bl) {
-                HandledScreen.fill(i, j, i + 16, j + 16, -2130706433);
+                HandledScreen.fill(matrixStack, i, j, i + 16, j + 16, -2130706433);
             }
             RenderSystem.enableDepthTest();
             this.itemRenderer.renderGuiItem(this.client.player, itemStack, i, j);

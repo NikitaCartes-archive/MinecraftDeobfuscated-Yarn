@@ -40,6 +40,7 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.class_5219;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MapRenderer;
@@ -79,7 +80,6 @@ import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchableContainer;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
@@ -282,6 +282,7 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.RegistryTagManager;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
@@ -296,6 +297,7 @@ import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TraderOfferList;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -304,6 +306,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.level.LevelInfo;
+import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -317,6 +320,7 @@ implements ClientPlayPacketListener {
     private final Screen loginScreen;
     private MinecraftClient client;
     private ClientWorld world;
+    private class_5219 field_24321;
     private boolean positionLookSetup;
     private final Map<UUID, PlayerListEntry> playerListEntries = Maps.newHashMap();
     private final ClientAdvancementManager advancementHandler;
@@ -361,7 +365,9 @@ implements ClientPlayPacketListener {
             EntityTypeTags.method_27058();
         }
         this.chunkLoadDistance = packet.getChunkLoadDistance();
-        this.world = new ClientWorld(this, new LevelInfo(packet.getSeed(), packet.getGameMode(), false, packet.isHardcore(), packet.getGeneratorType().getDefaultOptions()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
+        LevelProperties levelProperties = new LevelProperties(new LevelInfo("MpServer", packet.getSeed(), packet.getGameMode(), false, packet.isHardcore(), Difficulty.NORMAL, packet.getGeneratorType().getDefaultOptions()));
+        this.field_24321 = levelProperties;
+        this.world = new ClientWorld(this, levelProperties, packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
         this.client.joinWorld(this.world);
         if (this.client.player == null) {
             this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
@@ -858,7 +864,7 @@ implements ClientPlayPacketListener {
             if (entity2 == null) continue;
             entity2.startRiding(entity, true);
             if (entity2 != this.client.player || bl) continue;
-            this.client.inGameHud.setOverlayMessage(I18n.translate("mount.onboard", this.client.options.keySneak.getLocalizedName()), false);
+            this.client.inGameHud.setOverlayMessage(new TranslatableText("mount.onboard", this.client.options.keySneak.getLocalizedName()), false);
         }
     }
 
@@ -923,7 +929,9 @@ implements ClientPlayPacketListener {
         this.positionLookSetup = false;
         if (dimensionType != clientPlayerEntity.dimension) {
             Scoreboard scoreboard = this.world.getScoreboard();
-            this.world = new ClientWorld(this, new LevelInfo(packet.getSha256Seed(), packet.getGameMode(), false, this.client.world.getLevelProperties().isHardcore(), packet.getGeneratorType().getDefaultOptions()), packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
+            LevelProperties levelProperties = new LevelProperties(new LevelInfo("MpServer", packet.getSha256Seed(), packet.getGameMode(), false, this.field_24321.isHardcore(), this.field_24321.getDifficulty(), packet.getGeneratorType().getDefaultOptions()));
+            this.field_24321 = levelProperties;
+            this.world = new ClientWorld(this, levelProperties, packet.getDimension(), this.chunkLoadDistance, this.client::getProfiler, this.client.worldRenderer);
             this.world.setScoreboard(scoreboard);
             this.client.joinWorld(this.world);
             this.client.openScreen(new DownloadingTerrainScreen());
@@ -1108,7 +1116,7 @@ implements ClientPlayPacketListener {
         float f = packet.getValue();
         int j = MathHelper.floor(f + 0.5f);
         if (i >= 0 && i < GameStateChangeS2CPacket.REASON_MESSAGES.length && GameStateChangeS2CPacket.REASON_MESSAGES[i] != null) {
-            ((PlayerEntity)playerEntity).sendMessage(new TranslatableText(GameStateChangeS2CPacket.REASON_MESSAGES[i], new Object[0]), false);
+            ((PlayerEntity)playerEntity).sendMessage(new TranslatableText(GameStateChangeS2CPacket.REASON_MESSAGES[i]), false);
         }
         if (i == 1) {
             this.world.getLevelProperties().setRaining(true);
@@ -1350,8 +1358,8 @@ implements ClientPlayPacketListener {
     @Override
     public void onDifficulty(DifficultyS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.world.getLevelProperties().setDifficulty(packet.getDifficulty());
-        this.client.world.getLevelProperties().setDifficultyLocked(packet.isDifficultyLocked());
+        this.field_24321.setDifficulty(packet.getDifficulty());
+        this.field_24321.setDifficultyLocked(packet.isDifficultyLocked());
     }
 
     @Override
@@ -1373,35 +1381,35 @@ implements ClientPlayPacketListener {
     public void onTitle(TitleS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         TitleS2CPacket.Action action = packet.getAction();
-        String string = null;
-        String string2 = null;
-        String string3 = packet.getText() != null ? packet.getText().asFormattedString() : "";
+        Text text = null;
+        Text text2 = null;
+        Text text3 = packet.getText() != null ? packet.getText() : LiteralText.EMPTY;
         switch (action) {
             case TITLE: {
-                string = string3;
+                text = text3;
                 break;
             }
             case SUBTITLE: {
-                string2 = string3;
+                text2 = text3;
                 break;
             }
             case ACTIONBAR: {
-                this.client.inGameHud.setOverlayMessage(string3, false);
+                this.client.inGameHud.setOverlayMessage(text3, false);
                 return;
             }
             case RESET: {
-                this.client.inGameHud.setTitles("", "", -1, -1, -1);
+                this.client.inGameHud.setTitles(null, null, -1, -1, -1);
                 this.client.inGameHud.setDefaultTitleFade();
                 return;
             }
         }
-        this.client.inGameHud.setTitles(string, string2, packet.getFadeInTicks(), packet.getStayTicks(), packet.getFadeOutTicks());
+        this.client.inGameHud.setTitles(text, text2, packet.getFadeInTicks(), packet.getStayTicks(), packet.getFadeOutTicks());
     }
 
     @Override
     public void onPlayerListHeader(PlayerListHeaderS2CPacket packet) {
-        this.client.inGameHud.getPlayerListWidget().setHeader(packet.getHeader().asFormattedString().isEmpty() ? null : packet.getHeader());
-        this.client.inGameHud.getPlayerListWidget().setFooter(packet.getFooter().asFormattedString().isEmpty() ? null : packet.getFooter());
+        this.client.inGameHud.getPlayerListWidget().setHeader(packet.getHeader().getString().isEmpty() ? null : packet.getHeader());
+        this.client.inGameHud.getPlayerListWidget().setFooter(packet.getFooter().getString().isEmpty() ? null : packet.getFooter());
     }
 
     @Override
@@ -1534,7 +1542,7 @@ implements ClientPlayPacketListener {
                 }
                 ServerList.updateServerListEntry(serverInfo);
                 this.client.openScreen(null);
-            }, new TranslatableText("multiplayer.texturePrompt.line1", new Object[0]), new TranslatableText("multiplayer.texturePrompt.line2", new Object[0]))));
+            }, new TranslatableText("multiplayer.texturePrompt.line1"), new TranslatableText("multiplayer.texturePrompt.line2"))));
         } else {
             this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
         }
@@ -1761,18 +1769,18 @@ implements ClientPlayPacketListener {
                 if (bl6) {
                     path3 = Path.fromBuffer(packetByteBuf);
                 }
-                BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos4, blockPos5, x);
+                BeeDebugRenderer.class_5243 lv = new BeeDebugRenderer.class_5243(uUID, o, position, path3, blockPos4, blockPos5, x);
                 int y = packetByteBuf.readInt();
                 for (z = 0; z < y; ++z) {
                     String string10 = packetByteBuf.readString();
-                    bee.field_21542.add(string10);
+                    lv.field_24329.add(string10);
                 }
                 z = packetByteBuf.readInt();
                 for (int r = 0; r < z; ++r) {
                     BlockPos blockPos6 = packetByteBuf.readBlockPos();
-                    bee.blacklistedHives.add(blockPos6);
+                    lv.field_24330.add(blockPos6);
                 }
-                this.client.debugRenderer.beeDebugRenderer.addBee(bee);
+                this.client.debugRenderer.beeDebugRenderer.addBee(lv);
             } else if (CustomPayloadS2CPacket.DEBUG_HIVE.equals(identifier)) {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 String string = packetByteBuf.readString();

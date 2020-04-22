@@ -61,7 +61,7 @@ extends LongRunningTask {
                     return;
                 }
                 LOGGER.error("Failed to open server", (Throwable)exception);
-                this.error("Failed to open the server");
+                this.method_27453("Failed to open the server");
             }
         }
     }

@@ -28,6 +28,7 @@ import net.minecraft.client.options.HotbarStorageEntry;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchableContainer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -74,7 +75,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     private final Map<Identifier, Tag<Item>> searchResultTags = Maps.newTreeMap();
 
     public CreativeInventoryScreen(PlayerEntity player) {
-        super(new CreativeScreenHandler(player), player.inventory, new LiteralText(""));
+        super(new CreativeScreenHandler(player), player.inventory, LiteralText.EMPTY);
         player.currentScreenHandler = this.handler;
         this.passEvents = true;
         this.backgroundHeight = 136;
@@ -233,7 +234,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         if (this.client.interactionManager.hasCreativeInventory()) {
             super.init();
             this.client.keyboard.enableRepeatEvents(true);
-            this.searchBox = new TextFieldWidget(this.textRenderer, this.x + 82, this.y + 6, 80, this.textRenderer.fontHeight, I18n.translate("itemGroup.search", new Object[0]));
+            this.searchBox = new TextFieldWidget(this.textRenderer, this.x + 82, this.y + 6, 80, this.textRenderer.fontHeight, new TranslatableText("itemGroup.search"));
             this.searchBox.setMaxLength(50);
             this.searchBox.setHasBorder(false);
             this.searchBox.setVisible(false);
@@ -361,11 +362,11 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     }
 
     @Override
-    protected void drawForeground(int mouseX, int mouseY) {
+    protected void drawForeground(MatrixStack matrixStack, int i, int j) {
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
         if (itemGroup.hasTooltip()) {
             RenderSystem.disableBlend();
-            this.textRenderer.draw(I18n.translate(itemGroup.getTranslationKey(), new Object[0]), 8.0f, 6.0f, 0x404040);
+            this.textRenderer.draw(matrixStack, I18n.translate(itemGroup.getTranslationKey(), new Object[0]), 8.0f, 6.0f, 0x404040);
         }
     }
 
@@ -421,9 +422,9 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                         if (k == j) {
                             ItemStack itemStack = new ItemStack(Items.PAPER);
                             itemStack.getOrCreateSubTag("CustomCreativeLock");
-                            String string = this.client.options.keysHotbar[j].getLocalizedName();
-                            String string2 = this.client.options.keySaveToolbarActivator.getLocalizedName();
-                            itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", string2, string));
+                            Text text = this.client.options.keysHotbar[j].getLocalizedName();
+                            Text text2 = this.client.options.keySaveToolbarActivator.getLocalizedName();
+                            itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", text2, text));
                             ((CreativeScreenHandler)this.handler).itemList.add(itemStack);
                             continue;
                         }
@@ -538,31 +539,28 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
-        super.render(mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
+        super.render(matrices, mouseX, mouseY, delta);
         for (ItemGroup itemGroup : ItemGroup.GROUPS) {
-            if (this.renderTabTooltipIfHovered(itemGroup, mouseX, mouseY)) break;
+            if (this.renderTabTooltipIfHovered(matrices, itemGroup, mouseX, mouseY)) break;
         }
         if (this.deleteItemSlot != null && selectedTab == ItemGroup.INVENTORY.getIndex() && this.isPointWithinBounds(this.deleteItemSlot.x, this.deleteItemSlot.y, 16, 16, mouseX, mouseY)) {
-            this.renderTooltip(I18n.translate("inventory.binSlot", new Object[0]), mouseX, mouseY);
+            this.renderTooltip(matrices, new TranslatableText("inventory.binSlot"), mouseX, mouseY);
         }
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.drawMouseoverTooltip(mouseX, mouseY);
+        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
     }
 
     @Override
-    protected void renderTooltip(ItemStack stack, int x, int y) {
+    protected void renderTooltip(MatrixStack matrixStack, ItemStack itemStack, int i, int j) {
         if (selectedTab == ItemGroup.SEARCH.getIndex()) {
             Map<Enchantment, Integer> map;
-            List<Text> list = stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
-            ArrayList<String> list2 = Lists.newArrayListWithCapacity(list.size());
-            for (Text text : list) {
-                list2.add(text.asFormattedString());
-            }
-            Item item = stack.getItem();
+            List<Text> list = itemStack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
+            ArrayList<Text> list2 = Lists.newArrayList(list);
+            Item item = itemStack.getItem();
             ItemGroup itemGroup = item.getGroup();
-            if (itemGroup == null && item == Items.ENCHANTED_BOOK && (map = EnchantmentHelper.get(stack)).size() == 1) {
+            if (itemGroup == null && item == Items.ENCHANTED_BOOK && (map = EnchantmentHelper.get(itemStack)).size() == 1) {
                 Enchantment enchantment = map.keySet().iterator().next();
                 for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
                     if (!itemGroup2.containsEnchantments(enchantment.type)) continue;
@@ -572,48 +570,41 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             }
             this.searchResultTags.forEach((identifier, tag) -> {
                 if (tag.contains(item)) {
-                    list2.add(1, "" + (Object)((Object)Formatting.BOLD) + (Object)((Object)Formatting.DARK_PURPLE) + "#" + identifier);
+                    list2.add(1, new LiteralText("#" + identifier).formatted(Formatting.BOLD, Formatting.DARK_PURPLE));
                 }
             });
             if (itemGroup != null) {
-                list2.add(1, "" + (Object)((Object)Formatting.BOLD) + (Object)((Object)Formatting.BLUE) + I18n.translate(itemGroup.getTranslationKey(), new Object[0]));
+                list2.add(1, new TranslatableText(itemGroup.getTranslationKey()).formatted(Formatting.BOLD, Formatting.BLUE));
             }
-            for (int i = 0; i < list2.size(); ++i) {
-                if (i == 0) {
-                    list2.set(i, (Object)((Object)stack.getRarity().formatting) + (String)list2.get(i));
-                    continue;
-                }
-                list2.set(i, (Object)((Object)Formatting.GRAY) + (String)list2.get(i));
-            }
-            this.renderTooltip(list2, x, y);
+            this.renderTooltip(matrixStack, list2, i, j);
         } else {
-            super.renderTooltip(stack, x, y);
+            super.renderTooltip(matrixStack, itemStack, i, j);
         }
     }
 
     @Override
-    protected void drawBackground(float delta, int mouseX, int mouseY) {
+    protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
         for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
             this.client.getTextureManager().bindTexture(TEXTURE);
             if (itemGroup2.getIndex() == selectedTab) continue;
-            this.renderTabIcon(itemGroup2);
+            this.renderTabIcon(matrixStack, itemGroup2);
         }
         this.client.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
-        this.drawTexture(this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
-        this.searchBox.render(mouseX, mouseY, delta);
+        this.drawTexture(matrixStack, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.searchBox.render(matrixStack, mouseY, i, f);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        int i = this.x + 175;
-        int j = this.y + 18;
-        int k = j + 112;
+        int j = this.x + 175;
+        int k = this.y + 18;
+        int l = k + 112;
         this.client.getTextureManager().bindTexture(TEXTURE);
         if (itemGroup.hasScrollbar()) {
-            this.drawTexture(i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
+            this.drawTexture(matrixStack, j, k + (int)((float)(l - k - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
         }
-        this.renderTabIcon(itemGroup);
+        this.renderTabIcon(matrixStack, itemGroup);
         if (itemGroup == ItemGroup.INVENTORY) {
-            InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, this.x + 88 - mouseX, this.y + 45 - 30 - mouseY, this.client.player);
+            InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, this.x + 88 - mouseY, this.y + 45 - 30 - i, this.client.player);
         }
     }
 
@@ -630,27 +621,27 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         return mouseX >= (double)j && mouseX <= (double)(j + 28) && mouseY >= (double)k && mouseY <= (double)(k + 32);
     }
 
-    protected boolean renderTabTooltipIfHovered(ItemGroup group, int mouseX, int mouseY) {
-        int i = group.getColumn();
-        int j = 28 * i;
-        int k = 0;
-        if (group.isSpecial()) {
-            j = this.backgroundWidth - 28 * (6 - i) + 2;
-        } else if (i > 0) {
-            j += i;
+    protected boolean renderTabTooltipIfHovered(MatrixStack matrixStack, ItemGroup itemGroup, int i, int j) {
+        int k = itemGroup.getColumn();
+        int l = 28 * k;
+        int m = 0;
+        if (itemGroup.isSpecial()) {
+            l = this.backgroundWidth - 28 * (6 - k) + 2;
+        } else if (k > 0) {
+            l += k;
         }
-        k = group.isTopRow() ? (k -= 32) : (k += this.backgroundHeight);
-        if (this.isPointWithinBounds(j + 3, k + 3, 23, 27, mouseX, mouseY)) {
-            this.renderTooltip(I18n.translate(group.getTranslationKey(), new Object[0]), mouseX, mouseY);
+        m = itemGroup.isTopRow() ? (m -= 32) : (m += this.backgroundHeight);
+        if (this.isPointWithinBounds(l + 3, m + 3, 23, 27, i, j)) {
+            this.renderTooltip(matrixStack, new TranslatableText(itemGroup.getTranslationKey()), i, j);
             return true;
         }
         return false;
     }
 
-    protected void renderTabIcon(ItemGroup group) {
-        boolean bl = group.getIndex() == selectedTab;
-        boolean bl2 = group.isTopRow();
-        int i = group.getColumn();
+    protected void renderTabIcon(MatrixStack matrixStack, ItemGroup itemGroup) {
+        boolean bl = itemGroup.getIndex() == selectedTab;
+        boolean bl2 = itemGroup.isTopRow();
+        int i = itemGroup.getColumn();
         int j = i * 28;
         int k = 0;
         int l = this.x + 28 * i;
@@ -659,7 +650,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         if (bl) {
             k += 32;
         }
-        if (group.isSpecial()) {
+        if (itemGroup.isSpecial()) {
             l = this.x + this.backgroundWidth - 28 * (6 - i);
         } else if (i > 0) {
             l += i;
@@ -670,12 +661,12 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             k += 64;
             m += this.backgroundHeight - 4;
         }
-        this.drawTexture(l, m, j, k, 28, 32);
+        this.drawTexture(matrixStack, l, m, j, k, 28, 32);
         this.setZOffset(100);
         this.itemRenderer.zOffset = 100.0f;
         int n2 = bl2 ? 1 : -1;
         RenderSystem.enableRescaleNormal();
-        ItemStack itemStack = group.getIcon();
+        ItemStack itemStack = itemGroup.getIcon();
         this.itemRenderer.renderGuiItem(itemStack, l += 6, m += 8 + n2);
         this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, l, m);
         this.itemRenderer.zOffset = 0.0f;
@@ -701,9 +692,9 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             for (int i = 0; i < PlayerInventory.getHotbarSize(); ++i) {
                 hotbarStorageEntry.set(i, clientPlayerEntity.inventory.getStack(i).copy());
             }
-            String string = client.options.keysHotbar[index].getLocalizedName();
-            String string2 = client.options.keyLoadToolbarActivator.getLocalizedName();
-            client.inGameHud.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", string2, string), false);
+            Text text = client.options.keysHotbar[index].getLocalizedName();
+            Text text2 = client.options.keyLoadToolbarActivator.getLocalizedName();
+            client.inGameHud.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", text2, text), false);
             hotbarStorage.save();
         }
     }

@@ -5,16 +5,17 @@ package net.minecraft.client.gui.screen.ingame;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 
 @Environment(value=EnvType.CLIENT)
@@ -35,8 +36,8 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
         }
 
         @Override
-        public void onPropertyUpdate(ScreenHandler handler, int propertyId, int value) {
-            if (propertyId == 0) {
+        public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+            if (property == 0) {
                 LecternScreen.this.updatePage();
             }
         }
@@ -72,8 +73,8 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
     @Override
     protected void addCloseButton() {
         if (this.client.player.canModifyBlocks()) {
-            this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("gui.done", new Object[0]), buttonWidget -> this.client.openScreen(null)));
-            this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book", new Object[0]), buttonWidget -> this.sendButtonPressPacket(3)));
+            this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, ScreenTexts.DONE, buttonWidget -> this.client.openScreen(null)));
+            this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, new TranslatableText("lectern.take_book"), buttonWidget -> this.sendButtonPressPacket(3)));
         } else {
             super.addCloseButton();
         }

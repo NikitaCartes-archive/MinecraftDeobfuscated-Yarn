@@ -312,7 +312,7 @@ Tickable {
 
     @Override
     public Text getDisplayName() {
-        return this.customName != null ? this.customName : new TranslatableText("container.beacon", new Object[0]);
+        return this.customName != null ? this.customName : new TranslatableText("container.beacon");
     }
 
     public static class BeamSegment {

@@ -18,8 +18,8 @@ public enum ResourcePackCompatibility {
     private final Text confirmMessage;
 
     private ResourcePackCompatibility(String translationSuffix) {
-        this.notification = new TranslatableText("resourcePack.incompatible." + translationSuffix, new Object[0]);
-        this.confirmMessage = new TranslatableText("resourcePack.incompatible.confirm." + translationSuffix, new Object[0]);
+        this.notification = new TranslatableText("resourcePack.incompatible." + translationSuffix);
+        this.confirmMessage = new TranslatableText("resourcePack.incompatible.confirm." + translationSuffix);
     }
 
     public boolean isCompatible() {

@@ -3,27 +3,48 @@
  */
 package net.minecraft.text;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.text.BaseText;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 public class KeybindText
 extends BaseText {
-    public static Function<String, Supplier<String>> i18n = key -> () -> key;
+    private static Function<String, Supplier<Text>> translator = key -> () -> new LiteralText((String)key);
     private final String key;
-    private Supplier<String> name;
+    private Supplier<Text> translated;
 
     public KeybindText(String key) {
         this.key = key;
     }
 
-    @Override
-    public String asString() {
-        if (this.name == null) {
-            this.name = i18n.apply(this.key);
+    @Environment(value=EnvType.CLIENT)
+    public static void setTranslator(Function<String, Supplier<Text>> translator) {
+        KeybindText.translator = translator;
+    }
+
+    private Text getTranslated() {
+        if (this.translated == null) {
+            this.translated = translator.apply(this.key);
         }
-        return this.name.get();
+        return this.translated.get();
+    }
+
+    @Override
+    public <T> Optional<T> visitSelf(Text.Visitor<T> visitor) {
+        return this.getTranslated().visit(visitor);
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public <T> Optional<T> visitSelf(Text.StyledVisitor<T> visitor, Style style) {
+        return this.getTranslated().visit(visitor, style);
     }
 
     @Override
@@ -53,7 +74,12 @@ extends BaseText {
     }
 
     @Override
-    public /* synthetic */ Text copy() {
+    public /* synthetic */ BaseText copy() {
+        return this.copy();
+    }
+
+    @Override
+    public /* synthetic */ MutableText copy() {
         return this.copy();
     }
 }
