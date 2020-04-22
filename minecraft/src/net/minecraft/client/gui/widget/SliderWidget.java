@@ -4,16 +4,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class SliderWidget extends AbstractButtonWidget {
 	protected double value;
 
-	public SliderWidget(int x, int y, int width, int height, String message, double value) {
-		super(x, y, width, height, message);
+	public SliderWidget(int x, int y, int width, int height, Text text, double value) {
+		super(x, y, width, height, text);
 		this.value = value;
 	}
 
@@ -23,17 +26,17 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 	}
 
 	@Override
-	protected String getNarrationMessage() {
-		return I18n.translate("gui.narrate.slider", this.getMessage());
+	protected MutableText getNarrationMessage() {
+		return new TranslatableText("gui.narrate.slider", this.getMessage());
 	}
 
 	@Override
-	protected void renderBg(MinecraftClient client, int mouseX, int mouseY) {
-		client.getTextureManager().bindTexture(WIDGETS_LOCATION);
+	protected void renderBg(MatrixStack matrixStack, MinecraftClient minecraftClient, int mouseY, int i) {
+		minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		int i = (this.isHovered() ? 2 : 1) * 20;
-		this.drawTexture(this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + i, 4, 20);
-		this.drawTexture(this.x + (int)(this.value * (double)(this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
+		int j = (this.isHovered() ? 2 : 1) * 20;
+		this.drawTexture(matrixStack, this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + j, 4, 20);
+		this.drawTexture(matrixStack, this.x + (int)(this.value * (double)(this.width - 8)) + 4, this.y, 196, 46 + j, 4, 20);
 	}
 
 	@Override

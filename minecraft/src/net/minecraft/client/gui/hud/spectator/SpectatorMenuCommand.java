@@ -2,6 +2,7 @@ package net.minecraft.client.gui.hud.spectator;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -10,7 +11,7 @@ public interface SpectatorMenuCommand {
 
 	Text getName();
 
-	void renderIcon(float brightness, int alpha);
+	void renderIcon(MatrixStack matrixStack, float f, int i);
 
 	boolean isEnabled();
 }

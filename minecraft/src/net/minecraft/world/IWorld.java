@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5217;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +19,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.level.LevelProperties;
 
 public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	long getSeed();
@@ -42,7 +42,7 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 
 	World getWorld();
 
-	LevelProperties getLevelProperties();
+	class_5217 getLevelProperties();
 
 	LocalDifficulty getLocalDifficulty(BlockPos pos);
 

@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class NarratorManager implements ClientChatListener {
-	public static final Text EMPTY = new LiteralText("");
+	public static final Text EMPTY = LiteralText.EMPTY;
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final NarratorManager INSTANCE = new NarratorManager();
 	private final Narrator narrator = Narrator.getNarrator();
@@ -64,15 +64,13 @@ public class NarratorManager implements ClientChatListener {
 
 	public void addToast(NarratorOption option) {
 		this.clear();
-		this.narrator.say(new TranslatableText("options.narrator").getString() + " : " + new TranslatableText(option.getTranslationKey()).getString(), true);
+		this.narrator.say(new TranslatableText("options.narrator").append(" : ").append(option.getTranslationKey()).getString(), true);
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
 			if (option == NarratorOption.OFF) {
 				SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.disabled"), null);
 			} else {
-				SystemToast.show(
-					toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.enabled"), new TranslatableText(option.getTranslationKey())
-				);
+				SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, new TranslatableText("narrator.toast.enabled"), option.getTranslationKey());
 			}
 		} else {
 			SystemToast.show(

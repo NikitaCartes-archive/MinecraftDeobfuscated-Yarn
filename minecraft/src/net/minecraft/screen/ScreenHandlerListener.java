@@ -8,5 +8,5 @@ public interface ScreenHandlerListener {
 
 	void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack);
 
-	void onPropertyUpdate(ScreenHandler handler, int propertyId, int value);
+	void onPropertyUpdate(ScreenHandler handler, int property, int value);
 }

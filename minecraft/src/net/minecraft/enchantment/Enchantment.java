@@ -11,6 +11,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -107,18 +108,18 @@ public abstract class Enchantment {
 	}
 
 	public Text getName(int level) {
-		Text text = new TranslatableText(this.getTranslationKey());
+		MutableText mutableText = new TranslatableText(this.getTranslationKey());
 		if (this.isCursed()) {
-			text.formatted(Formatting.RED);
+			mutableText.formatted(Formatting.RED);
 		} else {
-			text.formatted(Formatting.GRAY);
+			mutableText.formatted(Formatting.GRAY);
 		}
 
 		if (level != 1 || this.getMaximumLevel() != 1) {
-			text.append(" ").append(new TranslatableText("enchantment.level." + level));
+			mutableText.append(" ").append(new TranslatableText("enchantment.level." + level));
 		}
 
-		return text;
+		return mutableText;
 	}
 
 	public boolean isAcceptableItem(ItemStack stack) {

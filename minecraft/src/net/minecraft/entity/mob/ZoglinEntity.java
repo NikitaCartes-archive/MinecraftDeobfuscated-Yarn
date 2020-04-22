@@ -233,6 +233,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	@Override
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
+		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
 	}
 
 	@Override

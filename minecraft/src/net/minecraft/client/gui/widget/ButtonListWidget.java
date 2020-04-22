@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
+import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonEntry> {
@@ -61,10 +62,10 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		}
 
 		@Override
-		public void render(int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovering, float delta) {
-			this.buttons.forEach(button -> {
-				button.y = y;
-				button.render(mouseX, mouseY, delta);
+		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
+			this.buttons.forEach(abstractButtonWidget -> {
+				abstractButtonWidget.y = y;
+				abstractButtonWidget.render(matrices, mouseY, i, tickDelta);
 			});
 		}
 

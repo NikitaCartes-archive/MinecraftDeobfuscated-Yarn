@@ -4,14 +4,22 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-import java.util.Map;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
+import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.TestableWorld;
+import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.TreeFeatureConfig;
+import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public abstract class TrunkPlacer {
 	private final int baseHeight;
@@ -30,23 +38,55 @@ public abstract class TrunkPlacer {
 	 * Generates the trunk blocks and return a map from branch tops to the
 	 * radius allowed for foliage generation on that branch top.
 	 */
-	public abstract Map<BlockPos, Integer> generate(
-		ModifiableTestableWorld world,
-		Random random,
-		int trunkHeight,
-		BlockPos pos,
-		int foliageRadius,
-		Set<BlockPos> logs,
-		BlockBox box,
-		BranchedTreeFeatureConfig config
+	public abstract List<FoliagePlacer.class_5208> generate(
+		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	);
 
-	public int getBaseHeight() {
-		return this.baseHeight;
+	public int getHeight(Random random) {
+		return this.baseHeight + random.nextInt(this.firstRandomHeight + 1) + random.nextInt(this.secondRandomHeight + 1);
 	}
 
-	public int getHeight(Random random, BranchedTreeFeatureConfig config) {
-		return this.baseHeight + random.nextInt(this.firstRandomHeight + 1) + random.nextInt(this.secondRandomHeight + 1);
+	protected static void method_27404(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, BlockBox blockBox) {
+		AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
+		blockBox.encompass(new BlockBox(blockPos, blockPos));
+	}
+
+	private static boolean method_27403(TestableWorld testableWorld, BlockPos blockPos) {
+		return testableWorld.testBlockState(blockPos, blockState -> {
+			Block block = blockState.getBlock();
+			return Feature.isDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM;
+		});
+	}
+
+	protected static void method_27400(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+		if (!method_27403(modifiableTestableWorld, blockPos)) {
+			AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableTestableWorld, blockPos, Blocks.DIRT.getDefaultState());
+		}
+	}
+
+	protected static boolean method_27402(
+		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
+	) {
+		if (AbstractTreeFeature.method_27371(modifiableTestableWorld, blockPos)) {
+			method_27404(modifiableTestableWorld, blockPos, treeFeatureConfig.trunkProvider.getBlockState(random, blockPos), blockBox);
+			set.add(blockPos.toImmutable());
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	protected static void method_27401(
+		ModifiableTestableWorld modifiableTestableWorld,
+		Random random,
+		BlockPos.Mutable mutable,
+		Set<BlockPos> set,
+		BlockBox blockBox,
+		TreeFeatureConfig treeFeatureConfig
+	) {
+		if (AbstractTreeFeature.canTreeReplace(modifiableTestableWorld, mutable)) {
+			method_27402(modifiableTestableWorld, random, mutable, set, blockBox, treeFeatureConfig);
+		}
 	}
 
 	public <T> T serialize(DynamicOps<T> ops) {

@@ -12,10 +12,14 @@ import java.util.TimeZone;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.Realms;
 import net.minecraft.realms.RealmsScreen;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +59,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				row(6),
 				200,
 				20,
-				I18n.translate("mco.configure.world.subscription.extend"),
+				new TranslatableText("mco.configure.world.subscription.extend"),
 				buttonWidget -> {
 					String string = "https://aka.ms/ExtendJavaRealms?subscriptionId="
 						+ this.serverData.remoteSubscriptionId
@@ -66,12 +70,12 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				}
 			)
 		);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, I18n.translate("gui.back"), buttonWidget -> this.client.openScreen(this.lastScreen)));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, row(12), 200, 20, ScreenTexts.BACK, buttonWidget -> this.client.openScreen(this.lastScreen)));
 		if (this.serverData.expired) {
-			this.addButton(new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, I18n.translate("mco.configure.world.delete.button"), buttonWidget -> {
-				String string = I18n.translate("mco.configure.world.delete.question.line1");
-				String string2 = I18n.translate("mco.configure.world.delete.question.line2");
-				this.client.openScreen(new RealmsLongConfirmationScreen(this::method_25271, RealmsLongConfirmationScreen.Type.Warning, string, string2, true));
+			this.addButton(new ButtonWidget(this.width / 2 - 100, row(10), 200, 20, new TranslatableText("mco.configure.world.delete.button"), buttonWidget -> {
+				Text text = new TranslatableText("mco.configure.world.delete.question.line1");
+				Text text2 = new TranslatableText("mco.configure.world.delete.question.line2");
+				this.client.openScreen(new RealmsLongConfirmationScreen(this::method_25271, RealmsLongConfirmationScreen.Type.Warning, text, text2, true));
 			}));
 		}
 	}
@@ -132,20 +136,20 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
 		int i = this.width / 2 - 100;
-		this.drawCenteredString(this.textRenderer, this.subscriptionTitle, this.width / 2, 17, 16777215);
-		this.textRenderer.draw(this.subscriptionStartLabelText, (float)i, (float)row(0), 10526880);
-		this.textRenderer.draw(this.startDate, (float)i, (float)row(1), 16777215);
+		this.drawCenteredString(matrices, this.textRenderer, this.subscriptionTitle, this.width / 2, 17, 16777215);
+		this.textRenderer.draw(matrices, this.subscriptionStartLabelText, (float)i, (float)row(0), 10526880);
+		this.textRenderer.draw(matrices, this.startDate, (float)i, (float)row(1), 16777215);
 		if (this.type == Subscription.SubscriptionType.NORMAL) {
-			this.textRenderer.draw(this.timeLeftLabelText, (float)i, (float)row(3), 10526880);
+			this.textRenderer.draw(matrices, this.timeLeftLabelText, (float)i, (float)row(3), 10526880);
 		} else if (this.type == Subscription.SubscriptionType.RECURRING) {
-			this.textRenderer.draw(this.daysLeftLabelText, (float)i, (float)row(3), 10526880);
+			this.textRenderer.draw(matrices, this.daysLeftLabelText, (float)i, (float)row(3), 10526880);
 		}
 
-		this.textRenderer.draw(this.daysLeftPresentation(this.daysLeft), (float)i, (float)row(4), 16777215);
-		super.render(mouseX, mouseY, delta);
+		this.textRenderer.draw(matrices, this.daysLeftPresentation(this.daysLeft), (float)i, (float)row(4), 16777215);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	private String daysLeftPresentation(int daysLeft) {

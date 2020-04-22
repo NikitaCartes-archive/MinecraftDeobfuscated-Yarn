@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.SmithingScreenHandler;
 import net.minecraft.text.Text;
@@ -17,8 +18,8 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	}
 
 	@Override
-	protected void drawForeground(int mouseX, int mouseY) {
+	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
 		RenderSystem.disableBlend();
-		this.textRenderer.draw(this.title.asFormattedString(), 40.0F, 20.0F, 4210752);
+		this.textRenderer.draw(matrixStack, this.title, 60.0F, 20.0F, 4210752);
 	}
 }

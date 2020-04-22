@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -476,7 +477,7 @@ public class CompoundTag implements Tag {
 		if (this.tags.isEmpty()) {
 			return new LiteralText("{}");
 		} else {
-			Text text = new LiteralText("{");
+			MutableText mutableText = new LiteralText("{");
 			Collection<String> collection = this.tags.keySet();
 			if (LOGGER.isDebugEnabled()) {
 				List<String> list = Lists.newArrayList(this.tags.keySet());
@@ -485,28 +486,28 @@ public class CompoundTag implements Tag {
 			}
 
 			if (!indent.isEmpty()) {
-				text.append("\n");
+				mutableText.append("\n");
 			}
 
-			Text text2;
-			for(Iterator<String> iterator = collection.iterator(); iterator.hasNext(); text.append(text2)) {
+			MutableText mutableText2;
+			for(Iterator<String> iterator = collection.iterator(); iterator.hasNext(); mutableText.append(mutableText2)) {
 				String string = (String)iterator.next();
-				text2 = new LiteralText(Strings.repeat(indent, depth + 1))
+				mutableText2 = new LiteralText(Strings.repeat(indent, depth + 1))
 					.append(prettyPrintTagKey(string))
 					.append(String.valueOf(':'))
 					.append(" ")
 					.append(((Tag)this.tags.get(string)).toText(indent, depth + 1));
 				if (iterator.hasNext()) {
-					text2.append(String.valueOf(',')).append(indent.isEmpty() ? " " : "\n");
+					mutableText2.append(String.valueOf(',')).append(indent.isEmpty() ? " " : "\n");
 				}
 			}
 
 			if (!indent.isEmpty()) {
-				text.append("\n").append(Strings.repeat(indent, depth));
+				mutableText.append("\n").append(Strings.repeat(indent, depth));
 			}
 
-			text.append("}");
-			return text;
+			mutableText.append("}");
+			return mutableText;
 		}
 	}
 }

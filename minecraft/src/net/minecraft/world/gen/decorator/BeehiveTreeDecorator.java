@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.Feature;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
 	private final float chance;
@@ -44,7 +44,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 			if (!list.isEmpty()) {
 				BlockPos blockPos = (BlockPos)list.get(random.nextInt(list.size()));
 				BlockPos blockPos2 = blockPos.offset(direction);
-				if (AbstractTreeFeature.isAir(world, blockPos2) && AbstractTreeFeature.isAir(world, blockPos2.offset(Direction.SOUTH))) {
+				if (Feature.method_27370(world, blockPos2) && Feature.method_27370(world, blockPos2.offset(Direction.SOUTH))) {
 					BlockState blockState = Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH);
 					this.setBlockStateAndEncompassPosition(world, blockPos2, blockState, set, box);
 					BlockEntity blockEntity = world.getBlockEntity(blockPos2);

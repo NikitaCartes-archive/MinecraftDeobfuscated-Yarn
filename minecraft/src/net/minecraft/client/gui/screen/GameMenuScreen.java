@@ -6,7 +6,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -30,7 +30,7 @@ public class GameMenuScreen extends Screen {
 	private void initWidgets() {
 		int i = -16;
 		int j = 98;
-		this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, I18n.translate("menu.returnToGame"), buttonWidgetx -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, new TranslatableText("menu.returnToGame"), buttonWidgetx -> {
 			this.client.openScreen(null);
 			this.client.mouse.lockCursor();
 		}));
@@ -40,7 +40,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 48 + -16,
 				98,
 				20,
-				I18n.translate("gui.advancements"),
+				new TranslatableText("gui.advancements"),
 				buttonWidgetx -> this.client.openScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))
 			)
 		);
@@ -50,7 +50,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 48 + -16,
 				98,
 				20,
-				I18n.translate("gui.stats"),
+				new TranslatableText("gui.stats"),
 				buttonWidgetx -> this.client.openScreen(new StatsScreen(this, this.client.player.getStatHandler()))
 			)
 		);
@@ -61,7 +61,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 72 + -16,
 				98,
 				20,
-				I18n.translate("menu.sendFeedback"),
+				new TranslatableText("menu.sendFeedback"),
 				buttonWidgetx -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
 							Util.getOperatingSystem().open(string);
@@ -77,7 +77,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 72 + -16,
 				98,
 				20,
-				I18n.translate("menu.reportBugs"),
+				new TranslatableText("menu.reportBugs"),
 				buttonWidgetx -> this.client.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
 							Util.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
@@ -93,7 +93,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 96 + -16,
 				98,
 				20,
-				I18n.translate("menu.options"),
+				new TranslatableText("menu.options"),
 				buttonWidgetx -> this.client.openScreen(new SettingsScreen(this, this.client.options))
 			)
 		);
@@ -103,13 +103,13 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 96 + -16,
 				98,
 				20,
-				I18n.translate("menu.shareToLan"),
+				new TranslatableText("menu.shareToLan"),
 				buttonWidgetx -> this.client.openScreen(new OpenToLanScreen(this))
 			)
 		);
 		buttonWidget.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
 		ButtonWidget buttonWidget2 = this.addButton(
-			new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, I18n.translate("menu.returnToMenu"), buttonWidgetx -> {
+			new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, new TranslatableText("menu.returnToMenu"), buttonWidgetx -> {
 				boolean bl = this.client.isInSingleplayer();
 				boolean bl2 = this.client.isConnectedToRealms();
 				buttonWidgetx.active = false;
@@ -131,7 +131,7 @@ public class GameMenuScreen extends Screen {
 			})
 		);
 		if (!this.client.isInSingleplayer()) {
-			buttonWidget2.setMessage(I18n.translate("menu.disconnect"));
+			buttonWidget2.setMessage(new TranslatableText("menu.disconnect"));
 		}
 	}
 
@@ -141,14 +141,14 @@ public class GameMenuScreen extends Screen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.showMenu) {
-			this.renderBackground();
-			this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 40, 16777215);
+			this.renderBackground(matrices);
+			this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 40, 16777215);
 		} else {
-			this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 10, 16777215);
+			this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		}
 
-		super.render(mouseX, mouseY, delta);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

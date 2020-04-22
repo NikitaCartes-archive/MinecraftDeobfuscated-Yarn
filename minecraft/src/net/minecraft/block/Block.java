@@ -32,6 +32,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -325,7 +326,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text getName() {
+	public MutableText getName() {
 		return new TranslatableText(this.getTranslationKey());
 	}
 

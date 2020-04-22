@@ -20,6 +20,7 @@ public class EmptyMapItem extends NetworkSyncedItem {
 			itemStack2.decrement(1);
 		}
 
+		user.incrementStat(Stats.USED.getOrCreateStat(this));
 		if (itemStack2.isEmpty()) {
 			return TypedActionResult.success(itemStack);
 		} else {
@@ -27,7 +28,6 @@ public class EmptyMapItem extends NetworkSyncedItem {
 				user.dropItem(itemStack, false);
 			}
 
-			user.incrementStat(Stats.USED.getOrCreateStat(this));
 			return TypedActionResult.success(itemStack2);
 		}
 	}

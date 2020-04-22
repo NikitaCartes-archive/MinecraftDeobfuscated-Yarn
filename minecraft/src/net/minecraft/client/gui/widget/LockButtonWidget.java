@@ -4,21 +4,23 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
 	public LockButtonWidget(int x, int y, ButtonWidget.PressAction action) {
-		super(x, y, 20, 20, I18n.translate("narrator.button.difficulty_lock"), action);
+		super(x, y, 20, 20, new TranslatableText("narrator.button.difficulty_lock"), action);
 	}
 
 	@Override
-	protected String getNarrationMessage() {
+	protected MutableText getNarrationMessage() {
 		return super.getNarrationMessage()
-			+ ". "
-			+ (this.isLocked() ? I18n.translate("narrator.button.difficulty_lock.locked") : I18n.translate("narrator.button.difficulty_lock.unlocked"));
+			.append(". ")
+			.append(this.isLocked() ? new TranslatableText("narrator.button.difficulty_lock.locked") : new TranslatableText("narrator.button.difficulty_lock.unlocked"));
 	}
 
 	public boolean isLocked() {
@@ -30,7 +32,7 @@ public class LockButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float delta) {
+	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;
@@ -42,7 +44,7 @@ public class LockButtonWidget extends ButtonWidget {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED : LockButtonWidget.IconLocation.UNLOCKED;
 		}
 
-		this.drawTexture(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
+		this.drawTexture(matrixStack, this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
 	}
 
 	@Environment(EnvType.CLIENT)

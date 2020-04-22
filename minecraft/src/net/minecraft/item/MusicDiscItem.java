@@ -13,6 +13,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -66,7 +67,7 @@ public class MusicDiscItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text getDescription() {
+	public MutableText getDescription() {
 		return new TranslatableText(this.getTranslationKey() + ".desc");
 	}
 

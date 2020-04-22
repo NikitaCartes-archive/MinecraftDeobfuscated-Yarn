@@ -183,7 +183,7 @@ public class DebugRenderer {
 
 			RenderSystem.depthMask(true);
 			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
-			float g = center ? (float)(-textRenderer.getStringWidth(string)) / 2.0F : 0.0F;
+			float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0F : 0.0F;
 			g -= offset / size;
 			RenderSystem.enableAlphaTest();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());

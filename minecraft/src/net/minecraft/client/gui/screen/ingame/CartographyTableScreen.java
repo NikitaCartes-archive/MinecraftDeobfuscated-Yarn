@@ -26,25 +26,25 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		super.render(mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(mouseX, mouseY);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		super.render(matrices, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawForeground(int mouseX, int mouseY) {
-		this.textRenderer.draw(this.title.asFormattedString(), 8.0F, 4.0F, 4210752);
-		this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
+	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+		this.textRenderer.draw(matrixStack, this.title, 8.0F, 4.0F, 4210752);
+		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(float delta, int mouseX, int mouseY) {
-		this.renderBackground();
+	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
+		this.renderBackground(matrixStack);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int i = this.x;
-		int j = this.y;
-		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		int j = this.x;
+		int k = this.y;
+		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		Item item = this.handler.getSlot(1).getStack().getItem();
 		boolean bl = item == Items.MAP;
 		boolean bl2 = item == Items.PAPER;
@@ -58,47 +58,47 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 				if (mapState.locked) {
 					bl4 = true;
 					if (bl2 || bl3) {
-						this.drawTexture(i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+						this.drawTexture(matrixStack, j + 35, k + 31, this.backgroundWidth + 50, 132, 28, 21);
 					}
 				}
 
 				if (bl2 && mapState.scale >= 4) {
 					bl4 = true;
-					this.drawTexture(i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+					this.drawTexture(matrixStack, j + 35, k + 31, this.backgroundWidth + 50, 132, 28, 21);
 				}
 			}
 		} else {
 			mapState = null;
 		}
 
-		this.drawMap(mapState, bl, bl2, bl3, bl4);
+		this.drawMap(matrixStack, mapState, bl, bl2, bl3, bl4);
 	}
 
-	private void drawMap(@Nullable MapState mapState, boolean isMap, boolean isPaper, boolean isGlassPane, boolean bl) {
+	private void drawMap(MatrixStack matrixStack, @Nullable MapState mapState, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
 		int i = this.x;
 		int j = this.y;
-		if (isPaper && !bl) {
-			this.drawTexture(i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
+		if (bl2 && !bl4) {
+			this.drawTexture(matrixStack, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
 			this.drawMap(mapState, i + 85, j + 31, 0.226F);
-		} else if (isMap) {
-			this.drawTexture(i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
+		} else if (bl) {
+			this.drawTexture(matrixStack, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
 			this.drawMap(mapState, i + 86, j + 16, 0.34F);
 			this.client.getTextureManager().bindTexture(TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 1.0F);
-			this.drawTexture(i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
+			this.drawTexture(matrixStack, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
 			this.drawMap(mapState, i + 70, j + 32, 0.34F);
 			RenderSystem.popMatrix();
-		} else if (isGlassPane) {
-			this.drawTexture(i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+		} else if (bl3) {
+			this.drawTexture(matrixStack, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
 			this.drawMap(mapState, i + 71, j + 17, 0.45F);
 			this.client.getTextureManager().bindTexture(TEXTURE);
 			RenderSystem.pushMatrix();
 			RenderSystem.translatef(0.0F, 0.0F, 1.0F);
-			this.drawTexture(i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
+			this.drawTexture(matrixStack, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
 			RenderSystem.popMatrix();
 		} else {
-			this.drawTexture(i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+			this.drawTexture(matrixStack, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
 			this.drawMap(mapState, i + 71, j + 17, 0.45F);
 		}
 	}

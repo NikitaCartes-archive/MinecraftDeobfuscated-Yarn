@@ -48,11 +48,11 @@ public final class DarkForestBiome extends Biome {
 						ImmutableList.of(
 							Feature.HUGE_BROWN_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_BROWN_MUSHROOM_CONFIG).withChance(0.025F),
 							Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_RED_MUSHROOM_CONFIG).withChance(0.05F),
-							Feature.DARK_OAK_TREE.configure(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG).withChance(0.6666667F),
-							Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG).withChance(0.2F),
-							Feature.FANCY_TREE.configure(DefaultBiomeFeatures.FANCY_TREE_CONFIG).withChance(0.1F)
+							Feature.TREE.configure(DefaultBiomeFeatures.DARK_OAK_TREE_CONFIG).withChance(0.6666667F),
+							Feature.TREE.configure(DefaultBiomeFeatures.BIRCH_TREE_CONFIG).withChance(0.2F),
+							Feature.TREE.configure(DefaultBiomeFeatures.FANCY_TREE_CONFIG).withChance(0.1F)
 						),
-						Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)
+						Feature.TREE.configure(DefaultBiomeFeatures.OAK_TREE_CONFIG)
 					)
 				)
 				.createDecoratedFeature(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT))

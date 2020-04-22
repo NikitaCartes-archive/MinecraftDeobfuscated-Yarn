@@ -32,10 +32,10 @@ public class WorldCreationTask extends LongRunningTask {
 			setScreen(this.lastScreen);
 		} catch (RealmsServiceException var4) {
 			LOGGER.error("Couldn't create world");
-			this.error(var4.toString());
+			this.method_27453(var4.toString());
 		} catch (Exception var5) {
 			LOGGER.error("Could not create world");
-			this.error(var5.getLocalizedMessage());
+			this.method_27453(var5.getLocalizedMessage());
 		}
 	}
 }

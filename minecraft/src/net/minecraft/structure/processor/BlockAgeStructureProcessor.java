@@ -59,7 +59,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	private BlockState processBlocks(Random random) {
-		if (random.nextFloat() < 0.5F) {
+		if (random.nextFloat() >= 0.5F) {
 			return null;
 		} else {
 			BlockState[] blockStates = new BlockState[]{Blocks.CRACKED_STONE_BRICKS.getDefaultState(), randomStairProperties(random, Blocks.STONE_BRICK_STAIRS)};
@@ -72,7 +72,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 	private BlockState processStairs(Random random, BlockState state) {
 		Direction direction = state.get(StairsBlock.FACING);
 		BlockHalf blockHalf = state.get(StairsBlock.HALF);
-		if (random.nextFloat() < 0.5F) {
+		if (random.nextFloat() >= 0.5F) {
 			return null;
 		} else {
 			BlockState[] blockStates = new BlockState[]{Blocks.STONE_SLAB.getDefaultState(), Blocks.STONE_BRICK_SLAB.getDefaultState()};
@@ -96,7 +96,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	private BlockState processObsidian(Random random) {
-		return (double)random.nextFloat() < 0.2 ? Blocks.CRYING_OBSIDIAN.getDefaultState() : null;
+		return random.nextFloat() < 0.15F ? Blocks.CRYING_OBSIDIAN.getDefaultState() : null;
 	}
 
 	private static BlockState randomStairProperties(Random random, Block stairs) {

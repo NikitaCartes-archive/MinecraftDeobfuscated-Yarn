@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.FullScreenOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.Option;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -28,7 +28,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.FULLSCREEN,
 		Option.PARTICLES,
 		Option.MIPMAP_LEVELS,
-		Option.ENTITY_SHADOWS
+		Option.ENTITY_SHADOWS,
+		Option.field_24213
 	};
 	private int mipmapLevels;
 
@@ -44,7 +45,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.list.addSingleOptionEntry(Option.BIOME_BLEND_RADIUS);
 		this.list.addAll(OPTIONS);
 		this.children.add(this.list);
-		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), button -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
 			this.client.options.write();
 			this.client.getWindow().applyVideoMode();
 			this.client.openScreen(this.parent);
@@ -92,10 +93,10 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.list.render(mouseX, mouseY, delta);
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 5, 16777215);
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.list.render(matrices, mouseX, mouseY, delta);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 5, 16777215);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

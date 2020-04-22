@@ -76,7 +76,7 @@ public class ResettingWorldTask extends LongRunningTask {
 				}
 
 				LOGGER.error("Couldn't reset world");
-				this.error(var5.toString());
+				this.method_27453(var5.toString());
 				return;
 			}
 		}

@@ -83,6 +83,7 @@ import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -122,8 +123,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private int watchDistance;
 
 	public ThreadedAnvilChunkStorage(
-		ServerWorld world,
-		File file,
+		ServerWorld serverWorld,
+		LevelStorage.Session session,
 		DataFixer dataFixer,
 		StructureManager structureManager,
 		Executor workerExecutor,
@@ -135,10 +136,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		int i,
 		boolean bl
 	) {
-		super(new File(world.getDimension().getType().getSaveDirectory(file), "region"), dataFixer, bl);
+		super(new File(session.method_27424(serverWorld.getDimension().getType()), "region"), dataFixer, bl);
 		this.structureManager = structureManager;
-		this.saveDir = world.getDimension().getType().getSaveDirectory(file);
-		this.world = world;
+		this.saveDir = session.method_27424(serverWorld.getDimension().getType());
+		this.world = serverWorld;
 		this.chunkGenerator = chunkGenerator;
 		this.mainThreadExecutor = mainThreadExecutor;
 		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(workerExecutor, "worldgen");

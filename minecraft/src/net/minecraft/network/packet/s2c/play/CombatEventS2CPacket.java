@@ -20,7 +20,7 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type) {
-		this(damageTracker, type, new LiteralText(""));
+		this(damageTracker, type, LiteralText.EMPTY);
 	}
 
 	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type, Text deathMessage) {

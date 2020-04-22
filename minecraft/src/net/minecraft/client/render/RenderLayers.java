@@ -82,8 +82,8 @@ public class RenderLayers {
 		hashMap.put(Blocks.RED_MUSHROOM, renderLayer2);
 		hashMap.put(Blocks.TORCH, renderLayer2);
 		hashMap.put(Blocks.WALL_TORCH, renderLayer2);
-		hashMap.put(Blocks.SOUL_FIRE_TORCH, renderLayer2);
-		hashMap.put(Blocks.SOUL_FIRE_WALL_TORCH, renderLayer2);
+		hashMap.put(Blocks.SOUL_TORCH, renderLayer2);
+		hashMap.put(Blocks.SOUL_WALL_TORCH, renderLayer2);
 		hashMap.put(Blocks.FIRE, renderLayer2);
 		hashMap.put(Blocks.SOUL_FIRE, renderLayer2);
 		hashMap.put(Blocks.SPAWNER, renderLayer2);
@@ -202,7 +202,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.SCAFFOLDING, renderLayer2);
 		hashMap.put(Blocks.STONECUTTER, renderLayer2);
 		hashMap.put(Blocks.LANTERN, renderLayer2);
-		hashMap.put(Blocks.SOUL_FIRE_LANTERN, renderLayer2);
+		hashMap.put(Blocks.SOUL_LANTERN, renderLayer2);
 		hashMap.put(Blocks.CAMPFIRE, renderLayer2);
 		hashMap.put(Blocks.SOUL_CAMPFIRE, renderLayer2);
 		hashMap.put(Blocks.SWEET_BERRY_BUSH, renderLayer2);

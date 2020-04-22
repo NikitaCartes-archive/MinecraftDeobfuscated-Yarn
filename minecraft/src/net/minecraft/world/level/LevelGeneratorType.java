@@ -8,6 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Lazy;
 
 public class LevelGeneratorType {
@@ -31,7 +33,9 @@ public class LevelGeneratorType {
 	private final Lazy<LevelGeneratorOptions> defaultOptions;
 	private boolean visible;
 	private boolean versioned;
+	private final Text field_24108;
 	private boolean info;
+	private final Text field_24109;
 	private boolean customizable;
 
 	private LevelGeneratorType(int index, String name, BiFunction<LevelGeneratorType, Dynamic<?>, LevelGeneratorOptions> optionsFactory) {
@@ -53,6 +57,8 @@ public class LevelGeneratorType {
 		this.visible = true;
 		this.id = index;
 		TYPES[index] = this;
+		this.field_24108 = new TranslatableText("generator." + name);
+		this.field_24109 = new TranslatableText("generator." + name + ".info");
 	}
 
 	public String getName() {
@@ -64,13 +70,13 @@ public class LevelGeneratorType {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String getTranslationKey() {
-		return "generator." + this.name;
+	public Text getTranslationKey() {
+		return this.field_24108;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String getInfoTranslationKey() {
-		return this.getTranslationKey() + ".info";
+	public Text getInfoTranslationKey() {
+		return this.field_24109;
 	}
 
 	public int getVersion() {

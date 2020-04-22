@@ -28,6 +28,8 @@ import net.minecraft.item.Items;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -139,7 +141,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	protected void renderLabelIfPresent(
-		AbstractClientPlayerEntity abstractClientPlayerEntity, String string, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
+		AbstractClientPlayerEntity abstractClientPlayerEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(abstractClientPlayerEntity);
 		matrixStack.push();
@@ -150,7 +152,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
 				super.renderLabelIfPresent(
 					abstractClientPlayerEntity,
-					scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().asFormattedString(),
+					new LiteralText(Integer.toString(scoreboardPlayerScore.getScore())).append(" ").append(scoreboardObjective.getDisplayName()),
 					matrixStack,
 					vertexConsumerProvider,
 					i
@@ -159,7 +161,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 		}
 
-		super.renderLabelIfPresent(abstractClientPlayerEntity, string, matrixStack, vertexConsumerProvider, i);
+		super.renderLabelIfPresent(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 

@@ -269,7 +269,7 @@ public class SavannaVillageData {
 				new StructurePool(
 					new Identifier("village/savanna/trees"),
 					new Identifier("empty"),
-					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG)), 1)),
+					ImmutableList.of(new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG)), 1)),
 					StructurePool.Projection.RIGID
 				)
 			);
@@ -280,7 +280,7 @@ public class SavannaVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new LegacySinglePoolElement("village/savanna/savanna_lamp_post_01"), 4),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.HAY_PILE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.MELON_PILE_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)
@@ -295,7 +295,7 @@ public class SavannaVillageData {
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new LegacySinglePoolElement("village/savanna/savanna_lamp_post_01", immutableList), 4),
-						new Pair<>(new FeaturePoolElement(Feature.NORMAL_TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG)), 4),
+						new Pair<>(new FeaturePoolElement(Feature.TREE.configure(DefaultBiomeFeatures.ACACIA_TREE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.HAY_PILE_CONFIG)), 4),
 						new Pair<>(new FeaturePoolElement(Feature.BLOCK_PILE.configure(DefaultBiomeFeatures.MELON_PILE_CONFIG)), 1),
 						Pair.of(EmptyPoolElement.INSTANCE, 4)

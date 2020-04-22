@@ -1,10 +1,13 @@
 package net.minecraft.client.network;
 
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -12,13 +15,13 @@ import net.minecraft.text.TranslatableText;
 public class ServerInfo {
 	public String name;
 	public String address;
-	public String playerCountLabel;
-	public String label;
+	public Text playerCountLabel;
+	public Text label;
 	public long ping;
 	public int protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
-	public String version = SharedConstants.getGameVersion().getName();
+	public Text version = new LiteralText(SharedConstants.getGameVersion().getName());
 	public boolean online;
-	public String playerListSummary;
+	public List<Text> playerListSummary = Collections.emptyList();
 	private ServerInfo.ResourcePackState resourcePackState = ServerInfo.ResourcePackState.PROMPT;
 	private String icon;
 	private boolean local;

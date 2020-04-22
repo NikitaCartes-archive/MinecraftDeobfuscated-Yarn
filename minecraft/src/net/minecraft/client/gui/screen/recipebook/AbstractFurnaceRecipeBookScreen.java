@@ -9,12 +9,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
@@ -61,11 +63,11 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	}
 
 	@Override
-	protected String getCraftableButtonText() {
-		return I18n.translate(this.toggleCraftableButton.isToggled() ? this.getToggleCraftableButtonText() : "gui.recipebook.toggleRecipes.all");
+	protected Text getCraftableButtonText() {
+		return (Text)(this.toggleCraftableButton.isToggled() ? this.getToggleCraftableButtonText() : new TranslatableText("gui.recipebook.toggleRecipes.all"));
 	}
 
-	protected abstract String getToggleCraftableButtonText();
+	protected abstract Text getToggleCraftableButtonText();
 
 	@Override
 	public void slotClicked(@Nullable Slot slot) {
@@ -106,19 +108,19 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 	protected abstract Set<Item> getAllowedFuels();
 
 	@Override
-	public void drawGhostSlots(int left, int top, boolean isBig, float lastFrameDuration) {
-		super.drawGhostSlots(left, top, isBig, lastFrameDuration);
+	public void drawGhostSlots(MatrixStack matrixStack, int i, int j, boolean bl, float f) {
+		super.drawGhostSlots(matrixStack, i, j, bl, f);
 		if (this.outputSlot != null) {
 			if (!Screen.hasControlDown()) {
-				this.frameTime += lastFrameDuration;
+				this.frameTime += f;
 			}
 
-			int i = this.outputSlot.x + left;
-			int j = this.outputSlot.y + top;
-			DrawableHelper.fill(i, j, i + 16, j + 16, 822018048);
-			this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), i, j);
+			int k = this.outputSlot.x + i;
+			int l = this.outputSlot.y + j;
+			DrawableHelper.fill(matrixStack, k, l, k + 16, l + 16, 822018048);
+			this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), k, l);
 			RenderSystem.depthFunc(516);
-			DrawableHelper.fill(i, j, i + 16, j + 16, 822083583);
+			DrawableHelper.fill(matrixStack, k, l, k + 16, l + 16, 822083583);
 			RenderSystem.depthFunc(515);
 		}
 	}

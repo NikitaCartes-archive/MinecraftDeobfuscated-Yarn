@@ -82,7 +82,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			}
 
-			if (!world.dimension.canPlayersSleep() || world.getBiome(pos) == Biomes.NETHER_WASTES) {
+			if (!method_27352(world, pos)) {
 				world.removeBlock(pos, false);
 				BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 				if (world.getBlockState(blockPos).getBlock() == this) {
@@ -115,6 +115,10 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				return ActionResult.SUCCESS;
 			}
 		}
+	}
+
+	public static boolean method_27352(World world, BlockPos blockPos) {
+		return world.dimension.canPlayersSleep() && world.getBiome(blockPos) != Biomes.NETHER_WASTES;
 	}
 
 	private boolean isFree(World world, BlockPos pos) {

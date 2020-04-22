@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.BrewingStandScreenHandler;
 import net.minecraft.text.Text;
@@ -19,44 +20,41 @@ public class BrewingStandScreen extends HandledScreen<BrewingStandScreenHandler>
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		super.render(mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(mouseX, mouseY);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		super.render(matrices, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawForeground(int mouseX, int mouseY) {
-		this.textRenderer
-			.draw(
-				this.title.asFormattedString(), (float)(this.backgroundWidth / 2 - this.textRenderer.getStringWidth(this.title.asFormattedString()) / 2), 6.0F, 4210752
-			);
-		this.textRenderer.draw(this.playerInventory.getDisplayName().asFormattedString(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
+	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
+		this.textRenderer.draw(matrixStack, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
+		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 
 	@Override
-	protected void drawBackground(float delta, int mouseX, int mouseY) {
+	protected void drawBackground(MatrixStack matrixStack, float f, int mouseY, int i) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(TEXTURE);
-		int i = (this.width - this.backgroundWidth) / 2;
-		int j = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		int k = this.handler.getFuel();
-		int l = MathHelper.clamp((18 * k + 20 - 1) / 20, 0, 18);
-		if (l > 0) {
-			this.drawTexture(i + 60, j + 44, 176, 29, l, 4);
+		int j = (this.width - this.backgroundWidth) / 2;
+		int k = (this.height - this.backgroundHeight) / 2;
+		this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		int l = this.handler.getFuel();
+		int m = MathHelper.clamp((18 * l + 20 - 1) / 20, 0, 18);
+		if (m > 0) {
+			this.drawTexture(matrixStack, j + 60, k + 44, 176, 29, m, 4);
 		}
 
-		int m = this.handler.getBrewTime();
-		if (m > 0) {
-			int n = (int)(28.0F * (1.0F - (float)m / 400.0F));
-			if (n > 0) {
-				this.drawTexture(i + 97, j + 16, 176, 0, 9, n);
+		int n = this.handler.getBrewTime();
+		if (n > 0) {
+			int o = (int)(28.0F * (1.0F - (float)n / 400.0F));
+			if (o > 0) {
+				this.drawTexture(matrixStack, j + 97, k + 16, 176, 0, 9, o);
 			}
 
-			n = BUBBLE_PROGRESS[m / 2 % 7];
-			if (n > 0) {
-				this.drawTexture(i + 63, j + 14 + 29 - n, 185, 29 - n, 12, n);
+			o = BUBBLE_PROGRESS[n / 2 % 7];
+			if (o > 0) {
+				this.drawTexture(matrixStack, j + 63, k + 14 + 29 - o, 185, 29 - o, 12, o);
 			}
 		}
 	}

@@ -197,12 +197,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	public float getSpeed() {
-		return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66F : 1.0F);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66F : 1.0F);
 	}
 
 	@Override
 	public float getSaddledSpeed() {
-		return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23F : 0.55F);
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23F : 0.55F);
 	}
 
 	@Override
@@ -350,7 +350,18 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Override
 	public boolean interactMob(PlayerEntity player, Hand hand) {
 		boolean bl = this.isBreedingItem(player.getStackInHand(hand));
-		if (super.interactMob(player, hand)) {
+		if (!super.interactMob(player, hand)) {
+			if (this.isSaddled() && !this.hasPassengers() && !this.isBaby()) {
+				if (!this.world.isClient) {
+					player.startRiding(this);
+				}
+
+				return true;
+			} else {
+				ItemStack itemStack = player.getStackInHand(hand);
+				return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
+			}
+		} else {
 			if (bl && !this.isSilent()) {
 				this.world
 					.playSound(
@@ -366,20 +377,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			}
 
 			return false;
-		} else {
-			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.getItem() == Items.NAME_TAG) {
-				itemStack.useOnEntity(player, this, hand);
-				return true;
-			} else if (this.isSaddled() && !this.hasPassengers() && !this.isBaby()) {
-				if (!this.world.isClient) {
-					player.startRiding(this);
-				}
-
-				return true;
-			} else {
-				return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
-			}
 		}
 	}
 

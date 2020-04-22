@@ -294,7 +294,7 @@ public class ZombieEntity extends HostileEntity {
 
 			if (livingEntity != null
 				&& this.world.getDifficulty() == Difficulty.HARD
-				&& (double)this.random.nextFloat() < this.getAttribute(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
+				&& (double)this.random.nextFloat() < this.getAttributeValue(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS)
 				&& this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 				int i = MathHelper.floor(this.getX());
 				int j = MathHelper.floor(this.getY());

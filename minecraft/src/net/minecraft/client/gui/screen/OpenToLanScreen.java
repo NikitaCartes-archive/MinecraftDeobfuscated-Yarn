@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NetworkUtils;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
@@ -24,7 +25,7 @@ public class OpenToLanScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("lanServer.start"), buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("lanServer.start"), buttonWidget -> {
 			this.client.openScreen(null);
 			int i = NetworkUtils.findLocalPort();
 			Text text;
@@ -37,10 +38,8 @@ public class OpenToLanScreen extends Screen {
 			this.client.inGameHud.getChatHud().addMessage(text);
 			this.client.updateWindowTitle();
 		}));
-		this.addButton(
-			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent))
-		);
-		this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
+		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
+		this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, new TranslatableText("selectWorld.gameMode"), buttonWidget -> {
 			if ("spectator".equals(this.gameMode)) {
 				this.gameMode = "creative";
 			} else if ("creative".equals(this.gameMode)) {
@@ -53,23 +52,26 @@ public class OpenToLanScreen extends Screen {
 
 			this.updateButtonText();
 		}));
-		this.buttonAllowCommands = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.allowCommands"), buttonWidget -> {
-			this.allowCommands = !this.allowCommands;
-			this.updateButtonText();
-		}));
+		this.buttonAllowCommands = this.addButton(
+			new ButtonWidget(this.width / 2 + 5, 100, 150, 20, new TranslatableText("selectWorld.allowCommands"), buttonWidget -> {
+				this.allowCommands = !this.allowCommands;
+				this.updateButtonText();
+			})
+		);
 		this.updateButtonText();
 	}
 
 	private void updateButtonText() {
-		this.buttonGameMode.setMessage(I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.gameMode));
-		this.buttonAllowCommands.setMessage(I18n.translate("selectWorld.allowCommands") + ' ' + I18n.translate(this.allowCommands ? "options.on" : "options.off"));
+		this.buttonGameMode
+			.setMessage(new TranslatableText("selectWorld.gameMode").append(": ").append(new TranslatableText("selectWorld.gameMode." + this.gameMode)));
+		this.buttonAllowCommands.setMessage(new TranslatableText("selectWorld.allowCommands").append(" ").append(ScreenTexts.getToggleText(this.allowCommands)));
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
-		this.renderBackground();
-		this.drawCenteredString(this.textRenderer, this.title.asFormattedString(), this.width / 2, 50, 16777215);
-		this.drawCenteredString(this.textRenderer, I18n.translate("lanServer.otherPlayers"), this.width / 2, 82, 16777215);
-		super.render(mouseX, mouseY, delta);
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackground(matrices);
+		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
+		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("lanServer.otherPlayers"), this.width / 2, 82, 16777215);
+		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

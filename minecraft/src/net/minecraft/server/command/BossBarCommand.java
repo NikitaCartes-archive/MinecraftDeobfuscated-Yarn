@@ -82,7 +82,7 @@ public class BossBarCommand {
 						.then(
 							CommandManager.argument("id", IdentifierArgumentType.identifier())
 								.suggests(suggestionProvider)
-								.executes(commandContext -> removeBossBar(commandContext.getSource(), createBossBar(commandContext)))
+								.executes(commandContext -> removeBossBar(commandContext.getSource(), getBossBar(commandContext)))
 						)
 				)
 				.then(CommandManager.literal("list").executes(commandContext -> listBossBars(commandContext.getSource())))
@@ -96,59 +96,53 @@ public class BossBarCommand {
 										.then(
 											CommandManager.argument("name", TextArgumentType.text())
 												.executes(
-													commandContext -> setName(commandContext.getSource(), createBossBar(commandContext), TextArgumentType.getTextArgument(commandContext, "name"))
+													commandContext -> setName(commandContext.getSource(), getBossBar(commandContext), TextArgumentType.getTextArgument(commandContext, "name"))
 												)
 										)
 								)
 								.then(
 									CommandManager.literal("color")
 										.then(
-											CommandManager.literal("pink").executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.PINK))
+											CommandManager.literal("pink").executes(commandContext -> setColor(commandContext.getSource(), getBossBar(commandContext), BossBar.Color.PINK))
 										)
 										.then(
-											CommandManager.literal("blue").executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.BLUE))
+											CommandManager.literal("blue").executes(commandContext -> setColor(commandContext.getSource(), getBossBar(commandContext), BossBar.Color.BLUE))
+										)
+										.then(CommandManager.literal("red").executes(commandContext -> setColor(commandContext.getSource(), getBossBar(commandContext), BossBar.Color.RED)))
+										.then(
+											CommandManager.literal("green").executes(commandContext -> setColor(commandContext.getSource(), getBossBar(commandContext), BossBar.Color.GREEN))
 										)
 										.then(
-											CommandManager.literal("red").executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.RED))
+											CommandManager.literal("yellow").executes(commandContext -> setColor(commandContext.getSource(), getBossBar(commandContext), BossBar.Color.YELLOW))
 										)
 										.then(
-											CommandManager.literal("green")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.GREEN))
+											CommandManager.literal("purple").executes(commandContext -> setColor(commandContext.getSource(), getBossBar(commandContext), BossBar.Color.PURPLE))
 										)
 										.then(
-											CommandManager.literal("yellow")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.YELLOW))
-										)
-										.then(
-											CommandManager.literal("purple")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.PURPLE))
-										)
-										.then(
-											CommandManager.literal("white")
-												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.WHITE))
+											CommandManager.literal("white").executes(commandContext -> setColor(commandContext.getSource(), getBossBar(commandContext), BossBar.Color.WHITE))
 										)
 								)
 								.then(
 									CommandManager.literal("style")
 										.then(
 											CommandManager.literal("progress")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.PROGRESS))
+												.executes(commandContext -> setStyle(commandContext.getSource(), getBossBar(commandContext), BossBar.Style.PROGRESS))
 										)
 										.then(
 											CommandManager.literal("notched_6")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.NOTCHED_6))
+												.executes(commandContext -> setStyle(commandContext.getSource(), getBossBar(commandContext), BossBar.Style.NOTCHED_6))
 										)
 										.then(
 											CommandManager.literal("notched_10")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.NOTCHED_10))
+												.executes(commandContext -> setStyle(commandContext.getSource(), getBossBar(commandContext), BossBar.Style.NOTCHED_10))
 										)
 										.then(
 											CommandManager.literal("notched_12")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.NOTCHED_12))
+												.executes(commandContext -> setStyle(commandContext.getSource(), getBossBar(commandContext), BossBar.Style.NOTCHED_12))
 										)
 										.then(
 											CommandManager.literal("notched_20")
-												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.NOTCHED_20))
+												.executes(commandContext -> setStyle(commandContext.getSource(), getBossBar(commandContext), BossBar.Style.NOTCHED_20))
 										)
 								)
 								.then(
@@ -156,7 +150,7 @@ public class BossBarCommand {
 										.then(
 											CommandManager.argument("value", IntegerArgumentType.integer(0))
 												.executes(
-													commandContext -> setValue(commandContext.getSource(), createBossBar(commandContext), IntegerArgumentType.getInteger(commandContext, "value"))
+													commandContext -> setValue(commandContext.getSource(), getBossBar(commandContext), IntegerArgumentType.getInteger(commandContext, "value"))
 												)
 										)
 								)
@@ -165,7 +159,7 @@ public class BossBarCommand {
 										.then(
 											CommandManager.argument("max", IntegerArgumentType.integer(1))
 												.executes(
-													commandContext -> setMaxValue(commandContext.getSource(), createBossBar(commandContext), IntegerArgumentType.getInteger(commandContext, "max"))
+													commandContext -> setMaxValue(commandContext.getSource(), getBossBar(commandContext), IntegerArgumentType.getInteger(commandContext, "max"))
 												)
 										)
 								)
@@ -174,18 +168,18 @@ public class BossBarCommand {
 										.then(
 											CommandManager.argument("visible", BoolArgumentType.bool())
 												.executes(
-													commandContext -> setVisible(commandContext.getSource(), createBossBar(commandContext), BoolArgumentType.getBool(commandContext, "visible"))
+													commandContext -> setVisible(commandContext.getSource(), getBossBar(commandContext), BoolArgumentType.getBool(commandContext, "visible"))
 												)
 										)
 								)
 								.then(
 									CommandManager.literal("players")
-										.executes(commandContext -> setPlayers(commandContext.getSource(), createBossBar(commandContext), Collections.emptyList()))
+										.executes(commandContext -> setPlayers(commandContext.getSource(), getBossBar(commandContext), Collections.emptyList()))
 										.then(
 											CommandManager.argument("targets", EntityArgumentType.players())
 												.executes(
 													commandContext -> setPlayers(
-															commandContext.getSource(), createBossBar(commandContext), EntityArgumentType.getOptionalPlayers(commandContext, "targets")
+															commandContext.getSource(), getBossBar(commandContext), EntityArgumentType.getOptionalPlayers(commandContext, "targets")
 														)
 												)
 										)
@@ -197,10 +191,10 @@ public class BossBarCommand {
 						.then(
 							CommandManager.argument("id", IdentifierArgumentType.identifier())
 								.suggests(suggestionProvider)
-								.then(CommandManager.literal("value").executes(commandContext -> getValue(commandContext.getSource(), createBossBar(commandContext))))
-								.then(CommandManager.literal("max").executes(commandContext -> getMaxValue(commandContext.getSource(), createBossBar(commandContext))))
-								.then(CommandManager.literal("visible").executes(commandContext -> isVisible(commandContext.getSource(), createBossBar(commandContext))))
-								.then(CommandManager.literal("players").executes(commandContext -> getPlayers(commandContext.getSource(), createBossBar(commandContext))))
+								.then(CommandManager.literal("value").executes(commandContext -> getValue(commandContext.getSource(), getBossBar(commandContext))))
+								.then(CommandManager.literal("max").executes(commandContext -> getMaxValue(commandContext.getSource(), getBossBar(commandContext))))
+								.then(CommandManager.literal("visible").executes(commandContext -> isVisible(commandContext.getSource(), getBossBar(commandContext))))
+								.then(CommandManager.literal("players").executes(commandContext -> getPlayers(commandContext.getSource(), getBossBar(commandContext))))
 						)
 				)
 		);
@@ -366,7 +360,7 @@ public class BossBarCommand {
 		return bossBarManager.getAll().size();
 	}
 
-	public static CommandBossBar createBossBar(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+	public static CommandBossBar getBossBar(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		Identifier identifier = IdentifierArgumentType.getIdentifier(context, "id");
 		CommandBossBar commandBossBar = context.getSource().getMinecraftServer().getBossBarManager().get(identifier);
 		if (commandBossBar == null) {

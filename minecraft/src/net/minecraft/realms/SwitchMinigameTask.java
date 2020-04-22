@@ -48,7 +48,7 @@ public class SwitchMinigameTask extends LongRunningTask {
 				}
 
 				LOGGER.error("Couldn't start mini game!");
-				this.error(var6.toString());
+				this.method_27453(var6.toString());
 			}
 		}
 	}

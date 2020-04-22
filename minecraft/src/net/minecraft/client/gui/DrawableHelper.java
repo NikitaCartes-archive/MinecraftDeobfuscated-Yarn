@@ -9,7 +9,8 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
 
@@ -32,31 +33,31 @@ public abstract class DrawableHelper {
 	 */
 	private int zOffset;
 
-	protected void drawHorizontalLine(int x1, int x2, int y, int color) {
-		if (x2 < x1) {
-			int i = x1;
-			x1 = x2;
-			x2 = i;
+	protected void drawHorizontalLine(MatrixStack matrixStack, int i, int j, int k, int l) {
+		if (j < i) {
+			int m = i;
+			i = j;
+			j = m;
 		}
 
-		fill(x1, y, x2 + 1, y + 1, color);
+		fill(matrixStack, i, k, j + 1, k + 1, l);
 	}
 
-	protected void drawVerticalLine(int x, int y1, int y2, int color) {
-		if (y2 < y1) {
-			int i = y1;
-			y1 = y2;
-			y2 = i;
+	protected void drawVerticalLine(MatrixStack matrixStack, int i, int j, int k, int l) {
+		if (k < j) {
+			int m = j;
+			j = k;
+			k = m;
 		}
 
-		fill(x, y1 + 1, x + 1, y2, color);
+		fill(matrixStack, i, j + 1, i + 1, k, l);
 	}
 
-	public static void fill(int x1, int y1, int x2, int y2, int color) {
-		fill(AffineTransformation.identity().getMatrix(), x1, y1, x2, y2, color);
+	public static void fill(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
+		fill(matrixStack.peek().getModel(), i, j, k, l, m);
 	}
 
-	public static void fill(Matrix4f matrix, int x1, int y1, int x2, int y2, int color) {
+	private static void fill(Matrix4f matrix, int x1, int y1, int x2, int y2, int color) {
 		if (x1 < x2) {
 			int i = x1;
 			x1 = x2;
@@ -88,15 +89,19 @@ public abstract class DrawableHelper {
 		RenderSystem.disableBlend();
 	}
 
-	protected void fillGradient(int xStart, int yStart, int xEnd, int yEnd, int colorStart, int colorEnd) {
-		float f = (float)(colorStart >> 24 & 0xFF) / 255.0F;
-		float g = (float)(colorStart >> 16 & 0xFF) / 255.0F;
-		float h = (float)(colorStart >> 8 & 0xFF) / 255.0F;
-		float i = (float)(colorStart & 0xFF) / 255.0F;
-		float j = (float)(colorEnd >> 24 & 0xFF) / 255.0F;
-		float k = (float)(colorEnd >> 16 & 0xFF) / 255.0F;
-		float l = (float)(colorEnd >> 8 & 0xFF) / 255.0F;
-		float m = (float)(colorEnd & 0xFF) / 255.0F;
+	protected void fillGradient(MatrixStack matrixStack, int i, int j, int yEnd, int colorStart, int colorEnd, int k) {
+		this.method_27533(matrixStack.peek().getModel(), i, j, yEnd, colorStart, colorEnd, k);
+	}
+
+	private void method_27533(Matrix4f matrix4f, int i, int j, int k, int l, int m, int n) {
+		float f = (float)(m >> 24 & 0xFF) / 255.0F;
+		float g = (float)(m >> 16 & 0xFF) / 255.0F;
+		float h = (float)(m >> 8 & 0xFF) / 255.0F;
+		float o = (float)(m & 0xFF) / 255.0F;
+		float p = (float)(n >> 24 & 0xFF) / 255.0F;
+		float q = (float)(n >> 16 & 0xFF) / 255.0F;
+		float r = (float)(n >> 8 & 0xFF) / 255.0F;
+		float s = (float)(n & 0xFF) / 255.0F;
 		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.disableAlphaTest();
@@ -105,10 +110,10 @@ public abstract class DrawableHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex((double)xEnd, (double)yStart, (double)this.zOffset).color(g, h, i, f).next();
-		bufferBuilder.vertex((double)xStart, (double)yStart, (double)this.zOffset).color(g, h, i, f).next();
-		bufferBuilder.vertex((double)xStart, (double)yEnd, (double)this.zOffset).color(k, l, m, j).next();
-		bufferBuilder.vertex((double)xEnd, (double)yEnd, (double)this.zOffset).color(k, l, m, j).next();
+		bufferBuilder.vertex(matrix4f, (float)k, (float)j, (float)this.zOffset).color(g, h, o, f).next();
+		bufferBuilder.vertex(matrix4f, (float)i, (float)j, (float)this.zOffset).color(g, h, o, f).next();
+		bufferBuilder.vertex(matrix4f, (float)i, (float)l, (float)this.zOffset).color(q, r, s, p).next();
+		bufferBuilder.vertex(matrix4f, (float)k, (float)l, (float)this.zOffset).color(q, r, s, p).next();
 		tessellator.draw();
 		RenderSystem.shadeModel(7424);
 		RenderSystem.disableBlend();
@@ -116,57 +121,55 @@ public abstract class DrawableHelper {
 		RenderSystem.enableTexture();
 	}
 
-	public void drawCenteredString(TextRenderer textRenderer, String str, int centerX, int y, int color) {
-		textRenderer.drawWithShadow(str, (float)(centerX - textRenderer.getStringWidth(str) / 2), (float)y, color);
+	public void drawCenteredString(MatrixStack matrixStack, TextRenderer textRenderer, String string, int i, int j, int k) {
+		textRenderer.drawWithShadow(matrixStack, string, (float)(i - textRenderer.getWidth(string) / 2), (float)j, k);
 	}
 
-	public void drawString(TextRenderer textRenderer, String str, int x, int y, int color) {
-		textRenderer.drawWithShadow(str, (float)x, (float)y, color);
+	public void method_27534(MatrixStack matrixStack, TextRenderer textRenderer, Text text, int i, int j, int k) {
+		textRenderer.drawWithShadow(matrixStack, text, (float)(i - textRenderer.getWidth(text) / 2), (float)j, k);
 	}
 
-	public static void drawSprite(int x, int y, int z, int width, int height, Sprite sprite) {
-		drawTexturedQuad(x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+	public void drawString(MatrixStack matrixStack, TextRenderer textRenderer, String string, int i, int j, int k) {
+		textRenderer.drawWithShadow(matrixStack, string, (float)i, (float)j, k);
 	}
 
-	public void drawTexture(int x, int y, int u, int v, int width, int height) {
-		drawTexture(x, y, this.zOffset, (float)u, (float)v, width, height, 256, 256);
+	public void method_27535(MatrixStack matrixStack, TextRenderer textRenderer, Text text, int i, int j, int k) {
+		textRenderer.drawWithShadow(matrixStack, text, (float)i, (float)j, k);
 	}
 
-	public static void drawTexture(int x, int y, int z, float u, float v, int width, int height, int textureHeight, int textureWidth) {
-		drawTexture(x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
+	public static void drawSprite(MatrixStack matrixStack, int i, int j, int k, int l, int m, Sprite sprite) {
+		drawTexturedQuad(matrixStack.peek().getModel(), i, i + l, j, j + m, k, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
 	}
 
-	public static void drawTexture(int x, int y, int width, int height, float u, float v, int uWidth, int vHeight, int textureWidth, int textureHeight) {
-		drawTexture(x, x + width, y, y + height, 0, uWidth, vHeight, u, v, textureWidth, textureHeight);
+	public void drawTexture(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n) {
+		drawTexture(matrixStack, i, j, this.zOffset, (float)k, (float)l, m, n, 256, 256);
 	}
 
-	public static void drawTexture(int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
-		drawTexture(x, y, width, height, u, v, width, height, textureWidth, textureHeight);
+	public static void drawTexture(MatrixStack matrixStack, int i, int j, int k, float f, float g, int l, int m, int n, int o) {
+		drawTexture(matrixStack, i, i + l, j, j + m, k, l, m, f, g, o, n);
 	}
 
-	private static void drawTexture(
-		int xStart, int xEnd, int yStart, int yEnd, int z, int uWidth, int vHeight, float u, float v, int textureWidth, int textureHeight
-	) {
+	public static void drawTexture(MatrixStack matrixStack, int i, int j, int k, int l, float f, float g, int m, int n, int o, int p) {
+		drawTexture(matrixStack, i, i + k, j, j + l, 0, m, n, f, g, o, p);
+	}
+
+	public static void drawTexture(MatrixStack matrixStack, int i, int j, float f, float g, int k, int l, int m, int n) {
+		drawTexture(matrixStack, i, j, k, l, f, g, k, l, m, n);
+	}
+
+	private static void drawTexture(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o, float f, float g, int p, int q) {
 		drawTexturedQuad(
-			xStart,
-			xEnd,
-			yStart,
-			yEnd,
-			z,
-			(u + 0.0F) / (float)textureWidth,
-			(u + (float)uWidth) / (float)textureWidth,
-			(v + 0.0F) / (float)textureHeight,
-			(v + (float)vHeight) / (float)textureHeight
+			matrixStack.peek().getModel(), i, j, k, l, m, (f + 0.0F) / (float)p, (f + (float)n) / (float)p, (g + 0.0F) / (float)q, (g + (float)o) / (float)q
 		);
 	}
 
-	protected static void drawTexturedQuad(int xStart, int xEnd, int yStart, int yEnd, int z, float uStart, float uEnd, float vStart, float vEnd) {
+	private static void drawTexturedQuad(Matrix4f matrix4f, int i, int j, int k, int l, int m, float f, float g, float h, float n) {
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex((double)xStart, (double)yEnd, (double)z).texture(uStart, vEnd).next();
-		bufferBuilder.vertex((double)xEnd, (double)yEnd, (double)z).texture(uEnd, vEnd).next();
-		bufferBuilder.vertex((double)xEnd, (double)yStart, (double)z).texture(uEnd, vStart).next();
-		bufferBuilder.vertex((double)xStart, (double)yStart, (double)z).texture(uStart, vStart).next();
+		bufferBuilder.vertex(matrix4f, (float)i, (float)l, (float)m).texture(f, n).next();
+		bufferBuilder.vertex(matrix4f, (float)j, (float)l, (float)m).texture(g, n).next();
+		bufferBuilder.vertex(matrix4f, (float)j, (float)k, (float)m).texture(g, h).next();
+		bufferBuilder.vertex(matrix4f, (float)i, (float)k, (float)m).texture(f, h).next();
 		bufferBuilder.end();
 		RenderSystem.enableAlphaTest();
 		BufferRenderer.draw(bufferBuilder);

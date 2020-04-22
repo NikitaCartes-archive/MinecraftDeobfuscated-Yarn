@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5217;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -37,7 +38,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
-import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,7 +50,7 @@ public class ChunkRegion implements IWorld {
 	private final ServerWorld world;
 	private final long seed;
 	private final int seaLevel;
-	private final LevelProperties levelProperties;
+	private final class_5217 levelProperties;
 	private final Random random;
 	private final Dimension dimension;
 	private final ChunkGeneratorConfig generatorSettings;
@@ -77,7 +77,7 @@ public class ChunkRegion implements IWorld {
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
 			this.dimension = world.getDimension();
-			this.biomeAccess = new BiomeAccess(this, LevelProperties.sha256Hash(this.seed), this.dimension.getType().getBiomeAccessType());
+			this.biomeAccess = new BiomeAccess(this, class_5217.method_27418(this.seed), this.dimension.getType().getBiomeAccessType());
 			this.field_23788 = ((Chunk)chunks.get(0)).getPos();
 			this.field_23789 = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
 		}
@@ -288,7 +288,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public LevelProperties getLevelProperties() {
+	public class_5217 getLevelProperties() {
 		return this.levelProperties;
 	}
 

@@ -58,6 +58,6 @@ public class EndTag implements Tag {
 
 	@Override
 	public Text toText(String indent, int depth) {
-		return new LiteralText("");
+		return LiteralText.EMPTY;
 	}
 }

@@ -450,12 +450,14 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 
 	@Override
 	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2) {
-		if (PiglinBrain.isGoldenItem(itemStack2.getItem())) {
-			return false;
-		} else if (this.isAdult() && itemStack2.getItem() == Items.CROSSBOW) {
+		if (PiglinBrain.isGoldenItem(itemStack.getItem()) && PiglinBrain.isGoldenItem(itemStack2.getItem())) {
+			return super.method_26320(itemStack, itemStack2);
+		} else if (PiglinBrain.isGoldenItem(itemStack.getItem())) {
+			return true;
+		} else if (PiglinBrain.isGoldenItem(itemStack2.getItem())) {
 			return false;
 		} else {
-			return PiglinBrain.isGoldenItem(itemStack.getItem()) ? true : super.isBetterItemFor(itemStack, itemStack2);
+			return this.isAdult() && itemStack2.getItem() == Items.CROSSBOW ? false : super.isBetterItemFor(itemStack, itemStack2);
 		}
 	}
 

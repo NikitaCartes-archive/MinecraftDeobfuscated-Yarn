@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -24,23 +25,23 @@ public class SystemToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(ToastManager manager, long currentTime) {
+	public Toast.Visibility draw(MatrixStack matrixStack, ToastManager toastManager, long l) {
 		if (this.justUpdated) {
-			this.startTime = currentTime;
+			this.startTime = l;
 			this.justUpdated = false;
 		}
 
-		manager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-		manager.drawTexture(0, 0, 0, 64, 160, 32);
+		toastManager.drawTexture(matrixStack, 0, 0, 0, 64, 160, 32);
 		if (this.description == null) {
-			manager.getGame().textRenderer.draw(this.title, 18.0F, 12.0F, -256);
+			toastManager.getGame().textRenderer.draw(matrixStack, this.title, 18.0F, 12.0F, -256);
 		} else {
-			manager.getGame().textRenderer.draw(this.title, 18.0F, 7.0F, -256);
-			manager.getGame().textRenderer.draw(this.description, 18.0F, 18.0F, -1);
+			toastManager.getGame().textRenderer.draw(matrixStack, this.title, 18.0F, 7.0F, -256);
+			toastManager.getGame().textRenderer.draw(matrixStack, this.description, 18.0F, 18.0F, -1);
 		}
 
-		return currentTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+		return l - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
 	public void setContent(Text title, @Nullable Text description) {

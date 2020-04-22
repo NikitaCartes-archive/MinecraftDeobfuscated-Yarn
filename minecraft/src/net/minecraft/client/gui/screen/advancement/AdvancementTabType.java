@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
@@ -31,18 +32,18 @@ enum AdvancementTabType {
 		return this.tabCount;
 	}
 
-	public void drawBackground(DrawableHelper drawable, int x, int y, boolean selected, int index) {
-		int i = this.u;
-		if (index > 0) {
-			i += this.width;
+	public void drawBackground(MatrixStack matrixStack, DrawableHelper drawableHelper, int i, int j, boolean bl, int k) {
+		int l = this.u;
+		if (k > 0) {
+			l += this.width;
 		}
 
-		if (index == this.tabCount - 1) {
-			i += this.width;
+		if (k == this.tabCount - 1) {
+			l += this.width;
 		}
 
-		int j = selected ? this.v + this.height : this.v;
-		drawable.drawTexture(x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
+		int m = bl ? this.v + this.height : this.v;
+		drawableHelper.drawTexture(matrixStack, i + this.getTabX(k), j + this.getTabY(k), l, m, this.width, this.height);
 	}
 
 	public void drawIcon(int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {

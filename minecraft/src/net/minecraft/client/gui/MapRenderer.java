@@ -17,6 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
@@ -135,8 +136,8 @@ public class MapRenderer implements AutoCloseable {
 					matrixStack.pop();
 					if (mapIcon.getText() != null) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-						String string = mapIcon.getText().asFormattedString();
-						float p = (float)textRenderer.getStringWidth(string);
+						Text text = mapIcon.getText();
+						float p = (float)textRenderer.getWidth(text);
 						float q = MathHelper.clamp(25.0F / p, 0.0F, 6.0F / 9.0F);
 						matrixStack.push();
 						matrixStack.translate(
@@ -144,7 +145,7 @@ public class MapRenderer implements AutoCloseable {
 						);
 						matrixStack.scale(q, q, 1.0F);
 						matrixStack.translate(0.0, 0.0, -0.1F);
-						textRenderer.draw(string, 0.0F, 0.0F, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
+						textRenderer.draw(text, 0.0F, 0.0F, -1, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, Integer.MIN_VALUE, i);
 						matrixStack.pop();
 					}
 

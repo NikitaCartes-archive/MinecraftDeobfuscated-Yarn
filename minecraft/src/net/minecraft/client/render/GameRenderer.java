@@ -455,11 +455,10 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		if (!this.client.skipGameRender) {
 			int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
 			int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
-			MatrixStack matrixStack = new MatrixStack();
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
-				this.renderWorld(tickDelta, startTime, matrixStack);
+				this.renderWorld(tickDelta, startTime, new MatrixStack());
 				if (this.client.isIntegratedServerRunning() && this.lastWorldIconUpdate < Util.getMeasuringTimeMs() - 1000L) {
 					this.lastWorldIconUpdate = Util.getMeasuringTimeMs();
 					if (!this.client.getServer().hasIconFile()) {
@@ -494,12 +493,13 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			RenderSystem.loadIdentity();
 			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
 			DiffuseLighting.enableGuiDepthLighting();
+			MatrixStack matrixStack = new MatrixStack();
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
 					RenderSystem.defaultAlphaFunc();
 					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickDelta);
-					this.client.inGameHud.render(tickDelta);
+					this.client.inGameHud.render(matrixStack, tickDelta);
 					RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 				}
 
@@ -508,7 +508,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 
 			if (this.client.overlay != null) {
 				try {
-					this.client.overlay.render(i, j, this.client.getLastFrameDuration());
+					this.client.overlay.render(matrixStack, i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
@@ -517,7 +517,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				}
 			} else if (this.client.currentScreen != null) {
 				try {
-					this.client.currentScreen.render(i, j, this.client.getLastFrameDuration());
+					this.client.currentScreen.render(matrixStack, i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var12) {
 					CrashReport crashReport = CrashReport.create(var12, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");

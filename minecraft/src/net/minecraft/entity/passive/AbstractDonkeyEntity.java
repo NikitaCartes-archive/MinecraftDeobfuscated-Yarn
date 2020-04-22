@@ -157,13 +157,9 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			if (!itemStack.isEmpty()) {
 				boolean bl = this.receiveFood(player, itemStack);
 				if (!bl) {
-					if (!this.isTame() || itemStack.getItem() == Items.NAME_TAG) {
-						if (itemStack.useOnEntity(player, this, hand)) {
-							return true;
-						} else {
-							this.playAngrySound();
-							return true;
-						}
+					if (!this.isTame()) {
+						this.playAngrySound();
+						return true;
 					}
 
 					if (!this.hasChest() && itemStack.getItem() == Blocks.CHEST.asItem()) {

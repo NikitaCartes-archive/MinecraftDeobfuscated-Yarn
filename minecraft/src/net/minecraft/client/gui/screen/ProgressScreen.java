@@ -1,17 +1,21 @@
 package net.minecraft.client.gui.screen;
 
-import java.util.Objects;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ProgressListener;
 
 @Environment(EnvType.CLIENT)
 public class ProgressScreen extends Screen implements ProgressListener {
-	private String title = "";
-	private String task = "";
+	@Nullable
+	private Text title;
+	@Nullable
+	private Text task;
 	private int progress;
 	private boolean done;
 
@@ -31,13 +35,13 @@ public class ProgressScreen extends Screen implements ProgressListener {
 
 	@Override
 	public void method_15413(Text text) {
-		this.title = text.asFormattedString();
+		this.title = text;
 		this.method_15414(new TranslatableText("progress.working"));
 	}
 
 	@Override
 	public void method_15414(Text text) {
-		this.task = text.asFormattedString();
+		this.task = text;
 		this.progressStagePercentage(0);
 	}
 
@@ -52,19 +56,22 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	}
 
 	@Override
-	public void render(int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.done) {
 			if (!this.client.isConnectedToRealms()) {
 				this.client.openScreen(null);
 			}
 		} else {
-			this.renderBackground();
-			this.drawCenteredString(this.textRenderer, this.title, this.width / 2, 70, 16777215);
-			if (!Objects.equals(this.task, "") && this.progress != 0) {
-				this.drawCenteredString(this.textRenderer, this.task + " " + this.progress + "%", this.width / 2, 90, 16777215);
+			this.renderBackground(matrices);
+			if (this.title != null) {
+				this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
 			}
 
-			super.render(mouseX, mouseY, delta);
+			if (this.task != null && this.progress != 0) {
+				this.method_27534(matrices, this.textRenderer, new LiteralText("").append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 16777215);
+			}
+
+			super.render(matrices, mouseX, mouseY, delta);
 		}
 	}
 }

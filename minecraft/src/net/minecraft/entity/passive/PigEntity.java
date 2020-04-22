@@ -133,22 +133,19 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	public boolean interactMob(PlayerEntity player, Hand hand) {
-		if (super.interactMob(player, hand)) {
-			return true;
-		} else {
-			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.getItem() == Items.NAME_TAG) {
-				itemStack.useOnEntity(player, this, hand);
-				return true;
-			} else if (this.isSaddled() && !this.hasPassengers()) {
+		if (!super.interactMob(player, hand)) {
+			if (this.isSaddled() && !this.hasPassengers()) {
 				if (!this.world.isClient) {
 					player.startRiding(this);
 				}
 
 				return true;
 			} else {
+				ItemStack itemStack = player.getStackInHand(hand);
 				return itemStack.getItem() == Items.SADDLE && itemStack.useOnEntity(player, this, hand);
 			}
+		} else {
+			return true;
 		}
 	}
 
@@ -212,7 +209,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	public float getSaddledSpeed() {
-		return (float)this.getAttribute(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225F;
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225F;
 	}
 
 	@Override

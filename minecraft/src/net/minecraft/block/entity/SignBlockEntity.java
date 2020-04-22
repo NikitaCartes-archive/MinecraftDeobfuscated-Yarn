@@ -1,7 +1,7 @@
 package net.minecraft.block.entity;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,10 +23,10 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class SignBlockEntity extends BlockEntity {
-	public final Text[] text = new Text[]{new LiteralText(""), new LiteralText(""), new LiteralText(""), new LiteralText("")};
+	private final Text[] text = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
 	private boolean editable = true;
 	private PlayerEntity editor;
-	private final String[] textBeingEdited = new String[4];
+	private final Text[] textBeingEdited = new Text[4];
 	private DyeColor textColor = DyeColor.BLACK;
 
 	public SignBlockEntity() {
@@ -81,9 +81,9 @@ public class SignBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public String getTextBeingEditedOnRow(int row, Function<Text, String> function) {
+	public Text getTextBeingEditedOnRow(int row, UnaryOperator<Text> unaryOperator) {
 		if (this.textBeingEdited[row] == null && this.text[row] != null) {
-			this.textBeingEdited[row] = (String)function.apply(this.text[row]);
+			this.textBeingEdited[row] = (Text)unaryOperator.apply(this.text[row]);
 		}
 
 		return this.textBeingEdited[row];

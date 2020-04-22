@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -25,11 +26,11 @@ public class SpectatorMenu {
 
 		@Override
 		public Text getName() {
-			return new LiteralText("");
+			return LiteralText.EMPTY;
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(MatrixStack matrixStack, float f, int i) {
 		}
 
 		@Override
@@ -132,12 +133,12 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(MatrixStack matrixStack, float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 			if (this.direction < 0) {
-				DrawableHelper.drawTexture(0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
+				DrawableHelper.drawTexture(matrixStack, 0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
 			} else {
-				DrawableHelper.drawTexture(0, 0, 160.0F, 0.0F, 16, 16, 256, 256);
+				DrawableHelper.drawTexture(matrixStack, 0, 0, 160.0F, 0.0F, 16, 16, 256, 256);
 			}
 		}
 
@@ -163,9 +164,9 @@ public class SpectatorMenu {
 		}
 
 		@Override
-		public void renderIcon(float brightness, int alpha) {
+		public void renderIcon(MatrixStack matrixStack, float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-			DrawableHelper.drawTexture(0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
+			DrawableHelper.drawTexture(matrixStack, 0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
 		}
 
 		@Override

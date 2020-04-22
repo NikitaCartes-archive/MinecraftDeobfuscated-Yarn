@@ -60,7 +60,7 @@ public class ScreenshotUtils {
 						nativeImage.writeFile(file2);
 						Text text = new LiteralText(file2.getName())
 							.formatted(Formatting.UNDERLINE)
-							.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
+							.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
 						messageReceiver.accept(new TranslatableText("screenshot.success", text));
 					} catch (Exception var7xx) {
 						LOGGER.warn("Couldn't save screenshot", var7xx);

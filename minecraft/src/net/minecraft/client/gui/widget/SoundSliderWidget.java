@@ -3,8 +3,11 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SoundSliderWidget extends OptionSliderWidget {
@@ -18,8 +21,8 @@ public class SoundSliderWidget extends OptionSliderWidget {
 
 	@Override
 	protected void updateMessage() {
-		String string = (float)this.value == (float)this.getYImage(false) ? I18n.translate("options.off") : (int)((float)this.value * 100.0F) + "%";
-		this.setMessage(I18n.translate("soundCategory." + this.category.getName()) + ": " + string);
+		Text text = (Text)((float)this.value == (float)this.getYImage(false) ? ScreenTexts.OFF : new LiteralText((int)(this.value * 100.0) + "%"));
+		this.setMessage(new TranslatableText("soundCategory." + this.category.getName()).append(": ").append(text));
 	}
 
 	@Override

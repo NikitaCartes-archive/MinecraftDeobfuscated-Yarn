@@ -4,6 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -32,7 +35,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 		int textureHeight,
 		ButtonWidget.PressAction pressAction
 	) {
-		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, "");
+		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, LiteralText.EMPTY);
 	}
 
 	public TexturedButtonWidget(
@@ -47,7 +50,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 		int textureWidth,
 		int textureHeight,
 		ButtonWidget.PressAction pressAction,
-		String text
+		Text text
 	) {
 		super(x, y, width, height, text, pressAction);
 		this.textureWidth = textureWidth;
@@ -64,16 +67,16 @@ public class TexturedButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(int mouseX, int mouseY, float delta) {
+	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
-		int i = this.v;
+		int k = this.v;
 		if (this.isHovered()) {
-			i += this.hoveredVOffset;
+			k += this.hoveredVOffset;
 		}
 
-		drawTexture(this.x, this.y, (float)this.u, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
+		drawTexture(matrixStack, this.x, this.y, (float)this.u, (float)k, this.width, this.height, this.textureWidth, this.textureHeight);
 		RenderSystem.enableDepthTest();
 	}
 }

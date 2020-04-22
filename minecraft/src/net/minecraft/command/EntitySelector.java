@@ -16,7 +16,7 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Texts;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -221,7 +221,7 @@ public class EntitySelector {
 		return list.subList(0, Math.min(this.limit, list.size()));
 	}
 
-	public static Text getNames(List<? extends Entity> list) {
+	public static MutableText getNames(List<? extends Entity> list) {
 		return Texts.join(list, Entity::getDisplayName);
 	}
 }

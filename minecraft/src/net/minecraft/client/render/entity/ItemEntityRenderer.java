@@ -56,7 +56,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		float l = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
 		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.getY();
 		matrixStack.translate(0.0, (double)(l + 0.25F * m), 0.0);
-		float n = ((float)itemEntity.getAge() + g) / 20.0F + itemEntity.hoverHeight;
+		float n = itemEntity.method_27314(g);
 		matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(n));
 		float o = bakedModel.getTransformation().ground.scale.getX();
 		float p = bakedModel.getTransformation().ground.scale.getY();

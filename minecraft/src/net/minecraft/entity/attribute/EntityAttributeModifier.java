@@ -12,23 +12,23 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityAttributeModifier {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final double amount;
+	private final double value;
 	private final EntityAttributeModifier.Operation operation;
 	private final Supplier<String> nameGetter;
 	private final UUID uuid;
 
-	public EntityAttributeModifier(String name, double amount, EntityAttributeModifier.Operation operation) {
-		this(MathHelper.randomUuid(ThreadLocalRandom.current()), (Supplier<String>)(() -> name), amount, operation);
+	public EntityAttributeModifier(String name, double value, EntityAttributeModifier.Operation operation) {
+		this(MathHelper.randomUuid(ThreadLocalRandom.current()), (Supplier<String>)(() -> name), value, operation);
 	}
 
-	public EntityAttributeModifier(UUID uuid, String name, double amount, EntityAttributeModifier.Operation operation) {
-		this(uuid, (Supplier<String>)(() -> name), amount, operation);
+	public EntityAttributeModifier(UUID uuid, String name, double value, EntityAttributeModifier.Operation operation) {
+		this(uuid, (Supplier<String>)(() -> name), value, operation);
 	}
 
-	public EntityAttributeModifier(UUID uuid, Supplier<String> nameGetter, double amount, EntityAttributeModifier.Operation operation) {
+	public EntityAttributeModifier(UUID uuid, Supplier<String> nameGetter, double value, EntityAttributeModifier.Operation operation) {
 		this.uuid = uuid;
 		this.nameGetter = nameGetter;
-		this.amount = amount;
+		this.value = value;
 		this.operation = operation;
 	}
 
@@ -44,8 +44,8 @@ public class EntityAttributeModifier {
 		return this.operation;
 	}
 
-	public double getAmount() {
-		return this.amount;
+	public double getValue() {
+		return this.value;
 	}
 
 	public boolean equals(Object o) {
@@ -65,7 +65,7 @@ public class EntityAttributeModifier {
 
 	public String toString() {
 		return "AttributeModifier{amount="
-			+ this.amount
+			+ this.value
 			+ ", operation="
 			+ this.operation
 			+ ", name='"
@@ -79,7 +79,7 @@ public class EntityAttributeModifier {
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", this.getName());
-		compoundTag.putDouble("Amount", this.amount);
+		compoundTag.putDouble("Amount", this.value);
 		compoundTag.putInt("Operation", this.operation.getId());
 		compoundTag.putUuidNew("UUID", this.uuid);
 		return compoundTag;

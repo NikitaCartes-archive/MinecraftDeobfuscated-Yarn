@@ -126,9 +126,7 @@ public abstract class AbstractFireBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!entity.isFireImmune()
-			&& (!(entity instanceof LivingEntity) || !EnchantmentHelper.hasFrostWalker((LivingEntity)entity))
-			&& !entity.isTouchingWaterOrRain()) {
+		if (!entity.isFireImmune() && (!(entity instanceof LivingEntity) || !EnchantmentHelper.hasFrostWalker((LivingEntity)entity))) {
 			entity.setFireTicks(entity.getFireTicks() + 1);
 			if (entity.getFireTicks() == 0) {
 				entity.setOnFireFor(8);

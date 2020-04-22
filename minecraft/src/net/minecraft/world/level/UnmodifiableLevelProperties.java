@@ -1,8 +1,8 @@
 package net.minecraft.world.level;
 
-import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.UUID;
+import net.minecraft.class_5217;
+import net.minecraft.class_5219;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.CrashReportSection;
@@ -10,24 +10,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.timer.Timer;
 
-public class UnmodifiableLevelProperties extends LevelProperties {
-	private final LevelProperties properties;
+public class UnmodifiableLevelProperties implements class_5217 {
+	private final DimensionType field_24178;
+	private final class_5219 field_24179;
+	private final class_5217 properties;
 
-	public UnmodifiableLevelProperties(LevelProperties properties) {
-		this.properties = properties;
-	}
-
-	@Override
-	public CompoundTag cloneWorldTag(@Nullable CompoundTag playerTag) {
-		return this.properties.cloneWorldTag(playerTag);
+	public UnmodifiableLevelProperties(DimensionType dimensionType, class_5219 arg, class_5217 arg2) {
+		this.field_24178 = dimensionType;
+		this.field_24179 = arg;
+		this.properties = arg2;
 	}
 
 	@Override
 	public long getSeed() {
-		return this.properties.getSeed();
+		return this.field_24179.getSeed();
 	}
 
 	@Override
@@ -56,24 +56,17 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public CompoundTag getPlayerData() {
-		return this.properties.getPlayerData();
-	}
-
-	@Override
 	public String getLevelName() {
-		return this.properties.getLevelName();
+		return this.field_24179.getLevelName();
 	}
 
 	@Override
-	public int getVersion() {
-		return this.properties.getVersion();
+	public int getClearWeatherTime() {
+		return this.properties.getClearWeatherTime();
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
-	public long getLastPlayed() {
-		return this.properties.getLastPlayed();
+	public void setClearWeatherTime(int i) {
 	}
 
 	@Override
@@ -98,53 +91,61 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Override
 	public GameMode getGameMode() {
-		return this.properties.getGameMode();
+		return this.field_24179.getGameMode();
 	}
 
 	@Override
-	public void setTime(long time) {
+	public void method_27416(int i) {
 	}
 
 	@Override
-	public void setTimeOfDay(long timeOfDay) {
+	public void method_27417(int i) {
 	}
 
 	@Override
-	public void setSpawnPos(BlockPos pos) {
+	public void method_27419(int i) {
 	}
 
 	@Override
-	public void setLevelName(String levelName) {
+	public void setTime(long l) {
 	}
 
 	@Override
-	public void setVersion(int version) {
+	public void setTimeOfDay(long l) {
 	}
 
 	@Override
-	public void setThundering(boolean thundering) {
+	public void setSpawnPos(BlockPos blockPos) {
 	}
 
 	@Override
-	public void setThunderTime(int thunderTime) {
+	public void setThundering(boolean bl) {
 	}
 
 	@Override
-	public void setRaining(boolean raining) {
+	public void setThunderTime(int i) {
 	}
 
 	@Override
-	public void setRainTime(int rainTime) {
+	public void setRaining(boolean bl) {
 	}
 
 	@Override
-	public boolean hasStructures() {
-		return this.properties.hasStructures();
+	public void setRainTime(int i) {
+	}
+
+	@Override
+	public boolean method_27420() {
+		return this.properties.method_27420();
+	}
+
+	@Override
+	public void setGameMode(GameMode gameMode) {
 	}
 
 	@Override
 	public boolean isHardcore() {
-		return this.properties.isHardcore();
+		return false;
 	}
 
 	@Override
@@ -153,16 +154,13 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setGeneratorOptions(LevelGeneratorOptions options) {
+	public LevelGeneratorOptions method_27421() {
+		return this.properties.method_27421();
 	}
 
 	@Override
 	public boolean areCommandsAllowed() {
-		return this.properties.areCommandsAllowed();
-	}
-
-	@Override
-	public void setCommandsAllowed(boolean commandsAllowed) {
+		return this.field_24179.areCommandsAllowed();
 	}
 
 	@Override
@@ -171,30 +169,31 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setInitialized(boolean initialized) {
+	public void setInitialized(boolean bl) {
 	}
 
 	@Override
 	public GameRules getGameRules() {
-		return this.properties.getGameRules();
+		return this.field_24179.getGameRules();
+	}
+
+	@Override
+	public WorldBorder.class_5200 method_27422() {
+		return this.properties.method_27422();
+	}
+
+	@Override
+	public void method_27415(WorldBorder.class_5200 arg) {
 	}
 
 	@Override
 	public Difficulty getDifficulty() {
-		return this.properties.getDifficulty();
-	}
-
-	@Override
-	public void setDifficulty(Difficulty difficulty) {
+		return this.field_24179.getDifficulty();
 	}
 
 	@Override
 	public boolean isDifficultyLocked() {
-		return this.properties.isDifficultyLocked();
-	}
-
-	@Override
-	public void setDifficultyLocked(boolean difficultyLocked) {
+		return this.field_24179.isDifficultyLocked();
 	}
 
 	@Override
@@ -203,18 +202,40 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void setWorldData(DimensionType type, CompoundTag tag) {
-		this.properties.setWorldData(type, tag);
+	public void setWorldData(CompoundTag compoundTag) {
+		this.field_24179.method_27435(this.field_24178, compoundTag);
 	}
 
 	@Override
-	public CompoundTag getWorldData(DimensionType type) {
-		return this.properties.getWorldData(type);
+	public CompoundTag getWorldData() {
+		return this.field_24179.method_27434(this.field_24178);
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection section) {
-		section.add("Derived", true);
-		this.properties.populateCrashReport(section);
+	public int getWanderingTraderSpawnDelay() {
+		return 0;
+	}
+
+	@Override
+	public void setWanderingTraderSpawnDelay(int i) {
+	}
+
+	@Override
+	public int getWanderingTraderSpawnChance() {
+		return 0;
+	}
+
+	@Override
+	public void setWanderingTraderSpawnChance(int i) {
+	}
+
+	@Override
+	public void setWanderingTraderId(UUID uUID) {
+	}
+
+	@Override
+	public void populateCrashReport(CrashReportSection crashReportSection) {
+		crashReportSection.add("Derived", true);
+		this.properties.populateCrashReport(crashReportSection);
 	}
 }

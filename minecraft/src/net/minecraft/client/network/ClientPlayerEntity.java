@@ -345,6 +345,21 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return true;
 	}
 
+	@Override
+	public boolean isHoldingOntoLadder() {
+		return !this.abilities.flying && super.isHoldingOntoLadder();
+	}
+
+	@Override
+	public boolean method_27298() {
+		return !this.abilities.flying && super.method_27298();
+	}
+
+	@Override
+	public boolean method_27302() {
+		return !this.abilities.flying && super.method_27302();
+	}
+
 	protected void startRidingJump() {
 		this.networkHandler
 			.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_RIDING_JUMP, MathHelper.floor(this.method_3151() * 100.0F)));
@@ -668,6 +683,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.pushOutOfBlocks(this.getX() - (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
 			this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() - (double)this.getWidth() * 0.35);
 			this.pushOutOfBlocks(this.getX() + (double)this.getWidth() * 0.35, this.getY() + 0.5, this.getZ() + (double)this.getWidth() * 0.35);
+		}
+
+		if (bl2) {
+			this.ticksLeftToDoubleTapSprint = 0;
 		}
 
 		boolean bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.abilities.allowFlying;

@@ -15,6 +15,6 @@ public class CheckerboardBiomeSource extends BiomeSource {
 
 	@Override
 	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		return this.biomeArray[Math.abs(((biomeX >> this.gridSize) + (biomeZ >> this.gridSize)) % this.biomeArray.length)];
+		return this.biomeArray[Math.floorMod((biomeX >> this.gridSize) + (biomeZ >> this.gridSize), this.biomeArray.length)];
 	}
 }

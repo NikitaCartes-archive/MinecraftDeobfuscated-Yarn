@@ -539,7 +539,7 @@ public interface DispenserBehavior {
 				}
 			}
 		});
-		DispenserBlock.registerBehavior(Items.GLOWSTONE, new ItemDispenserBehavior() {
+		DispenserBlock.registerBehavior(Items.GLOWSTONE, new FallibleItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
@@ -550,6 +550,8 @@ public interface DispenserBehavior {
 					if (blockState.get(RespawnAnchorBlock.CHARGES) != 4) {
 						RespawnAnchorBlock.charge(world, blockPos, blockState);
 						stack.decrement(1);
+					} else {
+						this.success = false;
 					}
 
 					return stack;
