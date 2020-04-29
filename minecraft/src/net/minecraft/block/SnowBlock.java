@@ -78,11 +78,11 @@ public class SnowBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.down());
-		Block block = blockState.getBlock();
-		if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
+		if (blockState.isOf(Blocks.ICE) || blockState.isOf(Blocks.PACKED_ICE) || blockState.isOf(Blocks.BARRIER)) {
 			return false;
-		} else if (block != Blocks.HONEY_BLOCK && block != Blocks.SOUL_SAND) {
-			return Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP) || block == this && blockState.get(LAYERS) == 8;
+		} else if (!blockState.isOf(Blocks.HONEY_BLOCK) && !blockState.isOf(Blocks.SOUL_SAND)) {
+			return Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP)
+				|| blockState.getBlock() == this && blockState.get(LAYERS) == 8;
 		} else {
 			return true;
 		}
@@ -117,7 +117,7 @@ public class SnowBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-		if (blockState.getBlock() == this) {
+		if (blockState.isOf(this)) {
 			int i = blockState.get(LAYERS);
 			return blockState.with(LAYERS, Integer.valueOf(Math.min(8, i + 1)));
 		} else {

@@ -101,7 +101,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof CampfireBlockEntity) {
 				ItemScatterer.spawn(world, pos, ((CampfireBlockEntity)blockEntity).getItemsBeingCooked());
@@ -136,7 +136,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	private boolean doesBlockCauseSignalFire(BlockState state) {
-		return state.getBlock() == Blocks.HAY_BLOCK;
+		return state.isOf(Blocks.HAY_BLOCK);
 	}
 
 	@Override

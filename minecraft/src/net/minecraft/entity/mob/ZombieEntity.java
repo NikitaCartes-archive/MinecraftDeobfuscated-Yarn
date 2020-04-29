@@ -242,7 +242,7 @@ public class ZombieEntity extends HostileEntity {
 	protected void convertInWater() {
 		this.convertTo(EntityType.DROWNED);
 		if (!this.isSilent()) {
-			this.world.playLevelEvent(null, 1040, this.getBlockPos(), 0);
+			this.world.syncWorldEvent(null, 1040, this.getBlockPos(), 0);
 		}
 	}
 
@@ -445,7 +445,7 @@ public class ZombieEntity extends HostileEntity {
 			zombieVillagerEntity.setInvulnerable(this.isInvulnerable());
 			this.world.spawnEntity(zombieVillagerEntity);
 			if (!this.isSilent()) {
-				this.world.playLevelEvent(null, 1026, this.getBlockPos(), 0);
+				this.world.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
 			}
 		}
 	}

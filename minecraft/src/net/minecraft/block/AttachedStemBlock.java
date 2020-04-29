@@ -47,14 +47,14 @@ public class AttachedStemBlock extends PlantBlock {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
-		return newState.getBlock() != this.gourdBlock && direction == state.get(FACING)
+		return !newState.isOf(this.gourdBlock) && direction == state.get(FACING)
 			? this.gourdBlock.getStem().getDefaultState().with(StemBlock.AGE, Integer.valueOf(7))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.getBlock() == Blocks.FARMLAND;
+		return floor.isOf(Blocks.FARMLAND);
 	}
 
 	@Environment(EnvType.CLIENT)

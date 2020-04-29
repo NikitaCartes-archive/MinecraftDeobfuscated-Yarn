@@ -22,7 +22,7 @@ public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 
 	@Override
 	protected boolean chooseStemState(BlockState state) {
-		return state.getBlock() == Blocks.WATER;
+		return state.isOf(Blocks.WATER);
 	}
 
 	@Override

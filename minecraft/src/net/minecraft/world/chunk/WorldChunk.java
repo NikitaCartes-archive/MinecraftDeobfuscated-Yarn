@@ -287,7 +287,7 @@ public class WorldChunk implements Chunk {
 				this.world.removeBlockEntity(pos);
 			}
 
-			if (chunkSection.getBlockState(i, j & 15, k).getBlock() != block) {
+			if (!chunkSection.getBlockState(i, j & 15, k).isOf(block)) {
 				return null;
 			} else {
 				if (block2 instanceof BlockEntityProvider) {

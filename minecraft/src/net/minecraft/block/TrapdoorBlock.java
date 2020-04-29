@@ -98,10 +98,10 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {
 		if (open) {
 			int i = this.material == Material.METAL ? 1037 : 1007;
-			world.playLevelEvent(player, i, pos, 0);
+			world.syncWorldEvent(player, i, pos, 0);
 		} else {
 			int i = this.material == Material.METAL ? 1036 : 1013;
-			world.playLevelEvent(player, i, pos, 0);
+			world.syncWorldEvent(player, i, pos, 0);
 		}
 	}
 

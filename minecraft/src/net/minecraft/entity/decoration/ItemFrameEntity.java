@@ -234,7 +234,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			mapState.setDirty(true);
 		}
 
-		map.method_27320(null);
+		map.setHolder(null);
 	}
 
 	public ItemStack getHeldItemStack() {
@@ -249,7 +249,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		if (!value.isEmpty()) {
 			value = value.copy();
 			value.setCount(1);
-			value.method_27320(this);
+			value.setHolder(this);
 		}
 
 		this.getDataTracker().set(ITEM_STACK, value);
@@ -277,7 +277,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		if (data.equals(ITEM_STACK)) {
 			ItemStack itemStack = this.getHeldItemStack();
 			if (!itemStack.isEmpty() && itemStack.getFrame() != this) {
-				itemStack.method_27320(this);
+				itemStack.setHolder(this);
 			}
 		}
 	}

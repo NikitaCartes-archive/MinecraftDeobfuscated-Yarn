@@ -141,7 +141,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		if (newState.getBlock() == this && direction.getAxis().isHorizontal()) {
+		if (newState.isOf(this) && direction.getAxis().isHorizontal()) {
 			ChestType chestType = newState.get(CHEST_TYPE);
 			if (state.get(CHEST_TYPE) == ChestType.SINGLE
 				&& chestType != ChestType.SINGLE
@@ -214,7 +214,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	@Nullable
 	private Direction getNeighborChestDirection(ItemPlacementContext ctx, Direction dir) {
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(dir));
-		return blockState.getBlock() == this && blockState.get(CHEST_TYPE) == ChestType.SINGLE ? blockState.get(FACING) : null;
+		return blockState.isOf(this) && blockState.get(CHEST_TYPE) == ChestType.SINGLE ? blockState.get(FACING) : null;
 	}
 
 	@Override
@@ -229,7 +229,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof Inventory) {
 				ItemScatterer.spawn(world, pos, (Inventory)blockEntity);

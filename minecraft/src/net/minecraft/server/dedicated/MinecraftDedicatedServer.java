@@ -33,7 +33,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
-import net.minecraft.server.rcon.RconServer;
+import net.minecraft.server.rcon.RconListener;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -46,7 +47,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
@@ -58,7 +58,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
 	private QueryResponseHandler queryResponseHandler;
 	private final ServerCommandOutput rconCommandOutput;
-	private RconServer rconServer;
+	private RconListener rconServer;
 	private final ServerPropertiesLoader propertiesLoader;
 	@Nullable
 	private DedicatedServerGui gui;
@@ -208,7 +208,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 			if (serverPropertiesHandler.enableRcon) {
 				LOGGER.info("Starting remote control listener");
-				this.rconServer = new RconServer(this);
+				this.rconServer = new RconListener(this);
 				this.rconServer.start();
 			}
 
@@ -404,8 +404,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean isSpawnProtected(World world, BlockPos pos, PlayerEntity player) {
-		if (world.dimension.getType() != DimensionType.OVERWORLD) {
+	public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
+		if (serverWorld.dimension.getType() != DimensionType.OVERWORLD) {
 			return false;
 		} else if (this.getPlayerManager().getOpList().isEmpty()) {
 			return false;
@@ -414,12 +414,17 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		} else if (this.getSpawnProtectionRadius() <= 0) {
 			return false;
 		} else {
-			BlockPos blockPos = world.getSpawnPos();
+			BlockPos blockPos = serverWorld.method_27911();
 			int i = MathHelper.abs(pos.getX() - blockPos.getX());
 			int j = MathHelper.abs(pos.getZ() - blockPos.getZ());
 			int k = Math.max(i, j);
 			return k <= this.getSpawnProtectionRadius();
 		}
+	}
+
+	@Override
+	public boolean acceptsStatusQuery() {
+		return this.getProperties().enableStatus;
 	}
 
 	@Override
@@ -534,9 +539,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public String executeRconCommand(String string) {
+	public String executeRconCommand(String command) {
 		this.rconCommandOutput.clear();
-		this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string));
+		this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), command));
 		return this.rconCommandOutput.asString();
 	}
 
@@ -553,6 +558,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public boolean isHost(GameProfile profile) {
 		return false;
+	}
+
+	@Override
+	public int adjustTrackingDistance(int initialDistance) {
+		return this.getProperties().entityBroadcastRangePercentage * initialDistance / 100;
 	}
 
 	@Override

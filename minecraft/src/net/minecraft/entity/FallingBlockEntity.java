@@ -102,7 +102,7 @@ public class FallingBlockEntity extends Entity {
 			Block block = this.block.getBlock();
 			if (this.timeFalling++ == 0) {
 				BlockPos blockPos = this.getBlockPos();
-				if (this.world.getBlockState(blockPos).getBlock() == block) {
+				if (this.world.getBlockState(blockPos).isOf(block)) {
 					this.world.removeBlock(blockPos, false);
 				} else if (!this.world.isClient) {
 					this.remove();
@@ -136,7 +136,7 @@ public class FallingBlockEntity extends Entity {
 				if (this.onGround || bl2) {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
-					if (blockState.getBlock() != Blocks.MOVING_PISTON) {
+					if (!blockState.isOf(Blocks.MOVING_PISTON)) {
 						this.remove();
 						if (!this.destroyedOnLanding) {
 							boolean bl3 = blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));

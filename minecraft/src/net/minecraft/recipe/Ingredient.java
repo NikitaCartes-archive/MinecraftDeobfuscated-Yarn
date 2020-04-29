@@ -223,7 +223,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("tag", ItemTags.getContainer().method_26798(this.tag).toString());
+			jsonObject.addProperty("tag", ItemTags.getContainer().checkId(this.tag).toString());
 			return jsonObject;
 		}
 	}

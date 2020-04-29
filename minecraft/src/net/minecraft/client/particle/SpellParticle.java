@@ -3,15 +3,15 @@ package net.minecraft.client.particle;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SpellParticle extends SpriteBillboardParticle {
 	private static final Random RANDOM = new Random();
 	private final SpriteProvider spriteProvider;
 
-	private SpellParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+	private SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.5 - RANDOM.nextDouble(), velocityY, 0.5 - RANDOM.nextDouble());
 		this.spriteProvider = spriteProvider;
 		this.velocityY *= 0.2F;
@@ -65,8 +65,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new SpellParticle(world, d, e, f, g, h, i, this.spriteProvider);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 
@@ -78,8 +78,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new SpellParticle(world, d, e, f, g, h, i, this.spriteProvider);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			Particle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 			particle.setColorAlpha(0.15F);
 			particle.setColor((float)g, (float)h, (float)i);
 			return particle;
@@ -94,8 +94,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 			this.field_17873 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new SpellParticle(world, d, e, f, g, h, i, this.field_17873);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			Particle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17873);
 			particle.setColor((float)g, (float)h, (float)i);
 			return particle;
 		}
@@ -109,8 +109,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 			this.field_17872 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new SpellParticle(world, d, e, f, g, h, i, this.field_17872);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17872);
 		}
 	}
 
@@ -122,9 +122,9 @@ public class SpellParticle extends SpriteBillboardParticle {
 			this.field_17875 = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			SpellParticle spellParticle = new SpellParticle(world, d, e, f, g, h, i, this.field_17875);
-			float j = world.random.nextFloat() * 0.5F + 0.35F;
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			SpellParticle spellParticle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17875);
+			float j = clientWorld.random.nextFloat() * 0.5F + 0.35F;
 			spellParticle.setColor(1.0F * j, 0.0F * j, 1.0F * j);
 			return spellParticle;
 		}

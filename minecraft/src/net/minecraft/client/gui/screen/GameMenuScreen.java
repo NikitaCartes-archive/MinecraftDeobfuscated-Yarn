@@ -144,9 +144,9 @@ public class GameMenuScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.showMenu) {
 			this.renderBackground(matrices);
-			this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 40, 16777215);
+			this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 40, 16777215);
 		} else {
-			this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
+			this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

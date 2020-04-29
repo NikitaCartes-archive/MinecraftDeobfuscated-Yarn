@@ -67,7 +67,7 @@ public class ErodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 			BlockState blockState5 = chunk.getBlockState(mutable);
 			if (blockState5.isAir()) {
 				r = -1;
-			} else if (blockState5.getBlock() == blockState.getBlock()) {
+			} else if (blockState5.isOf(blockState.getBlock())) {
 				if (r == -1) {
 					bl2 = false;
 					if (q <= 0) {

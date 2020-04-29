@@ -62,7 +62,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		int l = this.backgroundHeight - 94;
 		if (k > 0 && k <= 5 && this.handler.isLevelled()) {
 			String string = "- " + I18n.translate("merchant.level." + k);
-			int m = this.textRenderer.getWidth(this.title);
+			int m = this.textRenderer.getStringWidth(this.title);
 			int n = this.textRenderer.getWidth(string);
 			int o = m + n + 3;
 			int p = 49 + this.backgroundWidth / 2 - o / 2;
@@ -70,7 +70,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 			this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 107.0F, (float)l, 4210752);
 			this.textRenderer.draw(matrixStack, string, (float)(p + m + 3), 6.0F, 4210752);
 		} else {
-			this.textRenderer.draw(matrixStack, this.title, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
+			this.textRenderer.draw(matrixStack, this.title, (float)(49 + this.backgroundWidth / 2 - this.textRenderer.getStringWidth(this.title) / 2), 6.0F, 4210752);
 			this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 107.0F, (float)l, 4210752);
 		}
 

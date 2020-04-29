@@ -17,10 +17,10 @@ public abstract class BlockWithEntity extends Block implements BlockEntityProvid
 	}
 
 	@Override
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
-		super.onBlockAction(state, world, pos, channel, value);
+	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+		super.onSyncedBlockEvent(state, world, pos, type, data);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		return blockEntity == null ? false : blockEntity.onBlockAction(channel, value);
+		return blockEntity == null ? false : blockEntity.onSyncedBlockEvent(type, data);
 	}
 
 	@Nullable

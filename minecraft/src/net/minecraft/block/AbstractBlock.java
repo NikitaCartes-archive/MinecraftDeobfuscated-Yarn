@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -125,7 +126,7 @@ public abstract class AbstractBlock {
 
 	@Deprecated
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (this.hasBlockEntity() && state.getBlock() != newState.getBlock()) {
+		if (this.hasBlockEntity() && !state.isOf(newState.getBlock())) {
 			world.removeBlockEntity(pos);
 		}
 	}
@@ -136,7 +137,7 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
+	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 		return false;
 	}
 
@@ -556,8 +557,8 @@ public abstract class AbstractBlock {
 			}
 		}
 
-		public boolean onBlockAction(World world, BlockPos pos, int channel, int value) {
-			return this.getBlock().onBlockAction(this.asBlockState(), world, pos, channel, value);
+		public boolean onSyncedBlockEvent(World world, BlockPos pos, int type, int data) {
+			return this.getBlock().onSyncedBlockEvent(this.asBlockState(), world, pos, type, data);
 		}
 
 		public void neighborUpdate(World world, BlockPos pos, Block block, BlockPos posFrom, boolean notify) {
@@ -656,6 +657,14 @@ public abstract class AbstractBlock {
 
 		public boolean isIn(Tag<Block> tag) {
 			return this.getBlock().isIn(tag);
+		}
+
+		public boolean method_27851(Tag<Block> tag, Predicate<AbstractBlock.AbstractBlockState> predicate) {
+			return this.getBlock().isIn(tag) && predicate.test(this);
+		}
+
+		public boolean isOf(Block block) {
+			return this.getBlock().is(block);
 		}
 
 		public FluidState getFluidState() {
@@ -762,9 +771,7 @@ public abstract class AbstractBlock {
 					world, pos, Direction.UP
 				)
 				&& state.getLuminance() < 14;
-		private AbstractBlock.ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight()
-				&& state.isFullCube(world, pos)
-				&& !state.emitsRedstonePower();
+		private AbstractBlock.ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
 		private AbstractBlock.ContextPredicate suffocationPredicate = (state, world, pos) -> this.material.blocksMovement() && state.isFullCube(world, pos);
 		private AbstractBlock.ContextPredicate blockVisionPredicate = this.suffocationPredicate;
 		private AbstractBlock.ContextPredicate postProcessPredicate = (state, world, pos) -> false;

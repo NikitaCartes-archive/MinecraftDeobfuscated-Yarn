@@ -84,7 +84,7 @@ public class WrittenBookItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.LECTERN) {
+		if (blockState.isOf(Blocks.LECTERN)) {
 			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;

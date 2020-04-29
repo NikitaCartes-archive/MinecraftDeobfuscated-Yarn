@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Util;
@@ -27,7 +27,7 @@ public class MultipartBakedModel implements BakedModel {
 	protected final boolean field_21863;
 	protected final Sprite sprite;
 	protected final ModelTransformation transformations;
-	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
+	protected final ModelOverrideList itemPropertyOverrides;
 	private final Map<BlockState, BitSet> stateCache = new Object2ObjectOpenCustomHashMap<>(Util.identityHashStrategy());
 
 	public MultipartBakedModel(List<Pair<Predicate<BlockState>, BakedModel>> components) {
@@ -38,7 +38,7 @@ public class MultipartBakedModel implements BakedModel {
 		this.field_21863 = bakedModel.isSideLit();
 		this.sprite = bakedModel.getSprite();
 		this.transformations = bakedModel.getTransformation();
-		this.itemPropertyOverrides = bakedModel.getItemPropertyOverrides();
+		this.itemPropertyOverrides = bakedModel.getOverrides();
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class MultipartBakedModel implements BakedModel {
 	}
 
 	@Override
-	public ModelItemPropertyOverrideList getItemPropertyOverrides() {
+	public ModelOverrideList getOverrides() {
 		return this.itemPropertyOverrides;
 	}
 

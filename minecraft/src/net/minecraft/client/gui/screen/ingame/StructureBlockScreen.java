@@ -444,7 +444,7 @@ public class StructureBlockScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		StructureBlockMode structureBlockMode = this.structureBlock.getMode();
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		if (structureBlockMode != StructureBlockMode.DATA) {
 			this.drawString(matrices, this.textRenderer, I18n.translate("structure_block.structure_name"), this.width / 2 - 153, 30, 10526880);
 			this.inputName.render(matrices, mouseX, mouseY, delta);

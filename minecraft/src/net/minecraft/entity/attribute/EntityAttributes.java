@@ -4,7 +4,7 @@ import net.minecraft.util.registry.Registry;
 
 public class EntityAttributes {
 	public static final EntityAttribute GENERIC_MAX_HEALTH = register(
-		"generic.max_health", new ClampedEntityAttribute("attribute.name.generic.max_health", 20.0, 0.0, 1024.0).setTracked(true)
+		"generic.max_health", new ClampedEntityAttribute("attribute.name.generic.max_health", 20.0, 1.0, 1024.0).setTracked(true)
 	);
 	public static final EntityAttribute GENERIC_FOLLOW_RANGE = register(
 		"generic.follow_range", new ClampedEntityAttribute("attribute.name.generic.follow_range", 32.0, 0.0, 2048.0)

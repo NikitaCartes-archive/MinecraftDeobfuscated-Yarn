@@ -8,10 +8,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ItemPickupParticle extends Particle {
@@ -21,12 +21,14 @@ public class ItemPickupParticle extends Particle {
 	private int ticksExisted;
 	private final EntityRenderDispatcher dispatcher;
 
-	public ItemPickupParticle(EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, World world, Entity itemEntity, Entity interactingEntity) {
+	public ItemPickupParticle(
+		EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, ClientWorld world, Entity itemEntity, Entity interactingEntity
+	) {
 		this(dispatcher, bufferStorage, world, itemEntity, interactingEntity, itemEntity.getVelocity());
 	}
 
 	private ItemPickupParticle(
-		EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, World world, Entity itemEntity, Entity interactingEntity, Vec3d velocity
+		EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, ClientWorld world, Entity itemEntity, Entity interactingEntity, Vec3d velocity
 	) {
 		super(world, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), velocity.x, velocity.y, velocity.z);
 		this.bufferStorage = bufferStorage;

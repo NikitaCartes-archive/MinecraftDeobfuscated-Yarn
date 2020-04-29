@@ -2,8 +2,8 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class PortalParticle extends SpriteBillboardParticle {
@@ -11,8 +11,8 @@ public class PortalParticle extends SpriteBillboardParticle {
 	private final double startY;
 	private final double startZ;
 
-	protected PortalParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e, f);
+	protected PortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		super(clientWorld, d, e, f);
 		this.velocityX = g;
 		this.velocityY = h;
 		this.velocityZ = i;
@@ -91,8 +91,8 @@ public class PortalParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			PortalParticle portalParticle = new PortalParticle(world, d, e, f, g, h, i);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			PortalParticle portalParticle = new PortalParticle(clientWorld, d, e, f, g, h, i);
 			portalParticle.setSprite(this.spriteProvider);
 			return portalParticle;
 		}

@@ -120,7 +120,7 @@ public class SelectWorldScreen extends Screen {
 		this.tooltipText = null;
 		this.levelList.render(matrices, mouseX, mouseY, delta);
 		this.searchBox.render(matrices, mouseX, mouseY, delta);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.tooltipText != null) {
 			this.renderTooltip(matrices, this.tooltipText, mouseX, mouseY);

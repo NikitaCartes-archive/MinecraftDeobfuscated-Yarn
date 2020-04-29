@@ -213,7 +213,7 @@ public abstract class ChunkTicketManager {
 		this.nearbyChunkTicketUpdater.setWatchDistance(viewDistance);
 	}
 
-	public int getLevelCount() {
+	public int getSpawningChunkCount() {
 		this.distanceFromNearestPlayerTracker.updateLevels();
 		return this.distanceFromNearestPlayerTracker.distanceFromNearestPlayer.size();
 	}

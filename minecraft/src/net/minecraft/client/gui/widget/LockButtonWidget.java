@@ -32,7 +32,7 @@ public class LockButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;
@@ -44,7 +44,7 @@ public class LockButtonWidget extends ButtonWidget {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED : LockButtonWidget.IconLocation.UNLOCKED;
 		}
 
-		this.drawTexture(matrixStack, this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
+		this.drawTexture(matrices, this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -106,8 +106,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		return this.commandExecutor;
 	}
 
-	public void setPowered(boolean bl) {
-		this.powered = bl;
+	public void setPowered(boolean powered) {
+		this.powered = powered;
 	}
 
 	public boolean isPowered() {
@@ -118,10 +118,10 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		return this.auto;
 	}
 
-	public void setAuto(boolean bl) {
-		boolean bl2 = this.auto;
-		this.auto = bl;
-		if (!bl2 && bl && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
+	public void setAuto(boolean auto) {
+		boolean bl = this.auto;
+		this.auto = auto;
+		if (!bl && auto && !this.powered && this.world != null && this.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 			this.method_23360();
 		}
 	}
@@ -169,13 +169,13 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public CommandBlockBlockEntity.Type getCommandBlockType() {
-		Block block = this.getCachedState().getBlock();
-		if (block == Blocks.COMMAND_BLOCK) {
+		BlockState blockState = this.getCachedState();
+		if (blockState.isOf(Blocks.COMMAND_BLOCK)) {
 			return CommandBlockBlockEntity.Type.REDSTONE;
-		} else if (block == Blocks.REPEATING_COMMAND_BLOCK) {
+		} else if (blockState.isOf(Blocks.REPEATING_COMMAND_BLOCK)) {
 			return CommandBlockBlockEntity.Type.AUTO;
 		} else {
-			return block == Blocks.CHAIN_COMMAND_BLOCK ? CommandBlockBlockEntity.Type.SEQUENCE : CommandBlockBlockEntity.Type.REDSTONE;
+			return blockState.isOf(Blocks.CHAIN_COMMAND_BLOCK) ? CommandBlockBlockEntity.Type.SEQUENCE : CommandBlockBlockEntity.Type.REDSTONE;
 		}
 	}
 

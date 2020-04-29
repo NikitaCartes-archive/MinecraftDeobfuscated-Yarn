@@ -33,7 +33,7 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isSideSolidFullSquare(world, pos, Direction.UP) && floor.getBlock() != Blocks.MAGMA_BLOCK;
+		return floor.isSideSolidFullSquare(world, pos, Direction.UP) && !floor.isOf(Blocks.MAGMA_BLOCK);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -60,7 +60,7 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		if (state.get(HALF) == DoubleBlockHalf.UPPER) {
 			BlockState blockState = world.getBlockState(pos.down());
-			return blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
+			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
 		} else {
 			FluidState fluidState = world.getFluidState(pos);
 			return super.canPlaceAt(state, world, pos) && fluidState.matches(FluidTags.WATER) && fluidState.getLevel() == 8;

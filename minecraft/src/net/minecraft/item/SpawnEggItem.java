@@ -8,7 +8,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -57,8 +56,7 @@ public class SpawnEggItem extends Item {
 			BlockPos blockPos = context.getBlockPos();
 			Direction direction = context.getSide();
 			BlockState blockState = world.getBlockState(blockPos);
-			Block block = blockState.getBlock();
-			if (block == Blocks.SPAWNER) {
+			if (blockState.isOf(Blocks.SPAWNER)) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();

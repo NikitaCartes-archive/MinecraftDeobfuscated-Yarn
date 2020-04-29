@@ -58,7 +58,7 @@ public interface class_5219 {
 
 	void setCustomBossEvents(@Nullable CompoundTag compoundTag);
 
-	class_5217 method_27437(DimensionType dimensionType);
+	class_5268 method_27859();
 
 	LevelInfo method_27433();
 

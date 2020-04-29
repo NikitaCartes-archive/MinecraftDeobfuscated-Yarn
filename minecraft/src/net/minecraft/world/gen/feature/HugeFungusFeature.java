@@ -107,7 +107,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 
 	private void generateHat(IWorld world, Random random, HugeFungusFeatureConfig config, BlockPos blockPos, int hatHeight, boolean thickStem) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		boolean bl = config.hatState.getBlock() == Blocks.NETHER_WART_BLOCK;
+		boolean bl = config.hatState.isOf(Blocks.NETHER_WART_BLOCK);
 		int i = Math.min(random.nextInt(1 + hatHeight / 3) + 5, hatHeight);
 		int j = hatHeight - i;
 
@@ -165,7 +165,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 	}
 
 	private void tryGenerateVines(IWorld world, Random random, BlockPos pos, BlockState state, boolean bl) {
-		if (world.getBlockState(pos.down()).getBlock() == state.getBlock()) {
+		if (world.getBlockState(pos.down()).isOf(state.getBlock())) {
 			this.setBlockState(world, pos, state);
 		} else if ((double)random.nextFloat() < 0.15) {
 			this.setBlockState(world, pos, state);

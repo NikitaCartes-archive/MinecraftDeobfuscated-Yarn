@@ -31,9 +31,9 @@ public abstract class EntityTypePredicate {
 
 	public abstract JsonElement toJson();
 
-	public static EntityTypePredicate deserialize(@Nullable JsonElement element) {
-		if (element != null && !element.isJsonNull()) {
-			String string = JsonHelper.asString(element, "type");
+	public static EntityTypePredicate fromJson(@Nullable JsonElement json) {
+		if (json != null && !json.isJsonNull()) {
+			String string = JsonHelper.asString(json, "type");
 			if (string.startsWith("#")) {
 				Identifier identifier = new Identifier(string.substring(1));
 				return new EntityTypePredicate.Tagged(EntityTypeTags.getContainer().getOrCreate(identifier));
@@ -91,7 +91,7 @@ public abstract class EntityTypePredicate {
 
 		@Override
 		public JsonElement toJson() {
-			return new JsonPrimitive("#" + EntityTypeTags.getContainer().method_26798(this.tag));
+			return new JsonPrimitive("#" + EntityTypeTags.getContainer().checkId(this.tag));
 		}
 	}
 }

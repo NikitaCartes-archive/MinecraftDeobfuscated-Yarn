@@ -144,7 +144,7 @@ public class ProtoChunk implements Chunk {
 		int j = pos.getY();
 		int k = pos.getZ();
 		if (j >= 0 && j < 256) {
-			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && state.getBlock() == Blocks.AIR) {
+			if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && state.isOf(Blocks.AIR)) {
 				return state;
 			} else {
 				if (state.getLuminance() > 0) {

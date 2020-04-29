@@ -4,6 +4,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5217;
+import net.minecraft.class_5268;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.nbt.CompoundTag;
@@ -23,8 +25,18 @@ public class TheEndDimension extends Dimension {
 
 	public TheEndDimension(World world, DimensionType type) {
 		super(world, type, 0.0F);
-		CompoundTag compoundTag = world.getLevelProperties().getWorldData();
-		this.enderDragonFight = world instanceof ServerWorld ? new EnderDragonFight((ServerWorld)world, compoundTag.getCompound("DragonFight")) : null;
+		if (world instanceof ServerWorld) {
+			ServerWorld serverWorld = (ServerWorld)world;
+			class_5217 lv = serverWorld.getLevelProperties();
+			if (lv instanceof class_5268) {
+				CompoundTag compoundTag = ((class_5268)lv).getWorldData();
+				this.enderDragonFight = new EnderDragonFight(serverWorld, compoundTag.getCompound("DragonFight"));
+			} else {
+				this.enderDragonFight = null;
+			}
+		} else {
+			this.enderDragonFight = null;
+		}
 	}
 
 	@Override
@@ -108,13 +120,13 @@ public class TheEndDimension extends Dimension {
 	}
 
 	@Override
-	public void saveWorldData() {
+	public void saveWorldData(class_5268 arg) {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.enderDragonFight != null) {
 			compoundTag.put("DragonFight", this.enderDragonFight.toTag());
 		}
 
-		this.world.getLevelProperties().setWorldData(compoundTag);
+		arg.setWorldData(compoundTag);
 	}
 
 	@Override

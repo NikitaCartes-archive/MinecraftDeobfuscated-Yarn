@@ -48,7 +48,7 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 	private boolean canPlacePileBlock(IWorld world, BlockPos pos, Random random) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return blockState.getBlock() == Blocks.GRASS_PATH ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+		return blockState.isOf(Blocks.GRASS_PATH) ? random.nextBoolean() : blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
 	}
 
 	private void addPileBlock(IWorld world, BlockPos pos, Random random, BlockPileFeatureConfig config) {

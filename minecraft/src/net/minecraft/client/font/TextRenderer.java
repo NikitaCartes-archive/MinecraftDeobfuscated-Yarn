@@ -27,7 +27,7 @@ import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class TextRenderer {
-	private static final Vector3f FORWARD_SHIFT = new Vector3f(0.0F, 0.0F, 0.001F);
+	private static final Vector3f FORWARD_SHIFT = new Vector3f(0.0F, 0.0F, 0.03F);
 	public final int fontHeight = 9;
 	public final Random random = new Random();
 	private final Function<Identifier, FontStorage> fontStorageAccessor;
@@ -72,12 +72,12 @@ public class TextRenderer {
 		}
 	}
 
-	private int draw(String text, float x, float y, int color, Matrix4f matrix, boolean shadow, boolean rightToLeft) {
+	private int draw(String text, float x, float y, int color, Matrix4f matrix, boolean shadow, boolean mirror) {
 		if (text == null) {
 			return 0;
 		} else {
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 15728880, rightToLeft);
+			int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 15728880, mirror);
 			immediate.draw();
 			return i;
 		}
@@ -151,9 +151,9 @@ public class TextRenderer {
 		boolean seeThrough,
 		int backgroundColor,
 		int light,
-		boolean rightToLeft
+		boolean mirror
 	) {
-		if (rightToLeft) {
+		if (mirror) {
 			text = this.mirror(text);
 		}
 
@@ -250,7 +250,7 @@ public class TextRenderer {
 		return MathHelper.ceil(this.handler.getWidth(text));
 	}
 
-	public int getWidth(Text text) {
+	public int getStringWidth(Text text) {
 		return MathHelper.ceil(this.handler.getWidth(text));
 	}
 
@@ -367,11 +367,11 @@ public class TextRenderer {
 			float m = glyph.getAdvance(bl);
 			float n = this.shadow ? 1.0F : 0.0F;
 			if (style.isStrikethrough()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 4.5F, this.x + n + m, this.y + n + 4.5F - 1.0F, -0.01F, g, h, l, f));
+				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 4.5F, this.x + n + m, this.y + n + 4.5F - 1.0F, 0.01F, g, h, l, f));
 			}
 
 			if (style.isUnderlined()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 9.0F, this.x + n + m, this.y + n + 9.0F - 1.0F, -0.01F, g, h, l, f));
+				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 9.0F, this.x + n + m, this.y + n + 9.0F - 1.0F, 0.01F, g, h, l, f));
 			}
 
 			this.x += m;
@@ -384,7 +384,7 @@ public class TextRenderer {
 				float g = (float)(underlineColor >> 16 & 0xFF) / 255.0F;
 				float h = (float)(underlineColor >> 8 & 0xFF) / 255.0F;
 				float i = (float)(underlineColor & 0xFF) / 255.0F;
-				this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0F, this.y + 9.0F, this.x + 1.0F, this.y - 1.0F, 0.01F, g, h, i, f));
+				this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0F, this.y + 9.0F, this.x + 1.0F, this.y - 1.0F, -0.01F, g, h, i, f));
 			}
 
 			if (this.rectangles != null) {

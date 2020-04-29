@@ -21,7 +21,7 @@ public class StraightTrunkPlacer extends TrunkPlacer {
 	}
 
 	@Override
-	public List<FoliagePlacer.class_5208> generate(
+	public List<FoliagePlacer.TreeNode> generate(
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
 		method_27400(world, pos.down());
@@ -30,6 +30,6 @@ public class StraightTrunkPlacer extends TrunkPlacer {
 			method_27402(world, random, pos.up(i), set, blockBox, treeFeatureConfig);
 		}
 
-		return ImmutableList.of(new FoliagePlacer.class_5208(pos.up(trunkHeight), 0, false));
+		return ImmutableList.of(new FoliagePlacer.TreeNode(pos.up(trunkHeight), 0, false));
 	}
 }

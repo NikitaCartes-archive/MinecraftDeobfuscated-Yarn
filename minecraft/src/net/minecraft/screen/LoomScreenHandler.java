@@ -142,7 +142,7 @@ public class LoomScreenHandler extends ScreenHandler {
 			|| !itemStack.isEmpty()
 				&& !itemStack2.isEmpty()
 				&& this.selectedPattern.get() > 0
-				&& (this.selectedPattern.get() < BannerPattern.COUNT - 5 || !itemStack3.isEmpty())) {
+				&& (this.selectedPattern.get() < BannerPattern.COUNT - BannerPattern.field_24417 || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
 				CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
 				boolean bl = compoundTag.contains("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;

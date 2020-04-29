@@ -77,12 +77,12 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					for(int u = p; u <= q; ++u) {
 						BlockPos blockPos2 = blockPos.add(s, t, u);
 						if (s != k && t != -1 && u != p && s != l && t != 4 && u != q) {
-							if (iWorld.getBlockState(blockPos2).getBlock() != Blocks.CHEST) {
+							if (!iWorld.getBlockState(blockPos2).isOf(Blocks.CHEST)) {
 								iWorld.setBlockState(blockPos2, AIR, 2);
 							}
 						} else if (blockPos2.getY() >= 0 && !iWorld.getBlockState(blockPos2.down()).getMaterial().isSolid()) {
 							iWorld.setBlockState(blockPos2, AIR, 2);
-						} else if (iWorld.getBlockState(blockPos2).getMaterial().isSolid() && iWorld.getBlockState(blockPos2).getBlock() != Blocks.CHEST) {
+						} else if (iWorld.getBlockState(blockPos2).getMaterial().isSolid() && !iWorld.getBlockState(blockPos2).isOf(Blocks.CHEST)) {
 							if (t == -1 && random.nextInt(4) != 0) {
 								iWorld.setBlockState(blockPos2, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
 							} else {

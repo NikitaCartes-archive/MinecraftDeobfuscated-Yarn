@@ -66,14 +66,14 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 
 	void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 
-	void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data);
+	void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data);
 
 	default int getDimensionHeight() {
 		return this.getDimension().isNether() ? 128 : 256;
 	}
 
-	default void playLevelEvent(int eventId, BlockPos pos, int data) {
-		this.playLevelEvent(null, eventId, pos, data);
+	default void syncWorldEvent(int eventId, BlockPos pos, int data) {
+		this.syncWorldEvent(null, eventId, pos, data);
 	}
 
 	@Override

@@ -28,16 +28,16 @@ public class LootTableEntry extends LeafEntry {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		if (lootTableReporter.hasSupplier(this.id)) {
-			lootTableReporter.report("Table " + this.id + " is recursively called");
+	public void check(LootTableReporter reporter) {
+		if (reporter.hasTable(this.id)) {
+			reporter.report("Table " + this.id + " is recursively called");
 		} else {
-			super.check(lootTableReporter);
-			LootTable lootTable = lootTableReporter.getSupplier(this.id);
+			super.check(reporter);
+			LootTable lootTable = reporter.getTable(this.id);
 			if (lootTable == null) {
-				lootTableReporter.report("Unknown loot table called " + this.id);
+				reporter.report("Unknown loot table called " + this.id);
 			} else {
-				lootTable.check(lootTableReporter.withSupplier("->{" + this.id + "}", this.id));
+				lootTable.check(reporter.withTable("->{" + this.id + "}", this.id));
 			}
 		}
 	}

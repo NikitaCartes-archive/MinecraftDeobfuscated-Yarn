@@ -32,7 +32,7 @@ public class TallPlantBlock extends PlantBlock {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y
 			|| doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)
-			|| newState.getBlock() == this && newState.get(HALF) != doubleBlockHalf) {
+			|| newState.isOf(this) && newState.get(HALF) != doubleBlockHalf) {
 			return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 				? Blocks.AIR.getDefaultState()
 				: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
@@ -59,7 +59,7 @@ public class TallPlantBlock extends PlantBlock {
 			return super.canPlaceAt(state, world, pos);
 		} else {
 			BlockState blockState = world.getBlockState(pos.down());
-			return blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
+			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
 		}
 	}
 
@@ -78,9 +78,9 @@ public class TallPlantBlock extends PlantBlock {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
 		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == this && blockState.get(HALF) != doubleBlockHalf) {
+		if (blockState.isOf(this) && blockState.get(HALF) != doubleBlockHalf) {
 			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-			world.playLevelEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+			world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
 			if (!world.isClient && !player.isCreative()) {
 				dropStacks(state, world, pos, null, player, player.getMainHandStack());
 				dropStacks(blockState, world, blockPos, null, player, player.getMainHandStack());

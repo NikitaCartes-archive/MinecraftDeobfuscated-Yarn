@@ -55,7 +55,7 @@ public class WorldEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getEffectData() {
+	public int getData() {
 		return this.data;
 	}
 

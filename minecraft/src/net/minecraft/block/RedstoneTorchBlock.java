@@ -64,7 +64,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 			if (bl) {
 				world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)), 3);
 				if (isBurnedOut(world, pos, true)) {
-					world.playLevelEvent(1502, pos, 0);
+					world.syncWorldEvent(1502, pos, 0);
 					world.getBlockTickScheduler().schedule(pos, world.getBlockState(pos).getBlock(), 160);
 				}
 			}

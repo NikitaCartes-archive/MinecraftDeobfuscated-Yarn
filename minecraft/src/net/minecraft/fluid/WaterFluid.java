@@ -24,7 +24,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public abstract class WaterFluid extends BaseFluid {
+public abstract class WaterFluid extends FlowableFluid {
 	@Override
 	public Fluid getFlowing() {
 		return Fluids.FLOWING_WATER;

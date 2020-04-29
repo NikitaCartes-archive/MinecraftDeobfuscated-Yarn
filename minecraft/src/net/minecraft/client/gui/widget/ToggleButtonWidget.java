@@ -44,21 +44,21 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
-		int k = this.u;
-		int l = this.v;
+		int i = this.u;
+		int j = this.v;
 		if (this.toggled) {
-			k += this.pressedUOffset;
+			i += this.pressedUOffset;
 		}
 
 		if (this.isHovered()) {
-			l += this.hoverVOffset;
+			j += this.hoverVOffset;
 		}
 
-		this.drawTexture(matrixStack, this.x, this.y, k, l, this.width, this.height);
+		this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
 		RenderSystem.enableDepthTest();
 	}
 }

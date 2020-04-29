@@ -4,7 +4,7 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.AbstractPlantStemBlock;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -95,8 +95,8 @@ public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 		if (!iWorld.isAir(blockPos)) {
 			return true;
 		} else {
-			Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-			return block != Blocks.NETHERRACK && block != Blocks.WARPED_NYLIUM && block != Blocks.WARPED_WART_BLOCK;
+			BlockState blockState = iWorld.getBlockState(blockPos.down());
+			return !blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.WARPED_NYLIUM) && !blockState.isOf(Blocks.WARPED_WART_BLOCK);
 		}
 	}
 }

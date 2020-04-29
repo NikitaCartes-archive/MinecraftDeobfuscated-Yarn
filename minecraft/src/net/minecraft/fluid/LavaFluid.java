@@ -24,7 +24,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public abstract class LavaFluid extends BaseFluid {
+public abstract class LavaFluid extends FlowableFluid {
 	@Override
 	public Fluid getFlowing() {
 		return Fluids.FLOWING_LAVA;
@@ -178,7 +178,7 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	private void playExtinguishEvent(IWorld world, BlockPos pos) {
-		world.playLevelEvent(1501, pos, 0);
+		world.syncWorldEvent(1501, pos, 0);
 	}
 
 	@Override

@@ -38,12 +38,12 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	protected long nextNarration = Long.MAX_VALUE;
 	private boolean focused;
 
-	public AbstractButtonWidget(int x, int y, int width, int height, Text text) {
+	public AbstractButtonWidget(int x, int y, int width, int height, Text message) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.message = text;
+		this.message = message;
 	}
 
 	public int getHeight() {
@@ -100,25 +100,25 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		return new TranslatableText("gui.narrate.button", this.getMessage());
 	}
 
-	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
 		minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
-		int k = this.getYImage(this.isHovered());
+		int i = this.getYImage(this.isHovered());
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-		this.drawTexture(matrixStack, this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
-		this.drawTexture(matrixStack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
-		this.renderBg(matrixStack, minecraftClient, i, j);
-		int l = this.active ? 16777215 : 10526880;
-		this.method_27534(
-			matrixStack, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0F) << 24
+		this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
+		this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+		this.renderBg(matrices, minecraftClient, mouseX, mouseY);
+		int j = this.active ? 16777215 : 10526880;
+		this.drawStringWithShadow(
+			matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24
 		);
 	}
 
-	protected void renderBg(MatrixStack matrixStack, MinecraftClient minecraftClient, int mouseY, int i) {
+	protected void renderBg(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
 	}
 
 	public void onClick(double mouseX, double mouseY) {

@@ -178,7 +178,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	public static boolean canSpawn(EntityType<HoglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		return world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
+		return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
 	}
 
 	@Nullable
@@ -201,7 +201,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		if (HoglinBrain.isWarpedFungusAround(this, pos)) {
 			return -1.0F;
 		} else {
-			return world.getBlockState(pos.down()).getBlock() == Blocks.CRIMSON_NYLIUM ? 10.0F : 0.0F;
+			return world.getBlockState(pos.down()).isOf(Blocks.CRIMSON_NYLIUM) ? 10.0F : 0.0F;
 		}
 	}
 

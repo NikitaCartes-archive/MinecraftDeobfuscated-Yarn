@@ -1,13 +1,14 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -22,11 +23,13 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		return ID;
 	}
 
-	public BeeNestDestroyedCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public BeeNestDestroyedCriterion.Conditions conditionsFromJson(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
 		Block block = getBlock(jsonObject);
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("num_bees_inside"));
-		return new BeeNestDestroyedCriterion.Conditions(block, itemPredicate, intRange);
+		return new BeeNestDestroyedCriterion.Conditions(extended, block, itemPredicate, intRange);
 	}
 
 	@Nullable
@@ -40,23 +43,24 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 	}
 
 	public void test(ServerPlayerEntity player, Block block, ItemStack stack, int beeCount) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.test(block, stack, beeCount));
+		this.test(player, conditions -> conditions.test(block, stack, beeCount));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
+		@Nullable
 		private final Block block;
 		private final ItemPredicate item;
 		private final NumberRange.IntRange beeCount;
 
-		public Conditions(Block block, ItemPredicate item, NumberRange.IntRange beeCount) {
-			super(BeeNestDestroyedCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, @Nullable Block block, ItemPredicate item, NumberRange.IntRange beeCount) {
+			super(BeeNestDestroyedCriterion.ID, player);
 			this.block = block;
 			this.item = item;
 			this.beeCount = beeCount;
 		}
 
 		public static BeeNestDestroyedCriterion.Conditions create(Block block, ItemPredicate.Builder itemPredicateBuilder, NumberRange.IntRange beeCountRange) {
-			return new BeeNestDestroyedCriterion.Conditions(block, itemPredicateBuilder.build(), beeCountRange);
+			return new BeeNestDestroyedCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, itemPredicateBuilder.build(), beeCountRange);
 		}
 
 		public boolean test(Block block, ItemStack stack, int count) {
@@ -68,8 +72,8 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			if (this.block != null) {
 				jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
 			}

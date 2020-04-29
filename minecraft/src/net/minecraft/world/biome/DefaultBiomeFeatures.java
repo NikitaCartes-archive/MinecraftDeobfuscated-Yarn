@@ -4,17 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.OptionalInt;
-import net.minecraft.class_5203;
-import net.minecraft.class_5204;
-import net.minecraft.class_5205;
-import net.minecraft.class_5206;
-import net.minecraft.class_5207;
-import net.minecraft.class_5209;
-import net.minecraft.class_5210;
-import net.minecraft.class_5211;
-import net.minecraft.class_5212;
-import net.minecraft.class_5214;
-import net.minecraft.class_5215;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MushroomBlock;
@@ -55,6 +44,8 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
+import net.minecraft.world.gen.feature.JungleFoliagePlacer;
+import net.minecraft.world.gen.feature.MegaPineFoliagePlacer;
 import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
@@ -73,8 +64,13 @@ import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
+import net.minecraft.world.gen.feature.size.ThreeLayersFeatureSize;
+import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 import net.minecraft.world.gen.foliage.AcaciaFoliagePlacer;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
+import net.minecraft.world.gen.foliage.BushFoliagePlacer;
+import net.minecraft.world.gen.foliage.DarkOakFoliagePlacer;
+import net.minecraft.world.gen.foliage.LargeOakFoliagePlacer;
 import net.minecraft.world.gen.foliage.PineFoliagePlacer;
 import net.minecraft.world.gen.foliage.SpruceFoliagePlacer;
 import net.minecraft.world.gen.placer.ColumnPlacer;
@@ -85,7 +81,11 @@ import net.minecraft.world.gen.stateprovider.PillarBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.PlainsFlowerBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
+import net.minecraft.world.gen.trunk.DarkOakTrunkPlacer;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
+import net.minecraft.world.gen.trunk.GiantTrunkPlacer;
+import net.minecraft.world.gen.trunk.LargeOakTrunkPlacer;
+import net.minecraft.world.gen.trunk.MegaJungleTrunkPlacer;
 import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
 
 public class DefaultBiomeFeatures {
@@ -174,22 +174,22 @@ public class DefaultBiomeFeatures {
 			new SimpleBlockStateProvider(OAK_LEAVES),
 			new BlobFoliagePlacer(2, 0, 0, 0, 3),
 			new StraightTrunkPlacer(4, 2, 0),
-			new class_5204(1, 0, 1)
+			new TwoLayersFeatureSize(1, 0, 1)
 		)
 		.method_27374()
 		.build();
-	private static final BeehiveTreeDecorator field_24110 = new BeehiveTreeDecorator(0.002F);
-	private static final BeehiveTreeDecorator field_24111 = new BeehiveTreeDecorator(0.02F);
-	private static final BeehiveTreeDecorator field_24112 = new BeehiveTreeDecorator(0.05F);
-	public static final TreeFeatureConfig OAK_TREE_WITH_RARE_BEEHIVES_CONFIG = OAK_TREE_CONFIG.method_27373(ImmutableList.of(field_24110));
-	public static final TreeFeatureConfig OAK_TREE_WITH_BEEHIVES_CONFIG = OAK_TREE_CONFIG.method_27373(ImmutableList.of(field_24111));
-	public static final TreeFeatureConfig OAK_TREE_WITH_MORE_BEEHIVES_CONFIG = OAK_TREE_CONFIG.method_27373(ImmutableList.of(field_24112));
+	private static final BeehiveTreeDecorator VERY_RARE_BEEHIVES_CONFIG = new BeehiveTreeDecorator(0.002F);
+	private static final BeehiveTreeDecorator REGULAR_BEEHIVES_CONFIG = new BeehiveTreeDecorator(0.02F);
+	private static final BeehiveTreeDecorator MORE_BEEHIVES_CONFIG = new BeehiveTreeDecorator(0.05F);
+	public static final TreeFeatureConfig OAK_TREE_WITH_RARE_BEEHIVES_CONFIG = OAK_TREE_CONFIG.setTreeDecorators(ImmutableList.of(VERY_RARE_BEEHIVES_CONFIG));
+	public static final TreeFeatureConfig OAK_TREE_WITH_BEEHIVES_CONFIG = OAK_TREE_CONFIG.setTreeDecorators(ImmutableList.of(REGULAR_BEEHIVES_CONFIG));
+	public static final TreeFeatureConfig OAK_TREE_WITH_MORE_BEEHIVES_CONFIG = OAK_TREE_CONFIG.setTreeDecorators(ImmutableList.of(MORE_BEEHIVES_CONFIG));
 	public static final TreeFeatureConfig JUNGLE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(JUNGLE_LOG),
 			new SimpleBlockStateProvider(JUNGLE_LEAVES),
 			new BlobFoliagePlacer(2, 0, 0, 0, 3),
 			new StraightTrunkPlacer(4, 8, 0),
-			new class_5204(1, 0, 1)
+			new TwoLayersFeatureSize(1, 0, 1)
 		)
 		.method_27376(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
 		.method_27374()
@@ -199,7 +199,7 @@ public class DefaultBiomeFeatures {
 			new SimpleBlockStateProvider(JUNGLE_LEAVES),
 			new BlobFoliagePlacer(2, 0, 0, 0, 3),
 			new StraightTrunkPlacer(4, 8, 0),
-			new class_5204(1, 0, 1)
+			new TwoLayersFeatureSize(1, 0, 1)
 		)
 		.method_27374()
 		.build();
@@ -208,7 +208,7 @@ public class DefaultBiomeFeatures {
 			new SimpleBlockStateProvider(SPRUCE_LEAVES),
 			new PineFoliagePlacer(1, 0, 1, 0, 3, 1),
 			new StraightTrunkPlacer(6, 4, 0),
-			new class_5204(2, 0, 2)
+			new TwoLayersFeatureSize(2, 0, 2)
 		)
 		.method_27374()
 		.build();
@@ -217,7 +217,7 @@ public class DefaultBiomeFeatures {
 			new SimpleBlockStateProvider(SPRUCE_LEAVES),
 			new SpruceFoliagePlacer(2, 1, 0, 2, 1, 1),
 			new StraightTrunkPlacer(4, 3, 2),
-			new class_5204(2, 0, 2)
+			new TwoLayersFeatureSize(2, 0, 2)
 		)
 		.method_27374()
 		.build();
@@ -226,7 +226,7 @@ public class DefaultBiomeFeatures {
 			new SimpleBlockStateProvider(ACACIA_LEAVES),
 			new AcaciaFoliagePlacer(2, 0, 0, 0),
 			new ForkingTrunkPlacer(5, 2, 2),
-			new class_5204(1, 0, 2)
+			new TwoLayersFeatureSize(1, 0, 2)
 		)
 		.method_27374()
 		.build();
@@ -235,29 +235,29 @@ public class DefaultBiomeFeatures {
 			new SimpleBlockStateProvider(BIRCH_LEAVES),
 			new BlobFoliagePlacer(2, 0, 0, 0, 3),
 			new StraightTrunkPlacer(5, 2, 0),
-			new class_5204(1, 0, 1)
+			new TwoLayersFeatureSize(1, 0, 1)
 		)
 		.method_27374()
 		.build();
-	public static final TreeFeatureConfig BIRCH_TREE_WITH_RARE_BEEHIVES_CONFIG = BIRCH_TREE_CONFIG.method_27373(ImmutableList.of(field_24110));
-	public static final TreeFeatureConfig BIRCH_TREE_WITH_BEEHIVES_CONFIG = BIRCH_TREE_CONFIG.method_27373(ImmutableList.of(field_24111));
-	public static final TreeFeatureConfig BIRCH_TREE_WITH_MORE_BEEHIVES_CONFIG = BIRCH_TREE_CONFIG.method_27373(ImmutableList.of(field_24112));
+	public static final TreeFeatureConfig BIRCH_TREE_WITH_RARE_BEEHIVES_CONFIG = BIRCH_TREE_CONFIG.setTreeDecorators(ImmutableList.of(VERY_RARE_BEEHIVES_CONFIG));
+	public static final TreeFeatureConfig BIRCH_TREE_WITH_BEEHIVES_CONFIG = BIRCH_TREE_CONFIG.setTreeDecorators(ImmutableList.of(REGULAR_BEEHIVES_CONFIG));
+	public static final TreeFeatureConfig BIRCH_TREE_WITH_MORE_BEEHIVES_CONFIG = BIRCH_TREE_CONFIG.setTreeDecorators(ImmutableList.of(MORE_BEEHIVES_CONFIG));
 	public static final TreeFeatureConfig LARGE_BIRCH_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(BIRCH_LOG),
 			new SimpleBlockStateProvider(BIRCH_LEAVES),
 			new BlobFoliagePlacer(2, 0, 0, 0, 3),
 			new StraightTrunkPlacer(5, 2, 6),
-			new class_5204(1, 0, 1)
+			new TwoLayersFeatureSize(1, 0, 1)
 		)
 		.method_27374()
-		.method_27376(ImmutableList.of(field_24110))
+		.method_27376(ImmutableList.of(VERY_RARE_BEEHIVES_CONFIG))
 		.build();
 	public static final TreeFeatureConfig SWAMP_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(OAK_LOG),
 			new SimpleBlockStateProvider(OAK_LEAVES),
 			new BlobFoliagePlacer(3, 0, 0, 0, 3),
 			new StraightTrunkPlacer(5, 3, 0),
-			new class_5204(1, 0, 1)
+			new TwoLayersFeatureSize(1, 0, 1)
 		)
 		.baseHeight(1)
 		.method_27376(ImmutableList.of(new LeaveVineTreeDecorator()))
@@ -265,31 +265,31 @@ public class DefaultBiomeFeatures {
 	public static final TreeFeatureConfig FANCY_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(OAK_LOG),
 			new SimpleBlockStateProvider(OAK_LEAVES),
-			new class_5207(2, 0, 4, 0, 4),
-			new class_5212(3, 11, 0),
-			new class_5204(0, 0, 0, OptionalInt.of(4))
+			new LargeOakFoliagePlacer(2, 0, 4, 0, 4),
+			new LargeOakTrunkPlacer(3, 11, 0),
+			new TwoLayersFeatureSize(0, 0, 0, OptionalInt.of(4))
 		)
 		.method_27374()
 		.method_27375(Heightmap.Type.MOTION_BLOCKING)
 		.build();
-	public static final TreeFeatureConfig FANCY_TREE_WITH_RARE_BEEHIVES_CONFIG = FANCY_TREE_CONFIG.method_27373(ImmutableList.of(field_24110));
-	public static final TreeFeatureConfig FANCY_TREE_WITH_BEEHIVES_CONFIG = FANCY_TREE_CONFIG.method_27373(ImmutableList.of(field_24111));
-	public static final TreeFeatureConfig FANCY_TREE_WITH_MORE_BEEHIVES_CONFIG = FANCY_TREE_CONFIG.method_27373(ImmutableList.of(field_24112));
+	public static final TreeFeatureConfig FANCY_TREE_WITH_RARE_BEEHIVES_CONFIG = FANCY_TREE_CONFIG.setTreeDecorators(ImmutableList.of(VERY_RARE_BEEHIVES_CONFIG));
+	public static final TreeFeatureConfig FANCY_TREE_WITH_BEEHIVES_CONFIG = FANCY_TREE_CONFIG.setTreeDecorators(ImmutableList.of(REGULAR_BEEHIVES_CONFIG));
+	public static final TreeFeatureConfig FANCY_TREE_WITH_MORE_BEEHIVES_CONFIG = FANCY_TREE_CONFIG.setTreeDecorators(ImmutableList.of(MORE_BEEHIVES_CONFIG));
 	public static final TreeFeatureConfig JUNGLE_GROUND_BUSH_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(JUNGLE_LOG),
 			new SimpleBlockStateProvider(OAK_LEAVES),
-			new class_5205(2, 0, 1, 0, 2),
+			new BushFoliagePlacer(2, 0, 1, 0, 2),
 			new StraightTrunkPlacer(1, 0, 0),
-			new class_5204(0, 0, 0)
+			new TwoLayersFeatureSize(0, 0, 0)
 		)
 		.method_27375(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)
 		.build();
 	public static final TreeFeatureConfig DARK_OAK_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(DARK_OAK_LOG),
 			new SimpleBlockStateProvider(DARK_OAK_LEAVES),
-			new class_5206(0, 0, 0, 0),
-			new class_5211(6, 2, 1),
-			new class_5203(1, 1, 0, 1, 2, OptionalInt.empty())
+			new DarkOakFoliagePlacer(0, 0, 0, 0),
+			new DarkOakTrunkPlacer(6, 2, 1),
+			new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())
 		)
 		.baseHeight(Integer.MAX_VALUE)
 		.method_27375(Heightmap.Type.MOTION_BLOCKING)
@@ -298,27 +298,27 @@ public class DefaultBiomeFeatures {
 	public static final TreeFeatureConfig MEGA_SPRUCE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(SPRUCE_LOG),
 			new SimpleBlockStateProvider(SPRUCE_LEAVES),
-			new class_5210(0, 0, 0, 0, 4, 13),
-			new class_5214(13, 2, 14),
-			new class_5204(1, 1, 2)
+			new MegaPineFoliagePlacer(0, 0, 0, 0, 4, 13),
+			new GiantTrunkPlacer(13, 2, 14),
+			new TwoLayersFeatureSize(1, 1, 2)
 		)
 		.method_27376(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(PODZOL))))
 		.build();
 	public static final TreeFeatureConfig MEGA_PINE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(SPRUCE_LOG),
 			new SimpleBlockStateProvider(SPRUCE_LEAVES),
-			new class_5210(0, 0, 0, 0, 4, 3),
-			new class_5214(13, 2, 14),
-			new class_5204(1, 1, 2)
+			new MegaPineFoliagePlacer(0, 0, 0, 0, 4, 3),
+			new GiantTrunkPlacer(13, 2, 14),
+			new TwoLayersFeatureSize(1, 1, 2)
 		)
 		.method_27376(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(PODZOL))))
 		.build();
 	public static final TreeFeatureConfig MEGA_JUNGLE_TREE_CONFIG = new TreeFeatureConfig.Builder(
 			new SimpleBlockStateProvider(JUNGLE_LOG),
 			new SimpleBlockStateProvider(JUNGLE_LEAVES),
-			new class_5209(2, 0, 0, 0, 2),
-			new class_5215(10, 2, 19),
-			new class_5204(1, 1, 2)
+			new JungleFoliagePlacer(2, 0, 0, 0, 2),
+			new MegaJungleTrunkPlacer(10, 2, 19),
+			new TwoLayersFeatureSize(1, 1, 2)
 		)
 		.method_27376(ImmutableList.of(new TrunkVineTreeDecorator(), new LeaveVineTreeDecorator()))
 		.build();

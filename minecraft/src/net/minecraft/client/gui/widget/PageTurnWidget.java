@@ -23,20 +23,20 @@ public class PageTurnWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		MinecraftClient.getInstance().getTextureManager().bindTexture(BookScreen.BOOK_TEXTURE);
-		int k = 0;
-		int l = 192;
+		int i = 0;
+		int j = 192;
 		if (this.isHovered()) {
-			k += 23;
+			i += 23;
 		}
 
 		if (!this.isNextPageButton) {
-			l += 13;
+			j += 13;
 		}
 
-		this.drawTexture(matrixStack, this.x, this.y, k, l, 23, 13);
+		this.drawTexture(matrices, this.x, this.y, i, j, 23, 13);
 	}
 
 	@Override

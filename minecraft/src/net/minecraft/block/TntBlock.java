@@ -31,7 +31,7 @@ public class TntBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (oldState.getBlock() != state.getBlock()) {
+		if (!oldState.isOf(state.getBlock())) {
 			if (world.isReceivingRedstonePower(pos)) {
 				primeTnt(world, pos);
 				world.removeBlock(pos, false);

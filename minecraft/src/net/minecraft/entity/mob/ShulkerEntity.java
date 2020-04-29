@@ -197,7 +197,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		} else if (!this.world.isClient) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir()) {
-				if (blockState.getBlock() == Blocks.MOVING_PISTON) {
+				if (blockState.isOf(Blocks.MOVING_PISTON)) {
 					Direction direction = blockState.get(PistonBlock.FACING);
 					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);
@@ -205,7 +205,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					} else {
 						this.method_7127();
 					}
-				} else if (blockState.getBlock() == Blocks.PISTON_HEAD) {
+				} else if (blockState.isOf(Blocks.PISTON_HEAD)) {
 					Direction direction = blockState.get(PistonHeadBlock.FACING);
 					if (this.world.isAir(blockPos.offset(direction))) {
 						blockPos = blockPos.offset(direction);

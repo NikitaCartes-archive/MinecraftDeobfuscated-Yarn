@@ -1,6 +1,7 @@
 package net.minecraft.server.world;
 
 import java.util.concurrent.Executor;
+import net.minecraft.class_5268;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.world.border.WorldBorderListener;
@@ -10,22 +11,23 @@ import net.minecraft.world.level.storage.LevelStorage;
 
 public class SecondaryServerWorld extends ServerWorld {
 	public SecondaryServerWorld(
-		ServerWorld world,
-		MinecraftServer server,
-		Executor workerExecutor,
+		ServerWorld serverWorld,
+		class_5268 arg,
+		MinecraftServer minecraftServer,
+		Executor executor,
 		LevelStorage.Session session,
 		DimensionType dimensionType,
 		WorldGenerationProgressListener worldGenerationProgressListener
 	) {
 		super(
-			server,
-			workerExecutor,
+			minecraftServer,
+			executor,
 			session,
-			new UnmodifiableLevelProperties(dimensionType, server.method_27728(), world.getLevelProperties()),
+			new UnmodifiableLevelProperties(dimensionType, minecraftServer.method_27728(), arg),
 			dimensionType,
 			worldGenerationProgressListener
 		);
-		world.getWorldBorder().addListener(new WorldBorderListener.WorldBorderSyncer(this.getWorldBorder()));
+		serverWorld.getWorldBorder().addListener(new WorldBorderListener.WorldBorderSyncer(this.getWorldBorder()));
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class RealmsLabel implements Element {
 	}
 
 	public void render(Screen screen, MatrixStack matrixStack) {
-		screen.method_27534(matrixStack, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.color);
+		screen.drawStringWithShadow(matrixStack, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.color);
 	}
 
 	public String getText() {

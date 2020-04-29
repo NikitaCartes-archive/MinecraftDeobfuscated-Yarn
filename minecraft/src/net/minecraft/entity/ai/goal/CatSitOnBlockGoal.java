@@ -1,7 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BedBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FurnaceBlock;
@@ -49,13 +49,14 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 			return false;
 		} else {
 			BlockState blockState = world.getBlockState(pos);
-			Block block = blockState.getBlock();
-			if (block == Blocks.CHEST) {
+			if (blockState.isOf(Blocks.CHEST)) {
 				return ChestBlockEntity.getPlayersLookingInChestCount(world, pos) < 1;
-			} else if (block == Blocks.FURNACE && blockState.get(FurnaceBlock.LIT)) {
-				return true;
 			} else {
-				return block.isIn(BlockTags.BEDS) && blockState.get(BedBlock.PART) != BedPart.HEAD;
+				return blockState.isOf(Blocks.FURNACE) && blockState.get(FurnaceBlock.LIT)
+					? true
+					: blockState.method_27851(
+						BlockTags.BEDS, abstractBlockState -> abstractBlockState.method_27850(BedBlock.PART).map(bedPart -> bedPart != BedPart.HEAD).orElse(true)
+					);
 			}
 		}
 	}

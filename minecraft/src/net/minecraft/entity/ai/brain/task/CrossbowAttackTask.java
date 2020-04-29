@@ -81,7 +81,7 @@ public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends Li
 	}
 
 	private void setLookTarget(MobEntity entity, LivingEntity target) {
-		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target));
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 	}
 
 	private static LivingEntity getAttackTarget(LivingEntity entity) {

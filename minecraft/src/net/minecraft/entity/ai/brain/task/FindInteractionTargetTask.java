@@ -55,7 +55,7 @@ public class FindInteractionTargetTask extends Task<LivingEntity> {
 						.findFirst()
 						.ifPresent(livingEntity -> {
 							brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntity);
-							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity));
+							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
 						})
 			);
 	}

@@ -21,5 +21,5 @@ public interface DedicatedServer {
 
 	String getPlugins();
 
-	String executeRconCommand(String string);
+	String executeRconCommand(String command);
 }

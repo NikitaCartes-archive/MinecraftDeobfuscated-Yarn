@@ -71,7 +71,7 @@ public abstract class Option {
 			return doubleOption.getDisplayPrefix().append(ChatHud.getWidth(d) + "px");
 		}
 	);
-	public static final DoubleOption field_23930 = new DoubleOption(
+	public static final DoubleOption CHAT_LINE_SPACING = new DoubleOption(
 		"options.chat.line_spacing",
 		0.0,
 		1.0,
@@ -80,7 +80,7 @@ public abstract class Option {
 		(gameOptions, double_) -> gameOptions.chatLineSpacing = double_,
 		(gameOptions, doubleOption) -> doubleOption.getDisplayPrefix().append((int)(doubleOption.getRatio(doubleOption.get(gameOptions)) * 100.0) + "%")
 	);
-	public static final DoubleOption field_23931 = new DoubleOption(
+	public static final DoubleOption CHAT_DELAY_INSTANT = new DoubleOption(
 		"options.chat.delay_instant",
 		0.0,
 		6.0,
@@ -175,13 +175,13 @@ public abstract class Option {
 			return doubleOption.getDisplayPrefix().append(new TranslatableText("options.chunks", (int)d));
 		}
 	);
-	public static final DoubleOption field_24213 = new DoubleOption(
+	public static final DoubleOption ENTITY_DISTANCE_SCALING = new DoubleOption(
 		"options.entityDistanceScaling",
 		0.5,
 		5.0,
 		0.25F,
-		gameOptions -> (double)gameOptions.field_24214,
-		(gameOptions, double_) -> gameOptions.field_24214 = (float)double_.doubleValue(),
+		gameOptions -> (double)gameOptions.entityDistanceScaling,
+		(gameOptions, double_) -> gameOptions.entityDistanceScaling = (float)double_.doubleValue(),
 		(gameOptions, doubleOption) -> {
 			double d = doubleOption.get(gameOptions);
 			return doubleOption.getDisplayPrefix().append(new TranslatableText("options.entityDistancePercent", (int)(d * 100.0)));

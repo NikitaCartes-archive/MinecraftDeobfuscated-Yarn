@@ -53,7 +53,7 @@ public class JukeboxBlock extends BlockWithEntity {
 				JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity)blockEntity;
 				ItemStack itemStack = jukeboxBlockEntity.getRecord();
 				if (!itemStack.isEmpty()) {
-					world.playLevelEvent(1010, pos, 0);
+					world.syncWorldEvent(1010, pos, 0);
 					jukeboxBlockEntity.clear();
 					float f = 0.7F;
 					double d = (double)(world.random.nextFloat() * 0.7F) + 0.15F;
@@ -70,7 +70,7 @@ public class JukeboxBlock extends BlockWithEntity {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			this.removeRecord(world, pos);
 			super.onBlockRemoved(state, world, pos, newState, notify);
 		}

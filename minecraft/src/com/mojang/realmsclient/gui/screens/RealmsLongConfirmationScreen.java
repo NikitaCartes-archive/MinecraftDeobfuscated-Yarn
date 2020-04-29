@@ -52,8 +52,8 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.drawCenteredString(matrices, this.textRenderer, this.type.text, this.width / 2, row(2), this.type.colorCode);
-		this.method_27534(matrices, this.textRenderer, this.line2, this.width / 2, row(4), 16777215);
-		this.method_27534(matrices, this.textRenderer, this.line3, this.width / 2, row(6), 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.line2, this.width / 2, row(4), 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.line3, this.width / 2, row(6), 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

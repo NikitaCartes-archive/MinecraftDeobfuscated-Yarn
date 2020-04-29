@@ -149,7 +149,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	private final ServerRecipeBook recipeBook;
 	private Vec3d levitationStartPos;
 	private int levitationStartTick;
-	private boolean field_13964;
+	private boolean disconnected;
 	@Nullable
 	private Vec3d enteredNetherPos;
 	private ChunkSectionPos cameraPosition = ChunkSectionPos.from(0, 0, 0);
@@ -162,7 +162,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	public boolean notInAnyWorld;
 
 	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, ServerPlayerInteractionManager serverPlayerInteractionManager) {
-		super(world, profile);
+		super(world, world.method_27911(), profile);
 		serverPlayerInteractionManager.player = this;
 		this.interactionManager = serverPlayerInteractionManager;
 		this.server = server;
@@ -174,8 +174,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	private void moveToSpawn(ServerWorld world) {
-		BlockPos blockPos = world.getSpawnPos();
-		if (world.dimension.hasSkyLight() && world.getLevelProperties().getGameMode() != GameMode.ADVENTURE) {
+		BlockPos blockPos = world.method_27911();
+		if (world.dimension.hasSkyLight() && world.getServer().method_27728().getGameMode() != GameMode.ADVENTURE) {
 			int i = Math.max(0, this.server.getSpawnRadius(world));
 			int j = MathHelper.floor(world.getWorldBorder().getDistanceInsideBorder((double)blockPos.getX(), (double)blockPos.getZ()));
 			if (j < i) {
@@ -603,7 +603,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			ServerWorld serverWorld2 = this.server.getWorld(newDimension);
 			class_5217 lv = serverWorld2.getLevelProperties();
 			this.networkHandler
-				.sendPacket(new PlayerRespawnS2CPacket(newDimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode()));
+				.sendPacket(
+					new PlayerRespawnS2CPacket(newDimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode(), true)
+				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
@@ -1020,16 +1022,16 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.syncedExperience = -1;
 	}
 
-	public void method_14231() {
-		this.field_13964 = true;
+	public void onDisconnect() {
+		this.disconnected = true;
 		this.removeAllPassengers();
 		if (this.isSleeping()) {
 			this.wakeUp(true, false);
 		}
 	}
 
-	public boolean method_14239() {
-		return this.field_13964;
+	public boolean isDisconnected() {
+		return this.disconnected;
 	}
 
 	public void markHealthDirty() {
@@ -1332,7 +1334,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			class_5217 lv = targetWorld.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
-					new PlayerRespawnS2CPacket(this.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode())
+					new PlayerRespawnS2CPacket(this.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode(), true)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
 			this.server.getPlayerManager().sendCommandTree(this);

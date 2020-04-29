@@ -6,22 +6,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class RconBase implements Runnable {
-	private static final Logger field_14430 = LogManager.getLogger();
-	private static final AtomicInteger field_14428 = new AtomicInteger(0);
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final AtomicInteger THREAD_COUNTER = new AtomicInteger(0);
 	protected volatile boolean running;
 	protected final String description;
 	protected Thread thread;
 
-	protected RconBase(String string) {
-		this.description = string;
+	protected RconBase(String description) {
+		this.description = description;
 	}
 
 	public synchronized void start() {
 		this.running = true;
-		this.thread = new Thread(this, this.description + " #" + field_14428.incrementAndGet());
-		this.thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(field_14430));
+		this.thread = new Thread(this, this.description + " #" + THREAD_COUNTER.incrementAndGet());
+		this.thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOGGER));
 		this.thread.start();
-		field_14430.info("Thread {} started", this.description);
+		LOGGER.info("Thread {} started", this.description);
 	}
 
 	public synchronized void stop() {
@@ -33,16 +33,16 @@ public abstract class RconBase implements Runnable {
 				try {
 					this.thread.join(1000L);
 					if (++i >= 5) {
-						field_14430.warn("Waited {} seconds attempting force stop!", i);
+						LOGGER.warn("Waited {} seconds attempting force stop!", i);
 					} else if (this.thread.isAlive()) {
-						field_14430.warn("Thread {} ({}) failed to exit after {} second(s)", this, this.thread.getState(), i, new Exception("Stack:"));
+						LOGGER.warn("Thread {} ({}) failed to exit after {} second(s)", this, this.thread.getState(), i, new Exception("Stack:"));
 						this.thread.interrupt();
 					}
 				} catch (InterruptedException var3) {
 				}
 			}
 
-			field_14430.info("Thread {} stopped", this.description);
+			LOGGER.info("Thread {} stopped", this.description);
 			this.thread = null;
 		}
 	}

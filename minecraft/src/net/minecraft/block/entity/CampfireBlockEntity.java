@@ -186,10 +186,12 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	}
 
 	public void spawnItemsBeingCooked() {
-		if (!this.getWorld().isClient) {
-			ItemScatterer.spawn(this.getWorld(), this.getPos(), this.getItemsBeingCooked());
-		}
+		if (this.world != null) {
+			if (!this.world.isClient) {
+				ItemScatterer.spawn(this.world, this.getPos(), this.getItemsBeingCooked());
+			}
 
-		this.updateListeners();
+			this.updateListeners();
+		}
 	}
 }

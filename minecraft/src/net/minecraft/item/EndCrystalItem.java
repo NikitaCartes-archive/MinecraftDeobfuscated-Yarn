@@ -22,7 +22,7 @@ public class EndCrystalItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() != Blocks.OBSIDIAN && blockState.getBlock() != Blocks.BEDROCK) {
+		if (!blockState.isOf(Blocks.OBSIDIAN) && !blockState.isOf(Blocks.BEDROCK)) {
 			return ActionResult.FAIL;
 		} else {
 			BlockPos blockPos2 = blockPos.up();

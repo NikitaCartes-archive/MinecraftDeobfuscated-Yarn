@@ -6,13 +6,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
@@ -20,9 +18,6 @@ import net.minecraft.world.World;
 public class ShieldItem extends Item {
 	public ShieldItem(Item.Settings settings) {
 		super(settings);
-		this.addPropertyGetter(
-			new Identifier("blocking"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
-		);
 		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
 	}
 

@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -312,8 +311,8 @@ public class FishingBobberEntity extends ProjectileEntity {
 				double d = this.getX() + (double)(g * (float)this.fishTravelCountdown * 0.1F);
 				double e = (double)((float)MathHelper.floor(this.getY()) + 1.0F);
 				double j = this.getZ() + (double)(h * (float)this.fishTravelCountdown * 0.1F);
-				Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j)).getBlock();
-				if (block == Blocks.WATER) {
+				BlockState blockState = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j));
+				if (blockState.isOf(Blocks.WATER)) {
 					if (this.random.nextFloat() < 0.15F) {
 						serverWorld.spawnParticles(ParticleTypes.BUBBLE, d, e - 0.1F, j, 1, (double)g, 0.1, (double)h, 0.0);
 					}
@@ -352,8 +351,8 @@ public class FishingBobberEntity extends ProjectileEntity {
 				double d = this.getX() + (double)(MathHelper.sin(g) * h * 0.1F);
 				double e = (double)((float)MathHelper.floor(this.getY()) + 1.0F);
 				double j = this.getZ() + (double)(MathHelper.cos(g) * h * 0.1F);
-				Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j)).getBlock();
-				if (block == Blocks.WATER) {
+				BlockState blockState = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j));
+				if (blockState.isOf(Blocks.WATER)) {
 					serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 2 + this.random.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
 				}
 			}
@@ -402,7 +401,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	private FishingBobberEntity.PositionType getPositionType(BlockPos pos) {
 		BlockState blockState = this.world.getBlockState(pos);
-		if (!blockState.isAir() && blockState.getBlock() != Blocks.LILY_PAD) {
+		if (!blockState.isAir() && !blockState.isOf(Blocks.LILY_PAD)) {
 			FluidState fluidState = blockState.getFluidState();
 			return fluidState.matches(FluidTags.WATER) && fluidState.isStill() && blockState.getCollisionShape(this.world, pos).isEmpty()
 				? FishingBobberEntity.PositionType.INSIDE_WATER
@@ -513,7 +512,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 		return entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
 	}
 
-	public Entity method_26957() {
+	public Entity getHookedEntity() {
 		return this.hookedEntity;
 	}
 

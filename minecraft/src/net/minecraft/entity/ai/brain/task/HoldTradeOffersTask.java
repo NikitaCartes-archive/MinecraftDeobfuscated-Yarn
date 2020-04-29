@@ -114,7 +114,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	private LivingEntity findPotentialCuatomer(VillagerEntity villager) {
 		Brain<?> brain = villager.getBrain();
 		LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
-		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity));
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
 		return livingEntity;
 	}
 

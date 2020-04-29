@@ -41,7 +41,7 @@ public abstract class AbstractFireBlock extends Block {
 	public static BlockState getState(BlockView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return SoulFireBlock.method_26158(blockState.getBlock()) ? Blocks.SOUL_FIRE.getDefaultState() : ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
+		return SoulFireBlock.isSoulBase(blockState.getBlock()) ? Blocks.SOUL_FIRE.getDefaultState() : ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public abstract class AbstractFireBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (oldState.getBlock() != state.getBlock()) {
+		if (!oldState.isOf(state.getBlock())) {
 			if (world.dimension.getType() != DimensionType.OVERWORLD && world.dimension.getType() != DimensionType.THE_NETHER
 				|| !NetherPortalBlock.createPortalAt(world, pos)) {
 				if (!state.canPlaceAt(world, pos)) {
@@ -153,7 +153,7 @@ public abstract class AbstractFireBlock extends Block {
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient()) {
-			world.playLevelEvent(null, 1009, pos, 0);
+			world.syncWorldEvent(null, 1009, pos, 0);
 		}
 	}
 }

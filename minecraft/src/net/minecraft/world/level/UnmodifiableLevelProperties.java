@@ -1,8 +1,8 @@
 package net.minecraft.world.level;
 
 import java.util.UUID;
-import net.minecraft.class_5217;
 import net.minecraft.class_5219;
+import net.minecraft.class_5268;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.CrashReportSection;
@@ -14,12 +14,12 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.timer.Timer;
 
-public class UnmodifiableLevelProperties implements class_5217 {
+public class UnmodifiableLevelProperties implements class_5268 {
 	private final DimensionType field_24178;
 	private final class_5219 field_24179;
-	private final class_5217 properties;
+	private final class_5268 properties;
 
-	public UnmodifiableLevelProperties(DimensionType dimensionType, class_5219 arg, class_5217 arg2) {
+	public UnmodifiableLevelProperties(DimensionType dimensionType, class_5219 arg, class_5268 arg2) {
 		this.field_24178 = dimensionType;
 		this.field_24179 = arg;
 		this.properties = arg2;
@@ -145,7 +145,7 @@ public class UnmodifiableLevelProperties implements class_5217 {
 
 	@Override
 	public boolean isHardcore() {
-		return false;
+		return this.field_24179.isHardcore();
 	}
 
 	@Override

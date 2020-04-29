@@ -167,12 +167,12 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public boolean onBlockAction(int i, int j) {
-		if (i == 1) {
-			this.viewerCount = j;
+	public boolean onSyncedBlockEvent(int type, int data) {
+		if (type == 1) {
+			this.viewerCount = data;
 			return true;
 		} else {
-			return super.onBlockAction(i, j);
+			return super.onSyncedBlockEvent(type, data);
 		}
 	}
 
@@ -199,7 +199,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	protected void onInvOpenOrClose() {
 		Block block = this.getCachedState().getBlock();
 		if (block instanceof ChestBlock) {
-			this.world.addBlockAction(this.pos, block, 1, this.viewerCount);
+			this.world.addSyncedBlockEvent(this.pos, block, 1, this.viewerCount);
 			this.world.updateNeighborsAlways(this.pos, block);
 		}
 	}
@@ -216,8 +216,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float getAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
+	public float getAnimationProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastAnimationAngle, this.animationAngle);
 	}
 
 	public static int getPlayersLookingInChestCount(BlockView world, BlockPos pos) {

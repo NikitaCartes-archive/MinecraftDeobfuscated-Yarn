@@ -39,22 +39,22 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 		StructurePlacementData structurePlacementData
 	) {
 		Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
-		Block block = structureBlockInfo2.state.getBlock();
+		BlockState blockState = structureBlockInfo2.state;
 		BlockPos blockPos2 = structureBlockInfo2.pos;
-		BlockState blockState = null;
-		if (block == Blocks.STONE_BRICKS || block == Blocks.STONE || block == Blocks.CHISELED_STONE_BRICKS) {
-			blockState = this.processBlocks(random);
-		} else if (block.isIn(BlockTags.STAIRS)) {
-			blockState = this.processStairs(random, structureBlockInfo2.state);
-		} else if (block.isIn(BlockTags.SLABS)) {
-			blockState = this.processSlabs(random);
-		} else if (block.isIn(BlockTags.WALLS)) {
-			blockState = this.processWalls(random);
-		} else if (block == Blocks.OBSIDIAN) {
-			blockState = this.processObsidian(random);
+		BlockState blockState2 = null;
+		if (blockState.isOf(Blocks.STONE_BRICKS) || blockState.isOf(Blocks.STONE) || blockState.isOf(Blocks.CHISELED_STONE_BRICKS)) {
+			blockState2 = this.processBlocks(random);
+		} else if (blockState.isIn(BlockTags.STAIRS)) {
+			blockState2 = this.processStairs(random, structureBlockInfo2.state);
+		} else if (blockState.isIn(BlockTags.SLABS)) {
+			blockState2 = this.processSlabs(random);
+		} else if (blockState.isIn(BlockTags.WALLS)) {
+			blockState2 = this.processWalls(random);
+		} else if (blockState.isOf(Blocks.OBSIDIAN)) {
+			blockState2 = this.processObsidian(random);
 		}
 
-		return blockState != null ? new Structure.StructureBlockInfo(blockPos2, blockState, structureBlockInfo2.tag) : structureBlockInfo2;
+		return blockState2 != null ? new Structure.StructureBlockInfo(blockPos2, blockState2, structureBlockInfo2.tag) : structureBlockInfo2;
 	}
 
 	@Nullable

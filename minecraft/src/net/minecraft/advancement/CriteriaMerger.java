@@ -15,5 +15,5 @@ public interface CriteriaMerger {
 	};
 	CriteriaMerger OR = collection -> new String[][]{(String[])collection.toArray(new String[0])};
 
-	String[][] createRequirements(Collection<String> collection);
+	String[][] createRequirements(Collection<String> criteriaNames);
 }

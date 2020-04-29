@@ -72,7 +72,7 @@ public class PaneBlock extends HorizontalConnectingBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
-		if (stateFrom.getBlock() == this) {
+		if (stateFrom.isOf(this)) {
 			if (!direction.getAxis().isHorizontal()) {
 				return true;
 			}

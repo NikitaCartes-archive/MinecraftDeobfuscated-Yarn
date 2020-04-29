@@ -8,8 +8,8 @@ import net.minecraft.text.Text;
 public class ButtonWidget extends AbstractPressableButtonWidget {
 	protected final ButtonWidget.PressAction onPress;
 
-	public ButtonWidget(int x, int y, int width, int height, Text text, ButtonWidget.PressAction onPress) {
-		super(x, y, width, height, text);
+	public ButtonWidget(int x, int y, int width, int height, Text message, ButtonWidget.PressAction onPress) {
+		super(x, y, width, height, message);
 		this.onPress = onPress;
 	}
 

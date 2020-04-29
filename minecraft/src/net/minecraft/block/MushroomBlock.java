@@ -50,7 +50,7 @@ public class MushroomBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
-		return newState.getBlock() == this
+		return newState.isOf(this)
 			? state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(false))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}

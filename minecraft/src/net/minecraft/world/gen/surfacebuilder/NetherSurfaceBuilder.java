@@ -54,7 +54,7 @@ public class NetherSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 			BlockState blockState5 = chunk.getBlockState(mutable);
 			if (blockState5.isAir()) {
 				r = -1;
-			} else if (blockState5.getBlock() == blockState.getBlock()) {
+			} else if (blockState5.isOf(blockState.getBlock())) {
 				if (r == -1) {
 					if (q <= 0) {
 						blockState3 = CAVE_AIR;

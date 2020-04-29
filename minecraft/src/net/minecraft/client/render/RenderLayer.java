@@ -95,6 +95,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
 			.texturing(ENTITY_GLINT_TEXTURING)
+			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
 	);
 	private static final RenderLayer LIGHTNING = of(

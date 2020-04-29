@@ -247,7 +247,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					: Explosion.DestructionType.NONE;
 				this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, destructionType);
 				if (!this.isSilent()) {
-					this.world.playGlobalEvent(1023, this.getBlockPos(), 0);
+					this.world.syncGlobalEvent(1023, this.getBlockPos(), 0);
 				}
 			}
 
@@ -335,7 +335,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 					}
 
 					if (bl) {
-						this.world.playLevelEvent(null, 1022, this.getBlockPos(), 0);
+						this.world.syncWorldEvent(null, 1022, this.getBlockPos(), 0);
 					}
 				}
 			}
@@ -422,7 +422,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 
 	private void method_6877(int headIndex, double d, double e, double f, boolean bl) {
 		if (!this.isSilent()) {
-			this.world.playLevelEvent(null, 1024, this.getBlockPos(), 0);
+			this.world.syncWorldEvent(null, 1024, this.getBlockPos(), 0);
 		}
 
 		double g = this.getHeadX(headIndex);

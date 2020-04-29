@@ -3,7 +3,6 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ComposterBlock;
@@ -25,8 +24,7 @@ public class FarmerWorkTask extends VillagerWorkTask {
 		if (optional.isPresent()) {
 			GlobalPos globalPos = (GlobalPos)optional.get();
 			BlockState blockState = world.getBlockState(globalPos.getPos());
-			Block block = blockState.getBlock();
-			if (block == Blocks.COMPOSTER) {
+			if (blockState.isOf(Blocks.COMPOSTER)) {
 				this.craftAndDropBread(entity);
 				this.compostSeeds(world, entity, globalPos, blockState);
 			}

@@ -28,7 +28,7 @@ public class ReferenceLootCondition implements LootCondition {
 			if (lootCondition == null) {
 				reporter.report("Unknown condition table called " + this.id);
 			} else {
-				lootCondition.check(reporter.withSupplier(".{" + this.id + "}", this.id));
+				lootCondition.check(reporter.withTable(".{" + this.id + "}", this.id));
 			}
 		}
 	}

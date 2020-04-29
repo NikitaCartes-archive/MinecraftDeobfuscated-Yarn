@@ -2,14 +2,14 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 	private final SpriteProvider spriteProvider;
 
-	protected ExplosionSmokeParticle(World world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
+	protected ExplosionSmokeParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
 		super(world, x, y, z);
 		this.spriteProvider = spriteProvider;
 		this.velocityX = d + (Math.random() * 2.0 - 1.0) * 0.05F;
@@ -58,8 +58,8 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new ExplosionSmokeParticle(world, d, e, f, g, h, i, this.spriteProvider);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new ExplosionSmokeParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 }

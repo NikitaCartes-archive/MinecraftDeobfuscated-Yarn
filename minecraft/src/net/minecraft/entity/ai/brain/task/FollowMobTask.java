@@ -48,7 +48,7 @@ public class FollowMobTask extends Task<LivingEntity> {
 						.filter(this.predicate)
 						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared)
 						.findFirst()
-						.ifPresent(livingEntity -> brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity)))
+						.ifPresent(livingEntity -> brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true)))
 			);
 	}
 }

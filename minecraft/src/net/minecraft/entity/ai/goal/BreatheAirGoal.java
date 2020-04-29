@@ -73,7 +73,6 @@ public class BreatheAirGoal extends Goal {
 
 	private boolean isAirPos(WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		return (world.getFluidState(pos).isEmpty() || blockState.getBlock() == Blocks.BUBBLE_COLUMN)
-			&& blockState.canPathfindThrough(world, pos, NavigationType.LAND);
+		return (world.getFluidState(pos).isEmpty() || blockState.isOf(Blocks.BUBBLE_COLUMN)) && blockState.canPathfindThrough(world, pos, NavigationType.LAND);
 	}
 }

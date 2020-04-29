@@ -121,7 +121,7 @@ public class IglooGenerator {
 			if (this.template.equals(IglooGenerator.TOP_TEMPLATE)) {
 				BlockPos blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)));
 				BlockState blockState = world.getBlockState(blockPos5.down());
-				if (!blockState.isAir() && blockState.getBlock() != Blocks.LADDER) {
+				if (!blockState.isAir() && !blockState.isOf(Blocks.LADDER)) {
 					world.setBlockState(blockPos5, Blocks.SNOW_BLOCK.getDefaultState(), 3);
 				}
 			}

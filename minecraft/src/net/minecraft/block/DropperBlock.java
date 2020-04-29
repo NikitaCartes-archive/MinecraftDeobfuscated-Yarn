@@ -37,7 +37,7 @@ public class DropperBlock extends DispenserBlock {
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.playLevelEvent(1001, pos, 0);
+			world.syncWorldEvent(1001, pos, 0);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			if (!itemStack.isEmpty()) {

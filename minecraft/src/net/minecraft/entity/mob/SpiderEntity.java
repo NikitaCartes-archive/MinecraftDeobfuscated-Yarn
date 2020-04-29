@@ -116,7 +116,7 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	public void slowMovement(BlockState state, Vec3d multiplier) {
-		if (state.getBlock() != Blocks.COBWEB) {
+		if (!state.isOf(Blocks.COBWEB)) {
 			super.slowMovement(state, multiplier);
 		}
 	}

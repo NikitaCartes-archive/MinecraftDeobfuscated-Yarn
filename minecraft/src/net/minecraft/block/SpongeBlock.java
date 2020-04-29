@@ -18,7 +18,7 @@ public class SpongeBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (oldState.getBlock() != state.getBlock()) {
+		if (!oldState.isOf(state.getBlock())) {
 			this.update(world, pos);
 		}
 	}
@@ -32,7 +32,7 @@ public class SpongeBlock extends Block {
 	protected void update(World world, BlockPos pos) {
 		if (this.absorbWater(world, pos)) {
 			world.setBlockState(pos, Blocks.WET_SPONGE.getDefaultState(), 2);
-			world.playLevelEvent(2001, pos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
+			world.syncWorldEvent(2001, pos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
 		}
 	}
 

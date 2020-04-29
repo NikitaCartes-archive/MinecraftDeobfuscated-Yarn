@@ -67,8 +67,8 @@ public class PlayWithVillagerBabiesTask extends Task<MobEntityWithAi> {
 	private static void setPlayTarget(MobEntityWithAi entity, LivingEntity target) {
 		Brain<?> brain = entity.getBrain();
 		brain.remember(MemoryModuleType.INTERACTION_TARGET, target);
-		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target));
-		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(target), 0.6F, 1));
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
+		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(target, false), 0.6F, 1));
 	}
 
 	private Optional<LivingEntity> getVisibleMob(MobEntityWithAi entity) {

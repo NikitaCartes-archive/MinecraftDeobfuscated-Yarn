@@ -70,7 +70,7 @@ public class OpenToLanScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
 		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("lanServer.otherPlayers"), this.width / 2, 82, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

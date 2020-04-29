@@ -82,8 +82,8 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 						.findFirst()
 						.ifPresent(livingEntity -> {
 							brain.remember(this.targetModule, (T)livingEntity);
-							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity));
-							brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntity), this.speed, this.completionRange));
+							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
+							brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntity, false), this.speed, this.completionRange));
 						})
 			);
 	}

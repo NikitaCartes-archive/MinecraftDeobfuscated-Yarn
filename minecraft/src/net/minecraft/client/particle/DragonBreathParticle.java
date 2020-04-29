@@ -2,16 +2,18 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class DragonBreathParticle extends SpriteBillboardParticle {
 	private boolean reachedGround;
 	private final SpriteProvider spriteProvider;
 
-	private DragonBreathParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+	private DragonBreathParticle(
+		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider
+	) {
 		super(world, x, y, z);
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
@@ -77,8 +79,8 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new DragonBreathParticle(world, d, e, f, g, h, i, this.spriteProvider);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new DragonBreathParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 }

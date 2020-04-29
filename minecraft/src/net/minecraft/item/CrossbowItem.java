@@ -30,7 +30,6 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.Quaternion;
@@ -43,21 +42,6 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 
 	public CrossbowItem(Item.Settings settings) {
 		super(settings);
-		this.addPropertyGetter(new Identifier("pull"), (itemStack, world, livingEntity) -> {
-			if (livingEntity == null || itemStack.getItem() != this) {
-				return 0.0F;
-			} else {
-				return isCharged(itemStack) ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / (float)getPullTime(itemStack);
-			}
-		});
-		this.addPropertyGetter(
-			new Identifier("pulling"),
-			(stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack && !isCharged(stack) ? 1.0F : 0.0F
-		);
-		this.addPropertyGetter(new Identifier("charged"), (stack, world, entity) -> entity != null && isCharged(stack) ? 1.0F : 0.0F);
-		this.addPropertyGetter(
-			new Identifier("firework"), (stack, world, entity) -> entity != null && isCharged(stack) && hasProjectile(stack, Items.FIREWORK_ROCKET) ? 1.0F : 0.0F
-		);
 	}
 
 	@Override
@@ -198,7 +182,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		}
 	}
 
-	private static boolean hasProjectile(ItemStack crossbow, Item projectile) {
+	public static boolean hasProjectile(ItemStack crossbow, Item projectile) {
 		return getProjectiles(crossbow).stream().anyMatch(s -> s.getItem() == projectile);
 	}
 

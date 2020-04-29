@@ -9,14 +9,16 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntityLookTarget implements LookTarget {
 	private final Entity entity;
+	private final boolean field_24382;
 
-	public EntityLookTarget(Entity entity) {
+	public EntityLookTarget(Entity entity, boolean bl) {
 		this.entity = entity;
+		this.field_24382 = bl;
 	}
 
 	@Override
 	public Vec3d getPos() {
-		return this.entity.getPos();
+		return this.field_24382 ? this.entity.getPos().add(0.0, (double)this.entity.getStandingEyeHeight(), 0.0) : this.entity.getPos();
 	}
 
 	@Override

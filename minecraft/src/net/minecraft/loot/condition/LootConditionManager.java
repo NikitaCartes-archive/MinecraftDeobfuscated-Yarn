@@ -3,17 +3,13 @@ package net.minecraft.loot.condition;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.loot.BinomialLootTableRange;
-import net.minecraft.loot.ConstantLootTableRange;
+import net.minecraft.loot.LootGsons;
 import net.minecraft.loot.LootTableReporter;
-import net.minecraft.loot.UniformLootTableRange;
-import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
@@ -24,13 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 public class LootConditionManager extends JsonDataLoader {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Gson GSON = new GsonBuilder()
-		.registerTypeAdapter(UniformLootTableRange.class, new UniformLootTableRange.Serializer())
-		.registerTypeAdapter(BinomialLootTableRange.class, new BinomialLootTableRange.Serializer())
-		.registerTypeAdapter(ConstantLootTableRange.class, new ConstantLootTableRange.Serializer())
-		.registerTypeHierarchyAdapter(LootCondition.class, new LootConditions.Factory())
-		.registerTypeHierarchyAdapter(LootContext.EntityTarget.class, new LootContext.EntityTarget.Serializer())
-		.create();
+	private static final Gson GSON = LootGsons.getConditionGsonBuilder().create();
 	private Map<Identifier, LootCondition> conditions = ImmutableMap.of();
 
 	public LootConditionManager() {

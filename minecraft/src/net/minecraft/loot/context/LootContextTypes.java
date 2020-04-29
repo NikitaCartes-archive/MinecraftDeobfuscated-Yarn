@@ -38,6 +38,10 @@ public class LootContextTypes {
 	public static final LootContextType ADVANCEMENT_REWARD = register(
 		"advancement_reward", builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.POSITION)
 	);
+	public static final LootContextType ADVANCEMENT_ENTITY = register(
+		"advancement_entity",
+		builder -> builder.require(LootContextParameters.THIS_ENTITY).require(LootContextParameters.ORIGIN).require(LootContextParameters.POSITION)
+	);
 	public static final LootContextType GENERIC = register(
 		"generic",
 		builder -> builder.require(LootContextParameters.THIS_ENTITY)

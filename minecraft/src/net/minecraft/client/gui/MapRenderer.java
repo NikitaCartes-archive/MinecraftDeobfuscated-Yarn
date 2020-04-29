@@ -137,7 +137,7 @@ public class MapRenderer implements AutoCloseable {
 					if (mapIcon.getText() != null) {
 						TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 						Text text = mapIcon.getText();
-						float p = (float)textRenderer.getWidth(text);
+						float p = (float)textRenderer.getStringWidth(text);
 						float q = MathHelper.clamp(25.0F / p, 0.0F, 6.0F / 9.0F);
 						matrixStack.push();
 						matrixStack.translate(

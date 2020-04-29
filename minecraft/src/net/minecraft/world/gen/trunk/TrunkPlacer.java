@@ -35,10 +35,9 @@ public abstract class TrunkPlacer {
 	}
 
 	/**
-	 * Generates the trunk blocks and return a map from branch tops to the
-	 * radius allowed for foliage generation on that branch top.
+	 * Generates the trunk blocks and return a list of tree nodes to place foliage around
 	 */
-	public abstract List<FoliagePlacer.class_5208> generate(
+	public abstract List<FoliagePlacer.TreeNode> generate(
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	);
 
@@ -54,7 +53,7 @@ public abstract class TrunkPlacer {
 	private static boolean method_27403(TestableWorld testableWorld, BlockPos blockPos) {
 		return testableWorld.testBlockState(blockPos, blockState -> {
 			Block block = blockState.getBlock();
-			return Feature.isDirt(block) && block != Blocks.GRASS_BLOCK && block != Blocks.MYCELIUM;
+			return Feature.isDirt(block) && !blockState.isOf(Blocks.GRASS_BLOCK) && !blockState.isOf(Blocks.MYCELIUM);
 		});
 	}
 
@@ -67,7 +66,7 @@ public abstract class TrunkPlacer {
 	protected static boolean method_27402(
 		ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
-		if (AbstractTreeFeature.method_27371(modifiableTestableWorld, blockPos)) {
+		if (AbstractTreeFeature.canReplace(modifiableTestableWorld, blockPos)) {
 			method_27404(modifiableTestableWorld, blockPos, treeFeatureConfig.trunkProvider.getBlockState(random, blockPos), blockBox);
 			set.add(blockPos.toImmutable());
 			return true;
