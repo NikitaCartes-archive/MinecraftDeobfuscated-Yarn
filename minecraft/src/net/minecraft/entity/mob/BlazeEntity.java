@@ -232,7 +232,7 @@ public class BlazeEntity extends HostileEntity {
 						if (this.field_7218 > 1) {
 							float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
 							if (!this.blaze.isSilent()) {
-								this.blaze.world.playLevelEvent(null, 1018, this.blaze.getBlockPos(), 0);
+								this.blaze.world.syncWorldEvent(null, 1018, this.blaze.getBlockPos(), 0);
 							}
 
 							for (int i = 0; i < 1; i++) {

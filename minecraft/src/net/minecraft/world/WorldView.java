@@ -51,6 +51,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	boolean isClient();
 
+	@Deprecated
 	int getSeaLevel();
 
 	Dimension getDimension();

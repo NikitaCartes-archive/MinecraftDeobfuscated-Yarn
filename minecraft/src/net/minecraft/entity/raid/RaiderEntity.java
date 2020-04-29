@@ -153,7 +153,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 						i--;
 					}
 
-					i = MathHelper.clamp(i, 0, 5);
+					i = MathHelper.clamp(i, 0, 4);
 					StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(StatusEffects.BAD_OMEN, 120000, i, false, false, true);
 					if (!this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 						playerEntity.addStatusEffect(statusEffectInstance2);

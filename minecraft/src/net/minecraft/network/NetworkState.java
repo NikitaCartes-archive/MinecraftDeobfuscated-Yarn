@@ -66,9 +66,9 @@ import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.BlockActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
@@ -182,7 +182,7 @@ public enum NetworkState {
 					.register(PlayerActionResponseS2CPacket.class, PlayerActionResponseS2CPacket::new)
 					.register(BlockBreakingProgressS2CPacket.class, BlockBreakingProgressS2CPacket::new)
 					.register(BlockEntityUpdateS2CPacket.class, BlockEntityUpdateS2CPacket::new)
-					.register(BlockActionS2CPacket.class, BlockActionS2CPacket::new)
+					.register(BlockEventS2CPacket.class, BlockEventS2CPacket::new)
 					.register(BlockUpdateS2CPacket.class, BlockUpdateS2CPacket::new)
 					.register(BossBarS2CPacket.class, BossBarS2CPacket::new)
 					.register(DifficultyS2CPacket.class, DifficultyS2CPacket::new)

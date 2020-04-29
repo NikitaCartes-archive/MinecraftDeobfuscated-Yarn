@@ -36,6 +36,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -55,7 +56,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ParticleManager implements ResourceReloadListener {
@@ -66,7 +66,7 @@ public class ParticleManager implements ResourceReloadListener {
 		ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT,
 		ParticleTextureSheet.CUSTOM
 	);
-	protected World world;
+	protected ClientWorld world;
 	private final Map<ParticleTextureSheet, Queue<Particle>> particles = Maps.<ParticleTextureSheet, Queue<Particle>>newIdentityHashMap();
 	private final Queue<EmitterParticle> newEmitterParticles = Queues.<EmitterParticle>newArrayDeque();
 	private final TextureManager textureManager;
@@ -76,7 +76,7 @@ public class ParticleManager implements ResourceReloadListener {
 	private final Map<Identifier, ParticleManager.SimpleSpriteProvider> spriteAwareFactories = Maps.<Identifier, ParticleManager.SimpleSpriteProvider>newHashMap();
 	private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 
-	public ParticleManager(World world, TextureManager textureManager) {
+	public ParticleManager(ClientWorld world, TextureManager textureManager) {
 		textureManager.registerTexture(this.particleAtlasTexture.getId(), this.particleAtlasTexture);
 		this.world = world;
 		this.textureManager = textureManager;
@@ -411,7 +411,7 @@ public class ParticleManager implements ResourceReloadListener {
 		RenderSystem.disableFog();
 	}
 
-	public void setWorld(@Nullable World world) {
+	public void setWorld(@Nullable ClientWorld world) {
 		this.world = world;
 		this.particles.clear();
 		this.newEmitterParticles.clear();
@@ -451,14 +451,14 @@ public class ParticleManager implements ResourceReloadListener {
 		}
 	}
 
-	public void addBlockBreakingParticles(BlockPos blockPos, Direction direction) {
-		BlockState blockState = this.world.getBlockState(blockPos);
+	public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
+		BlockState blockState = this.world.getBlockState(pos);
 		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-			int i = blockPos.getX();
-			int j = blockPos.getY();
-			int k = blockPos.getZ();
+			int i = pos.getX();
+			int j = pos.getY();
+			int k = pos.getZ();
 			float f = 0.1F;
-			Box box = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
+			Box box = blockState.getOutlineShape(this.world, pos).getBoundingBox();
 			double d = (double)i + this.random.nextDouble() * (box.x2 - box.x1 - 0.2F) + 0.1F + box.x1;
 			double e = (double)j + this.random.nextDouble() * (box.y2 - box.y1 - 0.2F) + 0.1F + box.y1;
 			double g = (double)k + this.random.nextDouble() * (box.z2 - box.z1 - 0.2F) + 0.1F + box.z1;
@@ -486,7 +486,7 @@ public class ParticleManager implements ResourceReloadListener {
 				d = (double)i + box.x2 + 0.1F;
 			}
 
-			this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2F).scale(0.6F));
+			this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(pos).move(0.2F).scale(0.6F));
 		}
 	}
 

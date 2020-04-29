@@ -45,20 +45,20 @@ public class AbstractTreeFeature extends Feature<TreeFeatureConfig> {
 				return state.isAir()
 					|| state.isIn(BlockTags.LEAVES)
 					|| isDirt(block)
-					|| block.isIn(BlockTags.LOGS)
-					|| block.isIn(BlockTags.SAPLINGS)
-					|| block == Blocks.VINE
-					|| block == Blocks.WATER;
+					|| state.isIn(BlockTags.LOGS)
+					|| state.isIn(BlockTags.SAPLINGS)
+					|| state.isOf(Blocks.VINE)
+					|| state.isOf(Blocks.WATER);
 			}
 		);
 	}
 
 	private static boolean isVine(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> state.getBlock() == Blocks.VINE);
+		return world.testBlockState(pos, state -> state.isOf(Blocks.VINE));
 	}
 
 	private static boolean isWater(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> state.getBlock() == Blocks.WATER);
+		return world.testBlockState(pos, state -> state.isOf(Blocks.WATER));
 	}
 
 	public static boolean isAirOrLeaves(TestableWorld world, BlockPos pos) {
@@ -83,7 +83,7 @@ public class AbstractTreeFeature extends Feature<TreeFeatureConfig> {
 		world.setBlockState(pos, state, 19);
 	}
 
-	public static boolean method_27371(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
+	public static boolean canReplace(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
 		return isAirOrLeaves(modifiableTestableWorld, blockPos)
 			|| isReplaceablePlant(modifiableTestableWorld, blockPos)
 			|| isWater(modifiableTestableWorld, blockPos);
@@ -92,10 +92,10 @@ public class AbstractTreeFeature extends Feature<TreeFeatureConfig> {
 	private boolean generate(
 		ModifiableTestableWorld world, Random random, BlockPos pos, Set<BlockPos> logPositions, Set<BlockPos> leavesPositions, BlockBox box, TreeFeatureConfig config
 	) {
-		int i = config.field_24136.getHeight(random);
-		int j = config.field_24135.getHeight(random, i, config);
+		int i = config.trunkPlacer.getHeight(random);
+		int j = config.foliagePlacer.getHeight(random, i, config);
 		int k = i - j;
-		int l = config.field_24135.getRadius(random, k);
+		int l = config.foliagePlacer.getRadius(random, k);
 		BlockPos blockPos;
 		if (!config.skipFluidCheck) {
 			int m = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
@@ -105,12 +105,12 @@ public class AbstractTreeFeature extends Feature<TreeFeatureConfig> {
 			}
 
 			int o;
-			if (config.field_24139 == Heightmap.Type.OCEAN_FLOOR) {
+			if (config.heightmap == Heightmap.Type.OCEAN_FLOOR) {
 				o = m;
-			} else if (config.field_24139 == Heightmap.Type.WORLD_SURFACE) {
+			} else if (config.heightmap == Heightmap.Type.WORLD_SURFACE) {
 				o = n;
 			} else {
-				o = world.getTopPosition(config.field_24139, pos).getY();
+				o = world.getTopPosition(config.heightmap, pos).getY();
 			}
 
 			blockPos = new BlockPos(pos.getX(), o, pos.getZ());
@@ -124,16 +124,16 @@ public class AbstractTreeFeature extends Feature<TreeFeatureConfig> {
 			return false;
 		} else {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			OptionalInt optionalInt = config.field_24137.method_27377();
+			OptionalInt optionalInt = config.featureSize.getMinClippedHeight();
 			int o = i;
 
 			for (int p = 0; p <= i + 1; p++) {
-				int q = config.field_24137.method_27378(i, p);
+				int q = config.featureSize.method_27378(i, p);
 
 				for (int r = -q; r <= q; r++) {
 					for (int s = -q; s <= q; s++) {
 						mutable.set(blockPos, r, p, s);
-						if (!canTreeReplace(world, mutable) || !config.field_24138 && isVine(world, mutable)) {
+						if (!canTreeReplace(world, mutable) || !config.ignoreVines && isVine(world, mutable)) {
 							if (!optionalInt.isPresent() || p - 1 < optionalInt.getAsInt() + 1) {
 								return false;
 							}
@@ -146,8 +146,8 @@ public class AbstractTreeFeature extends Feature<TreeFeatureConfig> {
 			}
 
 			int p = o;
-			List<FoliagePlacer.class_5208> list = config.field_24136.generate(world, random, p, blockPos, logPositions, box, config);
-			list.forEach(arg -> config.field_24135.method_27385(world, random, config, p, arg, j, l, leavesPositions));
+			List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, p, blockPos, logPositions, box, config);
+			list.forEach(treeNode -> config.foliagePlacer.generate(world, random, config, p, treeNode, j, l, leavesPositions));
 			return true;
 		}
 	}

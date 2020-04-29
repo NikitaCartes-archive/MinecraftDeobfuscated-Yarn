@@ -27,7 +27,7 @@ public class EntityEffectPredicate {
 	}
 
 	public static EntityEffectPredicate create() {
-		return new EntityEffectPredicate(Maps.<StatusEffect, EntityEffectPredicate.EffectData>newHashMap());
+		return new EntityEffectPredicate(Maps.<StatusEffect, EntityEffectPredicate.EffectData>newLinkedHashMap());
 	}
 
 	public EntityEffectPredicate withEffect(StatusEffect statusEffect) {
@@ -47,12 +47,12 @@ public class EntityEffectPredicate {
 		return this == EMPTY ? true : this.test(livingEntity.getActiveStatusEffects());
 	}
 
-	public boolean test(Map<StatusEffect, StatusEffectInstance> map) {
+	public boolean test(Map<StatusEffect, StatusEffectInstance> effects) {
 		if (this == EMPTY) {
 			return true;
 		} else {
 			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
-				StatusEffectInstance statusEffectInstance = (StatusEffectInstance)map.get(entry.getKey());
+				StatusEffectInstance statusEffectInstance = (StatusEffectInstance)effects.get(entry.getKey());
 				if (!((EntityEffectPredicate.EffectData)entry.getValue()).test(statusEffectInstance)) {
 					return false;
 				}
@@ -62,17 +62,17 @@ public class EntityEffectPredicate {
 		}
 	}
 
-	public static EntityEffectPredicate deserialize(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "effects");
-			Map<StatusEffect, EntityEffectPredicate.EffectData> map = Maps.<StatusEffect, EntityEffectPredicate.EffectData>newHashMap();
+	public static EntityEffectPredicate fromJson(@Nullable JsonElement json) {
+		if (json != null && !json.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(json, "effects");
+			Map<StatusEffect, EntityEffectPredicate.EffectData> map = Maps.<StatusEffect, EntityEffectPredicate.EffectData>newLinkedHashMap();
 
 			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 				Identifier identifier = new Identifier((String)entry.getKey());
 				StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
 					.getOrEmpty(identifier)
 					.orElseThrow(() -> new JsonSyntaxException("Unknown effect '" + identifier + "'"));
-				EntityEffectPredicate.EffectData effectData = EntityEffectPredicate.EffectData.deserialize(
+				EntityEffectPredicate.EffectData effectData = EntityEffectPredicate.EffectData.fromJson(
 					JsonHelper.asObject((JsonElement)entry.getValue(), (String)entry.getKey())
 				);
 				map.put(statusEffect, effectData);
@@ -91,7 +91,7 @@ public class EntityEffectPredicate {
 			JsonObject jsonObject = new JsonObject();
 
 			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
-				jsonObject.add(Registry.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).serialize());
+				jsonObject.add(Registry.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).toJson());
 			}
 
 			return jsonObject;
@@ -131,7 +131,7 @@ public class EntityEffectPredicate {
 			}
 		}
 
-		public JsonElement serialize() {
+		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("amplifier", this.amplifier.toJson());
 			jsonObject.add("duration", this.duration.toJson());
@@ -140,7 +140,7 @@ public class EntityEffectPredicate {
 			return jsonObject;
 		}
 
-		public static EntityEffectPredicate.EffectData deserialize(JsonObject json) {
+		public static EntityEffectPredicate.EffectData fromJson(JsonObject json) {
 			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(json.get("amplifier"));
 			NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(json.get("duration"));
 			Boolean boolean_ = json.has("ambient") ? JsonHelper.getBoolean(json, "ambient") : null;

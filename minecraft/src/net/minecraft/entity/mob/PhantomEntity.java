@@ -518,7 +518,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				PhantomEntity.this.tryAttack(livingEntity);
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 				if (!PhantomEntity.this.isSilent()) {
-					PhantomEntity.this.world.playLevelEvent(1039, PhantomEntity.this.getBlockPos(), 0);
+					PhantomEntity.this.world.syncWorldEvent(1039, PhantomEntity.this.getBlockPos(), 0);
 				}
 			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;

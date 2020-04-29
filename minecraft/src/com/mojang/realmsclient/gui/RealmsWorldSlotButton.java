@@ -128,14 +128,14 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableRealm
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.state != null) {
 			this.drawSlotFrame(
-				matrixStack,
+				matrices,
 				this.x,
 				this.y,
-				i,
-				j,
+				mouseX,
+				mouseY,
 				this.state.isCurrentlyActiveSlot,
 				this.state.slotName,
 				this.slotIndex,

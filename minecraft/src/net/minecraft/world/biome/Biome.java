@@ -87,6 +87,7 @@ public abstract class Biome {
 	protected final List<ConfiguredFeature<?, ?>> flowerFeatures = Lists.<ConfiguredFeature<?, ?>>newArrayList();
 	protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.<StructureFeature<?>, FeatureConfig>newHashMap();
 	private final Map<EntityCategory, List<Biome.SpawnEntry>> spawns = Maps.<EntityCategory, List<Biome.SpawnEntry>>newHashMap();
+	private final Map<EntityType<?>, Biome.SpawnDensity> spawnDensities = Maps.<EntityType<?>, Biome.SpawnDensity>newHashMap();
 	private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
 			Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
 				@Override
@@ -160,8 +161,17 @@ public abstract class Biome {
 		((List)this.spawns.get(type)).add(spawnEntry);
 	}
 
+	protected void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
+		this.spawnDensities.put(type, new Biome.SpawnDensity(mass, maxMass));
+	}
+
 	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory category) {
 		return (List<Biome.SpawnEntry>)this.spawns.get(category);
+	}
+
+	@Nullable
+	public Biome.SpawnDensity getSpawnDensity(EntityType<?> type) {
+		return (Biome.SpawnDensity)this.spawnDensities.get(type);
 	}
 
 	public Biome.Precipitation getPrecipitation() {
@@ -229,13 +239,13 @@ public abstract class Biome {
 		}
 	}
 
-	public boolean canSetSnow(WorldView worldView, BlockPos blockPos) {
+	public boolean canSetSnow(WorldView world, BlockPos blockPos) {
 		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && worldView.getLightLevel(LightType.BLOCK, blockPos) < 10) {
-				BlockState blockState = worldView.getBlockState(blockPos);
-				if (blockState.isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(worldView, blockPos)) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && world.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+				BlockState blockState = world.getBlockState(blockPos);
+				if (blockState.isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos)) {
 					return true;
 				}
 			}
@@ -260,8 +270,8 @@ public abstract class Biome {
 		return (List<ConfiguredCarver<?>>)this.carvers.computeIfAbsent(carver, carverx -> Lists.newArrayList());
 	}
 
-	public <C extends FeatureConfig> void addStructureFeature(ConfiguredFeature<C, ? extends StructureFeature<C>> configuredFeature) {
-		this.structureFeatures.put(configuredFeature.feature, configuredFeature.config);
+	public <C extends FeatureConfig> void addStructureFeature(ConfiguredFeature<C, ? extends StructureFeature<C>> configuredStructureFeature) {
+		this.structureFeatures.put(configuredStructureFeature.feature, configuredStructureFeature.config);
 	}
 
 	public <C extends FeatureConfig> boolean hasStructureFeature(StructureFeature<C> structureFeature) {
@@ -285,18 +295,18 @@ public abstract class Biome {
 		GenerationStep.Feature step,
 		StructureAccessor structureAccessor,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
-		IWorld iWorld,
-		long l,
+		IWorld world,
+		long populationSeed,
 		ChunkRandom chunkRandom,
-		BlockPos blockPos
+		BlockPos pos
 	) {
 		int i = 0;
 
 		for (ConfiguredFeature<?, ?> configuredFeature : (List)this.features.get(step)) {
-			chunkRandom.setDecoratorSeed(l, i, step.ordinal());
+			chunkRandom.setDecoratorSeed(populationSeed, i, step.ordinal());
 
 			try {
-				configuredFeature.generate(iWorld, structureAccessor, chunkGenerator, chunkRandom, blockPos);
+				configuredFeature.generate(world, structureAccessor, chunkGenerator, chunkRandom, pos);
 			} catch (Exception var14) {
 				CrashReport crashReport = CrashReport.create(var14, "Feature placement");
 				crashReport.addElement("Feature")
@@ -425,7 +435,7 @@ public abstract class Biome {
 		return this.surfaceBuilder.getConfig();
 	}
 
-	public Stream<Biome.MixedNoisePoint> method_27342() {
+	public Stream<Biome.MixedNoisePoint> streamNoises() {
 		return this.noisePoints.stream();
 	}
 
@@ -666,6 +676,39 @@ public abstract class Biome {
 				+ '\''
 				+ "\n"
 				+ '}';
+		}
+	}
+
+	/**
+	 * Embodies the density limit information of a type of entity in entity
+	 * spawning logic. The density field is generated for all entities spawned
+	 * than a specific type of entity.
+	 */
+	public static class SpawnDensity {
+		private final double gravityLimit;
+		private final double mass;
+
+		public SpawnDensity(double gravityLimit, double mass) {
+			this.gravityLimit = gravityLimit;
+			this.mass = mass;
+		}
+
+		/**
+		 * Represents the cap of gravity as in {@link
+		 * net.minecraft.util.math.GravityField#calculate(BlockPos, double)} for
+		 * entity spawning. If the cap is exceeded, the entity spawning attempt
+		 * will skip.
+		 */
+		public double getGravityLimit() {
+			return this.gravityLimit;
+		}
+
+		/**
+		 * Represents the mass of each entity spawned. Will affect gravity
+		 * calculation.
+		 */
+		public double getMass() {
+			return this.mass;
 		}
 	}
 

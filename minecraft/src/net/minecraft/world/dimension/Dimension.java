@@ -3,6 +3,7 @@ package net.minecraft.world.dimension;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5268;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -96,7 +97,7 @@ public abstract class Dimension {
 		return new WorldBorder();
 	}
 
-	public void saveWorldData() {
+	public void saveWorldData(class_5268 arg) {
 	}
 
 	public void update() {

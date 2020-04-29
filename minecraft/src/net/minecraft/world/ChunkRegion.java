@@ -49,7 +49,6 @@ public class ChunkRegion implements IWorld {
 	private final int width;
 	private final ServerWorld world;
 	private final long seed;
-	private final int seaLevel;
 	private final class_5217 levelProperties;
 	private final Random random;
 	private final Dimension dimension;
@@ -73,7 +72,6 @@ public class ChunkRegion implements IWorld {
 			this.world = world;
 			this.seed = world.getSeed();
 			this.generatorSettings = world.getChunkManager().getChunkGenerator().getConfig();
-			this.seaLevel = world.getSeaLevel();
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
 			this.dimension = world.getDimension();
@@ -323,7 +321,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public int getSeaLevel() {
-		return this.seaLevel;
+		return this.world.getSeaLevel();
 	}
 
 	@Override
@@ -345,7 +343,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
+	public void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
 	}
 
 	@Override

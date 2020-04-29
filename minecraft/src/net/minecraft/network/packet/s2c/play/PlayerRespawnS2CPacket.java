@@ -15,15 +15,17 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	private long sha256Seed;
 	private GameMode gameMode;
 	private LevelGeneratorType generatorType;
+	private boolean field_24451;
 
 	public PlayerRespawnS2CPacket() {
 	}
 
-	public PlayerRespawnS2CPacket(DimensionType dimension, long sha256Seed, LevelGeneratorType generatorType, GameMode gameMode) {
+	public PlayerRespawnS2CPacket(DimensionType dimension, long sha256Seed, LevelGeneratorType generatorType, GameMode gameMode, boolean bl) {
 		this.dimension = dimension;
 		this.sha256Seed = sha256Seed;
 		this.gameMode = gameMode;
 		this.generatorType = generatorType;
+		this.field_24451 = bl;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -39,6 +41,8 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		if (this.generatorType == null) {
 			this.generatorType = LevelGeneratorType.DEFAULT;
 		}
+
+		this.field_24451 = buf.readBoolean();
 	}
 
 	@Override
@@ -47,6 +51,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeLong(this.sha256Seed);
 		buf.writeByte(this.gameMode.getId());
 		buf.writeString(this.generatorType.getName());
+		buf.writeBoolean(this.field_24451);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -67,5 +72,10 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	@Environment(EnvType.CLIENT)
 	public LevelGeneratorType getGeneratorType() {
 		return this.generatorType;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_27904() {
+		return this.field_24451;
 	}
 }

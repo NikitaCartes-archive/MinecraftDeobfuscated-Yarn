@@ -57,7 +57,7 @@ public class NoteBlock extends Block {
 
 	private void playNote(World world, BlockPos pos) {
 		if (world.getBlockState(pos.up()).isAir()) {
-			world.addBlockAction(pos, this, 0, 0);
+			world.addSyncedBlockEvent(pos, this, 0, 0);
 		}
 	}
 
@@ -83,7 +83,7 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
+	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 		int i = (Integer)state.get(NOTE);
 		float f = (float)Math.pow(2.0, (double)(i - 12) / 12.0);
 		world.playSound(null, pos, ((Instrument)state.get(INSTRUMENT)).getSound(), SoundCategory.RECORDS, 3.0F, f);

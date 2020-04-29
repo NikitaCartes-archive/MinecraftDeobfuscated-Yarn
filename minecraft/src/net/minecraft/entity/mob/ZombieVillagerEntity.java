@@ -242,7 +242,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		villagerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
 		if (!this.isSilent()) {
-			world.playLevelEvent(null, 1027, this.getBlockPos(), 0);
+			world.syncWorldEvent(null, 1027, this.getBlockPos(), 0);
 		}
 	}
 

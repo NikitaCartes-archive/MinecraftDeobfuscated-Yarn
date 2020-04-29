@@ -64,11 +64,13 @@ public class ProgressScreen extends Screen implements ProgressListener {
 		} else {
 			this.renderBackground(matrices);
 			if (this.title != null) {
-				this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
+				this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
 			}
 
 			if (this.task != null && this.progress != 0) {
-				this.method_27534(matrices, this.textRenderer, new LiteralText("").append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 16777215);
+				this.drawStringWithShadow(
+					matrices, this.textRenderer, new LiteralText("").append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 16777215
+				);
 			}
 
 			super.render(matrices, mouseX, mouseY, delta);

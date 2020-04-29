@@ -107,7 +107,7 @@ public class VineBlock extends Block {
 			} else {
 				BooleanProperty booleanProperty = (BooleanProperty)FACING_PROPERTIES.get(side);
 				BlockState blockState = world.getBlockState(pos.up());
-				return blockState.getBlock() == this && (Boolean)blockState.get(booleanProperty);
+				return blockState.isOf(this) && (Boolean)blockState.get(booleanProperty);
 			}
 		}
 	}
@@ -134,7 +134,7 @@ public class VineBlock extends Block {
 						blockState = world.getBlockState(blockPos);
 					}
 
-					bl = blockState.getBlock() == this && (Boolean)blockState.get(booleanProperty);
+					bl = blockState.isOf(this) && (Boolean)blockState.get(booleanProperty);
 				}
 
 				state = state.with(booleanProperty, Boolean.valueOf(bl));
@@ -219,7 +219,7 @@ public class VineBlock extends Block {
 				if (pos.getY() > 0) {
 					BlockPos blockPos2 = pos.down();
 					BlockState blockState = world.getBlockState(blockPos2);
-					if (blockState.isAir() || blockState.getBlock() == this) {
+					if (blockState.isAir() || blockState.isOf(this)) {
 						BlockState blockState3 = blockState.isAir() ? this.getDefaultState() : blockState;
 						BlockState blockState4 = this.getGrownState(state, blockState3, random);
 						if (blockState3 != blockState4 && this.hasHorizontalSide(blockState4)) {
@@ -254,7 +254,7 @@ public class VineBlock extends Block {
 		int j = 5;
 
 		for (BlockPos blockPos : iterable) {
-			if (world.getBlockState(blockPos).getBlock() == this) {
+			if (world.getBlockState(blockPos).isOf(this)) {
 				if (--j <= 0) {
 					return false;
 				}
@@ -267,14 +267,14 @@ public class VineBlock extends Block {
 	@Override
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
 		BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
-		return blockState.getBlock() == this ? this.getAdjacentBlockCount(blockState) < FACING_PROPERTIES.size() : super.canReplace(state, context);
+		return blockState.isOf(this) ? this.getAdjacentBlockCount(blockState) < FACING_PROPERTIES.size() : super.canReplace(state, context);
 	}
 
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-		boolean bl = blockState.getBlock() == this;
+		boolean bl = blockState.isOf(this);
 		BlockState blockState2 = bl ? blockState : this.getDefaultState();
 
 		for (Direction direction : ctx.getPlacementDirections()) {

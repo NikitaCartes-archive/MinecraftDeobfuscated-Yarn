@@ -1148,6 +1148,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
+		private int adjustTrackingDistance(int initialDistance) {
+			return ThreadedAnvilChunkStorage.this.world.getServer().adjustTrackingDistance(initialDistance);
+		}
+
 		private int getMaxTrackDistance() {
 			Collection<Entity> collection = this.entity.getPassengersDeep();
 			int i = this.maxDistance;
@@ -1159,7 +1163,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}
 			}
 
-			return i;
+			return this.adjustTrackingDistance(i);
 		}
 
 		public void updateCameraPosition(List<ServerPlayerEntity> players) {

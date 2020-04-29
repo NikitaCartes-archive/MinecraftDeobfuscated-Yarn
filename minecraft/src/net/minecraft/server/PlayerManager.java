@@ -71,7 +71,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
@@ -462,12 +461,12 @@ public abstract class PlayerManager {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
-					serverPlayerEntity.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), serverPlayerEntity.interactionManager.getGameMode()
+					serverPlayerEntity.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), serverPlayerEntity.interactionManager.getGameMode(), bl
 				)
 			);
 		serverPlayerEntity.networkHandler
 			.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.yaw, serverPlayerEntity.pitch);
-		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld.getSpawnPos()));
+		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld.method_27911()));
 		serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
 		serverPlayerEntity.networkHandler
 			.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity.experienceProgress, serverPlayerEntity.totalExperience, serverPlayerEntity.experienceLevel));
@@ -600,9 +599,7 @@ public abstract class PlayerManager {
 	}
 
 	public boolean isOperator(GameProfile profile) {
-		return this.ops.contains(profile)
-			|| this.server.isHost(profile) && this.server.getWorld(DimensionType.OVERWORLD).getLevelProperties().areCommandsAllowed()
-			|| this.cheatsAllowed;
+		return this.ops.contains(profile) || this.server.isHost(profile) && this.server.method_27728().areCommandsAllowed() || this.cheatsAllowed;
 	}
 
 	@Nullable
@@ -660,7 +657,7 @@ public abstract class PlayerManager {
 		player.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
 		player.networkHandler
 			.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
-		player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos()));
+		player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.method_27911()));
 		if (world.isRaining()) {
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(1, 0.0F));
 			player.networkHandler.sendPacket(new GameStateChangeS2CPacket(7, world.getRainGradient(1.0F)));
@@ -719,14 +716,14 @@ public abstract class PlayerManager {
 		this.gameMode = gameMode;
 	}
 
-	private void setGameMode(ServerPlayerEntity player, ServerPlayerEntity oldPlayer, IWorld world) {
+	private void setGameMode(ServerPlayerEntity player, ServerPlayerEntity oldPlayer, ServerWorld world) {
 		if (oldPlayer != null) {
 			player.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode());
 		} else if (this.gameMode != null) {
 			player.interactionManager.setGameMode(this.gameMode);
 		}
 
-		player.interactionManager.setGameModeIfNotPresent(world.getLevelProperties().getGameMode());
+		player.interactionManager.setGameModeIfNotPresent(world.getServer().method_27728().getGameMode());
 	}
 
 	@Environment(EnvType.CLIENT)

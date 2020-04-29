@@ -1,9 +1,10 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.Entity;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -16,35 +17,38 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 		return ID;
 	}
 
-	public SummonedEntityCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
-		return new SummonedEntityCriterion.Conditions(entityPredicate);
+	public SummonedEntityCriterion.Conditions conditionsFromJson(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
+		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+		return new SummonedEntityCriterion.Conditions(extended, extended2);
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, entity));
+		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
+		this.test(player, conditions -> conditions.matches(lootContext));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate entity;
+		private final EntityPredicate.Extended entity;
 
-		public Conditions(EntityPredicate entity) {
-			super(SummonedEntityCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended entity) {
+			super(SummonedEntityCriterion.ID, player);
 			this.entity = entity;
 		}
 
-		public static SummonedEntityCriterion.Conditions create(EntityPredicate.Builder builder) {
-			return new SummonedEntityCriterion.Conditions(builder.build());
+		public static SummonedEntityCriterion.Conditions create(EntityPredicate.Builder summonedEntityPredicateBuilder) {
+			return new SummonedEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(summonedEntityPredicateBuilder.build()));
 		}
 
-		public boolean matches(ServerPlayerEntity player, Entity entity) {
-			return this.entity.test(player, entity);
+		public boolean matches(LootContext summonedEntityContext) {
+			return this.entity.test(summonedEntityContext);
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("entity", this.entity.toJson());
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
+			jsonObject.add("entity", this.entity.toJson(predicateSerializer));
 			return jsonObject;
 		}
 	}

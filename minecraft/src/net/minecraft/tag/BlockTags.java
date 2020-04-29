@@ -93,8 +93,8 @@ public class BlockTags {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_27057() {
-		ACCESSOR.method_27061();
+	public static void markReady() {
+		ACCESSOR.markReady();
 	}
 
 	public static TagContainer<Block> getContainer() {

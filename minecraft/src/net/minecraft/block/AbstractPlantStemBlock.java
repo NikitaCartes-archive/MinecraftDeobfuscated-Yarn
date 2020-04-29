@@ -55,7 +55,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		if (direction == this.growthDirection && newState.getBlock() == this) {
+		if (direction == this.growthDirection && newState.isOf(this)) {
 			return this.getPlant().getDefaultState();
 		} else {
 			if (this.tickWater) {

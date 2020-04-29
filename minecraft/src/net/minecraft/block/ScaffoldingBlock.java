@@ -127,14 +127,14 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	private boolean shouldBeBottom(BlockView world, BlockPos pos, int distance) {
-		return distance > 0 && world.getBlockState(pos.down()).getBlock() != this;
+		return distance > 0 && !world.getBlockState(pos.down()).isOf(this);
 	}
 
 	public static int calculateDistance(BlockView world, BlockPos pos) {
 		BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.DOWN);
 		BlockState blockState = world.getBlockState(mutable);
 		int i = 7;
-		if (blockState.getBlock() == Blocks.SCAFFOLDING) {
+		if (blockState.isOf(Blocks.SCAFFOLDING)) {
 			i = (Integer)blockState.get(DISTANCE);
 		} else if (blockState.isSideSolidFullSquare(world, mutable, Direction.UP)) {
 			return 0;
@@ -142,7 +142,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockState blockState2 = world.getBlockState(mutable.set(pos, direction));
-			if (blockState2.getBlock() == Blocks.SCAFFOLDING) {
+			if (blockState2.isOf(Blocks.SCAFFOLDING)) {
 				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
 				if (i == 1) {
 					break;

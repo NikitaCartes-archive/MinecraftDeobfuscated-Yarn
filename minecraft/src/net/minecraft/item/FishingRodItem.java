@@ -7,26 +7,12 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class FishingRodItem extends Item implements Vanishable {
 	public FishingRodItem(Item.Settings settings) {
 		super(settings);
-		this.addPropertyGetter(new Identifier("cast"), (stack, world, entity) -> {
-			if (entity == null) {
-				return 0.0F;
-			} else {
-				boolean bl = entity.getMainHandStack() == stack;
-				boolean bl2 = entity.getOffHandStack() == stack;
-				if (entity.getMainHandStack().getItem() instanceof FishingRodItem) {
-					bl2 = false;
-				}
-
-				return (bl || bl2) && entity instanceof PlayerEntity && ((PlayerEntity)entity).fishHook != null ? 1.0F : 0.0F;
-			}
-		});
 	}
 
 	@Override

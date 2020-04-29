@@ -30,7 +30,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
+		if (!iWorld.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
 			return false;
 		} else {
 			blockPos = blockPos.up(random.nextInt(4));

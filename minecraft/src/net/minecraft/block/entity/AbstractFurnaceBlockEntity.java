@@ -159,30 +159,30 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		return map;
 	}
 
-	private static boolean method_26395(Item item) {
+	private static boolean isFlammableWood(Item item) {
 		return ItemTags.NON_FLAMMABLE_WOOD.contains(item);
 	}
 
 	private static void addFuel(Map<Item, Integer> fuelTimes, Tag<Item> tag, int fuelTime) {
 		for (Item item : tag.values()) {
-			if (!method_26395(item)) {
+			if (!isFlammableWood(item)) {
 				fuelTimes.put(item, fuelTime);
 			}
 		}
 	}
 
-	private static void addFuel(Map<Item, Integer> map, ItemConvertible itemConvertible, int fuelTime) {
-		Item item = itemConvertible.asItem();
-		if (method_26395(item)) {
+	private static void addFuel(Map<Item, Integer> map, ItemConvertible item, int fuelTime) {
+		Item item2 = item.asItem();
+		if (isFlammableWood(item2)) {
 			if (SharedConstants.isDevelopment) {
 				throw (IllegalStateException)Util.throwOrPause(
 					new IllegalStateException(
-						"A developer tried to explicitly make fire resistant item " + item.getName(null).getString() + " a furnace fuel. That will not work!"
+						"A developer tried to explicitly make fire resistant item " + item2.getName(null).getString() + " a furnace fuel. That will not work!"
 					)
 				);
 			}
 		} else {
-			map.put(item, fuelTime);
+			map.put(item2, fuelTime);
 		}
 	}
 

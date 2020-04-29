@@ -36,7 +36,7 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 			for (int p = k; p >= 0; p--) {
 				mutable.set(n, p, o);
 				if (!chunk.getBlockState(mutable).isAir()) {
-					if (p == 62 && chunk.getBlockState(mutable).getBlock() != blockState2.getBlock()) {
+					if (p == 62 && !chunk.getBlockState(mutable).isOf(blockState2.getBlock())) {
 						chunk.setBlockState(mutable, blockState2, false);
 					}
 					break;

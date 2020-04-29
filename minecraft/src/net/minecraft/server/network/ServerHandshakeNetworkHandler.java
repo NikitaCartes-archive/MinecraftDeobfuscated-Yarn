@@ -7,10 +7,12 @@ import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListener {
+	private static final Text IGNORING_STATUS_REQUEST_MESSAGE = new LiteralText("Ignoring status request");
 	private final MinecraftServer server;
 	private final ClientConnection connection;
 
@@ -37,8 +39,12 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 				}
 				break;
 			case STATUS:
-				this.connection.setState(NetworkState.STATUS);
-				this.connection.setPacketListener(new ServerQueryNetworkHandler(this.server, this.connection));
+				if (this.server.acceptsStatusQuery()) {
+					this.connection.setState(NetworkState.STATUS);
+					this.connection.setPacketListener(new ServerQueryNetworkHandler(this.server, this.connection));
+				} else {
+					this.connection.disconnect(IGNORING_STATUS_REQUEST_MESSAGE);
+				}
 				break;
 			default:
 				throw new UnsupportedOperationException("Invalid intention " + packet.getIntendedState());

@@ -185,7 +185,7 @@ public class CommandBlock extends BlockWithEntity {
 			mutable.move(facing);
 			BlockState blockState = world.getBlockState(mutable);
 			Block block = blockState.getBlock();
-			if (block != Blocks.CHAIN_COMMAND_BLOCK) {
+			if (!blockState.isOf(Blocks.CHAIN_COMMAND_BLOCK)) {
 				break;
 			}
 

@@ -4,7 +4,7 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.AbstractPlantStemBlock;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -32,8 +32,8 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 		if (!iWorld.isAir(blockPos)) {
 			return false;
 		} else {
-			Block block = iWorld.getBlockState(blockPos.up()).getBlock();
-			if (block != Blocks.NETHERRACK && block != Blocks.NETHER_WART_BLOCK) {
+			BlockState blockState = iWorld.getBlockState(blockPos.up());
+			if (!blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
 				return false;
 			} else {
 				this.generateNetherWartBlocksInArea(iWorld, random, blockPos);
@@ -54,8 +54,8 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 				int j = 0;
 
 				for (Direction direction : DIRECTIONS) {
-					Block block = world.getBlockState(mutable2.set(mutable, direction)).getBlock();
-					if (block == Blocks.NETHERRACK || block == Blocks.NETHER_WART_BLOCK) {
+					BlockState blockState = world.getBlockState(mutable2.set(mutable, direction));
+					if (blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
 						j++;
 					}
 
@@ -77,8 +77,8 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 		for (int i = 0; i < 100; i++) {
 			mutable.set(pos, random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
 			if (world.isAir(mutable)) {
-				Block block = world.getBlockState(mutable.up()).getBlock();
-				if (block == Blocks.NETHERRACK || block == Blocks.NETHER_WART_BLOCK) {
+				BlockState blockState = world.getBlockState(mutable.up());
+				if (blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
 					int j = MathHelper.nextInt(random, 1, 8);
 					if (random.nextInt(6) == 0) {
 						j *= 2;

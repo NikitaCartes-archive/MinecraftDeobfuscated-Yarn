@@ -172,9 +172,9 @@ public class LocationPredicate {
 		}
 	}
 
-	public static LocationPredicate fromJson(@Nullable JsonElement element) {
-		if (element != null && !element.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(element, "location");
+	public static LocationPredicate fromJson(@Nullable JsonElement json) {
+		if (json != null && !json.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(json, "location");
 			JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "position", new JsonObject());
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject2.get("x"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));

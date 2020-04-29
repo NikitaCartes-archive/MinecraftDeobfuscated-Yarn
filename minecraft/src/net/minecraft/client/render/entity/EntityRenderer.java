@@ -91,7 +91,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
 			int j = (int)(g * 255.0F) << 24;
 			TextRenderer textRenderer = this.getFontRenderer();
-			float h = (float)(-textRenderer.getWidth(text) / 2);
+			float h = (float)(-textRenderer.getStringWidth(text) / 2);
 			textRenderer.draw(text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl, j, light);
 			if (bl) {
 				textRenderer.draw(text, h, (float)i, -1, false, matrix4f, vertexConsumers, false, 0, light);

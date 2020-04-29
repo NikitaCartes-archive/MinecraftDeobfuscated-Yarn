@@ -67,16 +67,16 @@ public class TexturedButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		RenderSystem.disableDepthTest();
-		int k = this.v;
+		int i = this.v;
 		if (this.isHovered()) {
-			k += this.hoveredVOffset;
+			i += this.hoveredVOffset;
 		}
 
-		drawTexture(matrixStack, this.x, this.y, (float)this.u, (float)k, this.width, this.height, this.textureWidth, this.textureHeight);
+		drawTexture(matrices, this.x, this.y, (float)this.u, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
 		RenderSystem.enableDepthTest();
 	}
 }

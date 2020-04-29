@@ -7,7 +7,7 @@ import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.BaseFluid;
+import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.particle.ParticleTypes;
@@ -110,7 +110,7 @@ public class BucketItem extends Item {
 	}
 
 	public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
-		if (!(this.fluid instanceof BaseFluid)) {
+		if (!(this.fluid instanceof FlowableFluid)) {
 			return false;
 		} else {
 			BlockState blockState = world.getBlockState(pos);
@@ -130,17 +130,19 @@ public class BucketItem extends Item {
 					for (int l = 0; l < 8; l++) {
 						world.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
 					}
-				} else if (blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER) {
-					if (((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, pos, blockState, ((BaseFluid)this.fluid).getStill(false))) {
-						this.playEmptyingSound(player, world, pos);
-					}
 				} else {
-					if (!world.isClient && bl && !material.isLiquid()) {
-						world.breakBlock(pos, true);
+					if (!(blockState.getBlock() instanceof FluidFillable) || this.fluid != Fluids.WATER) {
+						if (!world.isClient && bl && !material.isLiquid()) {
+							world.breakBlock(pos, true);
+						}
+
+						this.playEmptyingSound(player, world, pos);
+						return world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), 11);
 					}
 
-					this.playEmptyingSound(player, world, pos);
-					world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), 11);
+					if (((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, pos, blockState, ((FlowableFluid)this.fluid).getStill(false))) {
+						this.playEmptyingSound(player, world, pos);
+					}
 				}
 
 				return true;

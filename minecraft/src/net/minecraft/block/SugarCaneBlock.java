@@ -40,7 +40,7 @@ public class SugarCaneBlock extends Block {
 		if (world.isAir(pos.up())) {
 			int i = 1;
 
-			while (world.getBlockState(pos.down(i)).getBlock() == this) {
+			while (world.getBlockState(pos.down(i)).isOf(this)) {
 				i++;
 			}
 
@@ -67,22 +67,22 @@ public class SugarCaneBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		Block block = world.getBlockState(pos.down()).getBlock();
-		if (block == this) {
+		BlockState blockState = world.getBlockState(pos.down());
+		if (blockState.getBlock() == this) {
 			return true;
 		} else {
-			if (block == Blocks.GRASS_BLOCK
-				|| block == Blocks.DIRT
-				|| block == Blocks.COARSE_DIRT
-				|| block == Blocks.PODZOL
-				|| block == Blocks.SAND
-				|| block == Blocks.RED_SAND) {
+			if (blockState.isOf(Blocks.GRASS_BLOCK)
+				|| blockState.isOf(Blocks.DIRT)
+				|| blockState.isOf(Blocks.COARSE_DIRT)
+				|| blockState.isOf(Blocks.PODZOL)
+				|| blockState.isOf(Blocks.SAND)
+				|| blockState.isOf(Blocks.RED_SAND)) {
 				BlockPos blockPos = pos.down();
 
 				for (Direction direction : Direction.Type.HORIZONTAL) {
-					BlockState blockState = world.getBlockState(blockPos.offset(direction));
+					BlockState blockState2 = world.getBlockState(blockPos.offset(direction));
 					FluidState fluidState = world.getFluidState(blockPos.offset(direction));
-					if (fluidState.matches(FluidTags.WATER) || blockState.getBlock() == Blocks.FROSTED_ICE) {
+					if (fluidState.matches(FluidTags.WATER) || blockState2.isOf(Blocks.FROSTED_ICE)) {
 						return true;
 					}
 				}

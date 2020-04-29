@@ -55,7 +55,11 @@ public class FlintAndSteelItem extends Item {
 	}
 
 	public static boolean isIgnitable(BlockState state) {
-		return state.getBlock().isIn(BlockTags.CAMPFIRES) && !(Boolean)state.get(Properties.WATERLOGGED) && !(Boolean)state.get(Properties.LIT);
+		return state.method_27851(
+				BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(Properties.WATERLOGGED) && abstractBlockState.contains(Properties.LIT)
+			)
+			&& !(Boolean)state.get(Properties.WATERLOGGED)
+			&& !(Boolean)state.get(Properties.LIT);
 	}
 
 	public static boolean canIgnite(BlockState block, IWorld world, BlockPos pos) {
@@ -63,7 +67,7 @@ public class FlintAndSteelItem extends Item {
 		boolean bl = false;
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			if (world.getBlockState(pos.offset(direction)).getBlock() == Blocks.OBSIDIAN && NetherPortalBlock.createAreaHelper(world, pos) != null) {
+			if (world.getBlockState(pos.offset(direction)).isOf(Blocks.OBSIDIAN) && NetherPortalBlock.createAreaHelper(world, pos) != null) {
 				bl = true;
 			}
 		}

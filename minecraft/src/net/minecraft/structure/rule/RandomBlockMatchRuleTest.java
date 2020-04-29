@@ -24,7 +24,7 @@ public class RandomBlockMatchRuleTest extends RuleTest {
 
 	@Override
 	public boolean test(BlockState state, Random random) {
-		return state.getBlock() == this.block && random.nextFloat() < this.probability;
+		return state.isOf(this.block) && random.nextFloat() < this.probability;
 	}
 
 	@Override

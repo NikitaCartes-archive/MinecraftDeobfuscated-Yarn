@@ -208,11 +208,7 @@ public class SelectionManager {
 		}
 	}
 
-	public void method_27566() {
-		this.method_27553(false);
-	}
-
-	public void method_27553(boolean bl) {
+	private void method_27553(boolean bl) {
 		this.selectionStart = 0;
 		this.updateSelectionRange(bl);
 	}
@@ -221,8 +217,8 @@ public class SelectionManager {
 		this.method_27558(false);
 	}
 
-	public void method_27558(boolean bl) {
-		this.selectionEnd = this.selectionStart = ((String)this.stringGetter.get()).length();
+	private void method_27558(boolean bl) {
+		this.selectionStart = ((String)this.stringGetter.get()).length();
 		this.updateSelectionRange(bl);
 	}
 

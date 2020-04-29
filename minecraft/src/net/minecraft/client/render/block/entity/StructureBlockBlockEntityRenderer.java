@@ -106,7 +106,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 		for (BlockPos blockPos4 : BlockPos.iterate(blockPos3, blockPos3.add(structureBlockBlockEntity.getSize()).add(-1, -1, -1))) {
 			BlockState blockState = blockView.getBlockState(blockPos4);
 			boolean bl2 = blockState.isAir();
-			boolean bl3 = blockState.getBlock() == Blocks.STRUCTURE_VOID;
+			boolean bl3 = blockState.isOf(Blocks.STRUCTURE_VOID);
 			if (bl2 || bl3) {
 				float f = bl2 ? 0.05F : 0.0F;
 				double d = (double)((float)(blockPos4.getX() - blockPos2.getX()) + 0.45F - f);

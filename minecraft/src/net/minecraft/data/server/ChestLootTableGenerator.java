@@ -1117,7 +1117,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.withEntry(ItemEntry.builder(Items.IRON_NUGGET).setWeight(40).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(9.0F, 18.0F))))
 						.withEntry(ItemEntry.builder(Items.FLINT_AND_STEEL).setWeight(40))
 						.withEntry(ItemEntry.builder(Items.FIRE_CHARGE).setWeight(40))
-						.withEntry(ItemEntry.builder(Items.GOLDEN_APPLE).setWeight(40))
+						.withEntry(ItemEntry.builder(Items.GOLDEN_APPLE).setWeight(15))
 						.withEntry(ItemEntry.builder(Items.GOLD_NUGGET).setWeight(15).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 24.0F))))
 						.withEntry(ItemEntry.builder(Items.GOLDEN_SWORD).setWeight(15).withFunction(EnchantRandomlyLootFunction.builder()))
 						.withEntry(ItemEntry.builder(Items.GOLDEN_AXE).setWeight(15).withFunction(EnchantRandomlyLootFunction.builder()))

@@ -374,7 +374,7 @@ public class EnderDragonFight {
 	}
 
 	private void generateEndGateway(BlockPos blockPos) {
-		this.world.playLevelEvent(3000, blockPos, 0);
+		this.world.syncWorldEvent(3000, blockPos, 0);
 		Feature.END_GATEWAY
 			.configure(EndGatewayFeatureConfig.createConfig())
 			.generate(
@@ -391,7 +391,7 @@ public class EnderDragonFight {
 		if (this.exitPortalLocation == null) {
 			this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN).down();
 
-			while (this.world.getBlockState(this.exitPortalLocation).getBlock() == Blocks.BEDROCK && this.exitPortalLocation.getY() > this.world.getSeaLevel()) {
+			while (this.world.getBlockState(this.exitPortalLocation).isOf(Blocks.BEDROCK) && this.exitPortalLocation.getY() > this.world.getSeaLevel()) {
 				this.exitPortalLocation = this.exitPortalLocation.down();
 			}
 		}
@@ -490,7 +490,7 @@ public class EnderDragonFight {
 					for (int j = 0; j < this.endPortalPattern.getHeight(); j++) {
 						for (int k = 0; k < this.endPortalPattern.getDepth(); k++) {
 							CachedBlockPosition cachedBlockPosition = result.translate(i, j, k);
-							if (cachedBlockPosition.getBlockState().getBlock() == Blocks.BEDROCK || cachedBlockPosition.getBlockState().getBlock() == Blocks.END_PORTAL) {
+							if (cachedBlockPosition.getBlockState().isOf(Blocks.BEDROCK) || cachedBlockPosition.getBlockState().isOf(Blocks.END_PORTAL)) {
 								this.world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.END_STONE.getDefaultState());
 							}
 						}

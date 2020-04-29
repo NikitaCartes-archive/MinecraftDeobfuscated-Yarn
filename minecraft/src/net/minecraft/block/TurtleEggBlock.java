@@ -66,7 +66,7 @@ public class TurtleEggBlock extends Block {
 			world.breakBlock(pos, false);
 		} else {
 			world.setBlockState(pos, state.with(EGGS, Integer.valueOf(i - 1)), 2);
-			world.playLevelEvent(2001, pos, Block.getRawIdFromState(state));
+			world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
 		}
 	}
 
@@ -82,7 +82,7 @@ public class TurtleEggBlock extends Block {
 				world.removeBlock(pos, false);
 
 				for (int j = 0; j < state.get(EGGS); j++) {
-					world.playLevelEvent(2001, pos, Block.getRawIdFromState(state));
+					world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
 					TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
 					turtleEntity.setBreedingAge(-24000);
 					turtleEntity.setHomePos(pos);
@@ -94,13 +94,13 @@ public class TurtleEggBlock extends Block {
 	}
 
 	private boolean isSand(BlockView world, BlockPos pos) {
-		return world.getBlockState(pos.down()).getBlock() == Blocks.SAND;
+		return world.getBlockState(pos.down()).isOf(Blocks.SAND);
 	}
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (this.isSand(world, pos) && !world.isClient) {
-			world.playLevelEvent(2005, pos, 0);
+			world.syncWorldEvent(2005, pos, 0);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class TurtleEggBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-		return blockState.getBlock() == this ? blockState.with(EGGS, Integer.valueOf(Math.min(4, (Integer)blockState.get(EGGS) + 1))) : super.getPlacementState(ctx);
+		return blockState.isOf(this) ? blockState.with(EGGS, Integer.valueOf(Math.min(4, (Integer)blockState.get(EGGS) + 1))) : super.getPlacementState(ctx);
 	}
 
 	@Override

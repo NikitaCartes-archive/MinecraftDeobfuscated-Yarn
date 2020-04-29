@@ -69,8 +69,8 @@ public class ItemTags {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_27060() {
-		ACCESSOR.method_27061();
+	public static void markReady() {
+		ACCESSOR.markReady();
 	}
 
 	public static TagContainer<Item> getContainer() {

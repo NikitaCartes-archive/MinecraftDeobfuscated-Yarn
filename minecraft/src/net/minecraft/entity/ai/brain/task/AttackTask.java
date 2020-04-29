@@ -36,7 +36,7 @@ public class AttackTask<E extends MobEntity> extends Task<E> {
 	}
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-		mobEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(this.getAttackTarget(mobEntity)));
+		mobEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(this.getAttackTarget(mobEntity), true));
 		mobEntity.getMoveControl().strafeTo(-this.forwardMovement, 0.0F);
 		mobEntity.yaw = MathHelper.capRotation(mobEntity.yaw, mobEntity.headYaw, 0.0F);
 	}

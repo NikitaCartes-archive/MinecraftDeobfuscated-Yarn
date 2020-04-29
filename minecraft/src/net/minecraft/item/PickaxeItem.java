@@ -101,25 +101,24 @@ public class PickaxeItem extends MiningToolItem {
 
 	@Override
 	public boolean isEffectiveOn(BlockState state) {
-		Block block = state.getBlock();
 		int i = this.getMaterial().getMiningLevel();
-		if (block == Blocks.OBSIDIAN
-			|| block == Blocks.CRYING_OBSIDIAN
-			|| block == Blocks.NETHERITE_BLOCK
-			|| block == Blocks.RESPAWN_ANCHOR
-			|| block == Blocks.ANCIENT_DEBRIS) {
+		if (state.isOf(Blocks.OBSIDIAN)
+			|| state.isOf(Blocks.CRYING_OBSIDIAN)
+			|| state.isOf(Blocks.NETHERITE_BLOCK)
+			|| state.isOf(Blocks.RESPAWN_ANCHOR)
+			|| state.isOf(Blocks.ANCIENT_DEBRIS)) {
 			return i >= 3;
-		} else if (block == Blocks.DIAMOND_BLOCK
-			|| block == Blocks.DIAMOND_ORE
-			|| block == Blocks.EMERALD_ORE
-			|| block == Blocks.EMERALD_BLOCK
-			|| block == Blocks.GOLD_BLOCK
-			|| block == Blocks.GOLD_ORE
-			|| block == Blocks.REDSTONE_ORE) {
+		} else if (state.isOf(Blocks.DIAMOND_BLOCK)
+			|| state.isOf(Blocks.DIAMOND_ORE)
+			|| state.isOf(Blocks.EMERALD_ORE)
+			|| state.isOf(Blocks.EMERALD_BLOCK)
+			|| state.isOf(Blocks.GOLD_BLOCK)
+			|| state.isOf(Blocks.GOLD_ORE)
+			|| state.isOf(Blocks.REDSTONE_ORE)) {
 			return i >= 2;
-		} else if (block != Blocks.IRON_BLOCK && block != Blocks.IRON_ORE && block != Blocks.LAPIS_BLOCK && block != Blocks.LAPIS_ORE) {
+		} else if (!state.isOf(Blocks.IRON_BLOCK) && !state.isOf(Blocks.IRON_ORE) && !state.isOf(Blocks.LAPIS_BLOCK) && !state.isOf(Blocks.LAPIS_ORE)) {
 			Material material = state.getMaterial();
-			return material == Material.STONE || material == Material.METAL || material == Material.ANVIL || block == Blocks.NETHER_GOLD_ORE;
+			return material == Material.STONE || material == Material.METAL || material == Material.ANVIL || state.isOf(Blocks.NETHER_GOLD_ORE);
 		} else {
 			return i >= 1;
 		}

@@ -78,7 +78,7 @@ public class ExecuteCommand {
 			resultConsumer.onCommandComplete(commandContext, bl, i);
 			resultConsumer2.onCommandComplete(commandContext, bl, i);
 		};
-	private static final SuggestionProvider<ServerCommandSource> field_20852 = (commandContext, suggestionsBuilder) -> {
+	private static final SuggestionProvider<ServerCommandSource> LOOT_CONDITIONS = (commandContext, suggestionsBuilder) -> {
 		LootConditionManager lootConditionManager = commandContext.getSource().getMinecraftServer().getPredicateManager();
 		return CommandSource.suggestIdentifiers(lootConditionManager.getIds(), suggestionsBuilder);
 	};
@@ -544,7 +544,7 @@ public class ExecuteCommand {
 					.then(
 						addConditionLogic(
 							root,
-							CommandManager.argument("predicate", IdentifierArgumentType.identifier()).suggests(field_20852),
+							CommandManager.argument("predicate", IdentifierArgumentType.identifier()).suggests(LOOT_CONDITIONS),
 							positive,
 							commandContext -> testLootCondition(commandContext.getSource(), IdentifierArgumentType.method_23727(commandContext, "predicate"))
 						)
@@ -707,7 +707,7 @@ public class ExecuteCommand {
 						BlockPos blockPos2 = new BlockPos(m, l, k);
 						BlockPos blockPos3 = blockPos2.add(blockPos);
 						BlockState blockState = world.getBlockState(blockPos2);
-						if (!masked || blockState.getBlock() != Blocks.AIR) {
+						if (!masked || !blockState.isOf(Blocks.AIR)) {
 							if (blockState != world.getBlockState(blockPos3)) {
 								return OptionalInt.empty();
 							}

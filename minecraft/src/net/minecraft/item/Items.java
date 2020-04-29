@@ -839,7 +839,7 @@ public class Items {
 	public static final Item EGG = register("egg", new EggItem(new Item.Settings().maxCount(16).group(ItemGroup.MATERIALS)));
 	public static final Item COMPASS = register("compass", new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item FISHING_ROD = register("fishing_rod", new FishingRodItem(new Item.Settings().maxDamage(64).group(ItemGroup.TOOLS)));
-	public static final Item CLOCK = register("clock", new ClockItem(new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item CLOCK = register("clock", new Item(new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item GLOWSTONE_DUST = register("glowstone_dust", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item COD = register("cod", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COD)));
 	public static final Item SALMON = register("salmon", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.SALMON)));

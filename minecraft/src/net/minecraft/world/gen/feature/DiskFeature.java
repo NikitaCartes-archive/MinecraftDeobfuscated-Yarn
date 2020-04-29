@@ -40,7 +40,7 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 							BlockState blockState = iWorld.getBlockState(blockPos2);
 
 							for (BlockState blockState2 : diskFeatureConfig.targets) {
-								if (blockState2.getBlock() == blockState.getBlock()) {
+								if (blockState2.isOf(blockState.getBlock())) {
 									iWorld.setBlockState(blockPos2, diskFeatureConfig.state, 2);
 									i++;
 									break;

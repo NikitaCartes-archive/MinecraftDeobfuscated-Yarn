@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5217;
+import net.minecraft.class_5269;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -59,8 +59,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -69,6 +71,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
+import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
 
 @Environment(EnvType.CLIENT)
@@ -77,6 +80,7 @@ public class ClientWorld extends World {
 	private final Int2ObjectMap<Entity> regularEntities = new Int2ObjectOpenHashMap<>();
 	private final ClientPlayNetworkHandler netHandler;
 	private final WorldRenderer worldRenderer;
+	private final ClientWorld.class_5271 field_24430;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private Scoreboard scoreboard = new Scoreboard();
@@ -90,13 +94,14 @@ public class ClientWorld extends World {
 
 	public ClientWorld(
 		ClientPlayNetworkHandler clientPlayNetworkHandler,
-		class_5217 levelInfo,
+		ClientWorld.class_5271 levelInfo,
 		DimensionType dimensionType,
 		int chunkLoadDistance,
 		Supplier<Profiler> supplier,
 		WorldRenderer worldRenderer
 	) {
 		super(levelInfo, dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance), supplier, true);
+		this.field_24430 = levelInfo;
 		this.netHandler = clientPlayNetworkHandler;
 		this.worldRenderer = worldRenderer;
 		this.setSpawnPos(new BlockPos(8, 64, 8));
@@ -345,7 +350,7 @@ public class ClientWorld extends World {
 			}
 		}
 
-		if (spawnBarrierParticles && blockState.getBlock() == Blocks.BARRIER) {
+		if (spawnBarrierParticles && blockState.isOf(Blocks.BARRIER)) {
 			this.addParticle(ParticleTypes.BARRIER, (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
 		}
 
@@ -556,14 +561,14 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playGlobalEvent(int type, BlockPos pos, int data) {
-		this.worldRenderer.playGlobalEvent(type, pos, data);
+	public void syncGlobalEvent(int eventId, BlockPos pos, int data) {
+		this.worldRenderer.processGlobalEvent(eventId, pos, data);
 	}
 
 	@Override
-	public void playLevelEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
+	public void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
 		try {
-			this.worldRenderer.playLevelEvent(player, eventId, pos, data);
+			this.worldRenderer.processWorldEvent(player, eventId, pos, data);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Playing level event");
 			CrashReportSection crashReportSection = crashReport.addElement("Level event being played");
@@ -763,6 +768,167 @@ public class ClientWorld extends World {
 			}
 
 			return (k / j & 0xFF) << 16 | (l / j & 0xFF) << 8 | m / j & 0xFF;
+		}
+	}
+
+	public BlockPos getSpawnPos() {
+		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
+		if (!this.getWorldBorder().contains(blockPos)) {
+			blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
+		}
+
+		return blockPos;
+	}
+
+	public void setSpawnPos(BlockPos pos) {
+		this.properties.setSpawnPos(pos);
+	}
+
+	public String toString() {
+		return "ClientLevel";
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_5271 implements class_5269 {
+		private final long field_24431;
+		private final LevelGeneratorOptions field_24432;
+		private final boolean field_24433;
+		private final GameRules field_24434;
+		private int field_24435;
+		private int field_24436;
+		private int field_24437;
+		private long field_24438;
+		private long field_24439;
+		private boolean field_24440;
+		private Difficulty field_24441;
+		private boolean field_24442;
+
+		public class_5271(long l, Difficulty difficulty, boolean bl, LevelGeneratorOptions levelGeneratorOptions) {
+			this.field_24431 = l;
+			this.field_24441 = difficulty;
+			this.field_24433 = bl;
+			this.field_24432 = levelGeneratorOptions;
+			this.field_24434 = new GameRules();
+		}
+
+		@Override
+		public long getSeed() {
+			return this.field_24431;
+		}
+
+		@Override
+		public int getSpawnX() {
+			return this.field_24435;
+		}
+
+		@Override
+		public int getSpawnY() {
+			return this.field_24436;
+		}
+
+		@Override
+		public int getSpawnZ() {
+			return this.field_24437;
+		}
+
+		@Override
+		public long getTime() {
+			return this.field_24438;
+		}
+
+		@Override
+		public long getTimeOfDay() {
+			return this.field_24439;
+		}
+
+		@Override
+		public void method_27416(int i) {
+			this.field_24435 = i;
+		}
+
+		@Override
+		public void method_27417(int i) {
+			this.field_24436 = i;
+		}
+
+		@Override
+		public void method_27419(int i) {
+			this.field_24437 = i;
+		}
+
+		@Override
+		public void setTime(long l) {
+			this.field_24438 = l;
+		}
+
+		@Override
+		public void setTimeOfDay(long l) {
+			this.field_24439 = l;
+		}
+
+		@Override
+		public void setSpawnPos(BlockPos blockPos) {
+			this.field_24435 = blockPos.getX();
+			this.field_24436 = blockPos.getY();
+			this.field_24437 = blockPos.getZ();
+		}
+
+		@Override
+		public boolean isThundering() {
+			return false;
+		}
+
+		@Override
+		public boolean isRaining() {
+			return this.field_24440;
+		}
+
+		@Override
+		public void setRaining(boolean bl) {
+			this.field_24440 = bl;
+		}
+
+		@Override
+		public boolean isHardcore() {
+			return this.field_24433;
+		}
+
+		@Override
+		public LevelGeneratorType getGeneratorType() {
+			return this.field_24432.getType();
+		}
+
+		@Override
+		public LevelGeneratorOptions method_27421() {
+			return this.field_24432;
+		}
+
+		@Override
+		public GameRules getGameRules() {
+			return this.field_24434;
+		}
+
+		@Override
+		public Difficulty getDifficulty() {
+			return this.field_24441;
+		}
+
+		@Override
+		public boolean isDifficultyLocked() {
+			return this.field_24442;
+		}
+
+		@Override
+		public void populateCrashReport(CrashReportSection crashReportSection) {
+			class_5269.super.populateCrashReport(crashReportSection);
+		}
+
+		public void method_27875(Difficulty difficulty) {
+			this.field_24441 = difficulty;
+		}
+
+		public void method_27876(boolean bl) {
+			this.field_24442 = bl;
 		}
 	}
 }

@@ -53,7 +53,7 @@ public class EndRodBlock extends FacingBlock {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		Direction direction = ctx.getSide();
 		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(direction.getOpposite()));
-		return blockState.getBlock() == this && blockState.get(FACING) == direction
+		return blockState.isOf(this) && blockState.get(FACING) == direction
 			? this.getDefaultState().with(FACING, direction.getOpposite())
 			: this.getDefaultState().with(FACING, direction);
 	}

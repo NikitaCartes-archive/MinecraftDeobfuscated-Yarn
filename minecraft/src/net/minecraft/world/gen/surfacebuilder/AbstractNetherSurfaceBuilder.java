@@ -65,10 +65,10 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 		for (int s = 127; s >= 0; s--) {
 			mutable.set(o, s, p);
 			BlockState blockState6 = chunk.getBlockState(mutable);
-			if (blockState5.getBlock() == blockState.getBlock() && (blockState6.isAir() || blockState6 == blockState2)) {
+			if (blockState5.isOf(blockState.getBlock()) && (blockState6.isAir() || blockState6 == blockState2)) {
 				for (int t = 0; t < q; t++) {
 					mutable.move(Direction.UP);
-					if (chunk.getBlockState(mutable).getBlock() != blockState.getBlock()) {
+					if (!chunk.getBlockState(mutable).isOf(blockState.getBlock())) {
 						break;
 					}
 
@@ -78,8 +78,8 @@ public abstract class AbstractNetherSurfaceBuilder extends SurfaceBuilder<Ternar
 				mutable.set(o, s, p);
 			}
 
-			if ((blockState5.isAir() || blockState5 == blockState2) && blockState6.getBlock() == blockState.getBlock()) {
-				for (int t = 0; t < r && chunk.getBlockState(mutable).getBlock() == blockState.getBlock(); t++) {
+			if ((blockState5.isAir() || blockState5 == blockState2) && blockState6.isOf(blockState.getBlock())) {
+				for (int t = 0; t < r && chunk.getBlockState(mutable).isOf(blockState.getBlock()); t++) {
 					if (bl && s >= n - 4 && s <= n + 1) {
 						chunk.setBlockState(mutable, this.method_27135(), false);
 					} else {

@@ -96,7 +96,7 @@ public class EditWorldScreen extends Screen {
 							backupLevel(this.field_23777);
 						}
 
-						this.client.openScreen(OptimizeWorldScreen.method_27031(this.callback, this.field_23777, bl2));
+						this.client.openScreen(OptimizeWorldScreen.method_27031(this.callback, this.client.getDataFixer(), this.field_23777, bl2));
 					}, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))
 			)
 		);
@@ -168,7 +168,7 @@ public class EditWorldScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 40, 10526880);
 		this.levelNameTextField.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);

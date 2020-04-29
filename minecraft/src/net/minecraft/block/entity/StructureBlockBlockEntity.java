@@ -133,7 +133,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		if (this.world != null) {
 			BlockPos blockPos = this.getPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
-			if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
+			if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
 				this.world.setBlockState(blockPos, blockState.with(StructureBlock.MODE, this.mode), 2);
 			}
 		}
@@ -236,7 +236,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	public void setMode(StructureBlockMode mode) {
 		this.mode = mode;
 		BlockState blockState = this.world.getBlockState(this.getPos());
-		if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
+		if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
 			this.world.setBlockState(this.getPos(), blockState.with(StructureBlock.MODE, mode), 2);
 		}
 	}
@@ -324,7 +324,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 
 		for (BlockPos blockPos : BlockPos.iterate(pos1, pos2)) {
 			BlockState blockState = this.world.getBlockState(blockPos);
-			if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
+			if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
 				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 				if (blockEntity != null && blockEntity instanceof StructureBlockBlockEntity) {
 					list.add((StructureBlockBlockEntity)blockEntity);

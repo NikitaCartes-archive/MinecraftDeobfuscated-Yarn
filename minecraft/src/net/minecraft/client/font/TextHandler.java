@@ -219,16 +219,6 @@ public class TextHandler {
 	}
 
 	public List<Text> wrapLines(Text text, int maxWidth, Style style) {
-		return this.wrapLines(text, maxWidth, style, false);
-	}
-
-	/**
-	 * @param text the content to split
-	 * @param maxWidth the max width of a line
-	 * @param style a parent style applied to all the lines
-	 * @param retainTrailingWordSplit whether an original trailing space or newline is removed after a ling wrap
-	 */
-	public List<Text> wrapLines(Text text, int maxWidth, Style style, boolean retainTrailingWordSplit) {
 		List<Text> list = Lists.<Text>newArrayList();
 		List<TextHandler.FormattedString> list2 = Lists.<TextHandler.FormattedString>newArrayList();
 		text.visit((stylex, string) -> {
@@ -240,19 +230,22 @@ public class TextHandler {
 		}, style);
 		TextHandler.LineWrappingCollector lineWrappingCollector = new TextHandler.LineWrappingCollector(list2);
 		boolean bl = true;
+		boolean bl2 = false;
 
 		while (bl) {
 			bl = false;
 			TextHandler.LineBreakingVisitor lineBreakingVisitor = new TextHandler.LineBreakingVisitor((float)maxWidth);
 
 			for (TextHandler.FormattedString formattedString : lineWrappingCollector.parts) {
-				boolean bl2 = TextVisitFactory.visitFormatted(formattedString.text, 0, formattedString.style, style, lineBreakingVisitor);
-				if (!bl2) {
+				boolean bl3 = TextVisitFactory.visitFormatted(formattedString.text, 0, formattedString.style, style, lineBreakingVisitor);
+				if (!bl3) {
 					int i = lineBreakingVisitor.getEndingIndex();
 					Style style2 = lineBreakingVisitor.getEndingStyle();
 					char c = lineWrappingCollector.charAt(i);
-					boolean bl3 = !retainTrailingWordSplit && (c == '\n' || c == ' ');
-					list.add(lineWrappingCollector.collectLine(i, bl3 ? 1 : 0, style2));
+					boolean bl4 = c == '\n';
+					boolean bl5 = bl4 || c == ' ';
+					bl2 = bl4;
+					list.add(lineWrappingCollector.collectLine(i, bl5 ? 1 : 0, style2));
 					bl = true;
 					break;
 				}
@@ -264,6 +257,8 @@ public class TextHandler {
 		Text text2 = lineWrappingCollector.collectRemainers();
 		if (text2 != null) {
 			list.add(text2);
+		} else if (bl2) {
+			list.add(new LiteralText("").fillStyle(style));
 		}
 
 		return list;

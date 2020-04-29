@@ -36,7 +36,7 @@ public class MagmaBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
-		if (direction == Direction.UP && newState.getBlock() == Blocks.WATER) {
+		if (direction == Direction.UP && newState.isOf(Blocks.WATER)) {
 			world.getBlockTickScheduler().schedule(pos, this, 20);
 		}
 

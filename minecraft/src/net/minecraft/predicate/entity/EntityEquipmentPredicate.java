@@ -63,9 +63,9 @@ public class EntityEquipmentPredicate {
 		}
 	}
 
-	public static EntityEquipmentPredicate deserialize(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "equipment");
+	public static EntityEquipmentPredicate fromJson(@Nullable JsonElement json) {
+		if (json != null && !json.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(json, "equipment");
 			ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("head"));
 			ItemPredicate itemPredicate2 = ItemPredicate.fromJson(jsonObject.get("chest"));
 			ItemPredicate itemPredicate3 = ItemPredicate.fromJson(jsonObject.get("legs"));

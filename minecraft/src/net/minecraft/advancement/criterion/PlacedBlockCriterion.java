@@ -1,7 +1,5 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
@@ -9,6 +7,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.StatePredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,7 +27,9 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		return ID;
 	}
 
-	public PlacedBlockCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public PlacedBlockCriterion.Conditions conditionsFromJson(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
 		if (block != null) {
@@ -37,7 +40,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 
 		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new PlacedBlockCriterion.Conditions(block, statePredicate, locationPredicate, itemPredicate);
+		return new PlacedBlockCriterion.Conditions(extended, block, statePredicate, locationPredicate, itemPredicate);
 	}
 
 	@Nullable
@@ -52,7 +55,7 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 
 	public void trigger(ServerPlayerEntity player, BlockPos blockPos, ItemStack stack) {
 		BlockState blockState = player.getServerWorld().getBlockState(blockPos);
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(blockState, blockPos, player.getServerWorld(), stack));
+		this.test(player, conditions -> conditions.matches(blockState, blockPos, player.getServerWorld(), stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -61,8 +64,8 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		private final LocationPredicate location;
 		private final ItemPredicate item;
 
-		public Conditions(@Nullable Block block, StatePredicate state, LocationPredicate location, ItemPredicate item) {
-			super(PlacedBlockCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, @Nullable Block block, StatePredicate state, LocationPredicate location, ItemPredicate item) {
+			super(PlacedBlockCriterion.ID, player);
 			this.block = block;
 			this.state = state;
 			this.location = location;
@@ -70,11 +73,11 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		}
 
 		public static PlacedBlockCriterion.Conditions block(Block block) {
-			return new PlacedBlockCriterion.Conditions(block, StatePredicate.ANY, LocationPredicate.ANY, ItemPredicate.ANY);
+			return new PlacedBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY, LocationPredicate.ANY, ItemPredicate.ANY);
 		}
 
 		public boolean matches(BlockState state, BlockPos pos, ServerWorld world, ItemStack stack) {
-			if (this.block != null && state.getBlock() != this.block) {
+			if (this.block != null && !state.isOf(this.block)) {
 				return false;
 			} else if (!this.state.test(state)) {
 				return false;
@@ -84,8 +87,8 @@ public class PlacedBlockCriterion extends AbstractCriterion<PlacedBlockCriterion
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			if (this.block != null) {
 				jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
 			}

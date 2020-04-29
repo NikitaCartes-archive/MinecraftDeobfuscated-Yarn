@@ -161,7 +161,7 @@ public class BookScreen extends Screen {
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
 			Text text = this.contents.getPage(this.pageIndex);
-			this.cachedPage = this.textRenderer.getTextHandler().wrapLines(text, 114, Style.EMPTY, false);
+			this.cachedPage = this.textRenderer.getTextHandler().wrapLines(text, 114, Style.EMPTY);
 		}
 
 		this.cachedPageIndex = this.pageIndex;

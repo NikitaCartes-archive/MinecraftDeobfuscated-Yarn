@@ -73,7 +73,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 			BlockState blockState3 = chunk.getBlockState(mutable);
 			if (blockState3.isAir()) {
 				i = -1;
-			} else if (blockState3.getBlock() == defaultBlock.getBlock()) {
+			} else if (blockState3.isOf(defaultBlock.getBlock())) {
 				if (i == -1) {
 					if (j <= 0) {
 						blockState = Blocks.AIR.getDefaultState();
@@ -106,9 +106,9 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 				} else if (i > 0) {
 					i--;
 					chunk.setBlockState(mutable, blockState2, false);
-					if (i == 0 && blockState2.getBlock() == Blocks.SAND && j > 1) {
+					if (i == 0 && blockState2.isOf(Blocks.SAND) && j > 1) {
 						i = random.nextInt(4) + Math.max(0, m - 63);
-						blockState2 = blockState2.getBlock() == Blocks.RED_SAND ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
+						blockState2 = blockState2.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
 					}
 				}
 			}

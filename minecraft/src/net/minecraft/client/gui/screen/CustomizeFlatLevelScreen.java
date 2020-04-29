@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawableHelper;
@@ -118,10 +117,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.layers.render(matrices, mouseX, mouseY, delta);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		int i = this.width / 2 - 92 - 16;
 		this.method_27535(matrices, this.textRenderer, this.tileText, i, 32, 16777215);
-		this.method_27535(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 16777215);
+		this.method_27535(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getStringWidth(this.heightText), 32, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -196,12 +195,11 @@ public class CustomizeFlatLevelScreen extends Screen {
 					.getLayers()
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - x - 1);
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
-				Block block = blockState.getBlock();
-				Item item = block.asItem();
+				Item item = blockState.getBlock().asItem();
 				if (item == Items.AIR) {
-					if (block == Blocks.WATER) {
+					if (blockState.isOf(Blocks.WATER)) {
 						item = Items.WATER_BUCKET;
-					} else if (block == Blocks.LAVA) {
+					} else if (blockState.isOf(Blocks.LAVA)) {
 						item = Items.LAVA_BUCKET;
 					}
 				}

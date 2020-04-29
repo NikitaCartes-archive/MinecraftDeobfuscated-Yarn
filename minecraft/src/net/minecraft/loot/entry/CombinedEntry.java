@@ -22,14 +22,14 @@ public abstract class CombinedEntry extends LootEntry {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		super.check(lootTableReporter);
+	public void check(LootTableReporter reporter) {
+		super.check(reporter);
 		if (this.children.length == 0) {
-			lootTableReporter.report("Empty children list");
+			reporter.report("Empty children list");
 		}
 
 		for (int i = 0; i < this.children.length; i++) {
-			this.children[i].check(lootTableReporter.makeChild(".entry[" + i + "]"));
+			this.children[i].check(reporter.makeChild(".entry[" + i + "]"));
 		}
 	}
 

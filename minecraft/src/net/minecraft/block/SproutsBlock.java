@@ -33,13 +33,13 @@ public class SproutsBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		Block block = world.getBlockState(pos.down()).getBlock();
-		return block.isIn(BlockTags.NYLIUM)
-			|| block == Blocks.SOUL_SOIL
-			|| block == Blocks.GRASS_BLOCK
-			|| block == Blocks.DIRT
-			|| block == Blocks.COARSE_DIRT
-			|| block == Blocks.PODZOL
-			|| block == Blocks.FARMLAND;
+		BlockState blockState = world.getBlockState(pos.down());
+		return blockState.isIn(BlockTags.NYLIUM)
+			|| blockState.isOf(Blocks.SOUL_SOIL)
+			|| blockState.isOf(Blocks.GRASS_BLOCK)
+			|| blockState.isOf(Blocks.DIRT)
+			|| blockState.isOf(Blocks.COARSE_DIRT)
+			|| blockState.isOf(Blocks.PODZOL)
+			|| blockState.isOf(Blocks.FARMLAND);
 	}
 }

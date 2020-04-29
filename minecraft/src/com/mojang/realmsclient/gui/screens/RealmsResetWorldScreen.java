@@ -224,7 +224,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 
 		DrawableHelper.drawTexture(matrixStack, i, j + 12, 0.0F, 0.0F, 60, 60, 60, 60);
 		int k = bl ? 10526880 : 16777215;
-		this.method_27534(matrixStack, this.textRenderer, text, i + 30, j, k);
+		this.drawStringWithShadow(matrixStack, this.textRenderer, text, i + 30, j, k);
 	}
 
 	@Override
@@ -313,8 +313,10 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
-			RealmsResetWorldScreen.this.drawFrame(matrixStack, this.x, this.y, this.getMessage(), this.image, this.isHovered(), this.isMouseOver((double)i, (double)j));
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+			RealmsResetWorldScreen.this.drawFrame(
+				matrices, this.x, this.y, this.getMessage(), this.image, this.isHovered(), this.isMouseOver((double)mouseX, (double)mouseY)
+			);
 		}
 	}
 

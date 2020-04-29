@@ -16,11 +16,11 @@ public class RconClient extends RconBase {
 	private Socket socket;
 	private final byte[] packetBuffer = new byte[1460];
 	private final String password;
-	private final DedicatedServer field_23965;
+	private final DedicatedServer server;
 
-	RconClient(DedicatedServer dedicatedServer, String string, Socket socket) {
+	RconClient(DedicatedServer server, String password, Socket socket) {
 		super("RCON Client " + socket.getInetAddress());
-		this.field_23965 = dedicatedServer;
+		this.server = server;
 		this.socket = socket;
 
 		try {
@@ -29,7 +29,7 @@ public class RconClient extends RconBase {
 			this.running = false;
 		}
 
-		this.password = string;
+		this.password = password;
 	}
 
 	public void run() {
@@ -59,29 +59,29 @@ public class RconClient extends RconBase {
 								String string2 = BufferHelper.getString(this.packetBuffer, j, i);
 
 								try {
-									this.method_14789(l, this.field_23965.executeRconCommand(string2));
+									this.respond(l, this.server.executeRconCommand(string2));
 								} catch (Exception var16) {
-									this.method_14789(l, "Error executing: " + string2 + " (" + var16.getMessage() + ")");
+									this.respond(l, "Error executing: " + string2 + " (" + var16.getMessage() + ")");
 								}
 								break;
 							}
 
-							this.method_14787();
+							this.fail();
 							break;
 						case 3:
 							String string = BufferHelper.getString(this.packetBuffer, j, i);
 							j += string.length();
 							if (!string.isEmpty() && string.equals(this.password)) {
 								this.authenticated = true;
-								this.method_14790(l, 2, "");
+								this.respond(l, 2, "");
 								break;
 							}
 
 							this.authenticated = false;
-							this.method_14787();
+							this.fail();
 							break;
 						default:
-							this.method_14789(l, String.format("Unknown request %s", Integer.toHexString(m)));
+							this.respond(l, String.format("Unknown request %s", Integer.toHexString(m)));
 					}
 				}
 
@@ -98,32 +98,32 @@ public class RconClient extends RconBase {
 		}
 	}
 
-	private void method_14790(int i, int j, String string) throws IOException {
+	private void respond(int sessionToken, int responseType, String message) throws IOException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1248);
 		DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-		byte[] bs = string.getBytes("UTF-8");
+		byte[] bs = message.getBytes("UTF-8");
 		dataOutputStream.writeInt(Integer.reverseBytes(bs.length + 10));
-		dataOutputStream.writeInt(Integer.reverseBytes(i));
-		dataOutputStream.writeInt(Integer.reverseBytes(j));
+		dataOutputStream.writeInt(Integer.reverseBytes(sessionToken));
+		dataOutputStream.writeInt(Integer.reverseBytes(responseType));
 		dataOutputStream.write(bs);
 		dataOutputStream.write(0);
 		dataOutputStream.write(0);
 		this.socket.getOutputStream().write(byteArrayOutputStream.toByteArray());
 	}
 
-	private void method_14787() throws IOException {
-		this.method_14790(-1, 2, "");
+	private void fail() throws IOException {
+		this.respond(-1, 2, "");
 	}
 
-	private void method_14789(int i, String string) throws IOException {
-		int j = string.length();
+	private void respond(int sessionToken, String message) throws IOException {
+		int i = message.length();
 
 		do {
-			int k = 4096 <= j ? 4096 : j;
-			this.method_14790(i, 0, string.substring(0, k));
-			string = string.substring(k);
-			j = string.length();
-		} while (0 != j);
+			int j = 4096 <= i ? 4096 : i;
+			this.respond(sessionToken, 0, message.substring(0, j));
+			message = message.substring(j);
+			i = message.length();
+		} while (0 != i);
 	}
 
 	@Override

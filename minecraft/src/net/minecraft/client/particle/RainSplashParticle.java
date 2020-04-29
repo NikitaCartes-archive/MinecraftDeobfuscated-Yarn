@@ -2,15 +2,15 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class RainSplashParticle extends SpriteBillboardParticle {
-	protected RainSplashParticle(World world, double d, double e, double f) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
+	protected RainSplashParticle(ClientWorld clientWorld, double d, double e, double f) {
+		super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
 		this.velocityX *= 0.3F;
 		this.velocityY = Math.random() * 0.2F + 0.1F;
 		this.velocityZ *= 0.3F;
@@ -68,8 +68,8 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			RainSplashParticle rainSplashParticle = new RainSplashParticle(world, d, e, f);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			RainSplashParticle rainSplashParticle = new RainSplashParticle(clientWorld, d, e, f);
 			rainSplashParticle.setSprite(this.spriteProvider);
 			return rainSplashParticle;
 		}

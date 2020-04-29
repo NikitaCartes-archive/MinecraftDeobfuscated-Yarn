@@ -89,7 +89,7 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public Glyph getGlyph(int i) {
-		return this.glyphCache.computeIfAbsent(i, ix -> (Glyph)(ix == 32 ? SPACE : this.getRenderableGlyph((char)ix)));
+		return this.glyphCache.computeIfAbsent(i, ix -> (Glyph)(ix == 32 ? SPACE : this.getRenderableGlyph(ix)));
 	}
 
 	private RenderableGlyph getRenderableGlyph(int i) {

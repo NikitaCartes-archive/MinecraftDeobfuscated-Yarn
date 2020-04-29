@@ -73,10 +73,10 @@ public class FluidRenderer {
 			return false;
 		} else {
 			boolean bl8 = false;
-			float j = 0.5F;
-			float k = 1.0F;
-			float l = 0.8F;
-			float m = 0.6F;
+			float j = world.getBrightness(Direction.DOWN, true);
+			float k = world.getBrightness(Direction.UP, true);
+			float l = world.getBrightness(Direction.NORTH, true);
+			float m = world.getBrightness(Direction.WEST, true);
 			float n = this.getNorthWestCornerFluidHeight(world, pos, state.getFluid());
 			float o = this.getNorthWestCornerFluidHeight(world, pos.south(), state.getFluid());
 			float p = this.getNorthWestCornerFluidHeight(world, pos.east().south(), state.getFluid());
@@ -141,9 +141,9 @@ public class FluidRenderer {
 				z = MathHelper.lerp(af, z, ac);
 				ab = MathHelper.lerp(af, ab, ac);
 				int ah = this.getLight(world, pos);
-				float ai = 1.0F * f;
-				float aj = 1.0F * g;
-				float ak = 1.0F * h;
+				float ai = k * f;
+				float aj = k * g;
+				float ak = k * h;
 				this.vertex(vertexConsumer, d + 0.0, e + (double)n, r + 0.0, ai, aj, ak, u, v, ah);
 				this.vertex(vertexConsumer, d + 0.0, e + (double)o, r + 1.0, ai, aj, ak, w, x, ah);
 				this.vertex(vertexConsumer, d + 1.0, e + (double)p, r + 1.0, ai, aj, ak, y, z, ah);
@@ -162,9 +162,9 @@ public class FluidRenderer {
 				float yx = sprites[0].getMinV();
 				float aax = sprites[0].getMaxV();
 				int al = this.getLight(world, pos.down());
-				float xx = 0.5F * f;
-				float zx = 0.5F * g;
-				float abx = 0.5F * h;
+				float xx = j * f;
+				float zx = j * g;
+				float abx = j * h;
 				this.vertex(vertexConsumer, d, e + (double)t, r + 1.0, xx, zx, abx, ux, aax, al);
 				this.vertex(vertexConsumer, d, e + (double)t, r, xx, zx, abx, ux, yx, al);
 				this.vertex(vertexConsumer, d + 1.0, e + (double)t, r, xx, zx, abx, wx, yx, al);
@@ -236,10 +236,10 @@ public class FluidRenderer {
 					float ar = sprite2.getFrameV((double)((1.0F - yx) * 16.0F * 0.5F));
 					float as = sprite2.getFrameV(8.0);
 					int at = this.getLight(world, blockPos);
-					float au = am < 2 ? 0.8F : 0.6F;
-					float av = 1.0F * au * f;
-					float aw = 1.0F * au * g;
-					float ax = 1.0F * au * h;
+					float au = am < 2 ? l : m;
+					float av = k * au * f;
+					float aw = k * au * g;
+					float ax = k * au * h;
 					this.vertex(vertexConsumer, an, e + (double)wx, ap, av, aw, ax, ai, ak, at);
 					this.vertex(vertexConsumer, ao, e + (double)yx, aq, av, aw, ax, aj, ar, at);
 					this.vertex(vertexConsumer, ao, e + (double)t, aq, av, aw, ax, aj, as, at);

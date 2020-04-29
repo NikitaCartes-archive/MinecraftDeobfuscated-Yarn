@@ -23,17 +23,17 @@ public class BlockPatternBuilder {
 		this.charMap.put(' ', Predicates.alwaysTrue());
 	}
 
-	public BlockPatternBuilder aisle(String... strings) {
-		if (!ArrayUtils.isEmpty((Object[])strings) && !StringUtils.isEmpty(strings[0])) {
+	public BlockPatternBuilder aisle(String... pattern) {
+		if (!ArrayUtils.isEmpty((Object[])pattern) && !StringUtils.isEmpty(pattern[0])) {
 			if (this.aisles.isEmpty()) {
-				this.height = strings.length;
-				this.width = strings[0].length();
+				this.height = pattern.length;
+				this.width = pattern[0].length();
 			}
 
-			if (strings.length != this.height) {
-				throw new IllegalArgumentException("Expected aisle with height of " + this.height + ", but was given one with a height of " + strings.length + ")");
+			if (pattern.length != this.height) {
+				throw new IllegalArgumentException("Expected aisle with height of " + this.height + ", but was given one with a height of " + pattern.length + ")");
 			} else {
-				for (String string : strings) {
+				for (String string : pattern) {
 					if (string.length() != this.width) {
 						throw new IllegalArgumentException(
 							"Not all rows in the given aisle are the correct width (expected " + this.width + ", found one with " + string.length() + ")"
@@ -47,7 +47,7 @@ public class BlockPatternBuilder {
 					}
 				}
 
-				this.aisles.add(strings);
+				this.aisles.add(pattern);
 				return this;
 			}
 		} else {
@@ -59,8 +59,8 @@ public class BlockPatternBuilder {
 		return new BlockPatternBuilder();
 	}
 
-	public BlockPatternBuilder where(char c, Predicate<CachedBlockPosition> predicate) {
-		this.charMap.put(c, predicate);
+	public BlockPatternBuilder where(char key, Predicate<CachedBlockPosition> predicate) {
+		this.charMap.put(key, predicate);
 		return this;
 	}
 

@@ -48,7 +48,7 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		super.tick();
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958, RayTraceContext.ShapeType.OUTLINE);
 		if (hitResult.getType() != HitResult.Type.MISS) {
-			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.NETHER_PORTAL) {
+			if (hitResult.getType() == HitResult.Type.BLOCK && this.world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).isOf(Blocks.NETHER_PORTAL)) {
 				this.setInNetherPortal(((BlockHitResult)hitResult).getBlockPos());
 			} else {
 				this.onCollision(hitResult);

@@ -107,14 +107,14 @@ public class TripwireHookBlock extends Block {
 		for (int k = 1; k < 42; k++) {
 			BlockPos blockPos = pos.offset(direction, k);
 			BlockState blockState2 = world.getBlockState(blockPos);
-			if (blockState2.getBlock() == Blocks.TRIPWIRE_HOOK) {
+			if (blockState2.isOf(Blocks.TRIPWIRE_HOOK)) {
 				if (blockState2.get(FACING) == direction.getOpposite()) {
 					j = k;
 				}
 				break;
 			}
 
-			if (blockState2.getBlock() != Blocks.TRIPWIRE && k != i) {
+			if (!blockState2.isOf(Blocks.TRIPWIRE) && k != i) {
 				blockStates[k] = null;
 				bl4 = false;
 			} else {
@@ -189,7 +189,7 @@ public class TripwireHookBlock extends Block {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (!notify && state.getBlock() != newState.getBlock()) {
+		if (!notify && !state.isOf(newState.getBlock())) {
 			boolean bl = (Boolean)state.get(ATTACHED);
 			boolean bl2 = (Boolean)state.get(POWERED);
 			if (bl || bl2) {

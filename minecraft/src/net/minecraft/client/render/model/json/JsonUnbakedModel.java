@@ -59,14 +59,14 @@ public class JsonUnbakedModel implements UnbakedModel {
 		.registerTypeAdapter(ModelElementTexture.class, new ModelElementTexture.Deserializer())
 		.registerTypeAdapter(Transformation.class, new Transformation.Deserializer())
 		.registerTypeAdapter(ModelTransformation.class, new ModelTransformation.Deserializer())
-		.registerTypeAdapter(ModelItemOverride.class, new ModelItemOverride.Deserializer())
+		.registerTypeAdapter(ModelOverride.class, new ModelOverride.Deserializer())
 		.create();
 	private final List<ModelElement> elements;
 	@Nullable
 	private final JsonUnbakedModel.GuiLight guiLight;
 	private final boolean ambientOcclusion;
 	private final ModelTransformation transformations;
-	private final List<ModelItemOverride> overrides;
+	private final List<ModelOverride> overrides;
 	public String id = "";
 	@VisibleForTesting
 	protected final Map<String, Either<SpriteIdentifier, String>> textureMap;
@@ -90,7 +90,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		boolean ambientOcclusion,
 		@Nullable JsonUnbakedModel.GuiLight guiLight,
 		ModelTransformation transformations,
-		List<ModelItemOverride> overrides
+		List<ModelOverride> overrides
 	) {
 		this.elements = elements;
 		this.ambientOcclusion = ambientOcclusion;
@@ -117,22 +117,20 @@ public class JsonUnbakedModel implements UnbakedModel {
 		}
 	}
 
-	public List<ModelItemOverride> getOverrides() {
+	public List<ModelOverride> getOverrides() {
 		return this.overrides;
 	}
 
-	private ModelItemPropertyOverrideList compileOverrides(ModelLoader modelLoader, JsonUnbakedModel parent) {
-		return this.overrides.isEmpty()
-			? ModelItemPropertyOverrideList.EMPTY
-			: new ModelItemPropertyOverrideList(modelLoader, parent, modelLoader::getOrLoadModel, this.overrides);
+	private ModelOverrideList compileOverrides(ModelLoader modelLoader, JsonUnbakedModel parent) {
+		return this.overrides.isEmpty() ? ModelOverrideList.EMPTY : new ModelOverrideList(modelLoader, parent, modelLoader::getOrLoadModel, this.overrides);
 	}
 
 	@Override
 	public Collection<Identifier> getModelDependencies() {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
-		for (ModelItemOverride modelItemOverride : this.overrides) {
-			set.add(modelItemOverride.getModelId());
+		for (ModelOverride modelOverride : this.overrides) {
+			set.add(modelOverride.getModelId());
 		}
 
 		if (this.parentId != null) {
@@ -193,8 +191,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 		}
 
-		this.overrides.forEach(modelItemOverride -> {
-			UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(modelItemOverride.getModelId());
+		this.overrides.forEach(modelOverride -> {
+			UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
 			if (!Objects.equals(unbakedModelx, this)) {
 				set2.addAll(unbakedModelx.getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences));
 			}
@@ -330,7 +328,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 				modelTransformation = jsonDeserializationContext.deserialize(jsonObject2, ModelTransformation.class);
 			}
 
-			List<ModelItemOverride> list2 = this.deserializeOverrides(jsonDeserializationContext, jsonObject);
+			List<ModelOverride> list2 = this.deserializeOverrides(jsonDeserializationContext, jsonObject);
 			JsonUnbakedModel.GuiLight guiLight = null;
 			if (jsonObject.has("gui_light")) {
 				guiLight = JsonUnbakedModel.GuiLight.deserialize(JsonHelper.getString(jsonObject, "gui_light"));
@@ -340,11 +338,11 @@ public class JsonUnbakedModel implements UnbakedModel {
 			return new JsonUnbakedModel(identifier, list, map, bl, guiLight, modelTransformation, list2);
 		}
 
-		protected List<ModelItemOverride> deserializeOverrides(JsonDeserializationContext context, JsonObject object) {
-			List<ModelItemOverride> list = Lists.<ModelItemOverride>newArrayList();
+		protected List<ModelOverride> deserializeOverrides(JsonDeserializationContext context, JsonObject object) {
+			List<ModelOverride> list = Lists.<ModelOverride>newArrayList();
 			if (object.has("overrides")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(object, "overrides")) {
-					list.add(context.deserialize(jsonElement, ModelItemOverride.class));
+					list.add(context.deserialize(jsonElement, ModelOverride.class));
 				}
 			}
 

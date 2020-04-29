@@ -344,7 +344,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		if (!state.getMaterial().isLiquid()) {
 			BlockState blockState = this.world.getBlockState(pos.up());
 			BlockSoundGroup blockSoundGroup = state.getSoundGroup();
-			if (blockState.getBlock() == Blocks.SNOW) {
+			if (blockState.isOf(Blocks.SNOW)) {
 				blockSoundGroup = blockState.getSoundGroup();
 			}
 
@@ -519,7 +519,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.world.getBlockState(this.getBlockPos().down()).getBlock() == Blocks.GRASS_BLOCK) {
+					&& this.world.getBlockState(this.getBlockPos().down()).isOf(Blocks.GRASS_BLOCK)) {
 					this.setEatingGrass(true);
 				}
 

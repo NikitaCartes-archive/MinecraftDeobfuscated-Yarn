@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.tag.BlockTags;
@@ -259,9 +260,12 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		PathNodeType pathNodeType = getCommonNodeType(world, mutable.set(x, y, z));
 		if (pathNodeType == PathNodeType.OPEN && y >= 1) {
-			Block block = world.getBlockState(mutable.set(x, y - 1, z)).getBlock();
+			BlockState blockState = world.getBlockState(mutable.set(x, y - 1, z));
 			PathNodeType pathNodeType2 = getCommonNodeType(world, mutable.set(x, y - 1, z));
-			if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || pathNodeType2 == PathNodeType.LAVA || block.isIn(BlockTags.CAMPFIRES)) {
+			if (pathNodeType2 == PathNodeType.DAMAGE_FIRE
+				|| blockState.isOf(Blocks.MAGMA_BLOCK)
+				|| pathNodeType2 == PathNodeType.LAVA
+				|| blockState.isIn(BlockTags.CAMPFIRES)) {
 				pathNodeType = PathNodeType.DAMAGE_FIRE;
 			} else if (pathNodeType2 == PathNodeType.DAMAGE_CACTUS) {
 				pathNodeType = PathNodeType.DAMAGE_CACTUS;

@@ -29,14 +29,14 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 		int i = 0;
 		int j = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());
-		if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
+		if (iWorld.getBlockState(blockPos2).isOf(Blocks.WATER)) {
 			BlockState blockState = Blocks.KELP.getDefaultState();
 			BlockState blockState2 = Blocks.KELP_PLANT.getDefaultState();
 			int k = 1 + random.nextInt(10);
 
 			for (int l = 0; l <= k; l++) {
-				if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.WATER
-					&& iWorld.getBlockState(blockPos2.up()).getBlock() == Blocks.WATER
+				if (iWorld.getBlockState(blockPos2).isOf(Blocks.WATER)
+					&& iWorld.getBlockState(blockPos2.up()).isOf(Blocks.WATER)
 					&& blockState2.canPlaceAt(iWorld, blockPos2)) {
 					if (l == k) {
 						iWorld.setBlockState(blockPos2, blockState.with(KelpBlock.AGE, Integer.valueOf(random.nextInt(4) + 20)), 2);
@@ -46,7 +46,7 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 					}
 				} else if (l > 0) {
 					BlockPos blockPos3 = blockPos2.down();
-					if (blockState.canPlaceAt(iWorld, blockPos3) && iWorld.getBlockState(blockPos3.down()).getBlock() != Blocks.KELP) {
+					if (blockState.canPlaceAt(iWorld, blockPos3) && !iWorld.getBlockState(blockPos3.down()).isOf(Blocks.KELP)) {
 						iWorld.setBlockState(blockPos3, blockState.with(KelpBlock.AGE, Integer.valueOf(random.nextInt(4) + 20)), 2);
 						i++;
 					}

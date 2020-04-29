@@ -172,7 +172,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	public static boolean canSpawn(EntityType<TurtleEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		return pos.getY() < world.getSeaLevel() + 4 && world.getBlockState(pos.down()).getBlock() == Blocks.SAND && world.getBaseLightLevel(pos, 0) > 8;
+		return pos.getY() < world.getSeaLevel() + 4 && world.getBlockState(pos.down()).isOf(Blocks.SAND) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	@Override
@@ -282,7 +282,7 @@ public class TurtleEntity extends AnimalEntity {
 		if (!this.isLandBound() && world.getFluidState(pos).matches(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return world.getBlockState(pos.down()).getBlock() == Blocks.SAND ? 10.0F : world.getBrightness(pos) - 0.5F;
+			return world.getBlockState(pos.down()).isOf(Blocks.SAND) ? 10.0F : world.getBrightness(pos) - 0.5F;
 		}
 	}
 
@@ -291,8 +291,8 @@ public class TurtleEntity extends AnimalEntity {
 		super.tickMovement();
 		if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0) {
 			BlockPos blockPos = this.getBlockPos();
-			if (this.world.getBlockState(blockPos.down()).getBlock() == Blocks.SAND) {
-				this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
+			if (this.world.getBlockState(blockPos.down()).isOf(Blocks.SAND)) {
+				this.world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
 			}
 		}
 	}
@@ -438,7 +438,7 @@ public class TurtleEntity extends AnimalEntity {
 					vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
 				}
 
-				if (vec3d2 != null && !bl && this.turtle.world.getBlockState(new BlockPos(vec3d2)).getBlock() != Blocks.WATER) {
+				if (vec3d2 != null && !bl && !this.turtle.world.getBlockState(new BlockPos(vec3d2)).isOf(Blocks.WATER)) {
 					vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 5, vec3d);
 				}
 
@@ -496,12 +496,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
-			if (!world.isAir(pos.up())) {
-				return false;
-			} else {
-				Block block = world.getBlockState(pos).getBlock();
-				return block == Blocks.SAND;
-			}
+			return !world.isAir(pos.up()) ? false : world.getBlockState(pos).isOf(Blocks.SAND);
 		}
 	}
 
@@ -700,7 +695,7 @@ public class TurtleEntity extends AnimalEntity {
 			if (this.entity instanceof TurtleEntity) {
 				TurtleEntity turtleEntity = (TurtleEntity)this.entity;
 				if (turtleEntity.isActivelyTravelling()) {
-					return this.world.getBlockState(pos).getBlock() == Blocks.WATER;
+					return this.world.getBlockState(pos).isOf(Blocks.WATER);
 				}
 			}
 
@@ -738,8 +733,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
-			Block block = world.getBlockState(pos).getBlock();
-			return block == Blocks.WATER;
+			return world.getBlockState(pos).isOf(Blocks.WATER);
 		}
 	}
 

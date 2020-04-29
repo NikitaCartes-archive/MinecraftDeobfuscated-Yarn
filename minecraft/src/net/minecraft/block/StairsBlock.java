@@ -133,7 +133,7 @@ public class StairsBlock extends Block implements Waterloggable {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (state.getBlock() != state.getBlock()) {
+		if (!state.isOf(state.getBlock())) {
 			this.baseBlockState.neighborUpdate(world, pos, Blocks.AIR, pos, false);
 			this.baseBlock.onBlockAdded(this.baseBlockState, world, pos, oldState, false);
 		}
@@ -141,7 +141,7 @@ public class StairsBlock extends Block implements Waterloggable {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			this.baseBlockState.onBlockRemoved(world, pos, newState, notify);
 		}
 	}
@@ -187,7 +187,7 @@ public class StairsBlock extends Block implements Waterloggable {
 				HALF, direction != Direction.DOWN && (direction == Direction.UP || !(ctx.getHitPos().y - (double)blockPos.getY() > 0.5)) ? BlockHalf.BOTTOM : BlockHalf.TOP
 			)
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
-		return blockState.with(SHAPE, method_10675(blockState, ctx.getWorld(), blockPos));
+		return blockState.with(SHAPE, getStairShape(blockState, ctx.getWorld(), blockPos));
 	}
 
 	@Override
@@ -197,11 +197,11 @@ public class StairsBlock extends Block implements Waterloggable {
 		}
 
 		return direction.getAxis().isHorizontal()
-			? state.with(SHAPE, method_10675(state, world, pos))
+			? state.with(SHAPE, getStairShape(state, world, pos))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
-	private static StairShape method_10675(BlockState state, BlockView world, BlockPos pos) {
+	private static StairShape getStairShape(BlockState state, BlockView world, BlockPos pos) {
 		Direction direction = state.get(FACING);
 		BlockState blockState = world.getBlockState(pos.offset(direction));
 		if (isStairs(blockState) && state.get(HALF) == blockState.get(HALF)) {

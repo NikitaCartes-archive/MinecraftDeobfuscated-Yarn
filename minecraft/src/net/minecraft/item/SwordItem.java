@@ -3,7 +3,6 @@ package net.minecraft.item;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -47,8 +46,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 
 	@Override
 	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-		Block block = state.getBlock();
-		if (block == Blocks.COBWEB) {
+		if (state.isOf(Blocks.COBWEB)) {
 			return 15.0F;
 		} else {
 			Material material = state.getMaterial();
@@ -79,7 +77,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 
 	@Override
 	public boolean isEffectiveOn(BlockState state) {
-		return state.getBlock() == Blocks.COBWEB;
+		return state.isOf(Blocks.COBWEB);
 	}
 
 	@Override

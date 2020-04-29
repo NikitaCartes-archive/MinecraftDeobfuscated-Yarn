@@ -83,7 +83,7 @@ public final class ItemStack {
 	private final Item item;
 	private CompoundTag tag;
 	private boolean empty;
-	private Entity field_24093;
+	private Entity holder;
 	private CachedBlockPosition lastDestroyPos;
 	private boolean lastDestroyResult;
 	private CachedBlockPosition lastPlaceOnPos;
@@ -733,21 +733,21 @@ public final class ItemStack {
 	}
 
 	public boolean isInFrame() {
-		return this.field_24093 instanceof ItemFrameEntity;
+		return this.holder instanceof ItemFrameEntity;
 	}
 
-	public void method_27320(@Nullable Entity entity) {
-		this.field_24093 = entity;
+	public void setHolder(@Nullable Entity holder) {
+		this.holder = holder;
 	}
 
 	@Nullable
 	public ItemFrameEntity getFrame() {
-		return this.field_24093 instanceof ItemFrameEntity ? (ItemFrameEntity)this.method_27319() : null;
+		return this.holder instanceof ItemFrameEntity ? (ItemFrameEntity)this.getHolder() : null;
 	}
 
 	@Nullable
-	public Entity method_27319() {
-		return !this.empty ? this.field_24093 : null;
+	public Entity getHolder() {
+		return !this.empty ? this.holder : null;
 	}
 
 	public int getRepairCost() {

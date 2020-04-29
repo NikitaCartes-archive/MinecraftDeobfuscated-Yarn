@@ -59,7 +59,7 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 		int i = this.height / 2 - this.textHeight / 2;
 		if (this.lines != null) {
 			for (Text text : this.lines) {
-				this.method_27534(matrices, this.textRenderer, text, this.width / 2, i, 16777215);
+				this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, i, 16777215);
 				i += 9;
 			}
 		}

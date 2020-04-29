@@ -131,18 +131,18 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	public void startTeleportCooldown() {
 		if (!this.world.isClient) {
 			this.teleportCooldown = 40;
-			this.world.addBlockAction(this.getPos(), this.getCachedState().getBlock(), 1, 0);
+			this.world.addSyncedBlockEvent(this.getPos(), this.getCachedState().getBlock(), 1, 0);
 			this.markDirty();
 		}
 	}
 
 	@Override
-	public boolean onBlockAction(int i, int j) {
-		if (i == 1) {
+	public boolean onSyncedBlockEvent(int type, int data) {
+		if (type == 1) {
 			this.teleportCooldown = 40;
 			return true;
 		} else {
-			return super.onBlockAction(i, j);
+			return super.onSyncedBlockEvent(type, data);
 		}
 	}
 
@@ -215,7 +215,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 					for (int k = 255; k > (blockPos == null ? 0 : blockPos.getY()); k--) {
 						BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
 						BlockState blockState = world.getBlockState(blockPos2);
-						if (blockState.isFullCube(world, blockPos2) && (bl || blockState.getBlock() != Blocks.BEDROCK)) {
+						if (blockState.isFullCube(world, blockPos2) && (bl || !blockState.isOf(Blocks.BEDROCK))) {
 							blockPos = blockPos2;
 							break;
 						}
@@ -244,7 +244,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			BlockState blockState = chunk.getBlockState(blockPos4);
 			BlockPos blockPos5 = blockPos4.up();
 			BlockPos blockPos6 = blockPos4.up(2);
-			if (blockState.getBlock() == Blocks.END_STONE
+			if (blockState.isOf(Blocks.END_STONE)
 				&& !chunk.getBlockState(blockPos5).isFullCube(chunk, blockPos5)
 				&& !chunk.getBlockState(blockPos6).isFullCube(chunk, blockPos6)) {
 				double e = blockPos4.getSquaredDistance(0.0, 0.0, 0.0, true);

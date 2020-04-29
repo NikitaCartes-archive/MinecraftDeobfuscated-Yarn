@@ -210,7 +210,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
 				BlockState blockState = addToComposter(state, world, pos, itemStack);
-				world.playLevelEvent(1500, pos, state != blockState ? 1 : 0);
+				world.syncWorldEvent(1500, pos, state != blockState ? 1 : 0);
 				if (!player.abilities.creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -230,7 +230,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		if (i < 7 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem())) {
 			BlockState blockState = addToComposter(state, world, pos, stack);
 			stack.decrement(1);
-			world.playLevelEvent(1500, pos, state != blockState ? 1 : 0);
+			world.syncWorldEvent(1500, pos, state != blockState ? 1 : 0);
 			return blockState;
 		} else {
 			return state;
@@ -353,7 +353,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			if (!itemStack.isEmpty()) {
 				this.dirty = true;
 				BlockState blockState = ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack);
-				this.world.playLevelEvent(1500, this.pos, blockState != this.state ? 1 : 0);
+				this.world.syncWorldEvent(1500, this.pos, blockState != this.state ? 1 : 0);
 				this.removeStack(0);
 			}
 		}

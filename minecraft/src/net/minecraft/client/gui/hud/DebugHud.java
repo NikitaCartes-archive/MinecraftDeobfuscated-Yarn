@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +16,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -32,6 +35,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCategory;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -52,6 +56,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -222,7 +227,7 @@ public class DebugHud extends DrawableHelper {
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
 				this.client.world.getDebugString()
 			);
-			String string3 = this.getServerWorldDebugString();
+			String string3 = this.method_27871();
 			if (string3 != null) {
 				list.add(string3);
 			}
@@ -328,19 +333,28 @@ public class DebugHud extends DrawableHelper {
 				list.add("Outside of world...");
 			}
 
+			ServerWorld serverWorld = this.getServerWorld();
+			if (serverWorld != null) {
+				SpawnHelper.Info info = serverWorld.getChunkManager().getSpawnInfo();
+				if (info != null) {
+					Object2IntMap<EntityCategory> object2IntMap = info.getCategoryToCount();
+					int kx = info.getSpawningChunkCount();
+					list.add(
+						"SC: "
+							+ kx
+							+ ", "
+							+ (String)Stream.of(EntityCategory.values())
+								.map(entityCategory -> Character.toUpperCase(entityCategory.getName().charAt(0)) + ": " + object2IntMap.getInt(entityCategory))
+								.collect(Collectors.joining(", "))
+					);
+				} else {
+					list.add("SC: N/A");
+				}
+			}
+
 			ShaderEffect shaderEffect = this.client.gameRenderer.getShader();
 			if (shaderEffect != null) {
 				list.add("Shader: " + shaderEffect.getName());
-			}
-
-			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockPos2 = ((BlockHitResult)this.blockHit).getBlockPos();
-				list.add(String.format("Looking at block: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
-			}
-
-			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockPos2 = ((BlockHitResult)this.fluidHit).getBlockPos();
-				list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
 			}
 
 			list.add(this.client.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.client.player.getMoodPercentage() * 100.0F)));
@@ -349,16 +363,15 @@ public class DebugHud extends DrawableHelper {
 	}
 
 	@Nullable
-	private String getServerWorldDebugString() {
+	private ServerWorld getServerWorld() {
 		IntegratedServer integratedServer = this.client.getServer();
-		if (integratedServer != null) {
-			ServerWorld serverWorld = integratedServer.getWorld(this.client.world.getDimension().getType());
-			if (serverWorld != null) {
-				return serverWorld.getDebugString();
-			}
-		}
+		return integratedServer != null ? integratedServer.getWorld(this.client.world.getDimension().getType()) : null;
+	}
 
-		return null;
+	@Nullable
+	private String method_27871() {
+		ServerWorld serverWorld = this.getServerWorld();
+		return serverWorld != null ? serverWorld.getDebugString() : null;
 	}
 
 	private World getWorld() {
@@ -370,14 +383,11 @@ public class DebugHud extends DrawableHelper {
 	@Nullable
 	private WorldChunk getChunk() {
 		if (this.chunkFuture == null) {
-			IntegratedServer integratedServer = this.client.getServer();
-			if (integratedServer != null) {
-				ServerWorld serverWorld = integratedServer.getWorld(this.client.world.dimension.getType());
-				if (serverWorld != null) {
-					this.chunkFuture = serverWorld.getChunkManager()
-						.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false)
-						.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
-				}
+			ServerWorld serverWorld = this.getServerWorld();
+			if (serverWorld != null) {
+				this.chunkFuture = serverWorld.getChunkManager()
+					.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false)
+					.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
 			}
 
 			if (this.chunkFuture == null) {
@@ -424,7 +434,7 @@ public class DebugHud extends DrawableHelper {
 				BlockPos blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				list.add("");
-				list.add(Formatting.UNDERLINE + "Targeted Block");
+				list.add(Formatting.UNDERLINE + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
 				list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : blockState.getEntries().entrySet()) {
@@ -440,7 +450,7 @@ public class DebugHud extends DrawableHelper {
 				BlockPos blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
 				FluidState fluidState = this.client.world.getFluidState(blockPos);
 				list.add("");
-				list.add(Formatting.UNDERLINE + "Targeted Fluid");
+				list.add(Formatting.UNDERLINE + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
 				list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : fluidState.getEntries().entrySet()) {

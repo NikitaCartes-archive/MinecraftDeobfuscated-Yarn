@@ -1,13 +1,19 @@
 package net.minecraft.entity.passive;
 
+import com.google.common.collect.Sets;
 import java.util.Random;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemSteerable;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SaddledComponent;
 import net.minecraft.entity.SpawnType;
@@ -32,7 +38,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -45,8 +51,10 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -141,12 +149,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	public boolean isCold() {
-		return this.dataTracker.get(COLD);
+		return this.getVehicle() instanceof StriderEntity ? ((StriderEntity)this.getVehicle()).isCold() : this.dataTracker.get(COLD);
 	}
 
 	@Override
-	public boolean canWalkOnLava() {
-		return true;
+	public boolean canWalkOnLava(Fluid fluid) {
+		return fluid.isIn(FluidTags.LAVA);
 	}
 
 	@Nullable
@@ -164,7 +172,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public double getMountedHeightOffset() {
 		float f = Math.min(0.25F, this.limbDistance);
 		float g = this.limbAngle;
-		return 1.4 + (double)(0.12F * MathHelper.cos(g * 1.5F) * 2.0F * f);
+		return (double)this.getHeight() - 0.2 + (double)(0.12F * MathHelper.cos(g * 1.5F) * 2.0F * f);
 	}
 
 	@Override
@@ -188,6 +196,50 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Override
 	public Entity getPrimaryPassenger() {
 		return this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
+	}
+
+	@Override
+	public Vec3d method_24829(LivingEntity livingEntity) {
+		Vec3d[] vec3ds = new Vec3d[]{
+			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw),
+			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw - 22.5F),
+			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw + 22.5F),
+			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw - 45.0F),
+			method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), livingEntity.yaw + 45.0F)
+		};
+		Set<BlockPos> set = Sets.<BlockPos>newLinkedHashSet();
+		double d = this.getBoundingBox().y2;
+		double e = this.getBoundingBox().y1 - 0.5;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (Vec3d vec3d : vec3ds) {
+			mutable.set(this.getX() + vec3d.x, d, this.getZ() + vec3d.z);
+
+			for (double f = d; f > e; f--) {
+				set.add(mutable.toImmutable());
+				mutable.move(Direction.DOWN);
+			}
+		}
+
+		for (BlockPos blockPos : set) {
+			if (!this.world.getFluidState(blockPos).matches(FluidTags.LAVA)) {
+				Vec3d vec3d2 = Vec3d.method_24955(blockPos);
+
+				for (EntityPose entityPose : livingEntity.getPoses()) {
+					Box box = livingEntity.method_24833(entityPose).offset(vec3d2);
+					double g = this.world.method_26372(blockPos);
+					if (!Double.isInfinite(g) && g < 1.0) {
+						Box box2 = box.offset(0.0, g, 0.0);
+						if (this.world.getBlockCollisions(livingEntity, box2).allMatch(VoxelShape::isEmpty)) {
+							livingEntity.setPose(entityPose);
+							return new Vec3d(vec3d2.x, (double)blockPos.getY() + g, vec3d2.z);
+						}
+					}
+				}
+			}
+		}
+
+		return new Vec3d(this.getX(), this.getBoundingBox().y2, this.getZ());
 	}
 
 	@Override
@@ -226,6 +278,16 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
+	protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
+		this.checkBlockCollision();
+		if (this.isInLava()) {
+			this.fallDistance = 0.0F;
+		} else {
+			super.fall(heightDifference, onGround, landedState, landedPosition);
+		}
+	}
+
+	@Override
 	public void tick() {
 		if (this.temptGoal != null && this.temptGoal.isActive() && this.random.nextInt(100) == 0) {
 			this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0F, this.getSoundPitch());
@@ -238,11 +300,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		BlockState blockState = this.world.getBlockState(this.getBlockPos());
 		BlockState blockState2 = this.getLandingBlockState();
 		boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS);
-		this.setCold(!bl && !this.hasVehicle());
-		if (this.isInLava()) {
-			this.onGround = true;
-		}
-
+		this.setCold(!bl);
 		super.tick();
 		this.updateFloating();
 		this.checkBlockCollision();
@@ -253,32 +311,19 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		return true;
 	}
 
-	public float getBaseLavaHeight() {
-		Box box = this.getBoundingBox();
-		float f = -1.0F;
-		float g = 0.0F;
-		BlockPos.Mutable mutable = new BlockPos.Mutable(box.getCenter().x, box.y1 + 0.5, box.getCenter().z);
-
-		for (FluidState fluidState = this.world.getFluidState(mutable); fluidState.matches(FluidTags.LAVA); fluidState = this.world.getFluidState(mutable)) {
-			f = (float)mutable.getY();
-			g = fluidState.getHeight(this.world, mutable);
-			mutable.move(0, 1, 0);
-		}
-
-		return f + g;
-	}
-
 	private void updateFloating() {
-		Vec3d vec3d = this.getVelocity();
-		Box box = this.getBoundingBox();
 		if (this.isInLava()) {
-			boolean bl = box.y1 <= (double)this.getBaseLavaHeight() - (this.isBaby() ? 0.0 : 0.25);
-			this.setVelocity(vec3d.x, bl ? vec3d.y + 0.01 : -0.01, vec3d.z);
+			ShapeContext shapeContext = ShapeContext.of(this);
+			if (shapeContext.isAbove(FluidBlock.field_24412, this.getBlockPos(), true) && !this.world.getFluidState(this.getBlockPos().up()).matches(FluidTags.LAVA)) {
+				this.onGround = true;
+			} else {
+				this.setVelocity(this.getVelocity().multiply(0.5).add(0.0, 0.05, 0.0));
+			}
 		}
 	}
 
 	public static DefaultAttributeContainer.Builder createStriderAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.15F).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0);
+		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.175F).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0);
 	}
 
 	@Override
@@ -313,11 +358,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Override
 	public boolean isOnFire() {
 		return false;
-	}
-
-	@Override
-	public boolean hasNoGravity() {
-		return this.isInLava() || super.hasNoGravity();
 	}
 
 	@Override
@@ -386,7 +426,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		StriderEntity.StriderData.RiderType riderType;
 		if (entityData instanceof StriderEntity.StriderData) {
 			riderType = ((StriderEntity.StriderData)entityData).type;
-		} else {
+		} else if (!this.isBaby()) {
 			if (this.random.nextInt(30) == 0) {
 				riderType = StriderEntity.StriderData.RiderType.PIGLIN_RIDER;
 			} else if (this.random.nextInt(10) == 0) {
@@ -397,6 +437,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 			entityData = new StriderEntity.StriderData(riderType);
 			((PassiveEntity.PassiveData)entityData).setBabyChance(riderType == StriderEntity.StriderData.RiderType.NO_RIDER ? 0.5F : 0.0F);
+		} else {
+			riderType = StriderEntity.StriderData.RiderType.NO_RIDER;
 		}
 
 		MobEntity mobEntity = null;
@@ -442,7 +484,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		@Override
 		public boolean isValidPosition(BlockPos pos) {
-			return this.world.getBlockState(pos).getBlock() == Blocks.LAVA || super.isValidPosition(pos);
+			return this.world.getBlockState(pos).isOf(Blocks.LAVA) || super.isValidPosition(pos);
 		}
 	}
 

@@ -1618,49 +1618,21 @@ public class BlockStateModelGenerator {
 						BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getMinecraftNamespacedBlock("redstone_dust_dot"))
 					)
 					.with(
-						When.anyOf(
-							When.create().set(Properties.NORTH_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP),
-							When.create()
-								.set(Properties.NORTH_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.EAST_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.SOUTH_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP)
-								.set(Properties.WEST_WIRE_CONNECTION, WireConnection.NONE)
-						),
+						When.create().set(Properties.NORTH_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP),
 						BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getMinecraftNamespacedBlock("redstone_dust_side0"))
 					)
 					.with(
-						When.anyOf(
-							When.create().set(Properties.SOUTH_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP),
-							When.create()
-								.set(Properties.NORTH_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP)
-								.set(Properties.EAST_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.SOUTH_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.WEST_WIRE_CONNECTION, WireConnection.NONE)
-						),
+						When.create().set(Properties.SOUTH_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP),
 						BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getMinecraftNamespacedBlock("redstone_dust_side_alt0"))
 					)
 					.with(
-						When.anyOf(
-							When.create().set(Properties.EAST_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP),
-							When.create()
-								.set(Properties.NORTH_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.EAST_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.SOUTH_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.WEST_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP)
-						),
+						When.create().set(Properties.EAST_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP),
 						BlockStateVariant.create()
 							.put(VariantSettings.MODEL, ModelIds.getMinecraftNamespacedBlock("redstone_dust_side_alt1"))
 							.put(VariantSettings.Y, VariantSettings.Rotation.R270)
 					)
 					.with(
-						When.anyOf(
-							When.create().set(Properties.WEST_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP),
-							When.create()
-								.set(Properties.NORTH_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.EAST_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP)
-								.set(Properties.SOUTH_WIRE_CONNECTION, WireConnection.NONE)
-								.set(Properties.WEST_WIRE_CONNECTION, WireConnection.NONE)
-						),
+						When.create().set(Properties.WEST_WIRE_CONNECTION, WireConnection.SIDE, WireConnection.UP),
 						BlockStateVariant.create()
 							.put(VariantSettings.MODEL, ModelIds.getMinecraftNamespacedBlock("redstone_dust_side1"))
 							.put(VariantSettings.Y, VariantSettings.Rotation.R270)

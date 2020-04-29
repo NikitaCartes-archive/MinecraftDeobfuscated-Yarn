@@ -50,21 +50,21 @@ public class DamagePredicate {
 		}
 	}
 
-	public static DamagePredicate deserialize(@Nullable JsonElement jsonElement) {
-		if (jsonElement != null && !jsonElement.isJsonNull()) {
-			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "damage");
+	public static DamagePredicate fromJson(@Nullable JsonElement json) {
+		if (json != null && !json.isJsonNull()) {
+			JsonObject jsonObject = JsonHelper.asObject(json, "damage");
 			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("dealt"));
 			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("taken"));
 			Boolean boolean_ = jsonObject.has("blocked") ? JsonHelper.getBoolean(jsonObject, "blocked") : null;
 			EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("source_entity"));
-			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.deserialize(jsonObject.get("type"));
+			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.fromJson(jsonObject.get("type"));
 			return new DamagePredicate(floatRange, floatRange2, entityPredicate, boolean_, damageSourcePredicate);
 		} else {
 			return ANY;
 		}
 	}
 
-	public JsonElement serialize() {
+	public JsonElement toJson() {
 		if (this == ANY) {
 			return JsonNull.INSTANCE;
 		} else {
@@ -72,7 +72,7 @@ public class DamagePredicate {
 			jsonObject.add("dealt", this.dealt.toJson());
 			jsonObject.add("taken", this.taken.toJson());
 			jsonObject.add("source_entity", this.sourceEntity.toJson());
-			jsonObject.add("type", this.type.serialize());
+			jsonObject.add("type", this.type.toJson());
 			if (this.blocked != null) {
 				jsonObject.addProperty("blocked", this.blocked);
 			}

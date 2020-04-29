@@ -18,10 +18,10 @@ public class SoulFireBlock extends AbstractFireBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return method_26158(world.getBlockState(pos.down()).getBlock());
+		return isSoulBase(world.getBlockState(pos.down()).getBlock());
 	}
 
-	public static boolean method_26158(Block block) {
+	public static boolean isSoulBase(Block block) {
 		return block.isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS);
 	}
 

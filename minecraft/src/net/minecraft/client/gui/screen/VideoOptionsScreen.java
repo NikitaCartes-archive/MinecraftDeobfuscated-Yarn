@@ -29,7 +29,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		Option.PARTICLES,
 		Option.MIPMAP_LEVELS,
 		Option.ENTITY_SHADOWS,
-		Option.field_24213
+		Option.ENTITY_DISTANCE_SCALING
 	};
 	private int mipmapLevels;
 
@@ -96,7 +96,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.list.render(matrices, mouseX, mouseY, delta);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 5, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 5, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

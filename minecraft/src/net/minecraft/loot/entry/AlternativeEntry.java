@@ -34,12 +34,12 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter) {
-		super.check(lootTableReporter);
+	public void check(LootTableReporter reporter) {
+		super.check(reporter);
 
 		for (int i = 0; i < this.children.length - 1; i++) {
 			if (ArrayUtils.isEmpty((Object[])this.children[i].conditions)) {
-				lootTableReporter.report("Unreachable entry!");
+				reporter.report("Unreachable entry!");
 			}
 		}
 	}

@@ -82,24 +82,23 @@ public class AnvilBlock extends FallingBlock {
 	@Override
 	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
 		if (!fallingBlockEntity.isSilent()) {
-			world.playLevelEvent(1031, pos, 0);
+			world.syncWorldEvent(1031, pos, 0);
 		}
 	}
 
 	@Override
 	public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
 		if (!fallingBlockEntity.isSilent()) {
-			world.playLevelEvent(1029, pos, 0);
+			world.syncWorldEvent(1029, pos, 0);
 		}
 	}
 
 	@Nullable
 	public static BlockState getLandingState(BlockState fallingState) {
-		Block block = fallingState.getBlock();
-		if (block == Blocks.ANVIL) {
+		if (fallingState.isOf(Blocks.ANVIL)) {
 			return Blocks.CHIPPED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING));
 		} else {
-			return block == Blocks.CHIPPED_ANVIL ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING)) : null;
+			return fallingState.isOf(Blocks.CHIPPED_ANVIL) ? Blocks.DAMAGED_ANVIL.getDefaultState().with(FACING, fallingState.get(FACING)) : null;
 		}
 	}
 
@@ -120,7 +119,7 @@ public class AnvilBlock extends FallingBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getColor(BlockState state, BlockView blockView, BlockPos blockPos) {
-		return state.getTopMaterialColor(blockView, blockPos).color;
+	public int getColor(BlockState state, BlockView world, BlockPos pos) {
+		return state.getTopMaterialColor(world, pos).color;
 	}
 }

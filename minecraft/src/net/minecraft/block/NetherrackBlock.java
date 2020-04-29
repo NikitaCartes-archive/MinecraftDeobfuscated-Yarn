@@ -38,12 +38,12 @@ public class NetherrackBlock extends Block implements Fertilizable {
 		boolean bl2 = false;
 
 		for (BlockPos blockPos : BlockPos.iterate(pos.add(-1, -1, -1), pos.add(1, 1, 1))) {
-			Block block = world.getBlockState(blockPos).getBlock();
-			if (block == Blocks.WARPED_NYLIUM) {
+			BlockState blockState = world.getBlockState(blockPos);
+			if (blockState.isOf(Blocks.WARPED_NYLIUM)) {
 				bl2 = true;
 			}
 
-			if (block == Blocks.CRIMSON_NYLIUM) {
+			if (blockState.isOf(Blocks.CRIMSON_NYLIUM)) {
 				bl = true;
 			}
 

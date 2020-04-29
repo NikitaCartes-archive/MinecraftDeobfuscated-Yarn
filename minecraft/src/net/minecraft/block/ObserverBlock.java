@@ -88,7 +88,7 @@ public class ObserverBlock extends FacingBlock {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (state.getBlock() != oldState.getBlock()) {
+		if (!state.isOf(oldState.getBlock())) {
 			if (!world.isClient() && (Boolean)state.get(POWERED) && !world.getBlockTickScheduler().isScheduled(pos, this)) {
 				BlockState blockState = state.with(POWERED, Boolean.valueOf(false));
 				world.setBlockState(pos, blockState, 18);
@@ -99,7 +99,7 @@ public class ObserverBlock extends FacingBlock {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			if (!world.isClient && (Boolean)state.get(POWERED) && world.getBlockTickScheduler().isScheduled(pos, this)) {
 				this.updateNeighbors(world, pos, state.with(POWERED, Boolean.valueOf(false)));
 			}

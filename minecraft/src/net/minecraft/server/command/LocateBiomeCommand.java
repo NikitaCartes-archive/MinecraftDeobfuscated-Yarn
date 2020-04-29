@@ -27,7 +27,7 @@ public class LocateBiomeCommand {
 				.then(
 					CommandManager.argument("biome", IdentifierArgumentType.identifier())
 						.suggests(SuggestionProviders.ALL_BIOMES)
-						.executes(commandContext -> execute(commandContext.getSource(), method_24493(commandContext, "biome")))
+						.executes(commandContext -> execute(commandContext.getSource(), getBiome(commandContext, "biome")))
 				)
 		);
 	}
@@ -42,8 +42,8 @@ public class LocateBiomeCommand {
 		}
 	}
 
-	private static Biome method_24493(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		Identifier identifier = commandContext.getArgument(string, Identifier.class);
+	private static Biome getBiome(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
+		Identifier identifier = context.getArgument(argumentName, Identifier.class);
 		return (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> INVALID_EXCEPTION.create(identifier));
 	}
 }

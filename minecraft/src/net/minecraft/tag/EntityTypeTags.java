@@ -21,8 +21,8 @@ public class EntityTypeTags {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_27058() {
-		ACCESSOR.method_27061();
+	public static void markReady() {
+		ACCESSOR.markReady();
 	}
 
 	public static TagContainer<EntityType<?>> getContainer() {

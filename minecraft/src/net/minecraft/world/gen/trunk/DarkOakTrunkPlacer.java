@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.world.gen.trunk;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.Dynamic;
@@ -12,27 +12,25 @@ import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.gen.feature.AbstractTreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
-import net.minecraft.world.gen.trunk.TrunkPlacer;
-import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
-public class class_5211 extends TrunkPlacer {
-	public class_5211(int i, int j, int k) {
+public class DarkOakTrunkPlacer extends TrunkPlacer {
+	public DarkOakTrunkPlacer(int i, int j, int k) {
 		this(i, j, k, TrunkPlacerType.DARK_OAK_TRUNK_PLACER);
 	}
 
-	public class_5211(int i, int j, int k, TrunkPlacerType<? extends class_5211> trunkPlacerType) {
+	public DarkOakTrunkPlacer(int i, int j, int k, TrunkPlacerType<? extends DarkOakTrunkPlacer> trunkPlacerType) {
 		super(i, j, k, trunkPlacerType);
 	}
 
-	public <T> class_5211(Dynamic<T> dynamic) {
+	public <T> DarkOakTrunkPlacer(Dynamic<T> dynamic) {
 		this(dynamic.get("base_height").asInt(0), dynamic.get("height_rand_a").asInt(0), dynamic.get("height_rand_b").asInt(0));
 	}
 
 	@Override
-	public List<FoliagePlacer.class_5208> generate(
+	public List<FoliagePlacer.TreeNode> generate(
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
-		List<FoliagePlacer.class_5208> list = Lists.<FoliagePlacer.class_5208>newArrayList();
+		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 		BlockPos blockPos = pos.down();
 		method_27400(world, blockPos);
 		method_27400(world, blockPos.east());
@@ -65,7 +63,7 @@ public class class_5211 extends TrunkPlacer {
 			}
 		}
 
-		list.add(new FoliagePlacer.class_5208(new BlockPos(n, p, o), 0, true));
+		list.add(new FoliagePlacer.TreeNode(new BlockPos(n, p, o), 0, true));
 
 		for (int q = -1; q <= 2; q++) {
 			for (int r = -1; r <= 2; r++) {
@@ -76,7 +74,7 @@ public class class_5211 extends TrunkPlacer {
 						method_27402(world, random, new BlockPos(k + q, p - t - 1, m + r), set, blockBox, treeFeatureConfig);
 					}
 
-					list.add(new FoliagePlacer.class_5208(new BlockPos(n + q, p, o + r), 0, false));
+					list.add(new FoliagePlacer.TreeNode(new BlockPos(n + q, p, o + r), 0, false));
 				}
 			}
 		}

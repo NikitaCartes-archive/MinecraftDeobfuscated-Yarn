@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
-import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -41,9 +40,8 @@ public class RangedApproachTask extends Task<MobEntity> {
 
 	private void rememberWalkTarget(LivingEntity entity, LivingEntity target) {
 		Brain brain = entity.getBrain();
-		LookTarget lookTarget = new EntityLookTarget(target);
-		brain.remember(MemoryModuleType.LOOK_TARGET, lookTarget);
-		WalkTarget walkTarget = new WalkTarget(lookTarget, this.speed, 0);
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
+		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), this.speed, 0);
 		brain.remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 

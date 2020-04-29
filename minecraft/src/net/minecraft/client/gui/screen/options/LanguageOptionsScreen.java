@@ -64,7 +64,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.languageSelectionList.render(matrices, mouseX, mouseY, delta);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		this.drawCenteredString(matrices, this.textRenderer, "(" + I18n.translate("options.languageWarning") + ")", this.width / 2, this.height - 56, 8421504);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

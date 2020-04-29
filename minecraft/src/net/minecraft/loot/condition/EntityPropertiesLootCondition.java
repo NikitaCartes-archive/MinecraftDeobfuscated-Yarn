@@ -12,7 +12,6 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityPropertiesLootCondition implements LootCondition {
@@ -31,8 +30,8 @@ public class EntityPropertiesLootCondition implements LootCondition {
 
 	public boolean test(LootContext lootContext) {
 		Entity entity = lootContext.get(this.entity.getParameter());
-		BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
-		return this.predicate.test(lootContext.getWorld(), blockPos != null ? Vec3d.method_24954(blockPos) : null, entity);
+		Vec3d vec3d = lootContext.get(LootContextParameters.ORIGIN);
+		return this.predicate.test(lootContext.getWorld(), vec3d, entity);
 	}
 
 	public static LootCondition.Builder create(LootContext.EntityTarget entity) {
@@ -41,6 +40,10 @@ public class EntityPropertiesLootCondition implements LootCondition {
 
 	public static LootCondition.Builder builder(LootContext.EntityTarget entity, EntityPredicate.Builder predicateBuilder) {
 		return () -> new EntityPropertiesLootCondition(predicateBuilder.build(), entity);
+	}
+
+	public static LootCondition.Builder builder(LootContext.EntityTarget entity, EntityPredicate predicate) {
+		return () -> new EntityPropertiesLootCondition(predicate, entity);
 	}
 
 	public static class Factory extends LootCondition.Factory<EntityPropertiesLootCondition> {

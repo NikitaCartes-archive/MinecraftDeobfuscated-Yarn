@@ -590,7 +590,7 @@ public class Raid {
 				&& this.world.getChunkManager().shouldTickChunk(new ChunkPos(mutable))
 				&& (
 					SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER)
-						|| this.world.getBlockState(mutable.down()).getBlock() == Blocks.SNOW && this.world.getBlockState(mutable).isAir()
+						|| this.world.getBlockState(mutable.down()).isOf(Blocks.SNOW) && this.world.getBlockState(mutable).isAir()
 				)) {
 				return mutable;
 			}

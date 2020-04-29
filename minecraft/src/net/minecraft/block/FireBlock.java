@@ -119,8 +119,10 @@ public class FireBlock extends AbstractFireBlock {
 				world.removeBlock(pos, false);
 			}
 
-			Block block = world.getBlockState(pos.down()).getBlock();
-			boolean bl = world.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
+			BlockState blockState = world.getBlockState(pos.down());
+			boolean bl = world.dimension instanceof TheEndDimension && blockState.isOf(Blocks.BEDROCK)
+				|| blockState.isOf(Blocks.NETHERRACK)
+				|| blockState.isOf(Blocks.MAGMA_BLOCK);
 			int i = (Integer)state.get(AGE);
 			if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
 				world.removeBlock(pos, false);
@@ -220,7 +222,7 @@ public class FireBlock extends AbstractFireBlock {
 
 	private BlockState method_24855(IWorld iWorld, BlockPos blockPos, int i) {
 		BlockState blockState = getState(iWorld, blockPos);
-		return blockState.getBlock() == Blocks.FIRE ? blockState.with(AGE, Integer.valueOf(i)) : blockState;
+		return blockState.isOf(Blocks.FIRE) ? blockState.with(AGE, Integer.valueOf(i)) : blockState;
 	}
 
 	private boolean areBlocksAroundFlammable(BlockView world, BlockPos pos) {

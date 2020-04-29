@@ -70,7 +70,7 @@ public class NetherFossilFeature extends AbstractTempleFeature<DefaultFeatureCon
 				BlockState blockState = blockView.getBlockState(mutable);
 				mutable.move(Direction.DOWN);
 				BlockState blockState2 = blockView.getBlockState(mutable);
-				if (blockState.isAir() && (blockState2.getBlock() == Blocks.SOUL_SAND || blockState2.isSideSolidFullSquare(blockView, mutable, Direction.UP))) {
+				if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(blockView, mutable, Direction.UP))) {
 					break;
 				}
 			}

@@ -22,9 +22,9 @@ public abstract class LootEntry implements EntryCombiner {
 		this.conditionPredicate = LootConditions.joinAnd(conditions);
 	}
 
-	public void check(LootTableReporter lootTableReporter) {
+	public void check(LootTableReporter reporter) {
 		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].check(lootTableReporter.makeChild(".condition[" + i + "]"));
+			this.conditions[i].check(reporter.makeChild(".condition[" + i + "]"));
 		}
 	}
 

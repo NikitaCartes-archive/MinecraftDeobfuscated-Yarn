@@ -34,7 +34,7 @@ public class DoubleBlockProperties {
 			} else {
 				BlockPos blockPos = pos.offset((Direction)function.apply(state));
 				BlockState blockState = world.getBlockState(blockPos);
-				if (blockState.getBlock() == state.getBlock()) {
+				if (blockState.isOf(state.getBlock())) {
 					DoubleBlockProperties.Type type2 = (DoubleBlockProperties.Type)typeMapper.apply(blockState);
 					if (type2 != DoubleBlockProperties.Type.SINGLE && type != type2 && blockState.get(directionProperty) == state.get(directionProperty)) {
 						if (fallbackTester.test(world, blockPos)) {

@@ -10,7 +10,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
@@ -18,16 +17,6 @@ import net.minecraft.world.World;
 public class BowItem extends RangedWeaponItem implements Vanishable {
 	public BowItem(Item.Settings settings) {
 		super(settings);
-		this.addPropertyGetter(new Identifier("pull"), (stack, world, entity) -> {
-			if (entity == null) {
-				return 0.0F;
-			} else {
-				return entity.getActiveItem() != stack ? 0.0F : (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0F;
-			}
-		});
-		this.addPropertyGetter(
-			new Identifier("pulling"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
-		);
 	}
 
 	@Override

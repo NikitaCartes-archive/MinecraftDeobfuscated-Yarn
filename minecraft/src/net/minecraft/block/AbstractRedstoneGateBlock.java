@@ -112,7 +112,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			return i;
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
-			return Math.max(i, blockState.getBlock() == Blocks.REDSTONE_WIRE ? (Integer)blockState.get(RedstoneWireBlock.POWER) : 0);
+			return Math.max(i, blockState.isOf(Blocks.REDSTONE_WIRE) ? (Integer)blockState.get(RedstoneWireBlock.POWER) : 0);
 		}
 	}
 
@@ -125,12 +125,11 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	protected int getInputLevel(WorldView worldView, BlockPos pos, Direction dir) {
 		BlockState blockState = worldView.getBlockState(pos);
-		Block block = blockState.getBlock();
 		if (this.isValidInput(blockState)) {
-			if (block == Blocks.REDSTONE_BLOCK) {
+			if (blockState.isOf(Blocks.REDSTONE_BLOCK)) {
 				return 15;
 			} else {
-				return block == Blocks.REDSTONE_WIRE ? (Integer)blockState.get(RedstoneWireBlock.POWER) : worldView.getStrongRedstonePower(pos, dir);
+				return blockState.isOf(Blocks.REDSTONE_WIRE) ? (Integer)blockState.get(RedstoneWireBlock.POWER) : worldView.getStrongRedstonePower(pos, dir);
 			}
 		} else {
 			return 0;
@@ -161,7 +160,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (!notify && state.getBlock() != newState.getBlock()) {
+		if (!notify && !state.isOf(newState.getBlock())) {
 			super.onBlockRemoved(state, world, pos, newState, notify);
 			this.updateTarget(world, pos, state);
 		}

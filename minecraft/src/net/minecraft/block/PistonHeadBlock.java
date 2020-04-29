@@ -97,7 +97,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	private boolean method_26980(BlockState blockState, BlockState blockState2) {
 		Block block = blockState.get(TYPE) == PistonType.DEFAULT ? Blocks.PISTON : Blocks.STICKY_PISTON;
-		return blockState2.getBlock() == block && (Boolean)blockState2.get(PistonBlock.EXTENDED) && blockState2.get(FACING) == blockState.get(FACING);
+		return blockState2.isOf(block) && (Boolean)blockState2.get(PistonBlock.EXTENDED) && blockState2.get(FACING) == blockState.get(FACING);
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			super.onBlockRemoved(state, world, pos, newState, notify);
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 			if (this.method_26980(state, world.getBlockState(blockPos))) {
@@ -133,7 +133,7 @@ public class PistonHeadBlock extends FacingBlock {
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite()));
-		return this.method_26980(state, blockState) || blockState.getBlock() == Blocks.MOVING_PISTON && blockState.get(FACING) == state.get(FACING);
+		return this.method_26980(state, blockState) || blockState.isOf(Blocks.MOVING_PISTON) && blockState.get(FACING) == state.get(FACING);
 	}
 
 	@Override

@@ -22,7 +22,9 @@ import net.minecraft.world.World;
 
 public class SummonCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed"));
-	private static final SimpleCommandExceptionType field_22254 = new SimpleCommandExceptionType(new TranslatableText("commands.summon.invalidPosition"));
+	private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableText("commands.summon.invalidPosition")
+	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -71,7 +73,7 @@ public class SummonCommand {
 	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, CompoundTag nbt, boolean initialize) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(pos);
 		if (!World.method_25953(blockPos)) {
-			throw field_22254.create();
+			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
 			CompoundTag compoundTag = nbt.copy();
 			compoundTag.putString("id", entity.toString());

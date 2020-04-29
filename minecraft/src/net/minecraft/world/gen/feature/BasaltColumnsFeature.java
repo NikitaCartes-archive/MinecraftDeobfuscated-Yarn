@@ -84,7 +84,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 						mutable.move(Direction.UP);
 						bl = true;
 					} else {
-						if (iWorld.getBlockState(mutable).getBlock() != Blocks.BASALT) {
+						if (!iWorld.getBlockState(mutable).isOf(Blocks.BASALT)) {
 							break;
 						}
 
@@ -144,6 +144,6 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 
 	private static boolean method_27095(IWorld iWorld, int i, BlockPos blockPos) {
 		BlockState blockState = iWorld.getBlockState(blockPos);
-		return blockState.isAir() || blockState.getBlock() == Blocks.LAVA && blockPos.getY() <= i;
+		return blockState.isAir() || blockState.isOf(Blocks.LAVA) && blockPos.getY() <= i;
 	}
 }

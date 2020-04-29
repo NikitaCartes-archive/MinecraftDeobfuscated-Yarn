@@ -61,8 +61,7 @@ public class ShovelItem extends MiningToolItem {
 
 	@Override
 	public boolean isEffectiveOn(BlockState state) {
-		Block block = state.getBlock();
-		return block == Blocks.SNOW || block == Blocks.SNOW_BLOCK;
+		return state.isOf(Blocks.SNOW) || state.isOf(Blocks.SNOW_BLOCK);
 	}
 
 	@Override
@@ -81,7 +80,7 @@ public class ShovelItem extends MiningToolItem {
 				blockState3 = blockState2;
 			} else if (blockState.getBlock() instanceof CampfireBlock && (Boolean)blockState.get(CampfireBlock.LIT)) {
 				if (!world.isClient()) {
-					world.playLevelEvent(null, 1009, blockPos, 0);
+					world.syncWorldEvent(null, 1009, blockPos, 0);
 				}
 
 				blockState3 = blockState.with(CampfireBlock.LIT, Boolean.valueOf(false));

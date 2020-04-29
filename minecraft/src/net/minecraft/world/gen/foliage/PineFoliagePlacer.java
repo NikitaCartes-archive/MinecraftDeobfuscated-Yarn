@@ -35,9 +35,9 @@ public class PineFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		ModifiableTestableWorld world,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
+		TreeFeatureConfig config,
 		int trunkHeight,
-		FoliagePlacer.class_5208 arg,
+		FoliagePlacer.TreeNode treeNode,
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
@@ -46,10 +46,10 @@ public class PineFoliagePlacer extends FoliagePlacer {
 		int j = 0;
 
 		for (int k = i; k >= i - foliageHeight; k--) {
-			this.generate(world, random, treeFeatureConfig, arg.method_27388(), j, leaves, k, arg.method_27390());
+			this.generate(world, random, config, treeNode.getCenter(), j, leaves, k, treeNode.isGiantTrunk());
 			if (j >= 1 && k == i - foliageHeight + 1) {
 				j--;
-			} else if (j < radius + arg.method_27389()) {
+			} else if (j < radius + treeNode.getFoliageRadius()) {
 				j++;
 			}
 		}
@@ -61,7 +61,7 @@ public class PineFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig treeFeatureConfig) {
+	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
 		return this.height + random.nextInt(this.randomHeight + 1);
 	}
 

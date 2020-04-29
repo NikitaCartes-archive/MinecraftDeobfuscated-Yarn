@@ -2,11 +2,11 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class CurrentDownParticle extends SpriteBillboardParticle {
@@ -15,7 +15,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 	 */
 	private float accelerationAngle;
 
-	private CurrentDownParticle(World world, double x, double y, double z) {
+	private CurrentDownParticle(ClientWorld world, double x, double y, double z) {
 		super(world, x, y, z);
 		this.maxAge = (int)(Math.random() * 60.0) + 30;
 		this.collidesWithWorld = false;
@@ -62,8 +62,8 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			CurrentDownParticle currentDownParticle = new CurrentDownParticle(world, d, e, f);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			CurrentDownParticle currentDownParticle = new CurrentDownParticle(clientWorld, d, e, f);
 			currentDownParticle.setSprite(this.spriteProvider);
 			return currentDownParticle;
 		}

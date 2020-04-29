@@ -470,7 +470,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 			for (int i = 0; i < 10; i++) {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
-				if (this.world.getBlockState(blockPos2).getBlock() == Blocks.WATER) {
+				if (this.world.getBlockState(blockPos2).isOf(Blocks.WATER)) {
 					return Vec3d.method_24955(blockPos2);
 				}
 			}

@@ -219,30 +219,30 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			RenderSystem.enableAlphaTest();
 			RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(RecipeAlternativesWidget.BG_TEX);
-			int k = 152;
+			int i = 152;
 			if (!this.isCraftable) {
-				k += 26;
+				i += 26;
 			}
 
-			int l = RecipeAlternativesWidget.this.furnace ? 130 : 78;
+			int j = RecipeAlternativesWidget.this.furnace ? 130 : 78;
 			if (this.isHovered()) {
-				l += 26;
+				j += 26;
 			}
 
-			this.drawTexture(matrixStack, this.x, this.y, k, l, this.width, this.height);
+			this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.slots) {
 				RenderSystem.pushMatrix();
-				float g = 0.42F;
-				int m = (int)((float)(this.x + inputSlot.y) / 0.42F - 3.0F);
-				int n = (int)((float)(this.y + inputSlot.x) / 0.42F - 3.0F);
+				float f = 0.42F;
+				int k = (int)((float)(this.x + inputSlot.y) / 0.42F - 3.0F);
+				int l = (int)((float)(this.y + inputSlot.x) / 0.42F - 3.0F);
 				RenderSystem.scalef(0.42F, 0.42F, 1.0F);
 				RecipeAlternativesWidget.this.client
 					.getItemRenderer()
-					.renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], m, n);
+					.renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], k, l);
 				RenderSystem.popMatrix();
 			}
 

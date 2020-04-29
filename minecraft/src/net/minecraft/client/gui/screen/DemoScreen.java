@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -33,13 +32,13 @@ public class DemoScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(MatrixStack matrixStack) {
-		super.renderBackground(matrixStack);
+	public void renderBackground(MatrixStack matrices) {
+		super.renderBackground(matrices);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(DEMO_BG);
 		int i = (this.width - 248) / 2;
 		int j = (this.height - 166) / 2;
-		this.drawTexture(matrixStack, i, j, 0, 0, 248, 166);
+		this.drawTexture(matrices, i, j, 0, 0, 248, 166);
 	}
 
 	@Override
@@ -53,7 +52,7 @@ public class DemoScreen extends Screen {
 		this.textRenderer
 			.draw(
 				matrices,
-				I18n.translate(
+				new TranslatableText(
 					"demo.help.movementShort",
 					gameOptions.keyForward.getLocalizedName(),
 					gameOptions.keyLeft.getLocalizedName(),
@@ -64,9 +63,10 @@ public class DemoScreen extends Screen {
 				(float)j,
 				5197647
 			);
-		this.textRenderer.draw(matrices, I18n.translate("demo.help.movementMouse"), (float)i, (float)(j + 12), 5197647);
-		this.textRenderer.draw(matrices, I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)i, (float)(j + 24), 5197647);
-		this.textRenderer.draw(matrices, I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)i, (float)(j + 36), 5197647);
+		this.textRenderer.draw(matrices, new TranslatableText("demo.help.movementMouse"), (float)i, (float)(j + 12), 5197647);
+		this.textRenderer.draw(matrices, new TranslatableText("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)i, (float)(j + 24), 5197647);
+		this.textRenderer
+			.draw(matrices, new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)i, (float)(j + 36), 5197647);
 		this.textRenderer.drawTrimmed(new TranslatableText("demo.help.fullWrapped"), i, j + 68, 218, 2039583);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

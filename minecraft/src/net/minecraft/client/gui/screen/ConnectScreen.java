@@ -143,7 +143,7 @@ public class ConnectScreen extends Screen {
 			NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.joining").getString());
 		}
 
-		this.method_27534(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

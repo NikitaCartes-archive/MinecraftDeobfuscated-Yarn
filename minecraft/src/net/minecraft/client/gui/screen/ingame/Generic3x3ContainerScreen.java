@@ -26,7 +26,7 @@ public class Generic3x3ContainerScreen extends HandledScreen<Generic3x3Container
 
 	@Override
 	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
-		this.textRenderer.draw(matrixStack, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getWidth(this.title) / 2), 6.0F, 4210752);
+		this.textRenderer.draw(matrixStack, this.title, (float)(this.backgroundWidth / 2 - this.textRenderer.getStringWidth(this.title) / 2), 6.0F, 4210752);
 		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 

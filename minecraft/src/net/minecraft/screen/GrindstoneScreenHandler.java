@@ -67,7 +67,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 						world.spawnEntity(new ExperienceOrbEntity(world, (double)blockPos.getX(), (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, j));
 					}
 
-					world.playLevelEvent(1042, blockPos, 0);
+					world.syncWorldEvent(1042, blockPos, 0);
 				}));
 				GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
 				GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);

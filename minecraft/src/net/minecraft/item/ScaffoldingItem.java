@@ -26,7 +26,7 @@ public class ScaffoldingItem extends BlockItem {
 		World world = context.getWorld();
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = this.getBlock();
-		if (blockState.getBlock() != block) {
+		if (!blockState.isOf(block)) {
 			return ScaffoldingBlock.calculateDistance(world, blockPos) == 7 ? null : context;
 		} else {
 			Direction direction;
@@ -53,7 +53,7 @@ public class ScaffoldingItem extends BlockItem {
 				}
 
 				blockState = world.getBlockState(mutable);
-				if (blockState.getBlock() != this.getBlock()) {
+				if (!blockState.isOf(this.getBlock())) {
 					if (blockState.canReplace(context)) {
 						return ItemPlacementContext.offset(context, mutable, direction);
 					}

@@ -85,7 +85,7 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.keyBindingListWidget.render(matrices, mouseX, mouseY, delta);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		boolean bl = false;
 
 		for (KeyBinding keyBinding : this.gameOptions.keysAll) {

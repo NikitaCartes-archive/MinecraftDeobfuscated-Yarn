@@ -57,7 +57,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 			BlockState blockState = bedBlockEntity.getCachedState();
 			DoubleBlockProperties.PropertySource<? extends BedBlockEntity> propertySource = DoubleBlockProperties.toPropertySource(
 				BlockEntityType.BED,
-				BedBlock::method_24164,
+				BedBlock::getBedPart,
 				BedBlock::getOppositePartDirection,
 				ChestBlock.FACING,
 				blockState,

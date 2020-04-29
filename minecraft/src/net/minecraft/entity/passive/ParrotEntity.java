@@ -11,7 +11,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -170,9 +169,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 
 	@Override
 	public void tickMovement() {
-		if (this.songSource == null
-			|| !this.songSource.isWithinDistance(this.getPos(), 3.46)
-			|| this.world.getBlockState(this.songSource).getBlock() != Blocks.JUKEBOX) {
+		if (this.songSource == null || !this.songSource.isWithinDistance(this.getPos(), 3.46) || !this.world.getBlockState(this.songSource).isOf(Blocks.JUKEBOX)) {
 			this.songPlaying = false;
 			this.songSource = null;
 		}
@@ -295,8 +292,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	public static boolean canSpawn(EntityType<ParrotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		Block block = world.getBlockState(pos.down()).getBlock();
-		return (block.isIn(BlockTags.LEAVES) || block == Blocks.GRASS_BLOCK || block.isIn(BlockTags.LOGS) || block == Blocks.AIR)
+		BlockState blockState = world.getBlockState(pos.down());
+		return (blockState.isIn(BlockTags.LEAVES) || blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.AIR))
 			&& world.getBaseLightLevel(pos, 0) > 8;
 	}
 

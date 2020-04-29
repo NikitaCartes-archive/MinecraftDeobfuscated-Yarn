@@ -2,13 +2,13 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class FlameParticle extends AbstractSlowingParticle {
-	private FlameParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+	private FlameParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
 	}
 
@@ -52,8 +52,8 @@ public class FlameParticle extends AbstractSlowingParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			FlameParticle flameParticle = new FlameParticle(world, d, e, f, g, h, i);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			FlameParticle flameParticle = new FlameParticle(clientWorld, d, e, f, g, h, i);
 			flameParticle.setSprite(this.spriteProvider);
 			return flameParticle;
 		}

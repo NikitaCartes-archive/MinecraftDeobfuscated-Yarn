@@ -14,6 +14,9 @@ import java.util.UUID;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 
+/**
+ * Represents metadata sent to the client. This describes the server's message of the day, online players and the protocol version.
+ */
 public class ServerMetadata {
 	private Text description;
 	private ServerMetadata.Players players;

@@ -164,7 +164,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 				if (this.dropsItem) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
 				} else {
-					this.world.playLevelEvent(2003, this.getBlockPos(), 0);
+					this.world.syncWorldEvent(2003, this.getBlockPos(), 0);
 				}
 			}
 		} else {

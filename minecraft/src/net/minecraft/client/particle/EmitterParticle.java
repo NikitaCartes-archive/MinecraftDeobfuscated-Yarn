@@ -2,10 +2,10 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class EmitterParticle extends NoRenderParticle {
@@ -14,16 +14,16 @@ public class EmitterParticle extends NoRenderParticle {
 	private final int maxEmitterAge;
 	private final ParticleEffect parameters;
 
-	public EmitterParticle(World world, Entity entity, ParticleEffect parameters) {
+	public EmitterParticle(ClientWorld world, Entity entity, ParticleEffect parameters) {
 		this(world, entity, parameters, 3);
 	}
 
-	public EmitterParticle(World world, Entity entity, ParticleEffect particleEffect, int i) {
-		this(world, entity, particleEffect, i, entity.getVelocity());
+	public EmitterParticle(ClientWorld world, Entity entity, ParticleEffect parameters, int maxEmitterAge) {
+		this(world, entity, parameters, maxEmitterAge, entity.getVelocity());
 	}
 
-	private EmitterParticle(World world, Entity entity, ParticleEffect parameters, int maxEmitterAge, Vec3d vec3d) {
-		super(world, entity.getX(), entity.getBodyY(0.5), entity.getZ(), vec3d.x, vec3d.y, vec3d.z);
+	private EmitterParticle(ClientWorld world, Entity entity, ParticleEffect parameters, int maxEmitterAge, Vec3d velocity) {
+		super(world, entity.getX(), entity.getBodyY(0.5), entity.getZ(), velocity.x, velocity.y, velocity.z);
 		this.entity = entity;
 		this.maxEmitterAge = maxEmitterAge;
 		this.parameters = parameters;

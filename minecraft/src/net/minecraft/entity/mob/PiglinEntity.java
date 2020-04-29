@@ -186,7 +186,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	public static boolean canSpawn(EntityType<PiglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		return world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
+		return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
 	}
 
 	@Nullable

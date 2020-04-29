@@ -163,7 +163,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 
 	private void generateVines(Random random, IWorld world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		if (!blockState.isAir() && blockState.getBlock() != Blocks.VINE) {
+		if (!blockState.isAir() && !blockState.isOf(Blocks.VINE)) {
 			Direction direction = Direction.Type.HORIZONTAL.random(random);
 			BlockPos blockPos = pos.offset(direction);
 			BlockState blockState2 = world.getBlockState(blockPos);
@@ -177,7 +177,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 	}
 
 	private void generateOvergrownLeaves(Random random, IWorld world, BlockPos pos) {
-		if (random.nextFloat() < 0.5F && world.getBlockState(pos).getBlock() == Blocks.NETHERRACK && world.getBlockState(pos.up()).isAir()) {
+		if (random.nextFloat() < 0.5F && world.getBlockState(pos).isOf(Blocks.NETHERRACK) && world.getBlockState(pos.up()).isAir()) {
 			world.setBlockState(pos.up(), Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.valueOf(true)), 3);
 		}
 	}
@@ -186,7 +186,7 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 		for (int i = this.boundingBox.minX + 1; i < this.boundingBox.maxX; i++) {
 			for (int j = this.boundingBox.minZ + 1; j < this.boundingBox.maxZ; j++) {
 				BlockPos blockPos = new BlockPos(i, this.boundingBox.minY, j);
-				if (world.getBlockState(blockPos).getBlock() == Blocks.NETHERRACK) {
+				if (world.getBlockState(blockPos).isOf(Blocks.NETHERRACK)) {
 					this.updateNetherracks(random, world, blockPos.down());
 				}
 			}
@@ -243,10 +243,10 @@ public class RuinedPortalFeaturePiece extends SimpleStructurePiece {
 	}
 
 	private boolean canFillNetherrack(IWorld world, BlockPos pos) {
-		Block block = world.getBlockState(pos).getBlock();
-		return block != Blocks.AIR
-			&& block != Blocks.OBSIDIAN
-			&& (this.verticalPlacement == RuinedPortalFeaturePiece.VerticalPlacement.IN_NETHER || block != Blocks.LAVA);
+		BlockState blockState = world.getBlockState(pos);
+		return !blockState.isOf(Blocks.AIR)
+			&& !blockState.isOf(Blocks.OBSIDIAN)
+			&& (this.verticalPlacement == RuinedPortalFeaturePiece.VerticalPlacement.IN_NETHER || !blockState.isOf(Blocks.LAVA));
 	}
 
 	private void placeNetherrackBottom(Random random, IWorld world, BlockPos pos) {

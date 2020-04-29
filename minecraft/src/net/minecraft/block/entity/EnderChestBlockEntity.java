@@ -29,7 +29,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	@Override
 	public void tick() {
 		if (++this.ticks % 20 * 4 == 0) {
-			this.world.addBlockAction(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
+			this.world.addSyncedBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
 		}
 
 		this.lastAnimationProgress = this.animationProgress;
@@ -71,12 +71,12 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	}
 
 	@Override
-	public boolean onBlockAction(int i, int j) {
-		if (i == 1) {
-			this.viewerCount = j;
+	public boolean onSyncedBlockEvent(int type, int data) {
+		if (type == 1) {
+			this.viewerCount = data;
 			return true;
 		} else {
-			return super.onBlockAction(i, j);
+			return super.onSyncedBlockEvent(type, data);
 		}
 	}
 
@@ -88,12 +88,12 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 	public void onOpen() {
 		this.viewerCount++;
-		this.world.addBlockAction(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
+		this.world.addSyncedBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
 	}
 
 	public void onClose() {
 		this.viewerCount--;
-		this.world.addBlockAction(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
+		this.world.addSyncedBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
 	}
 
 	public boolean canPlayerUse(PlayerEntity playerEntity) {
@@ -104,7 +104,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public float getAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.lastAnimationProgress, this.animationProgress);
+	public float getAnimationProgress(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.lastAnimationProgress, this.animationProgress);
 	}
 }

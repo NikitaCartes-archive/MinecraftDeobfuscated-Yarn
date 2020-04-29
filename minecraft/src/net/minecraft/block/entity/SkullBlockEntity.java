@@ -7,7 +7,6 @@ import com.mojang.authlib.properties.Property;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.CompoundTag;
@@ -63,8 +62,8 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 
 	@Override
 	public void tick() {
-		Block block = this.getCachedState().getBlock();
-		if (block == Blocks.DRAGON_HEAD || block == Blocks.DRAGON_WALL_HEAD) {
+		BlockState blockState = this.getCachedState();
+		if (blockState.isOf(Blocks.DRAGON_HEAD) || blockState.isOf(Blocks.DRAGON_WALL_HEAD)) {
 			if (this.world.isReceivingRedstonePower(this.pos)) {
 				this.powered = true;
 				this.ticksPowered++;

@@ -2,8 +2,8 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class AscendingParticle extends SpriteBillboardParticle {
@@ -11,7 +11,7 @@ public class AscendingParticle extends SpriteBillboardParticle {
 	private final double ascendingAcceleration;
 
 	protected AscendingParticle(
-		World world,
+		ClientWorld world,
 		double x,
 		double y,
 		double z,

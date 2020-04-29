@@ -135,7 +135,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 			this.cancelButton.active = false;
 		}
 
-		this.method_27534(matrices, this.textRenderer, this.status, this.width / 2, 50, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.status, this.width / 2, 50, 16777215);
 		if (this.showDots) {
 			this.drawDots(matrices);
 		}
@@ -147,7 +147,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 
 		if (this.field_20503 != null) {
 			for (int i = 0; i < this.field_20503.length; i++) {
-				this.method_27534(matrices, this.textRenderer, this.field_20503[i], this.width / 2, 110 + 12 * i, 16711680);
+				this.drawStringWithShadow(matrices, this.textRenderer, this.field_20503[i], this.width / 2, 110 + 12 * i, 16711680);
 			}
 		}
 
@@ -155,7 +155,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 	}
 
 	private void drawDots(MatrixStack matrixStack) {
-		int i = this.textRenderer.getWidth(this.status);
+		int i = this.textRenderer.getStringWidth(this.status);
 		this.textRenderer.draw(matrixStack, DOTS[this.animTick / 10 % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0F, 16777215);
 	}
 

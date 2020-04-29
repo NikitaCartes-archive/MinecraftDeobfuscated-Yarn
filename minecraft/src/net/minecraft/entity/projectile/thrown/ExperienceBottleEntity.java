@@ -37,7 +37,7 @@ public class ExperienceBottleEntity extends ThrownItemEntity {
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
-			this.world.playLevelEvent(2002, this.getBlockPos(), PotionUtil.getColor(Potions.WATER));
+			this.world.syncWorldEvent(2002, this.getBlockPos(), PotionUtil.getColor(Potions.WATER));
 			int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5);
 
 			while (i > 0) {

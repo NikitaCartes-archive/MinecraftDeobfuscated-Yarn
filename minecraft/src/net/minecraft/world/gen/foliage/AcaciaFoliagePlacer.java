@@ -20,23 +20,23 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		ModifiableTestableWorld world,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
+		TreeFeatureConfig config,
 		int trunkHeight,
-		FoliagePlacer.class_5208 arg,
+		FoliagePlacer.TreeNode treeNode,
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
 		int i
 	) {
-		boolean bl = arg.method_27390();
-		BlockPos blockPos = arg.method_27388().up(i);
-		this.generate(world, random, treeFeatureConfig, blockPos, radius + arg.method_27389(), leaves, -1 - foliageHeight, bl);
-		this.generate(world, random, treeFeatureConfig, blockPos, radius - 1, leaves, -foliageHeight, bl);
-		this.generate(world, random, treeFeatureConfig, blockPos, radius + arg.method_27389() - 1, leaves, 0, bl);
+		boolean bl = treeNode.isGiantTrunk();
+		BlockPos blockPos = treeNode.getCenter().up(i);
+		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius(), leaves, -1 - foliageHeight, bl);
+		this.generate(world, random, config, blockPos, radius - 1, leaves, -foliageHeight, bl);
+		this.generate(world, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, leaves, 0, bl);
 	}
 
 	@Override
-	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig treeFeatureConfig) {
+	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
 		return 0;
 	}
 

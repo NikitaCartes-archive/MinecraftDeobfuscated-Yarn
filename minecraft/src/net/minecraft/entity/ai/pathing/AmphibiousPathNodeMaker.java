@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.pathing;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractRailBlock;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.tag.BlockTags;
@@ -247,7 +247,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 			return PathNodeType.WATER;
 		} else {
 			if (pathNodeType == PathNodeType.OPEN && y >= 1) {
-				Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+				BlockState blockState = world.getBlockState(new BlockPos(x, y - 1, z));
 				PathNodeType pathNodeType3 = getCommonNodeType(world, mutable.set(x, y - 1, z));
 				if (pathNodeType3 != PathNodeType.WALKABLE && pathNodeType3 != PathNodeType.OPEN && pathNodeType3 != PathNodeType.LAVA) {
 					pathNodeType = PathNodeType.WALKABLE;
@@ -255,7 +255,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 					pathNodeType = PathNodeType.OPEN;
 				}
 
-				if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block.isIn(BlockTags.CAMPFIRES)) {
+				if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || blockState.isOf(Blocks.MAGMA_BLOCK) || blockState.isIn(BlockTags.CAMPFIRES)) {
 					pathNodeType = PathNodeType.DAMAGE_FIRE;
 				}
 

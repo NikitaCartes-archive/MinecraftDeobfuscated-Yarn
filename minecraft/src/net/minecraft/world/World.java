@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5217;
+import net.minecraft.class_5269;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -87,7 +88,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	public final Random random = new Random();
 	public final Dimension dimension;
 	protected final ChunkManager chunkManager;
-	protected final class_5217 properties;
+	protected final class_5269 properties;
 	private final Supplier<Profiler> profiler;
 	public final boolean isClient;
 	protected boolean iteratingTickingBlockEntities;
@@ -95,7 +96,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	private final BiomeAccess biomeAccess;
 
 	protected World(
-		class_5217 levelProperties,
+		class_5269 levelProperties,
 		DimensionType dimensionType,
 		BiFunction<World, Dimension, ChunkManager> chunkManagerProvider,
 		Supplier<Profiler> profiler,
@@ -287,7 +288,7 @@ public abstract class World implements IWorld, AutoCloseable {
 		} else {
 			FluidState fluidState = this.getFluidState(pos);
 			if (!(blockState.getBlock() instanceof AbstractFireBlock)) {
-				this.playLevelEvent(2001, pos, Block.getRawIdFromState(blockState));
+				this.syncWorldEvent(2001, pos, Block.getRawIdFromState(blockState));
 			}
 
 			if (drop) {
@@ -595,7 +596,7 @@ public abstract class World implements IWorld, AutoCloseable {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
 						BlockState blockState = this.getBlockState(mutable.set(o, p, q));
-						if (blockState.isIn(BlockTags.FIRE) || blockState.getBlock() == Blocks.LAVA) {
+						if (blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA)) {
 							return true;
 						}
 					}
@@ -622,7 +623,7 @@ public abstract class World implements IWorld, AutoCloseable {
 				for (int p = k; p < l; p++) {
 					for (int q = m; q < n; q++) {
 						BlockState blockState = this.getBlockState(mutable.set(o, p, q));
-						if (blockState.getBlock() == block) {
+						if (blockState.isOf(block)) {
 							return blockState;
 						}
 					}
@@ -948,7 +949,8 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public int getEmittedRedstonePower(BlockPos pos, Direction direction) {
 		BlockState blockState = this.getBlockState(pos);
-		return blockState.isSolidBlock(this, pos) ? this.getReceivedStrongRedstonePower(pos) : blockState.getWeakRedstonePower(this, pos, direction);
+		int i = blockState.getWeakRedstonePower(this, pos, direction);
+		return blockState.isSolidBlock(this, pos) ? Math.max(i, this.getReceivedStrongRedstonePower(pos)) : i;
 	}
 
 	public boolean isReceivingRedstonePower(BlockPos pos) {
@@ -1014,19 +1016,6 @@ public abstract class World implements IWorld, AutoCloseable {
 		}
 	}
 
-	public BlockPos getSpawnPos() {
-		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
-		if (!this.getWorldBorder().contains(blockPos)) {
-			blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
-		}
-
-		return blockPos;
-	}
-
-	public void setSpawnPos(BlockPos pos) {
-		this.properties.setSpawnPos(pos);
-	}
-
 	public boolean canPlayerModifyAt(PlayerEntity player, BlockPos pos) {
 		return true;
 	}
@@ -1039,8 +1028,8 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this.chunkManager;
 	}
 
-	public void addBlockAction(BlockPos pos, Block block, int type, int data) {
-		this.getBlockState(pos).onBlockAction(this, pos, type, data);
+	public void addSyncedBlockEvent(BlockPos pos, Block block, int type, int data) {
+		this.getBlockState(pos).onSyncedBlockEvent(this, pos, type, data);
 	}
 
 	@Override
@@ -1105,7 +1094,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	public abstract int getNextMapId();
 
-	public void playGlobalEvent(int type, BlockPos pos, int data) {
+	public void syncGlobalEvent(int eventId, BlockPos pos, int data) {
 	}
 
 	public CrashReportSection addDetailsToCrashReport(CrashReport report) {
@@ -1136,12 +1125,12 @@ public abstract class World implements IWorld, AutoCloseable {
 			BlockPos blockPos = pos.offset(direction);
 			if (this.isChunkLoaded(blockPos)) {
 				BlockState blockState = this.getBlockState(blockPos);
-				if (blockState.getBlock() == Blocks.COMPARATOR) {
+				if (blockState.isOf(Blocks.COMPARATOR)) {
 					blockState.neighborUpdate(this, blockPos, block, pos, false);
 				} else if (blockState.isSolidBlock(this, blockPos)) {
 					blockPos = blockPos.offset(direction);
 					blockState = this.getBlockState(blockPos);
-					if (blockState.getBlock() == Blocks.COMPARATOR) {
+					if (blockState.isOf(Blocks.COMPARATOR)) {
 						blockState.neighborUpdate(this, blockPos, block, pos, false);
 					}
 				}

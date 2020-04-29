@@ -13,16 +13,16 @@ import net.minecraft.client.render.entity.ElderGuardianEntityRenderer;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ElderGuardianAppearanceParticle extends Particle {
 	private final Model model = new GuardianEntityModel();
 	private final RenderLayer LAYER = RenderLayer.getEntityTranslucent(ElderGuardianEntityRenderer.TEXTURE);
 
-	private ElderGuardianAppearanceParticle(World world, double x, double y, double z) {
+	private ElderGuardianAppearanceParticle(ClientWorld world, double x, double y, double z) {
 		super(world, x, y, z);
 		this.gravityStrength = 0.0F;
 		this.maxAge = 30;
@@ -50,8 +50,8 @@ public class ElderGuardianAppearanceParticle extends Particle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new ElderGuardianAppearanceParticle(world, d, e, f);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new ElderGuardianAppearanceParticle(clientWorld, d, e, f);
 		}
 	}
 }

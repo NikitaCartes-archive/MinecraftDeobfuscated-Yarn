@@ -46,6 +46,6 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 
 	@Override
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().playLevelEvent(1000, pointer.getBlockPos(), 0);
+		pointer.getWorld().syncWorldEvent(1000, pointer.getBlockPos(), 0);
 	}
 }

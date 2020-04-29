@@ -31,7 +31,7 @@ public enum EnderDragonSpawnState {
 		public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos blockPos) {
 			if (i < 100) {
 				if (i == 0 || i == 50 || i == 51 || i == 52 || i >= 95) {
-					world.playLevelEvent(3001, new BlockPos(0, 128, 0), 0);
+					world.syncWorldEvent(3001, new BlockPos(0, 128, 0), 0);
 				}
 			} else {
 				fight.setSpawnState(SUMMONING_PILLARS);
@@ -101,13 +101,13 @@ public enum EnderDragonSpawnState {
 					endCrystalEntity.remove();
 				}
 			} else if (i >= 80) {
-				world.playLevelEvent(3001, new BlockPos(0, 128, 0), 0);
+				world.syncWorldEvent(3001, new BlockPos(0, 128, 0), 0);
 			} else if (i == 0) {
 				for (EndCrystalEntity endCrystalEntity : crystals) {
 					endCrystalEntity.setBeamTarget(new BlockPos(0, 128, 0));
 				}
 			} else if (i < 5) {
-				world.playLevelEvent(3001, new BlockPos(0, 128, 0), 0);
+				world.syncWorldEvent(3001, new BlockPos(0, 128, 0), 0);
 			}
 		}
 	},

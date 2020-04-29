@@ -44,11 +44,11 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 		public void toJson(
 			JsonObject jsonObject, DamageSourcePropertiesLootCondition damageSourcePropertiesLootCondition, JsonSerializationContext jsonSerializationContext
 		) {
-			jsonObject.add("predicate", damageSourcePropertiesLootCondition.predicate.serialize());
+			jsonObject.add("predicate", damageSourcePropertiesLootCondition.predicate.toJson());
 		}
 
 		public DamageSourcePropertiesLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.deserialize(jsonObject.get("predicate"));
+			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.fromJson(jsonObject.get("predicate"));
 			return new DamageSourcePropertiesLootCondition(damageSourcePredicate);
 		}
 	}

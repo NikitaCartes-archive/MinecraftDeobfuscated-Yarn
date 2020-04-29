@@ -74,7 +74,7 @@ public class LadderBlock extends Block implements Waterloggable {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		if (!ctx.canReplaceExisting()) {
 			BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(ctx.getSide().getOpposite()));
-			if (blockState.getBlock() == this && blockState.get(FACING) == ctx.getSide()) {
+			if (blockState.isOf(this) && blockState.get(FACING) == ctx.getSide()) {
 				return null;
 			}
 		}

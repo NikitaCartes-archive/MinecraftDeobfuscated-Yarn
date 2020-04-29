@@ -54,9 +54,8 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	}
 
 	private void update(VillagerEntity villager) {
-		EntityLookTarget entityLookTarget = new EntityLookTarget(villager.getCurrentCustomer());
 		Brain<?> brain = villager.getBrain();
-		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(entityLookTarget, this.speed, 2));
-		brain.remember(MemoryModuleType.LOOK_TARGET, entityLookTarget);
+		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(villager.getCurrentCustomer(), false), this.speed, 2));
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(villager.getCurrentCustomer(), true));
 	}
 }

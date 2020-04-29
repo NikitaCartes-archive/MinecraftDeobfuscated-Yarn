@@ -25,7 +25,7 @@ public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior 
 
 	@Override
 	protected void playSound(BlockPointer pointer) {
-		pointer.getWorld().playLevelEvent(1002, pointer.getBlockPos(), 0);
+		pointer.getWorld().syncWorldEvent(1002, pointer.getBlockPos(), 0);
 	}
 
 	protected abstract ProjectileEntity createProjectile(World world, Position position, ItemStack stack);

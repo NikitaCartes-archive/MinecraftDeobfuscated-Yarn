@@ -847,7 +847,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 						}
 
 						if (bl) {
-							BeeEntity.this.world.playLevelEvent(2005, blockPos, 0);
+							BeeEntity.this.world.syncWorldEvent(2005, blockPos, 0);
 							BeeEntity.this.world.setBlockState(blockPos, blockState.with(intProperty, Integer.valueOf((Integer)blockState.get(intProperty) + 1)));
 							BeeEntity.this.addCropCounter();
 						}
@@ -1050,7 +1050,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	class PollinateGoal extends BeeEntity.NotAngryGoal {
 		private final Predicate<BlockState> flowerPredicate = blockState -> {
 			if (blockState.isIn(BlockTags.TALL_FLOWERS)) {
-				return blockState.getBlock() == Blocks.SUNFLOWER ? blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
+				return blockState.isOf(Blocks.SUNFLOWER) ? blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
 			} else {
 				return blockState.isIn(BlockTags.SMALL_FLOWERS);
 			}

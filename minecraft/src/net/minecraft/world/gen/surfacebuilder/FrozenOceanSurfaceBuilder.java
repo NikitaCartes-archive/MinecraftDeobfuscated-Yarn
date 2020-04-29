@@ -89,7 +89,7 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 			BlockState blockState5 = chunk.getBlockState(mutable);
 			if (blockState5.isAir()) {
 				t = -1;
-			} else if (blockState5.getBlock() == blockState.getBlock()) {
+			} else if (blockState5.isOf(blockState.getBlock())) {
 				if (t == -1) {
 					if (s <= 0) {
 						blockState4 = AIR;
@@ -120,12 +120,12 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 				} else if (t > 0) {
 					t--;
 					chunk.setBlockState(mutable, blockState3, false);
-					if (t == 0 && blockState3.getBlock() == Blocks.SAND && s > 1) {
+					if (t == 0 && blockState3.isOf(Blocks.SAND) && s > 1) {
 						t = random.nextInt(4) + Math.max(0, x - 63);
-						blockState3 = blockState3.getBlock() == Blocks.RED_SAND ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
+						blockState3 = blockState3.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
 					}
 				}
-			} else if (blockState5.getBlock() == Blocks.PACKED_ICE && u <= v && x > w) {
+			} else if (blockState5.isOf(Blocks.PACKED_ICE) && u <= v && x > w) {
 				chunk.setBlockState(mutable, SNOW_BLOCK, false);
 				u++;
 			}

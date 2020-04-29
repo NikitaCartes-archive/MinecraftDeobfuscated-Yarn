@@ -147,10 +147,10 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		super.render(matrices, mouseX, mouseY, delta);
-		this.method_27534(matrices, this.textRenderer, this.field_24204, this.width / 2, 17, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.field_24204, this.width / 2, 17, 16777215);
 
 		for (int i = 0; i < this.message.length; i++) {
-			this.method_27534(matrices, this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, 10526880);
+			this.drawStringWithShadow(matrices, this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, 10526880);
 		}
 
 		if (this.field_20492 != null) {

@@ -30,7 +30,7 @@ public class BoneMealItem extends Item {
 		BlockPos blockPos2 = blockPos.offset(context.getSide());
 		if (useOnFertilizable(context.getStack(), world, blockPos)) {
 			if (!world.isClient) {
-				world.playLevelEvent(2005, blockPos, 0);
+				world.syncWorldEvent(2005, blockPos, 0);
 			}
 
 			return ActionResult.SUCCESS;
@@ -39,7 +39,7 @@ public class BoneMealItem extends Item {
 			boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
 			if (bl && useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
 				if (!world.isClient) {
-					world.playLevelEvent(2005, blockPos2, 0);
+					world.syncWorldEvent(2005, blockPos2, 0);
 				}
 
 				return ActionResult.SUCCESS;
@@ -70,7 +70,7 @@ public class BoneMealItem extends Item {
 	}
 
 	public static boolean useOnGround(ItemStack stack, World world, BlockPos blockPos, @Nullable Direction facing) {
-		if (world.getBlockState(blockPos).getBlock() == Blocks.WATER && world.getFluidState(blockPos).getLevel() == 8) {
+		if (world.getBlockState(blockPos).isOf(Blocks.WATER) && world.getFluidState(blockPos).getLevel() == 8) {
 			if (!(world instanceof ServerWorld)) {
 				return true;
 			} else {
@@ -104,9 +104,9 @@ public class BoneMealItem extends Item {
 
 					if (blockState.canPlaceAt(world, blockPos2)) {
 						BlockState blockState2 = world.getBlockState(blockPos2);
-						if (blockState2.getBlock() == Blocks.WATER && world.getFluidState(blockPos2).getLevel() == 8) {
+						if (blockState2.isOf(Blocks.WATER) && world.getFluidState(blockPos2).getLevel() == 8) {
 							world.setBlockState(blockPos2, blockState, 3);
-						} else if (blockState2.getBlock() == Blocks.SEAGRASS && RANDOM.nextInt(10) == 0) {
+						} else if (blockState2.isOf(Blocks.SEAGRASS) && RANDOM.nextInt(10) == 0) {
 							((Fertilizable)Blocks.SEAGRASS).grow((ServerWorld)world, RANDOM, blockPos2, blockState2);
 						}
 					}

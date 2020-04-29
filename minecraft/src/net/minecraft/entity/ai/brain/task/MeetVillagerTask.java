@@ -56,8 +56,8 @@ public class MeetVillagerTask extends Task<LivingEntity> {
 						.findFirst()
 						.ifPresent(livingEntityx -> {
 							brain.remember(MemoryModuleType.INTERACTION_TARGET, livingEntityx);
-							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntityx));
-							brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntityx), 0.3F, 1));
+							brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntityx, true));
+							brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(livingEntityx, false), 0.3F, 1));
 						})
 			);
 	}

@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -211,13 +210,30 @@ public abstract class EntityNavigation {
 		Vec3d vec3d = this.getPos();
 		this.nodeReachProximity = this.entity.getWidth() > 0.75F ? this.entity.getWidth() / 2.0F : 0.75F - this.entity.getWidth() / 2.0F;
 		Vec3i vec3i = this.currentPath.getCurrentPosition();
-		if (Math.abs(this.entity.getX() - (double)((float)vec3i.getX() + 0.5F)) < (double)this.nodeReachProximity
+		boolean bl = Math.abs(this.entity.getX() - (double)((float)vec3i.getX() + 0.5F)) < (double)this.nodeReachProximity
 			&& Math.abs(this.entity.getZ() - (double)((float)vec3i.getZ() + 0.5F)) < (double)this.nodeReachProximity
-			&& Math.abs(this.entity.getY() - (double)vec3i.getY()) < 1.0) {
+			&& Math.abs(this.entity.getY() - (double)vec3i.getY()) < 1.0;
+		if (bl || this.method_27799(vec3d)) {
 			this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 		}
 
 		this.checkTimeouts(vec3d);
+	}
+
+	private boolean method_27799(Vec3d vec3d) {
+		if (this.currentPath.getLength() <= this.currentPath.getCurrentNodeIndex() + 1) {
+			return false;
+		} else {
+			Vec3d vec3d2 = Vec3d.method_24955(this.currentPath.getNode(this.currentPath.getCurrentNodeIndex()).getPos());
+			if (!vec3d.isInRange(vec3d2, 2.0)) {
+				return false;
+			} else {
+				Vec3d vec3d3 = Vec3d.method_24955(this.currentPath.getNode(this.currentPath.getCurrentNodeIndex() + 1).getPos());
+				Vec3d vec3d4 = vec3d3.subtract(vec3d2);
+				Vec3d vec3d5 = vec3d.subtract(vec3d2);
+				return vec3d4.dotProduct(vec3d5) > 0.0;
+			}
+		}
 	}
 
 	protected void checkTimeouts(Vec3d currentPos) {
@@ -287,8 +303,7 @@ public abstract class EntityNavigation {
 				PathNode pathNode = this.currentPath.getNode(i);
 				PathNode pathNode2 = i + 1 < this.currentPath.getLength() ? this.currentPath.getNode(i + 1) : null;
 				BlockState blockState = this.world.getBlockState(new BlockPos(pathNode.x, pathNode.y, pathNode.z));
-				Block block = blockState.getBlock();
-				if (block == Blocks.CAULDRON) {
+				if (blockState.isOf(Blocks.CAULDRON)) {
 					this.currentPath.setNode(i, pathNode.copyWithNewPosition(pathNode.x, pathNode.y + 1, pathNode.z));
 					if (pathNode2 != null && pathNode.y >= pathNode2.y) {
 						this.currentPath.setNode(i + 1, pathNode2.copyWithNewPosition(pathNode2.x, pathNode.y + 1, pathNode2.z));

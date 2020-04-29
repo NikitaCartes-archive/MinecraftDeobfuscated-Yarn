@@ -63,7 +63,7 @@ public class DragonEggBlock extends FallingBlock {
 	}
 
 	@Override
-	protected int method_26154() {
+	protected int getFallDelay() {
 		return 5;
 	}
 

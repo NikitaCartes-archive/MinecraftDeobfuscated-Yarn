@@ -39,7 +39,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	public boolean generate(
 		IWorld world, StructureAccessor accessor, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, C config
 	) {
-		if (!world.getLevelProperties().method_27420()) {
+		if (!accessor.method_27834()) {
 			return false;
 		} else {
 			int i = pos.getX() >> 4;
@@ -73,11 +73,11 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 	public BlockPos locateStructure(
 		ServerWorld serverWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks
 	) {
-		if (!chunkGenerator.method_27367(this)) {
+		if (!chunkGenerator.hasStructure(this)) {
 			return null;
 		} else {
 			StructureAccessor structureAccessor = serverWorld.getStructureAccessor();
-			int j = this.getSpacing(chunkGenerator.method_27192(), chunkGenerator.getConfig());
+			int j = this.getSpacing(chunkGenerator.getDimensionType(), chunkGenerator.getConfig());
 			int k = blockPos.getX() >> 4;
 			int l = blockPos.getZ() >> 4;
 			int m = 0;
@@ -139,7 +139,7 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 
 	public final ChunkPos method_27218(ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int i, int j) {
 		ChunkGeneratorConfig chunkGeneratorConfig = chunkGenerator.getConfig();
-		DimensionType dimensionType = chunkGenerator.method_27192();
+		DimensionType dimensionType = chunkGenerator.getDimensionType();
 		int k = this.getSpacing(dimensionType, chunkGeneratorConfig);
 		int l = this.getSeparation(dimensionType, chunkGeneratorConfig);
 		int m = Math.floorDiv(i, k);

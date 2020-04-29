@@ -55,7 +55,7 @@ public class AnvilLevelStorage {
 		BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
 		BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
 		BiomeSource biomeSource;
-		if (lv != null && lv.method_27437(DimensionType.OVERWORLD).getGeneratorType() == LevelGeneratorType.FLAT) {
+		if (lv != null && lv.method_27859().getGeneratorType() == LevelGeneratorType.FLAT) {
 			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig(lv.getSeed()).setBiome(Biomes.PLAINS));
 		} else {
 			biomeSource = biomeSourceType2.applyConfig(biomeSourceType2.getConfig(l));

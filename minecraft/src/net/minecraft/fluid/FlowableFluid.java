@@ -30,7 +30,10 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public abstract class BaseFluid extends Fluid {
+/**
+ * Represents a fluid which can flow.
+ */
+public abstract class FlowableFluid extends Fluid {
 	public static final BooleanProperty FALLING = Properties.FALLING;
 	public static final IntProperty LEVEL = Properties.LEVEL_1_8;
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {

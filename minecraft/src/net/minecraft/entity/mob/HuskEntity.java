@@ -69,7 +69,7 @@ public class HuskEntity extends ZombieEntity {
 	protected void convertInWater() {
 		this.convertTo(EntityType.ZOMBIE);
 		if (!this.isSilent()) {
-			this.world.playLevelEvent(null, 1041, this.getBlockPos(), 0);
+			this.world.syncWorldEvent(null, 1041, this.getBlockPos(), 0);
 		}
 	}
 

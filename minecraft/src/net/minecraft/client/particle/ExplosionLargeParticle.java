@@ -2,14 +2,14 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ExplosionLargeParticle extends SpriteBillboardParticle {
 	private final SpriteProvider spriteProvider;
 
-	private ExplosionLargeParticle(World world, double x, double y, double z, double d, SpriteProvider spriteProvider) {
+	private ExplosionLargeParticle(ClientWorld world, double x, double y, double z, double d, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.maxAge = 6 + this.random.nextInt(4);
 		float f = this.random.nextFloat() * 0.6F + 0.4F;
@@ -51,8 +51,8 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			return new ExplosionLargeParticle(world, d, e, f, g, this.spriteProvider);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new ExplosionLargeParticle(clientWorld, d, e, f, g, this.spriteProvider);
 		}
 	}
 }

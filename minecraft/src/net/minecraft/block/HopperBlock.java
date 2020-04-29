@@ -111,7 +111,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (oldState.getBlock() != state.getBlock()) {
+		if (!oldState.isOf(state.getBlock())) {
 			this.updateEnabled(world, pos, state);
 		}
 	}
@@ -145,7 +145,7 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof HopperBlockEntity) {
 				ItemScatterer.spawn(world, pos, (HopperBlockEntity)blockEntity);

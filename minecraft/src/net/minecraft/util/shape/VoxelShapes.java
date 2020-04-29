@@ -257,7 +257,7 @@ public final class VoxelShapes {
 						if (s < 3) {
 							mutable.set(axisCycleDirection, q, r, p);
 							BlockState blockState = world.getBlockState(mutable);
-							if ((s != 1 || blockState.exceedsCube()) && (s != 2 || blockState.getBlock() == Blocks.MOVING_PISTON)) {
+							if ((s != 1 || blockState.exceedsCube()) && (s != 2 || blockState.isOf(Blocks.MOVING_PISTON))) {
 								initial = blockState.getCollisionShape(world, mutable, context)
 									.calculateMaxDistance(axis3, box.offset((double)(-mutable.getX()), (double)(-mutable.getY()), (double)(-mutable.getZ())), initial);
 								if (Math.abs(initial) < 1.0E-7) {

@@ -77,7 +77,7 @@ public class DispenserBlock extends BlockWithEntity {
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.playLevelEvent(1001, pos, 0);
+			world.syncWorldEvent(1001, pos, 0);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);
@@ -130,7 +130,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof DispenserBlockEntity) {
 				ItemScatterer.spawn(world, pos, (DispenserBlockEntity)blockEntity);

@@ -152,10 +152,10 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	@Override
-	public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
-		super.onBlockAction(state, world, pos, channel, value);
+	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+		super.onSyncedBlockEvent(state, world, pos, type, data);
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		return blockEntity != null && blockEntity.onBlockAction(channel, value);
+		return blockEntity != null && blockEntity.onSyncedBlockEvent(type, data);
 	}
 
 	@Override

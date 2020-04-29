@@ -11,7 +11,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
-import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.mob.MobEntity;
@@ -52,7 +51,7 @@ public class LookTargetUtil {
 	}
 
 	public static void lookAt(LivingEntity entity, LivingEntity target) {
-		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target));
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
 	}
 
 	private static void walkTowardsEachOther(LivingEntity first, LivingEntity second, float f) {
@@ -62,18 +61,14 @@ public class LookTargetUtil {
 	}
 
 	public static void walkTowards(LivingEntity entity, Entity target, float f, int i) {
-		LookTarget lookTarget = new EntityLookTarget(target);
-		walkTowards(entity, lookTarget, f, i);
+		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), f, i);
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
+		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
 	public static void walkTowards(LivingEntity entity, BlockPos target, float f, int i) {
-		LookTarget lookTarget = new BlockPosLookTarget(target);
-		walkTowards(entity, lookTarget, f, i);
-	}
-
-	private static void walkTowards(LivingEntity entity, LookTarget target, float f, int i) {
-		WalkTarget walkTarget = new WalkTarget(target, f, i);
-		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, target);
+		WalkTarget walkTarget = new WalkTarget(new BlockPosLookTarget(target), f, i);
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(target));
 		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 

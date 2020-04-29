@@ -60,7 +60,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -512,8 +511,9 @@ public class CatEntity extends TameableEntity {
 					BlockPos blockPos = this.owner.getBlockPos();
 					BlockState blockState = this.cat.world.getBlockState(blockPos);
 					if (blockState.getBlock().isIn(BlockTags.BEDS)) {
-						Direction direction = blockState.get(BedBlock.FACING);
-						this.bedPos = new BlockPos(blockPos.getX() - direction.getOffsetX(), blockPos.getY(), blockPos.getZ() - direction.getOffsetZ());
+						this.bedPos = (BlockPos)blockState.method_27850(BedBlock.FACING)
+							.map(direction -> blockPos.offset(direction.getOpposite()))
+							.orElseGet(() -> new BlockPos(blockPos));
 						return !this.method_16098();
 					}
 				}

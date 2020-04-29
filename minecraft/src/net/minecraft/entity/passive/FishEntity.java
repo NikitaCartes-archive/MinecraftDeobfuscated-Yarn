@@ -60,7 +60,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	public static boolean canSpawn(EntityType<? extends FishEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		return world.getBlockState(pos).getBlock() == Blocks.WATER && world.getBlockState(pos.up()).getBlock() == Blocks.WATER;
+		return world.getBlockState(pos).isOf(Blocks.WATER) && world.getBlockState(pos.up()).isOf(Blocks.WATER);
 	}
 
 	@Override

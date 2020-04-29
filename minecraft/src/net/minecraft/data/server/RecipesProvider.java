@@ -33,6 +33,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.StatePredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.CookingRecipeSerializer;
 import net.minecraft.recipe.Ingredient;
@@ -671,7 +672,9 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion(
 				"has_lots_of_items",
-				new InventoryChangedCriterion.Conditions(NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0])
+				new InventoryChangedCriterion.Conditions(
+					EntityPredicate.Extended.EMPTY, NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0]
+				)
 			)
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.CHEST_MINECART)
@@ -3758,7 +3761,7 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private static EnterBlockCriterion.Conditions requireEnteringFluid(Block block) {
-		return new EnterBlockCriterion.Conditions(block, StatePredicate.ANY);
+		return new EnterBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY);
 	}
 
 	private static InventoryChangedCriterion.Conditions conditionsFromItem(ItemConvertible itemConvertible) {
@@ -3770,7 +3773,9 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private static InventoryChangedCriterion.Conditions conditionsFromItemPredicates(ItemPredicate... itemPredicates) {
-		return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
+		return new InventoryChangedCriterion.Conditions(
+			EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates
+		);
 	}
 
 	@Override

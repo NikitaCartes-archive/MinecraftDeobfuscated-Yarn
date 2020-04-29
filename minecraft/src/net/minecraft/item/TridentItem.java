@@ -19,7 +19,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
@@ -32,9 +31,6 @@ public class TridentItem extends Item implements Vanishable {
 
 	public TridentItem(Item.Settings settings) {
 		super(settings);
-		this.addPropertyGetter(
-			new Identifier("throwing"), (stack, world, entity) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
-		);
 		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 		builder.put(
 			EntityAttributes.GENERIC_ATTACK_DAMAGE,

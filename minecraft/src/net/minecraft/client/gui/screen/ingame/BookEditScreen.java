@@ -153,24 +153,21 @@ public class BookEditScreen extends Screen {
 		}
 
 		this.updateButtons();
-		this.method_27577();
+		this.method_27872();
 	}
 
 	private void openNextPage() {
 		if (this.currentPage < this.countPages() - 1) {
 			this.currentPage++;
-			this.field_24269.method_27566();
 		} else {
 			this.appendNewPage();
 			if (this.currentPage < this.countPages() - 1) {
 				this.currentPage++;
 			}
-
-			this.field_24269.method_27566();
 		}
 
 		this.updateButtons();
-		this.method_27577();
+		this.method_27872();
 	}
 
 	@Override
@@ -467,27 +464,31 @@ public class BookEditScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (button == 0) {
-			long l = Util.getMeasuringTimeMs();
-			BookEditScreen.class_5233 lv = this.method_27576();
-			int i = lv.method_27602(this.textRenderer, this.method_27582(new BookEditScreen.class_5234((int)mouseX, (int)mouseY)));
-			if (i >= 0) {
-				if (i != this.lastClickIndex || l - this.lastClickTime >= 250L) {
-					this.field_24269.method_27560(i, Screen.hasShiftDown());
-				} else if (!this.field_24269.method_27568()) {
-					this.method_27589(i);
-				} else {
-					this.field_24269.selectAll();
+		if (super.mouseClicked(mouseX, mouseY, button)) {
+			return true;
+		} else {
+			if (button == 0) {
+				long l = Util.getMeasuringTimeMs();
+				BookEditScreen.class_5233 lv = this.method_27576();
+				int i = lv.method_27602(this.textRenderer, this.method_27582(new BookEditScreen.class_5234((int)mouseX, (int)mouseY)));
+				if (i >= 0) {
+					if (i != this.lastClickIndex || l - this.lastClickTime >= 250L) {
+						this.field_24269.method_27560(i, Screen.hasShiftDown());
+					} else if (!this.field_24269.method_27568()) {
+						this.method_27589(i);
+					} else {
+						this.field_24269.selectAll();
+					}
+
+					this.method_27577();
 				}
 
-				this.method_27577();
+				this.lastClickIndex = i;
+				this.lastClickTime = l;
 			}
 
-			this.lastClickIndex = i;
-			this.lastClickTime = l;
+			return true;
 		}
-
-		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	private void method_27589(int i) {
@@ -497,14 +498,18 @@ public class BookEditScreen extends Screen {
 
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		if (button == 0) {
-			BookEditScreen.class_5233 lv = this.method_27576();
-			int i = lv.method_27602(this.textRenderer, this.method_27582(new BookEditScreen.class_5234((int)mouseX, (int)mouseY)));
-			this.field_24269.method_27560(i, true);
-			this.method_27577();
-		}
+		if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+			return true;
+		} else {
+			if (button == 0) {
+				BookEditScreen.class_5233 lv = this.method_27576();
+				int i = lv.method_27602(this.textRenderer, this.method_27582(new BookEditScreen.class_5234((int)mouseX, (int)mouseY)));
+				this.field_24269.method_27560(i, true);
+				this.method_27577();
+			}
 
-		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+			return true;
+		}
 	}
 
 	private BookEditScreen.class_5233 method_27576() {
@@ -517,6 +522,11 @@ public class BookEditScreen extends Screen {
 
 	private void method_27577() {
 		this.field_24268 = null;
+	}
+
+	private void method_27872() {
+		this.field_24269.moveCaretToEnd();
+		this.method_27577();
 	}
 
 	private BookEditScreen.class_5233 method_27578() {

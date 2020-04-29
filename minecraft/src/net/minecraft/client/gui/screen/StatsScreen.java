@@ -103,7 +103,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			);
 		} else {
 			this.getSelectedStatList().render(matrices, mouseX, mouseY, delta);
-			this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+			this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 			super.render(matrices, mouseX, mouseY, delta);
 		}
 	}
@@ -408,7 +408,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			if (text != null) {
 				int k = i + 12;
 				int l = j - 12;
-				int m = StatsScreen.this.textRenderer.getWidth(text);
+				int m = StatsScreen.this.textRenderer.getStringWidth(text);
 				this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
 				RenderSystem.pushMatrix();
 				RenderSystem.translatef(0.0F, 0.0F, 400.0F);

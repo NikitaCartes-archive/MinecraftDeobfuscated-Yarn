@@ -593,16 +593,16 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Override
-	protected void renderTooltip(MatrixStack matrixStack, ItemStack itemStack, int i, int j) {
+	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
 		if (selectedTab == ItemGroup.SEARCH.getIndex()) {
-			List<Text> list = itemStack.getTooltip(
+			List<Text> list = stack.getTooltip(
 				this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
 			);
 			List<Text> list2 = Lists.<Text>newArrayList(list);
-			Item item = itemStack.getItem();
+			Item item = stack.getItem();
 			ItemGroup itemGroup = item.getGroup();
 			if (itemGroup == null && item == Items.ENCHANTED_BOOK) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack);
+				Map<Enchantment, Integer> map = EnchantmentHelper.get(stack);
 				if (map.size() == 1) {
 					Enchantment enchantment = (Enchantment)map.keySet().iterator().next();
 
@@ -624,9 +624,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				list2.add(1, new TranslatableText(itemGroup.getTranslationKey()).formatted(new Formatting[]{Formatting.BOLD, Formatting.BLUE}));
 			}
 
-			this.renderTooltip(matrixStack, list2, i, j);
+			this.renderTooltip(matrices, list2, x, y);
 		} else {
-			super.renderTooltip(matrixStack, itemStack, i, j);
+			super.renderTooltip(matrices, stack, x, y);
 		}
 	}
 

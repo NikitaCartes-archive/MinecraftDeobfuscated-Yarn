@@ -67,6 +67,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -503,7 +504,7 @@ public class FoxEntity extends AnimalEntity {
 			if (this.isWalking() && this.world.random.nextFloat() < 0.2F) {
 				BlockPos blockPos = this.getBlockPos();
 				BlockState blockState = this.world.getBlockState(blockPos);
-				this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+				this.world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 			}
 		}
 
@@ -875,7 +876,7 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
 			BlockState blockState = world.getBlockState(pos);
-			return blockState.getBlock() == Blocks.SWEET_BERRY_BUSH && (Integer)blockState.get(SweetBerryBushBlock.AGE) >= 2;
+			return blockState.isOf(Blocks.SWEET_BERRY_BUSH) && (Integer)blockState.get(SweetBerryBushBlock.AGE) >= 2;
 		}
 
 		@Override
@@ -896,7 +897,7 @@ public class FoxEntity extends AnimalEntity {
 		protected void eatSweetBerry() {
 			if (FoxEntity.this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
 				BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
-				if (blockState.getBlock() == Blocks.SWEET_BERRY_BUSH) {
+				if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 					int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
 					blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1));
 					int j = 1 + FoxEntity.this.world.random.nextInt(2) + (i == 3 ? 1 : 0);
@@ -1018,7 +1019,7 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return FoxEntity.this.isTouchingWater() && FoxEntity.this.getWaterHeight() > 0.25 || FoxEntity.this.isInLava();
+			return FoxEntity.this.isTouchingWater() && FoxEntity.this.getFluidHeight(FluidTags.WATER) > 0.25 || FoxEntity.this.isInLava();
 		}
 	}
 
@@ -1137,7 +1138,7 @@ public class FoxEntity extends AnimalEntity {
 			} else if (FoxEntity.this.pitch > 0.0F
 				&& FoxEntity.this.onGround
 				&& (float)FoxEntity.this.getVelocity().y != 0.0F
-				&& FoxEntity.this.world.getBlockState(FoxEntity.this.getBlockPos()).getBlock() == Blocks.SNOW) {
+				&& FoxEntity.this.world.getBlockState(FoxEntity.this.getBlockPos()).isOf(Blocks.SNOW)) {
 				FoxEntity.this.pitch = 60.0F;
 				FoxEntity.this.setTarget(null);
 				FoxEntity.this.setWalking(true);

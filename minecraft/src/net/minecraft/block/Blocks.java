@@ -1101,7 +1101,8 @@ public class Blocks {
 		"daylight_detector", new DaylightDetectorBlock(AbstractBlock.Settings.of(Material.WOOD).strength(0.2F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block REDSTONE_BLOCK = register(
-		"redstone_block", new RedstoneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.LAVA).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL))
+		"redstone_block",
+		new RedstoneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.LAVA).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).solidBlock(Blocks::never))
 	);
 	public static final Block NETHER_QUARTZ_ORE = register(
 		"nether_quartz_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_ORE))
@@ -1703,7 +1704,9 @@ public class Blocks {
 	public static final Block STRUCTURE_VOID = register(
 		"structure_void", new StructureVoidBlock(AbstractBlock.Settings.of(Material.STRUCTURE_VOID).noCollision().dropsNothing())
 	);
-	public static final Block OBSERVER = register("observer", new ObserverBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F)));
+	public static final Block OBSERVER = register(
+		"observer", new ObserverBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F).solidBlock(Blocks::never))
+	);
 	public static final Block SHULKER_BOX = register("shulker_box", createShulkerBoxBlock(null, AbstractBlock.Settings.of(Material.SHULKER_BOX)));
 	public static final Block WHITE_SHULKER_BOX = register(
 		"white_shulker_box", createShulkerBoxBlock(DyeColor.WHITE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.WHITE))

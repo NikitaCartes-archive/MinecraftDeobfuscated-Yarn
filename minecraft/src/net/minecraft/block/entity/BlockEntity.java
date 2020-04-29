@@ -139,7 +139,7 @@ public abstract class BlockEntity {
 		this.removed = false;
 	}
 
-	public boolean onBlockAction(int i, int j) {
+	public boolean onSyncedBlockEvent(int type, int data) {
 		return false;
 	}
 

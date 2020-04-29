@@ -2,14 +2,14 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class WaterBubbleParticle extends SpriteBillboardParticle {
-	private WaterBubbleParticle(World world, double x, double y, double z, double d, double e, double f) {
+	private WaterBubbleParticle(ClientWorld world, double x, double y, double z, double d, double e, double f) {
 		super(world, x, y, z);
 		this.setBoundingBoxSpacing(0.02F, 0.02F);
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.2F);
@@ -51,8 +51,8 @@ public class WaterBubbleParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-			WaterBubbleParticle waterBubbleParticle = new WaterBubbleParticle(world, d, e, f, g, h, i);
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			WaterBubbleParticle waterBubbleParticle = new WaterBubbleParticle(clientWorld, d, e, f, g, h, i);
 			waterBubbleParticle.setSprite(this.spriteProvider);
 			return waterBubbleParticle;
 		}

@@ -3,7 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -28,8 +28,8 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 		if (!iWorld.isAir(blockPos)) {
 			return false;
 		} else {
-			Block block = iWorld.getBlockState(blockPos.up()).getBlock();
-			if (block != Blocks.NETHERRACK && block != Blocks.BASALT && block != Blocks.BLACKSTONE) {
+			BlockState blockState = iWorld.getBlockState(blockPos.up());
+			if (!blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.BASALT) && !blockState.isOf(Blocks.BLACKSTONE)) {
 				return false;
 			} else {
 				iWorld.setBlockState(blockPos, Blocks.GLOWSTONE.getDefaultState(), 2);
@@ -40,7 +40,7 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 						int j = 0;
 
 						for (Direction direction : Direction.values()) {
-							if (iWorld.getBlockState(blockPos2.offset(direction)).getBlock() == Blocks.GLOWSTONE) {
+							if (iWorld.getBlockState(blockPos2.offset(direction)).isOf(Blocks.GLOWSTONE)) {
 								j++;
 							}
 

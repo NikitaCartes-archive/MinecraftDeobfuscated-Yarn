@@ -126,7 +126,7 @@ public class ResourcePackOptionsScreen extends GameOptionsScreen {
 		this.renderDirtBackground(0);
 		this.availablePacks.render(matrices, mouseX, mouseY, delta);
 		this.enabledPacks.render(matrices, mouseX, mouseY, delta);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("resourcePack.folderInfo"), this.width / 2 - 77, this.height - 26, 8421504);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

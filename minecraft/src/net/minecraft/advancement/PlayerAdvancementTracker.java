@@ -248,11 +248,11 @@ public class PlayerAdvancementTracker {
 		}
 	}
 
-	public boolean grantCriterion(Advancement advancement, String criterion) {
+	public boolean grantCriterion(Advancement advancement, String criterionName) {
 		boolean bl = false;
 		AdvancementProgress advancementProgress = this.getProgress(advancement);
 		boolean bl2 = advancementProgress.isDone();
-		if (advancementProgress.obtain(criterion)) {
+		if (advancementProgress.obtain(criterionName)) {
 			this.endTrackingCompleted(advancement);
 			this.progressUpdates.add(advancement);
 			bl = true;
@@ -277,10 +277,10 @@ public class PlayerAdvancementTracker {
 		return bl;
 	}
 
-	public boolean revokeCriterion(Advancement advancement, String criterion) {
+	public boolean revokeCriterion(Advancement advancement, String criterionName) {
 		boolean bl = false;
 		AdvancementProgress advancementProgress = this.getProgress(advancement);
-		if (advancementProgress.reset(criterion)) {
+		if (advancementProgress.reset(criterionName)) {
 			this.beginTracking(advancement);
 			this.progressUpdates.add(advancement);
 			bl = true;
@@ -328,7 +328,7 @@ public class PlayerAdvancementTracker {
 		}
 	}
 
-	public void sendUpdate(ServerPlayerEntity serverPlayerEntity) {
+	public void sendUpdate(ServerPlayerEntity player) {
 		if (this.dirty || !this.visibilityUpdates.isEmpty() || !this.progressUpdates.isEmpty()) {
 			Map<Identifier, AdvancementProgress> map = Maps.<Identifier, AdvancementProgress>newHashMap();
 			Set<Advancement> set = Sets.<Advancement>newLinkedHashSet();
@@ -349,7 +349,7 @@ public class PlayerAdvancementTracker {
 			}
 
 			if (this.dirty || !map.isEmpty() || !set.isEmpty() || !set2.isEmpty()) {
-				serverPlayerEntity.networkHandler.sendPacket(new AdvancementUpdateS2CPacket(this.dirty, set, set2, map));
+				player.networkHandler.sendPacket(new AdvancementUpdateS2CPacket(this.dirty, set, set2, map));
 				this.visibilityUpdates.clear();
 				this.progressUpdates.clear();
 			}

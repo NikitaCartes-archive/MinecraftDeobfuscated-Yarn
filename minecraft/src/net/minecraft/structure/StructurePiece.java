@@ -386,7 +386,7 @@ public abstract class StructurePiece {
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction2);
 			BlockState blockState2 = blockView.getBlockState(blockPos2);
-			if (blockState2.getBlock() == Blocks.CHEST) {
+			if (blockState2.isOf(Blocks.CHEST)) {
 				return blockState;
 			}
 
@@ -425,7 +425,7 @@ public abstract class StructurePiece {
 	}
 
 	protected boolean addChest(IWorld world, BlockBox boundingBox, Random random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block) {
-		if (boundingBox.contains(pos) && world.getBlockState(pos).getBlock() != Blocks.CHEST) {
+		if (boundingBox.contains(pos) && !world.getBlockState(pos).isOf(Blocks.CHEST)) {
 			if (block == null) {
 				block = method_14916(world, pos, Blocks.CHEST.getDefaultState());
 			}
@@ -444,7 +444,7 @@ public abstract class StructurePiece {
 
 	protected boolean addDispenser(IWorld world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTbaleId) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
-		if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).getBlock() != Blocks.DISPENSER) {
+		if (boundingBox.contains(blockPos) && !world.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
 			this.addBlock(world, Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {

@@ -171,22 +171,22 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public boolean onBlockAction(int i, int j) {
-		if (i == 1) {
-			this.viewerCount = j;
-			if (j == 0) {
+	public boolean onSyncedBlockEvent(int type, int data) {
+		if (type == 1) {
+			this.viewerCount = data;
+			if (data == 0) {
 				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSING;
 				this.updateNeighborStates();
 			}
 
-			if (j == 1) {
+			if (data == 1) {
 				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENING;
 				this.updateNeighborStates();
 			}
 
 			return true;
 		} else {
-			return super.onBlockAction(i, j);
+			return super.onSyncedBlockEvent(type, data);
 		}
 	}
 
@@ -202,7 +202,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			}
 
 			this.viewerCount++;
-			this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
+			this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount == 1) {
 				this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
@@ -213,7 +213,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	public void onClose(PlayerEntity player) {
 		if (!player.isSpectator()) {
 			this.viewerCount--;
-			this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
+			this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount <= 0) {
 				this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}

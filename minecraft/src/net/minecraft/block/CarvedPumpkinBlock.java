@@ -32,7 +32,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 	@Nullable
 	private BlockPattern ironGolemPattern;
 	private static final Predicate<BlockState> IS_PUMPKIN_PREDICATE = blockState -> blockState != null
-			&& (blockState.getBlock() == Blocks.CARVED_PUMPKIN || blockState.getBlock() == Blocks.JACK_O_LANTERN);
+			&& (blockState.isOf(Blocks.CARVED_PUMPKIN) || blockState.isOf(Blocks.JACK_O_LANTERN));
 
 	protected CarvedPumpkinBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -41,7 +41,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (oldState.getBlock() != state.getBlock()) {
+		if (!oldState.isOf(state.getBlock())) {
 			this.trySpawnEntity(world, pos);
 		}
 	}
@@ -56,7 +56,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 			for (int i = 0; i < this.getSnowGolemPattern().getHeight(); i++) {
 				CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
 				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-				world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+				world.syncWorldEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 			}
 
 			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
@@ -79,7 +79,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 					for (int k = 0; k < this.getIronGolemPattern().getHeight(); k++) {
 						CachedBlockPosition cachedBlockPosition3 = result.translate(i, k, 0);
 						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-						world.playLevelEvent(2001, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
+						world.syncWorldEvent(2001, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
 					}
 				}
 

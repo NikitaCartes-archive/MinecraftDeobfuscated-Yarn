@@ -14,8 +14,8 @@ import net.minecraft.util.Identifier;
  * tag changes through reloads/server tag sends.
  */
 public class GlobalTagAccessor<T> {
-	private final TagContainer<T> field_23804 = new TagContainer<>(identifier -> Optional.empty(), "", "");
-	private TagContainer<T> currentContainer = this.field_23804;
+	private final TagContainer<T> emptyContainer = new TagContainer<>(identifier -> Optional.empty(), "", "");
+	private TagContainer<T> currentContainer = this.emptyContainer;
 	private final List<GlobalTagAccessor.CachedTag<T>> tags = Lists.<GlobalTagAccessor.CachedTag<T>>newArrayList();
 
 	public Tag.Identified<T> get(String id) {
@@ -25,9 +25,9 @@ public class GlobalTagAccessor<T> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_27061() {
-		this.currentContainer = this.field_23804;
-		Tag<T> tag = this.field_23804.method_27068();
+	public void markReady() {
+		this.currentContainer = this.emptyContainer;
+		Tag<T> tag = this.emptyContainer.getEmpty();
 		this.tags.forEach(cachedTag -> cachedTag.updateContainer(identifier -> tag));
 	}
 
@@ -62,8 +62,8 @@ public class GlobalTagAccessor<T> {
 			}
 		}
 
-		void updateContainer(Function<Identifier, Tag<T>> function) {
-			this.currentTag = (Tag<T>)function.apply(this.id);
+		void updateContainer(Function<Identifier, Tag<T>> tagFactory) {
+			this.currentTag = (Tag<T>)tagFactory.apply(this.id);
 		}
 
 		@Override

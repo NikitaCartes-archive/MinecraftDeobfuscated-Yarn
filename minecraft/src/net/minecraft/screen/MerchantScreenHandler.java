@@ -164,7 +164,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 		super.close(player);
 		this.trader.setCurrentCustomer(null);
 		if (!this.trader.getTraderWorld().isClient) {
-			if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).method_14239()) {
+			if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
 				ItemStack itemStack = this.traderInventory.removeStack(0);
 				if (!itemStack.isEmpty()) {
 					player.dropItem(itemStack, false);

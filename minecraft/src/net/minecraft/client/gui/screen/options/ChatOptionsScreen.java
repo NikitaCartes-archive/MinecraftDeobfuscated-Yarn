@@ -22,7 +22,7 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 		Option.CHAT_OPACITY,
 		Option.TEXT_BACKGROUND_OPACITY,
 		Option.CHAT_SCALE,
-		Option.field_23930,
+		Option.CHAT_LINE_SPACING,
 		Option.CHAT_WIDTH,
 		Option.CHAT_HEIGHT_FOCUSED,
 		Option.SATURATION,
@@ -60,7 +60,7 @@ public class ChatOptionsScreen extends GameOptionsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

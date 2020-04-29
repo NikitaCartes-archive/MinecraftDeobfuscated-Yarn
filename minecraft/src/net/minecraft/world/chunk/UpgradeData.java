@@ -245,7 +245,7 @@ public class UpgradeData {
 		CHEST(Blocks.CHEST, Blocks.TRAPPED_CHEST) {
 			@Override
 			public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-				if (blockState2.getBlock() == blockState.getBlock()
+				if (blockState2.isOf(blockState.getBlock())
 					&& direction.getAxis().isHorizontal()
 					&& blockState.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE
 					&& blockState2.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE) {
@@ -324,7 +324,7 @@ public class UpgradeData {
 			public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 				if ((Integer)blockState.get(StemBlock.AGE) == 7) {
 					GourdBlock gourdBlock = ((StemBlock)blockState.getBlock()).getGourdBlock();
-					if (blockState2.getBlock() == gourdBlock) {
+					if (blockState2.isOf(gourdBlock)) {
 						return gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);
 					}
 				}

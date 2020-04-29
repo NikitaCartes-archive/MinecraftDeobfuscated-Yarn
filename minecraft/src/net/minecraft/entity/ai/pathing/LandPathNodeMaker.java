@@ -42,44 +42,41 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	@Override
 	public PathNode getStart() {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int i;
-		if (this.canSwim() && this.entity.isTouchingWater()) {
-			i = MathHelper.floor(this.entity.getY());
-			BlockState blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)i, this.entity.getZ()));
+		int i = MathHelper.floor(this.entity.getY());
+		BlockState blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)i, this.entity.getZ()));
+		if (!this.entity.canWalkOnLava(blockState.getFluidState().getFluid())) {
+			if (this.canSwim() && this.entity.isTouchingWater()) {
+				while (true) {
+					if (blockState.getBlock() != Blocks.WATER && blockState.getFluidState() != Fluids.WATER.getStill(false)) {
+						i--;
+						break;
+					}
 
-			while (blockState.getBlock() == Blocks.WATER || blockState.getFluidState() == Fluids.WATER.getStill(false)) {
+					blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ()));
+				}
+			} else if (this.entity.isOnGround()) {
+				i = MathHelper.floor(this.entity.getY() + 0.5);
+			} else {
+				BlockPos blockPos = this.entity.getBlockPos();
+
+				while (
+					(
+							this.cachedWorld.getBlockState(blockPos).isAir()
+								|| this.cachedWorld.getBlockState(blockPos).canPathfindThrough(this.cachedWorld, blockPos, NavigationType.LAND)
+						)
+						&& blockPos.getY() > 0
+				) {
+					blockPos = blockPos.down();
+				}
+
+				i = blockPos.up().getY();
+			}
+		} else {
+			while (this.entity.canWalkOnLava(blockState.getFluidState().getFluid())) {
 				blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ()));
 			}
 
 			i--;
-		} else if (this.entity.isInLava() && this.entity.canWalkOnLava()) {
-			i = MathHelper.floor(this.entity.getY());
-			BlockPos.Mutable mutable2 = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
-
-			for (BlockState blockState2 = this.cachedWorld.getBlockState(mutable2);
-				blockState2.getBlock() == Blocks.LAVA || blockState2.getFluidState() == Fluids.LAVA.getStill(false);
-				blockState2 = this.cachedWorld.getBlockState(mutable2)
-			) {
-				mutable2.set(this.entity.getX(), (double)(++i), this.entity.getZ());
-			}
-
-			i--;
-		} else if (this.entity.isOnGround()) {
-			i = MathHelper.floor(this.entity.getY() + 0.5);
-		} else {
-			BlockPos blockPos = this.entity.getBlockPos();
-
-			while (
-				(
-						this.cachedWorld.getBlockState(blockPos).isAir()
-							|| this.cachedWorld.getBlockState(blockPos).canPathfindThrough(this.cachedWorld, blockPos, NavigationType.LAND)
-					)
-					&& blockPos.getY() > 0
-			) {
-				blockPos = blockPos.down();
-			}
-
-			i = blockPos.up().getY();
 		}
 
 		BlockPos blockPos = this.entity.getBlockPos();
@@ -448,10 +445,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					if (l != 0 || n != 0) {
 						mutable.set(l + i, m + j, n + k);
 						BlockState blockState = blockView.getBlockState(mutable);
-						Block block = blockState.getBlock();
-						if (block == Blocks.CACTUS) {
+						if (blockState.isOf(Blocks.CACTUS)) {
 							pathNodeType = PathNodeType.DANGER_CACTUS;
-						} else if (block == Blocks.SWEET_BERRY_BUSH) {
+						} else if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 							pathNodeType = PathNodeType.DANGER_OTHER;
 						} else if (method_27138(blockState)) {
 							pathNodeType = PathNodeType.DANGER_FIRE;
@@ -470,15 +466,15 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		Material material = blockState.getMaterial();
 		if (blockState.isAir()) {
 			return PathNodeType.OPEN;
-		} else if (block.isIn(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
+		} else if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD)) {
 			return PathNodeType.TRAPDOOR;
-		} else if (block == Blocks.CACTUS) {
+		} else if (blockState.isOf(Blocks.CACTUS)) {
 			return PathNodeType.DAMAGE_CACTUS;
-		} else if (block == Blocks.SWEET_BERRY_BUSH) {
+		} else if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 			return PathNodeType.DAMAGE_OTHER;
-		} else if (block == Blocks.HONEY_BLOCK) {
+		} else if (blockState.isOf(Blocks.HONEY_BLOCK)) {
 			return PathNodeType.STICKY_HONEY;
-		} else if (block == Blocks.COCOA) {
+		} else if (blockState.isOf(Blocks.COCOA)) {
 			return PathNodeType.COCOA;
 		} else if (method_27138(blockState)) {
 			return PathNodeType.DAMAGE_FIRE;
@@ -511,7 +507,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private static boolean method_27138(BlockState blockState) {
-		Block block = blockState.getBlock();
-		return block.isIn(BlockTags.FIRE) || block == Blocks.LAVA || block == Blocks.MAGMA_BLOCK || CampfireBlock.isLitCampfire(blockState);
+		return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
 	}
 }

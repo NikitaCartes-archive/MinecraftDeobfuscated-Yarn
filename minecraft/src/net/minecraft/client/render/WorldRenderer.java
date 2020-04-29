@@ -386,9 +386,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 					float m = (float)voxelShape.getEndingCoord(Direction.Axis.Y, (double)g, (double)h);
 					float n = fluidState.getHeight(worldView, blockPos3);
 					float o = Math.max(m, n);
-					ParticleEffect particleEffect = !fluidState.matches(FluidTags.LAVA)
-							&& blockState.getBlock() != Blocks.MAGMA_BLOCK
-							&& !CampfireBlock.isLitCampfire(blockState)
+					ParticleEffect particleEffect = !fluidState.matches(FluidTags.LAVA) && !blockState.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(blockState)
 						? ParticleTypes.RAIN
 						: ParticleTypes.SMOKE;
 					this.client
@@ -719,7 +717,9 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			this.needsTerrainUpdate = false;
 			this.visibleChunks.clear();
 			Queue<WorldRenderer.ChunkInfo> queue = Queues.<WorldRenderer.ChunkInfo>newArrayDeque();
-			Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5) * (double)this.client.options.field_24214);
+			Entity.setRenderDistanceMultiplier(
+				MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5) * (double)this.client.options.entityDistanceScaling
+			);
 			boolean bl = this.client.chunkCullingEnabled;
 			if (builtChunk != null) {
 				if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
@@ -906,7 +906,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f);
 		this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f);
 		this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f);
-		DiffuseLighting.enableForLevel(matrices.peek().getModel());
+		if (this.world.dimension.getType() == DimensionType.THE_NETHER) {
+			DiffuseLighting.enableForLevel(matrices.peek().getModel());
+		} else {
+			DiffuseLighting.method_27869(matrices.peek().getModel());
+		}
+
 		profiler.swap("entities");
 		profiler.push("prepare");
 		this.regularEntityCount = 0;
@@ -2251,7 +2256,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	public void method_3267() {
 	}
 
-	public void playGlobalEvent(int eventId, BlockPos pos, int i) {
+	public void processGlobalEvent(int eventId, BlockPos pos, int i) {
 		switch (eventId) {
 			case 1023:
 			case 1028:
@@ -2282,9 +2287,9 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		}
 	}
 
-	public void playLevelEvent(PlayerEntity source, int type, BlockPos pos, int data) {
+	public void processWorldEvent(PlayerEntity source, int eventId, BlockPos pos, int data) {
 		Random random = this.world.random;
-		switch (type) {
+		switch (eventId) {
 			case 1000:
 				this.world.playSound(pos, SoundEvents.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 				break;
@@ -2528,7 +2533,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				float u = (float)(data >> 16 & 0xFF) / 255.0F;
 				float v = (float)(data >> 8 & 0xFF) / 255.0F;
 				float w = (float)(data >> 0 & 0xFF) / 255.0F;
-				ParticleEffect particleEffect = type == 2007 ? ParticleTypes.INSTANT_EFFECT : ParticleTypes.EFFECT;
+				ParticleEffect particleEffect = eventId == 2007 ? ParticleTypes.INSTANT_EFFECT : ParticleTypes.EFFECT;
 
 				for (int l = 0; l < 100; l++) {
 					double g = random.nextDouble() * 4.0;

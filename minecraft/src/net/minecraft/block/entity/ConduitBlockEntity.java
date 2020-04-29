@@ -135,7 +135,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 						BlockState blockState = this.world.getBlockState(blockPos2);
 
 						for (Block block : ACTIVATING_BLOCKS) {
-							if (blockState.getBlock() == block) {
+							if (blockState.isOf(block)) {
 								this.activatingBlocks.add(blockPos2);
 							}
 						}

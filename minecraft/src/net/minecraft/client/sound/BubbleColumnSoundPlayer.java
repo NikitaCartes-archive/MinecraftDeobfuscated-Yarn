@@ -25,7 +25,7 @@ public class BubbleColumnSoundPlayer implements ClientPlayerTickable {
 		World world = this.player.world;
 		BlockState blockState = world.getBlockState(this.player.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(0.001), Blocks.BUBBLE_COLUMN);
 		if (blockState != null) {
-			if (!this.hasPlayedForCurrentColumn && !this.firstTick && blockState.getBlock() == Blocks.BUBBLE_COLUMN && !this.player.isSpectator()) {
+			if (!this.hasPlayedForCurrentColumn && !this.firstTick && blockState.isOf(Blocks.BUBBLE_COLUMN) && !this.player.isSpectator()) {
 				boolean bl = (Boolean)blockState.get(BubbleColumnBlock.DRAG);
 				if (bl) {
 					this.player.playSound(SoundEvents.BLOCK_BUBBLE_COLUMN_WHIRLPOOL_INSIDE, 1.0F, 1.0F);

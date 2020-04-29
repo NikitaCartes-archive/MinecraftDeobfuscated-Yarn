@@ -18,18 +18,15 @@ public class SnowyBlock extends Block {
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
-		if (direction != Direction.UP) {
-			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
-		} else {
-			Block block = newState.getBlock();
-			return state.with(SNOWY, Boolean.valueOf(block == Blocks.SNOW_BLOCK || block == Blocks.SNOW));
-		}
+		return direction != Direction.UP
+			? super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom)
+			: state.with(SNOWY, Boolean.valueOf(newState.isOf(Blocks.SNOW_BLOCK) || newState.isOf(Blocks.SNOW)));
 	}
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		Block block = ctx.getWorld().getBlockState(ctx.getBlockPos().up()).getBlock();
-		return this.getDefaultState().with(SNOWY, Boolean.valueOf(block == Blocks.SNOW_BLOCK || block == Blocks.SNOW));
+		BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
+		return this.getDefaultState().with(SNOWY, Boolean.valueOf(blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.SNOW)));
 	}
 
 	@Override

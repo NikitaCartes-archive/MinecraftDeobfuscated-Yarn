@@ -28,6 +28,9 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
+/**
+ * A piston block entity represents the block being pushed by a piston.
+ */
 public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private BlockState pushedBlock;
 	private Direction facing;
@@ -99,7 +102,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			? Blocks.PISTON_HEAD
 				.getDefaultState()
 				.with(PistonHeadBlock.SHORT, Boolean.valueOf(this.progress > 0.25F))
-				.with(PistonHeadBlock.TYPE, this.pushedBlock.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT)
+				.with(PistonHeadBlock.TYPE, this.pushedBlock.isOf(Blocks.STICKY_PISTON) ? PistonType.STICKY : PistonType.DEFAULT)
 				.with(PistonHeadBlock.FACING, this.pushedBlock.get(PistonBlock.FACING))
 			: this.pushedBlock;
 	}
@@ -113,7 +116,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			List<Entity> list = this.world.getEntities(null, Boxes.stretch(box, direction, d).union(box));
 			if (!list.isEmpty()) {
 				List<Box> list2 = voxelShape.getBoundingBoxes();
-				boolean bl = this.pushedBlock.getBlock() == Blocks.SLIME_BLOCK;
+				boolean bl = this.pushedBlock.isOf(Blocks.SLIME_BLOCK);
 
 				for (Entity entity : list) {
 					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
@@ -172,7 +175,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private void method_23674(float f) {
-		if (this.method_23364()) {
+		if (this.isPushingHoneyBlock()) {
 			Direction direction = this.getMovementDirection();
 			if (direction.getAxis().isHorizontal()) {
 				double d = this.pushedBlock.getCollisionShape(this.world, this.pos).getMaximum(Direction.Axis.Y);
@@ -195,8 +198,8 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			&& entity.getZ() <= box.z2;
 	}
 
-	private boolean method_23364() {
-		return this.pushedBlock.getBlock() == Blocks.HONEY_BLOCK;
+	private boolean isPushingHoneyBlock() {
+		return this.pushedBlock.isOf(Blocks.HONEY_BLOCK);
 	}
 
 	public Direction getMovementDirection() {
@@ -254,7 +257,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			this.lastProgress = this.progress;
 			this.world.removeBlockEntity(this.pos);
 			this.markRemoved();
-			if (this.world.getBlockState(this.pos).getBlock() == Blocks.MOVING_PISTON) {
+			if (this.world.getBlockState(this.pos).isOf(Blocks.MOVING_PISTON)) {
 				BlockState blockState;
 				if (this.source) {
 					blockState = Blocks.AIR.getDefaultState();
@@ -275,7 +278,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		if (this.lastProgress >= 1.0F) {
 			this.world.removeBlockEntity(this.pos);
 			this.markRemoved();
-			if (this.pushedBlock != null && this.world.getBlockState(this.pos).getBlock() == Blocks.MOVING_PISTON) {
+			if (this.pushedBlock != null && this.world.getBlockState(this.pos).isOf(Blocks.MOVING_PISTON)) {
 				BlockState blockState = Block.postProcessState(this.pushedBlock, this.world, this.pos);
 				if (blockState.isAir()) {
 					this.world.setBlockState(this.pos, this.pushedBlock, 84);

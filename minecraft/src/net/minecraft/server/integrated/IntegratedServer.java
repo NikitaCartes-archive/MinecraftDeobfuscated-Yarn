@@ -254,4 +254,9 @@ public class IntegratedServer extends MinecraftServer {
 	public boolean isHost(GameProfile profile) {
 		return profile.getName().equalsIgnoreCase(this.getUserName());
 	}
+
+	@Override
+	public int adjustTrackingDistance(int initialDistance) {
+		return (int)(this.client.options.entityDistanceScaling * (float)initialDistance);
+	}
 }

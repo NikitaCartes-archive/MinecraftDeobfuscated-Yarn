@@ -56,7 +56,7 @@ public class EnchantingTableBlock extends BlockWithEntity {
 				if (random.nextInt(16) == 0) {
 					for (int k = 0; k <= 1; k++) {
 						BlockPos blockPos = pos.add(i, k, j);
-						if (world.getBlockState(blockPos).getBlock() == Blocks.BOOKSHELF) {
+						if (world.getBlockState(blockPos).isOf(Blocks.BOOKSHELF)) {
 							if (!world.isAir(pos.add(i / 2, 0, j / 2))) {
 								break;
 							}

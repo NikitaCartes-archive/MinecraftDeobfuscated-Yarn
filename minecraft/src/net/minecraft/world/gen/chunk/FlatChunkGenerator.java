@@ -115,7 +115,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public boolean method_27367(StructureFeature<?> structureFeature) {
+	public boolean hasStructure(StructureFeature<?> structureFeature) {
 		return this.biome.hasStructureFeature(structureFeature);
 	}
 

@@ -54,8 +54,7 @@ public class ChorusPlantBlock extends ConnectingBlock {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
-			Block block = newState.getBlock();
-			boolean bl = block == this || block == Blocks.CHORUS_FLOWER || direction == Direction.DOWN && block == Blocks.END_STONE;
+			boolean bl = newState.getBlock() == this || newState.isOf(Blocks.CHORUS_FLOWER) || direction == Direction.DOWN && newState.isOf(Blocks.END_STONE);
 			return state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(bl));
 		}
 	}

@@ -363,60 +363,60 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.isVisible()) {
 			if (this.hasBorder()) {
-				int k = this.isFocused() ? -1 : -6250336;
-				fill(matrixStack, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, k);
-				fill(matrixStack, this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
+				int i = this.isFocused() ? -1 : -6250336;
+				fill(matrices, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, i);
+				fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
 			}
 
-			int k = this.editable ? this.editableColor : this.uneditableColor;
-			int l = this.selectionStart - this.firstCharacterIndex;
-			int m = this.selectionEnd - this.firstCharacterIndex;
+			int i = this.editable ? this.editableColor : this.uneditableColor;
+			int j = this.selectionStart - this.firstCharacterIndex;
+			int k = this.selectionEnd - this.firstCharacterIndex;
 			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
-			boolean bl = l >= 0 && l <= string.length();
+			boolean bl = j >= 0 && j <= string.length();
 			boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
-			int n = this.focused ? this.x + 4 : this.x;
-			int o = this.focused ? this.y + (this.height - 8) / 2 : this.y;
-			int p = n;
-			if (m > string.length()) {
-				m = string.length();
+			int l = this.focused ? this.x + 4 : this.x;
+			int m = this.focused ? this.y + (this.height - 8) / 2 : this.y;
+			int n = l;
+			if (k > string.length()) {
+				k = string.length();
 			}
 
 			if (!string.isEmpty()) {
-				String string2 = bl ? string.substring(0, l) : string;
-				p = this.textRenderer.drawWithShadow(matrixStack, (String)this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float)n, (float)o, k);
+				String string2 = bl ? string.substring(0, j) : string;
+				n = this.textRenderer.drawWithShadow(matrices, (String)this.renderTextProvider.apply(string2, this.firstCharacterIndex), (float)l, (float)m, i);
 			}
 
 			boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
-			int q = p;
+			int o = n;
 			if (!bl) {
-				q = l > 0 ? n + this.width : n;
+				o = j > 0 ? l + this.width : l;
 			} else if (bl3) {
-				q = p - 1;
-				p--;
+				o = n - 1;
+				n--;
 			}
 
-			if (!string.isEmpty() && bl && l < string.length()) {
-				this.textRenderer.drawWithShadow(matrixStack, (String)this.renderTextProvider.apply(string.substring(l), this.selectionStart), (float)p, (float)o, k);
+			if (!string.isEmpty() && bl && j < string.length()) {
+				this.textRenderer.drawWithShadow(matrices, (String)this.renderTextProvider.apply(string.substring(j), this.selectionStart), (float)n, (float)m, i);
 			}
 
 			if (!bl3 && this.suggestion != null) {
-				this.textRenderer.drawWithShadow(matrixStack, this.suggestion, (float)(q - 1), (float)o, -8355712);
+				this.textRenderer.drawWithShadow(matrices, this.suggestion, (float)(o - 1), (float)m, -8355712);
 			}
 
 			if (bl2) {
 				if (bl3) {
-					DrawableHelper.fill(matrixStack, q, o - 1, q + 1, o + 1 + 9, -3092272);
+					DrawableHelper.fill(matrices, o, m - 1, o + 1, m + 1 + 9, -3092272);
 				} else {
-					this.textRenderer.drawWithShadow(matrixStack, "_", (float)q, (float)o, k);
+					this.textRenderer.drawWithShadow(matrices, "_", (float)o, (float)m, i);
 				}
 			}
 
-			if (m != l) {
-				int r = n + this.textRenderer.getWidth(string.substring(0, m));
-				this.drawSelectionHighlight(q, o - 1, r - 1, o + 1 + 9);
+			if (k != j) {
+				int p = l + this.textRenderer.getWidth(string.substring(0, k));
+				this.drawSelectionHighlight(o, m - 1, p - 1, m + 1 + 9);
 			}
 		}
 	}

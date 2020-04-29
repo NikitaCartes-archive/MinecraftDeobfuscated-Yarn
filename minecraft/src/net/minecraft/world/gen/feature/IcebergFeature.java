@@ -133,7 +133,7 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	private void clearSnowAbove(IWorld world, BlockPos pos) {
-		if (world.getBlockState(pos.up()).getBlock() == Blocks.SNOW) {
+		if (world.getBlockState(pos.up()).isOf(Blocks.SNOW)) {
 			this.setBlockState(world, pos.up(), Blocks.AIR.getDefaultState());
 		}
 	}
@@ -155,11 +155,10 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 
 	private void method_13425(BlockPos blockPos, IWorld iWorld, Random random, int i, int j, boolean bl, boolean bl2, BlockState blockState) {
 		BlockState blockState2 = iWorld.getBlockState(blockPos);
-		Block block = blockState2.getBlock();
-		if (blockState2.getMaterial() == Material.AIR || block == Blocks.SNOW_BLOCK || block == Blocks.ICE || block == Blocks.WATER) {
+		if (blockState2.getMaterial() == Material.AIR || blockState2.isOf(Blocks.SNOW_BLOCK) || blockState2.isOf(Blocks.ICE) || blockState2.isOf(Blocks.WATER)) {
 			boolean bl3 = !bl || random.nextDouble() > 0.05;
 			int k = bl ? 3 : 2;
-			if (bl2 && block != Blocks.WATER && (double)i <= (double)random.nextInt(Math.max(1, j / k)) + (double)j * 0.6 && bl3) {
+			if (bl2 && !blockState2.isOf(Blocks.WATER) && (double)i <= (double)random.nextInt(Math.max(1, j / k)) + (double)j * 0.6 && bl3) {
 				this.setBlockState(iWorld, blockPos, Blocks.SNOW_BLOCK.getDefaultState());
 			} else {
 				this.setBlockState(iWorld, blockPos, blockState);

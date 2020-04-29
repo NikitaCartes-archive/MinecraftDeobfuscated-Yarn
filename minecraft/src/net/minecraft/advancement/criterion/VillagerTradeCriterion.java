@@ -1,10 +1,11 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,39 +19,42 @@ public class VillagerTradeCriterion extends AbstractCriterion<VillagerTradeCrite
 		return ID;
 	}
 
-	public VillagerTradeCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("villager"));
+	public VillagerTradeCriterion.Conditions conditionsFromJson(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
+		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "villager", advancementEntityPredicateDeserializer);
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new VillagerTradeCriterion.Conditions(entityPredicate, itemPredicate);
+		return new VillagerTradeCriterion.Conditions(extended, extended2, itemPredicate);
 	}
 
 	public void handle(ServerPlayerEntity player, AbstractTraderEntity trader, ItemStack stack) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, trader, stack));
+		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, trader);
+		this.test(player, conditions -> conditions.matches(lootContext, stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate villager;
+		private final EntityPredicate.Extended villager;
 		private final ItemPredicate item;
 
-		public Conditions(EntityPredicate entity, ItemPredicate item) {
-			super(VillagerTradeCriterion.ID);
-			this.villager = entity;
+		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended villager, ItemPredicate item) {
+			super(VillagerTradeCriterion.ID, player);
+			this.villager = villager;
 			this.item = item;
 		}
 
 		public static VillagerTradeCriterion.Conditions any() {
-			return new VillagerTradeCriterion.Conditions(EntityPredicate.ANY, ItemPredicate.ANY);
+			return new VillagerTradeCriterion.Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity player, AbstractTraderEntity trader, ItemStack stack) {
-			return !this.villager.test(player, trader) ? false : this.item.test(stack);
+		public boolean matches(LootContext traderContext, ItemStack stack) {
+			return !this.villager.test(traderContext) ? false : this.item.test(stack);
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			jsonObject.add("item", this.item.toJson());
-			jsonObject.add("villager", this.villager.toJson());
+			jsonObject.add("villager", this.villager.toJson(predicateSerializer));
 			return jsonObject;
 		}
 	}

@@ -61,7 +61,7 @@ public class BreakDoorGoal extends DoorInteractGoal {
 	public void tick() {
 		super.tick();
 		if (this.mob.getRandom().nextInt(20) == 0) {
-			this.mob.world.playLevelEvent(1019, this.doorPos, 0);
+			this.mob.world.syncWorldEvent(1019, this.doorPos, 0);
 			if (!this.mob.handSwinging) {
 				this.mob.swingHand(this.mob.getActiveHand());
 			}
@@ -76,8 +76,8 @@ public class BreakDoorGoal extends DoorInteractGoal {
 
 		if (this.breakProgress == this.getMaxProgress() && this.isDifficultySufficient(this.mob.world.getDifficulty())) {
 			this.mob.world.removeBlock(this.doorPos, false);
-			this.mob.world.playLevelEvent(1021, this.doorPos, 0);
-			this.mob.world.playLevelEvent(2001, this.doorPos, Block.getRawIdFromState(this.mob.world.getBlockState(this.doorPos)));
+			this.mob.world.syncWorldEvent(1021, this.doorPos, 0);
+			this.mob.world.syncWorldEvent(2001, this.doorPos, Block.getRawIdFromState(this.mob.world.getBlockState(this.doorPos)));
 		}
 	}
 

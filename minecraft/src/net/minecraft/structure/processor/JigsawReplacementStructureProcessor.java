@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.structure.Structure;
@@ -29,8 +29,8 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData structurePlacementData
 	) {
-		Block block = structureBlockInfo2.state.getBlock();
-		if (block == Blocks.JIGSAW) {
+		BlockState blockState = structureBlockInfo2.state;
+		if (blockState.isOf(Blocks.JIGSAW)) {
 			String string = structureBlockInfo2.tag.getString("final_state");
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
 
@@ -40,7 +40,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 				throw new RuntimeException(var11);
 			}
 
-			return blockArgumentParser.getBlockState().getBlock() == Blocks.STRUCTURE_VOID
+			return blockArgumentParser.getBlockState().isOf(Blocks.STRUCTURE_VOID)
 				? null
 				: new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);
 		} else {

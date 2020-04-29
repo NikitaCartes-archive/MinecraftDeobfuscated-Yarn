@@ -166,7 +166,7 @@ public abstract class Carver<C extends CarverConfig> {
 			mutable.set(x, y, z);
 			BlockState blockState = chunk.getBlockState(mutable);
 			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable, Direction.UP));
-			if (blockState.getBlock() == Blocks.GRASS_BLOCK || blockState.getBlock() == Blocks.MYCELIUM) {
+			if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
 				foundSurface.set(true);
 			}
 
@@ -179,7 +179,7 @@ public abstract class Carver<C extends CarverConfig> {
 					chunk.setBlockState(mutable, CAVE_AIR, false);
 					if (foundSurface.get()) {
 						mutable3.set(mutable, Direction.DOWN);
-						if (chunk.getBlockState(mutable3).getBlock() == Blocks.DIRT) {
+						if (chunk.getBlockState(mutable3).isOf(Blocks.DIRT)) {
 							chunk.setBlockState(mutable3, ((Biome)posToBiome.apply(mutable)).getSurfaceConfig().getTopMaterial(), false);
 						}
 					}
@@ -210,8 +210,7 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	protected boolean canCarveBlock(BlockState state, BlockState stateAbove) {
-		Block block = state.getBlock();
-		return this.canAlwaysCarveBlock(state) || (block == Blocks.SAND || block == Blocks.GRAVEL) && !stateAbove.getFluidState().matches(FluidTags.WATER);
+		return this.canAlwaysCarveBlock(state) || (state.isOf(Blocks.SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().matches(FluidTags.WATER);
 	}
 
 	protected boolean isRegionUncarvable(Chunk chunk, int mainChunkX, int mainChunkZ, int relMinX, int relMaxX, int minY, int maxY, int relMinZ, int relMaxZ) {

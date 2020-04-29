@@ -78,10 +78,9 @@ public class BambooBlock extends Block implements Fertilizable {
 		} else {
 			BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().down());
 			if (blockState.isIn(BlockTags.BAMBOO_PLANTABLE_ON)) {
-				Block block = blockState.getBlock();
-				if (block == Blocks.BAMBOO_SAPLING) {
+				if (blockState.isOf(Blocks.BAMBOO_SAPLING)) {
 					return this.getDefaultState().with(AGE, Integer.valueOf(0));
-				} else if (block == Blocks.BAMBOO) {
+				} else if (blockState.isOf(Blocks.BAMBOO)) {
 					int i = blockState.get(AGE) > 0 ? 1 : 0;
 					return this.getDefaultState().with(AGE, Integer.valueOf(i));
 				} else {
@@ -128,7 +127,7 @@ public class BambooBlock extends Block implements Fertilizable {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 
-		if (direction == Direction.UP && newState.getBlock() == Blocks.BAMBOO && (Integer)newState.get(AGE) > (Integer)state.get(AGE)) {
+		if (direction == Direction.UP && newState.isOf(Blocks.BAMBOO) && (Integer)newState.get(AGE) > (Integer)state.get(AGE)) {
 			world.setBlockState(pos, state.cycle(AGE), 2);
 		}
 
@@ -178,18 +177,18 @@ public class BambooBlock extends Block implements Fertilizable {
 		BlockState blockState2 = world.getBlockState(blockPos);
 		BambooLeaves bambooLeaves = BambooLeaves.NONE;
 		if (height >= 1) {
-			if (blockState.getBlock() != Blocks.BAMBOO || blockState.get(LEAVES) == BambooLeaves.NONE) {
+			if (!blockState.isOf(Blocks.BAMBOO) || blockState.get(LEAVES) == BambooLeaves.NONE) {
 				bambooLeaves = BambooLeaves.SMALL;
-			} else if (blockState.getBlock() == Blocks.BAMBOO && blockState.get(LEAVES) != BambooLeaves.NONE) {
+			} else if (blockState.isOf(Blocks.BAMBOO) && blockState.get(LEAVES) != BambooLeaves.NONE) {
 				bambooLeaves = BambooLeaves.LARGE;
-				if (blockState2.getBlock() == Blocks.BAMBOO) {
+				if (blockState2.isOf(Blocks.BAMBOO)) {
 					world.setBlockState(pos.down(), blockState.with(LEAVES, BambooLeaves.SMALL), 3);
 					world.setBlockState(blockPos, blockState2.with(LEAVES, BambooLeaves.NONE), 3);
 				}
 			}
 		}
 
-		int i = state.get(AGE) != 1 && blockState2.getBlock() != Blocks.BAMBOO ? 0 : 1;
+		int i = state.get(AGE) != 1 && !blockState2.isOf(Blocks.BAMBOO) ? 0 : 1;
 		int j = (height < 11 || !(random.nextFloat() < 0.25F)) && height != 15 ? 0 : 1;
 		world.setBlockState(pos.up(), this.getDefaultState().with(AGE, Integer.valueOf(i)).with(LEAVES, bambooLeaves).with(STAGE, Integer.valueOf(j)), 3);
 	}
@@ -197,7 +196,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	protected int countBambooAbove(BlockView world, BlockPos pos) {
 		int i = 0;
 
-		while (i < 16 && world.getBlockState(pos.up(i + 1)).getBlock() == Blocks.BAMBOO) {
+		while (i < 16 && world.getBlockState(pos.up(i + 1)).isOf(Blocks.BAMBOO)) {
 			i++;
 		}
 
@@ -207,7 +206,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	protected int countBambooBelow(BlockView world, BlockPos pos) {
 		int i = 0;
 
-		while (i < 16 && world.getBlockState(pos.down(i + 1)).getBlock() == Blocks.BAMBOO) {
+		while (i < 16 && world.getBlockState(pos.down(i + 1)).isOf(Blocks.BAMBOO)) {
 			i++;
 		}
 

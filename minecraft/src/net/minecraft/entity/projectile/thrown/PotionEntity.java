@@ -104,7 +104,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			}
 
 			int i = potion.hasInstantEffect() ? 2007 : 2002;
-			this.world.playLevelEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
+			this.world.syncWorldEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
 			this.remove();
 		}
 	}
@@ -190,7 +190,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		if (blockState.isIn(BlockTags.FIRE)) {
 			this.world.removeBlock(pos, false);
 		} else if (CampfireBlock.isLitCampfire(blockState)) {
-			this.world.playLevelEvent(null, 1009, pos, 0);
+			this.world.syncWorldEvent(null, 1009, pos, 0);
 			this.world.setBlockState(pos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
 	}

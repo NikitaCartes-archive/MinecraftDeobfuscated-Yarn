@@ -2,16 +2,16 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class RedDustParticle extends SpriteBillboardParticle {
 	private final SpriteProvider spriteProvider;
 
 	private RedDustParticle(
-		World world,
+		ClientWorld world,
 		double x,
 		double y,
 		double z,
@@ -79,8 +79,8 @@ public class RedDustParticle extends SpriteBillboardParticle {
 			this.spriteProvider = spriteProvider;
 		}
 
-		public Particle createParticle(DustParticleEffect dustParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
-			return new RedDustParticle(world, d, e, f, g, h, i, dustParticleEffect, this.spriteProvider);
+		public Particle createParticle(DustParticleEffect dustParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new RedDustParticle(clientWorld, d, e, f, g, h, i, dustParticleEffect, this.spriteProvider);
 		}
 	}
 }

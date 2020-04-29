@@ -990,7 +990,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			int l = 0;
 
 			for (Text text : list) {
-				int m = this.textRenderer.getWidth(text);
+				int m = this.textRenderer.getStringWidth(text);
 				if (m > l) {
 					l = m;
 				}
@@ -1107,12 +1107,12 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			RealmsMainScreen.this.client.getTextureManager().bindTexture(RealmsMainScreen.CROSS_ICON);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			float g = this.isHovered() ? 12.0F : 0.0F;
-			drawTexture(matrixStack, this.x, this.y, 0.0F, g, 12, 12, 12, 24);
-			if (this.isMouseOver((double)i, (double)j)) {
+			float f = this.isHovered() ? 12.0F : 0.0F;
+			drawTexture(matrices, this.x, this.y, 0.0F, f, 12, 12, 12, 24);
+			if (this.isMouseOver((double)mouseX, (double)mouseY)) {
 				RealmsMainScreen.this.method_27452(this.getMessage());
 			}
 		}
@@ -1142,8 +1142,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
-			RealmsMainScreen.this.renderNews(matrixStack, i, j, RealmsMainScreen.this.hasUnreadNews, this.x, this.y, this.isHovered(), this.active);
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+			RealmsMainScreen.this.renderNews(matrices, mouseX, mouseY, RealmsMainScreen.this.hasUnreadNews, this.x, this.y, this.isHovered(), this.active);
 		}
 	}
 
@@ -1159,8 +1159,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
-			RealmsMainScreen.this.drawInvitationPendingIcon(matrixStack, i, j, this.x, this.y, this.isHovered(), this.active);
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+			RealmsMainScreen.this.drawInvitationPendingIcon(matrices, mouseX, mouseY, this.x, this.y, this.isHovered(), this.active);
 		}
 	}
 
@@ -1483,8 +1483,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
-			RealmsMainScreen.this.renderMoreInfo(matrixStack, i, j, this.x, this.y, this.isHovered());
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+			RealmsMainScreen.this.renderMoreInfo(matrices, mouseX, mouseY, this.x, this.y, this.isHovered());
 		}
 	}
 

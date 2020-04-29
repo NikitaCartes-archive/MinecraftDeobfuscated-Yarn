@@ -364,9 +364,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				if (!this.world.isClient && entity2 instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity2;
 					if (this.piercingKilledEntities != null && this.isShotFromCrossbow()) {
-						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, this.piercingKilledEntities, this.piercingKilledEntities.size());
+						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, this.piercingKilledEntities);
 					} else if (!entity.isAlive() && this.isShotFromCrossbow()) {
-						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, Arrays.asList(entity), 0);
+						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, Arrays.asList(entity));
 					}
 				}
 			}

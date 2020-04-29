@@ -12,34 +12,35 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.item.ModelPredicateProvider;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class ModelItemOverride {
+public class ModelOverride {
 	private final Identifier modelId;
-	private final Map<Identifier, Float> minPropertyValues;
+	private final Map<Identifier, Float> predicateToThresholds;
 
-	public ModelItemOverride(Identifier modelId, Map<Identifier, Float> minPropertyValues) {
+	public ModelOverride(Identifier modelId, Map<Identifier, Float> predicateToThresholds) {
 		this.modelId = modelId;
-		this.minPropertyValues = minPropertyValues;
+		this.predicateToThresholds = predicateToThresholds;
 	}
 
 	public Identifier getModelId() {
 		return this.modelId;
 	}
 
-	boolean matches(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+	boolean matches(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
 		Item item = stack.getItem();
 
-		for (Entry<Identifier, Float> entry : this.minPropertyValues.entrySet()) {
-			ItemPropertyGetter itemPropertyGetter = item.getPropertyGetter((Identifier)entry.getKey());
-			if (itemPropertyGetter == null || itemPropertyGetter.call(stack, world, entity) < (Float)entry.getValue()) {
+		for (Entry<Identifier, Float> entry : this.predicateToThresholds.entrySet()) {
+			ModelPredicateProvider modelPredicateProvider = ModelPredicateProviderRegistry.get(item, (Identifier)entry.getKey());
+			if (modelPredicateProvider == null || modelPredicateProvider.call(stack, world, entity) < (Float)entry.getValue()) {
 				return false;
 			}
 		}
@@ -48,15 +49,15 @@ public class ModelItemOverride {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Deserializer implements JsonDeserializer<ModelItemOverride> {
+	public static class Deserializer implements JsonDeserializer<ModelOverride> {
 		protected Deserializer() {
 		}
 
-		public ModelItemOverride deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+		public ModelOverride deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "model"));
 			Map<Identifier, Float> map = this.deserializeMinPropertyValues(jsonObject);
-			return new ModelItemOverride(identifier, map);
+			return new ModelOverride(identifier, map);
 		}
 
 		protected Map<Identifier, Float> deserializeMinPropertyValues(JsonObject object) {

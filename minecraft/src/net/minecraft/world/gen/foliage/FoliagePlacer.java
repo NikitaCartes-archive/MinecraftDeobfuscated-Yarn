@@ -28,17 +28,17 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 		this.type = type;
 	}
 
-	public void method_27385(
-		ModifiableTestableWorld modifiableTestableWorld,
+	public void generate(
+		ModifiableTestableWorld world,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
-		int i,
-		FoliagePlacer.class_5208 arg,
-		int j,
-		int k,
-		Set<BlockPos> set
+		TreeFeatureConfig config,
+		int trunkHeight,
+		FoliagePlacer.TreeNode treeNode,
+		int foliageHeight,
+		int radius,
+		Set<BlockPos> leaves
 	) {
-		this.generate(modifiableTestableWorld, random, treeFeatureConfig, i, arg, j, k, set, this.method_27386(random));
+		this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.method_27386(random));
 	}
 
 	/**
@@ -47,16 +47,16 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 	protected abstract void generate(
 		ModifiableTestableWorld world,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
+		TreeFeatureConfig config,
 		int trunkHeight,
-		FoliagePlacer.class_5208 arg,
+		FoliagePlacer.TreeNode treeNode,
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
 		int i
 	);
 
-	public abstract int getHeight(Random random, int trunkHeight, TreeFeatureConfig treeFeatureConfig);
+	public abstract int getHeight(Random random, int trunkHeight, TreeFeatureConfig config);
 
 	public int getRadius(Random random, int baseHeight) {
 		return this.radius + random.nextInt(this.randomRadius + 1);
@@ -83,25 +83,18 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 	}
 
 	protected void generate(
-		ModifiableTestableWorld modifiableTestableWorld,
-		Random random,
-		TreeFeatureConfig treeFeatureConfig,
-		BlockPos blockPos,
-		int baseHeight,
-		Set<BlockPos> set,
-		int i,
-		boolean bl
+		ModifiableTestableWorld world, Random random, TreeFeatureConfig config, BlockPos blockPos, int baseHeight, Set<BlockPos> leaves, int i, boolean giantTrunk
 	) {
-		int j = bl ? 1 : 0;
+		int j = giantTrunk ? 1 : 0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int k = -baseHeight; k <= baseHeight + j; k++) {
 			for (int l = -baseHeight; l <= baseHeight + j; l++) {
-				if (!this.method_27387(random, k, i, l, baseHeight, bl)) {
+				if (!this.method_27387(random, k, i, l, baseHeight, giantTrunk)) {
 					mutable.set(blockPos, k, i, l);
-					if (AbstractTreeFeature.method_27371(modifiableTestableWorld, mutable)) {
-						modifiableTestableWorld.setBlockState(mutable, treeFeatureConfig.leavesProvider.getBlockState(random, mutable), 19);
-						set.add(mutable.toImmutable());
+					if (AbstractTreeFeature.canReplace(world, mutable)) {
+						world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
+						leaves.add(mutable.toImmutable());
 					}
 				}
 			}
@@ -119,27 +112,33 @@ public abstract class FoliagePlacer implements DynamicSerializable {
 		return new Dynamic<>(ops, ops.createMap(builder.build())).getValue();
 	}
 
-	public static final class class_5208 {
-		private final BlockPos field_24158;
-		private final int field_24159;
-		private final boolean field_24160;
+	/**
+	 * A point on a tree to generate foliage around
+	 */
+	public static final class TreeNode {
+		private final BlockPos center;
+		private final int foliageRadius;
+		private final boolean giantTrunk;
 
-		public class_5208(BlockPos blockPos, int i, boolean bl) {
-			this.field_24158 = blockPos;
-			this.field_24159 = i;
-			this.field_24160 = bl;
+		public TreeNode(BlockPos center, int foliageRadius, boolean giantTrunk) {
+			this.center = center;
+			this.foliageRadius = foliageRadius;
+			this.giantTrunk = giantTrunk;
 		}
 
-		public BlockPos method_27388() {
-			return this.field_24158;
+		public BlockPos getCenter() {
+			return this.center;
 		}
 
-		public int method_27389() {
-			return this.field_24159;
+		public int getFoliageRadius() {
+			return this.foliageRadius;
 		}
 
-		public boolean method_27390() {
-			return this.field_24160;
+		/**
+		 * Whether this node is the top of a giant (2x2 block) trunk
+		 */
+		public boolean isGiantTrunk() {
+			return this.giantTrunk;
 		}
 	}
 }

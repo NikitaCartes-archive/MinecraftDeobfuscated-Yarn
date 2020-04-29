@@ -22,11 +22,11 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 	}
 
 	@Override
-	public List<FoliagePlacer.class_5208> generate(
+	public List<FoliagePlacer.TreeNode> generate(
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig
 	) {
 		method_27400(world, pos.down());
-		List<FoliagePlacer.class_5208> list = Lists.<FoliagePlacer.class_5208>newArrayList();
+		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		int i = trunkHeight - random.nextInt(4) - 1;
 		int j = 3 - random.nextInt(3);
@@ -48,7 +48,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 			}
 		}
 
-		list.add(new FoliagePlacer.class_5208(new BlockPos(k, m, l), 1, false));
+		list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 1, false));
 		k = pos.getX();
 		l = pos.getZ();
 		Direction direction2 = Direction.Type.HORIZONTAL.random(random);
@@ -71,7 +71,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 			}
 
 			if (m > 1) {
-				list.add(new FoliagePlacer.class_5208(new BlockPos(k, m, l), 0, false));
+				list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 0, false));
 			}
 		}
 

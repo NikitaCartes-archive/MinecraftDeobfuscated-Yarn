@@ -2,12 +2,12 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.World;
+import net.minecraft.client.world.ClientWorld;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractSlowingParticle extends SpriteBillboardParticle {
-	protected AbstractSlowingParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e, f, g, h, i);
+	protected AbstractSlowingParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		super(clientWorld, d, e, f, g, h, i);
 		this.velocityX = this.velocityX * 0.01F + g;
 		this.velocityY = this.velocityY * 0.01F + h;
 		this.velocityZ = this.velocityZ * 0.01F + i;

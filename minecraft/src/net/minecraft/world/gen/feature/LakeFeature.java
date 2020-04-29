@@ -110,7 +110,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 								BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
 								if (isDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
 									Biome biome = iWorld.getBiome(blockPos2);
-									if (biome.getSurfaceConfig().getTopMaterial().getBlock() == Blocks.MYCELIUM) {
+									if (biome.getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
 										iWorld.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
 									} else {
 										iWorld.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), 2);

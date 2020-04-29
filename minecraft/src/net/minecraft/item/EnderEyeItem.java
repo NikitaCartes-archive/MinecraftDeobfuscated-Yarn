@@ -32,7 +32,7 @@ public class EnderEyeItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() != Blocks.END_PORTAL_FRAME || (Boolean)blockState.get(EndPortalFrameBlock.EYE)) {
+		if (!blockState.isOf(Blocks.END_PORTAL_FRAME) || (Boolean)blockState.get(EndPortalFrameBlock.EYE)) {
 			return ActionResult.PASS;
 		} else if (world.isClient) {
 			return ActionResult.SUCCESS;
@@ -42,7 +42,7 @@ public class EnderEyeItem extends Item {
 			world.setBlockState(blockPos, blockState2, 2);
 			world.updateComparators(blockPos, Blocks.END_PORTAL_FRAME);
 			context.getStack().decrement(1);
-			world.playLevelEvent(1503, blockPos, 0);
+			world.syncWorldEvent(1503, blockPos, 0);
 			BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
 			if (result != null) {
 				BlockPos blockPos2 = result.getFrontTopLeft().add(-3, 0, -3);
@@ -53,7 +53,7 @@ public class EnderEyeItem extends Item {
 					}
 				}
 
-				world.playGlobalEvent(1038, blockPos2.add(1, 0, 1), 0);
+				world.syncGlobalEvent(1038, blockPos2.add(1, 0, 1), 0);
 			}
 
 			return ActionResult.SUCCESS;
@@ -64,7 +64,7 @@ public class EnderEyeItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
 		HitResult hitResult = rayTrace(world, user, RayTraceContext.FluidHandling.NONE);
-		if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).getBlock() == Blocks.END_PORTAL_FRAME) {
+		if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).isOf(Blocks.END_PORTAL_FRAME)) {
 			return TypedActionResult.pass(itemStack);
 		} else {
 			user.setCurrentHand(hand);
@@ -85,7 +85,7 @@ public class EnderEyeItem extends Item {
 					world.playSound(
 						null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_ENDER_EYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F)
 					);
-					world.playLevelEvent(null, 1003, user.getBlockPos(), 0);
+					world.syncWorldEvent(null, 1003, user.getBlockPos(), 0);
 					if (!user.abilities.creativeMode) {
 						itemStack.decrement(1);
 					}

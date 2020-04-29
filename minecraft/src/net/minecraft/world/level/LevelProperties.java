@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5217;
 import net.minecraft.class_5219;
+import net.minecraft.class_5268;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.NbtOps;
 import net.minecraft.datafixer.TypeReferences;
@@ -35,7 +35,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.timer.Timer;
 import net.minecraft.world.timer.TimerCallbackSerializer;
 
-public class LevelProperties implements class_5217, class_5219 {
+public class LevelProperties implements class_5268, class_5219 {
 	private final String versionName;
 	private final int versionId;
 	private final boolean versionSnapshot;
@@ -68,7 +68,7 @@ public class LevelProperties implements class_5217, class_5219 {
 	private final boolean commandsAllowed;
 	private final boolean field_24192;
 	private boolean initialized;
-	private Difficulty difficulty;
+	private Difficulty difficulty = Difficulty.NORMAL;
 	private boolean difficultyLocked;
 	private WorldBorder.class_5200 field_24193 = WorldBorder.field_24122;
 	private final Set<String> disabledDataPacks = Sets.<String>newHashSet();
@@ -317,10 +317,7 @@ public class LevelProperties implements class_5217, class_5219 {
 		levelTag.putBoolean("BonusChest", this.field_24192);
 		levelTag.putBoolean("initialized", this.initialized);
 		this.field_24193.method_27357(levelTag);
-		if (this.difficulty != null) {
-			levelTag.putByte("Difficulty", (byte)this.difficulty.getId());
-		}
-
+		levelTag.putByte("Difficulty", (byte)this.difficulty.getId());
 		levelTag.putBoolean("DifficultyLocked", this.difficultyLocked);
 		levelTag.put("GameRules", this.gameRules.toNbt());
 		CompoundTag compoundTag3 = new CompoundTag();
@@ -597,7 +594,7 @@ public class LevelProperties implements class_5217, class_5219 {
 
 	@Override
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		class_5217.super.populateCrashReport(crashReportSection);
+		class_5268.super.populateCrashReport(crashReportSection);
 		class_5219.super.populateCrashReport(crashReportSection);
 	}
 
@@ -703,8 +700,8 @@ public class LevelProperties implements class_5217, class_5219 {
 	}
 
 	@Override
-	public class_5217 method_27437(DimensionType dimensionType) {
-		return (class_5217)(dimensionType == DimensionType.OVERWORLD ? this : new UnmodifiableLevelProperties(dimensionType, this, this));
+	public class_5268 method_27859() {
+		return this;
 	}
 
 	@Override

@@ -97,7 +97,7 @@ public class PoweredRailBlock extends AbstractRailBlock {
 
 	protected boolean isPoweredByOtherRails(World world, BlockPos pos, boolean bl, int distance, RailShape shape) {
 		BlockState blockState = world.getBlockState(pos);
-		if (blockState.getBlock() != this) {
+		if (!blockState.isOf(this)) {
 			return false;
 		} else {
 			RailShape railShape = blockState.get(SHAPE);

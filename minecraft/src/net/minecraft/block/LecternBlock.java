@@ -164,7 +164,7 @@ public class LecternBlock extends BlockWithEntity {
 	public static void setPowered(World world, BlockPos pos, BlockState state) {
 		setPowered(world, pos, state, true);
 		world.getBlockTickScheduler().schedule(pos, state.getBlock(), 2);
-		world.playLevelEvent(1043, pos, 0);
+		world.syncWorldEvent(1043, pos, 0);
 	}
 
 	private static void setPowered(World world, BlockPos pos, BlockState state, boolean powered) {
@@ -183,7 +183,7 @@ public class LecternBlock extends BlockWithEntity {
 
 	@Override
 	public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-		if (state.getBlock() != newState.getBlock()) {
+		if (!state.isOf(newState.getBlock())) {
 			if ((Boolean)state.get(HAS_BOOK)) {
 				this.dropBook(state, world, pos);
 			}

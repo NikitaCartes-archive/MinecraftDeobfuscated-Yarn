@@ -206,7 +206,7 @@ public class CreditsScreen extends Screen {
 			if ((float)l + f + 12.0F + 8.0F > 0.0F && (float)l + f < (float)this.height) {
 				Text text = (Text)this.credits.get(m);
 				if (this.field_24261.contains(m)) {
-					this.textRenderer.drawWithShadow(matrices, text, (float)(j + (274 - this.textRenderer.getWidth(text)) / 2), (float)l, 16777215);
+					this.textRenderer.drawWithShadow(matrices, text, (float)(j + (274 - this.textRenderer.getStringWidth(text)) / 2), (float)l, 16777215);
 				} else {
 					this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0F));
 					this.textRenderer.drawWithShadow(matrices, text, (float)j, (float)l, 16777215);

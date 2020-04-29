@@ -82,7 +82,7 @@ public class DoorBlock extends Block {
 				? Blocks.AIR.getDefaultState()
 				: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
-			return newState.getBlock() == this && newState.get(HALF) != doubleBlockHalf
+			return newState.isOf(this) && newState.get(HALF) != doubleBlockHalf
 				? state.with(FACING, newState.get(FACING)).with(OPEN, newState.get(OPEN)).with(HINGE, newState.get(HINGE)).with(POWERED, newState.get(POWERED))
 				: Blocks.AIR.getDefaultState();
 		}
@@ -98,9 +98,9 @@ public class DoorBlock extends Block {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
 		BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == this && blockState.get(HALF) != doubleBlockHalf) {
+		if (blockState.isOf(this) && blockState.get(HALF) != doubleBlockHalf) {
 			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-			world.playLevelEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+			world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
 			ItemStack itemStack = player.getMainHandStack();
 			if (!world.isClient && !player.isCreative() && player.isUsingEffectiveTool(blockState)) {
 				Block.dropStacks(state, world, pos, null, player, itemStack);
@@ -175,8 +175,8 @@ public class DoorBlock extends Block {
 			+ (blockState2.isFullCube(blockView, blockPos4) ? -1 : 0)
 			+ (blockState3.isFullCube(blockView, blockPos5) ? 1 : 0)
 			+ (blockState4.isFullCube(blockView, blockPos6) ? 1 : 0);
-		boolean bl = blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
-		boolean bl2 = blockState3.getBlock() == this && blockState3.get(HALF) == DoubleBlockHalf.LOWER;
+		boolean bl = blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
+		boolean bl2 = blockState3.isOf(this) && blockState3.get(HALF) == DoubleBlockHalf.LOWER;
 		if ((!bl || bl2) && i <= 0) {
 			if ((!bl2 || bl) && i >= 0) {
 				int j = direction.getOffsetX();
@@ -200,14 +200,14 @@ public class DoorBlock extends Block {
 		} else {
 			state = state.cycle(OPEN);
 			world.setBlockState(pos, state, 10);
-			world.playLevelEvent(player, state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+			world.syncWorldEvent(player, state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
 			return ActionResult.SUCCESS;
 		}
 	}
 
 	public void setOpen(World world, BlockPos pos, boolean open) {
 		BlockState blockState = world.getBlockState(pos);
-		if (blockState.getBlock() == this && (Boolean)blockState.get(OPEN) != open) {
+		if (blockState.isOf(this) && (Boolean)blockState.get(OPEN) != open) {
 			world.setBlockState(pos, blockState.with(OPEN, Boolean.valueOf(open)), 10);
 			this.playOpenCloseSound(world, pos, open);
 		}
@@ -230,11 +230,11 @@ public class DoorBlock extends Block {
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		return state.get(HALF) == DoubleBlockHalf.LOWER ? blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) : blockState.getBlock() == this;
+		return state.get(HALF) == DoubleBlockHalf.LOWER ? blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) : blockState.isOf(this);
 	}
 
 	private void playOpenCloseSound(World world, BlockPos pos, boolean open) {
-		world.playLevelEvent(null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+		world.syncWorldEvent(null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
 	}
 
 	@Override

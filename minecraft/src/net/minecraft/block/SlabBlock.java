@@ -59,7 +59,7 @@ public class SlabBlock extends Block implements Waterloggable {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockPos blockPos = ctx.getBlockPos();
 		BlockState blockState = ctx.getWorld().getBlockState(blockPos);
-		if (blockState.getBlock() == this) {
+		if (blockState.isOf(this)) {
 			return blockState.with(TYPE, SlabType.DOUBLE).with(WATERLOGGED, Boolean.valueOf(false));
 		} else {
 			FluidState fluidState = ctx.getWorld().getFluidState(blockPos);

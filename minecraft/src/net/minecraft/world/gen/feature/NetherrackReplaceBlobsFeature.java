@@ -42,7 +42,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 				}
 
 				BlockState blockState = iWorld.getBlockState(blockPos3);
-				if (blockState.getBlock() == block) {
+				if (blockState.isOf(block)) {
 					this.setBlockState(iWorld, blockPos3, netherrackReplaceBlobsFeatureConfig.state);
 					bl = true;
 				}
@@ -56,7 +56,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 	private static BlockPos method_27107(IWorld iWorld, BlockPos.Mutable mutable, Block block) {
 		while (mutable.getY() > 1) {
 			BlockState blockState = iWorld.getBlockState(mutable);
-			if (blockState.getBlock() == block) {
+			if (blockState.isOf(block)) {
 				return mutable;
 			}
 

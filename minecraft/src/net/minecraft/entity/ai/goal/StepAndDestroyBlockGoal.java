@@ -126,13 +126,13 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 
 	@Nullable
 	private BlockPos tweakToProperPos(BlockPos pos, BlockView world) {
-		if (world.getBlockState(pos).getBlock() == this.targetBlock) {
+		if (world.getBlockState(pos).isOf(this.targetBlock)) {
 			return pos;
 		} else {
 			BlockPos[] blockPoss = new BlockPos[]{pos.down(), pos.west(), pos.east(), pos.north(), pos.south(), pos.down().down()};
 
 			for (BlockPos blockPos : blockPoss) {
-				if (world.getBlockState(blockPos).getBlock() == this.targetBlock) {
+				if (world.getBlockState(blockPos).isOf(this.targetBlock)) {
 					return blockPos;
 				}
 			}
@@ -146,6 +146,6 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		Chunk chunk = world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
 		return chunk == null
 			? false
-			: chunk.getBlockState(pos).getBlock() == this.targetBlock && chunk.getBlockState(pos.up()).isAir() && chunk.getBlockState(pos.up(2)).isAir();
+			: chunk.getBlockState(pos).isOf(this.targetBlock) && chunk.getBlockState(pos.up()).isAir() && chunk.getBlockState(pos.up(2)).isAir();
 	}
 }

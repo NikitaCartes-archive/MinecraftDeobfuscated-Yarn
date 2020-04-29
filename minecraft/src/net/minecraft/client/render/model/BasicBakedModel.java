@@ -10,7 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
@@ -24,7 +24,7 @@ public class BasicBakedModel implements BakedModel {
 	protected final boolean isSideLit;
 	protected final Sprite sprite;
 	protected final ModelTransformation transformation;
-	protected final ModelItemPropertyOverrideList itemPropertyOverrides;
+	protected final ModelOverrideList itemPropertyOverrides;
 
 	public BasicBakedModel(
 		List<BakedQuad> quads,
@@ -34,7 +34,7 @@ public class BasicBakedModel implements BakedModel {
 		boolean hasDepth,
 		Sprite sprite,
 		ModelTransformation modelTransformation,
-		ModelItemPropertyOverrideList modelItemPropertyOverrideList
+		ModelOverrideList modelOverrideList
 	) {
 		this.quads = quads;
 		this.faceQuads = faceQuads;
@@ -43,7 +43,7 @@ public class BasicBakedModel implements BakedModel {
 		this.isSideLit = isSideLit;
 		this.sprite = sprite;
 		this.transformation = modelTransformation;
-		this.itemPropertyOverrides = modelItemPropertyOverrideList;
+		this.itemPropertyOverrides = modelOverrideList;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class BasicBakedModel implements BakedModel {
 	}
 
 	@Override
-	public ModelItemPropertyOverrideList getItemPropertyOverrides() {
+	public ModelOverrideList getOverrides() {
 		return this.itemPropertyOverrides;
 	}
 
@@ -90,25 +90,23 @@ public class BasicBakedModel implements BakedModel {
 	public static class Builder {
 		private final List<BakedQuad> quads = Lists.<BakedQuad>newArrayList();
 		private final Map<Direction, List<BakedQuad>> faceQuads = Maps.newEnumMap(Direction.class);
-		private final ModelItemPropertyOverrideList itemPropertyOverrides;
+		private final ModelOverrideList itemPropertyOverrides;
 		private final boolean usesAo;
 		private Sprite particleTexture;
 		private final boolean isSideLit;
 		private final boolean hasDepth;
 		private final ModelTransformation transformation;
 
-		public Builder(JsonUnbakedModel unbakedModel, ModelItemPropertyOverrideList itemPropertyOverrides, boolean hasDepth) {
+		public Builder(JsonUnbakedModel unbakedModel, ModelOverrideList itemPropertyOverrides, boolean hasDepth) {
 			this(unbakedModel.useAmbientOcclusion(), unbakedModel.getGuiLight().isSide(), hasDepth, unbakedModel.getTransformations(), itemPropertyOverrides);
 		}
 
-		private Builder(
-			boolean usesAo, boolean isSideLit, boolean hasDepth, ModelTransformation modelTransformation, ModelItemPropertyOverrideList modelItemPropertyOverrideList
-		) {
+		private Builder(boolean usesAo, boolean isSideLit, boolean hasDepth, ModelTransformation modelTransformation, ModelOverrideList modelOverrideList) {
 			for (Direction direction : Direction.values()) {
 				this.faceQuads.put(direction, Lists.newArrayList());
 			}
 
-			this.itemPropertyOverrides = modelItemPropertyOverrideList;
+			this.itemPropertyOverrides = modelOverrideList;
 			this.usesAo = usesAo;
 			this.isSideLit = isSideLit;
 			this.hasDepth = hasDepth;

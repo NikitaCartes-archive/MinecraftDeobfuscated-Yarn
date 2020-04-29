@@ -64,7 +64,7 @@ public class BadlandsSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 				BlockState blockState5 = chunk.getBlockState(mutable);
 				if (blockState5.isAir()) {
 					q = -1;
-				} else if (blockState5.getBlock() == blockState.getBlock()) {
+				} else if (blockState5.isOf(blockState.getBlock())) {
 					if (q == -1) {
 						bl2 = false;
 						if (p <= 0) {

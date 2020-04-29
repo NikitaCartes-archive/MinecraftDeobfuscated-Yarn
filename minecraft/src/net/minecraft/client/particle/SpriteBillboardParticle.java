@@ -3,18 +3,18 @@ package net.minecraft.client.particle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.world.World;
+import net.minecraft.client.world.ClientWorld;
 
 @Environment(EnvType.CLIENT)
 public abstract class SpriteBillboardParticle extends BillboardParticle {
 	protected Sprite sprite;
 
-	protected SpriteBillboardParticle(World world, double d, double e, double f) {
-		super(world, d, e, f);
+	protected SpriteBillboardParticle(ClientWorld clientWorld, double d, double e, double f) {
+		super(clientWorld, d, e, f);
 	}
 
-	protected SpriteBillboardParticle(World world, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e, f, g, h, i);
+	protected SpriteBillboardParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+		super(clientWorld, d, e, f, g, h, i);
 	}
 
 	protected void setSprite(Sprite sprite) {

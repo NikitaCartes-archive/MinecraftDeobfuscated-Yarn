@@ -113,10 +113,12 @@ import net.minecraft.datafixer.fix.PointOfInterestReorganizationFix;
 import net.minecraft.datafixer.fix.RecipeFix;
 import net.minecraft.datafixer.fix.RecipeRenameFix;
 import net.minecraft.datafixer.fix.RecipeRenamingFix;
+import net.minecraft.datafixer.fix.RedstoneConnectionsFix;
 import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
 import net.minecraft.datafixer.fix.SavedDataVillageCropFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
+import net.minecraft.datafixer.fix.StriderGravityFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.SwimStatsRenameFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
@@ -631,5 +633,9 @@ public class Schemas {
 						.getOrDefault(string, string)
 			)
 		);
+		Schema schema116 = builder.addSchema(2529, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StriderGravityFix(schema116, false));
+		Schema schema117 = builder.addSchema(2531, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RedstoneConnectionsFix(schema117));
 	}
 }

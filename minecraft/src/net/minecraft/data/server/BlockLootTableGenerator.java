@@ -1545,16 +1545,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private void method_26000(Block block, Block block2) {
-		LootTable.Builder builder = LootTable.builder()
-			.withPool(
-				LootPool.builder()
-					.withRolls(ConstantLootTableRange.create(1))
-					.withEntry(
-						ItemEntry.builder(block)
-							.withCondition(RandomChanceLootCondition.builder(0.33333334F))
-							.withFunction(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE, 2))
-					)
-			);
+		LootTable.Builder builder = createForNeedingSilkTouchShears(
+			block, ItemEntry.builder(block).withCondition(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.33F, 0.55F, 0.77F, 1.0F))
+		);
 		this.register(block, builder);
 		this.register(block2, builder);
 	}

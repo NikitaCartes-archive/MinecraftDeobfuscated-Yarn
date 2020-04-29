@@ -30,7 +30,7 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
+		if (!iWorld.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
 			return false;
 		} else {
 			int i = random.nextInt(icePatchFeatureConfig.radius) + 2;

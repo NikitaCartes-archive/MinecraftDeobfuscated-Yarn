@@ -74,8 +74,8 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return false;
 	}
 
-	public boolean obtain(String string) {
-		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(string);
+	public boolean obtain(String name) {
+		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(name);
 		if (criterionProgress != null && !criterionProgress.isObtained()) {
 			criterionProgress.obtain();
 			return true;
@@ -84,8 +84,8 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		}
 	}
 
-	public boolean reset(String string) {
-		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(string);
+	public boolean reset(String name) {
+		CriterionProgress criterionProgress = (CriterionProgress)this.criteriaProgresses.get(name);
 		if (criterionProgress != null && criterionProgress.isObtained()) {
 			criterionProgress.reset();
 			return true;
@@ -98,12 +98,12 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString(this.requirements) + '}';
 	}
 
-	public void toPacket(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeVarInt(this.criteriaProgresses.size());
+	public void toPacket(PacketByteBuf buf) {
+		buf.writeVarInt(this.criteriaProgresses.size());
 
 		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
-			packetByteBuf.writeString((String)entry.getKey());
-			((CriterionProgress)entry.getValue()).toPacket(packetByteBuf);
+			buf.writeString((String)entry.getKey());
+			((CriterionProgress)entry.getValue()).toPacket(buf);
 		}
 	}
 
@@ -119,8 +119,8 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	@Nullable
-	public CriterionProgress getCriterionProgress(String string) {
-		return (CriterionProgress)this.criteriaProgresses.get(string);
+	public CriterionProgress getCriterionProgress(String name) {
+		return (CriterionProgress)this.criteriaProgresses.get(name);
 	}
 
 	@Environment(EnvType.CLIENT)

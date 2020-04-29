@@ -524,6 +524,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			this.equipLootStack(equipmentSlot, equipment);
+			this.onEquipStack(equipment);
 			return true;
 		} else {
 			return false;
@@ -622,7 +623,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean cannotDespawn() {
-		return false;
+		return this.hasVehicle();
 	}
 
 	protected boolean isDisallowedInPeaceful() {
@@ -637,13 +638,13 @@ public abstract class MobEntity extends LivingEntity {
 			Entity entity = this.world.getClosestPlayer(this, -1.0);
 			if (entity != null) {
 				double d = entity.squaredDistanceTo(this);
-				int i = this.getType().method_24908();
+				int i = this.getType().getImmediateDespawnRange();
 				int j = i * i;
 				if (d > (double)j && this.canImmediatelyDespawn(d)) {
 					this.remove();
 				}
 
-				int k = this.getType().method_24909();
+				int k = this.getType().getDespawnStartRange();
 				int l = k * k;
 				if (this.despawnCounter > 600 && this.random.nextInt(800) == 0 && d > (double)l && this.canImmediatelyDespawn(d)) {
 					this.remove();

@@ -6,6 +6,7 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.OpticFinder;
 import com.mojang.datafixers.TypeRewriteRule;
+import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.types.templates.List.ListType;
@@ -34,19 +35,38 @@ public class class_5196 extends DataFix {
 			"BitStorageAlignFix",
 			type,
 			this.getOutputSchema().getType(TypeReferences.CHUNK),
-			typed -> typed.updateTyped(opticFinder, typedx -> typedx.updateTyped(opticFinder2, typedxx -> typedxx.updateTyped(opticFinder3, typedxxx -> {
-							int i = (Integer)typedxxx.getOptional(opticFinder4).map(list -> Math.max(4, DataFixUtils.ceillog2(list.size()))).orElse(0);
-							return i != 0 && !MathHelper.isPowerOfTwo(i) ? typedxxx.update(DSL.remainderFinder(), dynamic -> this.method_27291(dynamic, i)) : typedxxx;
-						})))
+			typed -> typed.updateTyped(opticFinder, typedx -> this.method_27775(method_27774(opticFinder2, opticFinder3, opticFinder4, typedx)))
 		);
 	}
 
-	private Dynamic<?> method_27291(Dynamic<?> dynamic, int i) {
-		return dynamic.update("BlockStates", dynamic2 -> {
-			long[] ls = dynamic2.asLongStream().toArray();
-			long[] ms = method_27288(4096, i, ls);
-			return dynamic.createLongList(LongStream.of(ms));
-		});
+	private Typed<?> method_27775(Typed<?> typed) {
+		return typed.update(
+			DSL.remainderFinder(),
+			dynamic -> dynamic.update("Heightmaps", dynamic2 -> dynamic2.updateMapValues(pair -> pair.mapSecond(dynamic2x -> method_27772(dynamic, dynamic2x, 256, 9))))
+		);
+	}
+
+	private static Typed<?> method_27774(
+		OpticFinder<?> opticFinder, OpticFinder<?> opticFinder2, OpticFinder<List<Pair<String, Dynamic<?>>>> opticFinder3, Typed<?> typed
+	) {
+		return typed.updateTyped(
+			opticFinder,
+			typedx -> typedx.updateTyped(
+					opticFinder2,
+					typedxx -> {
+						int i = (Integer)typedxx.getOptional(opticFinder3).map(list -> Math.max(4, DataFixUtils.ceillog2(list.size()))).orElse(0);
+						return i != 0 && !MathHelper.isPowerOfTwo(i)
+							? typedxx.update(DSL.remainderFinder(), dynamic -> dynamic.update("BlockStates", dynamic2 -> method_27772(dynamic, dynamic2, 4096, i)))
+							: typedxx;
+					}
+				)
+		);
+	}
+
+	private static Dynamic<?> method_27772(Dynamic<?> dynamic, Dynamic<?> dynamic2, int i, int j) {
+		long[] ls = dynamic2.asLongStream().toArray();
+		long[] ms = method_27288(i, j, ls);
+		return dynamic.createLongList(LongStream.of(ms));
 	}
 
 	public static long[] method_27288(int i, int j, long[] ls) {

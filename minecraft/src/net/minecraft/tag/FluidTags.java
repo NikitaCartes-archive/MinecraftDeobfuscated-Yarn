@@ -18,8 +18,8 @@ public class FluidTags {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_27059() {
-		ACCESSOR.method_27061();
+	public static void markReady() {
+		ACCESSOR.markReady();
 	}
 
 	public static TagContainer<Fluid> getContainer() {

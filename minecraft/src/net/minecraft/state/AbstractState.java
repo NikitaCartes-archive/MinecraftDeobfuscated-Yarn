@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -87,6 +88,11 @@ public abstract class AbstractState<O, S> implements State<S> {
 		} else {
 			return (T)property.getType().cast(comparable);
 		}
+	}
+
+	public <T extends Comparable<T>> Optional<T> method_27850(Property<T> property) {
+		Comparable<?> comparable = this.entries.get(property);
+		return comparable == null ? Optional.empty() : Optional.of(property.getType().cast(comparable));
 	}
 
 	@Override

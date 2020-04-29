@@ -131,7 +131,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			world.setBlockState(pos, state, 10);
 		}
 
-		world.playLevelEvent(player, state.get(OPEN) ? 1008 : 1014, pos, 0);
+		world.syncWorldEvent(player, state.get(OPEN) ? 1008 : 1014, pos, 0);
 		return ActionResult.SUCCESS;
 	}
 
@@ -142,7 +142,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			if ((Boolean)state.get(POWERED) != bl) {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), 2);
 				if ((Boolean)state.get(OPEN) != bl) {
-					world.playLevelEvent(null, bl ? 1008 : 1014, pos, 0);
+					world.syncWorldEvent(null, bl ? 1008 : 1014, pos, 0);
 				}
 			}
 		}

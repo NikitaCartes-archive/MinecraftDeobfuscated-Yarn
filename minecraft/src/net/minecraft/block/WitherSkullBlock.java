@@ -42,8 +42,8 @@ public class WitherSkullBlock extends SkullBlock {
 
 	public static void onPlaced(World world, BlockPos pos, SkullBlockEntity blockEntity) {
 		if (!world.isClient) {
-			Block block = blockEntity.getCachedState().getBlock();
-			boolean bl = block == Blocks.WITHER_SKELETON_SKULL || block == Blocks.WITHER_SKELETON_WALL_SKULL;
+			BlockState blockState = blockEntity.getCachedState();
+			boolean bl = blockState.isOf(Blocks.WITHER_SKELETON_SKULL) || blockState.isOf(Blocks.WITHER_SKELETON_WALL_SKULL);
 			if (bl && pos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL) {
 				BlockPattern blockPattern = getWitherBossPattern();
 				BlockPattern.Result result = blockPattern.searchAround(world, pos);
@@ -52,7 +52,7 @@ public class WitherSkullBlock extends SkullBlock {
 						for (int j = 0; j < blockPattern.getHeight(); j++) {
 							CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
 							world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-							world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+							world.syncWorldEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 						}
 					}
 

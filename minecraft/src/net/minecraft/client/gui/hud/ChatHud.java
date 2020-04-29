@@ -58,8 +58,6 @@ public class ChatHud extends DrawableHelper {
 				double g = 9.0 * (this.client.options.chatLineSpacing + 1.0);
 				double h = -8.0 * (this.client.options.chatLineSpacing + 1.0) + 4.0 * this.client.options.chatLineSpacing;
 				int m = 0;
-				matrixStack.push();
-				matrixStack.translate(0.0, 0.0, -100.0);
 
 				for (int n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < j; n++) {
 					ChatHudLine chatHudLine = (ChatHudLine)this.visibleMessages.get(n + this.scrolledLines);
@@ -73,11 +71,15 @@ public class ChatHud extends DrawableHelper {
 							if (q > 3) {
 								int s = 0;
 								double t = (double)(-n) * g;
+								matrixStack.push();
+								matrixStack.translate(0.0, 0.0, 50.0);
 								fill(matrixStack, -2, (int)(t - g), 0 + l + 4, (int)t, r << 24);
 								RenderSystem.enableBlend();
+								matrixStack.translate(0.0, 0.0, 50.0);
 								this.client.textRenderer.drawWithShadow(matrixStack, chatHudLine.getText(), 0.0F, (float)((int)(t + h)), 16777215 + (q << 24));
 								RenderSystem.disableAlphaTest();
 								RenderSystem.disableBlend();
+								matrixStack.pop();
 							}
 						}
 					}
@@ -86,14 +88,17 @@ public class ChatHud extends DrawableHelper {
 				if (!this.field_23934.isEmpty()) {
 					int nx = (int)(128.0 * e);
 					int u = (int)(255.0 * f);
+					matrixStack.push();
+					matrixStack.translate(0.0, 0.0, 50.0);
 					fill(matrixStack, -2, 0, l + 4, 9, u << 24);
 					RenderSystem.enableBlend();
+					matrixStack.translate(0.0, 0.0, 50.0);
 					this.client.textRenderer.drawWithShadow(matrixStack, new TranslatableText("chat.queue", this.field_23934.size()), 0.0F, 1.0F, 16777215 + (nx << 24));
+					matrixStack.pop();
 					RenderSystem.disableAlphaTest();
 					RenderSystem.disableBlend();
 				}
 
-				matrixStack.pop();
 				if (bl) {
 					int nx = 9;
 					RenderSystem.translatef(-3.0F, 0.0F, 0.0F);

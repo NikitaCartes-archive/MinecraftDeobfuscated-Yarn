@@ -267,12 +267,12 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			this.method_21414(matrices, mouseX, mouseY, this.noTemplatesMessage);
 		}
 
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 13, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 13, 16777215);
 		if (this.displayWarning) {
 			Text[] texts = this.warning;
 
 			for (int i = 0; i < texts.length; i++) {
-				int j = this.textRenderer.getWidth(texts[i]);
+				int j = this.textRenderer.getStringWidth(texts[i]);
 				int k = this.width / 2 - j / 2;
 				int l = row(-1 + i);
 				if (mouseX >= k && mouseX <= k + j && mouseY >= l && mouseY <= l + 9) {
@@ -292,7 +292,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 					}
 				}
 
-				this.method_27534(matrices, this.textRenderer, text, this.width / 2, row(-1 + ix), k);
+				this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, row(-1 + ix), k);
 			}
 		}
 

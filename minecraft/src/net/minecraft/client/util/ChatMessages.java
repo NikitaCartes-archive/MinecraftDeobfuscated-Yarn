@@ -1,5 +1,6 @@
 package net.minecraft.client.util;
 
+import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
@@ -23,6 +24,18 @@ public class ChatMessages {
 			textCollector.add(new LiteralText(getRenderedChatMessage(string)).setStyle(style));
 			return Optional.empty();
 		}, Style.EMPTY);
-		return textRenderer.getTextHandler().wrapLines(textCollector.getCombined(), width, Style.EMPTY, false);
+		List<Text> list = textRenderer.getTextHandler().wrapLines(textCollector.getCombined(), width, Style.EMPTY);
+		if (list.isEmpty()) {
+			return Lists.<Text>newArrayList(LiteralText.EMPTY);
+		} else {
+			List<Text> list2 = Lists.<Text>newArrayList();
+			list2.add(list.get(0));
+
+			for (int i = 1; i < list.size(); i++) {
+				list2.add(new LiteralText(" ").append((Text)list.get(i)));
+			}
+
+			return list2;
+		}
 	}
 }

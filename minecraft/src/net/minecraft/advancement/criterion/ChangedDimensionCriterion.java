@@ -1,9 +1,10 @@
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javax.annotation.Nullable;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -17,14 +18,16 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		return ID;
 	}
 
-	public ChangedDimensionCriterion.Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public ChangedDimensionCriterion.Conditions conditionsFromJson(
+		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+	) {
 		DimensionType dimensionType = jsonObject.has("from") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
 		DimensionType dimensionType2 = jsonObject.has("to") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
-		return new ChangedDimensionCriterion.Conditions(dimensionType, dimensionType2);
+		return new ChangedDimensionCriterion.Conditions(extended, dimensionType, dimensionType2);
 	}
 
 	public void trigger(ServerPlayerEntity player, DimensionType from, DimensionType to) {
-		this.test(player.getAdvancementTracker(), conditions -> conditions.matches(from, to));
+		this.test(player, conditions -> conditions.matches(from, to));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -33,14 +36,14 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		@Nullable
 		private final DimensionType to;
 
-		public Conditions(@Nullable DimensionType from, @Nullable DimensionType to) {
-			super(ChangedDimensionCriterion.ID);
+		public Conditions(EntityPredicate.Extended player, @Nullable DimensionType from, @Nullable DimensionType to) {
+			super(ChangedDimensionCriterion.ID, player);
 			this.from = from;
 			this.to = to;
 		}
 
 		public static ChangedDimensionCriterion.Conditions to(DimensionType to) {
-			return new ChangedDimensionCriterion.Conditions(null, to);
+			return new ChangedDimensionCriterion.Conditions(EntityPredicate.Extended.EMPTY, null, to);
 		}
 
 		public boolean matches(DimensionType from, DimensionType to) {
@@ -48,8 +51,8 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 		}
 
 		@Override
-		public JsonElement toJson() {
-			JsonObject jsonObject = new JsonObject();
+		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+			JsonObject jsonObject = super.toJson(predicateSerializer);
 			if (this.from != null) {
 				jsonObject.addProperty("from", DimensionType.getId(this.from).toString());
 			}

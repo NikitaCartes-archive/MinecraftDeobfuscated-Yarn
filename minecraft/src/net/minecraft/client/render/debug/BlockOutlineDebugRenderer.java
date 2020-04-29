@@ -37,7 +37,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {
 			BlockState blockState = blockView.getBlockState(blockPos2);
-			if (blockState.getBlock() != Blocks.AIR) {
+			if (!blockState.isOf(Blocks.AIR)) {
 				VoxelShape voxelShape = blockState.getOutlineShape(blockView, blockPos2);
 
 				for (Box box : voxelShape.getBoundingBoxes()) {

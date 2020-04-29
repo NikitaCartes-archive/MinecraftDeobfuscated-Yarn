@@ -96,7 +96,7 @@ public class TargetBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (!world.isClient() && state.getBlock() != oldState.getBlock()) {
+		if (!world.isClient() && !state.isOf(oldState.getBlock())) {
 			if ((Integer)state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {
 				world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), 18);
 			}

@@ -168,21 +168,21 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconScreen.TEXTURE);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			int k = 219;
-			int l = 0;
+			int i = 219;
+			int j = 0;
 			if (!this.active) {
-				l += this.width * 2;
+				j += this.width * 2;
 			} else if (this.disabled) {
-				l += this.width * 1;
+				j += this.width * 1;
 			} else if (this.isHovered()) {
-				l += this.width * 3;
+				j += this.width * 3;
 			}
 
-			this.drawTexture(matrixStack, this.x, this.y, l, 219, this.width, this.height);
-			this.renderExtra(matrixStack);
+			this.drawTexture(matrices, this.x, this.y, j, 219, this.width, this.height);
+			this.renderExtra(matrices);
 		}
 
 		protected abstract void renderExtra(MatrixStack matrixStack);

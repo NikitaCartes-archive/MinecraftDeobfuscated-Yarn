@@ -5,5 +5,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface ChestAnimationProgress {
-	float getAnimationProgress(float f);
+	float getAnimationProgress(float tickDelta);
 }

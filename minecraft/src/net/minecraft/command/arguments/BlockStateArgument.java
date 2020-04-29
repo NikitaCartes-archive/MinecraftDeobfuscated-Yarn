@@ -30,7 +30,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 
 	public boolean test(CachedBlockPosition cachedBlockPosition) {
 		BlockState blockState = cachedBlockPosition.getBlockState();
-		if (blockState.getBlock() != this.state.getBlock()) {
+		if (!blockState.isOf(this.state.getBlock())) {
 			return false;
 		} else {
 			for (Property<?> property : this.properties) {

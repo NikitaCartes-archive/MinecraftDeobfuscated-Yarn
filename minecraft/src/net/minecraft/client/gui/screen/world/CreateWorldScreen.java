@@ -445,7 +445,7 @@ public class CreateWorldScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
+		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
 		if (this.moreOptionsOpen) {
 			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
 			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
@@ -472,8 +472,8 @@ public class CreateWorldScreen extends Screen {
 			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
 			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.resultFolder") + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
 			this.levelNameField.render(matrices, mouseX, mouseY, delta);
-			this.method_27534(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 155 + 75, 137, -6250336);
-			this.method_27534(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 155 + 75, 149, -6250336);
+			this.drawStringWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 155 + 75, 137, -6250336);
+			this.drawStringWithShadow(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 155 + 75, 149, -6250336);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

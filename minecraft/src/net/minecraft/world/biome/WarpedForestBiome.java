@@ -108,5 +108,6 @@ public class WarpedForestBiome extends Biome {
 		DefaultBiomeFeatures.addNetherOres(this);
 		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
 		this.addSpawn(EntityCategory.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 2, 4));
+		this.addSpawnDensity(EntityType.ENDERMAN, 1.0, 0.08);
 	}
 }

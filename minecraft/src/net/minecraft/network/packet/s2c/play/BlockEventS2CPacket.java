@@ -10,16 +10,16 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
-public class BlockActionS2CPacket implements Packet<ClientPlayPacketListener> {
+public class BlockEventS2CPacket implements Packet<ClientPlayPacketListener> {
 	private BlockPos pos;
 	private int type;
 	private int data;
 	private Block block;
 
-	public BlockActionS2CPacket() {
+	public BlockEventS2CPacket() {
 	}
 
-	public BlockActionS2CPacket(BlockPos pos, Block block, int type, int data) {
+	public BlockEventS2CPacket(BlockPos pos, Block block, int type, int data) {
 		this.pos = pos;
 		this.block = block;
 		this.type = type;
@@ -43,7 +43,7 @@ public class BlockActionS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onBlockAction(this);
+		clientPlayPacketListener.onBlockEvent(this);
 	}
 
 	@Environment(EnvType.CLIENT)

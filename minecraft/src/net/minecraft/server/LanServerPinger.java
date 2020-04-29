@@ -12,6 +12,11 @@ import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Used to send UDP multicasts to notify other clients of a local game on the same network.
+ * 
+ * <p>These multicasts will always be sent to {@code 224.0.2.60:4445} where other clients can listen for local games.
+ */
 @Environment(EnvType.CLIENT)
 public class LanServerPinger extends Thread {
 	private static final AtomicInteger THREAD_ID = new AtomicInteger(0);
@@ -56,6 +61,24 @@ public class LanServerPinger extends Thread {
 		this.running = false;
 	}
 
+	/**
+	 * Creates a server announcement.
+	 * 
+	 * <pre>
+	 * <blockquote>[MOTD]</blockquote> // Specifies the beginning of the message of the day
+	 * <blockquote>A message of the day</blockquote> // The message of the day
+	 * <blockquote>[/MOTD]</blockquote> // Specifies the end of the message of the day.
+	 * <blockquote>[AD]</blockquote> // Specifies the beginning of the address and the port of the local server.
+	 * <blockquote>the address of the local server.</blockquote> // Such as {@code 192.146.2.1:23132}
+	 * <blockquote>[/AD]</blockquote> // Specifies the end of the address and port of the local server.
+	 * </pre>
+	 * 
+	 * <p>An example of a complete announcement:
+	 * {@code [MOTD]A Player's Server[/MOTD][AD]192.168.0.33[/AD]}
+	 * 
+	 * @param motd the message of the day
+	 * @param addressPort the address of the server including the IP address and port
+	 */
 	public static String createAnnouncement(String motd, String addressPort) {
 		return "[MOTD]" + motd + "[/MOTD][AD]" + addressPort + "[/AD]";
 	}

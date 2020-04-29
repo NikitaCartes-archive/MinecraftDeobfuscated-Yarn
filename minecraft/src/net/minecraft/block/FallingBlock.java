@@ -21,12 +21,12 @@ public class FallingBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		world.getBlockTickScheduler().schedule(pos, this, this.method_26154());
+		world.getBlockTickScheduler().schedule(pos, this, this.getFallDelay());
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
-		world.getBlockTickScheduler().schedule(pos, this, this.method_26154());
+		world.getBlockTickScheduler().schedule(pos, this, this.getFallDelay());
 		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
@@ -44,7 +44,10 @@ public class FallingBlock extends Block {
 	protected void configureFallingBlockEntity(FallingBlockEntity entity) {
 	}
 
-	protected int method_26154() {
+	/**
+	 * Gets the amount of time in ticks this block will wait before attempting to start falling.
+	 */
+	protected int getFallDelay() {
 		return 2;
 	}
 
@@ -74,7 +77,7 @@ public class FallingBlock extends Block {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getColor(BlockState state, BlockView blockView, BlockPos blockPos) {
+	public int getColor(BlockState state, BlockView world, BlockPos pos) {
 		return -16777216;
 	}
 }

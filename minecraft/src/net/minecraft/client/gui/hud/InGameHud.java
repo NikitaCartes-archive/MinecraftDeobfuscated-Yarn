@@ -245,8 +245,8 @@ public class InGameHud extends DrawableHelper {
 					}
 
 					int l = k << 24 & 0xFF000000;
-					int m = textRenderer.getWidth(this.overlayMessage);
-					this.drawTextBackground(matrixStack, textRenderer, -4, m);
+					int m = textRenderer.getStringWidth(this.overlayMessage);
+					this.drawTextBackground(matrixStack, textRenderer, -4, m, 16777215 | l);
 					textRenderer.draw(matrixStack, this.overlayMessage, (float)(-m / 2), -4.0F, j | l);
 					RenderSystem.disableBlend();
 					RenderSystem.popMatrix();
@@ -277,15 +277,15 @@ public class InGameHud extends DrawableHelper {
 					RenderSystem.pushMatrix();
 					RenderSystem.scalef(4.0F, 4.0F, 4.0F);
 					int j = kx << 24 & 0xFF000000;
-					int l = textRenderer.getWidth(this.title);
-					this.drawTextBackground(matrixStack, textRenderer, -10, l);
+					int l = textRenderer.getStringWidth(this.title);
+					this.drawTextBackground(matrixStack, textRenderer, -10, l, 16777215 | j);
 					textRenderer.drawWithShadow(matrixStack, this.title, (float)(-l / 2), -10.0F, 16777215 | j);
 					RenderSystem.popMatrix();
 					if (this.subtitle != null) {
 						RenderSystem.pushMatrix();
 						RenderSystem.scalef(2.0F, 2.0F, 2.0F);
-						int m = textRenderer.getWidth(this.subtitle);
-						this.drawTextBackground(matrixStack, textRenderer, 5, m);
+						int m = textRenderer.getStringWidth(this.subtitle);
+						this.drawTextBackground(matrixStack, textRenderer, 5, m, 16777215 | j);
 						textRenderer.drawWithShadow(matrixStack, this.subtitle, (float)(-m / 2), 5.0F, 16777215 | j);
 						RenderSystem.popMatrix();
 					}
@@ -336,11 +336,11 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.enableAlphaTest();
 	}
 
-	private void drawTextBackground(MatrixStack matrixStack, TextRenderer textRenderer, int i, int j) {
-		int k = this.client.options.getTextBackgroundColor(0.0F);
-		if (k != 0) {
-			int l = -j / 2;
-			fill(matrixStack, l - 2, i - 2, l + j + 2, i + 9 + 2, k);
+	private void drawTextBackground(MatrixStack matrixStack, TextRenderer textRenderer, int i, int j, int k) {
+		int l = this.client.options.getTextBackgroundColor(0.0F);
+		if (l != 0) {
+			int m = -j / 2;
+			fill(matrixStack, m - 2, i - 2, m + j + 2, i + 9 + 2, BackgroundHelper.ColorMixer.mixColor(l, k));
 		}
 	}
 
@@ -573,7 +573,7 @@ public class InGameHud extends DrawableHelper {
 				mutableText.formatted(Formatting.ITALIC);
 			}
 
-			int i = this.getFontRenderer().getWidth(mutableText);
+			int i = this.getFontRenderer().getStringWidth(mutableText);
 			int j = (this.scaledWidth - i) / 2;
 			int k = this.scaledHeight - 59;
 			if (!this.client.interactionManager.hasStatusBars()) {
@@ -627,7 +627,7 @@ public class InGameHud extends DrawableHelper {
 
 		List<Pair<ScoreboardPlayerScore, Text>> list2 = Lists.<Pair<ScoreboardPlayerScore, Text>>newArrayListWithCapacity(collection.size());
 		Text text = scoreboardObjective.getDisplayName();
-		int i = this.getFontRenderer().getWidth(text);
+		int i = this.getFontRenderer().getStringWidth(text);
 		int j = i;
 		int k = this.getFontRenderer().getWidth(": ");
 
@@ -635,7 +635,7 @@ public class InGameHud extends DrawableHelper {
 			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
 			Text text2 = Team.modifyText(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
 			list2.add(Pair.of(scoreboardPlayerScore, text2));
-			j = Math.max(j, this.getFontRenderer().getWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
+			j = Math.max(j, this.getFontRenderer().getStringWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
 		}
 
 		int l = collection.size() * 9;

@@ -38,11 +38,11 @@ public class MusicDiscItem extends Item {
 		World world = context.getWorld();
 		BlockPos blockPos = context.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.getBlock() == Blocks.JUKEBOX && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
+		if (blockState.isOf(Blocks.JUKEBOX) && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
 			ItemStack itemStack = context.getStack();
 			if (!world.isClient) {
 				((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
-				world.playLevelEvent(null, 1010, blockPos, Item.getRawId(this));
+				world.syncWorldEvent(null, 1010, blockPos, Item.getRawId(this));
 				itemStack.decrement(1);
 				PlayerEntity playerEntity = context.getPlayer();
 				if (playerEntity != null) {

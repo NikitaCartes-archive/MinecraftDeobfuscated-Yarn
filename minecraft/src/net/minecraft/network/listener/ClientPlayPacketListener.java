@@ -1,9 +1,9 @@
 package net.minecraft.network.listener;
 
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.BlockActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
@@ -124,7 +124,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onBlockEntityUpdate(BlockEntityUpdateS2CPacket packet);
 
-	void onBlockAction(BlockActionS2CPacket packet);
+	void onBlockEvent(BlockEventS2CPacket packet);
 
 	void onBlockUpdate(BlockUpdateS2CPacket packet);
 

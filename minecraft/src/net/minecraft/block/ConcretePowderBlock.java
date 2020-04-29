@@ -21,7 +21,7 @@ public class ConcretePowderBlock extends FallingBlock {
 
 	@Override
 	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
-		if (method_24279(world, pos, currentStateInPos)) {
+		if (shouldHarden(world, pos, currentStateInPos)) {
 			world.setBlockState(pos, this.hardenedState, 3);
 		}
 	}
@@ -31,11 +31,11 @@ public class ConcretePowderBlock extends FallingBlock {
 		BlockView blockView = ctx.getWorld();
 		BlockPos blockPos = ctx.getBlockPos();
 		BlockState blockState = blockView.getBlockState(blockPos);
-		return method_24279(blockView, blockPos, blockState) ? this.hardenedState : super.getPlacementState(ctx);
+		return shouldHarden(blockView, blockPos, blockState) ? this.hardenedState : super.getPlacementState(ctx);
 	}
 
-	private static boolean method_24279(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return hardensIn(blockState) || hardensOnAnySide(blockView, blockPos);
+	private static boolean shouldHarden(BlockView world, BlockPos pos, BlockState state) {
+		return hardensIn(state) || hardensOnAnySide(world, pos);
 	}
 
 	private static boolean hardensOnAnySide(BlockView world, BlockPos pos) {
@@ -68,7 +68,7 @@ public class ConcretePowderBlock extends FallingBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getColor(BlockState state, BlockView blockView, BlockPos blockPos) {
-		return state.getTopMaterialColor(blockView, blockPos).color;
+	public int getColor(BlockState state, BlockView world, BlockPos pos) {
+		return state.getTopMaterialColor(world, pos).color;
 	}
 }

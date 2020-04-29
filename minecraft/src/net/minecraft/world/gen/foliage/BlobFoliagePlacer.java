@@ -36,22 +36,22 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		ModifiableTestableWorld world,
 		Random random,
-		TreeFeatureConfig treeFeatureConfig,
+		TreeFeatureConfig config,
 		int trunkHeight,
-		FoliagePlacer.class_5208 arg,
+		FoliagePlacer.TreeNode treeNode,
 		int foliageHeight,
 		int radius,
 		Set<BlockPos> leaves,
 		int i
 	) {
 		for (int j = i; j >= i - foliageHeight; j--) {
-			int k = Math.max(radius + arg.method_27389() - 1 - j / 2, 0);
-			this.generate(world, random, treeFeatureConfig, arg.method_27388(), k, leaves, j, arg.method_27390());
+			int k = Math.max(radius + treeNode.getFoliageRadius() - 1 - j / 2, 0);
+			this.generate(world, random, config, treeNode.getCenter(), k, leaves, j, treeNode.isGiantTrunk());
 		}
 	}
 
 	@Override
-	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig treeFeatureConfig) {
+	public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
 		return this.height;
 	}
 

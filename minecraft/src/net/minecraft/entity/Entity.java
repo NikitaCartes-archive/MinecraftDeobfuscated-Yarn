@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,6 +40,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -155,7 +158,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public int age;
 	private int fireTicks = -this.getBurningDuration();
 	protected boolean touchingWater;
-	protected double waterHeight;
+	protected Object2DoubleMap<Tag<Fluid>> fluidHeight = new Object2DoubleArrayMap<>(2);
 	protected boolean submergedInWater;
 	protected boolean inLava;
 	public int timeUntilRegen;
@@ -308,7 +311,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.removed = true;
 	}
 
-	protected void setPose(EntityPose pose) {
+	public void setPose(EntityPose pose) {
 		this.dataTracker.set(POSE, pose);
 	}
 
@@ -837,7 +840,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected void playStepSound(BlockPos pos, BlockState state) {
 		if (!state.getMaterial().isLiquid()) {
 			BlockState blockState = this.world.getBlockState(pos.up());
-			BlockSoundGroup blockSoundGroup = blockState.getBlock() == Blocks.SNOW ? blockState.getSoundGroup() : state.getSoundGroup();
+			BlockSoundGroup blockSoundGroup = blockState.isOf(Blocks.SNOW) ? blockState.getSoundGroup() : state.getSoundGroup();
 			this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 		}
 	}
@@ -924,7 +927,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	private boolean isInsideBubbleColumn() {
-		return this.world.getBlockState(this.getBlockPos()).getBlock() == Blocks.BUBBLE_COLUMN;
+		return this.world.getBlockState(this.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
 	}
 
 	public boolean isTouchingWaterOrRain() {
@@ -962,6 +965,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected boolean updateWaterState() {
+		this.fluidHeight.clear();
 		this.checkWaterState();
 		if (this.isTouchingWater()) {
 			return true;
@@ -1416,6 +1420,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.pitch = listTag3.getFloat(1);
 			this.prevYaw = this.yaw;
 			this.prevPitch = this.pitch;
+			if (listTag3.isEmpty() && this instanceof ShulkerEntity) {
+				this.yaw = 180.0F;
+				this.prevYaw = 180.0F;
+			}
+
 			this.setHeadYaw(this.yaw);
 			this.setYaw(this.yaw);
 			this.fallDistance = tag.getFloat("FallDistance");
@@ -2020,7 +2029,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	private static Text removeClickEvents(Text textComponent) {
-		MutableText mutableText = textComponent.shallowCopy().styled(style -> style.withClickEvent(null));
+		MutableText mutableText = textComponent.copy().styled(style -> style.withClickEvent(null));
 
 		for (Text text : textComponent.getSiblings()) {
 			mutableText.append(removeClickEvents(text));
@@ -2068,7 +2077,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.getClass().getSimpleName(),
 			this.getName().asString(),
 			this.entityId,
-			this.world == null ? "~NULL~" : this.world.getLevelProperties().getLevelName(),
+			this.world == null ? "~NULL~" : this.world.toString(),
 			this.getX(),
 			this.getY(),
 			this.getZ()
@@ -2116,7 +2125,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			float f = 0.0F;
 			BlockPos blockPos;
 			if (dimensionType == DimensionType.THE_END && newDimension == DimensionType.OVERWORLD) {
-				blockPos = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.getSpawnPos());
+				blockPos = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.method_27911());
 			} else if (newDimension == DimensionType.THE_END) {
 				blockPos = serverWorld2.getForcedSpawnPoint();
 			} else {
@@ -2767,13 +2776,13 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.setVelocity(this.getVelocity().add(vec3d.multiply(d)));
 			}
 
-			this.waterHeight = e;
+			this.fluidHeight.put(tag, e);
 			return bl2;
 		}
 	}
 
-	public double getWaterHeight() {
-		return this.waterHeight;
+	public double getFluidHeight(Tag<Fluid> fluid) {
+		return this.fluidHeight.getDouble(fluid);
 	}
 
 	public final float getWidth() {

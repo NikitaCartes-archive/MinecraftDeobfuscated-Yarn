@@ -32,15 +32,15 @@ public interface EntityView {
 		return this.getEntities(except, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
-		if (voxelShape.isEmpty()) {
+	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
+		if (shape.isEmpty()) {
 			return true;
 		} else {
-			for (Entity entity2 : this.getEntities(entity, voxelShape.getBoundingBox())) {
-				if (!entity2.removed
-					&& entity2.inanimate
-					&& (entity == null || !entity2.isConnectedThroughVehicle(entity))
-					&& VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cuboid(entity2.getBoundingBox()), BooleanBiFunction.AND)) {
+			for (Entity entity : this.getEntities(except, shape.getBoundingBox())) {
+				if (!entity.removed
+					&& entity.inanimate
+					&& (except == null || !entity.isConnectedThroughVehicle(except))
+					&& VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND)) {
 					return false;
 				}
 			}

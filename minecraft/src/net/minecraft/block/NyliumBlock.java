@@ -43,11 +43,11 @@ public class NyliumBlock extends Block implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		Block block = world.getBlockState(pos).getBlock();
+		BlockState blockState = world.getBlockState(pos);
 		BlockPos blockPos = pos.up();
-		if (block == Blocks.CRIMSON_NYLIUM) {
+		if (blockState.isOf(Blocks.CRIMSON_NYLIUM)) {
 			NetherForestVegetationFeature.method_26264(world, random, blockPos, DefaultBiomeFeatures.CRIMSON_ROOTS_CONFIG, 3, 1);
-		} else if (block == Blocks.WARPED_NYLIUM) {
+		} else if (blockState.isOf(Blocks.WARPED_NYLIUM)) {
 			NetherForestVegetationFeature.method_26264(world, random, blockPos, DefaultBiomeFeatures.WARPED_ROOTS_CONFIG, 3, 1);
 			NetherForestVegetationFeature.method_26264(world, random, blockPos, DefaultBiomeFeatures.NETHER_SPROUTS_CONFIG, 3, 1);
 			if (random.nextInt(8) == 0) {

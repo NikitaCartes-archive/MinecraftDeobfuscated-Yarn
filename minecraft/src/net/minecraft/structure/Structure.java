@@ -737,7 +737,7 @@ public class Structure {
 		public List<Structure.StructureBlockInfo> getAllOf(Block block) {
 			return (List<Structure.StructureBlockInfo>)this.blockToInfos
 				.computeIfAbsent(
-					block, blockx -> (List)this.infos.stream().filter(structureBlockInfo -> structureBlockInfo.state.getBlock() == blockx).collect(Collectors.toList())
+					block, blockx -> (List)this.infos.stream().filter(structureBlockInfo -> structureBlockInfo.state.isOf(blockx)).collect(Collectors.toList())
 				);
 		}
 	}
