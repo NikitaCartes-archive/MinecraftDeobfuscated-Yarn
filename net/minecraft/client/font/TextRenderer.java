@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TextRenderer {
-    private static final Vector3f FORWARD_SHIFT = new Vector3f(0.0f, 0.0f, 0.001f);
+    private static final Vector3f FORWARD_SHIFT = new Vector3f(0.0f, 0.0f, 0.03f);
     public final int fontHeight = 9;
     public final Random random = new Random();
     private final Function<Identifier, FontStorage> fontStorageAccessor;
@@ -81,12 +81,12 @@ public class TextRenderer {
         }
     }
 
-    private int draw(String text, float x, float y, int color, Matrix4f matrix, boolean shadow, boolean rightToLeft) {
+    private int draw(String text, float x, float y, int color, Matrix4f matrix, boolean shadow, boolean mirror) {
         if (text == null) {
             return 0;
         }
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 0xF000F0, rightToLeft);
+        int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 0xF000F0, mirror);
         immediate.draw();
         return i;
     }
@@ -117,8 +117,8 @@ public class TextRenderer {
         return argb;
     }
 
-    private int drawInternal(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light, boolean rightToLeft) {
-        if (rightToLeft) {
+    private int drawInternal(String text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light, boolean mirror) {
+        if (mirror) {
             text = this.mirror(text);
         }
         color = TextRenderer.tweakTransparency(color);
@@ -165,7 +165,7 @@ public class TextRenderer {
         return MathHelper.ceil(this.handler.getWidth(text));
     }
 
-    public int getWidth(Text text) {
+    public int getStringWidth(Text text) {
         return MathHelper.ceil(this.handler.getWidth(text));
     }
 
@@ -280,10 +280,10 @@ public class TextRenderer {
             float m = glyph.getAdvance(bl);
             float f2 = n = this.shadow ? 1.0f : 0.0f;
             if (style.isStrikethrough()) {
-                this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0f, this.y + n + 4.5f, this.x + n + m, this.y + n + 4.5f - 1.0f, -0.01f, g, h, l, f));
+                this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0f, this.y + n + 4.5f, this.x + n + m, this.y + n + 4.5f - 1.0f, 0.01f, g, h, l, f));
             }
             if (style.isUnderlined()) {
-                this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0f, this.y + n + 9.0f, this.x + n + m, this.y + n + 9.0f - 1.0f, -0.01f, g, h, l, f));
+                this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0f, this.y + n + 9.0f, this.x + n + m, this.y + n + 9.0f - 1.0f, 0.01f, g, h, l, f));
             }
             this.x += m;
             return true;
@@ -295,7 +295,7 @@ public class TextRenderer {
                 float g = (float)(underlineColor >> 16 & 0xFF) / 255.0f;
                 float h = (float)(underlineColor >> 8 & 0xFF) / 255.0f;
                 float i = (float)(underlineColor & 0xFF) / 255.0f;
-                this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0f, this.y + 9.0f, this.x + 1.0f, this.y - 1.0f, 0.01f, g, h, i, f));
+                this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0f, this.y + 9.0f, this.x + 1.0f, this.y - 1.0f, -0.01f, g, h, i, f));
             }
             if (this.rectangles != null) {
                 GlyphRenderer glyphRenderer = TextRenderer.this.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();

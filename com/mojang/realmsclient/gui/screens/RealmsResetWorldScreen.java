@@ -181,7 +181,7 @@ extends RealmsScreenWithCallback {
         }
         DrawableHelper.drawTexture(matrixStack, i, j + 12, 0.0f, 0.0f, 60, 60, 60, 60);
         int k = bl ? 0xA0A0A0 : 0xFFFFFF;
-        this.method_27534(matrixStack, this.textRenderer, text, i + 30, j, k);
+        this.drawStringWithShadow(matrixStack, this.textRenderer, text, i + 30, j, k);
     }
 
     @Override
@@ -271,8 +271,8 @@ extends RealmsScreenWithCallback {
         }
 
         @Override
-        public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
-            RealmsResetWorldScreen.this.drawFrame(matrixStack, this.x, this.y, this.getMessage(), this.image, this.isHovered(), this.isMouseOver(i, j));
+        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            RealmsResetWorldScreen.this.drawFrame(matrices, this.x, this.y, this.getMessage(), this.image, this.isHovered(), this.isMouseOver(mouseX, mouseY));
         }
     }
 

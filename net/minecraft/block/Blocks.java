@@ -552,7 +552,7 @@ public class Blocks {
     public static final Block HEAVY_WEIGHTED_PRESSURE_PLATE = Blocks.register("heavy_weighted_pressure_plate", new WeightedPressurePlateBlock(150, AbstractBlock.Settings.of(Material.METAL).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block COMPARATOR = Blocks.register("comparator", new ComparatorBlock(AbstractBlock.Settings.of(Material.PART).breakInstantly().sounds(BlockSoundGroup.WOOD)));
     public static final Block DAYLIGHT_DETECTOR = Blocks.register("daylight_detector", new DaylightDetectorBlock(AbstractBlock.Settings.of(Material.WOOD).strength(0.2f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block REDSTONE_BLOCK = Blocks.register("redstone_block", new RedstoneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.LAVA).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL)));
+    public static final Block REDSTONE_BLOCK = Blocks.register("redstone_block", new RedstoneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.LAVA).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL).solidBlock(Blocks::never)));
     public static final Block NETHER_QUARTZ_ORE = Blocks.register("nether_quartz_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(3.0f, 3.0f).sounds(BlockSoundGroup.NETHER_ORE)));
     public static final Block HOPPER = Blocks.register("hopper", new HopperBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.STONE).strength(3.0f, 4.8f).sounds(BlockSoundGroup.METAL).nonOpaque()));
     public static final Block QUARTZ_BLOCK = Blocks.register("quartz_block", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.QUARTZ).strength(0.8f)));
@@ -726,7 +726,7 @@ public class Blocks {
     public static final Block RED_NETHER_BRICKS = Blocks.register("red_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICK)));
     public static final Block BONE_BLOCK = Blocks.register("bone_block", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(2.0f).sounds(BlockSoundGroup.BONE)));
     public static final Block STRUCTURE_VOID = Blocks.register("structure_void", new StructureVoidBlock(AbstractBlock.Settings.of(Material.STRUCTURE_VOID).noCollision().dropsNothing()));
-    public static final Block OBSERVER = Blocks.register("observer", new ObserverBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f)));
+    public static final Block OBSERVER = Blocks.register("observer", new ObserverBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f).solidBlock(Blocks::never)));
     public static final Block SHULKER_BOX = Blocks.register("shulker_box", Blocks.createShulkerBoxBlock(null, AbstractBlock.Settings.of(Material.SHULKER_BOX)));
     public static final Block WHITE_SHULKER_BOX = Blocks.register("white_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.WHITE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.WHITE)));
     public static final Block ORANGE_SHULKER_BOX = Blocks.register("orange_shulker_box", Blocks.createShulkerBoxBlock(DyeColor.ORANGE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MaterialColor.ORANGE)));

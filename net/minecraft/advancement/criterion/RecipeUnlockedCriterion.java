@@ -3,12 +3,12 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -24,32 +24,36 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe"));
-        return new Conditions(identifier);
+        return new Conditions(extended, identifier);
     }
 
     public void trigger(ServerPlayerEntity player, Recipe<?> recipe) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(recipe));
+        this.test(player, conditions -> conditions.matches(recipe));
+    }
+
+    public static Conditions create(Identifier id) {
+        return new Conditions(EntityPredicate.Extended.EMPTY, id);
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final Identifier recipe;
 
-        public Conditions(Identifier identifier) {
-            super(ID);
-            this.recipe = identifier;
+        public Conditions(EntityPredicate.Extended player, Identifier recipe) {
+            super(ID, player);
+            this.recipe = recipe;
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.addProperty("recipe", this.recipe.toString());
             return jsonObject;
         }

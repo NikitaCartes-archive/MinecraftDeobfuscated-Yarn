@@ -54,14 +54,14 @@ implements Shearable {
 
     @Override
     public float getPathfindingFavor(BlockPos pos, WorldView world) {
-        if (world.getBlockState(pos.down()).getBlock() == Blocks.MYCELIUM) {
+        if (world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM)) {
             return 10.0f;
         }
         return world.getBrightness(pos) - 0.5f;
     }
 
     public static boolean canSpawn(EntityType<MooshroomEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return world.getBlockState(pos.down()).getBlock() == Blocks.MYCELIUM && world.getBaseLightLevel(pos, 0) > 8;
+        return world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM) && world.getBaseLightLevel(pos, 0) > 8;
     }
 
     @Override

@@ -60,6 +60,8 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final int maxWorldSize;
     public final boolean syncChunkWrites;
     public final boolean enableJmxMonitoring;
+    public final boolean enableStatus;
+    public final int entityBroadcastRangePercentage;
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout;
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList;
 
@@ -83,6 +85,8 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         this.maxWorldSize = this.transformedParseInt("max-world-size", integer -> MathHelper.clamp(integer, 1, 29999984), 29999984);
         this.syncChunkWrites = this.parseBoolean("sync-chunk-writes", true);
         this.enableJmxMonitoring = this.parseBoolean("enable-jmx-monitoring", false);
+        this.enableStatus = this.parseBoolean("enable-status", true);
+        this.entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", integer -> MathHelper.clamp(integer, 10, 1000), 100);
         this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
         this.whiteList = this.booleanAccessor("white-list", false);
     }

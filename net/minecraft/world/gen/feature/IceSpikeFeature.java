@@ -31,7 +31,7 @@ extends Feature<DefaultFeatureConfig> {
         while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
             blockPos = blockPos.down();
         }
-        if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
+        if (!iWorld.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
             return false;
         }
         blockPos = blockPos.up(random.nextInt(4));

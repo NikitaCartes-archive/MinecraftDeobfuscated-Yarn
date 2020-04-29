@@ -38,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
 public class LoomScreen
 extends HandledScreen<LoomScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
-    private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - 5 - 1 + 4 - 1) / 4;
+    private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - BannerPattern.field_24417 - 1 + 4 - 1) / 4;
     private final ModelPart bannerField;
     @Nullable
     private List<Pair<BannerPattern, DyeColor>> field_21841;
@@ -113,7 +113,7 @@ extends HandledScreen<LoomScreenHandler> {
             int m = j + 60;
             int n = k + 13;
             int o = this.firstPatternButtonId + 16;
-            for (int p = this.firstPatternButtonId; p < o && p < BannerPattern.COUNT - 5; ++p) {
+            for (int p = this.firstPatternButtonId; p < o && p < BannerPattern.COUNT - BannerPattern.field_24417; ++p) {
                 int q = p - this.firstPatternButtonId;
                 int r = m + q % 4 * 14;
                 int s = n + q / 4 * 14;

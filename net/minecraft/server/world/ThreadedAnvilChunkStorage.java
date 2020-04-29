@@ -1032,6 +1032,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             }
         }
 
+        private int adjustTrackingDistance(int initialDistance) {
+            return ThreadedAnvilChunkStorage.this.world.getServer().adjustTrackingDistance(initialDistance);
+        }
+
         private int getMaxTrackDistance() {
             Collection<Entity> collection = this.entity.getPassengersDeep();
             int i = this.maxDistance;
@@ -1040,7 +1044,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 if (j <= i) continue;
                 i = j;
             }
-            return i;
+            return this.adjustTrackingDistance(i);
         }
 
         public void updateCameraPosition(List<ServerPlayerEntity> players) {

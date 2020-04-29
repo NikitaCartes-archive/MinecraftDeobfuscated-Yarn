@@ -29,10 +29,10 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.class_5208> generate(ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
+    public List<FoliagePlacer.TreeNode> generate(ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
         int o;
         ForkingTrunkPlacer.method_27400(world, pos.down());
-        ArrayList<FoliagePlacer.class_5208> list = Lists.newArrayList();
+        ArrayList<FoliagePlacer.TreeNode> list = Lists.newArrayList();
         Direction direction = Direction.Type.HORIZONTAL.random(random);
         int i = trunkHeight - random.nextInt(4) - 1;
         int j = 3 - random.nextInt(3);
@@ -50,7 +50,7 @@ extends TrunkPlacer {
             if (!ForkingTrunkPlacer.method_27402(world, random, mutable.set(k, o, l), set, blockBox, treeFeatureConfig)) continue;
             m = o + 1;
         }
-        list.add(new FoliagePlacer.class_5208(new BlockPos(k, m, l), 1, false));
+        list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 1, false));
         k = pos.getX();
         l = pos.getZ();
         Direction direction2 = Direction.Type.HORIZONTAL.random(random);
@@ -65,7 +65,7 @@ extends TrunkPlacer {
                 m = r + 1;
             }
             if (m > 1) {
-                list.add(new FoliagePlacer.class_5208(new BlockPos(k, m, l), 0, false));
+                list.add(new FoliagePlacer.TreeNode(new BlockPos(k, m, l), 0, false));
             }
         }
         return list;

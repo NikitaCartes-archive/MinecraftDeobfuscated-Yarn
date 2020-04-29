@@ -122,11 +122,11 @@ extends MoveToTargetPosGoal {
     @Nullable
     private BlockPos tweakToProperPos(BlockPos pos, BlockView world) {
         BlockPos[] blockPoss;
-        if (world.getBlockState(pos).getBlock() == this.targetBlock) {
+        if (world.getBlockState(pos).isOf(this.targetBlock)) {
             return pos;
         }
         for (BlockPos blockPos : blockPoss = new BlockPos[]{pos.down(), pos.west(), pos.east(), pos.north(), pos.south(), pos.down().down()}) {
-            if (world.getBlockState(blockPos).getBlock() != this.targetBlock) continue;
+            if (!world.getBlockState(blockPos).isOf(this.targetBlock)) continue;
             return blockPos;
         }
         return null;
@@ -136,7 +136,7 @@ extends MoveToTargetPosGoal {
     protected boolean isTargetPos(WorldView world, BlockPos pos) {
         Chunk chunk = world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false);
         if (chunk != null) {
-            return chunk.getBlockState(pos).getBlock() == this.targetBlock && chunk.getBlockState(pos.up()).isAir() && chunk.getBlockState(pos.up(2)).isAir();
+            return chunk.getBlockState(pos).isOf(this.targetBlock) && chunk.getBlockState(pos.up()).isAir() && chunk.getBlockState(pos.up(2)).isAir();
         }
         return false;
     }

@@ -50,7 +50,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
@@ -88,13 +88,13 @@ implements BlockEntityProvider {
         if (world.isClient) {
             return ActionResult.CONSUME;
         }
-        if (state.get(PART) != BedPart.HEAD && (state = world.getBlockState(pos = pos.offset(state.get(FACING)))).getBlock() != this) {
+        if (state.get(PART) != BedPart.HEAD && !(state = world.getBlockState(pos = pos.offset(state.get(FACING)))).isOf(this)) {
             return ActionResult.CONSUME;
         }
-        if (!BedBlock.method_27352(world, pos)) {
+        if (!BedBlock.isOverworld(world, pos)) {
             world.removeBlock(pos, false);
             BlockPos blockPos = pos.offset(state.get(FACING).getOpposite());
-            if (world.getBlockState(blockPos).getBlock() == this) {
+            if (world.getBlockState(blockPos).isOf(this)) {
                 world.removeBlock(blockPos, false);
             }
             world.createExplosion(null, DamageSource.netherBed(), (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0f, true, Explosion.DestructionType.DESTROY);
@@ -114,8 +114,8 @@ implements BlockEntityProvider {
         return ActionResult.SUCCESS;
     }
 
-    public static boolean method_27352(World world, BlockPos blockPos) {
-        return world.dimension.canPlayersSleep() && world.getBiome(blockPos) != Biomes.NETHER_WASTES;
+    public static boolean isOverworld(World world, BlockPos pos) {
+        return world.dimension.getType() == DimensionType.OVERWORLD;
     }
 
     private boolean isFree(World world, BlockPos pos) {
@@ -137,11 +137,11 @@ implements BlockEntityProvider {
         if (entity.bypassesLandingEffects()) {
             super.onEntityLand(world, entity);
         } else {
-            this.method_21838(entity);
+            this.bounceEntity(entity);
         }
     }
 
-    private void method_21838(Entity entity) {
+    private void bounceEntity(Entity entity) {
         Vec3d vec3d = entity.getVelocity();
         if (vec3d.y < 0.0) {
             double d = entity instanceof LivingEntity ? 1.0 : 0.8;
@@ -152,7 +152,7 @@ implements BlockEntityProvider {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         if (direction == BedBlock.getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
-            if (newState.getBlock() == this && newState.get(PART) != state.get(PART)) {
+            if (newState.isOf(this) && newState.get(PART) != state.get(PART)) {
                 return (BlockState)state.with(OCCUPIED, newState.get(OCCUPIED));
             }
             return Blocks.AIR.getDefaultState();
@@ -174,9 +174,9 @@ implements BlockEntityProvider {
         BedPart bedPart = state.get(PART);
         BlockPos blockPos = pos.offset(BedBlock.getDirectionTowardsOtherPart(bedPart, state.get(FACING)));
         BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.getBlock() == this && blockState.get(PART) != bedPart) {
+        if (blockState.isOf(this) && blockState.get(PART) != bedPart) {
             world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-            world.playLevelEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+            world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
             if (!world.isClient && !player.isCreative()) {
                 ItemStack itemStack = player.getMainHandStack();
                 BedBlock.dropStacks(state, world, pos, null, player, itemStack);
@@ -216,22 +216,22 @@ implements BlockEntityProvider {
         return EAST_SHAPE;
     }
 
-    public static Direction getOppositePartDirection(BlockState blockState) {
-        Direction direction = blockState.get(FACING);
-        return blockState.get(PART) == BedPart.HEAD ? direction.getOpposite() : direction;
+    public static Direction getOppositePartDirection(BlockState state) {
+        Direction direction = state.get(FACING);
+        return state.get(PART) == BedPart.HEAD ? direction.getOpposite() : direction;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static DoubleBlockProperties.Type method_24164(BlockState blockState) {
-        BedPart bedPart = blockState.get(PART);
+    public static DoubleBlockProperties.Type getBedPart(BlockState state) {
+        BedPart bedPart = state.get(PART);
         if (bedPart == BedPart.HEAD) {
             return DoubleBlockProperties.Type.FIRST;
         }
         return DoubleBlockProperties.Type.SECOND;
     }
 
-    public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, WorldView worldView, BlockPos pos, int index) {
-        Direction direction = worldView.getBlockState(pos).get(FACING);
+    public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, WorldView world, BlockPos pos, int index) {
+        Direction direction = world.getBlockState(pos).get(FACING);
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
@@ -243,7 +243,7 @@ implements BlockEntityProvider {
             for (int q = m; q <= o; ++q) {
                 for (int r = n; r <= p; ++r) {
                     BlockPos blockPos = new BlockPos(q, j, r);
-                    Optional<Vec3d> optional = BedBlock.canWakeUpAt(type, worldView, blockPos);
+                    Optional<Vec3d> optional = BedBlock.canWakeUpAt(type, world, blockPos);
                     if (!optional.isPresent()) continue;
                     if (index > 0) {
                         --index;
@@ -256,16 +256,16 @@ implements BlockEntityProvider {
         return Optional.empty();
     }
 
-    public static Optional<Vec3d> canWakeUpAt(EntityType<?> type, WorldView worldView, BlockPos pos) {
-        VoxelShape voxelShape = worldView.getBlockState(pos).getCollisionShape(worldView, pos);
+    public static Optional<Vec3d> canWakeUpAt(EntityType<?> type, WorldView world, BlockPos pos) {
+        VoxelShape voxelShape = world.getBlockState(pos).getCollisionShape(world, pos);
         if (voxelShape.getMaximum(Direction.Axis.Y) > 0.4375) {
             return Optional.empty();
         }
         BlockPos.Mutable mutable = pos.mutableCopy();
-        while (mutable.getY() >= 0 && pos.getY() - mutable.getY() <= 2 && worldView.getBlockState(mutable).getCollisionShape(worldView, mutable).isEmpty()) {
+        while (mutable.getY() >= 0 && pos.getY() - mutable.getY() <= 2 && world.getBlockState(mutable).getCollisionShape(world, mutable).isEmpty()) {
             mutable.move(Direction.DOWN);
         }
-        VoxelShape voxelShape2 = worldView.getBlockState(mutable).getCollisionShape(worldView, mutable);
+        VoxelShape voxelShape2 = world.getBlockState(mutable).getCollisionShape(world, mutable);
         if (voxelShape2.isEmpty()) {
             return Optional.empty();
         }
@@ -275,7 +275,7 @@ implements BlockEntityProvider {
         }
         float f = type.getWidth() / 2.0f;
         Vec3d vec3d = new Vec3d((double)mutable.getX() + 0.5, d, (double)mutable.getZ() + 0.5);
-        if (worldView.doesNotCollide(new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)type.getHeight(), vec3d.z + (double)f))) {
+        if (world.doesNotCollide(new Box(vec3d.x - (double)f, vec3d.y, vec3d.z - (double)f, vec3d.x + (double)f, vec3d.y + (double)type.getHeight(), vec3d.z + (double)f))) {
             return Optional.of(vec3d);
         }
         return Optional.empty();

@@ -12,11 +12,13 @@ import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerQueryNetworkHandler;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class ServerHandshakeNetworkHandler
 implements ServerHandshakePacketListener {
+    private static final Text IGNORING_STATUS_REQUEST_MESSAGE = new LiteralText("Ignoring status request");
     private final MinecraftServer server;
     private final ClientConnection connection;
 
@@ -46,8 +48,12 @@ implements ServerHandshakePacketListener {
                 break;
             }
             case STATUS: {
-                this.connection.setState(NetworkState.STATUS);
-                this.connection.setPacketListener(new ServerQueryNetworkHandler(this.server, this.connection));
+                if (this.server.acceptsStatusQuery()) {
+                    this.connection.setState(NetworkState.STATUS);
+                    this.connection.setPacketListener(new ServerQueryNetworkHandler(this.server, this.connection));
+                    break;
+                }
+                this.connection.disconnect(IGNORING_STATUS_REQUEST_MESSAGE);
                 break;
             }
             default: {

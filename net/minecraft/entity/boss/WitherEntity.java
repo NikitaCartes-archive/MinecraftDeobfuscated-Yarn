@@ -219,7 +219,7 @@ RangedAttackMob {
                 Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
                 this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0f, false, destructionType);
                 if (!this.isSilent()) {
-                    this.world.playGlobalEvent(1023, this.getBlockPos(), 0);
+                    this.world.syncGlobalEvent(1023, this.getBlockPos(), 0);
                 }
             }
             this.setInvulTimer(i2);
@@ -302,7 +302,7 @@ RangedAttackMob {
                     }
                 }
                 if (bl) {
-                    this.world.playLevelEvent(null, 1022, this.getBlockPos(), 0);
+                    this.world.syncWorldEvent(null, 1022, this.getBlockPos(), 0);
                 }
             }
         }
@@ -379,7 +379,7 @@ RangedAttackMob {
 
     private void method_6877(int headIndex, double d, double e, double f, boolean bl) {
         if (!this.isSilent()) {
-            this.world.playLevelEvent(null, 1024, this.getBlockPos(), 0);
+            this.world.syncWorldEvent(null, 1024, this.getBlockPos(), 0);
         }
         double g = this.getHeadX(headIndex);
         double h = this.getHeadY(headIndex);

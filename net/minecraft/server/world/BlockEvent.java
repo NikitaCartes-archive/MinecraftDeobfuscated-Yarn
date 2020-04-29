@@ -6,13 +6,13 @@ package net.minecraft.server.world;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 
-public class BlockAction {
+public class BlockEvent {
     private final BlockPos pos;
     private final Block block;
     private final int type;
     private final int data;
 
-    public BlockAction(BlockPos pos, Block block, int type, int data) {
+    public BlockEvent(BlockPos pos, Block block, int type, int data) {
         this.pos = pos;
         this.block = block;
         this.type = type;
@@ -36,9 +36,9 @@ public class BlockAction {
     }
 
     public boolean equals(Object o) {
-        if (o instanceof BlockAction) {
-            BlockAction blockAction = (BlockAction)o;
-            return this.pos.equals(blockAction.pos) && this.type == blockAction.type && this.data == blockAction.data && this.block == blockAction.block;
+        if (o instanceof BlockEvent) {
+            BlockEvent blockEvent = (BlockEvent)o;
+            return this.pos.equals(blockEvent.pos) && this.type == blockEvent.type && this.data == blockEvent.data && this.block == blockEvent.block;
         }
         return false;
     }

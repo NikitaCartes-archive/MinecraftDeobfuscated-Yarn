@@ -30,15 +30,15 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig treeFeatureConfig, int trunkHeight, FoliagePlacer.class_5208 arg, int foliageHeight, int radius, Set<BlockPos> leaves, int i) {
+    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int i) {
         int j = 0;
         for (int k = i; k >= i - foliageHeight; --k) {
-            this.generate(world, random, treeFeatureConfig, arg.method_27388(), j, leaves, k, arg.method_27390());
+            this.generate(world, random, config, treeNode.getCenter(), j, leaves, k, treeNode.isGiantTrunk());
             if (j >= 1 && k == i - foliageHeight + 1) {
                 --j;
                 continue;
             }
-            if (j >= radius + arg.method_27389()) continue;
+            if (j >= radius + treeNode.getFoliageRadius()) continue;
             ++j;
         }
     }
@@ -49,7 +49,7 @@ extends FoliagePlacer {
     }
 
     @Override
-    public int getHeight(Random random, int trunkHeight, TreeFeatureConfig treeFeatureConfig) {
+    public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
         return this.height + random.nextInt(this.randomHeight + 1);
     }
 

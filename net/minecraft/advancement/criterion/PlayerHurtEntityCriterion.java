@@ -3,15 +3,15 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.DamagePredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -26,48 +26,49 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        DamagePredicate damagePredicate = DamagePredicate.deserialize(jsonObject.get("damage"));
-        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("entity"));
-        return new Conditions(damagePredicate, entityPredicate);
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
+        DamagePredicate damagePredicate = DamagePredicate.fromJson(jsonObject.get("damage"));
+        EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+        return new Conditions(extended, damagePredicate, extended2);
     }
 
-    public void trigger(ServerPlayerEntity player, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, entity, source, dealt, taken, blocked));
+    public void trigger(ServerPlayerEntity player, Entity entity, DamageSource damage, float dealt, float taken, boolean blocked) {
+        LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
+        this.test(player, conditions -> conditions.matches(player, lootContext, damage, dealt, taken, blocked));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final DamagePredicate damage;
-        private final EntityPredicate entity;
+        private final EntityPredicate.Extended entity;
 
-        public Conditions(DamagePredicate damage, EntityPredicate entity) {
-            super(ID);
+        public Conditions(EntityPredicate.Extended player, DamagePredicate damage, EntityPredicate.Extended entity) {
+            super(ID, player);
             this.damage = damage;
             this.entity = entity;
         }
 
-        public static Conditions create(DamagePredicate.Builder builder) {
-            return new Conditions(builder.build(), EntityPredicate.ANY);
+        public static Conditions create(DamagePredicate.Builder hurtEntityPredicateBuilder) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, hurtEntityPredicateBuilder.build(), EntityPredicate.Extended.EMPTY);
         }
 
-        public boolean matches(ServerPlayerEntity player, Entity entity, DamageSource source, float dealt, float taken, boolean blocked) {
+        public boolean matches(ServerPlayerEntity player, LootContext entityContext, DamageSource source, float dealt, float taken, boolean blocked) {
             if (!this.damage.test(player, source, dealt, taken, blocked)) {
                 return false;
             }
-            return this.entity.test(player, entity);
+            return this.entity.test(entityContext);
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add("damage", this.damage.serialize());
-            jsonObject.add("entity", this.entity.toJson());
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
+            jsonObject.add("damage", this.damage.toJson());
+            jsonObject.add("entity", this.entity.toJson(predicateSerializer));
             return jsonObject;
         }
     }

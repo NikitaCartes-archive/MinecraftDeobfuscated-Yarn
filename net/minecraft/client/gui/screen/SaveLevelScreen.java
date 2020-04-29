@@ -24,7 +24,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderDirtBackground(0);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

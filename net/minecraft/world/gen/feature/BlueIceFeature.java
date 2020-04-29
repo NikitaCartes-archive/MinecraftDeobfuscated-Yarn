@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -30,12 +29,12 @@ extends Feature<DefaultFeatureConfig> {
         if (blockPos.getY() > iWorld.getSeaLevel() - 1) {
             return false;
         }
-        if (iWorld.getBlockState(blockPos).getBlock() != Blocks.WATER && iWorld.getBlockState(blockPos.down()).getBlock() != Blocks.WATER) {
+        if (!iWorld.getBlockState(blockPos).isOf(Blocks.WATER) && !iWorld.getBlockState(blockPos.down()).isOf(Blocks.WATER)) {
             return false;
         }
         boolean bl = false;
         for (Direction direction : Direction.values()) {
-            if (direction == Direction.DOWN || iWorld.getBlockState(blockPos.offset(direction)).getBlock() != Blocks.PACKED_ICE) continue;
+            if (direction == Direction.DOWN || !iWorld.getBlockState(blockPos.offset(direction)).isOf(Blocks.PACKED_ICE)) continue;
             bl = true;
             break;
         }
@@ -44,19 +43,17 @@ extends Feature<DefaultFeatureConfig> {
         }
         iWorld.setBlockState(blockPos, Blocks.BLUE_ICE.getDefaultState(), 2);
         block1: for (int i = 0; i < 200; ++i) {
+            BlockPos blockPos2;
+            BlockState blockState;
             int j = random.nextInt(5) - random.nextInt(6);
             int k = 3;
             if (j < 2) {
                 k += j / 2;
             }
-            if (k < 1) continue;
-            BlockPos blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k));
-            BlockState blockState = iWorld.getBlockState(blockPos2);
-            Block block = blockState.getBlock();
-            if (blockState.getMaterial() != Material.AIR && block != Blocks.WATER && block != Blocks.PACKED_ICE && block != Blocks.ICE) continue;
+            if (k < 1 || (blockState = iWorld.getBlockState(blockPos2 = blockPos.add(random.nextInt(k) - random.nextInt(k), j, random.nextInt(k) - random.nextInt(k)))).getMaterial() != Material.AIR && !blockState.isOf(Blocks.WATER) && !blockState.isOf(Blocks.PACKED_ICE) && !blockState.isOf(Blocks.ICE)) continue;
             for (Direction direction2 : Direction.values()) {
-                Block block2 = iWorld.getBlockState(blockPos2.offset(direction2)).getBlock();
-                if (block2 != Blocks.BLUE_ICE) continue;
+                BlockState blockState2 = iWorld.getBlockState(blockPos2.offset(direction2));
+                if (!blockState2.isOf(Blocks.BLUE_ICE)) continue;
                 iWorld.setBlockState(blockPos2, Blocks.BLUE_ICE.getDefaultState(), 2);
                 continue block1;
             }

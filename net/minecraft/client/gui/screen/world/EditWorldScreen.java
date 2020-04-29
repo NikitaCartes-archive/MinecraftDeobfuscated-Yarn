@@ -78,7 +78,7 @@ extends Screen {
             if (bl) {
                 EditWorldScreen.backupLevel(this.field_23777);
             }
-            this.client.openScreen(OptimizeWorldScreen.method_27031(this.callback, this.field_23777, bl2));
+            this.client.openScreen(OptimizeWorldScreen.method_27031(this.callback, this.client.getDataFixer(), this.field_23777, bl2));
         }, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))));
         this.saveButton = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), buttonWidget -> this.commit()));
         this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
@@ -145,7 +145,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterName", new Object[0]), this.width / 2 - 100, 40, 0xA0A0A0);
         this.levelNameTextField.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);

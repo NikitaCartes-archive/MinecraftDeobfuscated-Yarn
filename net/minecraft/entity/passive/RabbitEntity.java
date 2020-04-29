@@ -360,8 +360,8 @@ extends AnimalEntity {
     }
 
     public static boolean canSpawn(EntityType<RabbitEntity> entity, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        Block block = world.getBlockState(pos.down()).getBlock();
-        return (block == Blocks.GRASS_BLOCK || block == Blocks.SNOW || block == Blocks.SAND) && world.getBaseLightLevel(pos, 0) > 8;
+        BlockState blockState = world.getBlockState(pos.down());
+        return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SAND)) && world.getBaseLightLevel(pos, 0) > 8;
     }
 
     private boolean wantsCarrots() {
@@ -458,7 +458,7 @@ extends AnimalEntity {
                         world.breakBlock(blockPos, true, this.rabbit);
                     } else {
                         world.setBlockState(blockPos, (BlockState)blockState.with(CarrotsBlock.AGE, integer - 1), 2);
-                        world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+                        world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
                     }
                     this.rabbit.moreCarrotTicks = 40;
                 }

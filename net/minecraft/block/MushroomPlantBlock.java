@@ -42,7 +42,7 @@ implements Fertilizable {
             int i = 5;
             int j = 4;
             for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, -1, -4), pos.add(4, 1, 4))) {
-                if (world.getBlockState(blockPos).getBlock() != this || --i > 0) continue;
+                if (!world.getBlockState(blockPos).isOf(this) || --i > 0) continue;
                 return;
             }
             BlockPos blockPos2 = pos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
@@ -67,8 +67,7 @@ implements Fertilizable {
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        Block block = blockState.getBlock();
-        if (block == Blocks.MYCELIUM || block == Blocks.PODZOL) {
+        if (blockState.isOf(Blocks.MYCELIUM) || blockState.isOf(Blocks.PODZOL)) {
             return true;
         }
         return world.getBaseLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);

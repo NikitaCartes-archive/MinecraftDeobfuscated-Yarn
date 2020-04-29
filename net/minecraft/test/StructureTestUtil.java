@@ -124,7 +124,7 @@ public class StructureTestUtil {
                 for (int k = (int)box.z1; k <= (int)box.z2; ++k) {
                     BlockPos blockPos = new BlockPos(i, j, k);
                     BlockState blockState = world.getBlockState(blockPos);
-                    if (blockState.getBlock() != Blocks.STRUCTURE_BLOCK) continue;
+                    if (!blockState.isOf(Blocks.STRUCTURE_BLOCK)) continue;
                     collection.add(blockPos);
                 }
             }

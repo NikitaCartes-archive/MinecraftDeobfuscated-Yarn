@@ -130,7 +130,7 @@ public abstract class MobSpawnerLogic {
                     }
                 }
                 this.spawnEntity(entity2);
-                world.playLevelEvent(2004, blockPos, 0);
+                world.syncWorldEvent(2004, blockPos, 0);
                 if (entity2 instanceof MobEntity) {
                     ((MobEntity)entity2).playSpawnEffects();
                 }

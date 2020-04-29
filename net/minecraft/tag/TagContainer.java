@@ -45,7 +45,7 @@ public class TagContainer<T> {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
     private static final int JSON_EXTENSION_LENGTH = ".json".length();
-    private final Tag<T> field_23691 = Tag.of(ImmutableSet.of());
+    private final Tag<T> empty = Tag.of(ImmutableSet.of());
     private BiMap<Identifier, Tag<T>> entries = HashBiMap.create();
     private final Function<Identifier, Optional<T>> getter;
     private final String dataType;
@@ -63,24 +63,24 @@ public class TagContainer<T> {
     }
 
     public Tag<T> getOrCreate(Identifier id) {
-        return this.entries.getOrDefault(id, this.field_23691);
+        return this.entries.getOrDefault(id, this.empty);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Tag<T> method_27068() {
-        return this.field_23691;
+    public Tag<T> getEmpty() {
+        return this.empty;
     }
 
     @Nullable
-    public Identifier method_26796(Tag<T> tag) {
+    public Identifier getId(Tag<T> tag) {
         if (tag instanceof Tag.Identified) {
             return ((Tag.Identified)tag).getId();
         }
         return (Identifier)this.entries.inverse().get(tag);
     }
 
-    public Identifier method_26798(Tag<T> tag) {
-        Identifier identifier = this.method_26796(tag);
+    public Identifier checkId(Tag<T> tag) {
+        Identifier identifier = this.getId(tag);
         if (identifier == null) {
             throw new IllegalStateException("Unrecognized tag");
         }

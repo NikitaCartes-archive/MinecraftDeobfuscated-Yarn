@@ -9,13 +9,13 @@ import net.minecraft.client.particle.AnimatedParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class EndRodParticle
 extends AnimatedParticle {
-    private EndRodParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+    private EndRodParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z, spriteProvider, -5.0E-4f);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
@@ -42,8 +42,8 @@ extends AnimatedParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new EndRodParticle(world, d, e, f, g, h, i, this.spriteProvider);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new EndRodParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

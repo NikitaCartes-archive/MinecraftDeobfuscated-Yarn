@@ -18,7 +18,7 @@ import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.fluid.BaseFluid;
+import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -42,10 +42,11 @@ public class FluidBlock
 extends Block
 implements FluidDrainable {
     public static final IntProperty LEVEL = Properties.LEVEL_15;
-    protected final BaseFluid fluid;
+    protected final FlowableFluid fluid;
     private final List<FluidState> statesByLevel;
+    public static final VoxelShape field_24412 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 
-    protected FluidBlock(BaseFluid fluid, AbstractBlock.Settings settings) {
+    protected FluidBlock(FlowableFluid fluid, AbstractBlock.Settings settings) {
         super(settings);
         this.fluid = fluid;
         this.statesByLevel = Lists.newArrayList();
@@ -55,6 +56,14 @@ implements FluidDrainable {
         }
         this.statesByLevel.add(fluid.getFlowing(8, true));
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LEVEL, 0));
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        if (context.isAbove(field_24412, pos, true) && state.get(LEVEL) == 0 && context.method_27866(world.getFluidState(pos.up()), this.fluid)) {
+            return field_24412;
+        }
+        return VoxelShapes.empty();
     }
 
     @Override
@@ -128,7 +137,7 @@ implements FluidDrainable {
 
     private boolean receiveNeighborFluids(World world, BlockPos pos, BlockState state) {
         if (this.fluid.isIn(FluidTags.LAVA)) {
-            boolean bl = world.getBlockState(pos.down()).getBlock() == Blocks.SOUL_SOIL;
+            boolean bl = world.getBlockState(pos.down()).isOf(Blocks.SOUL_SOIL);
             for (Direction direction : Direction.values()) {
                 if (direction == Direction.DOWN) continue;
                 BlockPos blockPos = pos.offset(direction);
@@ -138,7 +147,7 @@ implements FluidDrainable {
                     this.playExtinguishSound(world, pos);
                     return false;
                 }
-                if (!bl || world.getBlockState(blockPos).getBlock() != Blocks.BLUE_ICE) continue;
+                if (!bl || !world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) continue;
                 world.setBlockState(pos, Blocks.BASALT.getDefaultState());
                 this.playExtinguishSound(world, pos);
                 return false;
@@ -148,7 +157,7 @@ implements FluidDrainable {
     }
 
     private void playExtinguishSound(IWorld world, BlockPos pos) {
-        world.playLevelEvent(1501, pos, 0);
+        world.syncWorldEvent(1501, pos, 0);
     }
 
     @Override

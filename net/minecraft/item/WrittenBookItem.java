@@ -91,7 +91,7 @@ extends Item {
         BlockPos blockPos;
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
-        if (blockState.getBlock() == Blocks.LECTERN) {
+        if (blockState.isOf(Blocks.LECTERN)) {
             return LecternBlock.putBookIfAbsent(world, blockPos, blockState, context.getStack()) ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         return ActionResult.PASS;

@@ -67,8 +67,8 @@ implements Comparable<AdvancementProgress> {
         return false;
     }
 
-    public boolean obtain(String string) {
-        CriterionProgress criterionProgress = this.criteriaProgresses.get(string);
+    public boolean obtain(String name) {
+        CriterionProgress criterionProgress = this.criteriaProgresses.get(name);
         if (criterionProgress != null && !criterionProgress.isObtained()) {
             criterionProgress.obtain();
             return true;
@@ -76,8 +76,8 @@ implements Comparable<AdvancementProgress> {
         return false;
     }
 
-    public boolean reset(String string) {
-        CriterionProgress criterionProgress = this.criteriaProgresses.get(string);
+    public boolean reset(String name) {
+        CriterionProgress criterionProgress = this.criteriaProgresses.get(name);
         if (criterionProgress != null && criterionProgress.isObtained()) {
             criterionProgress.reset();
             return true;
@@ -89,11 +89,11 @@ implements Comparable<AdvancementProgress> {
         return "AdvancementProgress{criteria=" + this.criteriaProgresses + ", requirements=" + Arrays.deepToString((Object[])this.requirements) + '}';
     }
 
-    public void toPacket(PacketByteBuf packetByteBuf) {
-        packetByteBuf.writeVarInt(this.criteriaProgresses.size());
+    public void toPacket(PacketByteBuf buf) {
+        buf.writeVarInt(this.criteriaProgresses.size());
         for (Map.Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
-            packetByteBuf.writeString(entry.getKey());
-            entry.getValue().toPacket(packetByteBuf);
+            buf.writeString(entry.getKey());
+            entry.getValue().toPacket(buf);
         }
     }
 
@@ -107,8 +107,8 @@ implements Comparable<AdvancementProgress> {
     }
 
     @Nullable
-    public CriterionProgress getCriterionProgress(String string) {
-        return this.criteriaProgresses.get(string);
+    public CriterionProgress getCriterionProgress(String name) {
+        return this.criteriaProgresses.get(name);
     }
 
     @Environment(value=EnvType.CLIENT)

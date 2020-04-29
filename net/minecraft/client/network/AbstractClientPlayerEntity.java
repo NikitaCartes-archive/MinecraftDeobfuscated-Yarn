@@ -32,7 +32,7 @@ extends PlayerEntity {
     public final ClientWorld clientWorld;
 
     public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, profile);
+        super(world, world.getSpawnPos(), profile);
         this.clientWorld = world;
     }
 

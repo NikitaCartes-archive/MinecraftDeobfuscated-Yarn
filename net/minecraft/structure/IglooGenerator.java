@@ -107,7 +107,7 @@ public class IglooGenerator {
             BlockPos blockPos4 = this.pos;
             this.pos = this.pos.add(0, i - 90 - 1, 0);
             boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
-            if (this.template.equals(TOP_TEMPLATE) && !(blockState = world.getBlockState((blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && blockState.getBlock() != Blocks.LADDER) {
+            if (this.template.equals(TOP_TEMPLATE) && !(blockState = world.getBlockState((blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && !blockState.isOf(Blocks.LADDER)) {
                 world.setBlockState(blockPos5, Blocks.SNOW_BLOCK.getDefaultState(), 3);
             }
             this.pos = blockPos4;

@@ -67,11 +67,11 @@ extends Feature<DeltaFeatureConfig> {
     }
 
     private static boolean method_27103(IWorld iWorld, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
-        Block block = iWorld.getBlockState(blockPos).getBlock();
-        if (block == deltaFeatureConfig.contents.getBlock()) {
+        BlockState blockState = iWorld.getBlockState(blockPos);
+        if (blockState.isOf(deltaFeatureConfig.contents.getBlock())) {
             return false;
         }
-        if (field_24133.contains(block)) {
+        if (field_24133.contains(blockState.getBlock())) {
             return false;
         }
         for (Direction direction : field_23883) {
@@ -88,8 +88,7 @@ extends Feature<DeltaFeatureConfig> {
             if (iWorld.getBlockState(mutable).isAir()) {
                 BlockState blockState = iWorld.getBlockState(mutable.move(Direction.DOWN));
                 mutable.move(Direction.UP);
-                Block block = blockState.getBlock();
-                if (block != Blocks.LAVA && block != Blocks.BEDROCK && !blockState.isAir()) {
+                if (!(blockState.isOf(Blocks.LAVA) || blockState.isOf(Blocks.BEDROCK) || blockState.isAir())) {
                     return mutable;
                 }
             }

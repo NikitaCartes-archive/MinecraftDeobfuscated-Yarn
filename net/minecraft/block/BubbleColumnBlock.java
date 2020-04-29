@@ -83,16 +83,15 @@ implements FluidDrainable {
 
     public static boolean isStillWater(IWorld world, BlockPos pos) {
         FluidState fluidState = world.getFluidState(pos);
-        return world.getBlockState(pos).getBlock() == Blocks.WATER && fluidState.getLevel() >= 8 && fluidState.isStill();
+        return world.getBlockState(pos).isOf(Blocks.WATER) && fluidState.getLevel() >= 8 && fluidState.isStill();
     }
 
     private static boolean calculateDrag(BlockView world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos);
-        Block block = blockState.getBlock();
-        if (block == Blocks.BUBBLE_COLUMN) {
+        if (blockState.isOf(Blocks.BUBBLE_COLUMN)) {
             return blockState.get(DRAG);
         }
-        return block != Blocks.SOUL_SAND;
+        return !blockState.isOf(Blocks.SOUL_SAND);
     }
 
     @Override
@@ -122,7 +121,7 @@ implements FluidDrainable {
         }
         if (direction == Direction.DOWN) {
             world.setBlockState(pos, (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, BubbleColumnBlock.calculateDrag(world, posFrom)), 2);
-        } else if (direction == Direction.UP && newState.getBlock() != Blocks.BUBBLE_COLUMN && BubbleColumnBlock.isStillWater(world, posFrom)) {
+        } else if (direction == Direction.UP && !newState.isOf(Blocks.BUBBLE_COLUMN) && BubbleColumnBlock.isStillWater(world, posFrom)) {
             world.getBlockTickScheduler().schedule(pos, this, 5);
         }
         world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
@@ -131,8 +130,8 @@ implements FluidDrainable {
 
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        Block block = world.getBlockState(pos.down()).getBlock();
-        return block == Blocks.BUBBLE_COLUMN || block == Blocks.MAGMA_BLOCK || block == Blocks.SOUL_SAND;
+        BlockState blockState = world.getBlockState(pos.down());
+        return blockState.isOf(Blocks.BUBBLE_COLUMN) || blockState.isOf(Blocks.MAGMA_BLOCK) || blockState.isOf(Blocks.SOUL_SAND);
     }
 
     @Override

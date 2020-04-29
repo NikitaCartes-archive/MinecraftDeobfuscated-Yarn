@@ -48,11 +48,11 @@ extends BlockEntityRenderer<PistonBlockEntity> {
         BlockModelRenderer.enableBrightnessCache();
         matrixStack.push();
         matrixStack.translate(pistonBlockEntity.getRenderOffsetX(f), pistonBlockEntity.getRenderOffsetY(f), pistonBlockEntity.getRenderOffsetZ(f));
-        if (blockState.getBlock() == Blocks.PISTON_HEAD && pistonBlockEntity.getProgress(f) <= 4.0f) {
+        if (blockState.isOf(Blocks.PISTON_HEAD) && pistonBlockEntity.getProgress(f) <= 4.0f) {
             blockState = (BlockState)blockState.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(f) <= 0.5f);
             this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
         } else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
-            PistonType pistonType = blockState.getBlock() == Blocks.STICKY_PISTON ? PistonType.STICKY : PistonType.DEFAULT;
+            PistonType pistonType = blockState.isOf(Blocks.STICKY_PISTON) ? PistonType.STICKY : PistonType.DEFAULT;
             BlockState blockState2 = (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.TYPE, pistonType)).with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
             blockState2 = (BlockState)blockState2.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(f) >= 0.5f);
             this.method_3575(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);

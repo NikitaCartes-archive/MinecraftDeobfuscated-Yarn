@@ -7,7 +7,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawableHelper;
@@ -114,10 +113,10 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.layers.render(matrices, mouseX, mouseY, delta);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         int i = this.width / 2 - 92 - 16;
         this.method_27535(matrices, this.textRenderer, this.tileText, i, 32, 0xFFFFFF);
-        this.method_27535(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 0xFFFFFF);
+        this.method_27535(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getStringWidth(this.heightText), 32, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
@@ -179,12 +178,11 @@ extends Screen {
             public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
                 FlatChunkGeneratorLayer flatChunkGeneratorLayer = CustomizeFlatLevelScreen.this.config.getLayers().get(CustomizeFlatLevelScreen.this.config.getLayers().size() - x - 1);
                 BlockState blockState = flatChunkGeneratorLayer.getBlockState();
-                Block block = blockState.getBlock();
-                Item item = block.asItem();
+                Item item = blockState.getBlock().asItem();
                 if (item == Items.AIR) {
-                    if (block == Blocks.WATER) {
+                    if (blockState.isOf(Blocks.WATER)) {
                         item = Items.WATER_BUCKET;
-                    } else if (block == Blocks.LAVA) {
+                    } else if (blockState.isOf(Blocks.LAVA)) {
                         item = Items.LAVA_BUCKET;
                     }
                 }

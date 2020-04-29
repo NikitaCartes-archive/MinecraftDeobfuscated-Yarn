@@ -7,7 +7,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.AbstractPlantStemBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -33,8 +32,8 @@ extends Feature<DefaultFeatureConfig> {
         if (!iWorld.isAir(blockPos)) {
             return false;
         }
-        Block block = iWorld.getBlockState(blockPos.up()).getBlock();
-        if (block != Blocks.NETHERRACK && block != Blocks.NETHER_WART_BLOCK) {
+        BlockState blockState = iWorld.getBlockState(blockPos.up());
+        if (!blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
             return false;
         }
         this.generateNetherWartBlocksInArea(iWorld, random, blockPos);
@@ -51,8 +50,8 @@ extends Feature<DefaultFeatureConfig> {
             if (!world.isAir(mutable)) continue;
             int j = 0;
             for (Direction direction : DIRECTIONS) {
-                Block block = world.getBlockState(mutable2.set(mutable, direction)).getBlock();
-                if (block == Blocks.NETHERRACK || block == Blocks.NETHER_WART_BLOCK) {
+                BlockState blockState = world.getBlockState(mutable2.set(mutable, direction));
+                if (blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.NETHER_WART_BLOCK)) {
                     ++j;
                 }
                 if (j > 1) break;
@@ -65,9 +64,9 @@ extends Feature<DefaultFeatureConfig> {
     private void generateVinesInArea(IWorld world, Random random, BlockPos pos) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < 100; ++i) {
-            Block block;
+            BlockState blockState;
             mutable.set(pos, random.nextInt(8) - random.nextInt(8), random.nextInt(2) - random.nextInt(7), random.nextInt(8) - random.nextInt(8));
-            if (!world.isAir(mutable) || (block = world.getBlockState(mutable.up()).getBlock()) != Blocks.NETHERRACK && block != Blocks.NETHER_WART_BLOCK) continue;
+            if (!world.isAir(mutable) || !(blockState = world.getBlockState(mutable.up())).isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.NETHER_WART_BLOCK)) continue;
             int j = MathHelper.nextInt(random, 1, 8);
             if (random.nextInt(6) == 0) {
                 j *= 2;

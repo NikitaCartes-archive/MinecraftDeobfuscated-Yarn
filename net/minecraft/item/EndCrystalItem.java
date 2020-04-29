@@ -31,7 +31,7 @@ extends Item {
         BlockPos blockPos;
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
-        if (blockState.getBlock() != Blocks.OBSIDIAN && blockState.getBlock() != Blocks.BEDROCK) {
+        if (!blockState.isOf(Blocks.OBSIDIAN) && !blockState.isOf(Blocks.BEDROCK)) {
             return ActionResult.FAIL;
         }
         BlockPos blockPos2 = blockPos.up();

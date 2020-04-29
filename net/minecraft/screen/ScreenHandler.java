@@ -54,7 +54,7 @@ public abstract class ScreenHandler {
 
     protected static boolean canUse(ScreenHandlerContext context, PlayerEntity player, Block block) {
         return context.run((world, blockPos) -> {
-            if (world.getBlockState((BlockPos)blockPos).getBlock() != block) {
+            if (!world.getBlockState((BlockPos)blockPos).isOf(block)) {
                 return false;
             }
             return player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0;
@@ -412,7 +412,7 @@ public abstract class ScreenHandler {
     }
 
     protected void dropInventory(PlayerEntity player, World world, Inventory inventory) {
-        if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).method_14239()) {
+        if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
             for (int i = 0; i < inventory.size(); ++i) {
                 player.dropItem(inventory.removeStack(i), false);
             }

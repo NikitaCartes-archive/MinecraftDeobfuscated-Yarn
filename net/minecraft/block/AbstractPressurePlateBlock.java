@@ -105,7 +105,7 @@ extends Block {
 
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (notify || state.getBlock() == newState.getBlock()) {
+        if (notify || state.isOf(newState.getBlock())) {
             return;
         }
         if (this.getRedstoneOutput(state) > 0) {

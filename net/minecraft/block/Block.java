@@ -134,6 +134,10 @@ implements ItemConvertible {
         return tag.contains(this);
     }
 
+    public boolean is(Block block) {
+        return this == block;
+    }
+
     public static BlockState postProcessState(BlockState state, IWorld world, BlockPos pos) {
         BlockState blockState = state;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -356,7 +360,7 @@ implements ItemConvertible {
     }
 
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        world.playLevelEvent(player, 2001, pos, Block.getRawIdFromState(state));
+        world.syncWorldEvent(player, 2001, pos, Block.getRawIdFromState(state));
         if (this.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
             PiglinBrain.onGoldBlockBroken(player);
         }

@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.FluidTags;
 
 public class StayAboveWaterTask
 extends Task<MobEntity> {
@@ -22,7 +23,7 @@ extends Task<MobEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-        return mobEntity.isTouchingWater() && mobEntity.getWaterHeight() > (double)this.minWaterHeight || mobEntity.isInLava();
+        return mobEntity.isTouchingWater() && mobEntity.getFluidHeight(FluidTags.WATER) > (double)this.minWaterHeight || mobEntity.isInLava();
     }
 
     @Override

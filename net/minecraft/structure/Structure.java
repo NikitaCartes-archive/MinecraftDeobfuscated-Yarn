@@ -629,7 +629,7 @@ public class Structure {
         }
 
         public List<StructureBlockInfo> getAllOf(Block block2) {
-            return this.blockToInfos.computeIfAbsent(block2, block -> this.infos.stream().filter(structureBlockInfo -> structureBlockInfo.state.getBlock() == block).collect(Collectors.toList()));
+            return this.blockToInfos.computeIfAbsent(block2, block -> this.infos.stream().filter(structureBlockInfo -> structureBlockInfo.state.isOf((Block)block)).collect(Collectors.toList()));
         }
     }
 

@@ -43,7 +43,7 @@ extends ThrownItemEntity {
         super.onCollision(hitResult);
         if (!this.world.isClient) {
             int j;
-            this.world.playLevelEvent(2002, this.getBlockPos(), PotionUtil.getColor(Potions.WATER));
+            this.world.syncWorldEvent(2002, this.getBlockPos(), PotionUtil.getColor(Potions.WATER));
             for (int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5); i > 0; i -= j) {
                 j = ExperienceOrbEntity.roundToOrbSize(i);
                 this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY(), this.getZ(), j));

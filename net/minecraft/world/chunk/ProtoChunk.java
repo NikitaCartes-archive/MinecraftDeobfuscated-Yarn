@@ -146,7 +146,7 @@ implements Chunk {
         if (j < 0 || j >= 256) {
             return Blocks.VOID_AIR.getDefaultState();
         }
-        if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && state.getBlock() == Blocks.AIR) {
+        if (this.sections[j >> 4] == WorldChunk.EMPTY_SECTION && state.isOf(Blocks.AIR)) {
             return state;
         }
         if (state.getLuminance() > 0) {

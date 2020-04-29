@@ -133,7 +133,7 @@ implements Tickable {
                     BlockPos blockPos2 = this.pos.add(i, j, k);
                     BlockState blockState = this.world.getBlockState(blockPos2);
                     for (Block block : ACTIVATING_BLOCKS) {
-                        if (blockState.getBlock() != block) continue;
+                        if (!blockState.isOf(block)) continue;
                         this.activatingBlocks.add(blockPos2);
                     }
                 }

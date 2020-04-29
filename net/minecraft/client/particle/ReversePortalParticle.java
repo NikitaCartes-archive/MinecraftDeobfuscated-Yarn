@@ -9,14 +9,14 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class ReversePortalParticle
 extends PortalParticle {
-    private ReversePortalParticle(World world, double d, double e, double f, double g, double h, double i) {
-        super(world, d, e, f, g, h, i);
+    private ReversePortalParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        super(world, x, y, z, velocityX, velocityY, velocityZ);
         this.scale = (float)((double)this.scale * 1.5);
         this.maxAge = (int)(Math.random() * 2.0) + 60;
     }
@@ -52,8 +52,8 @@ extends PortalParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            ReversePortalParticle reversePortalParticle = new ReversePortalParticle(world, d, e, f, g, h, i);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            ReversePortalParticle reversePortalParticle = new ReversePortalParticle(clientWorld, d, e, f, g, h, i);
             reversePortalParticle.setSprite(this.spriteProvider);
             return reversePortalParticle;
         }

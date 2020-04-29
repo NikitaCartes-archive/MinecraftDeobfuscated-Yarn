@@ -239,7 +239,7 @@ extends AbstractDecorationEntity {
             mapState.removeFrame(this.attachmentPos, this.getEntityId());
             mapState.setDirty(true);
         }
-        map.method_27320(null);
+        map.setHolder(null);
     }
 
     public ItemStack getHeldItemStack() {
@@ -254,7 +254,7 @@ extends AbstractDecorationEntity {
         if (!value.isEmpty()) {
             value = value.copy();
             value.setCount(1);
-            value.method_27320(this);
+            value.setHolder(this);
         }
         this.getDataTracker().set(ITEM_STACK, value);
         if (!value.isEmpty()) {
@@ -278,7 +278,7 @@ extends AbstractDecorationEntity {
     public void onTrackedDataSet(TrackedData<?> data) {
         ItemStack itemStack;
         if (data.equals(ITEM_STACK) && !(itemStack = this.getHeldItemStack()).isEmpty() && itemStack.getFrame() != this) {
-            itemStack.method_27320(this);
+            itemStack.setHolder(this);
         }
     }
 

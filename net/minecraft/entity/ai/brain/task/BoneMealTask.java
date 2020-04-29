@@ -111,7 +111,7 @@ extends Task<VillagerEntity> {
             break;
         }
         if (!itemStack.isEmpty() && BoneMealItem.useOnFertilizable(itemStack, serverWorld, blockPos)) {
-            serverWorld.playLevelEvent(2005, blockPos, 0);
+            serverWorld.syncWorldEvent(2005, blockPos, 0);
             this.pos = this.findBoneMealPos(serverWorld, villagerEntity);
             this.addLookWalkTargets(villagerEntity);
             this.startTime = l + 40L;

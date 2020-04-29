@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
@@ -14,31 +14,31 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
-public class class_5209
+public class JungleFoliagePlacer
 extends FoliagePlacer {
-    protected final int field_24166;
+    protected final int height;
 
-    public class_5209(int i, int j, int k, int l, int m) {
-        super(i, j, k, l, FoliagePlacerType.JUNGLE_FOLIAGE_PLACER);
-        this.field_24166 = m;
+    public JungleFoliagePlacer(int radius, int randomRadius, int offset, int randomOffset, int height) {
+        super(radius, randomRadius, offset, randomOffset, FoliagePlacerType.JUNGLE_FOLIAGE_PLACER);
+        this.height = height;
     }
 
-    public <T> class_5209(Dynamic<T> dynamic) {
+    public <T> JungleFoliagePlacer(Dynamic<T> dynamic) {
         this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0), dynamic.get("offset").asInt(0), dynamic.get("offset_random").asInt(0), dynamic.get("height").asInt(0));
     }
 
     @Override
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig treeFeatureConfig, int trunkHeight, FoliagePlacer.class_5208 arg, int foliageHeight, int radius, Set<BlockPos> leaves, int i) {
-        int j = arg.method_27390() ? foliageHeight : 1 + random.nextInt(2);
+    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int i) {
+        int j = treeNode.isGiantTrunk() ? foliageHeight : 1 + random.nextInt(2);
         for (int k = i; k >= i - j; --k) {
-            int l = radius + arg.method_27389() + 1 - k;
-            this.generate(world, random, treeFeatureConfig, arg.method_27388(), l, leaves, k, arg.method_27390());
+            int l = radius + treeNode.getFoliageRadius() + 1 - k;
+            this.generate(world, random, config, treeNode.getCenter(), l, leaves, k, treeNode.isGiantTrunk());
         }
     }
 
     @Override
-    public int getHeight(Random random, int trunkHeight, TreeFeatureConfig treeFeatureConfig) {
-        return this.field_24166;
+    public int getHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
+        return this.height;
     }
 
     @Override
@@ -52,7 +52,7 @@ extends FoliagePlacer {
     @Override
     public <T> T serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(ops.createString("height"), ops.createInt(this.field_24166));
+        builder.put(ops.createString("height"), ops.createInt(this.height));
         return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
     }
 }

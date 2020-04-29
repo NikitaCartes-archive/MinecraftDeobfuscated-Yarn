@@ -85,10 +85,10 @@ extends Screen {
         this.fillGradient(matrices, 0, 0, this.width, this.height, 0x60500000, -1602211792);
         RenderSystem.pushMatrix();
         RenderSystem.scalef(2.0f, 2.0f, 2.0f);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 0xFFFFFF);
         RenderSystem.popMatrix();
         if (this.message != null) {
-            this.method_27534(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
+            this.drawStringWithShadow(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
         }
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("deathScreen.score", new Object[0]) + ": " + (Object)((Object)Formatting.YELLOW) + this.client.player.getScore(), this.width / 2, 100, 0xFFFFFF);
         if (this.message != null && mouseY > 85 && mouseY < 85 + this.textRenderer.fontHeight) {
@@ -103,7 +103,7 @@ extends Screen {
         if (this.message == null) {
             return null;
         }
-        int i = this.client.textRenderer.getWidth(this.message);
+        int i = this.client.textRenderer.getStringWidth(this.message);
         int j = this.width / 2 - i / 2;
         int k = this.width / 2 + i / 2;
         if (mouseX < j || mouseX > k) {

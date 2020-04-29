@@ -29,7 +29,7 @@ extends Feature<IcePatchFeatureConfig> {
         while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
             blockPos = blockPos.down();
         }
-        if (iWorld.getBlockState(blockPos).getBlock() != Blocks.SNOW_BLOCK) {
+        if (!iWorld.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
             return false;
         }
         int i = random.nextInt(icePatchFeatureConfig.radius) + 2;

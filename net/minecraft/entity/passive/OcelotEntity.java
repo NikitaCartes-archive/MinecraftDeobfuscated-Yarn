@@ -6,7 +6,6 @@ package net.minecraft.entity.passive;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -257,8 +256,7 @@ extends AnimalEntity {
                 return false;
             }
             BlockState blockState = world.getBlockState(blockPos.down());
-            Block block = blockState.getBlock();
-            if (block == Blocks.GRASS_BLOCK || blockState.isIn(BlockTags.LEAVES)) {
+            if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isIn(BlockTags.LEAVES)) {
                 return true;
             }
         }

@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -33,15 +34,15 @@ extends Screen {
     private final BooleanConsumer callback;
     private final WorldUpdater updater;
 
-    public static OptimizeWorldScreen method_27031(BooleanConsumer booleanConsumer, LevelStorage.Session session, boolean bl) {
+    public static OptimizeWorldScreen method_27031(BooleanConsumer booleanConsumer, DataFixer dataFixer, LevelStorage.Session session, boolean bl) {
         class_5219 lv = session.readLevelProperties();
-        return new OptimizeWorldScreen(booleanConsumer, session, lv, bl);
+        return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, lv, bl);
     }
 
-    private OptimizeWorldScreen(BooleanConsumer callback, LevelStorage.Session session, class_5219 arg, boolean bl) {
+    private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session session, class_5219 arg, boolean bl) {
         super(new TranslatableText("optimizeWorld.title", arg.getLevelName()));
         this.callback = callback;
-        this.updater = new WorldUpdater(session, this.client.getDataFixer(), arg, bl);
+        this.updater = new WorldUpdater(session, dataFixer, arg, bl);
     }
 
     @Override
@@ -73,12 +74,12 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         int i = this.width / 2 - 150;
         int j = this.width / 2 + 150;
         int k = this.height / 4 + 100;
         int l = k + 10;
-        this.method_27534(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - this.textRenderer.fontHeight - 2, 0xA0A0A0);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - this.textRenderer.fontHeight - 2, 0xA0A0A0);
         if (this.updater.getTotalChunkCount() > 0) {
             OptimizeWorldScreen.fill(matrices, i - 1, k - 1, j + 1, l + 1, -16777216);
             this.drawString(matrices, this.textRenderer, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 0xA0A0A0);

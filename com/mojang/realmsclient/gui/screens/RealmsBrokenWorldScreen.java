@@ -131,9 +131,9 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
-        this.method_27534(matrices, this.textRenderer, this.field_24204, this.width / 2, 17, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.field_24204, this.width / 2, 17, 0xFFFFFF);
         for (int i = 0; i < this.message.length; ++i) {
-            this.method_27534(matrices, this.textRenderer, this.message[i], this.width / 2, RealmsBrokenWorldScreen.row(-1) + 3 + i * 12, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, this.message[i], this.width / 2, RealmsBrokenWorldScreen.row(-1) + 3 + i * 12, 0xA0A0A0);
         }
         if (this.field_20492 == null) {
             return;

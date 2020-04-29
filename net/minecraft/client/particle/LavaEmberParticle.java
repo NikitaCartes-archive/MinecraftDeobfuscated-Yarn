@@ -10,14 +10,14 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class LavaEmberParticle
 extends SpriteBillboardParticle {
-    private LavaEmberParticle(World world, double x, double y, double z) {
+    private LavaEmberParticle(ClientWorld world, double x, double y, double z) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         this.velocityX *= (double)0.8f;
         this.velocityY *= (double)0.8f;
@@ -80,8 +80,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            LavaEmberParticle lavaEmberParticle = new LavaEmberParticle(world, d, e, f);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            LavaEmberParticle lavaEmberParticle = new LavaEmberParticle(clientWorld, d, e, f);
             lavaEmberParticle.setSprite(this.spriteProvider);
             return lavaEmberParticle;
         }

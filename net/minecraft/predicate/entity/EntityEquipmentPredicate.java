@@ -60,11 +60,11 @@ public class EntityEquipmentPredicate {
         return this.offhand.test(livingEntity.getEquippedStack(EquipmentSlot.OFFHAND));
     }
 
-    public static EntityEquipmentPredicate deserialize(@Nullable JsonElement jsonElement) {
-        if (jsonElement == null || jsonElement.isJsonNull()) {
+    public static EntityEquipmentPredicate fromJson(@Nullable JsonElement json) {
+        if (json == null || json.isJsonNull()) {
             return ANY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(jsonElement, "equipment");
+        JsonObject jsonObject = JsonHelper.asObject(json, "equipment");
         ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("head"));
         ItemPredicate itemPredicate2 = ItemPredicate.fromJson(jsonObject.get("chest"));
         ItemPredicate itemPredicate3 = ItemPredicate.fromJson(jsonObject.get("legs"));

@@ -113,12 +113,12 @@ extends Block {
         for (int k = 1; k < 42; ++k) {
             blockPos = pos.offset(direction, k);
             BlockState blockState2 = world.getBlockState(blockPos);
-            if (blockState2.getBlock() == Blocks.TRIPWIRE_HOOK) {
+            if (blockState2.isOf(Blocks.TRIPWIRE_HOOK)) {
                 if (blockState2.get(FACING) != direction.getOpposite()) break;
                 j = k;
                 break;
             }
-            if (blockState2.getBlock() == Blocks.TRIPWIRE || k == i) {
+            if (blockState2.isOf(Blocks.TRIPWIRE) || k == i) {
                 if (k == i) {
                     blockState2 = MoreObjects.firstNonNull(blockState, blockState2);
                 }
@@ -184,7 +184,7 @@ extends Block {
 
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (notify || state.getBlock() == newState.getBlock()) {
+        if (notify || state.isOf(newState.getBlock())) {
             return;
         }
         boolean bl = state.get(ATTACHED);

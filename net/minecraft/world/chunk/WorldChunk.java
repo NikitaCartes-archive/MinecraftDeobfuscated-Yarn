@@ -251,7 +251,7 @@ implements Chunk {
         } else if (block2 != block && block2 instanceof BlockEntityProvider) {
             this.world.removeBlockEntity(pos);
         }
-        if (chunkSection.getBlockState(i, j & 0xF, k).getBlock() != block) {
+        if (!chunkSection.getBlockState(i, j & 0xF, k).isOf(block)) {
             return null;
         }
         if (block2 instanceof BlockEntityProvider && (blockEntity = this.getBlockEntity(pos, CreationType.CHECK)) != null) {

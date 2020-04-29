@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.world.World;
+import net.minecraft.client.world.ClientWorld;
 
 @Environment(value=EnvType.CLIENT)
 public class AnimatedParticle
@@ -21,7 +21,7 @@ extends SpriteBillboardParticle {
     private float targetColorBlue;
     private boolean changesColor;
 
-    protected AnimatedParticle(World world, double x, double y, double z, SpriteProvider spriteProvider, float upwardsAcceleration) {
+    protected AnimatedParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider, float upwardsAcceleration) {
         super(world, x, y, z);
         this.spriteProvider = spriteProvider;
         this.upwardsAcceleration = upwardsAcceleration;

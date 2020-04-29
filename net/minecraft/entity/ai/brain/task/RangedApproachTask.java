@@ -36,9 +36,8 @@ extends Task<MobEntity> {
 
     private void rememberWalkTarget(LivingEntity entity, LivingEntity target) {
         Brain<?> brain = entity.getBrain();
-        EntityLookTarget lookTarget = new EntityLookTarget(target);
-        brain.remember(MemoryModuleType.LOOK_TARGET, lookTarget);
-        WalkTarget walkTarget = new WalkTarget(lookTarget, this.speed, 0);
+        brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
+        WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), this.speed, 0);
         brain.remember(MemoryModuleType.WALK_TARGET, walkTarget);
     }
 

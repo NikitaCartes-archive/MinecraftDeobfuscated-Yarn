@@ -48,7 +48,7 @@ import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.fluid.BaseFluid;
+import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BoneMealItem;
@@ -300,7 +300,7 @@ public interface DispenserBehavior {
 
             @Override
             protected void playSound(BlockPointer pointer) {
-                pointer.getWorld().playLevelEvent(1004, pointer.getBlockPos(), 0);
+                pointer.getWorld().syncWorldEvent(1004, pointer.getBlockPos(), 0);
             }
         });
         DispenserBlock.registerBehavior(Items.FIRE_CHARGE, new ItemDispenserBehavior(){
@@ -324,7 +324,7 @@ public interface DispenserBehavior {
 
             @Override
             protected void playSound(BlockPointer pointer) {
-                pointer.getWorld().playLevelEvent(1018, pointer.getBlockPos(), 0);
+                pointer.getWorld().syncWorldEvent(1018, pointer.getBlockPos(), 0);
             }
         });
         DispenserBlock.registerBehavior(Items.OAK_BOAT, new BoatDispenserBehavior(BoatEntity.Type.OAK));
@@ -366,7 +366,7 @@ public interface DispenserBehavior {
                 Block block = blockState.getBlock();
                 if (block instanceof FluidDrainable) {
                     fluid = ((FluidDrainable)((Object)block)).tryDrainFluid(iWorld, blockPos, blockState);
-                    if (!(fluid instanceof BaseFluid)) {
+                    if (!(fluid instanceof FlowableFluid)) {
                         return super.dispenseSilently(pointer, stack);
                     }
                 } else {
@@ -416,7 +416,7 @@ public interface DispenserBehavior {
                 World world = pointer.getWorld();
                 if (BoneMealItem.useOnFertilizable(stack, world, blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING))) || BoneMealItem.useOnGround(stack, world, blockPos, null)) {
                     if (!world.isClient) {
-                        world.playLevelEvent(2005, blockPos, 0);
+                        world.syncWorldEvent(2005, blockPos, 0);
                     }
                 } else {
                     this.success = false;
@@ -514,8 +514,7 @@ public interface DispenserBehavior {
                 this.success = false;
                 World iWorld = pointer.getWorld();
                 BlockState blockState = iWorld.getBlockState(blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING)));
-                Block block = blockState.getBlock();
-                if (block.isIn(BlockTags.BEEHIVES) && blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
+                if (blockState.method_27851(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL)) && blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
                     ((BeehiveBlock)blockState.getBlock()).takeHoney(iWorld.getWorld(), blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
                     this.success = true;
                     return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
@@ -535,7 +534,7 @@ public interface DispenserBehavior {
                 BlockPos blockPos = pointer.getBlockPos().offset(direction);
                 World world = pointer.getWorld();
                 BlockState blockState = world.getBlockState(blockPos);
-                if (blockState.getBlock() == Blocks.RESPAWN_ANCHOR) {
+                if (blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
                     if (blockState.get(RespawnAnchorBlock.CHARGES) != 4) {
                         RespawnAnchorBlock.charge(world, blockPos, blockState);
                         stack.decrement(1);

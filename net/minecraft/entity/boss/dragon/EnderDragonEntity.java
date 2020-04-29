@@ -407,7 +407,7 @@ implements Monster {
         }
         if (bl2) {
             BlockPos blockPos2 = new BlockPos(i + this.random.nextInt(l - i + 1), j + this.random.nextInt(m - j + 1), k + this.random.nextInt(n - k + 1));
-            this.world.playLevelEvent(2008, blockPos2, 0);
+            this.world.syncWorldEvent(2008, blockPos2, 0);
         }
         return bl;
     }
@@ -484,7 +484,7 @@ implements Monster {
                 this.awardExperience(MathHelper.floor((float)i * 0.08f));
             }
             if (this.ticksSinceDeath == 1 && !this.isSilent()) {
-                this.world.playGlobalEvent(1028, this.getBlockPos(), 0);
+                this.world.syncGlobalEvent(1028, this.getBlockPos(), 0);
             }
         }
         this.move(MovementType.SELF, new Vec3d(0.0, 0.1f, 0.0));

@@ -29,7 +29,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
             for (int p = k; p >= 0; --p) {
                 mutable.set(n, p, o);
                 if (chunk.getBlockState(mutable).isAir()) continue;
-                if (p != 62 || chunk.getBlockState(mutable).getBlock() == blockState2.getBlock()) break;
+                if (p != 62 || chunk.getBlockState(mutable).isOf(blockState2.getBlock())) break;
                 chunk.setBlockState(mutable, blockState2, false);
                 break;
             }

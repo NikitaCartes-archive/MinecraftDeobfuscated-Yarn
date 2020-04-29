@@ -10,15 +10,15 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class BubbleColumnUpParticle
 extends SpriteBillboardParticle {
-    private BubbleColumnUpParticle(World world, double x, double y, double z, double d, double e, double f) {
+    private BubbleColumnUpParticle(ClientWorld world, double x, double y, double z, double d, double e, double f) {
         super(world, x, y, z);
         this.setBoundingBoxSpacing(0.02f, 0.02f);
         this.scale *= this.random.nextFloat() * 0.6f + 0.2f;
@@ -62,8 +62,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            BubbleColumnUpParticle bubbleColumnUpParticle = new BubbleColumnUpParticle(world, d, e, f, g, h, i);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            BubbleColumnUpParticle bubbleColumnUpParticle = new BubbleColumnUpParticle(clientWorld, d, e, f, g, h, i);
             bubbleColumnUpParticle.setSprite(this.spriteProvider);
             return bubbleColumnUpParticle;
         }

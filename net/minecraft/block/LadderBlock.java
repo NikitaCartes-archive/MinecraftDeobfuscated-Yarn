@@ -85,7 +85,7 @@ implements Waterloggable {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState blockState;
-        if (!ctx.canReplaceExisting() && (blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(ctx.getSide().getOpposite()))).getBlock() == this && blockState.get(FACING) == ctx.getSide()) {
+        if (!ctx.canReplaceExisting() && (blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(ctx.getSide().getOpposite()))).isOf(this) && blockState.get(FACING) == ctx.getSide()) {
             return null;
         }
         blockState = this.getDefaultState();

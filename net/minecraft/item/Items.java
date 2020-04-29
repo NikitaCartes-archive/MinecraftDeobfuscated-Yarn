@@ -30,7 +30,6 @@ import net.minecraft.item.BookItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ChorusFruitItem;
-import net.minecraft.item.ClockItem;
 import net.minecraft.item.CommandBlockItem;
 import net.minecraft.item.CompassItem;
 import net.minecraft.item.CrossbowItem;
@@ -788,7 +787,7 @@ public class Items {
     public static final Item EGG = Items.register("egg", (Item)new EggItem(new Item.Settings().maxCount(16).group(ItemGroup.MATERIALS)));
     public static final Item COMPASS = Items.register("compass", (Item)new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
     public static final Item FISHING_ROD = Items.register("fishing_rod", (Item)new FishingRodItem(new Item.Settings().maxDamage(64).group(ItemGroup.TOOLS)));
-    public static final Item CLOCK = Items.register("clock", (Item)new ClockItem(new Item.Settings().group(ItemGroup.TOOLS)));
+    public static final Item CLOCK = Items.register("clock", new Item(new Item.Settings().group(ItemGroup.TOOLS)));
     public static final Item GLOWSTONE_DUST = Items.register("glowstone_dust", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item COD = Items.register("cod", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COD)));
     public static final Item SALMON = Items.register("salmon", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.SALMON)));

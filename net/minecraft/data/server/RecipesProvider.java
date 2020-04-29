@@ -37,6 +37,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.StatePredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.CookingRecipeSerializer;
 import net.minecraft.recipe.Ingredient;
@@ -417,7 +418,7 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Items.WARPED_FUNGUS_ON_A_STICK).input(Character.valueOf('#'), Items.FISHING_ROD).input(Character.valueOf('X'), Items.WARPED_FUNGUS).pattern("# ").pattern(" X").criterion("has_warped_fungus", RecipesProvider.conditionsFromItem(Items.WARPED_FUNGUS)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CAULDRON).input(Character.valueOf('#'), Items.IRON_INGOT).pattern("# #").pattern("# #").pattern("###").criterion("has_water_bucket", RecipesProvider.conditionsFromItem(Items.WATER_BUCKET)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.COMPOSTER).input(Character.valueOf('#'), ItemTags.WOODEN_SLABS).pattern("# #").pattern("# #").pattern("###").criterion("has_wood_slab", RecipesProvider.conditionsFromTag(ItemTags.WOODEN_SLABS)).offerTo(consumer);
-        ShapedRecipeJsonFactory.create(Blocks.CHEST).input(Character.valueOf('#'), ItemTags.PLANKS).pattern("###").pattern("# #").pattern("###").criterion("has_lots_of_items", new InventoryChangedCriterion.Conditions(NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0])).offerTo(consumer);
+        ShapedRecipeJsonFactory.create(Blocks.CHEST).input(Character.valueOf('#'), ItemTags.PLANKS).pattern("###").pattern("# #").pattern("###").criterion("has_lots_of_items", new InventoryChangedCriterion.Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0])).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Items.CHEST_MINECART).input(Character.valueOf('A'), Blocks.CHEST).input(Character.valueOf('B'), Items.MINECART).pattern("A").pattern("B").criterion("has_minecart", RecipesProvider.conditionsFromItem(Items.MINECART)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CHISELED_NETHER_BRICKS).input(Character.valueOf('#'), Blocks.NETHER_BRICK_SLAB).pattern("#").pattern("#").criterion("has_nether_bricks", RecipesProvider.conditionsFromItem(Blocks.NETHER_BRICKS)).offerTo(consumer);
         ShapedRecipeJsonFactory.create(Blocks.CHISELED_QUARTZ_BLOCK).input(Character.valueOf('#'), Blocks.QUARTZ_SLAB).pattern("#").pattern("#").criterion("has_chiseled_quartz_block", RecipesProvider.conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK)).criterion("has_quartz_block", RecipesProvider.conditionsFromItem(Blocks.QUARTZ_BLOCK)).criterion("has_quartz_pillar", RecipesProvider.conditionsFromItem(Blocks.QUARTZ_PILLAR)).offerTo(consumer);
@@ -1061,7 +1062,7 @@ implements DataProvider {
     }
 
     private static EnterBlockCriterion.Conditions requireEnteringFluid(Block block) {
-        return new EnterBlockCriterion.Conditions(block, StatePredicate.ANY);
+        return new EnterBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY);
     }
 
     private static InventoryChangedCriterion.Conditions conditionsFromItem(ItemConvertible itemConvertible) {
@@ -1073,7 +1074,7 @@ implements DataProvider {
     }
 
     private static InventoryChangedCriterion.Conditions conditionsFromItemPredicates(ItemPredicate ... itemPredicates) {
-        return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
+        return new InventoryChangedCriterion.Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
     }
 
     @Override

@@ -3,12 +3,12 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.util.Identifier;
 
 public class ImpossibleCriterion
@@ -33,19 +33,25 @@ implements Criterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         return new Conditions();
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, predicateDeserializer);
     }
 
     public static class Conditions
-    extends AbstractCriterionConditions {
-        public Conditions() {
-            super(ID);
+    implements CriterionConditions {
+        @Override
+        public Identifier getId() {
+            return ID;
+        }
+
+        @Override
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            return new JsonObject();
         }
     }
 }

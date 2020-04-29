@@ -52,7 +52,7 @@ Waterloggable {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-        if (blockState.getBlock() == this) {
+        if (blockState.isOf(this)) {
             return (BlockState)blockState.with(PICKLES, Math.min(4, blockState.get(PICKLES) + 1));
         }
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
@@ -149,7 +149,7 @@ Waterloggable {
                     for (int r = q - 2; r < q; ++r) {
                         BlockState blockState;
                         BlockPos blockPos = new BlockPos(m + o, r, pos.getZ() - n + p);
-                        if (blockPos == pos || random.nextInt(6) != 0 || world.getBlockState(blockPos).getBlock() != Blocks.WATER || !(blockState = world.getBlockState(blockPos.down())).isIn(BlockTags.CORAL_BLOCKS)) continue;
+                        if (blockPos == pos || random.nextInt(6) != 0 || !world.getBlockState(blockPos).isOf(Blocks.WATER) || !(blockState = world.getBlockState(blockPos.down())).isIn(BlockTags.CORAL_BLOCKS)) continue;
                         world.setBlockState(blockPos, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, random.nextInt(4) + 1), 3);
                     }
                 }

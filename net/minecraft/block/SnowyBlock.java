@@ -27,16 +27,15 @@ extends Block {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         if (direction == Direction.UP) {
-            Block block = newState.getBlock();
-            return (BlockState)state.with(SNOWY, block == Blocks.SNOW_BLOCK || block == Blocks.SNOW);
+            return (BlockState)state.with(SNOWY, newState.isOf(Blocks.SNOW_BLOCK) || newState.isOf(Blocks.SNOW));
         }
         return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        Block block = ctx.getWorld().getBlockState(ctx.getBlockPos().up()).getBlock();
-        return (BlockState)this.getDefaultState().with(SNOWY, block == Blocks.SNOW_BLOCK || block == Blocks.SNOW);
+        BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
+        return (BlockState)this.getDefaultState().with(SNOWY, blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.SNOW));
     }
 
     @Override

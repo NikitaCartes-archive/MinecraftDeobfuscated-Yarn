@@ -70,7 +70,7 @@ implements Waterloggable {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockPos blockPos = ctx.getBlockPos();
         BlockState blockState = ctx.getWorld().getBlockState(blockPos);
-        if (blockState.getBlock() == this) {
+        if (blockState.isOf(this)) {
             return (BlockState)((BlockState)blockState.with(TYPE, SlabType.DOUBLE)).with(WATERLOGGED, false);
         }
         FluidState fluidState = ctx.getWorld().getFluidState(blockPos);

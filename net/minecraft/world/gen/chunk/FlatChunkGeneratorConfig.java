@@ -23,6 +23,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -35,6 +36,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.feature.BastionRemnantFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -69,6 +71,7 @@ extends ChunkGeneratorConfig {
     private static final ConfiguredFeature<?, ? extends StructureFeature<?>> field_24017 = Feature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig());
     private static final ConfiguredFeature<?, ? extends StructureFeature<?>> OCEAN_RUIN = Feature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3f, 0.1f));
     private static final ConfiguredFeature<?, ? extends StructureFeature<?>> PILLAGER_OUTPOST = Feature.PILLAGER_OUTPOST.configure(FeatureConfig.DEFAULT);
+    private static final ConfiguredFeature<?, ? extends StructureFeature<?>> field_24422 = Feature.BASTION_REMNANT.configure(new BastionRemnantFeatureConfig(BastionRemnantGenerator.START_POOLS_TO_SIZES));
     private static final ConfiguredFeature<?, ?> WATER_LAKE = Feature.LAKE.configure(new SingleStateFeatureConfig(Blocks.WATER.getDefaultState())).createDecoratedFeature(Decorator.WATER_LAKE.configure(new ChanceDecoratorConfig(4)));
     private static final ConfiguredFeature<?, ?> LAVA_LAKE = Feature.LAKE.configure(new SingleStateFeatureConfig(Blocks.LAVA.getDefaultState())).createDecoratedFeature(Decorator.LAVA_LAKE.configure(new ChanceDecoratorConfig(80)));
     public static final Map<ConfiguredFeature<?, ?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = Util.make(Maps.newHashMap(), hashMap -> {
@@ -89,6 +92,7 @@ extends ChunkGeneratorConfig {
         hashMap.put(NETHER_BRIDGE, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
         hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.SURFACE_STRUCTURES);
         hashMap.put(PILLAGER_OUTPOST, GenerationStep.Feature.SURFACE_STRUCTURES);
+        hashMap.put(field_24422, GenerationStep.Feature.SURFACE_STRUCTURES);
     });
     public static final Map<String, ConfiguredFeature<?, ?>[]> STRUCTURE_TO_FEATURES = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put("mineshaft", new ConfiguredFeature[]{MINESHAFT});
@@ -103,6 +107,7 @@ extends ChunkGeneratorConfig {
         hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
         hashMap.put("pillager_outpost", new ConfiguredFeature[]{PILLAGER_OUTPOST});
         hashMap.put("ruined_portal", new ConfiguredFeature[]{field_24017});
+        hashMap.put("bastion_remnant", new ConfiguredFeature[]{field_24422});
     });
     public static final Map<ConfiguredFeature<?, ? extends StructureFeature<?>>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
@@ -119,6 +124,7 @@ extends ChunkGeneratorConfig {
         hashMap.put(WOODLAND_MANSION, FeatureConfig.DEFAULT);
         hashMap.put(NETHER_BRIDGE, FeatureConfig.DEFAULT);
         hashMap.put(PILLAGER_OUTPOST, FeatureConfig.DEFAULT);
+        hashMap.put(field_24422, new BastionRemnantFeatureConfig(BastionRemnantGenerator.START_POOLS_TO_SIZES));
     });
     private final List<FlatChunkGeneratorLayer> layers = Lists.newArrayList();
     private final Map<String, Map<String, String>> structures = Maps.newHashMap();
@@ -166,11 +172,11 @@ extends ChunkGeneratorConfig {
         for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.layers) {
             for (int j = flatChunkGeneratorLayer.getStartY(); j < flatChunkGeneratorLayer.getStartY() + flatChunkGeneratorLayer.getThickness(); ++j) {
                 BlockState blockState = flatChunkGeneratorLayer.getBlockState();
-                if (blockState.getBlock() == Blocks.AIR) continue;
+                if (blockState.isOf(Blocks.AIR)) continue;
                 this.hasNoTerrain = false;
                 this.layerBlocks[j] = blockState;
             }
-            if (flatChunkGeneratorLayer.getBlockState().getBlock() == Blocks.AIR) {
+            if (flatChunkGeneratorLayer.getBlockState().isOf(Blocks.AIR)) {
                 i += flatChunkGeneratorLayer.getThickness();
                 continue;
             }

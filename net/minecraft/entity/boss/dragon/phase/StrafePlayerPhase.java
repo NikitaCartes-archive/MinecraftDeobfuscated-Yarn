@@ -72,7 +72,7 @@ extends AbstractPhase {
                     double p = this.field_7062.getBodyY(0.5) - m;
                     double q = this.field_7062.getZ() - n;
                     if (!this.dragon.isSilent()) {
-                        this.dragon.world.playLevelEvent(null, 1017, this.dragon.getBlockPos(), 0);
+                        this.dragon.world.syncWorldEvent(null, 1017, this.dragon.getBlockPos(), 0);
                     }
                     DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.world, this.dragon, o, p, q);
                     dragonFireballEntity.refreshPositionAndAngles(l, m, n, 0.0f, 0.0f);

@@ -51,22 +51,17 @@ extends PathNodeMaker {
     @Override
     public PathNode getStart() {
         BlockPos blockPos;
-        int i;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        if (this.canSwim() && this.entity.isTouchingWater()) {
-            i = MathHelper.floor(this.entity.getY());
-            BlockState blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)i, this.entity.getZ()));
-            while (blockState.getBlock() == Blocks.WATER || blockState.getFluidState() == Fluids.WATER.getStill(false)) {
+        int i = MathHelper.floor(this.entity.getY());
+        BlockState blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)i, this.entity.getZ()));
+        if (this.entity.canWalkOnLava(blockState.getFluidState().getFluid())) {
+            while (this.entity.canWalkOnLava(blockState.getFluidState().getFluid())) {
                 blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ()));
             }
             --i;
-        } else if (this.entity.isInLava() && this.entity.canWalkOnLava()) {
-            i = MathHelper.floor(this.entity.getY());
-            BlockPos.Mutable mutable2 = new BlockPos.Mutable(this.entity.getX(), (double)i, this.entity.getZ());
-            BlockState blockState2 = this.cachedWorld.getBlockState(mutable2);
-            while (blockState2.getBlock() == Blocks.LAVA || blockState2.getFluidState() == Fluids.LAVA.getStill(false)) {
-                mutable2.set(this.entity.getX(), (double)(++i), this.entity.getZ());
-                blockState2 = this.cachedWorld.getBlockState(mutable2);
+        } else if (this.canSwim() && this.entity.isTouchingWater()) {
+            while (blockState.getBlock() == Blocks.WATER || blockState.getFluidState() == Fluids.WATER.getStill(false)) {
+                blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ()));
             }
             --i;
         } else if (this.entity.isOnGround()) {
@@ -82,9 +77,9 @@ extends PathNodeMaker {
         PathNodeType pathNodeType = this.getNodeType(this.entity, blockPos.getX(), i, blockPos.getZ());
         if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0f) {
             Box box = this.entity.getBoundingBox();
-            BlockPos.Mutable mutable3 = mutable;
-            if (this.method_27139(mutable3.set(box.x1, (double)i, box.z1)) || this.method_27139(mutable3.set(box.x1, (double)i, box.z2)) || this.method_27139(mutable3.set(box.x2, (double)i, box.z1)) || this.method_27139(mutable3.set(box.x2, (double)i, box.z2))) {
-                return this.method_27137(mutable3);
+            BlockPos.Mutable mutable2 = mutable;
+            if (this.method_27139(mutable2.set(box.x1, (double)i, box.z1)) || this.method_27139(mutable2.set(box.x1, (double)i, box.z2)) || this.method_27139(mutable2.set(box.x2, (double)i, box.z1)) || this.method_27139(mutable2.set(box.x2, (double)i, box.z2))) {
+                return this.method_27137(mutable2);
             }
         }
         return this.getNode(blockPos.getX(), i, blockPos.getZ());
@@ -361,12 +356,11 @@ extends PathNodeMaker {
                     if (l == 0 && n == 0) continue;
                     mutable.set(l + i, m + j, n + k);
                     BlockState blockState = blockView.getBlockState(mutable);
-                    Block block = blockState.getBlock();
-                    if (block == Blocks.CACTUS) {
+                    if (blockState.isOf(Blocks.CACTUS)) {
                         pathNodeType = PathNodeType.DANGER_CACTUS;
                         continue;
                     }
-                    if (block == Blocks.SWEET_BERRY_BUSH) {
+                    if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
                         pathNodeType = PathNodeType.DANGER_OTHER;
                         continue;
                     }
@@ -385,19 +379,19 @@ extends PathNodeMaker {
         if (blockState.isAir()) {
             return PathNodeType.OPEN;
         }
-        if (block.isIn(BlockTags.TRAPDOORS) || block == Blocks.LILY_PAD) {
+        if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD)) {
             return PathNodeType.TRAPDOOR;
         }
-        if (block == Blocks.CACTUS) {
+        if (blockState.isOf(Blocks.CACTUS)) {
             return PathNodeType.DAMAGE_CACTUS;
         }
-        if (block == Blocks.SWEET_BERRY_BUSH) {
+        if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
             return PathNodeType.DAMAGE_OTHER;
         }
-        if (block == Blocks.HONEY_BLOCK) {
+        if (blockState.isOf(Blocks.HONEY_BLOCK)) {
             return PathNodeType.STICKY_HONEY;
         }
-        if (block == Blocks.COCOA) {
+        if (blockState.isOf(Blocks.COCOA)) {
             return PathNodeType.COCOA;
         }
         if (LandPathNodeMaker.method_27138(blockState)) {
@@ -435,8 +429,7 @@ extends PathNodeMaker {
     }
 
     private static boolean method_27138(BlockState blockState) {
-        Block block = blockState.getBlock();
-        return block.isIn(BlockTags.FIRE) || block == Blocks.LAVA || block == Blocks.MAGMA_BLOCK || CampfireBlock.isLitCampfire(blockState);
+        return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
     }
 }
 

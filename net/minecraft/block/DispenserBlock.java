@@ -84,7 +84,7 @@ extends BlockWithEntity {
         DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)blockPointerImpl.getBlockEntity();
         int i = dispenserBlockEntity.chooseNonEmptySlot();
         if (i < 0) {
-            world.playLevelEvent(1001, pos, 0);
+            world.syncWorldEvent(1001, pos, 0);
             return;
         }
         ItemStack itemStack = dispenserBlockEntity.getStack(i);
@@ -135,7 +135,7 @@ extends BlockWithEntity {
 
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (state.getBlock() == newState.getBlock()) {
+        if (state.isOf(newState.getBlock())) {
             return;
         }
         BlockEntity blockEntity = world.getBlockEntity(pos);

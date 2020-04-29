@@ -11,8 +11,8 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class SpellParticle
@@ -20,7 +20,7 @@ extends SpriteBillboardParticle {
     private static final Random RANDOM = new Random();
     private final SpriteProvider spriteProvider;
 
-    private SpellParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+    private SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z, 0.5 - RANDOM.nextDouble(), velocityY, 0.5 - RANDOM.nextDouble());
         this.spriteProvider = spriteProvider;
         this.velocityY *= (double)0.2f;
@@ -74,8 +74,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new SpellParticle(world, d, e, f, g, h, i, this.field_17872);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17872);
         }
     }
 
@@ -89,9 +89,9 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            SpellParticle spellParticle = new SpellParticle(world, d, e, f, g, h, i, this.field_17875);
-            float j = world.random.nextFloat() * 0.5f + 0.35f;
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            SpellParticle spellParticle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17875);
+            float j = clientWorld.random.nextFloat() * 0.5f + 0.35f;
             spellParticle.setColor(1.0f * j, 0.0f * j, 1.0f * j);
             return spellParticle;
         }
@@ -107,8 +107,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            SpellParticle particle = new SpellParticle(world, d, e, f, g, h, i, this.spriteProvider);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            SpellParticle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
             particle.setColorAlpha(0.15f);
             particle.setColor((float)g, (float)h, (float)i);
             return particle;
@@ -125,8 +125,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            SpellParticle particle = new SpellParticle(world, d, e, f, g, h, i, this.field_17873);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            SpellParticle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17873);
             particle.setColor((float)g, (float)h, (float)i);
             return particle;
         }
@@ -142,8 +142,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new SpellParticle(world, d, e, f, g, h, i, this.spriteProvider);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

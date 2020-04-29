@@ -3,14 +3,14 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -25,20 +25,20 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("durability"));
         NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("delta"));
-        return new Conditions(itemPredicate, intRange, intRange2);
+        return new Conditions(extended, itemPredicate, intRange, intRange2);
     }
 
     public void trigger(ServerPlayerEntity player, ItemStack stack, int damage) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(stack, damage));
+        this.test(player, conditions -> conditions.matches(stack, damage));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
@@ -47,15 +47,15 @@ extends AbstractCriterion<Conditions> {
         private final NumberRange.IntRange durability;
         private final NumberRange.IntRange delta;
 
-        public Conditions(ItemPredicate item, NumberRange.IntRange durability, NumberRange.IntRange delta) {
-            super(ID);
+        public Conditions(EntityPredicate.Extended player, ItemPredicate item, NumberRange.IntRange durability, NumberRange.IntRange delta) {
+            super(ID, player);
             this.item = item;
             this.durability = durability;
             this.delta = delta;
         }
 
         public static Conditions create(ItemPredicate item, NumberRange.IntRange durability) {
-            return new Conditions(item, durability, NumberRange.IntRange.ANY);
+            return new Conditions(EntityPredicate.Extended.EMPTY, item, durability, NumberRange.IntRange.ANY);
         }
 
         public boolean matches(ItemStack stack, int damage) {
@@ -69,8 +69,8 @@ extends AbstractCriterion<Conditions> {
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("item", this.item.toJson());
             jsonObject.add("durability", this.durability.toJson());
             jsonObject.add("delta", this.delta.toJson());

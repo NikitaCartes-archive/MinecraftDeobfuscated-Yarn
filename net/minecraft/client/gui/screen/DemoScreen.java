@@ -9,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -38,13 +37,13 @@ extends Screen {
     }
 
     @Override
-    public void renderBackground(MatrixStack matrixStack) {
-        super.renderBackground(matrixStack);
+    public void renderBackground(MatrixStack matrices) {
+        super.renderBackground(matrices);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.client.getTextureManager().bindTexture(DEMO_BG);
         int i = (this.width - 248) / 2;
         int j = (this.height - 166) / 2;
-        this.drawTexture(matrixStack, i, j, 0, 0, 248, 166);
+        this.drawTexture(matrices, i, j, 0, 0, 248, 166);
     }
 
     @Override
@@ -54,10 +53,10 @@ extends Screen {
         int j = (this.height - 166) / 2 + 8;
         this.textRenderer.draw(matrices, this.title, (float)i, (float)j, 0x1F1F1F);
         GameOptions gameOptions = this.client.options;
-        this.textRenderer.draw(matrices, I18n.translate("demo.help.movementShort", gameOptions.keyForward.getLocalizedName(), gameOptions.keyLeft.getLocalizedName(), gameOptions.keyBack.getLocalizedName(), gameOptions.keyRight.getLocalizedName()), (float)i, (float)(j += 12), 0x4F4F4F);
-        this.textRenderer.draw(matrices, I18n.translate("demo.help.movementMouse", new Object[0]), (float)i, (float)(j + 12), 0x4F4F4F);
-        this.textRenderer.draw(matrices, I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)i, (float)(j + 24), 0x4F4F4F);
-        this.textRenderer.draw(matrices, I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)i, (float)(j + 36), 0x4F4F4F);
+        this.textRenderer.draw(matrices, new TranslatableText("demo.help.movementShort", gameOptions.keyForward.getLocalizedName(), gameOptions.keyLeft.getLocalizedName(), gameOptions.keyBack.getLocalizedName(), gameOptions.keyRight.getLocalizedName()), (float)i, (float)(j += 12), 0x4F4F4F);
+        this.textRenderer.draw(matrices, new TranslatableText("demo.help.movementMouse"), (float)i, (float)(j + 12), 0x4F4F4F);
+        this.textRenderer.draw(matrices, new TranslatableText("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)i, (float)(j + 24), 0x4F4F4F);
+        this.textRenderer.draw(matrices, new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)i, (float)(j + 36), 0x4F4F4F);
         this.textRenderer.drawTrimmed(new TranslatableText("demo.help.fullWrapped"), i, j + 68, 218, 0x1F1F1F);
         super.render(matrices, mouseX, mouseY, delta);
     }

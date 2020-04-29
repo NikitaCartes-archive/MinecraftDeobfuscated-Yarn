@@ -98,7 +98,7 @@ extends Screen {
         this.listWidget.render(matrices, mouseX, mouseY, delta);
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 400.0f);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         this.method_27535(matrices, this.textRenderer, this.shareText, 50, 30, 0xA0A0A0);
         this.method_27535(matrices, this.textRenderer, this.listText, 50, 70, 0xA0A0A0);
         RenderSystem.popMatrix();

@@ -49,7 +49,7 @@ extends PlantBlock {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
-        if (newState.getBlock() != this.gourdBlock && direction == state.get(FACING)) {
+        if (!newState.isOf(this.gourdBlock) && direction == state.get(FACING)) {
             return (BlockState)this.gourdBlock.getStem().getDefaultState().with(StemBlock.AGE, 7);
         }
         return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
@@ -57,7 +57,7 @@ extends PlantBlock {
 
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-        return floor.getBlock() == Blocks.FARMLAND;
+        return floor.isOf(Blocks.FARMLAND);
     }
 
     @Environment(value=EnvType.CLIENT)

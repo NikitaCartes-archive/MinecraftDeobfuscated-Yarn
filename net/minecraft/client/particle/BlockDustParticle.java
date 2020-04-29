@@ -5,7 +5,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -14,9 +13,9 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -27,7 +26,7 @@ extends SpriteBillboardParticle {
     private final float sampleU;
     private final float sampleV;
 
-    public BlockDustParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState blockState) {
+    public BlockDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState blockState) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
         this.blockState = blockState;
         this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
@@ -47,7 +46,7 @@ extends SpriteBillboardParticle {
 
     public BlockDustParticle setBlockPos(BlockPos blockPos) {
         this.blockPos = blockPos;
-        if (this.blockState.getBlock() == Blocks.GRASS_BLOCK) {
+        if (this.blockState.isOf(Blocks.GRASS_BLOCK)) {
             return this;
         }
         this.updateColor(blockPos);
@@ -56,8 +55,7 @@ extends SpriteBillboardParticle {
 
     public BlockDustParticle setBlockPosFromPosition() {
         this.blockPos = new BlockPos(this.x, this.y, this.z);
-        Block block = this.blockState.getBlock();
-        if (block == Blocks.GRASS_BLOCK) {
+        if (this.blockState.isOf(Blocks.GRASS_BLOCK)) {
             return this;
         }
         this.updateColor(this.blockPos);
@@ -105,12 +103,12 @@ extends SpriteBillboardParticle {
     public static class Factory
     implements ParticleFactory<BlockStateParticleEffect> {
         @Override
-        public Particle createParticle(BlockStateParticleEffect blockStateParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
+        public Particle createParticle(BlockStateParticleEffect blockStateParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             BlockState blockState = blockStateParticleEffect.getBlockState();
-            if (blockState.isAir() || blockState.getBlock() == Blocks.MOVING_PISTON) {
+            if (blockState.isAir() || blockState.isOf(Blocks.MOVING_PISTON)) {
                 return null;
             }
-            return new BlockDustParticle(world, d, e, f, g, h, i, blockState).setBlockPosFromPosition();
+            return new BlockDustParticle(clientWorld, d, e, f, g, h, i, blockState).setBlockPosFromPosition();
         }
     }
 }

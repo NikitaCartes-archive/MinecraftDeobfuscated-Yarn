@@ -16,6 +16,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -27,7 +28,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -43,8 +43,8 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            Explosion explosion = new Explosion(world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            Explosion explosion = new Explosion(clientWorld, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider);
             explosion.setColorAlpha(0.99f);
             return explosion;
         }
@@ -60,8 +60,8 @@ public class FireworksSparkParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            Flash flash = new Flash(world, d, e, f);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            Flash flash = new Flash(clientWorld, d, e, f);
             flash.setSprite(this.spriteProvider);
             return flash;
         }
@@ -70,8 +70,8 @@ public class FireworksSparkParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Flash
     extends SpriteBillboardParticle {
-        private Flash(World x, double y, double d, double e) {
-            super(x, y, d, e);
+        private Flash(ClientWorld world, double x, double y, double z) {
+            super(world, x, y, z);
             this.maxAge = 4;
         }
 
@@ -103,8 +103,8 @@ public class FireworksSparkParticle {
         private float field_3799;
         private boolean field_3802;
 
-        private Explosion(World world, double d, double e, double f, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, SpriteProvider spriteProvider) {
-            super(world, d, e, f, spriteProvider, -0.004f);
+        private Explosion(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, SpriteProvider spriteProvider) {
+            super(world, x, y, z, spriteProvider, -0.004f);
             this.velocityX = velocityX;
             this.velocityY = velocityY;
             this.velocityZ = velocityZ;
@@ -157,7 +157,7 @@ public class FireworksSparkParticle {
         private ListTag explosions;
         private boolean flicker;
 
-        public FireworkParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, @Nullable CompoundTag tag) {
+        public FireworkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, @Nullable CompoundTag tag) {
             super(world, x, y, z);
             this.velocityX = velocityX;
             this.velocityY = velocityY;

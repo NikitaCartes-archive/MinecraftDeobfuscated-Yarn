@@ -148,22 +148,20 @@ extends Screen {
             --this.currentPage;
         }
         this.updateButtons();
-        this.method_27577();
+        this.method_27872();
     }
 
     private void openNextPage() {
         if (this.currentPage < this.countPages() - 1) {
             ++this.currentPage;
-            this.field_24269.method_27566();
         } else {
             this.appendNewPage();
             if (this.currentPage < this.countPages() - 1) {
                 ++this.currentPage;
             }
-            this.field_24269.method_27566();
         }
         this.updateButtons();
-        this.method_27577();
+        this.method_27872();
     }
 
     @Override
@@ -463,6 +461,9 @@ extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (super.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
         if (button == 0) {
             long l = Util.getMeasuringTimeMs();
             class_5233 lv = this.method_27576();
@@ -482,7 +483,7 @@ extends Screen {
             this.lastClickIndex = i;
             this.lastClickTime = l;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return true;
     }
 
     private void method_27589(int i) {
@@ -492,13 +493,16 @@ extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+            return true;
+        }
         if (button == 0) {
             class_5233 lv = this.method_27576();
             int i = lv.method_27602(this.textRenderer, this.method_27582(new class_5234((int)mouseX, (int)mouseY)));
             this.field_24269.method_27560(i, true);
             this.method_27577();
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return true;
     }
 
     private class_5233 method_27576() {
@@ -510,6 +514,11 @@ extends Screen {
 
     private void method_27577() {
         this.field_24268 = null;
+    }
+
+    private void method_27872() {
+        this.field_24269.moveCaretToEnd();
+        this.method_27577();
     }
 
     private class_5233 method_27578() {

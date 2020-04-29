@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world.gen.foliage;
 
 import com.mojang.datafixers.Dynamic;
 import java.util.Random;
@@ -13,21 +13,21 @@ import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
-public class class_5205
+public class BushFoliagePlacer
 extends BlobFoliagePlacer {
-    public class_5205(int i, int j, int k, int l, int m) {
+    public BushFoliagePlacer(int i, int j, int k, int l, int m) {
         super(i, j, k, l, m, FoliagePlacerType.BUSH_FOLIAGE_PLACER);
     }
 
-    public <T> class_5205(Dynamic<T> dynamic) {
+    public <T> BushFoliagePlacer(Dynamic<T> dynamic) {
         this(dynamic.get("radius").asInt(0), dynamic.get("radius_random").asInt(0), dynamic.get("offset").asInt(0), dynamic.get("offset_random").asInt(0), dynamic.get("height").asInt(0));
     }
 
     @Override
-    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig treeFeatureConfig, int trunkHeight, FoliagePlacer.class_5208 arg, int foliageHeight, int radius, Set<BlockPos> leaves, int i) {
+    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves, int i) {
         for (int j = i; j >= i - foliageHeight; --j) {
-            int k = radius + arg.method_27389() - 1 - j;
-            this.generate(world, random, treeFeatureConfig, arg.method_27388(), k, leaves, j, arg.method_27390());
+            int k = radius + treeNode.getFoliageRadius() - 1 - j;
+            this.generate(world, random, config, treeNode.getCenter(), k, leaves, j, treeNode.isGiantTrunk());
         }
     }
 

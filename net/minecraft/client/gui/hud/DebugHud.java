@@ -9,6 +9,7 @@ import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.longs.LongSets;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -17,6 +18,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -33,6 +36,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCategory;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -53,6 +57,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
@@ -145,6 +150,8 @@ extends DrawableHelper {
     }
 
     protected List<String> getLeftText() {
+        ShaderEffect shaderEffect;
+        int k;
         World world;
         String string2;
         IntegratedServer integratedServer = this.client.getServer();
@@ -186,7 +193,7 @@ extends DrawableHelper {
         }
         LongSets.EmptySet longSet = (world = this.getWorld()) instanceof ServerWorld ? ((ServerWorld)world).getForcedChunks() : LongSets.EMPTY_SET;
         ArrayList<String> list = Lists.newArrayList("Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ("release".equalsIgnoreCase(this.client.getVersionType()) ? "" : "/" + this.client.getVersionType()) + ")", this.client.fpsDebugString, string, this.client.worldRenderer.getChunksDebugString(), this.client.worldRenderer.getEntitiesDebugString(), "P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(), this.client.world.getDebugString());
-        String string3 = this.getServerWorldDebugString();
+        String string3 = this.method_27871();
         if (string3 != null) {
             list.add(string3);
         }
@@ -204,7 +211,7 @@ extends DrawableHelper {
                 } else {
                     int i = this.client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
                     int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
-                    int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
+                    k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
                     list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
                     WorldChunk worldChunk2 = this.getChunk();
                     if (worldChunk2 != null) {
@@ -249,27 +256,37 @@ extends DrawableHelper {
         } else {
             list.add("Outside of world...");
         }
-        ShaderEffect shaderEffect = this.client.gameRenderer.getShader();
-        if (shaderEffect != null) {
+        ServerWorld serverWorld = this.getServerWorld();
+        if (serverWorld != null) {
+            SpawnHelper.Info info = serverWorld.getChunkManager().getSpawnInfo();
+            if (info != null) {
+                Object2IntMap<EntityCategory> object2IntMap = info.getCategoryToCount();
+                k = info.getSpawningChunkCount();
+                list.add("SC: " + k + ", " + Stream.of(EntityCategory.values()).map(entityCategory -> Character.toUpperCase(entityCategory.getName().charAt(0)) + ": " + object2IntMap.getInt(entityCategory)).collect(Collectors.joining(", ")));
+            } else {
+                list.add("SC: N/A");
+            }
+        }
+        if ((shaderEffect = this.client.gameRenderer.getShader()) != null) {
             list.add("Shader: " + shaderEffect.getName());
-        }
-        if (this.blockHit.getType() == HitResult.Type.BLOCK) {
-            BlockPos blockPos2 = ((BlockHitResult)this.blockHit).getBlockPos();
-            list.add(String.format("Looking at block: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
-        }
-        if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
-            BlockPos blockPos2 = ((BlockHitResult)this.fluidHit).getBlockPos();
-            list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
         }
         list.add(this.client.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.client.player.getMoodPercentage() * 100.0f)));
         return list;
     }
 
     @Nullable
-    private String getServerWorldDebugString() {
-        ServerWorld serverWorld;
+    private ServerWorld getServerWorld() {
         IntegratedServer integratedServer = this.client.getServer();
-        if (integratedServer != null && (serverWorld = integratedServer.getWorld(this.client.world.getDimension().getType())) != null) {
+        if (integratedServer != null) {
+            return integratedServer.getWorld(this.client.world.getDimension().getType());
+        }
+        return null;
+    }
+
+    @Nullable
+    private String method_27871() {
+        ServerWorld serverWorld = this.getServerWorld();
+        if (serverWorld != null) {
             return serverWorld.getDebugString();
         }
         return null;
@@ -282,9 +299,8 @@ extends DrawableHelper {
     @Nullable
     private WorldChunk getChunk() {
         if (this.chunkFuture == null) {
-            ServerWorld serverWorld;
-            IntegratedServer integratedServer = this.client.getServer();
-            if (integratedServer != null && (serverWorld = integratedServer.getWorld(this.client.world.dimension.getType())) != null) {
+            ServerWorld serverWorld = this.getServerWorld();
+            if (serverWorld != null) {
                 this.chunkFuture = serverWorld.getChunkManager().getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false).thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
             }
             if (this.chunkFuture == null) {
@@ -316,7 +332,7 @@ extends DrawableHelper {
             blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
             BlockState blockState = this.client.world.getBlockState(blockPos);
             list.add("");
-            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Block");
+            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
             list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
             for (Map.Entry entry : blockState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
@@ -329,7 +345,7 @@ extends DrawableHelper {
             blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
             FluidState fluidState = this.client.world.getFluidState(blockPos);
             list.add("");
-            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Fluid");
+            list.add((Object)((Object)Formatting.UNDERLINE) + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
             list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
             for (Map.Entry entry : fluidState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));

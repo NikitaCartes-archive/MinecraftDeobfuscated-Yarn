@@ -62,7 +62,7 @@ implements Fertilizable {
         if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
-        if (direction == this.growthDirection && newState.getBlock() == this) {
+        if (direction == this.growthDirection && newState.isOf(this)) {
             return this.getPlant().getDefaultState();
         }
         if (this.tickWater) {

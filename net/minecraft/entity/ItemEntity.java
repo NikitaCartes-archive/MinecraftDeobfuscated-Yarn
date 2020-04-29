@@ -324,7 +324,7 @@ extends Entity {
     public void onTrackedDataSet(TrackedData<?> data) {
         super.onTrackedDataSet(data);
         if (STACK.equals(data)) {
-            this.getStack().method_27320(this);
+            this.getStack().setHolder(this);
         }
     }
 

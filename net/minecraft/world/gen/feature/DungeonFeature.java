@@ -82,7 +82,7 @@ extends Feature<DefaultFeatureConfig> {
                             iWorld.setBlockState(blockPos2, AIR, 2);
                             continue;
                         }
-                        if (!iWorld.getBlockState(blockPos2).getMaterial().isSolid() || iWorld.getBlockState(blockPos2).getBlock() == Blocks.CHEST) continue;
+                        if (!iWorld.getBlockState(blockPos2).getMaterial().isSolid() || iWorld.getBlockState(blockPos2).isOf(Blocks.CHEST)) continue;
                         if (t == -1 && random.nextInt(4) != 0) {
                             iWorld.setBlockState(blockPos2, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
                             continue;
@@ -90,7 +90,7 @@ extends Feature<DefaultFeatureConfig> {
                         iWorld.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
                         continue;
                     }
-                    if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.CHEST) continue;
+                    if (iWorld.getBlockState(blockPos2).isOf(Blocks.CHEST)) continue;
                     iWorld.setBlockState(blockPos2, AIR, 2);
                 }
             }

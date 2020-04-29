@@ -1,33 +1,33 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world.gen.feature.size;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import java.util.OptionalInt;
-import net.minecraft.class_5201;
-import net.minecraft.class_5202;
+import net.minecraft.world.gen.feature.size.FeatureSize;
+import net.minecraft.world.gen.feature.size.FeatureSizeType;
 
-public class class_5204
-extends class_5201 {
+public class TwoLayersFeatureSize
+extends FeatureSize {
     private final int field_24155;
     private final int field_24156;
     private final int field_24157;
 
-    public class_5204(int i, int j, int k) {
+    public TwoLayersFeatureSize(int i, int j, int k) {
         this(i, j, k, OptionalInt.empty());
     }
 
-    public class_5204(int i, int j, int k, OptionalInt optionalInt) {
-        super(class_5202.field_24147, optionalInt);
+    public TwoLayersFeatureSize(int i, int j, int k, OptionalInt minClippedHeight) {
+        super(FeatureSizeType.TWO_LAYERS_FEATURE_SIZE, minClippedHeight);
         this.field_24155 = i;
         this.field_24156 = j;
         this.field_24157 = k;
     }
 
-    public <T> class_5204(Dynamic<T> dynamic) {
+    public <T> TwoLayersFeatureSize(Dynamic<T> dynamic) {
         this(dynamic.get("limit").asInt(1), dynamic.get("lower_size").asInt(0), dynamic.get("upper_size").asInt(1), dynamic.get("min_clipped_height").asNumber().map(number -> OptionalInt.of(number.intValue())).orElse(OptionalInt.empty()));
     }
 
@@ -37,10 +37,10 @@ extends class_5201 {
     }
 
     @Override
-    public <T> T method_27380(DynamicOps<T> dynamicOps) {
+    public <T> T serialize(DynamicOps<T> ops) {
         ImmutableMap.Builder<T, T> builder = ImmutableMap.builder();
-        builder.put(dynamicOps.createString("limit"), dynamicOps.createInt(this.field_24155)).put(dynamicOps.createString("lower_size"), dynamicOps.createInt(this.field_24156)).put(dynamicOps.createString("upper_size"), dynamicOps.createInt(this.field_24157));
-        return dynamicOps.merge(super.method_27380(dynamicOps), dynamicOps.createMap(builder.build()));
+        builder.put(ops.createString("limit"), ops.createInt(this.field_24155)).put(ops.createString("lower_size"), ops.createInt(this.field_24156)).put(ops.createString("upper_size"), ops.createInt(this.field_24157));
+        return ops.merge(super.serialize(ops), ops.createMap(builder.build()));
     }
 }
 

@@ -66,7 +66,7 @@ extends HorizontalConnectingBlock {
     @Override
     @Environment(value=EnvType.CLIENT)
     public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
-        if (stateFrom.getBlock() == this) {
+        if (stateFrom.isOf(this)) {
             if (!direction.getAxis().isHorizontal()) {
                 return true;
             }

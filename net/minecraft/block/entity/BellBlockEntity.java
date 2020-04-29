@@ -25,12 +25,12 @@ import net.minecraft.world.World;
 public class BellBlockEntity
 extends BlockEntity
 implements Tickable {
-    private long field_19155;
+    private long lastRingTime;
     public int ringTicks;
     public boolean ringing;
     public Direction lastSideHit;
-    private List<LivingEntity> field_19156;
-    private boolean field_19157;
+    private List<LivingEntity> hearingEntities;
+    private boolean resonating;
     private int field_19158;
 
     public BellBlockEntity() {
@@ -38,16 +38,16 @@ implements Tickable {
     }
 
     @Override
-    public boolean onBlockAction(int i, int j) {
-        if (i == 1) {
-            this.method_20219();
+    public boolean onSyncedBlockEvent(int type, int data) {
+        if (type == 1) {
+            this.notifyMemoriesOfBell();
             this.field_19158 = 0;
-            this.lastSideHit = Direction.byId(j);
+            this.lastSideHit = Direction.byId(data);
             this.ringTicks = 0;
             this.ringing = true;
             return true;
         }
-        return super.onBlockAction(i, j);
+        return super.onSyncedBlockEvent(type, data);
     }
 
     @Override
@@ -60,16 +60,16 @@ implements Tickable {
             this.ringTicks = 0;
         }
         if (this.ringTicks >= 5 && this.field_19158 == 0 && this.method_20523()) {
-            this.field_19157 = true;
+            this.resonating = true;
             this.playResonateSound();
         }
-        if (this.field_19157) {
+        if (this.resonating) {
             if (this.field_19158 < 40) {
                 ++this.field_19158;
             } else {
-                this.method_20521(this.world);
-                this.method_20218(this.world);
-                this.field_19157 = false;
+                this.applyGlowToRaiders(this.world);
+                this.applyParticlesToRaiders(this.world);
+                this.resonating = false;
             }
         }
     }
@@ -86,18 +86,18 @@ implements Tickable {
         } else {
             this.ringing = true;
         }
-        this.world.addBlockAction(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
+        this.world.addSyncedBlockEvent(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
     }
 
-    private void method_20219() {
+    private void notifyMemoriesOfBell() {
         BlockPos blockPos = this.getPos();
-        if (this.world.getTime() > this.field_19155 + 60L || this.field_19156 == null) {
-            this.field_19155 = this.world.getTime();
+        if (this.world.getTime() > this.lastRingTime + 60L || this.hearingEntities == null) {
+            this.lastRingTime = this.world.getTime();
             Box box = new Box(blockPos).expand(48.0);
-            this.field_19156 = this.world.getNonSpectatingEntities(LivingEntity.class, box);
+            this.hearingEntities = this.world.getNonSpectatingEntities(LivingEntity.class, box);
         }
         if (!this.world.isClient) {
-            for (LivingEntity livingEntity : this.field_19156) {
+            for (LivingEntity livingEntity : this.hearingEntities) {
                 if (!livingEntity.isAlive() || livingEntity.removed || !blockPos.isWithinDistance(livingEntity.getPos(), 32.0)) continue;
                 livingEntity.getBrain().remember(MemoryModuleType.HEARD_BELL_TIME, this.world.getTime());
             }
@@ -106,28 +106,28 @@ implements Tickable {
 
     private boolean method_20523() {
         BlockPos blockPos = this.getPos();
-        for (LivingEntity livingEntity : this.field_19156) {
+        for (LivingEntity livingEntity : this.hearingEntities) {
             if (!livingEntity.isAlive() || livingEntity.removed || !blockPos.isWithinDistance(livingEntity.getPos(), 32.0) || !livingEntity.getType().isIn(EntityTypeTags.RAIDERS)) continue;
             return true;
         }
         return false;
     }
 
-    private void method_20521(World world) {
+    private void applyGlowToRaiders(World world) {
         if (world.isClient) {
             return;
         }
-        this.field_19156.stream().filter(this::isRaiderEntity).forEach(this::glowEntity);
+        this.hearingEntities.stream().filter(this::isRaiderEntity).forEach(this::glowEntity);
     }
 
-    private void method_20218(World world) {
+    private void applyParticlesToRaiders(World world) {
         if (!world.isClient) {
             return;
         }
         BlockPos blockPos = this.getPos();
         AtomicInteger atomicInteger = new AtomicInteger(16700985);
-        int i = (int)this.field_19156.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
-        this.field_19156.stream().filter(this::isRaiderEntity).forEach(livingEntity -> {
+        int i = (int)this.hearingEntities.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
+        this.hearingEntities.stream().filter(this::isRaiderEntity).forEach(livingEntity -> {
             float f = 1.0f;
             float g = MathHelper.sqrt((livingEntity.getX() - (double)blockPos.getX()) * (livingEntity.getX() - (double)blockPos.getX()) + (livingEntity.getZ() - (double)blockPos.getZ()) * (livingEntity.getZ() - (double)blockPos.getZ()));
             double d = (double)((float)blockPos.getX() + 0.5f) + (double)(1.0f / g) * (livingEntity.getX() - (double)blockPos.getX());

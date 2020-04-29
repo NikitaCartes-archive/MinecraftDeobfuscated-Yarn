@@ -95,7 +95,7 @@ implements StatsListener {
             this.drawCenteredString(matrices, this.textRenderer, PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)], this.width / 2, this.height / 2 + this.textRenderer.fontHeight * 2, 0xFFFFFF);
         } else {
             this.getSelectedStatList().render(matrices, mouseX, mouseY, delta);
-            this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
+            this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
             super.render(matrices, mouseX, mouseY, delta);
         }
     }
@@ -352,7 +352,7 @@ implements StatsListener {
             }
             int k = i + 12;
             int l = j - 12;
-            int m = StatsScreen.this.textRenderer.getWidth(text);
+            int m = StatsScreen.this.textRenderer.getStringWidth(text);
             this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
             RenderSystem.pushMatrix();
             RenderSystem.translatef(0.0f, 0.0f, 400.0f);

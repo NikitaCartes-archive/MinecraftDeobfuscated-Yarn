@@ -9,7 +9,7 @@ import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.BaseFluid;
+import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
@@ -112,7 +112,7 @@ extends Item {
     }
 
     public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
-        if (!(this.fluid instanceof BaseFluid)) {
+        if (!(this.fluid instanceof FlowableFluid)) {
             return false;
         }
         BlockState blockState = world.getBlockState(pos);
@@ -128,7 +128,7 @@ extends Item {
                     world.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
                 }
             } else if (blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER) {
-                if (((FluidFillable)((Object)blockState.getBlock())).tryFillWithFluid(world, pos, blockState, ((BaseFluid)this.fluid).getStill(false))) {
+                if (((FluidFillable)((Object)blockState.getBlock())).tryFillWithFluid(world, pos, blockState, ((FlowableFluid)this.fluid).getStill(false))) {
                     this.playEmptyingSound(player, world, pos);
                 }
             } else {
@@ -136,7 +136,7 @@ extends Item {
                     world.breakBlock(pos, true);
                 }
                 this.playEmptyingSound(player, world, pos);
-                world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), 11);
+                return world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), 11);
             }
             return true;
         }

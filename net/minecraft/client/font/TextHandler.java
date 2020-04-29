@@ -203,17 +203,7 @@ public class TextHandler {
         return list;
     }
 
-    public List<Text> wrapLines(Text text, int maxWidth, Style style) {
-        return this.wrapLines(text, maxWidth, style, false);
-    }
-
-    /**
-     * @param text the content to split
-     * @param maxWidth the max width of a line
-     * @param style a parent style applied to all the lines
-     * @param retainTrailingWordSplit whether an original trailing space or newline is removed after a ling wrap
-     */
-    public List<Text> wrapLines(Text text, int maxWidth, Style style2, boolean retainTrailingWordSplit) {
+    public List<Text> wrapLines(Text text, int maxWidth, Style style2) {
         ArrayList<Text> list = Lists.newArrayList();
         ArrayList<FormattedString> list2 = Lists.newArrayList();
         text.visit((style, string) -> {
@@ -224,17 +214,20 @@ public class TextHandler {
         }, style2);
         LineWrappingCollector lineWrappingCollector = new LineWrappingCollector(list2);
         boolean bl = true;
+        boolean bl2 = false;
         block0: while (bl) {
             bl = false;
             LineBreakingVisitor lineBreakingVisitor = new LineBreakingVisitor(maxWidth);
             for (FormattedString formattedString : lineWrappingCollector.parts) {
-                boolean bl2 = TextVisitFactory.visitFormatted(formattedString.text, 0, formattedString.style, style2, lineBreakingVisitor);
-                if (!bl2) {
+                boolean bl3 = TextVisitFactory.visitFormatted(formattedString.text, 0, formattedString.style, style2, lineBreakingVisitor);
+                if (!bl3) {
                     int i = lineBreakingVisitor.getEndingIndex();
                     Style style22 = lineBreakingVisitor.getEndingStyle();
                     char c = lineWrappingCollector.charAt(i);
-                    boolean bl3 = !retainTrailingWordSplit && (c == '\n' || c == ' ');
-                    list.add(lineWrappingCollector.collectLine(i, bl3 ? 1 : 0, style22));
+                    boolean bl4 = c == '\n';
+                    boolean bl5 = bl4 || c == ' ';
+                    bl2 = bl4;
+                    list.add(lineWrappingCollector.collectLine(i, bl5 ? 1 : 0, style22));
                     bl = true;
                     continue block0;
                 }
@@ -244,6 +237,8 @@ public class TextHandler {
         Text text2 = lineWrappingCollector.collectRemainers();
         if (text2 != null) {
             list.add(text2);
+        } else if (bl2) {
+            list.add(new LiteralText("").fillStyle(style2));
         }
         return list;
     }

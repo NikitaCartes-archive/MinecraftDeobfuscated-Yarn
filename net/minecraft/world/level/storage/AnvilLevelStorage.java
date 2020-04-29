@@ -58,7 +58,7 @@ public class AnvilLevelStorage {
         long l = lv != null ? lv.getSeed() : 0L;
         BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
         BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
-        BiomeSource biomeSource = lv != null && lv.method_27437(DimensionType.OVERWORLD).getGeneratorType() == LevelGeneratorType.FLAT ? biomeSourceType.applyConfig(biomeSourceType.getConfig(lv.getSeed()).setBiome(Biomes.PLAINS)) : biomeSourceType2.applyConfig(biomeSourceType2.getConfig(l));
+        BiomeSource biomeSource = lv != null && lv.method_27859().getGeneratorType() == LevelGeneratorType.FLAT ? biomeSourceType.applyConfig(biomeSourceType.getConfig(lv.getSeed()).setBiome(Biomes.PLAINS)) : biomeSourceType2.applyConfig(biomeSourceType2.getConfig(l));
         AnvilLevelStorage.convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
         AnvilLevelStorage.convertRegions(new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig(l).setBiome(Biomes.NETHER_WASTES)), list.size(), i, progressListener);
         AnvilLevelStorage.convertRegions(new File(file3, "region"), list3, biomeSourceType.applyConfig(biomeSourceType.getConfig(l).setBiome(Biomes.THE_END)), list.size() + list2.size(), i, progressListener);

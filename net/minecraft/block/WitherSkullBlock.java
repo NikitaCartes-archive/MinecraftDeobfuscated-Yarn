@@ -55,8 +55,8 @@ extends SkullBlock {
         if (world.isClient) {
             return;
         }
-        Block block = blockEntity.getCachedState().getBlock();
-        boolean bl2 = bl = block == Blocks.WITHER_SKELETON_SKULL || block == Blocks.WITHER_SKELETON_WALL_SKULL;
+        BlockState blockState = blockEntity.getCachedState();
+        boolean bl2 = bl = blockState.isOf(Blocks.WITHER_SKELETON_SKULL) || blockState.isOf(Blocks.WITHER_SKELETON_WALL_SKULL);
         if (!bl || pos.getY() < 2 || world.getDifficulty() == Difficulty.PEACEFUL) {
             return;
         }
@@ -69,7 +69,7 @@ extends SkullBlock {
             for (int j = 0; j < blockPattern.getHeight(); ++j) {
                 CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
                 world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-                world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+                world.syncWorldEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
             }
         }
         WitherEntity witherEntity = EntityType.WITHER.create(world);

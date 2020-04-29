@@ -29,11 +29,11 @@ extends BlockItem {
     @Override
     @Nullable
     public ItemPlacementContext getPlacementContext(ItemPlacementContext context) {
+        Block block;
         BlockPos blockPos = context.getBlockPos();
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos);
-        Block block = this.getBlock();
-        if (blockState.getBlock() == block) {
+        if (blockState.isOf(block = this.getBlock())) {
             Direction direction = context.shouldCancelInteraction() ? (context.hitsInsideBlock() ? context.getSide().getOpposite() : context.getSide()) : (context.getSide() == Direction.UP ? context.getPlayerFacing() : Direction.UP);
             int i = 0;
             BlockPos.Mutable mutable = blockPos.mutableCopy().move(direction);
@@ -47,7 +47,7 @@ extends BlockItem {
                     break;
                 }
                 blockState = world.getBlockState(mutable);
-                if (blockState.getBlock() != this.getBlock()) {
+                if (!blockState.isOf(this.getBlock())) {
                     if (!blockState.canReplace(context)) break;
                     return ItemPlacementContext.offset(context, mutable, direction);
                 }

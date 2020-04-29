@@ -58,7 +58,7 @@ extends BadlandsSurfaceBuilder {
                 r = -1;
                 continue;
             }
-            if (blockState5.getBlock() != blockState.getBlock()) continue;
+            if (!blockState5.isOf(blockState.getBlock())) continue;
             if (r == -1) {
                 bl2 = false;
                 if (q <= 0) {

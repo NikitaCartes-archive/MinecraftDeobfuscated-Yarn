@@ -583,8 +583,8 @@ public class MathHelper {
         return (Math.abs(f % g - g * 0.5f) - g * 0.25f) / (g * 0.25f);
     }
 
-    public static float method_27285(float f) {
-        return f * f;
+    public static float square(float n) {
+        return n * n;
     }
 
     static {

@@ -184,7 +184,7 @@ Tickable {
             }
         }
         this.inventory.set(3, itemStack);
-        this.world.playLevelEvent(1035, blockPos, 0);
+        this.world.syncWorldEvent(1035, blockPos, 0);
     }
 
     @Override

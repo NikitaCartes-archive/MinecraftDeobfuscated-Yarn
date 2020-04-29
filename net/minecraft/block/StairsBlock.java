@@ -131,7 +131,7 @@ implements Waterloggable {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (state.getBlock() == state.getBlock()) {
+        if (state.isOf(state.getBlock())) {
             return;
         }
         this.baseBlockState.neighborUpdate(world, pos, Blocks.AIR, pos, false);
@@ -140,7 +140,7 @@ implements Waterloggable {
 
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (state.getBlock() == newState.getBlock()) {
+        if (state.isOf(newState.getBlock())) {
             return;
         }
         this.baseBlockState.onBlockRemoved(world, pos, newState, notify);
@@ -182,7 +182,7 @@ implements Waterloggable {
         BlockPos blockPos = ctx.getBlockPos();
         FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
         BlockState blockState = (BlockState)((BlockState)((BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing())).with(HALF, direction == Direction.DOWN || direction != Direction.UP && ctx.getHitPos().y - (double)blockPos.getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
-        return (BlockState)blockState.with(SHAPE, StairsBlock.method_10675(blockState, ctx.getWorld(), blockPos));
+        return (BlockState)blockState.with(SHAPE, StairsBlock.getStairShape(blockState, ctx.getWorld(), blockPos));
     }
 
     @Override
@@ -191,12 +191,12 @@ implements Waterloggable {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction.getAxis().isHorizontal()) {
-            return (BlockState)state.with(SHAPE, StairsBlock.method_10675(state, world, pos));
+            return (BlockState)state.with(SHAPE, StairsBlock.getStairShape(state, world, pos));
         }
         return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
-    private static StairShape method_10675(BlockState state, BlockView world, BlockPos pos) {
+    private static StairShape getStairShape(BlockState state, BlockView world, BlockPos pos) {
         Direction direction3;
         Direction direction2;
         Direction direction = state.get(FACING);

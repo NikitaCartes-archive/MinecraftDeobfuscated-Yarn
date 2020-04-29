@@ -93,7 +93,7 @@ implements SpectatorMenuCloseCallback {
             RenderSystem.popMatrix();
             if (k > 3 && spectatorMenuCommand.isEnabled()) {
                 Text text = this.client.options.keysHotbar[i].getLocalizedName();
-                this.client.textRenderer.drawWithShadow(matrixStack, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0f + 3.0f, 0xFFFFFF + (k << 24));
+                this.client.textRenderer.drawWithShadow(matrixStack, text, (float)(j + 19 - 2 - this.client.textRenderer.getStringWidth(text)), f + 6.0f + 3.0f, 0xFFFFFF + (k << 24));
             }
         }
     }
@@ -105,7 +105,7 @@ implements SpectatorMenuCloseCallback {
             SpectatorMenuCommand spectatorMenuCommand = this.spectatorMenu.getSelectedCommand();
             Text text2 = text = spectatorMenuCommand == SpectatorMenu.BLANK_COMMAND ? this.spectatorMenu.getCurrentGroup().getPrompt() : spectatorMenuCommand.getName();
             if (text != null) {
-                int j = (this.client.getWindow().getScaledWidth() - this.client.textRenderer.getWidth(text)) / 2;
+                int j = (this.client.getWindow().getScaledWidth() - this.client.textRenderer.getStringWidth(text)) / 2;
                 int k = this.client.getWindow().getScaledHeight() - 35;
                 RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();

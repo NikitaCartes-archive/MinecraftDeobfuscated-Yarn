@@ -36,6 +36,9 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.BucketItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WritableBookItem;
@@ -847,6 +850,14 @@ implements ServerPlayPacketListener {
         throw new IllegalArgumentException("Invalid player action");
     }
 
+    private static boolean method_27913(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+        if (itemStack.isEmpty()) {
+            return false;
+        }
+        Item item = itemStack.getItem();
+        return (item instanceof BlockItem || item instanceof BucketItem) && !serverPlayerEntity.getItemCooldownManager().isCoolingDown(item);
+    }
+
     @Override
     public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
@@ -857,14 +868,19 @@ implements ServerPlayPacketListener {
         BlockPos blockPos = blockHitResult.getBlockPos();
         Direction direction = blockHitResult.getSide();
         this.player.updateLastActionTime();
-        if (blockPos.getY() < this.server.getWorldHeight() - 1 || direction != Direction.UP && blockPos.getY() < this.server.getWorldHeight()) {
-            ActionResult actionResult;
-            if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0 && serverWorld.canPlayerModifyAt(this.player, blockPos) && (actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult)).shouldSwingHand()) {
-                this.player.swingHand(hand, true);
+        if (blockPos.getY() < this.server.getWorldHeight()) {
+            if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0 && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
+                ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
+                if (direction == Direction.UP && actionResult != ActionResult.SUCCESS && blockPos.getY() >= this.server.getWorldHeight() - 1 && ServerPlayNetworkHandler.method_27913(this.player, itemStack)) {
+                    MutableText text = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
+                    this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO));
+                } else if (actionResult.shouldSwingHand()) {
+                    this.player.swingHand(hand, true);
+                }
             }
         } else {
-            MutableText text = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
-            this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO));
+            MutableText text2 = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
+            this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text2, MessageType.GAME_INFO));
         }
         this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
         this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos.offset(direction)));
@@ -914,7 +930,7 @@ implements ServerPlayPacketListener {
         LOGGER.info("{} lost connection: {}", (Object)this.player.getName().getString(), (Object)reason.getString());
         this.server.forcePlayerSampleUpdate();
         this.server.getPlayerManager().sendToAll(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW));
-        this.player.method_14231();
+        this.player.onDisconnect();
         this.server.getPlayerManager().remove(this.player);
         if (this.isHost()) {
             LOGGER.info("Stopping singleplayer server as player logged out");

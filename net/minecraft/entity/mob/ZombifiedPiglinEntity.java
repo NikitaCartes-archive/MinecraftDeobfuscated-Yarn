@@ -5,6 +5,7 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import java.util.UUID;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -109,7 +110,7 @@ extends ZombieEntity {
     }
 
     public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return world.getDifficulty() != Difficulty.PEACEFUL;
+        return world.getDifficulty() != Difficulty.PEACEFUL && world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
     }
 
     @Override

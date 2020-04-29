@@ -7,7 +7,7 @@ import com.google.common.collect.Maps;
 import java.util.HashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -156,8 +156,8 @@ implements CrossbowUser {
 
     @Override
     public float getPathfindingFavor(BlockPos pos, WorldView world) {
-        Block block = world.getBlockState(pos.down()).getBlock();
-        if (block == Blocks.GRASS_BLOCK || block == Blocks.SAND) {
+        BlockState blockState = world.getBlockState(pos.down());
+        if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SAND)) {
             return 10.0f;
         }
         return 0.5f - world.getBrightness(pos);

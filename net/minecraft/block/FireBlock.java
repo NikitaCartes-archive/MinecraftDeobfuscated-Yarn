@@ -117,8 +117,8 @@ extends AbstractFireBlock {
         if (!state.canPlaceAt(world, pos)) {
             world.removeBlock(pos, false);
         }
-        Block block = world.getBlockState(pos.down()).getBlock();
-        boolean bl = world.dimension instanceof TheEndDimension && block == Blocks.BEDROCK || block == Blocks.NETHERRACK || block == Blocks.MAGMA_BLOCK;
+        BlockState blockState = world.getBlockState(pos.down());
+        boolean bl = world.dimension instanceof TheEndDimension && blockState.isOf(Blocks.BEDROCK) || blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.MAGMA_BLOCK);
         int i = state.get(AGE);
         if (!bl && world.isRaining() && this.isRainingAround(world, pos) && random.nextFloat() < 0.2f + (float)i * 0.03f) {
             world.removeBlock(pos, false);
@@ -212,7 +212,7 @@ extends AbstractFireBlock {
 
     private BlockState method_24855(IWorld iWorld, BlockPos blockPos, int i) {
         BlockState blockState = FireBlock.getState(iWorld, blockPos);
-        if (blockState.getBlock() == Blocks.FIRE) {
+        if (blockState.isOf(Blocks.FIRE)) {
             return (BlockState)blockState.with(AGE, i);
         }
         return blockState;

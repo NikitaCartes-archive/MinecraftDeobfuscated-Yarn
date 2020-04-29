@@ -68,8 +68,8 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.method_27534(matrices, this.textRenderer, this.line1, this.width / 2, 80, 0xFFFFFF);
-        this.method_27534(matrices, this.textRenderer, this.line2, this.width / 2, 100, 0xFF0000);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.line1, this.width / 2, 80, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.line2, this.width / 2, 100, 0xFF0000);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

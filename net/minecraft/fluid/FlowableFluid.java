@@ -37,7 +37,10 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public abstract class BaseFluid
+/**
+ * Represents a fluid which can flow.
+ */
+public abstract class FlowableFluid
 extends Fluid {
     public static final BooleanProperty FALLING = Properties.FALLING;
     public static final IntProperty LEVEL = Properties.LEVEL_1_8;
@@ -247,7 +250,7 @@ extends Fluid {
             int k;
             if (direction2 == direction) continue;
             BlockPos blockPos3 = blockPos.offset(direction2);
-            short s = BaseFluid.method_15747(blockPos2, blockPos3);
+            short s = FlowableFluid.method_15747(blockPos2, blockPos3);
             Pair pair = short2ObjectMap.computeIfAbsent(s, i -> {
                 BlockState blockState = world.getBlockState(blockPos3);
                 return Pair.of(blockState, blockState.getFluidState());
@@ -307,7 +310,7 @@ extends Fluid {
         Short2BooleanOpenHashMap short2BooleanMap = new Short2BooleanOpenHashMap();
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos = pos.offset(direction);
-            short s = BaseFluid.method_15747(pos, blockPos);
+            short s = FlowableFluid.method_15747(pos, blockPos);
             Pair pair = short2ObjectMap.computeIfAbsent(s, i -> {
                 BlockState blockState = world.getBlockState(blockPos);
                 return Pair.of(blockState, blockState.getFluidState());
@@ -389,7 +392,7 @@ extends Fluid {
 
     @Override
     public float getHeight(FluidState state, BlockView world, BlockPos pos) {
-        if (BaseFluid.isFluidAboveEqual(state, world, pos)) {
+        if (FlowableFluid.isFluidAboveEqual(state, world, pos)) {
             return 1.0f;
         }
         return state.getHeight();
@@ -402,7 +405,7 @@ extends Fluid {
 
     @Override
     public VoxelShape getShape(FluidState state, BlockView world, BlockPos pos) {
-        if (state.getLevel() == 9 && BaseFluid.isFluidAboveEqual(state, world, pos)) {
+        if (state.getLevel() == 9 && FlowableFluid.isFluidAboveEqual(state, world, pos)) {
             return VoxelShapes.fullCube();
         }
         return this.shapeCache.computeIfAbsent(state, fluidState -> VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, fluidState.getHeight(world, pos), 1.0));

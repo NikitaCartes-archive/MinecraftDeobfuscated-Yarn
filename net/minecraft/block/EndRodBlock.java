@@ -63,7 +63,7 @@ extends FacingBlock {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         Direction direction = ctx.getSide();
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().offset(direction.getOpposite()));
-        if (blockState.getBlock() == this && blockState.get(FACING) == direction) {
+        if (blockState.isOf(this) && blockState.get(FACING) == direction) {
             return (BlockState)this.getDefaultState().with(FACING, direction.getOpposite());
         }
         return (BlockState)this.getDefaultState().with(FACING, direction);

@@ -42,7 +42,7 @@ extends Block {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
-        if (newState.getBlock() == this) {
+        if (newState.isOf(this)) {
             return (BlockState)state.with(FACING_PROPERTIES.get(direction), false);
         }
         return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);

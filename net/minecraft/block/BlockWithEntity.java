@@ -27,13 +27,13 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
-        super.onBlockAction(state, world, pos, channel, value);
+    public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+        super.onSyncedBlockEvent(state, world, pos, type, data);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity == null) {
             return false;
         }
-        return blockEntity.onBlockAction(channel, value);
+        return blockEntity.onSyncedBlockEvent(type, data);
     }
 
     @Override

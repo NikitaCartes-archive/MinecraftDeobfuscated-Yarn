@@ -8,8 +8,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class AscendingParticle
@@ -17,7 +17,7 @@ extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
     private final double ascendingAcceleration;
 
-    protected AscendingParticle(World world, double x, double y, double z, float randomVelocityXMultiplier, float randomVelocityYMultiplier, float randomVelocityZMultiplier, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider, float colorMultiplier, int baseMaxAge, double ascendingAcceleration, boolean collidesWithWorld) {
+    protected AscendingParticle(ClientWorld world, double x, double y, double z, float randomVelocityXMultiplier, float randomVelocityYMultiplier, float randomVelocityZMultiplier, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider, float colorMultiplier, int baseMaxAge, double ascendingAcceleration, boolean collidesWithWorld) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         float f;
         this.ascendingAcceleration = ascendingAcceleration;

@@ -87,6 +87,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -106,14 +107,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ParticleManager
 implements ResourceReloadListener {
     private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(ParticleTextureSheet.TERRAIN_SHEET, ParticleTextureSheet.PARTICLE_SHEET_OPAQUE, ParticleTextureSheet.PARTICLE_SHEET_LIT, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT, ParticleTextureSheet.CUSTOM);
-    protected World world;
+    protected ClientWorld world;
     private final Map<ParticleTextureSheet, Queue<Particle>> particles = Maps.newIdentityHashMap();
     private final Queue<EmitterParticle> newEmitterParticles = Queues.newArrayDeque();
     private final TextureManager textureManager;
@@ -123,7 +123,7 @@ implements ResourceReloadListener {
     private final Map<Identifier, SimpleSpriteProvider> spriteAwareFactories = Maps.newHashMap();
     private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 
-    public ParticleManager(World world, TextureManager textureManager) {
+    public ParticleManager(ClientWorld world, TextureManager textureManager) {
         textureManager.registerTexture(this.particleAtlasTexture.getId(), this.particleAtlasTexture);
         this.world = world;
         this.textureManager = textureManager;
@@ -382,7 +382,7 @@ implements ResourceReloadListener {
         RenderSystem.disableFog();
     }
 
-    public void setWorld(@Nullable World world) {
+    public void setWorld(@Nullable ClientWorld world) {
         this.world = world;
         this.particles.clear();
         this.newEmitterParticles.clear();
@@ -417,16 +417,16 @@ implements ResourceReloadListener {
         });
     }
 
-    public void addBlockBreakingParticles(BlockPos blockPos, Direction direction) {
-        BlockState blockState = this.world.getBlockState(blockPos);
+    public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
+        BlockState blockState = this.world.getBlockState(pos);
         if (blockState.getRenderType() == BlockRenderType.INVISIBLE) {
             return;
         }
-        int i = blockPos.getX();
-        int j = blockPos.getY();
-        int k = blockPos.getZ();
+        int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
         float f = 0.1f;
-        Box box = blockState.getOutlineShape(this.world, blockPos).getBoundingBox();
+        Box box = blockState.getOutlineShape(this.world, pos).getBoundingBox();
         double d = (double)i + this.random.nextDouble() * (box.x2 - box.x1 - (double)0.2f) + (double)0.1f + box.x1;
         double e = (double)j + this.random.nextDouble() * (box.y2 - box.y1 - (double)0.2f) + (double)0.1f + box.y1;
         double g = (double)k + this.random.nextDouble() * (box.z2 - box.z1 - (double)0.2f) + (double)0.1f + box.z1;
@@ -448,7 +448,7 @@ implements ResourceReloadListener {
         if (direction == Direction.EAST) {
             d = (double)i + box.x2 + (double)0.1f;
         }
-        this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(blockPos).move(0.2f).scale(0.6f));
+        this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(pos).move(0.2f).scale(0.6f));
     }
 
     public String getDebugString() {

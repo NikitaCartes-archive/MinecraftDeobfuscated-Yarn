@@ -45,13 +45,13 @@ extends Item {
         BlockPos blockPos;
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos = context.getBlockPos());
-        if (blockState.getBlock() != Blocks.JUKEBOX || blockState.get(JukeboxBlock.HAS_RECORD).booleanValue()) {
+        if (!blockState.isOf(Blocks.JUKEBOX) || blockState.get(JukeboxBlock.HAS_RECORD).booleanValue()) {
             return ActionResult.PASS;
         }
         ItemStack itemStack = context.getStack();
         if (!world.isClient) {
             ((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
-            world.playLevelEvent(null, 1010, blockPos, Item.getRawId(this));
+            world.syncWorldEvent(null, 1010, blockPos, Item.getRawId(this));
             itemStack.decrement(1);
             PlayerEntity playerEntity = context.getPlayer();
             if (playerEntity != null) {

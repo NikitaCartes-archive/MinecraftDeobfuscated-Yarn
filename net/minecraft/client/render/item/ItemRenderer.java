@@ -35,6 +35,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -134,15 +135,9 @@ implements SynchronousResourceReloadListener {
     public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
         Item item = stack.getItem();
         BakedModel bakedModel = item == Items.TRIDENT ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : this.models.getModel(stack);
-        if (!item.hasPropertyGetters()) {
-            return bakedModel;
-        }
-        return this.getOverriddenModel(bakedModel, stack, world, entity);
-    }
-
-    private BakedModel getOverriddenModel(BakedModel model, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
-        BakedModel bakedModel = model.getItemPropertyOverrides().apply(model, stack, world, entity);
-        return bakedModel == null ? this.models.getModelManager().getMissingModel() : bakedModel;
+        ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
+        BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity);
+        return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
     }
 
     public void renderItem(ItemStack stack, ModelTransformation.Mode transformationType, int light, int overlay, MatrixStack matrices, VertexConsumerProvider vertexConsumers) {

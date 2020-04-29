@@ -183,7 +183,7 @@ implements Monster {
                 World world = this.ghast.world;
                 ++this.cooldown;
                 if (this.cooldown == 10 && !this.ghast.isSilent()) {
-                    world.playLevelEvent(null, 1015, this.ghast.getBlockPos(), 0);
+                    world.syncWorldEvent(null, 1015, this.ghast.getBlockPos(), 0);
                 }
                 if (this.cooldown == 20) {
                     double e = 4.0;
@@ -192,7 +192,7 @@ implements Monster {
                     double g = livingEntity.getBodyY(0.5) - (0.5 + this.ghast.getBodyY(0.5));
                     double h = livingEntity.getZ() - (this.ghast.getZ() + vec3d.z * 4.0);
                     if (!this.ghast.isSilent()) {
-                        world.playLevelEvent(null, 1016, this.ghast.getBlockPos(), 0);
+                        world.syncWorldEvent(null, 1016, this.ghast.getBlockPos(), 0);
                     }
                     FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);
                     fireballEntity.explosionPower = this.ghast.getFireballStrength();

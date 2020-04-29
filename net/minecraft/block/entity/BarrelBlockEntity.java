@@ -110,7 +110,7 @@ extends LootableContainerBlockEntity {
             this.scheduleUpdate();
         } else {
             BlockState blockState = this.getCachedState();
-            if (blockState.getBlock() != Blocks.BARREL) {
+            if (!blockState.isOf(Blocks.BARREL)) {
                 this.markRemoved();
                 return;
             }

@@ -110,75 +110,75 @@ implements Drawable {
         return this.addChild(button);
     }
 
-    protected <T extends Element> T addChild(T element) {
-        this.children.add(element);
-        return element;
+    protected <T extends Element> T addChild(T child) {
+        this.children.add(child);
+        return child;
     }
 
-    protected void renderTooltip(MatrixStack matrixStack, ItemStack itemStack, int i, int j) {
-        this.renderTooltip(matrixStack, this.getTooltipFromItem(itemStack), i, j);
+    protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
+        this.renderTooltip(matrices, this.getTooltipFromItem(stack), x, y);
     }
 
     public List<Text> getTooltipFromItem(ItemStack stack) {
         return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
     }
 
-    public void renderTooltip(MatrixStack matrixStack, Text text, int i, int j) {
-        this.renderTooltip(matrixStack, Arrays.asList(text), i, j);
+    public void renderTooltip(MatrixStack matrices, Text line, int x, int y) {
+        this.renderTooltip(matrices, Arrays.asList(line), x, y);
     }
 
-    public void renderTooltip(MatrixStack matrixStack, List<Text> list, int i, int j) {
-        int l;
-        if (list.isEmpty()) {
+    public void renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y) {
+        int j;
+        if (lines.isEmpty()) {
             return;
         }
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableDepthTest();
-        int k = 0;
-        for (Text text : list) {
-            l = this.textRenderer.getWidth(text);
-            if (l <= k) continue;
-            k = l;
+        int i = 0;
+        for (Text text : lines) {
+            j = this.textRenderer.getStringWidth(text);
+            if (j <= i) continue;
+            i = j;
         }
-        int m = i + 12;
-        int n = j - 12;
-        l = k;
-        int o = 8;
-        if (list.size() > 1) {
-            o += 2 + (list.size() - 1) * 10;
+        int k = x + 12;
+        int l = y - 12;
+        j = i;
+        int m = 8;
+        if (lines.size() > 1) {
+            m += 2 + (lines.size() - 1) * 10;
         }
-        if (m + k > this.width) {
-            m -= 28 + k;
+        if (k + i > this.width) {
+            k -= 28 + i;
         }
-        if (n + o + 6 > this.height) {
-            n = this.height - o - 6;
+        if (l + m + 6 > this.height) {
+            l = this.height - m - 6;
         }
         this.setZOffset(300);
         this.itemRenderer.zOffset = 300.0f;
-        int p = -267386864;
-        this.fillGradient(matrixStack, m - 3, n - 4, m + l + 3, n - 3, -267386864, -267386864);
-        this.fillGradient(matrixStack, m - 3, n + o + 3, m + l + 3, n + o + 4, -267386864, -267386864);
-        this.fillGradient(matrixStack, m - 3, n - 3, m + l + 3, n + o + 3, -267386864, -267386864);
-        this.fillGradient(matrixStack, m - 4, n - 3, m - 3, n + o + 3, -267386864, -267386864);
-        this.fillGradient(matrixStack, m + l + 3, n - 3, m + l + 4, n + o + 3, -267386864, -267386864);
-        int q = 0x505000FF;
-        int r = 1344798847;
-        this.fillGradient(matrixStack, m - 3, n - 3 + 1, m - 3 + 1, n + o + 3 - 1, 0x505000FF, 1344798847);
-        this.fillGradient(matrixStack, m + l + 2, n - 3 + 1, m + l + 3, n + o + 3 - 1, 0x505000FF, 1344798847);
-        this.fillGradient(matrixStack, m - 3, n - 3, m + l + 3, n - 3 + 1, 0x505000FF, 0x505000FF);
-        this.fillGradient(matrixStack, m - 3, n + o + 2, m + l + 3, n + o + 3, 1344798847, 1344798847);
+        int n = -267386864;
+        this.fillGradient(matrices, k - 3, l - 4, k + j + 3, l - 3, -267386864, -267386864);
+        this.fillGradient(matrices, k - 3, l + m + 3, k + j + 3, l + m + 4, -267386864, -267386864);
+        this.fillGradient(matrices, k - 3, l - 3, k + j + 3, l + m + 3, -267386864, -267386864);
+        this.fillGradient(matrices, k - 4, l - 3, k - 3, l + m + 3, -267386864, -267386864);
+        this.fillGradient(matrices, k + j + 3, l - 3, k + j + 4, l + m + 3, -267386864, -267386864);
+        int o = 0x505000FF;
+        int p = 1344798847;
+        this.fillGradient(matrices, k - 3, l - 3 + 1, k - 3 + 1, l + m + 3 - 1, 0x505000FF, 1344798847);
+        this.fillGradient(matrices, k + j + 2, l - 3 + 1, k + j + 3, l + m + 3 - 1, 0x505000FF, 1344798847);
+        this.fillGradient(matrices, k - 3, l - 3, k + j + 3, l - 3 + 1, 0x505000FF, 0x505000FF);
+        this.fillGradient(matrices, k - 3, l + m + 2, k + j + 3, l + m + 3, 1344798847, 1344798847);
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        matrixStack.translate(0.0, 0.0, this.itemRenderer.zOffset);
-        Matrix4f matrix4f = matrixStack.peek().getModel();
-        for (int s = 0; s < list.size(); ++s) {
-            Text text2 = list.get(s);
+        matrices.translate(0.0, 0.0, this.itemRenderer.zOffset);
+        Matrix4f matrix4f = matrices.peek().getModel();
+        for (int q = 0; q < lines.size(); ++q) {
+            Text text2 = lines.get(q);
             if (text2 != null) {
-                this.textRenderer.draw(text2, (float)m, (float)n, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+                this.textRenderer.draw(text2, (float)k, (float)l, -1, true, matrix4f, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
             }
-            if (s == 0) {
-                n += 2;
+            if (q == 0) {
+                l += 2;
             }
-            n += 10;
+            l += 10;
         }
         immediate.draw();
         this.setZOffset(0);
@@ -187,24 +187,24 @@ implements Drawable {
         RenderSystem.enableRescaleNormal();
     }
 
-    protected void renderTextHoverEffect(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
+    protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Text text, int i, int j) {
         if (text == null || text.getStyle().getHoverEvent() == null) {
             return;
         }
         HoverEvent hoverEvent = text.getStyle().getHoverEvent();
         HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
         if (itemStackContent != null) {
-            this.renderTooltip(matrixStack, itemStackContent.asStack(), i, j);
+            this.renderTooltip(matrices, itemStackContent.asStack(), i, j);
         } else {
             HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
             if (entityContent != null) {
                 if (this.client.options.advancedItemTooltips) {
-                    this.renderTooltip(matrixStack, entityContent.asTooltip(), i, j);
+                    this.renderTooltip(matrices, entityContent.asTooltip(), i, j);
                 }
             } else {
                 Text text2 = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
                 if (text2 != null) {
-                    this.renderTooltip(matrixStack, this.client.textRenderer.wrapLines(text2, Math.max(this.width / 2, 200)), i, j);
+                    this.renderTooltip(matrices, this.client.textRenderer.wrapLines(text2, Math.max(this.width / 2, 200)), i, j);
                 }
             }
         }
@@ -301,15 +301,15 @@ implements Drawable {
     public void removed() {
     }
 
-    public void renderBackground(MatrixStack matrixStack) {
-        this.renderBackground(matrixStack, 0);
+    public void renderBackground(MatrixStack matrices) {
+        this.renderBackground(matrices, 0);
     }
 
-    public void renderBackground(MatrixStack matrixStack, int i) {
+    public void renderBackground(MatrixStack matrices, int alpha) {
         if (this.client.world != null) {
-            this.fillGradient(matrixStack, 0, 0, this.width, this.height, -1072689136, -804253680);
+            this.fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
         } else {
-            this.renderDirtBackground(i);
+            this.renderDirtBackground(alpha);
         }
     }
 

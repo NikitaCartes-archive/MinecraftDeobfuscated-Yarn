@@ -97,7 +97,7 @@ extends FacingBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (state.getBlock() == oldState.getBlock()) {
+        if (state.isOf(oldState.getBlock())) {
             return;
         }
         if (!world.isClient() && state.get(POWERED).booleanValue() && !world.getBlockTickScheduler().isScheduled(pos, this)) {
@@ -109,7 +109,7 @@ extends FacingBlock {
 
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (state.getBlock() == newState.getBlock()) {
+        if (state.isOf(newState.getBlock())) {
             return;
         }
         if (!world.isClient && state.get(POWERED).booleanValue() && world.getBlockTickScheduler().isScheduled(pos, this)) {

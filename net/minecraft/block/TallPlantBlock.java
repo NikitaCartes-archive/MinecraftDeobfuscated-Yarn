@@ -39,7 +39,7 @@ extends PlantBlock {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         DoubleBlockHalf doubleBlockHalf = state.get(HALF);
-        if (direction.getAxis() == Direction.Axis.Y && doubleBlockHalf == DoubleBlockHalf.LOWER == (direction == Direction.UP) && (newState.getBlock() != this || newState.get(HALF) == doubleBlockHalf)) {
+        if (!(direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP) || newState.isOf(this) && newState.get(HALF) != doubleBlockHalf)) {
             return Blocks.AIR.getDefaultState();
         }
         if (doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
@@ -67,7 +67,7 @@ extends PlantBlock {
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         if (state.get(HALF) == DoubleBlockHalf.UPPER) {
             BlockState blockState = world.getBlockState(pos.down());
-            return blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
+            return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
         }
         return super.canPlaceAt(state, world, pos);
     }
@@ -87,9 +87,9 @@ extends PlantBlock {
         DoubleBlockHalf doubleBlockHalf = state.get(HALF);
         BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.getBlock() == this && blockState.get(HALF) != doubleBlockHalf) {
+        if (blockState.isOf(this) && blockState.get(HALF) != doubleBlockHalf) {
             world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-            world.playLevelEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+            world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
             if (!world.isClient && !player.isCreative()) {
                 TallPlantBlock.dropStacks(state, world, pos, null, player, player.getMainHandStack());
                 TallPlantBlock.dropStacks(blockState, world, blockPos, null, player, player.getMainHandStack());

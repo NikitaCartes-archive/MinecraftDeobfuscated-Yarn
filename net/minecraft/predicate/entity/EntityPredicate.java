@@ -7,11 +7,20 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.CatEntity;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditions;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.PlayerPredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
@@ -30,7 +39,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class EntityPredicate {
     public static final EntityPredicate ANY = new EntityPredicate(EntityTypePredicate.ANY, DistancePredicate.ANY, LocationPredicate.ANY, EntityEffectPredicate.EMPTY, NbtPredicate.ANY, EntityFlagsPredicate.ANY, EntityEquipmentPredicate.ANY, PlayerPredicate.ANY, FishingHookPredicate.ANY, null, null);
-    public static final EntityPredicate[] EMPTY = new EntityPredicate[0];
     private final EntityTypePredicate type;
     private final DistancePredicate distance;
     private final LocationPredicate location;
@@ -104,35 +112,23 @@ public class EntityPredicate {
         return this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).getTexture().equals(this.catType);
     }
 
-    public static EntityPredicate fromJson(@Nullable JsonElement el) {
-        if (el == null || el.isJsonNull()) {
+    public static EntityPredicate fromJson(@Nullable JsonElement json) {
+        if (json == null || json.isJsonNull()) {
             return ANY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(el, "entity");
-        EntityTypePredicate entityTypePredicate = EntityTypePredicate.deserialize(jsonObject.get("type"));
-        DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
+        JsonObject jsonObject = JsonHelper.asObject(json, "entity");
+        EntityTypePredicate entityTypePredicate = EntityTypePredicate.fromJson(jsonObject.get("type"));
+        DistancePredicate distancePredicate = DistancePredicate.fromJson(jsonObject.get("distance"));
         LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("location"));
-        EntityEffectPredicate entityEffectPredicate = EntityEffectPredicate.deserialize(jsonObject.get("effects"));
+        EntityEffectPredicate entityEffectPredicate = EntityEffectPredicate.fromJson(jsonObject.get("effects"));
         NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
-        EntityFlagsPredicate entityFlagsPredicate = EntityFlagsPredicate.deserialize(jsonObject.get("flags"));
-        EntityEquipmentPredicate entityEquipmentPredicate = EntityEquipmentPredicate.deserialize(jsonObject.get("equipment"));
+        EntityFlagsPredicate entityFlagsPredicate = EntityFlagsPredicate.fromJson(jsonObject.get("flags"));
+        EntityEquipmentPredicate entityEquipmentPredicate = EntityEquipmentPredicate.fromJson(jsonObject.get("equipment"));
         PlayerPredicate playerPredicate = PlayerPredicate.fromJson(jsonObject.get("player"));
         FishingHookPredicate fishingHookPredicate = FishingHookPredicate.fromJson(jsonObject.get("fishing_hook"));
         String string = JsonHelper.getString(jsonObject, "team", null);
         Identifier identifier = jsonObject.has("catType") ? new Identifier(JsonHelper.getString(jsonObject, "catType")) : null;
         return new Builder().type(entityTypePredicate).distance(distancePredicate).location(locationPredicate).effects(entityEffectPredicate).nbt(nbtPredicate).flags(entityFlagsPredicate).equipment(entityEquipmentPredicate).player(playerPredicate).fishHook(fishingHookPredicate).team(string).catType(identifier).build();
-    }
-
-    public static EntityPredicate[] fromJsonArray(@Nullable JsonElement element) {
-        if (element == null || element.isJsonNull()) {
-            return EMPTY;
-        }
-        JsonArray jsonArray = JsonHelper.asArray(element, "entities");
-        EntityPredicate[] entityPredicates = new EntityPredicate[jsonArray.size()];
-        for (int i = 0; i < jsonArray.size(); ++i) {
-            entityPredicates[i] = EntityPredicate.fromJson(jsonArray.get(i));
-        }
-        return entityPredicates;
     }
 
     public JsonElement toJson() {
@@ -156,17 +152,76 @@ public class EntityPredicate {
         return jsonObject;
     }
 
-    public static JsonElement serializeAll(EntityPredicate[] predicates) {
-        if (predicates == EMPTY) {
-            return JsonNull.INSTANCE;
+    public static LootContext createAdvancementEntityLootContext(ServerPlayerEntity player, Entity target) {
+        return new LootContext.Builder(player.getServerWorld()).put(LootContextParameters.THIS_ENTITY, target).put(LootContextParameters.POSITION, target.getBlockPos()).put(LootContextParameters.ORIGIN, player.getPos()).setRandom(player.getRandom()).build(LootContextTypes.ADVANCEMENT_ENTITY);
+    }
+
+    public static class Extended {
+        public static final Extended EMPTY = new Extended(new LootCondition[0]);
+        private final LootCondition[] conditions;
+        private final Predicate<LootContext> combinedCondition;
+
+        private Extended(LootCondition[] conditions) {
+            this.conditions = conditions;
+            this.combinedCondition = LootConditions.joinAnd(conditions);
         }
-        JsonArray jsonArray = new JsonArray();
-        for (EntityPredicate entityPredicate : predicates) {
-            JsonElement jsonElement = entityPredicate.toJson();
-            if (jsonElement.isJsonNull()) continue;
-            jsonArray.add(jsonElement);
+
+        public static Extended getInJson(JsonObject root, String key, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+            JsonElement jsonElement = root.get(key);
+            return Extended.fromJson(key, predicateDeserializer, jsonElement);
         }
-        return jsonArray;
+
+        public static Extended[] requireInJson(JsonObject root, String key, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+            JsonElement jsonElement = root.get(key);
+            if (jsonElement == null || jsonElement.isJsonNull()) {
+                return new Extended[0];
+            }
+            JsonArray jsonArray = JsonHelper.asArray(jsonElement, key);
+            Extended[] extendeds = new Extended[jsonArray.size()];
+            for (int i = 0; i < jsonArray.size(); ++i) {
+                extendeds[i] = Extended.fromJson(key + "[" + i + "]", predicateDeserializer, jsonArray.get(i));
+            }
+            return extendeds;
+        }
+
+        private static Extended fromJson(String key, AdvancementEntityPredicateDeserializer predicateDeserializer, @Nullable JsonElement json) {
+            if (json != null && json.isJsonArray()) {
+                LootCondition[] lootConditions = predicateDeserializer.loadConditions(json.getAsJsonArray(), predicateDeserializer.getAdvancementId().toString() + "/" + key, LootContextTypes.ADVANCEMENT_ENTITY);
+                return new Extended(lootConditions);
+            }
+            EntityPredicate entityPredicate = EntityPredicate.fromJson(json);
+            return Extended.ofLegacy(entityPredicate);
+        }
+
+        public static Extended ofLegacy(EntityPredicate predicate) {
+            if (predicate == ANY) {
+                return EMPTY;
+            }
+            LootCondition lootCondition = EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, predicate).build();
+            return new Extended(new LootCondition[]{lootCondition});
+        }
+
+        public boolean test(LootContext context) {
+            return this.combinedCondition.test(context);
+        }
+
+        public JsonElement toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            if (this.conditions.length == 0) {
+                return JsonNull.INSTANCE;
+            }
+            return predicateSerializer.conditionsToJson(this.conditions);
+        }
+
+        public static JsonElement toPredicatesJsonArray(Extended[] predicates, AdvancementEntityPredicateSerializer predicateSerializer) {
+            if (predicates.length == 0) {
+                return JsonNull.INSTANCE;
+            }
+            JsonArray jsonArray = new JsonArray();
+            for (Extended extended : predicates) {
+                jsonArray.add(extended.toJson(predicateSerializer));
+            }
+            return jsonArray;
+        }
     }
 
     public static class Builder {

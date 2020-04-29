@@ -159,7 +159,7 @@ Hoglin {
     }
 
     public static boolean canSpawn(EntityType<HoglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
+        return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
     }
 
     @Override
@@ -181,7 +181,7 @@ Hoglin {
         if (HoglinBrain.isWarpedFungusAround(this, pos)) {
             return -1.0f;
         }
-        if (world.getBlockState(pos.down()).getBlock() == Blocks.CRIMSON_NYLIUM) {
+        if (world.getBlockState(pos.down()).isOf(Blocks.CRIMSON_NYLIUM)) {
             return 10.0f;
         }
         return 0.0f;

@@ -76,13 +76,13 @@ extends ForgingScreenHandler {
                 BlockState blockState2 = AnvilBlock.getLandingState(blockState);
                 if (blockState2 == null) {
                     world.removeBlock((BlockPos)blockPos, false);
-                    world.playLevelEvent(1029, (BlockPos)blockPos, 0);
+                    world.syncWorldEvent(1029, (BlockPos)blockPos, 0);
                 } else {
                     world.setBlockState((BlockPos)blockPos, blockState2, 2);
-                    world.playLevelEvent(1030, (BlockPos)blockPos, 0);
+                    world.syncWorldEvent(1030, (BlockPos)blockPos, 0);
                 }
             } else {
-                world.playLevelEvent(1030, (BlockPos)blockPos, 0);
+                world.syncWorldEvent(1030, (BlockPos)blockPos, 0);
             }
         });
         return stack;

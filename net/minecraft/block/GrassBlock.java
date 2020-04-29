@@ -43,10 +43,10 @@ implements Fertilizable {
             BlockState blockState3;
             BlockPos blockPos2 = blockPos;
             for (int j = 0; j < i / 16; ++j) {
-                if (world.getBlockState((blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1)).down()).getBlock() != this || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) continue block0;
+                if (!world.getBlockState((blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1)).down()).isOf(this) || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) continue block0;
             }
             BlockState blockState2 = world.getBlockState(blockPos2);
-            if (blockState2.getBlock() == blockState.getBlock() && random.nextInt(10) == 0) {
+            if (blockState2.isOf(blockState.getBlock()) && random.nextInt(10) == 0) {
                 ((Fertilizable)((Object)blockState.getBlock())).grow(world, random, blockPos2, blockState2);
             }
             if (!blockState2.isAir()) continue;

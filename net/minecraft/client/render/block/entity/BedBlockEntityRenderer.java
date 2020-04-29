@@ -64,7 +64,7 @@ extends BlockEntityRenderer<BedBlockEntity> {
         World world = bedBlockEntity.getWorld();
         if (world != null) {
             BlockState blockState = bedBlockEntity.getCachedState();
-            DoubleBlockProperties.PropertySource<BedBlockEntity> propertySource = DoubleBlockProperties.toPropertySource(BlockEntityType.BED, BedBlock::method_24164, BedBlock::getOppositePartDirection, ChestBlock.FACING, blockState, world, bedBlockEntity.getPos(), (iWorld, blockPos) -> false);
+            DoubleBlockProperties.PropertySource<BedBlockEntity> propertySource = DoubleBlockProperties.toPropertySource(BlockEntityType.BED, BedBlock::getBedPart, BedBlock::getOppositePartDirection, ChestBlock.FACING, blockState, world, bedBlockEntity.getPos(), (iWorld, blockPos) -> false);
             int k = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).get(i);
             this.method_3558(matrixStack, vertexConsumerProvider, blockState.get(BedBlock.PART) == BedPart.HEAD, blockState.get(BedBlock.FACING), spriteIdentifier, k, j, false);
         } else {

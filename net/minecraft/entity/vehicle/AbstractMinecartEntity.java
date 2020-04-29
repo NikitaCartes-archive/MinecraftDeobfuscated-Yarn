@@ -270,9 +270,9 @@ extends Entity {
         if (this.world.getBlockState(new BlockPos(i = MathHelper.floor(this.getX()), (j = MathHelper.floor(this.getY())) - 1, k = MathHelper.floor(this.getZ()))).isIn(BlockTags.RAILS)) {
             --j;
         }
-        if ((blockState = this.world.getBlockState(blockPos = new BlockPos(i, j, k))).isIn(BlockTags.RAILS)) {
+        if (AbstractRailBlock.isRail(blockState = this.world.getBlockState(blockPos = new BlockPos(i, j, k)))) {
             this.moveOnRail(blockPos, blockState);
-            if (blockState.getBlock() == Blocks.ACTIVATOR_RAIL) {
+            if (blockState.isOf(Blocks.ACTIVATOR_RAIL)) {
                 this.onActivatorRail(i, j, k, blockState.get(PoweredRailBlock.POWERED));
             }
         } else {
@@ -505,7 +505,7 @@ extends Entity {
         if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(e)) - 1, k = MathHelper.floor(f))).isIn(BlockTags.RAILS)) {
             --j;
         }
-        if ((blockState = this.world.getBlockState(new BlockPos(i, j, k))).isIn(BlockTags.RAILS)) {
+        if (AbstractRailBlock.isRail(blockState = this.world.getBlockState(new BlockPos(i, j, k)))) {
             RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
             e = j;
             if (railShape.isAscending()) {
@@ -536,7 +536,7 @@ extends Entity {
         if (this.world.getBlockState(new BlockPos(i, (j = MathHelper.floor(e)) - 1, k = MathHelper.floor(f))).isIn(BlockTags.RAILS)) {
             --j;
         }
-        if ((blockState = this.world.getBlockState(new BlockPos(i, j, k))).isIn(BlockTags.RAILS)) {
+        if (AbstractRailBlock.isRail(blockState = this.world.getBlockState(new BlockPos(i, j, k)))) {
             double s;
             RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
             Pair<Vec3i, Vec3i> pair = AbstractMinecartEntity.method_22864(railShape);

@@ -65,7 +65,7 @@ extends BlockWithEntity {
                 if (random.nextInt(16) != 0) continue;
                 for (int k = 0; k <= 1; ++k) {
                     BlockPos blockPos = pos.add(i, k, j);
-                    if (world.getBlockState(blockPos).getBlock() != Blocks.BOOKSHELF) continue;
+                    if (!world.getBlockState(blockPos).isOf(Blocks.BOOKSHELF)) continue;
                     if (!world.isAir(pos.add(i / 2, 0, j / 2))) continue block1;
                     world.addParticle(ParticleTypes.ENCHANT, (double)pos.getX() + 0.5, (double)pos.getY() + 2.0, (double)pos.getZ() + 0.5, (double)((float)i + random.nextFloat()) - 0.5, (float)k - random.nextFloat() - 1.0f, (double)((float)j + random.nextFloat()) - 0.5);
                 }

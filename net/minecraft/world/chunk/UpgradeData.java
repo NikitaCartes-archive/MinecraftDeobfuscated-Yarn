@@ -195,7 +195,7 @@ public class UpgradeData {
 
             @Override
             public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-                if (blockState2.getBlock() == blockState.getBlock() && direction.getAxis().isHorizontal() && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE && blockState2.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE) {
+                if (blockState2.isOf(blockState.getBlock()) && direction.getAxis().isHorizontal() && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE && blockState2.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE) {
                     Direction direction2 = blockState.get(ChestBlock.FACING);
                     if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
                         ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.LEFT : ChestType.RIGHT;
@@ -262,11 +262,9 @@ public class UpgradeData {
 
             @Override
             public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-                if (blockState.get(StemBlock.AGE) == 7) {
-                    GourdBlock gourdBlock = ((StemBlock)blockState.getBlock()).getGourdBlock();
-                    if (blockState2.getBlock() == gourdBlock) {
-                        return (BlockState)gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);
-                    }
+                GourdBlock gourdBlock;
+                if (blockState.get(StemBlock.AGE) == 7 && blockState2.isOf(gourdBlock = ((StemBlock)blockState.getBlock()).getGourdBlock())) {
+                    return (BlockState)gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);
                 }
                 return blockState;
             }

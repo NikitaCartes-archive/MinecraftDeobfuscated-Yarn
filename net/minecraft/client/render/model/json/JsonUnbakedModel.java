@@ -47,8 +47,8 @@ import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
-import net.minecraft.client.render.model.json.ModelItemOverride;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverride;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.render.model.json.Transformation;
 import net.minecraft.client.texture.MissingSprite;
@@ -68,13 +68,13 @@ implements UnbakedModel {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final BakedQuadFactory QUAD_FACTORY = new BakedQuadFactory();
     @VisibleForTesting
-    static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)JsonUnbakedModel.class), new Deserializer()).registerTypeAdapter((Type)((Object)ModelElement.class), new ModelElement.Deserializer()).registerTypeAdapter((Type)((Object)ModelElementFace.class), new ModelElementFace.Deserializer()).registerTypeAdapter((Type)((Object)ModelElementTexture.class), new ModelElementTexture.Deserializer()).registerTypeAdapter((Type)((Object)Transformation.class), new Transformation.Deserializer()).registerTypeAdapter((Type)((Object)ModelTransformation.class), new ModelTransformation.Deserializer()).registerTypeAdapter((Type)((Object)ModelItemOverride.class), new ModelItemOverride.Deserializer()).create();
+    static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)JsonUnbakedModel.class), new Deserializer()).registerTypeAdapter((Type)((Object)ModelElement.class), new ModelElement.Deserializer()).registerTypeAdapter((Type)((Object)ModelElementFace.class), new ModelElementFace.Deserializer()).registerTypeAdapter((Type)((Object)ModelElementTexture.class), new ModelElementTexture.Deserializer()).registerTypeAdapter((Type)((Object)Transformation.class), new Transformation.Deserializer()).registerTypeAdapter((Type)((Object)ModelTransformation.class), new ModelTransformation.Deserializer()).registerTypeAdapter((Type)((Object)ModelOverride.class), new ModelOverride.Deserializer()).create();
     private final List<ModelElement> elements;
     @Nullable
     private final GuiLight guiLight;
     private final boolean ambientOcclusion;
     private final ModelTransformation transformations;
-    private final List<ModelItemOverride> overrides;
+    private final List<ModelOverride> overrides;
     public String id = "";
     @VisibleForTesting
     protected final Map<String, Either<SpriteIdentifier, String>> textureMap;
@@ -91,7 +91,7 @@ implements UnbakedModel {
         return JsonUnbakedModel.deserialize(new StringReader(json));
     }
 
-    public JsonUnbakedModel(@Nullable Identifier parentId, List<ModelElement> elements, Map<String, Either<SpriteIdentifier, String>> textureMap, boolean ambientOcclusion, @Nullable GuiLight guiLight, ModelTransformation transformations, List<ModelItemOverride> overrides) {
+    public JsonUnbakedModel(@Nullable Identifier parentId, List<ModelElement> elements, Map<String, Either<SpriteIdentifier, String>> textureMap, boolean ambientOcclusion, @Nullable GuiLight guiLight, ModelTransformation transformations, List<ModelOverride> overrides) {
         this.elements = elements;
         this.ambientOcclusion = ambientOcclusion;
         this.guiLight = guiLight;
@@ -125,22 +125,22 @@ implements UnbakedModel {
         return GuiLight.field_21859;
     }
 
-    public List<ModelItemOverride> getOverrides() {
+    public List<ModelOverride> getOverrides() {
         return this.overrides;
     }
 
-    private ModelItemPropertyOverrideList compileOverrides(ModelLoader modelLoader, JsonUnbakedModel parent) {
+    private ModelOverrideList compileOverrides(ModelLoader modelLoader, JsonUnbakedModel parent) {
         if (this.overrides.isEmpty()) {
-            return ModelItemPropertyOverrideList.EMPTY;
+            return ModelOverrideList.EMPTY;
         }
-        return new ModelItemPropertyOverrideList(modelLoader, parent, modelLoader::getOrLoadModel, this.overrides);
+        return new ModelOverrideList(modelLoader, parent, modelLoader::getOrLoadModel, this.overrides);
     }
 
     @Override
     public Collection<Identifier> getModelDependencies() {
         HashSet<Identifier> set = Sets.newHashSet();
-        for (ModelItemOverride modelItemOverride : this.overrides) {
-            set.add(modelItemOverride.getModelId());
+        for (ModelOverride modelOverride : this.overrides) {
+            set.add(modelOverride.getModelId());
         }
         if (this.parentId != null) {
             set.add(this.parentId);
@@ -182,8 +182,8 @@ implements UnbakedModel {
                 set2.add(spriteIdentifier);
             }
         }
-        this.overrides.forEach(modelItemOverride -> {
-            UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(modelItemOverride.getModelId());
+        this.overrides.forEach(modelOverride -> {
+            UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
             if (Objects.equals(unbakedModel, this)) {
                 return;
             }
@@ -328,7 +328,7 @@ implements UnbakedModel {
                 JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "display");
                 modelTransformation = (ModelTransformation)jsonDeserializationContext.deserialize(jsonObject2, (Type)((Object)ModelTransformation.class));
             }
-            List<ModelItemOverride> list2 = this.deserializeOverrides(jsonDeserializationContext, jsonObject);
+            List<ModelOverride> list2 = this.deserializeOverrides(jsonDeserializationContext, jsonObject);
             GuiLight guiLight = null;
             if (jsonObject.has("gui_light")) {
                 guiLight = GuiLight.deserialize(JsonHelper.getString(jsonObject, "gui_light"));
@@ -337,12 +337,12 @@ implements UnbakedModel {
             return new JsonUnbakedModel(identifier, list, map, bl, guiLight, modelTransformation, list2);
         }
 
-        protected List<ModelItemOverride> deserializeOverrides(JsonDeserializationContext context, JsonObject object) {
-            ArrayList<ModelItemOverride> list = Lists.newArrayList();
+        protected List<ModelOverride> deserializeOverrides(JsonDeserializationContext context, JsonObject object) {
+            ArrayList<ModelOverride> list = Lists.newArrayList();
             if (object.has("overrides")) {
                 JsonArray jsonArray = JsonHelper.getArray(object, "overrides");
                 for (JsonElement jsonElement : jsonArray) {
-                    list.add((ModelItemOverride)context.deserialize(jsonElement, (Type)((Object)ModelItemOverride.class)));
+                    list.add((ModelOverride)context.deserialize(jsonElement, (Type)((Object)ModelOverride.class)));
                 }
             }
             return list;

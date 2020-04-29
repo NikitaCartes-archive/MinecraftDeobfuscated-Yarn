@@ -24,7 +24,7 @@ extends Feature<DefaultFeatureConfig> {
 
     @Override
     public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        if (iWorld.isAir(blockPos.up()) && iWorld.getBlockState(blockPos).getBlock() == Blocks.END_STONE) {
+        if (iWorld.isAir(blockPos.up()) && iWorld.getBlockState(blockPos).isOf(Blocks.END_STONE)) {
             ChorusFlowerBlock.generate(iWorld, blockPos.up(), random, 8);
             return true;
         }

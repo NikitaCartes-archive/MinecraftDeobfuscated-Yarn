@@ -62,6 +62,7 @@ BiomeAccess.Storage {
 
     public boolean isClient();
 
+    @Deprecated
     public int getSeaLevel();
 
     public Dimension getDimension();

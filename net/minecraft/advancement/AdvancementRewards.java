@@ -5,13 +5,10 @@ package net.minecraft.advancement;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import net.minecraft.entity.ItemEntity;
@@ -35,38 +32,38 @@ public class AdvancementRewards {
     private final Identifier[] recipes;
     private final CommandFunction.LazyContainer function;
 
-    public AdvancementRewards(int experience, Identifier[] loot, Identifier[] recipes, CommandFunction.LazyContainer lazyContainer) {
+    public AdvancementRewards(int experience, Identifier[] loot, Identifier[] recipes, CommandFunction.LazyContainer function) {
         this.experience = experience;
         this.loot = loot;
         this.recipes = recipes;
-        this.function = lazyContainer;
+        this.function = function;
     }
 
-    public void apply(ServerPlayerEntity serverPlayerEntity) {
-        serverPlayerEntity.addExperience(this.experience);
-        LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld()).put(LootContextParameters.THIS_ENTITY, serverPlayerEntity).put(LootContextParameters.POSITION, serverPlayerEntity.getBlockPos()).setRandom(serverPlayerEntity.getRandom()).build(LootContextTypes.ADVANCEMENT_REWARD);
+    public void apply(ServerPlayerEntity player) {
+        player.addExperience(this.experience);
+        LootContext lootContext = new LootContext.Builder(player.getServerWorld()).put(LootContextParameters.THIS_ENTITY, player).put(LootContextParameters.POSITION, player.getBlockPos()).setRandom(player.getRandom()).build(LootContextTypes.ADVANCEMENT_REWARD);
         boolean bl = false;
         for (Identifier identifier : this.loot) {
-            for (ItemStack itemStack : serverPlayerEntity.server.getLootManager().getTable(identifier).getDrops(lootContext)) {
-                if (serverPlayerEntity.giveItemStack(itemStack)) {
-                    serverPlayerEntity.world.playSound(null, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
+            for (ItemStack itemStack : player.server.getLootManager().getTable(identifier).getDrops(lootContext)) {
+                if (player.giveItemStack(itemStack)) {
+                    player.world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, ((player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
                     bl = true;
                     continue;
                 }
-                ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
+                ItemEntity itemEntity = player.dropItem(itemStack, false);
                 if (itemEntity == null) continue;
                 itemEntity.resetPickupDelay();
-                itemEntity.setOwner(serverPlayerEntity.getUuid());
+                itemEntity.setOwner(player.getUuid());
             }
         }
         if (bl) {
-            serverPlayerEntity.playerScreenHandler.sendContentUpdates();
+            player.playerScreenHandler.sendContentUpdates();
         }
         if (this.recipes.length > 0) {
-            serverPlayerEntity.unlockRecipes(this.recipes);
+            player.unlockRecipes(this.recipes);
         }
-        MinecraftServer minecraftServer = serverPlayerEntity.server;
-        this.function.get(minecraftServer.getCommandFunctionManager()).ifPresent(commandFunction -> minecraftServer.getCommandFunctionManager().execute((CommandFunction)commandFunction, serverPlayerEntity.getCommandSource().withSilent().withLevel(2)));
+        MinecraftServer minecraftServer = player.server;
+        this.function.get(minecraftServer.getCommandFunctionManager()).ifPresent(commandFunction -> minecraftServer.getCommandFunctionManager().execute((CommandFunction)commandFunction, player.getCommandSource().withSilent().withLevel(2)));
     }
 
     public String toString() {
@@ -102,6 +99,22 @@ public class AdvancementRewards {
         return jsonObject;
     }
 
+    public static AdvancementRewards fromJson(JsonObject json) throws JsonParseException {
+        int i = JsonHelper.getInt(json, "experience", 0);
+        JsonArray jsonArray = JsonHelper.getArray(json, "loot", new JsonArray());
+        Identifier[] identifiers = new Identifier[jsonArray.size()];
+        for (int j = 0; j < identifiers.length; ++j) {
+            identifiers[j] = new Identifier(JsonHelper.asString(jsonArray.get(j), "loot[" + j + "]"));
+        }
+        JsonArray jsonArray2 = JsonHelper.getArray(json, "recipes", new JsonArray());
+        Identifier[] identifiers2 = new Identifier[jsonArray2.size()];
+        for (int k = 0; k < identifiers2.length; ++k) {
+            identifiers2[k] = new Identifier(JsonHelper.asString(jsonArray2.get(k), "recipes[" + k + "]"));
+        }
+        CommandFunction.LazyContainer lazyContainer = json.has("function") ? new CommandFunction.LazyContainer(new Identifier(JsonHelper.getString(json, "function"))) : CommandFunction.LazyContainer.EMPTY;
+        return new AdvancementRewards(i, identifiers, identifiers2, lazyContainer);
+    }
+
     public static class Builder {
         private int experience;
         private final List<Identifier> loot = Lists.newArrayList();
@@ -129,32 +142,6 @@ public class AdvancementRewards {
 
         public AdvancementRewards build() {
             return new AdvancementRewards(this.experience, this.loot.toArray(new Identifier[0]), this.recipes.toArray(new Identifier[0]), this.function == null ? CommandFunction.LazyContainer.EMPTY : new CommandFunction.LazyContainer(this.function));
-        }
-    }
-
-    public static class Deserializer
-    implements JsonDeserializer<AdvancementRewards> {
-        @Override
-        public AdvancementRewards deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            JsonObject jsonObject = JsonHelper.asObject(jsonElement, "rewards");
-            int i = JsonHelper.getInt(jsonObject, "experience", 0);
-            JsonArray jsonArray = JsonHelper.getArray(jsonObject, "loot", new JsonArray());
-            Identifier[] identifiers = new Identifier[jsonArray.size()];
-            for (int j = 0; j < identifiers.length; ++j) {
-                identifiers[j] = new Identifier(JsonHelper.asString(jsonArray.get(j), "loot[" + j + "]"));
-            }
-            JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "recipes", new JsonArray());
-            Identifier[] identifiers2 = new Identifier[jsonArray2.size()];
-            for (int k = 0; k < identifiers2.length; ++k) {
-                identifiers2[k] = new Identifier(JsonHelper.asString(jsonArray2.get(k), "recipes[" + k + "]"));
-            }
-            CommandFunction.LazyContainer lazyContainer = jsonObject.has("function") ? new CommandFunction.LazyContainer(new Identifier(JsonHelper.getString(jsonObject, "function"))) : CommandFunction.LazyContainer.EMPTY;
-            return new AdvancementRewards(i, identifiers, identifiers2, lazyContainer);
-        }
-
-        @Override
-        public /* synthetic */ Object deserialize(JsonElement functionJson, Type unused, JsonDeserializationContext context) throws JsonParseException {
-            return this.deserialize(functionJson, unused, context);
         }
     }
 }

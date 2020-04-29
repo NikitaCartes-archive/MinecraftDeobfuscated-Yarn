@@ -147,17 +147,17 @@ extends ChunkGenerator<T> {
 
     @Override
     public int getHeight(int x, int z, Heightmap.Type heightmapType) {
-        return this.method_26263(x, z, null, heightmapType.getBlockPredicate());
+        return this.sampleHeightmap(x, z, null, heightmapType.getBlockPredicate());
     }
 
     @Override
     public BlockView getColumnSample(int x, int z) {
         BlockState[] blockStates = new BlockState[this.noiseSizeY * this.verticalNoiseResolution];
-        this.method_26263(x, z, blockStates, null);
+        this.sampleHeightmap(x, z, blockStates, null);
         return new VerticalBlockSample(blockStates);
     }
 
-    private int method_26263(int i, int j, @Nullable BlockState[] blockStates, @Nullable Predicate<BlockState> predicate) {
+    private int sampleHeightmap(int i, int j, @Nullable BlockState[] blockStates, @Nullable Predicate<BlockState> predicate) {
         int k = Math.floorDiv(i, this.horizontalNoiseResolution);
         int l = Math.floorDiv(j, this.horizontalNoiseResolution);
         int m = Math.floorMod(i, this.horizontalNoiseResolution);
@@ -178,7 +178,7 @@ extends ChunkGenerator<T> {
                 double v = (double)u / (double)this.verticalNoiseResolution;
                 double w = MathHelper.lerp3(v, d, e, f, q, h, s, g, r, p, t);
                 int x = o * this.verticalNoiseResolution + u;
-                BlockState blockState = this.method_26262(w, x);
+                BlockState blockState = this.getBlockState(w, x);
                 if (blockStates != null) {
                     blockStates[x] = blockState;
                 }
@@ -189,8 +189,8 @@ extends ChunkGenerator<T> {
         return 0;
     }
 
-    protected BlockState method_26262(double d, int i) {
-        BlockState blockState = d > 0.0 ? this.defaultBlock : (i < this.getSeaLevel() ? this.defaultFluid : AIR);
+    protected BlockState getBlockState(double density, int y) {
+        BlockState blockState = density > 0.0 ? this.defaultBlock : (y < this.getSeaLevel() ? this.defaultFluid : AIR);
         return blockState;
     }
 
@@ -353,7 +353,7 @@ extends ChunkGenerator<T> {
                                     an += SurfaceChunkGenerator.method_16572(ar, ao, ap) * 0.4;
                                 }
                                 objectListIterator2.back(objectList2.size());
-                                BlockState blockState = this.method_26262(an, u);
+                                BlockState blockState = this.getBlockState(an, u);
                                 if (blockState == AIR) continue;
                                 if (blockState.getLuminance() != 0) {
                                     mutable.set(ad, u, aj);

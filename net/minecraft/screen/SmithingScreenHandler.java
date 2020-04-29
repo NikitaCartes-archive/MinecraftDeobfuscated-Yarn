@@ -32,7 +32,7 @@ extends ForgingScreenHandler {
 
     @Override
     protected boolean canUse(BlockState state) {
-        return state.getBlock() == Blocks.SMITHING_TABLE;
+        return state.isOf(Blocks.SMITHING_TABLE);
     }
 
     @Override
@@ -46,7 +46,7 @@ extends ForgingScreenHandler {
         ItemStack itemStack = this.input.getStack(1);
         itemStack.decrement(1);
         this.input.setStack(1, itemStack);
-        this.context.run((world, blockPos) -> world.playLevelEvent(1044, (BlockPos)blockPos, 0));
+        this.context.run((world, blockPos) -> world.syncWorldEvent(1044, (BlockPos)blockPos, 0));
         return stack;
     }
 

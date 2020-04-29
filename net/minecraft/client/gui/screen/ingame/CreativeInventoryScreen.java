@@ -553,14 +553,14 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     }
 
     @Override
-    protected void renderTooltip(MatrixStack matrixStack, ItemStack itemStack, int i, int j) {
+    protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
         if (selectedTab == ItemGroup.SEARCH.getIndex()) {
             Map<Enchantment, Integer> map;
-            List<Text> list = itemStack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
+            List<Text> list = stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
             ArrayList<Text> list2 = Lists.newArrayList(list);
-            Item item = itemStack.getItem();
+            Item item = stack.getItem();
             ItemGroup itemGroup = item.getGroup();
-            if (itemGroup == null && item == Items.ENCHANTED_BOOK && (map = EnchantmentHelper.get(itemStack)).size() == 1) {
+            if (itemGroup == null && item == Items.ENCHANTED_BOOK && (map = EnchantmentHelper.get(stack)).size() == 1) {
                 Enchantment enchantment = map.keySet().iterator().next();
                 for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
                     if (!itemGroup2.containsEnchantments(enchantment.type)) continue;
@@ -576,9 +576,9 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             if (itemGroup != null) {
                 list2.add(1, new TranslatableText(itemGroup.getTranslationKey()).formatted(Formatting.BOLD, Formatting.BLUE));
             }
-            this.renderTooltip(matrixStack, list2, i, j);
+            this.renderTooltip(matrices, list2, x, y);
         } else {
-            super.renderTooltip(matrixStack, itemStack, i, j);
+            super.renderTooltip(matrices, stack, x, y);
         }
     }
 

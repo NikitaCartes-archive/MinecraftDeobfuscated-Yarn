@@ -9,23 +9,23 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class BillboardParticle
 extends Particle {
     protected float scale;
 
-    protected BillboardParticle(World world, double d, double e, double f) {
-        super(world, d, e, f);
+    protected BillboardParticle(ClientWorld clientWorld, double d, double e, double f) {
+        super(clientWorld, d, e, f);
         this.scale = 0.1f * (this.random.nextFloat() * 0.5f + 0.5f) * 2.0f;
     }
 
-    protected BillboardParticle(World world, double d, double e, double f, double g, double h, double i) {
-        super(world, d, e, f, g, h, i);
+    protected BillboardParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+        super(clientWorld, d, e, f, g, h, i);
         this.scale = 0.1f * (this.random.nextFloat() * 0.5f + 0.5f) * 2.0f;
     }
 

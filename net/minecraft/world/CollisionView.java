@@ -110,7 +110,7 @@ extends BlockView {
                     if (l == 3 || (blockView = CollisionView.this.getExistingChunk(m = i >> 4, n = k >> 4)) == null) continue;
                     mutable.set(i, j, k);
                     BlockState blockState = blockView.getBlockState(mutable);
-                    if (l == 1 && !blockState.exceedsCube() || l == 2 && blockState.getBlock() != Blocks.MOVING_PISTON) continue;
+                    if (l == 1 && !blockState.exceedsCube() || l == 2 && !blockState.isOf(Blocks.MOVING_PISTON)) continue;
                     VoxelShape voxelShape3 = blockState.getCollisionShape(CollisionView.this, mutable, shapeContext);
                     if (voxelShape3 == VoxelShapes.fullCube()) {
                         if (!box.intersects(i, j, k, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)) continue;

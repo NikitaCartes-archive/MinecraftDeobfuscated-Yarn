@@ -100,7 +100,7 @@ extends FacingBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (oldState.getBlock() == state.getBlock()) {
+        if (oldState.isOf(state.getBlock())) {
             return;
         }
         if (!world.isClient && world.getBlockEntity(pos) == null) {
@@ -118,7 +118,7 @@ extends FacingBlock {
         boolean bl = this.shouldExtend(world, pos, direction);
         if (bl && !state.get(EXTENDED).booleanValue()) {
             if (new PistonHandler(world, pos, direction, true).calculatePush()) {
-                world.addBlockAction(pos, this, 0, direction.getId());
+                world.addSyncedBlockEvent(pos, this, 0, direction.getId());
             }
         } else if (!bl && state.get(EXTENDED).booleanValue()) {
             PistonBlockEntity pistonBlockEntity;
@@ -126,10 +126,10 @@ extends FacingBlock {
             BlockPos blockPos = pos.offset(direction, 2);
             BlockState blockState = world.getBlockState(blockPos);
             int i = 1;
-            if (blockState.getBlock() == Blocks.MOVING_PISTON && blockState.get(FACING) == direction && (blockEntity = world.getBlockEntity(blockPos)) instanceof PistonBlockEntity && (pistonBlockEntity = (PistonBlockEntity)blockEntity).isExtending() && (pistonBlockEntity.getProgress(0.0f) < 0.5f || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInBlockTick())) {
+            if (blockState.isOf(Blocks.MOVING_PISTON) && blockState.get(FACING) == direction && (blockEntity = world.getBlockEntity(blockPos)) instanceof PistonBlockEntity && (pistonBlockEntity = (PistonBlockEntity)blockEntity).isExtending() && (pistonBlockEntity.getProgress(0.0f) < 0.5f || world.getTime() == pistonBlockEntity.getSavedWorldTime() || ((ServerWorld)world).isInBlockTick())) {
                 i = 2;
             }
-            world.addBlockAction(pos, this, i, direction.getId());
+            world.addSyncedBlockEvent(pos, this, i, direction.getId());
         }
     }
 
@@ -154,32 +154,32 @@ extends FacingBlock {
      * Lifted jumps to return sites
      */
     @Override
-    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
+    public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
         Direction direction = state.get(FACING);
         if (!world.isClient) {
             boolean bl = this.shouldExtend(world, pos, direction);
-            if (bl && (channel == 1 || channel == 2)) {
+            if (bl && (type == 1 || type == 2)) {
                 world.setBlockState(pos, (BlockState)state.with(EXTENDED, true), 2);
                 return false;
             }
-            if (!bl && channel == 0) {
+            if (!bl && type == 0) {
                 return false;
             }
         }
-        if (channel == 0) {
+        if (type == 0) {
             if (!this.move(world, pos, direction, true)) return false;
             world.setBlockState(pos, (BlockState)state.with(EXTENDED, true), 67);
             world.playSound(null, pos, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.25f + 0.6f);
             return true;
         } else {
-            if (channel != 1 && channel != 2) return true;
+            if (type != 1 && type != 2) return true;
             BlockEntity blockEntity = world.getBlockEntity(pos.offset(direction));
             if (blockEntity instanceof PistonBlockEntity) {
                 ((PistonBlockEntity)blockEntity).finish();
             }
             BlockState blockState = (BlockState)((BlockState)Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, direction)).with(PistonExtensionBlock.TYPE, this.sticky ? PistonType.STICKY : PistonType.DEFAULT);
             world.setBlockState(pos, blockState, 20);
-            world.setBlockEntity(pos, PistonExtensionBlock.createBlockEntityPiston((BlockState)this.getDefaultState().with(FACING, Direction.byId(value & 7)), direction, false, true));
+            world.setBlockEntity(pos, PistonExtensionBlock.createBlockEntityPiston((BlockState)this.getDefaultState().with(FACING, Direction.byId(data & 7)), direction, false, true));
             world.updateNeighbors(pos, blockState.getBlock());
             blockState.updateNeighbors(world, pos, 2);
             if (this.sticky) {
@@ -187,14 +187,13 @@ extends FacingBlock {
                 BlockEntity blockEntity2;
                 BlockPos blockPos = pos.add(direction.getOffsetX() * 2, direction.getOffsetY() * 2, direction.getOffsetZ() * 2);
                 BlockState blockState2 = world.getBlockState(blockPos);
-                Block block = blockState2.getBlock();
                 boolean bl2 = false;
-                if (block == Blocks.MOVING_PISTON && (blockEntity2 = world.getBlockEntity(blockPos)) instanceof PistonBlockEntity && (pistonBlockEntity = (PistonBlockEntity)blockEntity2).getFacing() == direction && pistonBlockEntity.isExtending()) {
+                if (blockState2.isOf(Blocks.MOVING_PISTON) && (blockEntity2 = world.getBlockEntity(blockPos)) instanceof PistonBlockEntity && (pistonBlockEntity = (PistonBlockEntity)blockEntity2).getFacing() == direction && pistonBlockEntity.isExtending()) {
                     pistonBlockEntity.finish();
                     bl2 = true;
                 }
                 if (!bl2) {
-                    if (channel == 1 && !blockState2.isAir() && PistonBlock.isMovable(blockState2, world, blockPos, direction.getOpposite(), false, direction) && (blockState2.getPistonBehavior() == PistonBehavior.NORMAL || block == Blocks.PISTON || block == Blocks.STICKY_PISTON)) {
+                    if (type == 1 && !blockState2.isAir() && PistonBlock.isMovable(blockState2, world, blockPos, direction.getOpposite(), false, direction) && (blockState2.getPistonBehavior() == PistonBehavior.NORMAL || blockState2.isOf(Blocks.PISTON) || blockState2.isOf(Blocks.STICKY_PISTON))) {
                         this.move(world, pos, direction, false);
                     } else {
                         world.removeBlock(pos.offset(direction), false);
@@ -209,8 +208,7 @@ extends FacingBlock {
     }
 
     public static boolean isMovable(BlockState state, World world, BlockPos pos, Direction motionDir, boolean canBreak, Direction pistonDir) {
-        Block block = state.getBlock();
-        if (block == Blocks.OBSIDIAN || block == Blocks.CRYING_OBSIDIAN || block == Blocks.RESPAWN_ANCHOR) {
+        if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR)) {
             return false;
         }
         if (!world.getWorldBorder().contains(pos)) {
@@ -222,7 +220,7 @@ extends FacingBlock {
         if (pos.getY() > world.getHeight() - 1 || motionDir == Direction.UP && pos.getY() == world.getHeight() - 1) {
             return false;
         }
-        if (block == Blocks.PISTON || block == Blocks.STICKY_PISTON) {
+        if (state.isOf(Blocks.PISTON) || state.isOf(Blocks.STICKY_PISTON)) {
             if (state.get(EXTENDED).booleanValue()) {
                 return false;
             }
@@ -242,7 +240,7 @@ extends FacingBlock {
                 }
             }
         }
-        return !block.hasBlockEntity();
+        return !state.getBlock().hasBlockEntity();
     }
 
     private boolean move(World world, BlockPos pos, Direction dir, boolean retract) {
@@ -252,7 +250,7 @@ extends FacingBlock {
         int k;
         PistonHandler pistonHandler;
         BlockPos blockPos = pos.offset(dir);
-        if (!retract && world.getBlockState(blockPos).getBlock() == Blocks.PISTON_HEAD) {
+        if (!retract && world.getBlockState(blockPos).isOf(Blocks.PISTON_HEAD)) {
             world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 20);
         }
         if (!(pistonHandler = new PistonHandler(world, pos, dir, retract)).calculatePush()) {

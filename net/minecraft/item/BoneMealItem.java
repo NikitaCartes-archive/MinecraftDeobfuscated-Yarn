@@ -38,7 +38,7 @@ extends Item {
         BlockPos blockPos2 = blockPos.offset(context.getSide());
         if (BoneMealItem.useOnFertilizable(context.getStack(), world, blockPos)) {
             if (!world.isClient) {
-                world.playLevelEvent(2005, blockPos, 0);
+                world.syncWorldEvent(2005, blockPos, 0);
             }
             return ActionResult.SUCCESS;
         }
@@ -46,7 +46,7 @@ extends Item {
         boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
         if (bl && BoneMealItem.useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
             if (!world.isClient) {
-                world.playLevelEvent(2005, blockPos2, 0);
+                world.syncWorldEvent(2005, blockPos2, 0);
             }
             return ActionResult.SUCCESS;
         }
@@ -69,7 +69,7 @@ extends Item {
     }
 
     public static boolean useOnGround(ItemStack stack, World world, BlockPos blockPos, @Nullable Direction facing) {
-        if (world.getBlockState(blockPos).getBlock() != Blocks.WATER || world.getFluidState(blockPos).getLevel() != 8) {
+        if (!world.getBlockState(blockPos).isOf(Blocks.WATER) || world.getFluidState(blockPos).getLevel() != 8) {
             return false;
         }
         if (!(world instanceof ServerWorld)) {
@@ -99,11 +99,11 @@ extends Item {
             }
             if (!blockState.canPlaceAt(world, blockPos2)) continue;
             BlockState blockState2 = world.getBlockState(blockPos2);
-            if (blockState2.getBlock() == Blocks.WATER && world.getFluidState(blockPos2).getLevel() == 8) {
+            if (blockState2.isOf(Blocks.WATER) && world.getFluidState(blockPos2).getLevel() == 8) {
                 world.setBlockState(blockPos2, blockState, 3);
                 continue;
             }
-            if (blockState2.getBlock() != Blocks.SEAGRASS || RANDOM.nextInt(10) != 0) continue;
+            if (!blockState2.isOf(Blocks.SEAGRASS) || RANDOM.nextInt(10) != 0) continue;
             ((Fertilizable)((Object)Blocks.SEAGRASS)).grow((ServerWorld)world, RANDOM, blockPos2, blockState2);
         }
         stack.decrement(1);

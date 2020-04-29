@@ -10,16 +10,16 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class RedDustParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
 
-    private RedDustParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, DustParticleEffect dustParticleEffect, SpriteProvider spriteProvider) {
+    private RedDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, DustParticleEffect dustParticleEffect, SpriteProvider spriteProvider) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
         this.spriteProvider = spriteProvider;
         this.velocityX *= (double)0.1f;
@@ -79,8 +79,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DustParticleEffect dustParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
-            return new RedDustParticle(world, d, e, f, g, h, i, dustParticleEffect, this.spriteProvider);
+        public Particle createParticle(DustParticleEffect dustParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new RedDustParticle(clientWorld, d, e, f, g, h, i, dustParticleEffect, this.spriteProvider);
         }
     }
 }

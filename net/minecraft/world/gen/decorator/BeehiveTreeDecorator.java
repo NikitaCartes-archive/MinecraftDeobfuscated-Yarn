@@ -44,7 +44,7 @@ extends TreeDecorator {
         if (random.nextFloat() >= this.chance) {
             return;
         }
-        Direction direction = BeehiveBlock.method_26978(random);
+        Direction direction = BeehiveBlock.getRandomGenerationDirection(random);
         int i = !leavesPositions.isEmpty() ? Math.max(leavesPositions.get(0).getY() - 1, logPositions.get(0).getY()) : Math.min(logPositions.get(0).getY() + 1 + random.nextInt(3), logPositions.get(logPositions.size() - 1).getY());
         List list = logPositions.stream().filter(blockPos -> blockPos.getY() == i).collect(Collectors.toList());
         if (list.isEmpty()) {

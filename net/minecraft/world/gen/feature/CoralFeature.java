@@ -38,7 +38,7 @@ extends Feature<DefaultFeatureConfig> {
     protected boolean spawnCoralPiece(IWorld world, Random random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.up();
         BlockState blockState = world.getBlockState(pos);
-        if (blockState.getBlock() != Blocks.WATER && !blockState.isIn(BlockTags.CORALS) || world.getBlockState(blockPos).getBlock() != Blocks.WATER) {
+        if (!blockState.isOf(Blocks.WATER) && !blockState.isIn(BlockTags.CORALS) || !world.getBlockState(blockPos).isOf(Blocks.WATER)) {
             return false;
         }
         world.setBlockState(pos, state, 3);
@@ -49,7 +49,7 @@ extends Feature<DefaultFeatureConfig> {
         }
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos2;
-            if (!(random.nextFloat() < 0.2f) || world.getBlockState(blockPos2 = pos.offset(direction)).getBlock() != Blocks.WATER) continue;
+            if (!(random.nextFloat() < 0.2f) || !world.getBlockState(blockPos2 = pos.offset(direction)).isOf(Blocks.WATER)) continue;
             BlockState blockState2 = (BlockState)((Block)BlockTags.WALL_CORALS.getRandom(random)).getDefaultState().with(DeadCoralWallFanBlock.FACING, direction);
             world.setBlockState(blockPos2, blockState2, 2);
         }

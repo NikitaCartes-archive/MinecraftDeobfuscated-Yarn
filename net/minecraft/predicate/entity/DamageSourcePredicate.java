@@ -78,11 +78,11 @@ public class DamageSourcePredicate {
         return this.sourceEntity.test(world, pos, damageSource.getAttacker());
     }
 
-    public static DamageSourcePredicate deserialize(@Nullable JsonElement element) {
-        if (element == null || element.isJsonNull()) {
+    public static DamageSourcePredicate fromJson(@Nullable JsonElement json) {
+        if (json == null || json.isJsonNull()) {
             return EMPTY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(element, "damage type");
+        JsonObject jsonObject = JsonHelper.asObject(json, "damage type");
         Boolean boolean_ = DamageSourcePredicate.getBoolean(jsonObject, "is_projectile");
         Boolean boolean2 = DamageSourcePredicate.getBoolean(jsonObject, "is_explosion");
         Boolean boolean3 = DamageSourcePredicate.getBoolean(jsonObject, "bypasses_armor");
@@ -101,7 +101,7 @@ public class DamageSourcePredicate {
         return obj.has(name) ? Boolean.valueOf(JsonHelper.getBoolean(obj, name)) : null;
     }
 
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         if (this == EMPTY) {
             return JsonNull.INSTANCE;
         }

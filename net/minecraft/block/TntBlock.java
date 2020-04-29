@@ -39,7 +39,7 @@ extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (oldState.getBlock() == state.getBlock()) {
+        if (oldState.isOf(state.getBlock())) {
             return;
         }
         if (world.isReceivingRedstonePower(pos)) {

@@ -3,13 +3,13 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.DistancePredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -26,20 +26,20 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("entered"));
         LocationPredicate locationPredicate2 = LocationPredicate.fromJson(jsonObject.get("exited"));
-        DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
-        return new Conditions(locationPredicate, locationPredicate2, distancePredicate);
+        DistancePredicate distancePredicate = DistancePredicate.fromJson(jsonObject.get("distance"));
+        return new Conditions(extended, locationPredicate, locationPredicate2, distancePredicate);
     }
 
     public void trigger(ServerPlayerEntity player, Vec3d enteredPos) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player.getServerWorld(), enteredPos, player.getX(), player.getY(), player.getZ()));
+        this.test(player, conditions -> conditions.matches(player.getServerWorld(), enteredPos, player.getX(), player.getY(), player.getZ()));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
@@ -48,15 +48,15 @@ extends AbstractCriterion<Conditions> {
         private final LocationPredicate exitedPos;
         private final DistancePredicate distance;
 
-        public Conditions(LocationPredicate entered, LocationPredicate exited, DistancePredicate distance) {
-            super(ID);
-            this.enteredPos = entered;
-            this.exitedPos = exited;
+        public Conditions(EntityPredicate.Extended player, LocationPredicate enteredPos, LocationPredicate exitedPos, DistancePredicate distance) {
+            super(ID, player);
+            this.enteredPos = enteredPos;
+            this.exitedPos = exitedPos;
             this.distance = distance;
         }
 
         public static Conditions distance(DistancePredicate distance) {
-            return new Conditions(LocationPredicate.ANY, LocationPredicate.ANY, distance);
+            return new Conditions(EntityPredicate.Extended.EMPTY, LocationPredicate.ANY, LocationPredicate.ANY, distance);
         }
 
         public boolean matches(ServerWorld world, Vec3d enteredPos, double exitedPosX, double exitedPosY, double exitedPosZ) {
@@ -70,8 +70,8 @@ extends AbstractCriterion<Conditions> {
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("entered", this.enteredPos.toJson());
             jsonObject.add("exited", this.exitedPos.toJson());
             jsonObject.add("distance", this.distance.toJson());

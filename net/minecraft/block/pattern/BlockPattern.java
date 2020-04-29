@@ -47,27 +47,27 @@ public class BlockPattern {
     }
 
     @Nullable
-    private Result testTransform(BlockPos frontTopLeft, Direction forwards, Direction up, LoadingCache<BlockPos, CachedBlockPosition> loadingCache) {
+    private Result testTransform(BlockPos frontTopLeft, Direction forwards, Direction up, LoadingCache<BlockPos, CachedBlockPosition> cache) {
         for (int i = 0; i < this.width; ++i) {
             for (int j = 0; j < this.height; ++j) {
                 for (int k = 0; k < this.depth; ++k) {
-                    if (this.pattern[k][j][i].test(loadingCache.getUnchecked(BlockPattern.translate(frontTopLeft, forwards, up, i, j, k)))) continue;
+                    if (this.pattern[k][j][i].test(cache.getUnchecked(BlockPattern.translate(frontTopLeft, forwards, up, i, j, k)))) continue;
                     return null;
                 }
             }
         }
-        return new Result(frontTopLeft, forwards, up, loadingCache, this.width, this.height, this.depth);
+        return new Result(frontTopLeft, forwards, up, cache, this.width, this.height, this.depth);
     }
 
     @Nullable
-    public Result searchAround(WorldView worldView, BlockPos blockPos) {
-        LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(worldView, false);
+    public Result searchAround(WorldView world, BlockPos pos) {
+        LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(world, false);
         int i = Math.max(Math.max(this.width, this.height), this.depth);
-        for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(i - 1, i - 1, i - 1))) {
+        for (BlockPos blockPos : BlockPos.iterate(pos, pos.add(i - 1, i - 1, i - 1))) {
             for (Direction direction : Direction.values()) {
                 for (Direction direction2 : Direction.values()) {
                     Result result;
-                    if (direction2 == direction || direction2 == direction.getOpposite() || (result = this.testTransform(blockPos2, direction, direction2, loadingCache)) == null) continue;
+                    if (direction2 == direction || direction2 == direction.getOpposite() || (result = this.testTransform(blockPos, direction, direction2, loadingCache)) == null) continue;
                     return result;
                 }
             }
@@ -75,8 +75,8 @@ public class BlockPattern {
         return null;
     }
 
-    public static LoadingCache<BlockPos, CachedBlockPosition> makeCache(WorldView worldView, boolean bl) {
-        return CacheBuilder.newBuilder().build(new BlockStateCacheLoader(worldView, bl));
+    public static LoadingCache<BlockPos, CachedBlockPosition> makeCache(WorldView world, boolean forceLoad) {
+        return CacheBuilder.newBuilder().build(new BlockStateCacheLoader(world, forceLoad));
     }
 
     protected static BlockPos translate(BlockPos pos, Direction forwards, Direction up, int offsetLeft, int offsetDown, int offsetForwards) {
@@ -110,11 +110,11 @@ public class BlockPattern {
         private final int height;
         private final int depth;
 
-        public Result(BlockPos frontTopLeft, Direction forwards, Direction up, LoadingCache<BlockPos, CachedBlockPosition> loadingCache, int width, int height, int depth) {
+        public Result(BlockPos frontTopLeft, Direction forwards, Direction up, LoadingCache<BlockPos, CachedBlockPosition> cache, int width, int height, int depth) {
             this.frontTopLeft = frontTopLeft;
             this.forwards = forwards;
             this.up = up;
-            this.cache = loadingCache;
+            this.cache = cache;
             this.width = width;
             this.height = height;
             this.depth = depth;
@@ -192,9 +192,9 @@ public class BlockPattern {
         private final WorldView world;
         private final boolean forceLoad;
 
-        public BlockStateCacheLoader(WorldView worldView, boolean bl) {
-            this.world = worldView;
-            this.forceLoad = bl;
+        public BlockStateCacheLoader(WorldView world, boolean forceLoad) {
+            this.world = world;
+            this.forceLoad = forceLoad;
         }
 
         @Override
@@ -203,8 +203,8 @@ public class BlockPattern {
         }
 
         @Override
-        public /* synthetic */ Object load(Object object) throws Exception {
-            return this.load((BlockPos)object);
+        public /* synthetic */ Object load(Object pos) throws Exception {
+            return this.load((BlockPos)pos);
         }
     }
 }

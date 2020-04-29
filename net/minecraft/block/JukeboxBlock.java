@@ -68,7 +68,7 @@ extends BlockWithEntity {
         if (itemStack.isEmpty()) {
             return;
         }
-        world.playLevelEvent(1010, pos, 0);
+        world.syncWorldEvent(1010, pos, 0);
         jukeboxBlockEntity.clear();
         float f = 0.7f;
         double d = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
@@ -82,7 +82,7 @@ extends BlockWithEntity {
 
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (state.getBlock() == newState.getBlock()) {
+        if (state.isOf(newState.getBlock())) {
             return;
         }
         this.removeRecord(world, pos);

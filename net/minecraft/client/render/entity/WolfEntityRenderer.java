@@ -13,6 +13,7 @@ import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class WolfEntityRenderer
@@ -34,7 +35,7 @@ extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
     @Override
     public void render(WolfEntity wolfEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (wolfEntity.isFurWet()) {
-            float h = wolfEntity.getBrightnessAtEyes() * wolfEntity.getFurWetBrightnessMultiplier(g);
+            float h = MathHelper.clamp(wolfEntity.getBrightnessAtEyes() * wolfEntity.getFurWetBrightnessMultiplier(g), 0.0f, 1.0f);
             ((WolfEntityModel)this.model).setColorMultiplier(h, h, h);
         }
         super.render(wolfEntity, f, g, matrixStack, vertexConsumerProvider, i);

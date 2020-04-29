@@ -3,11 +3,11 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.util.Identifier;
 
 public interface Criterion<T extends CriterionConditions> {
@@ -19,7 +19,7 @@ public interface Criterion<T extends CriterionConditions> {
 
     public void endTracking(PlayerAdvancementTracker var1);
 
-    public T conditionsFromJson(JsonObject var1, JsonDeserializationContext var2);
+    public T conditionsFromJson(JsonObject var1, AdvancementEntityPredicateDeserializer var2);
 
     public static class ConditionsContainer<T extends CriterionConditions> {
         private final T conditions;

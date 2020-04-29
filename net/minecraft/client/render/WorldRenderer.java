@@ -361,7 +361,7 @@ AutoCloseable {
             float m = (float)voxelShape.getEndingCoord(Direction.Axis.Y, g, h);
             float n = fluidState.getHeight(worldView, (BlockPos)blockPos2);
             float o = Math.max(m, n);
-            DefaultParticleType particleEffect = fluidState.matches(FluidTags.LAVA) || blockState.getBlock() == Blocks.MAGMA_BLOCK || CampfireBlock.isLitCampfire(blockState) ? ParticleTypes.SMOKE : ParticleTypes.RAIN;
+            DefaultParticleType particleEffect = fluidState.matches(FluidTags.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState) ? ParticleTypes.SMOKE : ParticleTypes.RAIN;
             this.client.world.addParticle(particleEffect, (float)blockPos2.getX() + g, (float)blockPos2.getY() + o, (float)blockPos2.getZ() + h, 0.0, 0.0, 0.0);
         }
         if (blockPos2 != null && random.nextInt(3) < this.field_20793++) {
@@ -647,7 +647,7 @@ AutoCloseable {
             this.needsTerrainUpdate = false;
             this.visibleChunks.clear();
             ArrayDeque<ChunkInfo> queue = Queues.newArrayDeque();
-            Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5) * (double)this.client.options.field_24214);
+            Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5) * (double)this.client.options.entityDistanceScaling);
             boolean bl = this.client.chunkCullingEnabled;
             if (builtChunk == null) {
                 int j = blockPos.getY() > 0 ? 248 : 8;
@@ -807,7 +807,11 @@ AutoCloseable {
         this.renderLayer(RenderLayer.getSolid(), matrices, d, e, f);
         this.renderLayer(RenderLayer.getCutoutMipped(), matrices, d, e, f);
         this.renderLayer(RenderLayer.getCutout(), matrices, d, e, f);
-        DiffuseLighting.enableForLevel(matrices.peek().getModel());
+        if (this.world.dimension.getType() == DimensionType.THE_NETHER) {
+            DiffuseLighting.enableForLevel(matrices.peek().getModel());
+        } else {
+            DiffuseLighting.method_27869(matrices.peek().getModel());
+        }
         profiler.swap("entities");
         profiler.push("prepare");
         this.regularEntityCount = 0;
@@ -1894,7 +1898,7 @@ AutoCloseable {
     public void method_3267() {
     }
 
-    public void playGlobalEvent(int eventId, BlockPos pos, int i) {
+    public void processGlobalEvent(int eventId, BlockPos pos, int i) {
         switch (eventId) {
             case 1023: 
             case 1028: 
@@ -1926,9 +1930,9 @@ AutoCloseable {
         }
     }
 
-    public void playLevelEvent(PlayerEntity source, int type, BlockPos pos, int data) {
+    public void processWorldEvent(PlayerEntity source, int eventId, BlockPos pos, int data) {
         Random random = this.world.random;
-        switch (type) {
+        switch (eventId) {
             case 1035: {
                 this.world.playSound(pos, SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
                 break;
@@ -2009,7 +2013,7 @@ AutoCloseable {
                 float u = (float)(data >> 16 & 0xFF) / 255.0f;
                 float v = (float)(data >> 8 & 0xFF) / 255.0f;
                 float w = (float)(data >> 0 & 0xFF) / 255.0f;
-                DefaultParticleType particleEffect = type == 2007 ? ParticleTypes.INSTANT_EFFECT : ParticleTypes.EFFECT;
+                DefaultParticleType particleEffect = eventId == 2007 ? ParticleTypes.INSTANT_EFFECT : ParticleTypes.EFFECT;
                 for (int l = 0; l < 100; ++l) {
                     double g = random.nextDouble() * 4.0;
                     double h = random.nextDouble() * Math.PI * 2.0;

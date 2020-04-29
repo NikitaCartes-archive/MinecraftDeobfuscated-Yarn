@@ -65,10 +65,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.class_5217;
 import net.minecraft.class_5218;
 import net.minecraft.class_5219;
+import net.minecraft.class_5268;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
@@ -113,6 +115,7 @@ import net.minecraft.server.world.SecondaryServerWorld;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.RegistryTagManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.LiteralText;
@@ -147,9 +150,16 @@ import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.level.LevelGeneratorOptions;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
@@ -233,7 +243,7 @@ Runnable {
     private final BossBarManager bossBarManager = new BossBarManager(this);
     private final LootConditionManager predicateManager = new LootConditionManager();
     private final LootManager lootManager = new LootManager(this.predicateManager);
-    private final ServerAdvancementLoader advancementLoader = new ServerAdvancementLoader();
+    private final ServerAdvancementLoader advancementLoader = new ServerAdvancementLoader(this.predicateManager);
     private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
     private final MetricsData metricsData = new MetricsData();
     private boolean enforceWhitelist;
@@ -351,7 +361,7 @@ Runnable {
     }
 
     protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
-        class_5217 lv = this.field_24372.method_27437(DimensionType.OVERWORLD);
+        class_5268 lv = this.field_24372.method_27859();
         ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, this.session, lv, DimensionType.OVERWORLD, worldGenerationProgressListener);
         this.worlds.put(DimensionType.OVERWORLD, serverWorld);
         PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
@@ -361,7 +371,7 @@ Runnable {
         ServerWorld serverWorld2 = this.getWorld(DimensionType.OVERWORLD);
         if (!lv.isInitialized()) {
             try {
-                serverWorld2.init(this.field_24372.method_27433().hasBonusChest());
+                MinecraftServer.method_27901(serverWorld2, serverWorld2.dimension, lv, this.field_24372.method_27433().hasBonusChest());
                 lv.setInitialized(true);
                 if (lv.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
                     this.setToDebugWorldProperties(this.field_24372);
@@ -383,14 +393,65 @@ Runnable {
         }
         for (DimensionType dimensionType : DimensionType.getAll()) {
             if (dimensionType == DimensionType.OVERWORLD) continue;
-            this.worlds.put(dimensionType, new SecondaryServerWorld(serverWorld2, this, this.workerExecutor, this.session, dimensionType, worldGenerationProgressListener));
+            this.worlds.put(dimensionType, new SecondaryServerWorld(serverWorld2, this.field_24372.method_27859(), this, this.workerExecutor, this.session, dimensionType, worldGenerationProgressListener));
+        }
+    }
+
+    private static void method_27901(ServerWorld serverWorld, Dimension dimension, class_5268 arg, boolean bl) {
+        ChunkPos chunkPos;
+        ChunkGenerator<?> chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
+        if (!dimension.canPlayersSleep()) {
+            arg.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()));
+            return;
+        }
+        if (arg.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+            arg.setSpawnPos(BlockPos.ORIGIN.up());
+            return;
+        }
+        BiomeSource biomeSource = chunkGenerator.getBiomeSource();
+        List<Biome> list = biomeSource.getSpawnBiomes();
+        Random random = new Random(serverWorld.getSeed());
+        BlockPos blockPos = biomeSource.locateBiome(0, serverWorld.getSeaLevel(), 0, 256, list, random);
+        ChunkPos chunkPos2 = chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
+        if (blockPos == null) {
+            LOGGER.warn("Unable to find spawn biome");
+        }
+        boolean bl2 = false;
+        for (Block block : BlockTags.VALID_SPAWN.values()) {
+            if (!biomeSource.getTopMaterials().contains(block.getDefaultState())) continue;
+            bl2 = true;
+            break;
+        }
+        arg.setSpawnPos(chunkPos.getCenterBlockPos().add(8, chunkGenerator.getSpawnHeight(), 8));
+        int i = 0;
+        int j = 0;
+        int k = 0;
+        int l = -1;
+        int m = 32;
+        for (int n = 0; n < 1024; ++n) {
+            BlockPos blockPos2;
+            if (i > -16 && i <= 16 && j > -16 && j <= 16 && (blockPos2 = dimension.getSpawningBlockInChunk(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl2)) != null) {
+                arg.setSpawnPos(blockPos2);
+                break;
+            }
+            if (i == j || i < 0 && i == -j || i > 0 && i == 1 - j) {
+                int o = k;
+                k = -l;
+                l = o;
+            }
+            i += k;
+            j += l;
+        }
+        if (bl) {
+            ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
+            configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), chunkGenerator, serverWorld.random, new BlockPos(arg.getSpawnX(), arg.getSpawnY(), arg.getSpawnZ()));
         }
     }
 
     private void setToDebugWorldProperties(class_5219 properties) {
         properties.setDifficulty(Difficulty.PEACEFUL);
         properties.setDifficultyLocked(true);
-        class_5217 lv = properties.method_27437(DimensionType.OVERWORLD);
+        class_5268 lv = properties.method_27859();
         lv.setRaining(false);
         lv.setThundering(false);
         lv.setClearWeatherTime(1000000000);
@@ -420,7 +481,7 @@ Runnable {
     private void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
         ServerWorld serverWorld = this.getWorld(DimensionType.OVERWORLD);
         LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
-        BlockPos blockPos = serverWorld.getSpawnPos();
+        BlockPos blockPos = serverWorld.method_27911();
         worldGenerationProgressListener.start(new ChunkPos(blockPos));
         ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
         serverChunkManager.getLightingProvider().setTaskBatchSize(500);
@@ -480,13 +541,13 @@ Runnable {
         boolean bl4 = false;
         for (ServerWorld serverWorld : this.getWorlds()) {
             if (!bl) {
-                LOGGER.info("Saving chunks for level '{}'/{}", (Object)serverWorld.getLevelProperties().getLevelName(), (Object)DimensionType.getId(serverWorld.dimension.getType()));
+                LOGGER.info("Saving chunks for level '{}'/{}", (Object)serverWorld, (Object)DimensionType.getId(serverWorld.dimension.getType()));
             }
             serverWorld.save(null, bl2, serverWorld.savingDisabled && !bl3);
             bl4 = true;
         }
         ServerWorld serverWorld2 = this.getWorld(DimensionType.OVERWORLD);
-        class_5217 lv = serverWorld2.getLevelProperties();
+        class_5268 lv = this.field_24372.method_27859();
         lv.method_27415(serverWorld2.getWorldBorder().method_27355());
         this.field_24372.setCustomBossEvents(this.getBossBarManager().toTag());
         this.session.method_27426(this.field_24372, this.getPlayerManager().getUserData());
@@ -752,7 +813,7 @@ Runnable {
         this.profiler.swap("levels");
         for (ServerWorld serverWorld : this.getWorlds()) {
             if (serverWorld.dimension.getType() != DimensionType.OVERWORLD && !this.isNetherAllowed()) continue;
-            this.profiler.push(() -> serverWorld.getLevelProperties().getLevelName() + " " + Registry.DIMENSION_TYPE.getId(serverWorld.dimension.getType()));
+            this.profiler.push(() -> serverWorld + " " + Registry.DIMENSION_TYPE.getId(serverWorld.dimension.getType()));
             if (this.ticks % 20 == 0) {
                 this.profiler.push("timeSync");
                 this.playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)), serverWorld.dimension.getType());
@@ -1004,6 +1065,10 @@ Runnable {
         this.getPlayerManager().getPlayerList().forEach(this::sendDifficulty);
     }
 
+    public int adjustTrackingDistance(int initialDistance) {
+        return initialDistance;
+    }
+
     private void method_27729() {
         for (ServerWorld serverWorld : this.getWorlds()) {
             serverWorld.setMobSpawnOptions(this.isMonsterSpawningEnabled(), this.shouldSpawnAnimals());
@@ -1063,7 +1128,7 @@ Runnable {
             if (serverWorld == null) continue;
             class_5217 lv = serverWorld.getLevelProperties();
             snooper.addInfo("world[" + i + "][dimension]", serverWorld.dimension.getType());
-            snooper.addInfo("world[" + i + "][mode]", (Object)lv.getGameMode());
+            snooper.addInfo("world[" + i + "][mode]", (Object)this.field_24372.getGameMode());
             snooper.addInfo("world[" + i + "][difficulty]", (Object)serverWorld.getDifficulty());
             snooper.addInfo("world[" + i + "][hardcore]", this.field_24372.isHardcore());
             snooper.addInfo("world[" + i + "][generator_name]", lv.getGeneratorType().getName());
@@ -1184,7 +1249,7 @@ Runnable {
         return 16;
     }
 
-    public boolean isSpawnProtected(World world, BlockPos pos, PlayerEntity player) {
+    public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
         return false;
     }
 
@@ -1194,6 +1259,10 @@ Runnable {
 
     public boolean shouldForceGameMode() {
         return this.forceGameMode;
+    }
+
+    public boolean acceptsStatusQuery() {
+        return true;
     }
 
     public int getPlayerIdleTimeout() {
@@ -1333,7 +1402,7 @@ Runnable {
     }
 
     public ServerCommandSource getCommandSource() {
-        return new ServerCommandSource(this, this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : Vec3d.method_24954(this.getWorld(DimensionType.OVERWORLD).getSpawnPos()), Vec2f.ZERO, this.getWorld(DimensionType.OVERWORLD), 4, "Server", new LiteralText("Server"), this, null);
+        return new ServerCommandSource(this, this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : Vec3d.method_24954(this.getWorld(DimensionType.OVERWORLD).method_27911()), Vec2f.ZERO, this.getWorld(DimensionType.OVERWORLD), 4, "Server", new LiteralText("Server"), this, null);
     }
 
     @Override

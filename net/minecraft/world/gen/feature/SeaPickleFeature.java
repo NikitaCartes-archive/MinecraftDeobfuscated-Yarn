@@ -32,7 +32,7 @@ extends Feature<SeaPickleFeatureConfig> {
             int m = iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
             BlockPos blockPos2 = new BlockPos(blockPos.getX() + k, m, blockPos.getZ() + l);
             BlockState blockState = (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, random.nextInt(4) + 1);
-            if (iWorld.getBlockState(blockPos2).getBlock() != Blocks.WATER || !blockState.canPlaceAt(iWorld, blockPos2)) continue;
+            if (!iWorld.getBlockState(blockPos2).isOf(Blocks.WATER) || !blockState.canPlaceAt(iWorld, blockPos2)) continue;
             iWorld.setBlockState(blockPos2, blockState, 2);
             ++i;
         }

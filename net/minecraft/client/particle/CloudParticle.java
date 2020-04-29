@@ -10,17 +10,17 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class CloudParticle
 extends SpriteBillboardParticle {
     private final SpriteProvider spriteProvider;
 
-    private CloudParticle(World world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
+    private CloudParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         float h;
         this.spriteProvider = spriteProvider;
@@ -88,8 +88,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            CloudParticle particle = new CloudParticle(world, d, e, f, g, h, i, this.spriteProvider);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            CloudParticle particle = new CloudParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
             particle.setColor(200.0f, 50.0f, 120.0f);
             particle.setColorAlpha(0.4f);
             return particle;
@@ -106,8 +106,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new CloudParticle(world, d, e, f, g, h, i, this.spriteProvider);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new CloudParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

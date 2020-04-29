@@ -9,13 +9,13 @@ import net.minecraft.client.particle.AscendingParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class WhiteAshParticle
 extends AscendingParticle {
-    protected WhiteAshParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider) {
+    protected WhiteAshParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider) {
         super(world, x, y, z, 0.1f, -0.1f, 0.1f, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.0f, 20, -5.0E-4, false);
         this.colorRed = 0.7294118f;
         this.colorGreen = 0.69411767f;
@@ -32,8 +32,8 @@ extends AscendingParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new WhiteAshParticle(world, d, e, f, g, h, i, 1.0f, this.spriteProvider);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new WhiteAshParticle(clientWorld, d, e, f, g, h, i, 1.0f, this.spriteProvider);
         }
     }
 }

@@ -125,7 +125,7 @@ extends HorizontalFacingBlock {
             state = (BlockState)state.with(OPEN, true);
             world.setBlockState(pos, state, 10);
         }
-        world.playLevelEvent(player, state.get(OPEN) != false ? 1008 : 1014, pos, 0);
+        world.syncWorldEvent(player, state.get(OPEN) != false ? 1008 : 1014, pos, 0);
         return ActionResult.SUCCESS;
     }
 
@@ -138,7 +138,7 @@ extends HorizontalFacingBlock {
         if (state.get(POWERED) != bl) {
             world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), 2);
             if (state.get(OPEN) != bl) {
-                world.playLevelEvent(null, bl ? 1008 : 1014, pos, 0);
+                world.syncWorldEvent(null, bl ? 1008 : 1014, pos, 0);
             }
         }
     }

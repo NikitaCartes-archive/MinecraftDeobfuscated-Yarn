@@ -95,7 +95,7 @@ implements AutoCloseable {
     }
 
     public Glyph getGlyph(int i2) {
-        return this.glyphCache.computeIfAbsent(i2, i -> i == 32 ? SPACE : this.getRenderableGlyph((char)i));
+        return this.glyphCache.computeIfAbsent(i2, i -> i == 32 ? SPACE : this.getRenderableGlyph(i));
     }
 
     private RenderableGlyph getRenderableGlyph(int i) {

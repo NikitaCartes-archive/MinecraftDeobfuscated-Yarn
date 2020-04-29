@@ -133,7 +133,7 @@ extends BlockEntity {
         }
         BlockPos blockPos = this.getPos();
         BlockState blockState = this.world.getBlockState(blockPos);
-        if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
+        if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
             this.world.setBlockState(blockPos, (BlockState)blockState.with(StructureBlock.MODE, this.mode), 2);
         }
     }
@@ -233,7 +233,7 @@ extends BlockEntity {
     public void setMode(StructureBlockMode mode) {
         this.mode = mode;
         BlockState blockState = this.world.getBlockState(this.getPos());
-        if (blockState.getBlock() == Blocks.STRUCTURE_BLOCK) {
+        if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
             this.world.setBlockState(this.getPos(), (BlockState)blockState.with(StructureBlock.MODE, mode), 2);
         }
     }
@@ -321,7 +321,7 @@ extends BlockEntity {
         for (BlockPos blockPos : BlockPos.iterate(pos1, pos2)) {
             BlockEntity blockEntity;
             BlockState blockState = this.world.getBlockState(blockPos);
-            if (blockState.getBlock() != Blocks.STRUCTURE_BLOCK || (blockEntity = this.world.getBlockEntity(blockPos)) == null || !(blockEntity instanceof StructureBlockBlockEntity)) continue;
+            if (!blockState.isOf(Blocks.STRUCTURE_BLOCK) || (blockEntity = this.world.getBlockEntity(blockPos)) == null || !(blockEntity instanceof StructureBlockBlockEntity)) continue;
             list.add((StructureBlockBlockEntity)blockEntity);
         }
         return list;

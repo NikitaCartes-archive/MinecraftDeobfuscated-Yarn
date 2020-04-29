@@ -493,6 +493,7 @@ extends LivingEntity {
                 this.dropStack(itemStack);
             }
             this.equipLootStack(equipmentSlot, equipment);
+            this.onEquipStack(equipment);
             return true;
         }
         return false;
@@ -590,7 +591,7 @@ extends LivingEntity {
     }
 
     public boolean cannotDespawn() {
-        return false;
+        return this.hasVehicle();
     }
 
     protected boolean isDisallowedInPeaceful() {
@@ -612,10 +613,10 @@ extends LivingEntity {
             int i;
             int j;
             double d = entity.squaredDistanceTo(this);
-            if (d > (double)(j = (i = this.getType().method_24908()) * i) && this.canImmediatelyDespawn(d)) {
+            if (d > (double)(j = (i = this.getType().getImmediateDespawnRange()) * i) && this.canImmediatelyDespawn(d)) {
                 this.remove();
             }
-            int k = this.getType().method_24909();
+            int k = this.getType().getDespawnStartRange();
             int l = k * k;
             if (this.despawnCounter > 600 && this.random.nextInt(800) == 0 && d > (double)l && this.canImmediatelyDespawn(d)) {
                 this.remove();

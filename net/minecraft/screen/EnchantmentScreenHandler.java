@@ -112,23 +112,23 @@ extends ScreenHandler {
                     for (j = -1; j <= 1; ++j) {
                         for (int k = -1; k <= 1; ++k) {
                             if (j == 0 && k == 0 || !world.isAir(blockPos.add(k, 0, j)) || !world.isAir(blockPos.add(k, 1, j))) continue;
-                            if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).getBlock() == Blocks.BOOKSHELF) {
+                            if (world.getBlockState(blockPos.add(k * 2, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
-                            if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).getBlock() == Blocks.BOOKSHELF) {
+                            if (world.getBlockState(blockPos.add(k * 2, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
                             if (k == 0 || j == 0) continue;
-                            if (world.getBlockState(blockPos.add(k * 2, 0, j)).getBlock() == Blocks.BOOKSHELF) {
+                            if (world.getBlockState(blockPos.add(k * 2, 0, j)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
-                            if (world.getBlockState(blockPos.add(k * 2, 1, j)).getBlock() == Blocks.BOOKSHELF) {
+                            if (world.getBlockState(blockPos.add(k * 2, 1, j)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
-                            if (world.getBlockState(blockPos.add(k, 0, j * 2)).getBlock() == Blocks.BOOKSHELF) {
+                            if (world.getBlockState(blockPos.add(k, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
                                 ++i;
                             }
-                            if (world.getBlockState(blockPos.add(k, 1, j * 2)).getBlock() != Blocks.BOOKSHELF) continue;
+                            if (!world.getBlockState(blockPos.add(k, 1, j * 2)).isOf(Blocks.BOOKSHELF)) continue;
                             ++i;
                         }
                     }

@@ -45,6 +45,7 @@ import net.minecraft.entity.mob.Hoglin;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -200,7 +201,9 @@ Hoglin {
     @Override
     public void setBaby(boolean baby) {
         this.getDataTracker().set(BABY, baby);
-        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
+        if (!this.world.isClient && baby) {
+            this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5);
+        }
     }
 
     @Override
@@ -266,6 +269,22 @@ Hoglin {
     @Override
     public EntityGroup getGroup() {
         return EntityGroup.UNDEAD;
+    }
+
+    @Override
+    public void writeCustomDataToTag(CompoundTag tag) {
+        super.writeCustomDataToTag(tag);
+        if (this.isBaby()) {
+            tag.putBoolean("IsBaby", true);
+        }
+    }
+
+    @Override
+    public void readCustomDataFromTag(CompoundTag tag) {
+        super.readCustomDataFromTag(tag);
+        if (tag.getBoolean("IsBaby")) {
+            this.setBaby(true);
+        }
     }
 }
 

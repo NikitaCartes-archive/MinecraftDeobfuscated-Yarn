@@ -60,10 +60,10 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderDirtBackground(0);
-        this.method_27534(matrices, this.textRenderer, header, this.width / 2, 30, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, header, this.width / 2, 30, 0xFFFFFF);
         int i = 70;
         for (Text text : this.lines) {
-            this.method_27534(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
+            this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
             i += this.textRenderer.fontHeight;
         }
         super.render(matrices, mouseX, mouseY, delta);

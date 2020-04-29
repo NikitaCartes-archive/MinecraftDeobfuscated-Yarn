@@ -84,7 +84,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     @Override
     @Nullable
     public BlockPos locateStructure(ServerWorld serverWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks) {
-        if (!chunkGenerator.method_27367(this)) {
+        if (!chunkGenerator.hasStructure(this)) {
             return null;
         }
         if (this.lastSeed != serverWorld.getSeed()) {

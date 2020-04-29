@@ -3,14 +3,14 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -24,31 +24,31 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));
-        return new Conditions(intRange);
+        return new Conditions(extended, intRange);
     }
 
     public void trigger(ServerPlayerEntity player, BeaconBlockEntity beacon) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(beacon));
+        this.test(player, conditions -> conditions.matches(beacon));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final NumberRange.IntRange level;
 
-        public Conditions(NumberRange.IntRange level) {
-            super(ID);
+        public Conditions(EntityPredicate.Extended player, NumberRange.IntRange level) {
+            super(ID, player);
             this.level = level;
         }
 
-        public static Conditions level(NumberRange.IntRange intRange) {
-            return new Conditions(intRange);
+        public static Conditions level(NumberRange.IntRange level) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, level);
         }
 
         public boolean matches(BeaconBlockEntity beacon) {
@@ -56,8 +56,8 @@ extends AbstractCriterion<Conditions> {
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("level", this.level.toJson());
             return jsonObject;
         }

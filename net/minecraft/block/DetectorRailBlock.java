@@ -121,7 +121,7 @@ extends AbstractRailBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (oldState.getBlock() == state.getBlock()) {
+        if (oldState.isOf(state.getBlock())) {
             return;
         }
         this.updatePoweredStatus(world, pos, this.method_24417(state, world, pos, notify));

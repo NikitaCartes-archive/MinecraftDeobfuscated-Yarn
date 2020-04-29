@@ -12,6 +12,7 @@ import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.collection.ReusableStream;
 import net.minecraft.util.math.BlockPos;
@@ -19,12 +20,11 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class Particle {
     private static final Box EMPTY_BOUNDING_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    protected final World world;
+    protected final ClientWorld world;
     protected double prevPosX;
     protected double prevPosY;
     protected double prevPosZ;
@@ -52,7 +52,7 @@ public abstract class Particle {
     protected float angle;
     protected float prevAngle;
 
-    protected Particle(World world, double x, double y, double z) {
+    protected Particle(ClientWorld world, double x, double y, double z) {
         this.world = world;
         this.setBoundingBoxSpacing(0.2f, 0.2f);
         this.setPos(x, y, z);
@@ -62,7 +62,7 @@ public abstract class Particle {
         this.maxAge = (int)(4.0f / (this.random.nextFloat() * 0.9f + 0.1f));
     }
 
-    public Particle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    public Particle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         this(world, x, y, z);
         this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * (double)0.4f;
         this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * (double)0.4f;

@@ -77,11 +77,11 @@ extends BlockEntityRenderer<SignBlockEntity> {
         int q = 20;
         for (int r = 0; r < 4; ++r) {
             Text text2 = signBlockEntity.getTextBeingEditedOnRow(r, text -> {
-                List<Text> list = textRenderer.getTextHandler().wrapLines((Text)text, 90, Style.EMPTY, true);
+                List<Text> list = textRenderer.getTextHandler().wrapLines((Text)text, 90, Style.EMPTY);
                 return list.isEmpty() ? LiteralText.EMPTY : list.get(0);
             });
             if (text2 == null) continue;
-            float s = -textRenderer.getWidth(text2) / 2;
+            float s = -textRenderer.getStringWidth(text2) / 2;
             textRenderer.draw(text2, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
         }
         matrixStack.pop();

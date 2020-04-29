@@ -159,13 +159,12 @@ extends LivingEntity {
     @Nullable
     public FishingBobberEntity fishHook;
 
-    public PlayerEntity(World world, GameProfile profile) {
+    public PlayerEntity(World world, BlockPos blockPos, GameProfile gameProfile) {
         super((EntityType<? extends LivingEntity>)EntityType.PLAYER, world);
-        this.setUuid(PlayerEntity.getUuidFromProfile(profile));
-        this.gameProfile = profile;
+        this.setUuid(PlayerEntity.getUuidFromProfile(gameProfile));
+        this.gameProfile = gameProfile;
         this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
         this.currentScreenHandler = this.playerScreenHandler;
-        BlockPos blockPos = world.getSpawnPos();
         this.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY() + 1, (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
         this.field_6215 = 180.0f;
     }
@@ -1153,7 +1152,7 @@ extends LivingEntity {
             }
             return optional;
         }
-        if (block instanceof BedBlock && BedBlock.method_27352(world, pos)) {
+        if (block instanceof BedBlock && BedBlock.isOverworld(world, pos)) {
             return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, 0);
         }
         if (!bl) {

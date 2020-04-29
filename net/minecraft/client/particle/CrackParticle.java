@@ -10,11 +10,11 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ItemStackParticleEffect;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class CrackParticle
@@ -22,8 +22,8 @@ extends SpriteBillboardParticle {
     private final float sampleU;
     private final float sampleV;
 
-    private CrackParticle(World world, double x, double y, double z, double d, double e, double f, ItemStack itemStack) {
-        this(world, x, y, z, itemStack);
+    private CrackParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, ItemStack stack) {
+        this(world, x, y, z, stack);
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
@@ -37,9 +37,9 @@ extends SpriteBillboardParticle {
         return ParticleTextureSheet.TERRAIN_SHEET;
     }
 
-    protected CrackParticle(World world, double d, double e, double f, ItemStack itemStack) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
-        this.setSprite(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(itemStack, world, null).getSprite());
+    protected CrackParticle(ClientWorld world, double x, double y, double z, ItemStack stack) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
+        this.setSprite(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(stack, world, null).getSprite());
         this.gravityStrength = 1.0f;
         this.scale /= 2.0f;
         this.sampleU = this.random.nextFloat() * 3.0f;
@@ -70,8 +70,8 @@ extends SpriteBillboardParticle {
     public static class SnowballFactory
     implements ParticleFactory<DefaultParticleType> {
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new CrackParticle(world, d, e, f, new ItemStack(Items.SNOWBALL));
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new CrackParticle(clientWorld, d, e, f, new ItemStack(Items.SNOWBALL));
         }
     }
 
@@ -79,8 +79,8 @@ extends SpriteBillboardParticle {
     public static class SlimeballFactory
     implements ParticleFactory<DefaultParticleType> {
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new CrackParticle(world, d, e, f, new ItemStack(Items.SLIME_BALL));
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new CrackParticle(clientWorld, d, e, f, new ItemStack(Items.SLIME_BALL));
         }
     }
 
@@ -88,8 +88,8 @@ extends SpriteBillboardParticle {
     public static class ItemFactory
     implements ParticleFactory<ItemStackParticleEffect> {
         @Override
-        public Particle createParticle(ItemStackParticleEffect itemStackParticleEffect, World world, double d, double e, double f, double g, double h, double i) {
-            return new CrackParticle(world, d, e, f, g, h, i, itemStackParticleEffect.getItemStack());
+        public Particle createParticle(ItemStackParticleEffect itemStackParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new CrackParticle(clientWorld, d, e, f, g, h, i, itemStackParticleEffect.getItemStack());
         }
     }
 }

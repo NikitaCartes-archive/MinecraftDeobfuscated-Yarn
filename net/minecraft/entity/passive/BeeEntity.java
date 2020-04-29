@@ -706,7 +706,7 @@ implements Flutterer {
                     intProperty = SweetBerryBushBlock.AGE;
                 }
                 if (!bl) continue;
-                BeeEntity.this.world.playLevelEvent(2005, blockPos, 0);
+                BeeEntity.this.world.syncWorldEvent(2005, blockPos, 0);
                 BeeEntity.this.world.setBlockState(blockPos, (BlockState)blockState.with(intProperty, blockState.get(intProperty) + 1));
                 BeeEntity.this.addCropCounter();
             }
@@ -764,7 +764,7 @@ implements Flutterer {
         PollinateGoal() {
             this.flowerPredicate = blockState -> {
                 if (blockState.isIn(BlockTags.TALL_FLOWERS)) {
-                    if (blockState.getBlock() == Blocks.SUNFLOWER) {
+                    if (blockState.isOf(Blocks.SUNFLOWER)) {
                         return blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;
                     }
                     return true;

@@ -142,7 +142,7 @@ implements AutoCloseable {
                 if (mapIcon.getText() != null) {
                     TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
                     Text text = mapIcon.getText();
-                    float p = textRenderer.getWidth(text);
+                    float p = textRenderer.getStringWidth(text);
                     float f2 = 25.0f / p;
                     textRenderer.getClass();
                     float q = MathHelper.clamp(f2, 0.0f, 6.0f / 9.0f);

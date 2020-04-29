@@ -114,7 +114,7 @@ extends GameOptionsScreen {
         this.renderDirtBackground(0);
         this.availablePacks.render(matrices, mouseX, mouseY, delta);
         this.enabledPacks.render(matrices, mouseX, mouseY, delta);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("resourcePack.folderInfo", new Object[0]), this.width / 2 - 77, this.height - 26, 0x808080);
         super.render(matrices, mouseX, mouseY, delta);
     }

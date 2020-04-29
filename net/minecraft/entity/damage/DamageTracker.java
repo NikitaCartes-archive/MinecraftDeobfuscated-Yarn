@@ -6,7 +6,7 @@ package net.minecraft.entity.damage;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -38,8 +38,8 @@ public class DamageTracker {
         this.clearFallDeathSuffix();
         Optional<BlockPos> optional = this.entity.method_24832();
         if (optional.isPresent()) {
-            Block block = this.entity.world.getBlockState(optional.get()).getBlock();
-            this.fallDeathSuffix = block == Blocks.LADDER || block.isIn(BlockTags.TRAPDOORS) ? "ladder" : (block == Blocks.VINE ? "vines" : (block == Blocks.WEEPING_VINES || block == Blocks.WEEPING_VINES_PLANT ? "weeping_vines" : (block == Blocks.TWISTING_VINES || block == Blocks.TWISTING_VINES_PLANT ? "twisting_vines" : (block == Blocks.SCAFFOLDING ? "scaffolding" : "other_climbable"))));
+            BlockState blockState = this.entity.world.getBlockState(optional.get());
+            this.fallDeathSuffix = blockState.isOf(Blocks.LADDER) || blockState.isIn(BlockTags.TRAPDOORS) ? "ladder" : (blockState.isOf(Blocks.VINE) ? "vines" : (blockState.isOf(Blocks.WEEPING_VINES) || blockState.isOf(Blocks.WEEPING_VINES_PLANT) ? "weeping_vines" : (blockState.isOf(Blocks.TWISTING_VINES) || blockState.isOf(Blocks.TWISTING_VINES_PLANT) ? "twisting_vines" : (blockState.isOf(Blocks.SCAFFOLDING) ? "scaffolding" : "other_climbable"))));
         } else if (this.entity.isTouchingWater()) {
             this.fallDeathSuffix = "water";
         }

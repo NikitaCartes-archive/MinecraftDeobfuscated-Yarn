@@ -285,7 +285,7 @@ extends BlockWithEntity {
         return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
     }
 
-    public static Direction method_26978(Random random) {
+    public static Direction getRandomGenerationDirection(Random random) {
         return Util.getRandom(GENERATE_DIRECTIONS, random);
     }
 }

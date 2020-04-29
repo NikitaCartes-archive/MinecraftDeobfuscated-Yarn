@@ -63,7 +63,7 @@ public class GameOptions {
     private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
     public double mouseSensitivity = 0.5;
     public int viewDistance = -1;
-    public float field_24214 = 1.0f;
+    public float entityDistanceScaling = 1.0f;
     public int maxFps = 120;
     public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
     public boolean fancyGraphics = true;
@@ -299,7 +299,7 @@ public class GameOptions {
                         this.viewDistance = Integer.parseInt(string22);
                     }
                     if ("entityDistanceScaling".equals(string2)) {
-                        this.field_24214 = Float.parseFloat(string22);
+                        this.entityDistanceScaling = Float.parseFloat(string22);
                     }
                     if ("guiScale".equals(string2)) {
                         this.guiScale = Integer.parseInt(string22);
@@ -501,7 +501,7 @@ public class GameOptions {
             printWriter.println("fov:" + (this.fov - 70.0) / 40.0);
             printWriter.println("gamma:" + this.gamma);
             printWriter.println("renderDistance:" + this.viewDistance);
-            printWriter.println("entityDistanceScaling:" + this.field_24214);
+            printWriter.println("entityDistanceScaling:" + this.entityDistanceScaling);
             printWriter.println("guiScale:" + this.guiScale);
             printWriter.println("particles:" + this.particles.getId());
             printWriter.println("maxFps:" + this.maxFps);

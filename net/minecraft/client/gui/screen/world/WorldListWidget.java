@@ -195,6 +195,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                         this.screen.setTooltip(this.client.textRenderer.wrapLines(text2, 175));
                     }
                 } else if (this.level.isDifferentVersion()) {
+                    DrawableHelper.drawTexture(matrices, width, y, 32.0f, k, 32, 32, 256, 256);
                     if (this.level.isLegacyCustomizedWorld()) {
                         DrawableHelper.drawTexture(matrices, width, y, 96.0f, k, 32, 32, 256, 256);
                         if (bl2) {

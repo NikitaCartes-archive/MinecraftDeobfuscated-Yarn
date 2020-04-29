@@ -13,8 +13,8 @@ public class ButtonWidget
 extends AbstractPressableButtonWidget {
     protected final PressAction onPress;
 
-    public ButtonWidget(int x, int y, int width, int height, Text text, PressAction onPress) {
-        super(x, y, width, height, text);
+    public ButtonWidget(int x, int y, int width, int height, Text message, PressAction onPress) {
+        super(x, y, width, height, message);
         this.onPress = onPress;
     }
 

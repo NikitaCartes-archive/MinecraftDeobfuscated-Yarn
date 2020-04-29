@@ -19,7 +19,7 @@ extends Block {
     @Override
     @Environment(value=EnvType.CLIENT)
     public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
-        if (stateFrom.getBlock() == this) {
+        if (stateFrom.isOf(this)) {
             return true;
         }
         return super.isSideInvisible(state, stateFrom, direction);

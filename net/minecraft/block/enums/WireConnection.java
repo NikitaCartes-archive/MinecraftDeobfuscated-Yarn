@@ -25,5 +25,9 @@ public enum WireConnection implements StringIdentifiable
     public String asString() {
         return this.name;
     }
+
+    public boolean isConnected() {
+        return this != NONE;
+    }
 }
 

@@ -16,30 +16,30 @@ import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.client.render.model.json.ModelItemOverride;
+import net.minecraft.client.render.model.json.ModelOverride;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class ModelItemPropertyOverrideList {
-    public static final ModelItemPropertyOverrideList EMPTY = new ModelItemPropertyOverrideList();
-    private final List<ModelItemOverride> overrides = Lists.newArrayList();
+public class ModelOverrideList {
+    public static final ModelOverrideList EMPTY = new ModelOverrideList();
+    private final List<ModelOverride> overrides = Lists.newArrayList();
     private final List<BakedModel> models;
 
-    private ModelItemPropertyOverrideList() {
+    private ModelOverrideList() {
         this.models = Collections.emptyList();
     }
 
-    public ModelItemPropertyOverrideList(ModelLoader modelLoader, JsonUnbakedModel unbakedModel, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelItemOverride> overrides) {
-        this.models = overrides.stream().map(modelItemOverride -> {
-            UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(modelItemOverride.getModelId());
+    public ModelOverrideList(ModelLoader modelLoader, JsonUnbakedModel unbakedModel, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides) {
+        this.models = overrides.stream().map(modelOverride -> {
+            UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
             if (Objects.equals(unbakedModel, unbakedModel)) {
                 return null;
             }
-            return modelLoader.bake(modelItemOverride.getModelId(), ModelRotation.X0_Y0);
+            return modelLoader.bake(modelOverride.getModelId(), ModelRotation.X0_Y0);
         }).collect(Collectors.toList());
         Collections.reverse(this.models);
         for (int i = overrides.size() - 1; i >= 0; --i) {
@@ -48,11 +48,11 @@ public class ModelItemPropertyOverrideList {
     }
 
     @Nullable
-    public BakedModel apply(BakedModel model, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+    public BakedModel apply(BakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
         if (!this.overrides.isEmpty()) {
             for (int i = 0; i < this.overrides.size(); ++i) {
-                ModelItemOverride modelItemOverride = this.overrides.get(i);
-                if (!modelItemOverride.matches(stack, world, entity)) continue;
+                ModelOverride modelOverride = this.overrides.get(i);
+                if (!modelOverride.matches(stack, world, entity)) continue;
                 BakedModel bakedModel = this.models.get(i);
                 if (bakedModel == null) {
                     return model;

@@ -72,7 +72,7 @@ extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (oldState.getBlock() == state.getBlock()) {
+        if (oldState.isOf(state.getBlock())) {
             return;
         }
         this.update(world, pos, state);
@@ -80,7 +80,7 @@ extends Block {
 
     @Override
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (notify || state.getBlock() == newState.getBlock()) {
+        if (notify || state.isOf(newState.getBlock())) {
             return;
         }
         this.update(world, pos, (BlockState)state.with(POWERED, true));
@@ -99,12 +99,12 @@ extends Block {
             for (int i = 1; i < 42; ++i) {
                 BlockPos blockPos = pos.offset(direction, i);
                 BlockState blockState = world.getBlockState(blockPos);
-                if (blockState.getBlock() == this.hookBlock) {
+                if (blockState.isOf(this.hookBlock)) {
                     if (blockState.get(TripwireHookBlock.FACING) != direction.getOpposite()) continue block0;
                     this.hookBlock.update(world, blockPos, blockState, false, true, i, state);
                     continue block0;
                 }
-                if (blockState.getBlock() != this) continue block0;
+                if (!blockState.isOf(this)) continue block0;
             }
         }
     }

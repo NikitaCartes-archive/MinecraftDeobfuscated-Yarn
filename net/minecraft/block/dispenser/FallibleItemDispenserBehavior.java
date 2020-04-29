@@ -12,7 +12,7 @@ extends ItemDispenserBehavior {
 
     @Override
     protected void playSound(BlockPointer pointer) {
-        pointer.getWorld().playLevelEvent(this.success ? 1000 : 1001, pointer.getBlockPos(), 0);
+        pointer.getWorld().syncWorldEvent(this.success ? 1000 : 1001, pointer.getBlockPos(), 0);
     }
 }
 

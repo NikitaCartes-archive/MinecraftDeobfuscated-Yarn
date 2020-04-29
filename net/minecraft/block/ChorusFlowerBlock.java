@@ -109,12 +109,12 @@ extends Block {
 
     private void grow(World world, BlockPos pos, int age) {
         world.setBlockState(pos, (BlockState)this.getDefaultState().with(AGE, age), 2);
-        world.playLevelEvent(1033, pos, 0);
+        world.syncWorldEvent(1033, pos, 0);
     }
 
     private void die(World world, BlockPos pos) {
         world.setBlockState(pos, (BlockState)this.getDefaultState().with(AGE, 5), 2);
-        world.playLevelEvent(1034, pos, 0);
+        world.syncWorldEvent(1034, pos, 0);
     }
 
     private static boolean isSurroundedByAir(WorldView worldView, BlockPos pos, @Nullable Direction exceptDirection) {
@@ -136,8 +136,7 @@ extends Block {
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos.down());
-        Block block = blockState.getBlock();
-        if (block == this.plantBlock || block == Blocks.END_STONE) {
+        if (blockState.getBlock() == this.plantBlock || blockState.isOf(Blocks.END_STONE)) {
             return true;
         }
         if (!blockState.isAir()) {
@@ -146,7 +145,7 @@ extends Block {
         boolean bl = false;
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockState blockState2 = world.getBlockState(pos.offset(direction));
-            if (blockState2.getBlock() == this.plantBlock) {
+            if (blockState2.isOf(this.plantBlock)) {
                 if (bl) {
                     return false;
                 }

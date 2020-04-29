@@ -3,14 +3,14 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.DamagePredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -24,31 +24,31 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        DamagePredicate damagePredicate = DamagePredicate.deserialize(jsonObject.get("damage"));
-        return new Conditions(damagePredicate);
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
+        DamagePredicate damagePredicate = DamagePredicate.fromJson(jsonObject.get("damage"));
+        return new Conditions(extended, damagePredicate);
     }
 
     public void trigger(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(player, source, dealt, taken, blocked));
+        this.test(player, conditions -> conditions.matches(player, source, dealt, taken, blocked));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final DamagePredicate damage;
 
-        public Conditions(DamagePredicate damage) {
-            super(ID);
+        public Conditions(EntityPredicate.Extended player, DamagePredicate damage) {
+            super(ID, player);
             this.damage = damage;
         }
 
-        public static Conditions create(DamagePredicate.Builder builder) {
-            return new Conditions(builder.build());
+        public static Conditions create(DamagePredicate.Builder damageBuilder) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, damageBuilder.build());
         }
 
         public boolean matches(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
@@ -56,9 +56,9 @@ extends AbstractCriterion<Conditions> {
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add("damage", this.damage.serialize());
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
+            jsonObject.add("damage", this.damage.toJson());
             return jsonObject;
         }
     }

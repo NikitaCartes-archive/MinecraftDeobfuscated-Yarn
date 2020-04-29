@@ -9,14 +9,14 @@ import net.minecraft.client.particle.AnimatedParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class SquidInkParticle
 extends AnimatedParticle {
-    private SquidInkParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+    private SquidInkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z, spriteProvider, 0.0f);
         this.scale = 0.5f;
         this.setColorAlpha(1.0f);
@@ -66,8 +66,8 @@ extends AnimatedParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new SquidInkParticle(world, d, e, f, g, h, i, this.spriteProvider);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new SquidInkParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 }

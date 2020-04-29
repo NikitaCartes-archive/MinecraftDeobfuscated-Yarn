@@ -204,7 +204,7 @@ implements Monster {
             Direction direction;
             BlockState blockState = this.world.getBlockState(blockPos);
             if (!blockState.isAir()) {
-                if (blockState.getBlock() == Blocks.MOVING_PISTON) {
+                if (blockState.isOf(Blocks.MOVING_PISTON)) {
                     direction = blockState.get(PistonBlock.FACING);
                     if (this.world.isAir(blockPos.offset(direction))) {
                         blockPos = blockPos.offset(direction);
@@ -212,7 +212,7 @@ implements Monster {
                     } else {
                         this.method_7127();
                     }
-                } else if (blockState.getBlock() == Blocks.PISTON_HEAD) {
+                } else if (blockState.isOf(Blocks.PISTON_HEAD)) {
                     direction = blockState.get(PistonHeadBlock.FACING);
                     if (this.world.isAir(blockPos.offset(direction))) {
                         blockPos = blockPos.offset(direction);

@@ -47,8 +47,8 @@ public class AdvancementManager {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void removeAll(Set<Identifier> set) {
-        for (Identifier identifier : set) {
+    public void removeAll(Set<Identifier> advancements) {
+        for (Identifier identifier : advancements) {
             Advancement advancement = this.advancements.get(identifier);
             if (advancement == null) {
                 LOGGER.warn("Told to remove advancement {} but I don't know what that is", (Object)identifier);
@@ -109,8 +109,8 @@ public class AdvancementManager {
     }
 
     @Nullable
-    public Advancement get(Identifier identifier) {
-        return this.advancements.get(identifier);
+    public Advancement get(Identifier id) {
+        return this.advancements.get(id);
     }
 
     @Environment(value=EnvType.CLIENT)

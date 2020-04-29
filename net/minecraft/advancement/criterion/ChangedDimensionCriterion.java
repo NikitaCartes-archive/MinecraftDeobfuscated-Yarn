@@ -3,12 +3,12 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -25,19 +25,19 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         DimensionType dimensionType = jsonObject.has("from") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
         DimensionType dimensionType2 = jsonObject.has("to") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
-        return new Conditions(dimensionType, dimensionType2);
+        return new Conditions(extended, dimensionType, dimensionType2);
     }
 
     public void trigger(ServerPlayerEntity player, DimensionType from, DimensionType to) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.matches(from, to));
+        this.test(player, conditions -> conditions.matches(from, to));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
@@ -47,14 +47,14 @@ extends AbstractCriterion<Conditions> {
         @Nullable
         private final DimensionType to;
 
-        public Conditions(@Nullable DimensionType from, @Nullable DimensionType to) {
-            super(ID);
+        public Conditions(EntityPredicate.Extended player, @Nullable DimensionType from, @Nullable DimensionType to) {
+            super(ID, player);
             this.from = from;
             this.to = to;
         }
 
         public static Conditions to(DimensionType to) {
-            return new Conditions(null, to);
+            return new Conditions(EntityPredicate.Extended.EMPTY, null, to);
         }
 
         public boolean matches(DimensionType from, DimensionType to) {
@@ -65,8 +65,8 @@ extends AbstractCriterion<Conditions> {
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
             if (this.from != null) {
                 jsonObject.addProperty("from", DimensionType.getId(this.from).toString());
             }

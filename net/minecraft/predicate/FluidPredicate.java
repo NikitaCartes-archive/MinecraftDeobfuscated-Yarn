@@ -82,7 +82,7 @@ public class FluidPredicate {
             jsonObject.addProperty("fluid", Registry.FLUID.getId(this.fluid).toString());
         }
         if (this.tag != null) {
-            jsonObject.addProperty("tag", FluidTags.getContainer().method_26798(this.tag).toString());
+            jsonObject.addProperty("tag", FluidTags.getContainer().checkId(this.tag).toString());
         }
         jsonObject.add("state", this.state.toJson());
         return jsonObject;

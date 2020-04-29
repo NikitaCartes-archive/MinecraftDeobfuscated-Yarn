@@ -440,7 +440,7 @@ extends Screen {
         String string;
         this.renderBackground(matrices);
         StructureBlockMode structureBlockMode = this.structureBlock.getMode();
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
         if (structureBlockMode != StructureBlockMode.DATA) {
             this.drawString(matrices, this.textRenderer, I18n.translate("structure_block.structure_name", new Object[0]), this.width / 2 - 153, 30, 0xA0A0A0);
             this.inputName.render(matrices, mouseX, mouseY, delta);

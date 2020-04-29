@@ -10,14 +10,14 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class EmotionParticle
 extends SpriteBillboardParticle {
-    private EmotionParticle(World world, double x, double y, double z) {
+    private EmotionParticle(ClientWorld world, double x, double y, double z) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         this.velocityX *= (double)0.01f;
         this.velocityY *= (double)0.01f;
@@ -71,8 +71,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            EmotionParticle emotionParticle = new EmotionParticle(world, d, e + 0.5, f);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            EmotionParticle emotionParticle = new EmotionParticle(clientWorld, d, e + 0.5, f);
             emotionParticle.setSprite(this.spriteProvider);
             emotionParticle.setColor(1.0f, 1.0f, 1.0f);
             return emotionParticle;
@@ -89,8 +89,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            EmotionParticle emotionParticle = new EmotionParticle(world, d, e, f);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            EmotionParticle emotionParticle = new EmotionParticle(clientWorld, d, e, f);
             emotionParticle.setSprite(this.spriteProvider);
             return emotionParticle;
         }

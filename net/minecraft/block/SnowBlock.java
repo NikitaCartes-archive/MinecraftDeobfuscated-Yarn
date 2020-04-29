@@ -79,14 +79,13 @@ extends Block {
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos.down());
-        Block block = blockState.getBlock();
-        if (block == Blocks.ICE || block == Blocks.PACKED_ICE || block == Blocks.BARRIER) {
+        if (blockState.isOf(Blocks.ICE) || blockState.isOf(Blocks.PACKED_ICE) || blockState.isOf(Blocks.BARRIER)) {
             return false;
         }
-        if (block == Blocks.HONEY_BLOCK || block == Blocks.SOUL_SAND) {
+        if (blockState.isOf(Blocks.HONEY_BLOCK) || blockState.isOf(Blocks.SOUL_SAND)) {
             return true;
         }
-        return Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP) || block == this && blockState.get(LAYERS) == 8;
+        return Block.isFaceFullSquare(blockState.getCollisionShape(world, pos.down()), Direction.UP) || blockState.getBlock() == this && blockState.get(LAYERS) == 8;
     }
 
     @Override
@@ -121,7 +120,7 @@ extends Block {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-        if (blockState.getBlock() == this) {
+        if (blockState.isOf(this)) {
             int i = blockState.get(LAYERS);
             return (BlockState)blockState.with(LAYERS, Math.min(8, i + 1));
         }

@@ -46,7 +46,7 @@ extends Feature<BlockPileFeatureConfig> {
     private boolean canPlacePileBlock(IWorld world, BlockPos pos, Random random) {
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.getBlock() == Blocks.GRASS_PATH) {
+        if (blockState.isOf(Blocks.GRASS_PATH)) {
             return random.nextBoolean();
         }
         return blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);

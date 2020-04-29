@@ -39,7 +39,7 @@ extends RuleTest {
 
     @Override
     protected <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("tag"), ops.createString(BlockTags.getContainer().method_26798(this.tag).toString()))));
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString("tag"), ops.createString(BlockTags.getContainer().checkId(this.tag).toString()))));
     }
 }
 

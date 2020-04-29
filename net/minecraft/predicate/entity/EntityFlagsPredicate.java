@@ -49,24 +49,24 @@ public class EntityFlagsPredicate {
     }
 
     @Nullable
-    private static Boolean deserializeBoolean(JsonObject json, String key) {
+    private static Boolean nullableBooleanFromJson(JsonObject json, String key) {
         return json.has(key) ? Boolean.valueOf(JsonHelper.getBoolean(json, key)) : null;
     }
 
-    public static EntityFlagsPredicate deserialize(@Nullable JsonElement element) {
-        if (element == null || element.isJsonNull()) {
+    public static EntityFlagsPredicate fromJson(@Nullable JsonElement json) {
+        if (json == null || json.isJsonNull()) {
             return ANY;
         }
-        JsonObject jsonObject = JsonHelper.asObject(element, "entity flags");
-        Boolean boolean_ = EntityFlagsPredicate.deserializeBoolean(jsonObject, "is_on_fire");
-        Boolean boolean2 = EntityFlagsPredicate.deserializeBoolean(jsonObject, "is_sneaking");
-        Boolean boolean3 = EntityFlagsPredicate.deserializeBoolean(jsonObject, "is_sprinting");
-        Boolean boolean4 = EntityFlagsPredicate.deserializeBoolean(jsonObject, "is_swimming");
-        Boolean boolean5 = EntityFlagsPredicate.deserializeBoolean(jsonObject, "is_baby");
+        JsonObject jsonObject = JsonHelper.asObject(json, "entity flags");
+        Boolean boolean_ = EntityFlagsPredicate.nullableBooleanFromJson(jsonObject, "is_on_fire");
+        Boolean boolean2 = EntityFlagsPredicate.nullableBooleanFromJson(jsonObject, "is_sneaking");
+        Boolean boolean3 = EntityFlagsPredicate.nullableBooleanFromJson(jsonObject, "is_sprinting");
+        Boolean boolean4 = EntityFlagsPredicate.nullableBooleanFromJson(jsonObject, "is_swimming");
+        Boolean boolean5 = EntityFlagsPredicate.nullableBooleanFromJson(jsonObject, "is_baby");
         return new EntityFlagsPredicate(boolean_, boolean2, boolean3, boolean4, boolean5);
     }
 
-    private void serializeBoolean(JsonObject json, String key, @Nullable Boolean value) {
+    private void nullableBooleanToJson(JsonObject json, String key, @Nullable Boolean value) {
         if (value != null) {
             json.addProperty(key, value);
         }
@@ -77,11 +77,11 @@ public class EntityFlagsPredicate {
             return JsonNull.INSTANCE;
         }
         JsonObject jsonObject = new JsonObject();
-        this.serializeBoolean(jsonObject, "is_on_fire", this.isOnFire);
-        this.serializeBoolean(jsonObject, "is_sneaking", this.isSneaking);
-        this.serializeBoolean(jsonObject, "is_sprinting", this.isSprinting);
-        this.serializeBoolean(jsonObject, "is_swimming", this.isSwimming);
-        this.serializeBoolean(jsonObject, "is_baby", this.isBaby);
+        this.nullableBooleanToJson(jsonObject, "is_on_fire", this.isOnFire);
+        this.nullableBooleanToJson(jsonObject, "is_sneaking", this.isSneaking);
+        this.nullableBooleanToJson(jsonObject, "is_sprinting", this.isSprinting);
+        this.nullableBooleanToJson(jsonObject, "is_swimming", this.isSwimming);
+        this.nullableBooleanToJson(jsonObject, "is_baby", this.isBaby);
         return jsonObject;
     }
 

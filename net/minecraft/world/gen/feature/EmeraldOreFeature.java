@@ -22,7 +22,7 @@ extends Feature<EmeraldOreFeatureConfig> {
 
     @Override
     public boolean generate(IWorld iWorld, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, EmeraldOreFeatureConfig emeraldOreFeatureConfig) {
-        if (iWorld.getBlockState(blockPos).getBlock() == emeraldOreFeatureConfig.target.getBlock()) {
+        if (iWorld.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
             iWorld.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
         }
         return true;

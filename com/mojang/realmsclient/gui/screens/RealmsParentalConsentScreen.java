@@ -31,9 +31,9 @@ extends RealmsScreen {
         Realms.narrateNow(I18n.translate("mco.account.privacyinfo", new Object[0]));
         TranslatableText text = new TranslatableText("mco.account.update");
         Text text2 = ScreenTexts.BACK;
-        int i = Math.max(this.textRenderer.getWidth(text), this.textRenderer.getWidth(text2)) + 30;
+        int i = Math.max(this.textRenderer.getStringWidth(text), this.textRenderer.getStringWidth(text2)) + 30;
         TranslatableText text3 = new TranslatableText("mco.account.privacy.info");
-        int j = (int)((double)this.textRenderer.getWidth(text3) * 1.2);
+        int j = (int)((double)this.textRenderer.getStringWidth(text3) * 1.2);
         this.addButton(new ButtonWidget(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20, text3, buttonWidget -> Util.getOperatingSystem().open("https://minecraft.net/privacy/gdpr/")));
         this.addButton(new ButtonWidget(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20, text, buttonWidget -> Util.getOperatingSystem().open("https://minecraft.net/update-account")));
         this.addButton(new ButtonWidget(this.width / 2 + 5, RealmsParentalConsentScreen.row(13), i, 20, text2, buttonWidget -> this.client.openScreen(this.field_22701)));
@@ -45,7 +45,7 @@ extends RealmsScreen {
         List<Text> list = this.client.textRenderer.wrapLines(new TranslatableText("mco.account.privacyinfo"), (int)Math.round((double)this.width * 0.9));
         int i = 15;
         for (Text text : list) {
-            this.method_27534(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
+            this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
             i += 15;
         }
         super.render(matrices, mouseX, mouseY, delta);

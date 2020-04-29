@@ -132,13 +132,13 @@ extends AmbientEntity {
                 if (this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
                     this.setRoosting(false);
                     if (!bl) {
-                        this.world.playLevelEvent(null, 1025, blockPos, 0);
+                        this.world.syncWorldEvent(null, 1025, blockPos, 0);
                     }
                 }
             } else {
                 this.setRoosting(false);
                 if (!bl) {
-                    this.world.playLevelEvent(null, 1025, blockPos, 0);
+                    this.world.syncWorldEvent(null, 1025, blockPos, 0);
                 }
             }
         } else {

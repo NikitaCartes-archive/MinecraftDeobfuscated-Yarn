@@ -25,7 +25,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
@@ -36,9 +35,7 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -56,15 +53,9 @@ import org.jetbrains.annotations.Nullable;
 public class Item
 implements ItemConvertible {
     public static final Map<Block, Item> BLOCK_ITEMS = Maps.newHashMap();
-    private static final ItemPropertyGetter DAMAGED_PROPERTY_GETTER = (stack, world, entity) -> stack.isDamaged() ? 1.0f : 0.0f;
-    private static final ItemPropertyGetter DAMAGE_PROPERTY_GETTER = (stack, world, entity) -> MathHelper.clamp((float)stack.getDamage() / (float)stack.getMaxDamage(), 0.0f, 1.0f);
-    private static final ItemPropertyGetter LEFTHANDED_PROPERTY_GETTER = (stack, world, entity) -> entity == null || entity.getMainArm() == Arm.RIGHT ? 0.0f : 1.0f;
-    private static final ItemPropertyGetter COOLDOWN_PROPERTY_GETTER = (stack, world, entity) -> entity instanceof PlayerEntity ? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0f) : 0.0f;
-    private static final ItemPropertyGetter CUSTOM_DATA_PROPERTY_GETTER = (stack, world, entity) -> stack.hasTag() ? (float)stack.getTag().getInt("CustomModelData") : 0.0f;
     protected static final UUID ATTACK_DAMAGE_MODIFIER_UUID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
     protected static final UUID ATTACK_SPEED_MODIFIER_UUID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
     protected static final Random RANDOM = new Random();
-    private final Map<Identifier, ItemPropertyGetter> propertyGetters = Maps.newHashMap();
     protected final ItemGroup group;
     private final Rarity rarity;
     private final int maxCount;
@@ -90,9 +81,6 @@ implements ItemConvertible {
     }
 
     public Item(Settings settings) {
-        this.addPropertyGetter(new Identifier("lefthanded"), LEFTHANDED_PROPERTY_GETTER);
-        this.addPropertyGetter(new Identifier("cooldown"), COOLDOWN_PROPERTY_GETTER);
-        this.addPropertyGetter(new Identifier("custom_model_data"), CUSTOM_DATA_PROPERTY_GETTER);
         this.group = settings.group;
         this.rarity = settings.rarity;
         this.recipeRemainder = settings.recipeRemainder;
@@ -100,24 +88,9 @@ implements ItemConvertible {
         this.maxCount = settings.maxCount;
         this.foodComponent = settings.foodComponent;
         this.fireproof = settings.fireproof;
-        if (this.maxDamage > 0) {
-            this.addPropertyGetter(new Identifier("damaged"), DAMAGED_PROPERTY_GETTER);
-            this.addPropertyGetter(new Identifier("damage"), DAMAGE_PROPERTY_GETTER);
-        }
     }
 
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-    }
-
-    @Nullable
-    @Environment(value=EnvType.CLIENT)
-    public ItemPropertyGetter getPropertyGetter(Identifier id) {
-        return this.propertyGetters.get(id);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public boolean hasPropertyGetters() {
-        return !this.propertyGetters.isEmpty();
     }
 
     public boolean postProcessTag(CompoundTag tag) {
@@ -131,10 +104,6 @@ implements ItemConvertible {
     @Override
     public Item asItem() {
         return this;
-    }
-
-    public final void addPropertyGetter(Identifier id, ItemPropertyGetter property) {
-        this.propertyGetters.put(id, property);
     }
 
     public ActionResult useOnBlock(ItemUsageContext context) {

@@ -63,7 +63,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
                     bl = true;
                     continue;
                 }
-                if (iWorld.getBlockState(mutable).getBlock() != Blocks.BASALT) continue block0;
+                if (!iWorld.getBlockState(mutable).isOf(Blocks.BASALT)) continue block0;
                 mutable.move(Direction.UP);
             }
         }
@@ -112,7 +112,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
 
     private static boolean method_27095(IWorld iWorld, int i, BlockPos blockPos) {
         BlockState blockState = iWorld.getBlockState(blockPos);
-        return blockState.isAir() || blockState.getBlock() == Blocks.LAVA && blockPos.getY() <= i;
+        return blockState.isAir() || blockState.isOf(Blocks.LAVA) && blockPos.getY() <= i;
     }
 }
 

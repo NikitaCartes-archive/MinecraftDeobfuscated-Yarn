@@ -831,7 +831,7 @@ extends AnimalEntity {
                         int n = l = k < j && k > -j ? j : 0;
                         while (l <= j) {
                             mutable.set(blockPos, k, i, l);
-                            if (this.world.getBlockState(mutable).getBlock() == Blocks.BAMBOO) {
+                            if (this.world.getBlockState(mutable).isOf(Blocks.BAMBOO)) {
                                 return true;
                             }
                             l = l > 0 ? -l : 1 - l;

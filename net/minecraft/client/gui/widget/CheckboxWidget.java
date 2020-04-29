@@ -42,7 +42,7 @@ extends AbstractPressableButtonWidget {
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
+    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         minecraftClient.getTextureManager().bindTexture(TEXTURE);
         RenderSystem.enableDepthTest();
@@ -51,10 +51,10 @@ extends AbstractPressableButtonWidget {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        CheckboxWidget.drawTexture(matrixStack, this.x, this.y, this.isFocused() ? 20.0f : 0.0f, this.checked ? 20.0f : 0.0f, 20, this.height, 64, 64);
-        this.renderBg(matrixStack, minecraftClient, i, j);
+        CheckboxWidget.drawTexture(matrices, this.x, this.y, this.isFocused() ? 20.0f : 0.0f, this.checked ? 20.0f : 0.0f, 20, this.height, 64, 64);
+        this.renderBg(matrices, minecraftClient, mouseX, mouseY);
         if (this.field_24253) {
-            this.method_27535(matrixStack, textRenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
+            this.method_27535(matrices, textRenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
         }
     }
 }

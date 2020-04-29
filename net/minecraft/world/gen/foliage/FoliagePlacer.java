@@ -32,14 +32,14 @@ implements DynamicSerializable {
         this.type = type;
     }
 
-    public void method_27385(ModifiableTestableWorld modifiableTestableWorld, Random random, TreeFeatureConfig treeFeatureConfig, int i, class_5208 arg, int j, int k, Set<BlockPos> set) {
-        this.generate(modifiableTestableWorld, random, treeFeatureConfig, i, arg, j, k, set, this.method_27386(random));
+    public void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius, Set<BlockPos> leaves) {
+        this.generate(world, random, config, trunkHeight, treeNode, foliageHeight, radius, leaves, this.method_27386(random));
     }
 
     /**
      * This is the main method used to generate foliage.
      */
-    protected abstract void generate(ModifiableTestableWorld var1, Random var2, TreeFeatureConfig var3, int var4, class_5208 var5, int var6, int var7, Set<BlockPos> var8, int var9);
+    protected abstract void generate(ModifiableTestableWorld var1, Random var2, TreeFeatureConfig var3, int var4, TreeNode var5, int var6, int var7, Set<BlockPos> var8, int var9);
 
     public abstract int getHeight(Random var1, int var2, TreeFeatureConfig var3);
 
@@ -66,16 +66,16 @@ implements DynamicSerializable {
         return this.isInvalidForLeaves(random, m, j, n, l, bl);
     }
 
-    protected void generate(ModifiableTestableWorld modifiableTestableWorld, Random random, TreeFeatureConfig treeFeatureConfig, BlockPos blockPos, int baseHeight, Set<BlockPos> set, int i, boolean bl) {
-        int j = bl ? 1 : 0;
+    protected void generate(ModifiableTestableWorld world, Random random, TreeFeatureConfig config, BlockPos blockPos, int baseHeight, Set<BlockPos> leaves, int i, boolean giantTrunk) {
+        int j = giantTrunk ? 1 : 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int k = -baseHeight; k <= baseHeight + j; ++k) {
             for (int l = -baseHeight; l <= baseHeight + j; ++l) {
-                if (this.method_27387(random, k, i, l, baseHeight, bl)) continue;
+                if (this.method_27387(random, k, i, l, baseHeight, giantTrunk)) continue;
                 mutable.set(blockPos, k, i, l);
-                if (!AbstractTreeFeature.method_27371(modifiableTestableWorld, mutable)) continue;
-                modifiableTestableWorld.setBlockState(mutable, treeFeatureConfig.leavesProvider.getBlockState(random, mutable), 19);
-                set.add(mutable.toImmutable());
+                if (!AbstractTreeFeature.canReplace(world, mutable)) continue;
+                world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
+                leaves.add(mutable.toImmutable());
             }
         }
     }
@@ -87,27 +87,27 @@ implements DynamicSerializable {
         return new Dynamic<T>(ops, ops.createMap(builder.build())).getValue();
     }
 
-    public static final class class_5208 {
-        private final BlockPos field_24158;
-        private final int field_24159;
-        private final boolean field_24160;
+    public static final class TreeNode {
+        private final BlockPos center;
+        private final int foliageRadius;
+        private final boolean giantTrunk;
 
-        public class_5208(BlockPos blockPos, int i, boolean bl) {
-            this.field_24158 = blockPos;
-            this.field_24159 = i;
-            this.field_24160 = bl;
+        public TreeNode(BlockPos center, int foliageRadius, boolean giantTrunk) {
+            this.center = center;
+            this.foliageRadius = foliageRadius;
+            this.giantTrunk = giantTrunk;
         }
 
-        public BlockPos method_27388() {
-            return this.field_24158;
+        public BlockPos getCenter() {
+            return this.center;
         }
 
-        public int method_27389() {
-            return this.field_24159;
+        public int getFoliageRadius() {
+            return this.foliageRadius;
         }
 
-        public boolean method_27390() {
-            return this.field_24160;
+        public boolean isGiantTrunk() {
+            return this.giantTrunk;
         }
     }
 }

@@ -91,6 +91,7 @@ public abstract class Biome {
     protected final List<ConfiguredFeature<?, ?>> flowerFeatures = Lists.newArrayList();
     protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.newHashMap();
     private final Map<EntityCategory, List<SpawnEntry>> spawns = Maps.newHashMap();
+    private final Map<EntityType<?>, SpawnDensity> spawnDensities = Maps.newHashMap();
     private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
         Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25f){
 
@@ -155,8 +156,17 @@ public abstract class Biome {
         this.spawns.get((Object)type).add(spawnEntry);
     }
 
+    protected void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
+        this.spawnDensities.put(type, new SpawnDensity(mass, maxMass));
+    }
+
     public List<SpawnEntry> getEntitySpawnList(EntityCategory category) {
         return this.spawns.get((Object)category);
+    }
+
+    @Nullable
+    public SpawnDensity getSpawnDensity(EntityType<?> type) {
+        return this.spawnDensities.get(type);
     }
 
     public Precipitation getPrecipitation() {
@@ -219,12 +229,12 @@ public abstract class Biome {
         return false;
     }
 
-    public boolean canSetSnow(WorldView worldView, BlockPos blockPos) {
+    public boolean canSetSnow(WorldView world, BlockPos blockPos) {
         BlockState blockState;
         if (this.getTemperature(blockPos) >= 0.15f) {
             return false;
         }
-        return blockPos.getY() >= 0 && blockPos.getY() < 256 && worldView.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = worldView.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(worldView, blockPos);
+        return blockPos.getY() >= 0 && blockPos.getY() < 256 && world.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = world.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos);
     }
 
     public void addFeature(GenerationStep.Feature step, ConfiguredFeature<?, ?> configuredFeature) {
@@ -242,8 +252,8 @@ public abstract class Biome {
         return this.carvers.computeIfAbsent(carver2, carver -> Lists.newArrayList());
     }
 
-    public <C extends FeatureConfig> void addStructureFeature(ConfiguredFeature<C, ? extends StructureFeature<C>> configuredFeature) {
-        this.structureFeatures.put((StructureFeature<?>)configuredFeature.feature, (FeatureConfig)configuredFeature.config);
+    public <C extends FeatureConfig> void addStructureFeature(ConfiguredFeature<C, ? extends StructureFeature<C>> configuredStructureFeature) {
+        this.structureFeatures.put((StructureFeature<?>)configuredStructureFeature.feature, (FeatureConfig)configuredStructureFeature.config);
     }
 
     public <C extends FeatureConfig> boolean hasStructureFeature(StructureFeature<C> structureFeature) {
@@ -263,12 +273,12 @@ public abstract class Biome {
         return this.features.get((Object)feature);
     }
 
-    public void generateFeatureStep(GenerationStep.Feature step, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, IWorld iWorld, long l, ChunkRandom chunkRandom, BlockPos blockPos) {
+    public void generateFeatureStep(GenerationStep.Feature step, StructureAccessor structureAccessor, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, IWorld world, long populationSeed, ChunkRandom chunkRandom, BlockPos pos) {
         int i = 0;
         for (ConfiguredFeature<?, ?> configuredFeature : this.features.get((Object)step)) {
-            chunkRandom.setDecoratorSeed(l, i, step.ordinal());
+            chunkRandom.setDecoratorSeed(populationSeed, i, step.ordinal());
             try {
-                configuredFeature.generate(iWorld, structureAccessor, chunkGenerator, chunkRandom, blockPos);
+                configuredFeature.generate(world, structureAccessor, chunkGenerator, chunkRandom, pos);
             } catch (Exception exception) {
                 CrashReport crashReport = CrashReport.create(exception, "Feature placement");
                 crashReport.addElement("Feature").add("Id", Registry.FEATURE.getId((Feature<?>)configuredFeature.feature)).add("Config", configuredFeature.config).add("Description", () -> configuredFeature.feature.toString());
@@ -393,7 +403,7 @@ public abstract class Biome {
         return this.surfaceBuilder.getConfig();
     }
 
-    public Stream<MixedNoisePoint> method_27342() {
+    public Stream<MixedNoisePoint> streamNoises() {
         return this.noisePoints.stream();
     }
 
@@ -547,6 +557,24 @@ public abstract class Biome {
 
         public String toString() {
             return EntityType.getId(this.type) + "*(" + this.minGroupSize + "-" + this.maxGroupSize + "):" + this.weight;
+        }
+    }
+
+    public static class SpawnDensity {
+        private final double gravityLimit;
+        private final double mass;
+
+        public SpawnDensity(double gravityLimit, double mass) {
+            this.gravityLimit = gravityLimit;
+            this.mass = mass;
+        }
+
+        public double getGravityLimit() {
+            return this.gravityLimit;
+        }
+
+        public double getMass() {
+            return this.mass;
         }
     }
 

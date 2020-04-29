@@ -3,7 +3,6 @@
  */
 package net.minecraft.block.enums;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -49,38 +48,37 @@ public enum Instrument implements StringIdentifiable
     }
 
     public static Instrument fromBlockState(BlockState state) {
-        Block block = state.getBlock();
-        if (block == Blocks.CLAY) {
+        if (state.isOf(Blocks.CLAY)) {
             return FLUTE;
         }
-        if (block == Blocks.GOLD_BLOCK) {
+        if (state.isOf(Blocks.GOLD_BLOCK)) {
             return BELL;
         }
-        if (block.isIn(BlockTags.WOOL)) {
+        if (state.isIn(BlockTags.WOOL)) {
             return GUITAR;
         }
-        if (block == Blocks.PACKED_ICE) {
+        if (state.isOf(Blocks.PACKED_ICE)) {
             return CHIME;
         }
-        if (block == Blocks.BONE_BLOCK) {
+        if (state.isOf(Blocks.BONE_BLOCK)) {
             return XYLOPHONE;
         }
-        if (block == Blocks.IRON_BLOCK) {
+        if (state.isOf(Blocks.IRON_BLOCK)) {
             return IRON_XYLOPHONE;
         }
-        if (block == Blocks.SOUL_SAND) {
+        if (state.isOf(Blocks.SOUL_SAND)) {
             return COW_BELL;
         }
-        if (block == Blocks.PUMPKIN) {
+        if (state.isOf(Blocks.PUMPKIN)) {
             return DIDGERIDOO;
         }
-        if (block == Blocks.EMERALD_BLOCK) {
+        if (state.isOf(Blocks.EMERALD_BLOCK)) {
             return BIT;
         }
-        if (block == Blocks.HAY_BLOCK) {
+        if (state.isOf(Blocks.HAY_BLOCK)) {
             return BANJO;
         }
-        if (block == Blocks.GLOWSTONE) {
+        if (state.isOf(Blocks.GLOWSTONE)) {
             return PLING;
         }
         Material material = state.getMaterial();

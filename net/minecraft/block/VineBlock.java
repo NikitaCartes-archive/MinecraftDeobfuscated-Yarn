@@ -96,7 +96,7 @@ extends Block {
         if (side.getAxis() != Direction.Axis.Y) {
             BooleanProperty booleanProperty = FACING_PROPERTIES.get(side);
             BlockState blockState = world.getBlockState(pos.up());
-            return blockState.getBlock() == this && blockState.get(booleanProperty) != false;
+            return blockState.isOf(this) && blockState.get(booleanProperty) != false;
         }
         return false;
     }
@@ -120,7 +120,7 @@ extends Block {
                 if (blockState == null) {
                     blockState = world.getBlockState(blockPos);
                 }
-                bl = blockState.getBlock() == this && blockState.get(booleanProperty) != false;
+                bl = blockState.isOf(this) && blockState.get(booleanProperty) != false;
             }
             state = (BlockState)state.with(booleanProperty, bl);
         }
@@ -202,7 +202,7 @@ extends Block {
                 return;
             }
         }
-        if (pos.getY() > 0 && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.getBlock() == this) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
+        if (pos.getY() > 0 && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.isOf(this)) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
             world.setBlockState(blockPos2, blockState4, 2);
         }
     }
@@ -225,7 +225,7 @@ extends Block {
         Iterable<BlockPos> iterable = BlockPos.iterate(pos.getX() - 4, pos.getY() - 1, pos.getZ() - 4, pos.getX() + 4, pos.getY() + 1, pos.getZ() + 4);
         int j = 5;
         for (BlockPos blockPos : iterable) {
-            if (world.getBlockState(blockPos).getBlock() != this || --j > 0) continue;
+            if (!world.getBlockState(blockPos).isOf(this) || --j > 0) continue;
             return false;
         }
         return true;
@@ -234,7 +234,7 @@ extends Block {
     @Override
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
         BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
-        if (blockState.getBlock() == this) {
+        if (blockState.isOf(this)) {
             return this.getAdjacentBlockCount(blockState) < FACING_PROPERTIES.size();
         }
         return super.canReplace(state, context);
@@ -244,7 +244,7 @@ extends Block {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-        boolean bl = blockState.getBlock() == this;
+        boolean bl = blockState.isOf(this);
         BlockState blockState2 = bl ? blockState : this.getDefaultState();
         for (Direction direction : ctx.getPlacementDirections()) {
             boolean bl2;

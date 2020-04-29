@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.collection.WeightedPicker;
@@ -67,8 +67,8 @@ implements BakedModel {
     }
 
     @Override
-    public ModelItemPropertyOverrideList getItemPropertyOverrides() {
-        return this.defaultModel.getItemPropertyOverrides();
+    public ModelOverrideList getOverrides() {
+        return this.defaultModel.getOverrides();
     }
 
     @Environment(value=EnvType.CLIENT)

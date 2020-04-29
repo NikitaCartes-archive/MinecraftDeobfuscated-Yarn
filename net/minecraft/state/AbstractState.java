@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.state.State;
@@ -92,6 +93,14 @@ implements State<S> {
             throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
         }
         return (T)((Comparable)property.getType().cast(comparable));
+    }
+
+    public <T extends Comparable<T>> Optional<T> method_27850(Property<T> property) {
+        Comparable<?> comparable = this.entries.get(property);
+        if (comparable == null) {
+            return Optional.empty();
+        }
+        return Optional.of(property.getType().cast(comparable));
     }
 
     @Override

@@ -31,7 +31,7 @@ extends Block {
     }
 
     public static boolean isRail(BlockState state) {
-        return state.isIn(BlockTags.RAILS);
+        return state.isIn(BlockTags.RAILS) && state.getBlock() instanceof AbstractRailBlock;
     }
 
     protected AbstractRailBlock(boolean allowCurves, AbstractBlock.Settings settings) {
@@ -46,7 +46,7 @@ extends Block {
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         RailShape railShape;
-        RailShape railShape2 = railShape = state.getBlock() == this ? state.get(this.getShapeProperty()) : null;
+        RailShape railShape2 = railShape = state.isOf(this) ? state.get(this.getShapeProperty()) : null;
         if (railShape != null && railShape.isAscending()) {
             return ASCENDING_SHAPE;
         }
@@ -60,7 +60,7 @@ extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (oldState.getBlock() == state.getBlock()) {
+        if (oldState.isOf(state.getBlock())) {
             return;
         }
         this.method_24417(state, world, pos, notify);

@@ -47,7 +47,7 @@ extends Task<LivingEntity> {
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
         Brain<?> brain = entity.getBrain();
-        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(this.predicate).filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared).findFirst().ifPresent(livingEntity -> brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)livingEntity))));
+        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(list -> list.stream().filter(this.predicate).filter(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared).findFirst().ifPresent(livingEntity -> brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget((Entity)livingEntity, true))));
     }
 }
 

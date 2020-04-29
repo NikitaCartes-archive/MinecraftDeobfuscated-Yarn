@@ -3,15 +3,15 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,58 +31,59 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-        return new Conditions(this.id, EntityPredicate.fromJson(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow")));
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
+        return new Conditions(this.id, extended, EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer), DamageSourcePredicate.fromJson(jsonObject.get("killing_blow")));
     }
 
-    public void trigger(ServerPlayerEntity player, Entity entity, DamageSource source) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.test(player, entity, source));
+    public void trigger(ServerPlayerEntity player, Entity entity, DamageSource killingDamage) {
+        LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
+        this.test(player, conditions -> conditions.test(player, lootContext, killingDamage));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
-        private final EntityPredicate entity;
+        private final EntityPredicate.Extended entity;
         private final DamageSourcePredicate killingBlow;
 
-        public Conditions(Identifier id, EntityPredicate entity, DamageSourcePredicate killingBlow) {
-            super(id);
+        public Conditions(Identifier id, EntityPredicate.Extended player, EntityPredicate.Extended entity, DamageSourcePredicate killingBlow) {
+            super(id, player);
             this.entity = entity;
             this.killingBlow = killingBlow;
         }
 
-        public static Conditions createPlayerKilledEntity(EntityPredicate.Builder builder) {
-            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, builder.build(), DamageSourcePredicate.EMPTY);
+        public static Conditions createPlayerKilledEntity(EntityPredicate.Builder killedEntityPredicateBuilder) {
+            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(killedEntityPredicateBuilder.build()), DamageSourcePredicate.EMPTY);
         }
 
         public static Conditions createPlayerKilledEntity() {
-            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
+            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, DamageSourcePredicate.EMPTY);
         }
 
-        public static Conditions createPlayerKilledEntity(EntityPredicate.Builder builder, DamageSourcePredicate.Builder builder2) {
-            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, builder.build(), builder2.build());
+        public static Conditions createPlayerKilledEntity(EntityPredicate.Builder killedEntityPredicateBuilder, DamageSourcePredicate.Builder killingBlowBuilder) {
+            return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(killedEntityPredicateBuilder.build()), killingBlowBuilder.build());
         }
 
         public static Conditions createEntityKilledPlayer() {
-            return new Conditions(Criteria.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
+            return new Conditions(Criteria.ENTITY_KILLED_PLAYER.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, DamageSourcePredicate.EMPTY);
         }
 
-        public boolean test(ServerPlayerEntity player, Entity entity, DamageSource killingBlow) {
+        public boolean test(ServerPlayerEntity player, LootContext killedEntityContext, DamageSource killingBlow) {
             if (!this.killingBlow.test(player, killingBlow)) {
                 return false;
             }
-            return this.entity.test(player, entity);
+            return this.entity.test(killedEntityContext);
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add("entity", this.entity.toJson());
-            jsonObject.add("killing_blow", this.killingBlow.serialize());
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
+            jsonObject.add("entity", this.entity.toJson(predicateSerializer));
+            jsonObject.add("killing_blow", this.killingBlow.toJson());
             return jsonObject;
         }
     }

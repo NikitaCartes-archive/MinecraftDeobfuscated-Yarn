@@ -38,7 +38,7 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
         for (BlockPos blockPos3 : BlockPos.iterateOutwards(blockPos2, vec3i.getX(), vec3i.getY(), vec3i.getZ())) {
             if (blockPos3.getManhattanDistance(blockPos2) > i) break;
             BlockState blockState = iWorld.getBlockState(blockPos3);
-            if (blockState.getBlock() != block) continue;
+            if (!blockState.isOf(block)) continue;
             this.setBlockState(iWorld, blockPos3, netherrackReplaceBlobsFeatureConfig.state);
             bl = true;
         }
@@ -49,7 +49,7 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
     private static BlockPos method_27107(IWorld iWorld, BlockPos.Mutable mutable, Block block) {
         while (mutable.getY() > 1) {
             BlockState blockState = iWorld.getBlockState(mutable);
-            if (blockState.getBlock() == block) {
+            if (blockState.isOf(block)) {
                 return mutable;
             }
             mutable.move(Direction.DOWN);

@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -65,8 +64,7 @@ extends Item {
         BlockPos blockPos = context.getBlockPos();
         Direction direction = context.getSide();
         BlockState blockState = world.getBlockState(blockPos);
-        Block block = blockState.getBlock();
-        if (block == Blocks.SPAWNER && (blockEntity = world.getBlockEntity(blockPos)) instanceof MobSpawnerBlockEntity) {
+        if (blockState.isOf(Blocks.SPAWNER) && (blockEntity = world.getBlockEntity(blockPos)) instanceof MobSpawnerBlockEntity) {
             MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
             EntityType<?> entityType = this.getEntityType(itemStack.getTag());
             mobSpawnerLogic.setEntityId(entityType);

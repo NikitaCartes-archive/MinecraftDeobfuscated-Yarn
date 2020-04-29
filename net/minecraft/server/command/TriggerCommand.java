@@ -57,9 +57,9 @@ public class TriggerCommand {
         return score.getScore();
     }
 
-    private static int executeSet(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int value) {
-        scoreboardPlayerScore.setScore(value);
-        serverCommandSource.sendFeedback(new TranslatableText("commands.trigger.set.success", scoreboardPlayerScore.getObjective().toHoverableText(), value), true);
+    private static int executeSet(ServerCommandSource source, ScoreboardPlayerScore score, int value) {
+        score.setScore(value);
+        source.sendFeedback(new TranslatableText("commands.trigger.set.success", score.getObjective().toHoverableText(), value), true);
         return value;
     }
 
@@ -69,16 +69,16 @@ public class TriggerCommand {
         return score.getScore();
     }
 
-    private static ScoreboardPlayerScore getScore(ServerPlayerEntity serverPlayerEntity, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {
+    private static ScoreboardPlayerScore getScore(ServerPlayerEntity player, ScoreboardObjective objective) throws CommandSyntaxException {
         String string;
-        if (scoreboardObjective.getCriterion() != ScoreboardCriterion.TRIGGER) {
+        if (objective.getCriterion() != ScoreboardCriterion.TRIGGER) {
             throw FAILED_INVALID_EXCEPTION.create();
         }
-        Scoreboard scoreboard = serverPlayerEntity.getScoreboard();
-        if (!scoreboard.playerHasObjective(string = serverPlayerEntity.getEntityName(), scoreboardObjective)) {
+        Scoreboard scoreboard = player.getScoreboard();
+        if (!scoreboard.playerHasObjective(string = player.getEntityName(), objective)) {
             throw FAILED_UMPRIMED_EXCEPTION.create();
         }
-        ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
+        ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
         if (scoreboardPlayerScore.isLocked()) {
             throw FAILED_UMPRIMED_EXCEPTION.create();
         }

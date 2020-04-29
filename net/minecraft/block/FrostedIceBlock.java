@@ -42,7 +42,7 @@ extends IceBlock {
             for (Direction direction : Direction.values()) {
                 mutable.set(pos, direction);
                 BlockState blockState = world.getBlockState(mutable);
-                if (blockState.getBlock() != this || this.increaseAge(blockState, world, mutable)) continue;
+                if (!blockState.isOf(this) || this.increaseAge(blockState, world, mutable)) continue;
                 world.getBlockTickScheduler().schedule(mutable, this, MathHelper.nextInt(random, 20, 40));
             }
             return;
@@ -73,7 +73,7 @@ extends IceBlock {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.values()) {
             mutable.set(pos, direction);
-            if (world.getBlockState(mutable).getBlock() != this || ++i < maxNeighbors) continue;
+            if (!world.getBlockState(mutable).isOf(this) || ++i < maxNeighbors) continue;
             return false;
         }
         return true;

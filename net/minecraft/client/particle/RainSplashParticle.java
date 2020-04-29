@@ -10,16 +10,16 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class RainSplashParticle
 extends SpriteBillboardParticle {
-    protected RainSplashParticle(World world, double d, double e, double f) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
+    protected RainSplashParticle(ClientWorld clientWorld, double d, double e, double f) {
+        super(clientWorld, d, e, f, 0.0, 0.0, 0.0);
         this.velocityX *= (double)0.3f;
         this.velocityY = Math.random() * (double)0.2f + (double)0.1f;
         this.velocityZ *= (double)0.3f;
@@ -71,8 +71,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            RainSplashParticle rainSplashParticle = new RainSplashParticle(world, d, e, f);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            RainSplashParticle rainSplashParticle = new RainSplashParticle(clientWorld, d, e, f);
             rainSplashParticle.setSprite(this.spriteProvider);
             return rainSplashParticle;
         }

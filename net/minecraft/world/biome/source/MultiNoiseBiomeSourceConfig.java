@@ -25,7 +25,7 @@ implements BiomeSourceConfig {
     }
 
     public MultiNoiseBiomeSourceConfig withBiomes(List<Biome> list) {
-        return this.method_27350(list.stream().flatMap(biome -> biome.method_27342().map(mixedNoisePoint -> Pair.of(mixedNoisePoint, biome))).collect(ImmutableList.toImmutableList()));
+        return this.method_27350(list.stream().flatMap(biome -> biome.streamNoises().map(mixedNoisePoint -> Pair.of(mixedNoisePoint, biome))).collect(ImmutableList.toImmutableList()));
     }
 
     public MultiNoiseBiomeSourceConfig method_27350(List<Pair<Biome.MixedNoisePoint, Biome>> list) {

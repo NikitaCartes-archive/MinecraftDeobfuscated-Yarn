@@ -43,11 +43,11 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, this.height / 2 - this.reasonHeight / 2 - this.textRenderer.fontHeight * 2, 0xAAAAAA);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, this.height / 2 - this.reasonHeight / 2 - this.textRenderer.fontHeight * 2, 0xAAAAAA);
         int i = this.height / 2 - this.reasonHeight / 2;
         if (this.reasonFormatted != null) {
             for (Text text : this.reasonFormatted) {
-                this.method_27534(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
+                this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
                 i += this.textRenderer.fontHeight;
             }
         }

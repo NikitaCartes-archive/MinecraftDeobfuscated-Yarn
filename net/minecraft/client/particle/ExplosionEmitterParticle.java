@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.NoRenderParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class ExplosionEmitterParticle
@@ -18,7 +18,7 @@ extends NoRenderParticle {
     private int age_;
     private final int maxAge_;
 
-    private ExplosionEmitterParticle(World world, double x, double y, double z) {
+    private ExplosionEmitterParticle(ClientWorld world, double x, double y, double z) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         this.maxAge_ = 8;
     }
@@ -41,8 +41,8 @@ extends NoRenderParticle {
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            return new ExplosionEmitterParticle(world, d, e, f);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return new ExplosionEmitterParticle(clientWorld, d, e, f);
         }
     }
 }

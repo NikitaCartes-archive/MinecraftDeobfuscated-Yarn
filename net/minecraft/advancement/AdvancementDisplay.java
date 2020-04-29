@@ -3,7 +3,6 @@
  */
 package net.minecraft.advancement;
 
-import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -17,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -97,9 +97,9 @@ public class AdvancementDisplay {
         return this.hidden;
     }
 
-    public static AdvancementDisplay fromJson(JsonObject obj, JsonDeserializationContext context) {
-        Text text = JsonHelper.deserialize(obj, "title", context, Text.class);
-        Text text2 = JsonHelper.deserialize(obj, "description", context, Text.class);
+    public static AdvancementDisplay fromJson(JsonObject obj) {
+        MutableText text = Text.Serializer.fromJson(obj.get("title"));
+        MutableText text2 = Text.Serializer.fromJson(obj.get("description"));
         if (text == null || text2 == null) {
             throw new JsonSyntaxException("Both title and description must be set");
         }
@@ -112,18 +112,18 @@ public class AdvancementDisplay {
         return new AdvancementDisplay(itemStack, text, text2, identifier, advancementFrame, bl, bl2, bl3);
     }
 
-    private static ItemStack iconFromJson(JsonObject jsonObject) {
-        if (!jsonObject.has("item")) {
+    private static ItemStack iconFromJson(JsonObject json) {
+        if (!json.has("item")) {
             throw new JsonSyntaxException("Unsupported icon type, currently only items are supported (add 'item' key)");
         }
-        Item item = JsonHelper.getItem(jsonObject, "item");
-        if (jsonObject.has("data")) {
+        Item item = JsonHelper.getItem(json, "item");
+        if (json.has("data")) {
             throw new JsonParseException("Disallowed data tag found");
         }
         ItemStack itemStack = new ItemStack(item);
-        if (jsonObject.has("nbt")) {
+        if (json.has("nbt")) {
             try {
-                CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.asString(jsonObject.get("nbt"), "nbt"));
+                CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.asString(json.get("nbt"), "nbt"));
                 itemStack.setTag(compoundTag);
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new JsonSyntaxException("Invalid nbt tag: " + commandSyntaxException.getMessage());
@@ -132,11 +132,11 @@ public class AdvancementDisplay {
         return itemStack;
     }
 
-    public void toPacket(PacketByteBuf packetByteBuf) {
-        packetByteBuf.writeText(this.title);
-        packetByteBuf.writeText(this.description);
-        packetByteBuf.writeItemStack(this.icon);
-        packetByteBuf.writeEnumConstant(this.frame);
+    public void toPacket(PacketByteBuf buf) {
+        buf.writeText(this.title);
+        buf.writeText(this.description);
+        buf.writeItemStack(this.icon);
+        buf.writeEnumConstant(this.frame);
         int i = 0;
         if (this.background != null) {
             i |= 1;
@@ -147,12 +147,12 @@ public class AdvancementDisplay {
         if (this.hidden) {
             i |= 4;
         }
-        packetByteBuf.writeInt(i);
+        buf.writeInt(i);
         if (this.background != null) {
-            packetByteBuf.writeIdentifier(this.background);
+            buf.writeIdentifier(this.background);
         }
-        packetByteBuf.writeFloat(this.xPos);
-        packetByteBuf.writeFloat(this.yPos);
+        buf.writeFloat(this.xPos);
+        buf.writeFloat(this.yPos);
     }
 
     public static AdvancementDisplay fromPacket(PacketByteBuf buf) {

@@ -49,7 +49,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
                 r = -1;
                 continue;
             }
-            if (blockState5.getBlock() != blockState.getBlock()) continue;
+            if (!blockState5.isOf(blockState.getBlock())) continue;
             if (r == -1) {
                 if (q <= 0) {
                     blockState3 = CAVE_AIR;

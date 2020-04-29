@@ -74,7 +74,7 @@ extends Block {
             world.breakBlock(pos, false);
         } else {
             world.setBlockState(pos, (BlockState)state.with(EGGS, i - 1), 2);
-            world.playLevelEvent(2001, pos, Block.getRawIdFromState(state));
+            world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
         }
     }
 
@@ -89,7 +89,7 @@ extends Block {
                 world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
                 world.removeBlock(pos, false);
                 for (int j = 0; j < state.get(EGGS); ++j) {
-                    world.playLevelEvent(2001, pos, Block.getRawIdFromState(state));
+                    world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
                     TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
                     turtleEntity.setBreedingAge(-24000);
                     turtleEntity.setHomePos(pos);
@@ -101,13 +101,13 @@ extends Block {
     }
 
     private boolean isSand(BlockView world, BlockPos pos) {
-        return world.getBlockState(pos.down()).getBlock() == Blocks.SAND;
+        return world.getBlockState(pos.down()).isOf(Blocks.SAND);
     }
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (this.isSand(world, pos) && !world.isClient) {
-            world.playLevelEvent(2005, pos, 0);
+            world.syncWorldEvent(2005, pos, 0);
         }
     }
 
@@ -137,7 +137,7 @@ extends Block {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
-        if (blockState.getBlock() == this) {
+        if (blockState.isOf(this)) {
             return (BlockState)blockState.with(EGGS, Math.min(4, blockState.get(EGGS) + 1));
         }
         return super.getPlacementState(ctx);

@@ -10,13 +10,13 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
 public class SuspendParticle
 extends SpriteBillboardParticle {
-    private SuspendParticle(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    private SuspendParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
         float f;
         this.colorRed = f = this.random.nextFloat() * 0.1f + 0.2f;
@@ -66,11 +66,11 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
             suspendParticle.setColor(0.3f, 0.5f, 1.0f);
             suspendParticle.setSprite(this.spriteProvider);
-            suspendParticle.setColorAlpha(1.0f - world.random.nextFloat() * 0.7f);
+            suspendParticle.setColorAlpha(1.0f - clientWorld.random.nextFloat() * 0.7f);
             suspendParticle.setMaxAge(suspendParticle.getMaxAge() / 2);
             return suspendParticle;
         }
@@ -86,11 +86,11 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
             suspendParticle.setSprite(this.spriteProvider);
             suspendParticle.setColor(1.0f, 1.0f, 1.0f);
-            suspendParticle.setMaxAge(3 + world.getRandom().nextInt(5));
+            suspendParticle.setMaxAge(3 + clientWorld.getRandom().nextInt(5));
             return suspendParticle;
         }
     }
@@ -105,8 +105,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
             suspendParticle.setSprite(this.spriteProvider);
             suspendParticle.setColor(1.0f, 1.0f, 1.0f);
             return suspendParticle;
@@ -123,8 +123,8 @@ extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
-            SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
             suspendParticle.setSprite(this.spriteProvider);
             return suspendParticle;
         }

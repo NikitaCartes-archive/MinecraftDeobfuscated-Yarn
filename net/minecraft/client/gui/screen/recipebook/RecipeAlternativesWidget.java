@@ -212,26 +212,26 @@ Element {
         }
 
         @Override
-        public void renderButton(MatrixStack matrixStack, int i, int j, float f) {
-            int l;
+        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+            int j;
             RenderSystem.enableAlphaTest();
             RecipeAlternativesWidget.this.client.getTextureManager().bindTexture(BG_TEX);
-            int k = 152;
+            int i = 152;
             if (!this.isCraftable) {
-                k += 26;
+                i += 26;
             }
-            int n = l = RecipeAlternativesWidget.this.furnace ? 130 : 78;
+            int n = j = RecipeAlternativesWidget.this.furnace ? 130 : 78;
             if (this.isHovered()) {
-                l += 26;
+                j += 26;
             }
-            this.drawTexture(matrixStack, this.x, this.y, k, l, this.width, this.height);
+            this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
             for (InputSlot inputSlot : this.slots) {
                 RenderSystem.pushMatrix();
-                float g = 0.42f;
-                int m = (int)((float)(this.x + inputSlot.y) / 0.42f - 3.0f);
-                int n2 = (int)((float)(this.y + inputSlot.x) / 0.42f - 3.0f);
+                float f = 0.42f;
+                int k = (int)((float)(this.x + inputSlot.y) / 0.42f - 3.0f);
+                int l = (int)((float)(this.y + inputSlot.x) / 0.42f - 3.0f);
                 RenderSystem.scalef(0.42f, 0.42f, 1.0f);
-                RecipeAlternativesWidget.this.client.getItemRenderer().renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0f) % inputSlot.stacks.length], m, n2);
+                RecipeAlternativesWidget.this.client.getItemRenderer().renderGuiItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0f) % inputSlot.stacks.length], k, l);
                 RenderSystem.popMatrix();
             }
             RenderSystem.disableAlphaTest();

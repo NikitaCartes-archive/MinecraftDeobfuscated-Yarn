@@ -3,14 +3,14 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.entity.Entity;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -26,56 +26,50 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("signal_strength"));
-        EntityPredicate entityPredicate = EntityPredicate.fromJson(jsonObject.get("projectile"));
-        EntityPredicate entityPredicate2 = EntityPredicate.fromJson(jsonObject.get("shooter"));
-        return new Conditions(intRange, entityPredicate, entityPredicate2);
+        EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "projectile", advancementEntityPredicateDeserializer);
+        return new Conditions(extended, intRange, extended2);
     }
 
-    public void trigger(ServerPlayerEntity player, Entity entity, Vec3d vec3d, int i) {
-        this.test(player.getAdvancementTracker(), conditions -> conditions.method_24952(player, entity, vec3d, i));
+    public void trigger(ServerPlayerEntity player, Entity projectile, Vec3d hitPos, int signalStrength) {
+        LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, projectile);
+        this.test(player, conditions -> conditions.test(lootContext, hitPos, signalStrength));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
     extends AbstractCriterionConditions {
         private final NumberRange.IntRange signalStrength;
-        private final EntityPredicate projectile;
-        private final EntityPredicate shooter;
+        private final EntityPredicate.Extended projectile;
 
-        public Conditions(NumberRange.IntRange signalStrength, EntityPredicate projectile, EntityPredicate shooter) {
-            super(ID);
+        public Conditions(EntityPredicate.Extended player, NumberRange.IntRange signalStrength, EntityPredicate.Extended projectile) {
+            super(ID, player);
             this.signalStrength = signalStrength;
             this.projectile = projectile;
-            this.shooter = shooter;
         }
 
         public static Conditions create(NumberRange.IntRange signalStrength) {
-            return new Conditions(signalStrength, EntityPredicate.ANY, EntityPredicate.ANY);
+            return new Conditions(EntityPredicate.Extended.EMPTY, signalStrength, EntityPredicate.Extended.EMPTY);
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
             jsonObject.add("signal_strength", this.signalStrength.toJson());
-            jsonObject.add("projectile", this.projectile.toJson());
-            jsonObject.add("shooter", this.shooter.toJson());
+            jsonObject.add("projectile", this.projectile.toJson(predicateSerializer));
             return jsonObject;
         }
 
-        public boolean method_24952(ServerPlayerEntity serverPlayerEntity, Entity entity, Vec3d vec3d, int i) {
-            if (!this.signalStrength.test(i)) {
+        public boolean test(LootContext projectileContext, Vec3d hitPos, int signalStrength) {
+            if (!this.signalStrength.test(signalStrength)) {
                 return false;
             }
-            if (!this.projectile.test(serverPlayerEntity, entity)) {
-                return false;
-            }
-            return this.shooter.test(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity);
+            return this.projectile.test(projectileContext);
         }
     }
 }

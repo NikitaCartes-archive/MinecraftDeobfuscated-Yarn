@@ -122,7 +122,7 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderDirtBackground(0);
         this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
-        this.method_27534(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.generator", new Object[0]), this.width / 2, 30, 0xA0A0A0);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.biome", new Object[0]), this.width / 2, 68, 0xA0A0A0);
         super.render(matrices, mouseX, mouseY, delta);

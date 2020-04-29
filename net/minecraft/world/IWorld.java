@@ -80,14 +80,14 @@ ModifiableTestableWorld {
 
     public void addParticle(ParticleEffect var1, double var2, double var4, double var6, double var8, double var10, double var12);
 
-    public void playLevelEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
+    public void syncWorldEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
 
     default public int getDimensionHeight() {
         return this.getDimension().isNether() ? 128 : 256;
     }
 
-    default public void playLevelEvent(int eventId, BlockPos pos, int data) {
-        this.playLevelEvent(null, eventId, pos, data);
+    default public void syncWorldEvent(int eventId, BlockPos pos, int data) {
+        this.syncWorldEvent(null, eventId, pos, data);
     }
 
     @Override
@@ -96,8 +96,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
-        return EntityView.super.intersectsEntities(entity, voxelShape);
+    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
+        return EntityView.super.intersectsEntities(except, shape);
     }
 
     @Override

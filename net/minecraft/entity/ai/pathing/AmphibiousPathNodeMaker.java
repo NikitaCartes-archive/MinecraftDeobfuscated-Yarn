@@ -4,7 +4,7 @@
 package net.minecraft.entity.ai.pathing;
 
 import net.minecraft.block.AbstractRailBlock;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.PathNode;
@@ -204,10 +204,10 @@ extends LandPathNodeMaker {
             return PathNodeType.WATER;
         }
         if (pathNodeType == PathNodeType.OPEN && y >= 1) {
-            Block block = world.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+            BlockState blockState = world.getBlockState(new BlockPos(x, y - 1, z));
             PathNodeType pathNodeType3 = AmphibiousPathNodeMaker.getCommonNodeType(world, mutable.set(x, y - 1, z));
             pathNodeType = pathNodeType3 == PathNodeType.WALKABLE || pathNodeType3 == PathNodeType.OPEN || pathNodeType3 == PathNodeType.LAVA ? PathNodeType.OPEN : PathNodeType.WALKABLE;
-            if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA_BLOCK || block.isIn(BlockTags.CAMPFIRES)) {
+            if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || blockState.isOf(Blocks.MAGMA_BLOCK) || blockState.isIn(BlockTags.CAMPFIRES)) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;
             }
             if (pathNodeType3 == PathNodeType.DAMAGE_CACTUS) {

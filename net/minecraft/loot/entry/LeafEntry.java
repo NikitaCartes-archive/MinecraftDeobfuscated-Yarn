@@ -47,10 +47,10 @@ extends LootEntry {
     }
 
     @Override
-    public void check(LootTableReporter lootTableReporter) {
-        super.check(lootTableReporter);
+    public void check(LootTableReporter reporter) {
+        super.check(reporter);
         for (int i = 0; i < this.functions.length; ++i) {
-            this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"));
+            this.functions[i].check(reporter.makeChild(".functions[" + i + "]"));
         }
     }
 

@@ -39,7 +39,7 @@ extends PlantBlock {
 
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-        return floor.getBlock() == Blocks.SOUL_SAND;
+        return floor.isOf(Blocks.SOUL_SAND);
     }
 
     @Override

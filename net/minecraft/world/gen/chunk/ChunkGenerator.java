@@ -59,7 +59,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         ((ProtoChunk)chunk).setBiomes(new BiomeArray(chunkPos, this.biomeSource));
     }
 
-    public DimensionType method_27192() {
+    public DimensionType getDimensionType() {
         return this.world.getDimension().getType();
     }
 
@@ -160,7 +160,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
     public void setStructureStarts(StructureAccessor structureAccessor, BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator<?> chunkGenerator, StructureManager structureManager) {
         for (StructureFeature structureFeature : Feature.STRUCTURES.values()) {
-            if (!chunkGenerator.method_27367(structureFeature)) continue;
+            if (!chunkGenerator.hasStructure(structureFeature)) continue;
             StructureStart structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), structureFeature, chunk);
             int i = structureStart != null ? structureStart.getReferences() : 0;
             ChunkRandom chunkRandom = new ChunkRandom();
@@ -176,7 +176,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         }
     }
 
-    public boolean method_27367(StructureFeature<?> structureFeature) {
+    public boolean hasStructure(StructureFeature<?> structureFeature) {
         return this.getBiomeSource().hasStructureFeature(structureFeature);
     }
 

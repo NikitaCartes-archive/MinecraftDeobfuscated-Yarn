@@ -95,7 +95,7 @@ extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (world.isClient() || state.getBlock() == oldState.getBlock()) {
+        if (world.isClient() || state.isOf(oldState.getBlock())) {
             return;
         }
         if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {

@@ -28,18 +28,18 @@ public class BlockPatternBuilder {
         this.charMap.put(Character.valueOf(' '), Predicates.alwaysTrue());
     }
 
-    public BlockPatternBuilder aisle(String ... strings) {
-        if (ArrayUtils.isEmpty(strings) || StringUtils.isEmpty(strings[0])) {
+    public BlockPatternBuilder aisle(String ... pattern) {
+        if (ArrayUtils.isEmpty(pattern) || StringUtils.isEmpty(pattern[0])) {
             throw new IllegalArgumentException("Empty pattern for aisle");
         }
         if (this.aisles.isEmpty()) {
-            this.height = strings.length;
-            this.width = strings[0].length();
+            this.height = pattern.length;
+            this.width = pattern[0].length();
         }
-        if (strings.length != this.height) {
-            throw new IllegalArgumentException("Expected aisle with height of " + this.height + ", but was given one with a height of " + strings.length + ")");
+        if (pattern.length != this.height) {
+            throw new IllegalArgumentException("Expected aisle with height of " + this.height + ", but was given one with a height of " + pattern.length + ")");
         }
-        for (String string : strings) {
+        for (String string : pattern) {
             if (string.length() != this.width) {
                 throw new IllegalArgumentException("Not all rows in the given aisle are the correct width (expected " + this.width + ", found one with " + string.length() + ")");
             }
@@ -48,7 +48,7 @@ public class BlockPatternBuilder {
                 this.charMap.put(Character.valueOf(c), null);
             }
         }
-        this.aisles.add(strings);
+        this.aisles.add(pattern);
         return this;
     }
 
@@ -56,8 +56,8 @@ public class BlockPatternBuilder {
         return new BlockPatternBuilder();
     }
 
-    public BlockPatternBuilder where(char c, Predicate<CachedBlockPosition> predicate) {
-        this.charMap.put(Character.valueOf(c), predicate);
+    public BlockPatternBuilder where(char key, Predicate<CachedBlockPosition> predicate) {
+        this.charMap.put(Character.valueOf(key), predicate);
         return this;
     }
 

@@ -75,7 +75,7 @@ extends ScreenHandler {
                         j = ExperienceOrbEntity.roundToOrbSize(i);
                         world.spawnEntity(new ExperienceOrbEntity((World)world, blockPos.getX(), (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, j));
                     }
-                    world.playLevelEvent(1042, (BlockPos)blockPos, 0);
+                    world.syncWorldEvent(1042, (BlockPos)blockPos, 0);
                 });
                 GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
                 GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);

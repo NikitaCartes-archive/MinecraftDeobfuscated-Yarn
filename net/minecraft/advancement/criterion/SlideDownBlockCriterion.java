@@ -3,16 +3,16 @@
  */
 package net.minecraft.advancement.criterion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.predicate.StatePredicate;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -29,7 +29,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     @Override
-    public Conditions conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+    public Conditions conditionsFromJson(JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
         Block block = SlideDownBlockCriterion.getBlock(jsonObject);
         StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
         if (block != null) {
@@ -37,7 +37,7 @@ extends AbstractCriterion<Conditions> {
                 throw new JsonSyntaxException("Block " + block + " has no property " + key);
             });
         }
-        return new Conditions(block, statePredicate);
+        return new Conditions(extended, block, statePredicate);
     }
 
     @Nullable
@@ -50,12 +50,12 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void test(ServerPlayerEntity player, BlockState state) {
-        this.test(player.getAdvancementTracker(), (T conditions) -> conditions.test(state));
+        this.test(player, (T conditions) -> conditions.test(state));
     }
 
     @Override
-    public /* synthetic */ CriterionConditions conditionsFromJson(JsonObject obj, JsonDeserializationContext context) {
-        return this.conditionsFromJson(obj, context);
+    public /* synthetic */ AbstractCriterionConditions conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        return this.conditionsFromJson(obj, playerPredicate, predicateDeserializer);
     }
 
     public static class Conditions
@@ -63,19 +63,19 @@ extends AbstractCriterion<Conditions> {
         private final Block block;
         private final StatePredicate state;
 
-        public Conditions(@Nullable Block block, StatePredicate state) {
-            super(ID);
+        public Conditions(EntityPredicate.Extended player, @Nullable Block block, StatePredicate state) {
+            super(ID, player);
             this.block = block;
             this.state = state;
         }
 
         public static Conditions create(Block block) {
-            return new Conditions(block, StatePredicate.ANY);
+            return new Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY);
         }
 
         @Override
-        public JsonElement toJson() {
-            JsonObject jsonObject = new JsonObject();
+        public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+            JsonObject jsonObject = super.toJson(predicateSerializer);
             if (this.block != null) {
                 jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
             }
@@ -84,7 +84,7 @@ extends AbstractCriterion<Conditions> {
         }
 
         public boolean test(BlockState state) {
-            if (this.block != null && state.getBlock() != this.block) {
+            if (this.block != null && !state.isOf(this.block)) {
                 return false;
             }
             return this.state.test(state);

@@ -23,7 +23,7 @@ implements Tickable {
 
         @Override
         public void sendStatus(int status) {
-            MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, status, 0);
+            MobSpawnerBlockEntity.this.world.addSyncedBlockEvent(MobSpawnerBlockEntity.this.pos, Blocks.SPAWNER, status, 0);
         }
 
         @Override
@@ -82,11 +82,11 @@ implements Tickable {
     }
 
     @Override
-    public boolean onBlockAction(int i, int j) {
-        if (this.logic.method_8275(i)) {
+    public boolean onSyncedBlockEvent(int type, int data) {
+        if (this.logic.method_8275(type)) {
             return true;
         }
-        return super.onBlockAction(i, j);
+        return super.onSyncedBlockEvent(type, data);
     }
 
     @Override

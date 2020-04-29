@@ -332,7 +332,7 @@ Saddleable {
         }
         BlockState blockState = this.world.getBlockState(pos.up());
         BlockSoundGroup blockSoundGroup = state.getSoundGroup();
-        if (blockState.getBlock() == Blocks.SNOW) {
+        if (blockState.isOf(Blocks.SNOW)) {
             blockSoundGroup = blockState.getSoundGroup();
         }
         if (this.hasPassengers() && this.field_6964) {
@@ -493,7 +493,7 @@ Saddleable {
             this.heal(1.0f);
         }
         if (this.eatsGrass()) {
-            if (!this.isEatingGrass() && !this.hasPassengers() && this.random.nextInt(300) == 0 && this.world.getBlockState(this.getBlockPos().down()).getBlock() == Blocks.GRASS_BLOCK) {
+            if (!this.isEatingGrass() && !this.hasPassengers() && this.random.nextInt(300) == 0 && this.world.getBlockState(this.getBlockPos().down()).isOf(Blocks.GRASS_BLOCK)) {
                 this.setEatingGrass(true);
             }
             if (this.isEatingGrass() && ++this.eatingGrassTicks > 50) {

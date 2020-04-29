@@ -7,7 +7,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.structure.Structure;
@@ -28,8 +28,8 @@ extends StructureProcessor {
     @Override
     @Nullable
     public Structure.StructureBlockInfo process(WorldView worldView, BlockPos pos, BlockPos blockPos, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData structurePlacementData) {
-        Block block = structureBlockInfo2.state.getBlock();
-        if (block != Blocks.JIGSAW) {
+        BlockState blockState = structureBlockInfo2.state;
+        if (!blockState.isOf(Blocks.JIGSAW)) {
             return structureBlockInfo2;
         }
         String string = structureBlockInfo2.tag.getString("final_state");
@@ -39,7 +39,7 @@ extends StructureProcessor {
         } catch (CommandSyntaxException commandSyntaxException) {
             throw new RuntimeException(commandSyntaxException);
         }
-        if (blockArgumentParser.getBlockState().getBlock() == Blocks.STRUCTURE_VOID) {
+        if (blockArgumentParser.getBlockState().isOf(Blocks.STRUCTURE_VOID)) {
             return null;
         }
         return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);

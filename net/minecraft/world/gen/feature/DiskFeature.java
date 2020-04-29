@@ -38,7 +38,7 @@ extends Feature<DiskFeatureConfig> {
                     BlockPos blockPos2 = new BlockPos(k, o, l);
                     BlockState blockState = iWorld.getBlockState(blockPos2);
                     for (BlockState blockState2 : diskFeatureConfig.targets) {
-                        if (blockState2.getBlock() != blockState.getBlock()) continue;
+                        if (!blockState2.isOf(blockState.getBlock())) continue;
                         iWorld.setBlockState(blockPos2, diskFeatureConfig.state, 2);
                         ++i;
                         continue block2;

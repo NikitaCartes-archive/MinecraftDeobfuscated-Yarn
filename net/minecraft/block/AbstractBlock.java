@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -137,7 +138,7 @@ public abstract class AbstractBlock {
 
     @Deprecated
     public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean notify) {
-        if (this.hasBlockEntity() && state.getBlock() != newState.getBlock()) {
+        if (this.hasBlockEntity() && !state.isOf(newState.getBlock())) {
             world.removeBlockEntity(pos);
         }
     }
@@ -148,7 +149,7 @@ public abstract class AbstractBlock {
     }
 
     @Deprecated
-    public boolean onBlockAction(BlockState state, World world, BlockPos pos, int channel, int value) {
+    public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
         return false;
     }
 
@@ -581,8 +582,8 @@ public abstract class AbstractBlock {
             return new Vec3d(((double)((float)(l & 0xFL) / 15.0f) - 0.5) * 0.5, offsetType == OffsetType.XYZ ? ((double)((float)(l >> 4 & 0xFL) / 15.0f) - 1.0) * 0.2 : 0.0, ((double)((float)(l >> 8 & 0xFL) / 15.0f) - 0.5) * 0.5);
         }
 
-        public boolean onBlockAction(World world, BlockPos pos, int channel, int value) {
-            return this.getBlock().onBlockAction(this.asBlockState(), world, pos, channel, value);
+        public boolean onSyncedBlockEvent(World world, BlockPos pos, int type, int data) {
+            return this.getBlock().onSyncedBlockEvent(this.asBlockState(), world, pos, type, data);
         }
 
         public void neighborUpdate(World world, BlockPos pos, Block block, BlockPos posFrom, boolean notify) {
@@ -682,6 +683,14 @@ public abstract class AbstractBlock {
             return this.getBlock().isIn(tag);
         }
 
+        public boolean method_27851(Tag<Block> tag, Predicate<AbstractBlockState> predicate) {
+            return this.getBlock().isIn(tag) && predicate.test(this);
+        }
+
+        public boolean isOf(Block block) {
+            return this.getBlock().is(block);
+        }
+
         public FluidState getFluidState() {
             return this.getBlock().getFluidState(this.asBlockState());
         }
@@ -775,7 +784,7 @@ public abstract class AbstractBlock {
         private boolean opaque = true;
         private boolean isAir;
         private TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(world, pos, Direction.UP) && state.getLuminance() < 14;
-        private ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos) && !state.emitsRedstonePower();
+        private ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
         private ContextPredicate suffocationPredicate;
         private ContextPredicate blockVisionPredicate = this.suffocationPredicate = (state, world, pos) -> this.material.blocksMovement() && state.isFullCube(world, pos);
         private ContextPredicate postProcessPredicate = (state, world, pos) -> false;

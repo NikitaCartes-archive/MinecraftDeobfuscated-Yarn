@@ -51,7 +51,7 @@ extends Block {
             return;
         }
         int i = 1;
-        while (world.getBlockState(pos.down(i)).getBlock() == this) {
+        while (world.getBlockState(pos.down(i)).isOf(this)) {
             ++i;
         }
         if (i >= 3) {
@@ -94,8 +94,8 @@ extends Block {
             if (!material.isSolid() && !world.getFluidState(pos.offset(direction)).matches(FluidTags.LAVA)) continue;
             return false;
         }
-        Block block = world.getBlockState(pos.down()).getBlock();
-        return (block == Blocks.CACTUS || block == Blocks.SAND || block == Blocks.RED_SAND) && !world.getBlockState(pos.up()).getMaterial().isLiquid();
+        BlockState blockState2 = world.getBlockState(pos.down());
+        return (blockState2.isOf(Blocks.CACTUS) || blockState2.isOf(Blocks.SAND) || blockState2.isOf(Blocks.RED_SAND)) && !world.getBlockState(pos.up()).getMaterial().isLiquid();
     }
 
     @Override

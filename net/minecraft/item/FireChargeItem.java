@@ -27,7 +27,7 @@ extends Item {
         BlockPos blockPos = context.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         boolean bl = false;
-        if (blockState.getBlock().isIn(BlockTags.CAMPFIRES)) {
+        if (blockState.method_27851(BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(CampfireBlock.LIT) && abstractBlockState.contains(CampfireBlock.WATERLOGGED))) {
             if (!blockState.get(CampfireBlock.LIT).booleanValue() && !blockState.get(CampfireBlock.WATERLOGGED).booleanValue()) {
                 this.playUseSound(world, blockPos);
                 world.setBlockState(blockPos, (BlockState)blockState.with(CampfireBlock.LIT, true));

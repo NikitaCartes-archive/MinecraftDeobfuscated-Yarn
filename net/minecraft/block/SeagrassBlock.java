@@ -45,7 +45,7 @@ FluidFillable {
 
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-        return floor.isSideSolidFullSquare(world, pos, Direction.UP) && floor.getBlock() != Blocks.MAGMA_BLOCK;
+        return floor.isSideSolidFullSquare(world, pos, Direction.UP) && !floor.isOf(Blocks.MAGMA_BLOCK);
     }
 
     @Override
@@ -87,7 +87,7 @@ FluidFillable {
         BlockState blockState = Blocks.TALL_SEAGRASS.getDefaultState();
         BlockState blockState2 = (BlockState)blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
         BlockPos blockPos = pos.up();
-        if (world.getBlockState(blockPos).getBlock() == Blocks.WATER) {
+        if (world.getBlockState(blockPos).isOf(Blocks.WATER)) {
             world.setBlockState(pos, blockState, 2);
             world.setBlockState(blockPos, blockState2, 2);
         }

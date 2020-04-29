@@ -60,7 +60,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getEffectData() {
+    public int getData() {
         return this.data;
     }
 

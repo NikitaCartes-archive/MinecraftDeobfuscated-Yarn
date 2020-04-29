@@ -108,8 +108,12 @@ public final class TextColor {
     @Nullable
     public static TextColor parse(String name) {
         if (name.startsWith("#")) {
-            int i = Integer.parseInt(name.substring(1), 16);
-            return TextColor.fromRgb(i);
+            try {
+                int i = Integer.parseInt(name.substring(1), 16);
+                return TextColor.fromRgb(i);
+            } catch (NumberFormatException numberFormatException) {
+                return null;
+            }
         }
         return BY_NAME.get(name);
     }

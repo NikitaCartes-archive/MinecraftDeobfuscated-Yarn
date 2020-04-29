@@ -198,7 +198,7 @@ extends BlockWithEntity {
             mutable.move(facing);
             BlockState blockState = world.getBlockState(mutable);
             Block block = blockState.getBlock();
-            if (block != Blocks.CHAIN_COMMAND_BLOCK || !((blockEntity = world.getBlockEntity(mutable)) instanceof CommandBlockBlockEntity) || (commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity).getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) break;
+            if (!blockState.isOf(Blocks.CHAIN_COMMAND_BLOCK) || !((blockEntity = world.getBlockEntity(mutable)) instanceof CommandBlockBlockEntity) || (commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity).getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) break;
             if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
                 CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
                 if (commandBlockBlockEntity.updateConditionMet()) {

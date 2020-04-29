@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.render.model.json.ModelItemPropertyOverrideList;
+import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
@@ -38,6 +38,6 @@ public interface BakedModel {
 
     public ModelTransformation getTransformation();
 
-    public ModelItemPropertyOverrideList getItemPropertyOverrides();
+    public ModelOverrideList getOverrides();
 }
 

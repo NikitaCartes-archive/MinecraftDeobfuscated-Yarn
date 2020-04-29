@@ -83,7 +83,7 @@ extends Block {
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
         DoubleBlockHalf doubleBlockHalf = state.get(HALF);
         if (direction.getAxis() == Direction.Axis.Y && doubleBlockHalf == DoubleBlockHalf.LOWER == (direction == Direction.UP)) {
-            if (newState.getBlock() == this && newState.get(HALF) != doubleBlockHalf) {
+            if (newState.isOf(this) && newState.get(HALF) != doubleBlockHalf) {
                 return (BlockState)((BlockState)((BlockState)((BlockState)state.with(FACING, newState.get(FACING))).with(OPEN, newState.get(OPEN))).with(HINGE, newState.get(HINGE))).with(POWERED, newState.get(POWERED));
             }
             return Blocks.AIR.getDefaultState();
@@ -104,9 +104,9 @@ extends Block {
         DoubleBlockHalf doubleBlockHalf = state.get(HALF);
         BlockPos blockPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.getBlock() == this && blockState.get(HALF) != doubleBlockHalf) {
+        if (blockState.isOf(this) && blockState.get(HALF) != doubleBlockHalf) {
             world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-            world.playLevelEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+            world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
             ItemStack itemStack = player.getMainHandStack();
             if (!world.isClient && !player.isCreative() && player.isUsingEffectiveTool(blockState)) {
                 Block.dropStacks(state, world, pos, null, player, itemStack);
@@ -174,8 +174,8 @@ extends Block {
         BlockPos blockPos6 = blockPos2.offset(direction3);
         BlockState blockState4 = blockView.getBlockState(blockPos6);
         int i = (blockState.isFullCube(blockView, blockPos3) ? -1 : 0) + (blockState2.isFullCube(blockView, blockPos4) ? -1 : 0) + (blockState3.isFullCube(blockView, blockPos5) ? 1 : 0) + (blockState4.isFullCube(blockView, blockPos6) ? 1 : 0);
-        boolean bl = blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
-        boolean bl3 = bl2 = blockState3.getBlock() == this && blockState3.get(HALF) == DoubleBlockHalf.LOWER;
+        boolean bl = blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.LOWER;
+        boolean bl3 = bl2 = blockState3.isOf(this) && blockState3.get(HALF) == DoubleBlockHalf.LOWER;
         if (bl && !bl2 || i > 0) {
             return DoorHinge.RIGHT;
         }
@@ -197,13 +197,13 @@ extends Block {
         }
         state = (BlockState)state.cycle(OPEN);
         world.setBlockState(pos, state, 10);
-        world.playLevelEvent(player, state.get(OPEN) != false ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+        world.syncWorldEvent(player, state.get(OPEN) != false ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
         return ActionResult.SUCCESS;
     }
 
     public void setOpen(World world, BlockPos pos, boolean open) {
         BlockState blockState = world.getBlockState(pos);
-        if (blockState.getBlock() != this || blockState.get(OPEN) == open) {
+        if (!blockState.isOf(this) || blockState.get(OPEN) == open) {
             return;
         }
         world.setBlockState(pos, (BlockState)blockState.with(OPEN, open), 10);
@@ -229,11 +229,11 @@ extends Block {
         if (state.get(HALF) == DoubleBlockHalf.LOWER) {
             return blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
         }
-        return blockState.getBlock() == this;
+        return blockState.isOf(this);
     }
 
     private void playOpenCloseSound(World world, BlockPos pos, boolean open) {
-        world.playLevelEvent(null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+        world.syncWorldEvent(null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
     }
 
     @Override
