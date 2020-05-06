@@ -29,7 +29,7 @@ public class LootContextType {
 			+ "]";
 	}
 
-	public void check(LootTableReporter reporter, LootContextAware parameterConsumer) {
+	public void validate(LootTableReporter reporter, LootContextAware parameterConsumer) {
 		Set<LootContextParameter<?>> set = parameterConsumer.getRequiredParameters();
 		Set<LootContextParameter<?>> set2 = Sets.<LootContextParameter<?>>difference(set, this.allowed);
 		if (!set2.isEmpty()) {

@@ -19,16 +19,16 @@ public class ReferenceLootCondition implements LootCondition {
 	}
 
 	@Override
-	public void check(LootTableReporter reporter) {
+	public void validate(LootTableReporter reporter) {
 		if (reporter.hasCondition(this.id)) {
 			reporter.report("Condition " + this.id + " is recursively called");
 		} else {
-			LootCondition.super.check(reporter);
+			LootCondition.super.validate(reporter);
 			LootCondition lootCondition = reporter.getCondition(this.id);
 			if (lootCondition == null) {
 				reporter.report("Unknown condition table called " + this.id);
 			} else {
-				lootCondition.check(reporter.withTable(".{" + this.id + "}", this.id));
+				lootCondition.validate(reporter.withTable(".{" + this.id + "}", this.id));
 			}
 		}
 	}

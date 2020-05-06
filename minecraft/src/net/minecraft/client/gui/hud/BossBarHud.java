@@ -35,7 +35,7 @@ public class BossBarHud extends DrawableHelper {
 				this.client.getTextureManager().bindTexture(BAR_TEX);
 				this.renderBossBar(matrixStack, k, j, clientBossBar);
 				Text text = clientBossBar.getName();
-				int m = this.client.textRenderer.getStringWidth(text);
+				int m = this.client.textRenderer.getWidth(text);
 				int n = i / 2 - m / 2;
 				int o = j - 9;
 				this.client.textRenderer.drawWithShadow(matrixStack, text, (float)n, (float)o, 16777215);

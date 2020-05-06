@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -190,7 +190,7 @@ public class SquidEntity extends WaterCreatureEntity {
 		this.move(MovementType.SELF, this.getVelocity());
 	}
 
-	public static boolean canSpawn(EntityType<SquidEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<SquidEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return pos.getY() > 45 && pos.getY() < world.getSeaLevel();
 	}
 

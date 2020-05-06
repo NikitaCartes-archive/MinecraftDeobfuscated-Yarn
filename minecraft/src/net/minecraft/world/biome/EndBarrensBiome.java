@@ -2,8 +2,8 @@ package net.minecraft.world.biome;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
@@ -22,7 +22,7 @@ public class EndBarrensBiome extends Biome {
 				.parent(null)
 		);
 		DefaultBiomeFeatures.addEndCities(this);
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
+		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 
 	@Environment(EnvType.CLIENT)

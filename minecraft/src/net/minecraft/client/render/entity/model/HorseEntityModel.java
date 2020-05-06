@@ -171,7 +171,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		float o = horseBaseEntity.getAngryAnimationProgress(h);
 		float p = 1.0F - o;
 		float q = horseBaseEntity.getEatingAnimationProgress(h);
-		boolean bl = horseBaseEntity.field_6957 != 0;
+		boolean bl = horseBaseEntity.tailWagTicks != 0;
 		float r = (float)horseBaseEntity.age + h;
 		this.head.pivotY = 4.0F;
 		this.head.pivotZ = -12.0F;

@@ -114,7 +114,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
-			this.updatePoweredStatus(world, pos, this.method_24417(state, world, pos, notify));
+			this.updatePoweredStatus(world, pos, this.updateCurves(state, world, pos, notify));
 		}
 	}
 

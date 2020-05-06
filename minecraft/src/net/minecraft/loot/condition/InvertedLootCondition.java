@@ -27,9 +27,9 @@ public class InvertedLootCondition implements LootCondition {
 	}
 
 	@Override
-	public void check(LootTableReporter reporter) {
-		LootCondition.super.check(reporter);
-		this.term.check(reporter);
+	public void validate(LootTableReporter reporter) {
+		LootCondition.super.validate(reporter);
+		this.term.validate(reporter);
 	}
 
 	public static LootCondition.Builder builder(LootCondition.Builder term) {

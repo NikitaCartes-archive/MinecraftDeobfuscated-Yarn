@@ -6,6 +6,7 @@ import net.minecraft.client.render.entity.model.VexEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class VexEntityRenderer extends BipedEntityRenderer<VexEntity, VexEntityModel> {
@@ -16,7 +17,7 @@ public class VexEntityRenderer extends BipedEntityRenderer<VexEntity, VexEntityM
 		super(entityRenderDispatcher, new VexEntityModel(), 0.3F);
 	}
 
-	protected int getBlockLight(VexEntity vexEntity, float f) {
+	protected int getBlockLight(VexEntity vexEntity, BlockPos blockPos) {
 		return 15;
 	}
 

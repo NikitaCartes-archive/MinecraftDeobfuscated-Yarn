@@ -119,6 +119,14 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
+	public static VertexConsumer method_27952(VertexConsumerProvider vertexConsumerProvider, RenderLayer renderLayer, boolean bl, boolean bl2) {
+		return bl2
+			? VertexConsumers.dual(
+				vertexConsumerProvider.getBuffer(bl ? RenderLayer.method_27948() : RenderLayer.method_27949()), vertexConsumerProvider.getBuffer(renderLayer)
+			)
+			: vertexConsumerProvider.getBuffer(renderLayer);
+	}
+
 	public static VertexConsumer getArmorVertexConsumer(VertexConsumerProvider vertexConsumers, RenderLayer layer, boolean solid, boolean glint) {
 		return glint
 			? VertexConsumers.dual(vertexConsumers.getBuffer(solid ? RenderLayer.getGlint() : RenderLayer.getEntityGlint()), vertexConsumers.getBuffer(layer))
@@ -220,7 +228,15 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		this.renderGuiItem(MinecraftClient.getInstance().player, stack, x, y);
 	}
 
-	public void renderGuiItem(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y) {
+	public void method_27953(ItemStack itemStack, int i, int j) {
+		this.renderGuiItem(null, itemStack, i, j);
+	}
+
+	public void method_27951(LivingEntity livingEntity, ItemStack itemStack, int i, int j) {
+		this.renderGuiItem(livingEntity, itemStack, i, j);
+	}
+
+	private void renderGuiItem(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y) {
 		if (!itemStack.isEmpty()) {
 			this.zOffset += 50.0F;
 

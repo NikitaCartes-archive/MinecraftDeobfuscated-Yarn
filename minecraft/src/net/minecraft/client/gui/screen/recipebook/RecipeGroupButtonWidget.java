@@ -84,10 +84,10 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		List<ItemStack> list = this.category.getIcons();
 		int i = this.toggled ? -2 : 0;
 		if (list.size() == 1) {
-			itemRenderer.renderGuiItem((ItemStack)list.get(0), this.x + 9 + i, this.y + 5);
+			itemRenderer.method_27953((ItemStack)list.get(0), this.x + 9 + i, this.y + 5);
 		} else if (list.size() == 2) {
-			itemRenderer.renderGuiItem((ItemStack)list.get(0), this.x + 3 + i, this.y + 5);
-			itemRenderer.renderGuiItem((ItemStack)list.get(1), this.x + 14 + i, this.y + 5);
+			itemRenderer.method_27953((ItemStack)list.get(0), this.x + 3 + i, this.y + 5);
+			itemRenderer.method_27953((ItemStack)list.get(1), this.x + 14 + i, this.y + 5);
 		}
 	}
 

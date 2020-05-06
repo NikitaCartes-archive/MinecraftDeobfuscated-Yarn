@@ -46,7 +46,7 @@ public class SwitchSlotTask extends LongRunningTask {
 				}
 
 				LOGGER.error("Couldn't switch world!");
-				this.method_27453(var6.toString());
+				this.error(var6.toString());
 			}
 		}
 	}

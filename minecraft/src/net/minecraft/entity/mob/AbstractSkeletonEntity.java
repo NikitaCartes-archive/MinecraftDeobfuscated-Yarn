@@ -12,7 +12,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.AvoidSunlightGoal;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
@@ -138,8 +138,10 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
 		this.updateAttackType();
@@ -194,8 +196,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public boolean method_25938(RangedWeaponItem rangedWeaponItem) {
-		return rangedWeaponItem == Items.BOW;
+	public boolean canUseRangedWeapon(RangedWeaponItem weapon) {
+		return weapon == Items.BOW;
 	}
 
 	@Override

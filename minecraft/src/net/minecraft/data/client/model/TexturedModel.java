@@ -32,7 +32,7 @@ public class TexturedModel {
 	public static final TexturedModel.Factory END_FOR_TOP_CUBE_COLUMN = makeFactory(Texture::sideAndEndForTop, Models.CUBE_COLUMN);
 	public static final TexturedModel.Factory END_FOR_TOP_CUBE_COLUMN_HORIZONTAL = makeFactory(Texture::sideAndEndForTop, Models.CUBE_COLUMN_HORIZONTAL);
 	public static final TexturedModel.Factory WALL_CUBE_BUTTOM_TOP = makeFactory(Texture::wallSideTopBottom, Models.CUBE_BOTTOM_TOP);
-	public static final TexturedModel.Factory field_23959 = makeFactory(Texture::method_27168, Models.CUBE_TOP);
+	public static final TexturedModel.Factory field_23959 = makeFactory(Texture::method_27168, Models.CUBE_COLUMN);
 	private final Texture texture;
 	private final Model model;
 

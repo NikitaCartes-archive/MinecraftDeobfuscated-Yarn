@@ -17,7 +17,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -63,7 +63,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	);
 	private int conversionTicks = 0;
 	private final BasicInventory inventory = new BasicInventory(8);
-	private boolean field_23738 = false;
+	private boolean cannotHunt = false;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinEntity>>> SENSOR_TYPES = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES,
 		SensorType.NEAREST_PLAYERS,
@@ -130,7 +130,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 			tag.putBoolean("IsImmuneToZombification", true);
 		}
 
-		if (this.field_23738) {
+		if (this.cannotHunt) {
 			tag.putBoolean("CannotHunt", true);
 		}
 
@@ -158,8 +158,8 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		return this.inventory.addStack(stack);
 	}
 
-	protected boolean method_27085(ItemStack itemStack) {
-		return this.inventory.method_27070(itemStack);
+	protected boolean canInsertIntoInventory(ItemStack stack) {
+		return this.inventory.canInsert(stack);
 	}
 
 	@Override
@@ -185,14 +185,16 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
 	}
 
-	public static boolean canSpawn(EntityType<PiglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<PiglinEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		if (spawnType != SpawnType.STRUCTURE) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
+		if (spawnReason != SpawnReason.STRUCTURE) {
 			if (world.getRandom().nextFloat() < 0.2F) {
 				this.setBaby(true);
 			} else if (this.isAdult()) {
@@ -202,7 +204,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 
 		PiglinBrain.setHuntedRecently(this);
 		this.initEquipment(difficulty);
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -286,16 +288,16 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		return this.getDataTracker().get(IMMUNE_TO_ZOMBIFICATION);
 	}
 
-	private void setCannotHunt(boolean bl) {
-		this.field_23738 = bl;
+	private void setCannotHunt(boolean cannotHunt) {
+		this.cannotHunt = cannotHunt;
 	}
 
-	protected boolean method_26952() {
-		return !this.field_23738;
+	protected boolean canHunt() {
+		return !this.cannotHunt;
 	}
 
 	public boolean canConvert() {
-		return this.world.getDimension().getType() == DimensionType.OVERWORLD && !this.isImmuneToZombification() && !this.isAiDisabled();
+		return this.world.getDimension().getType() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
 	}
 
 	@Override
@@ -327,7 +329,7 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 		if (zombifiedPiglinEntity != null) {
 			zombifiedPiglinEntity.copyPositionAndRotation(this);
 			zombifiedPiglinEntity.initialize(
-				world, world.getLocalDifficulty(zombifiedPiglinEntity.getBlockPos()), SpawnType.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null
+				world, world.getLocalDifficulty(zombifiedPiglinEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null
 			);
 			zombifiedPiglinEntity.setBaby(this.isBaby());
 			zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
@@ -420,8 +422,8 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	@Override
-	public boolean method_25938(RangedWeaponItem rangedWeaponItem) {
-		return rangedWeaponItem == Items.CROSSBOW;
+	public boolean canUseRangedWeapon(RangedWeaponItem weapon) {
+		return weapon == Items.CROSSBOW;
 	}
 
 	protected void equipToMainHand(ItemStack stack) {
@@ -429,9 +431,9 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	}
 
 	protected void equipToOffHand(ItemStack stack) {
-		if (stack.getItem() == PiglinBrain.field_23826) {
+		if (stack.getItem() == PiglinBrain.BARTERING_ITEM) {
 			this.equipStack(EquipmentSlot.OFFHAND, stack);
-			this.method_25939(EquipmentSlot.OFFHAND);
+			this.updateDropChances(EquipmentSlot.OFFHAND);
 		} else {
 			this.equipLootStack(EquipmentSlot.OFFHAND, stack);
 		}
@@ -445,19 +447,21 @@ public class PiglinEntity extends HostileEntity implements CrossbowUser {
 	protected boolean method_24846(ItemStack stack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-		return this.isBetterItemFor(stack, itemStack);
+		return this.prefersNewEquipment(stack, itemStack);
 	}
 
 	@Override
-	protected boolean isBetterItemFor(ItemStack itemStack, ItemStack itemStack2) {
-		if (PiglinBrain.isGoldenItem(itemStack.getItem()) && PiglinBrain.isGoldenItem(itemStack2.getItem())) {
-			return super.method_26320(itemStack, itemStack2);
-		} else if (PiglinBrain.isGoldenItem(itemStack.getItem())) {
+	protected boolean prefersNewEquipment(ItemStack newStack, ItemStack oldStack) {
+		boolean bl = PiglinBrain.isGoldenItem(newStack.getItem());
+		boolean bl2 = PiglinBrain.isGoldenItem(oldStack.getItem());
+		if (bl && !bl2) {
 			return true;
-		} else if (PiglinBrain.isGoldenItem(itemStack2.getItem())) {
+		} else if (!bl && bl2) {
 			return false;
 		} else {
-			return this.isAdult() && itemStack2.getItem() == Items.CROSSBOW ? false : super.isBetterItemFor(itemStack, itemStack2);
+			return this.isAdult() && newStack.getItem() != Items.CROSSBOW && oldStack.getItem() == Items.CROSSBOW
+				? false
+				: super.prefersNewEquipment(newStack, oldStack);
 		}
 	}
 

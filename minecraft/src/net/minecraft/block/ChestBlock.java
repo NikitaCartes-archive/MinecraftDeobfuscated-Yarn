@@ -334,7 +334,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		);
 		if (!list.isEmpty()) {
 			for(CatEntity catEntity : list) {
-				if (catEntity.isSitting()) {
+				if (catEntity.isInSittingPose()) {
 					return true;
 				}
 			}

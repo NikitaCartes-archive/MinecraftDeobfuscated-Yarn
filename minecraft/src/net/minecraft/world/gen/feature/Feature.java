@@ -65,7 +65,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"bastion_remnant", new BastionRemnantFeature(BastionRemnantFeatureConfig::deserialize)
 	);
 	public static final Feature<DefaultFeatureConfig> NO_OP = register("no_op", new NoOpFeature(DefaultFeatureConfig::deserialize));
-	public static final Feature<TreeFeatureConfig> TREE = register("tree", new AbstractTreeFeature(TreeFeatureConfig::deserialize));
+	public static final Feature<TreeFeatureConfig> TREE = register("tree", new TreeFeature(TreeFeatureConfig::deserialize));
 	public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig::deserialize));
 	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig::deserialize));
 	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig::deserialize));

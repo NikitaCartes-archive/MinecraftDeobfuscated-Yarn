@@ -6,6 +6,7 @@ import net.minecraft.client.render.entity.model.MagmaCubeEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -16,7 +17,7 @@ public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, 
 		super(entityRenderDispatcher, new MagmaCubeEntityModel<>(), 0.25F);
 	}
 
-	protected int getBlockLight(MagmaCubeEntity magmaCubeEntity, float f) {
+	protected int getBlockLight(MagmaCubeEntity magmaCubeEntity, BlockPos blockPos) {
 		return 15;
 	}
 

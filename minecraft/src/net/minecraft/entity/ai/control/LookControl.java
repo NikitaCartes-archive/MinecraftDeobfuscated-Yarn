@@ -54,7 +54,7 @@ public class LookControl {
 		}
 
 		if (!this.entity.getNavigation().isIdle()) {
-			this.entity.headYaw = MathHelper.capRotation(this.entity.headYaw, this.entity.bodyYaw, (float)this.entity.getBodyYawSpeed());
+			this.entity.headYaw = MathHelper.stepAngleTowards(this.entity.headYaw, this.entity.bodyYaw, (float)this.entity.getBodyYawSpeed());
 		}
 	}
 

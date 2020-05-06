@@ -1,6 +1,6 @@
 package net.minecraft.entity;
 
-public enum SpawnType {
+public enum SpawnReason {
 	NATURAL,
 	CHUNK_GENERATION,
 	SPAWNER,

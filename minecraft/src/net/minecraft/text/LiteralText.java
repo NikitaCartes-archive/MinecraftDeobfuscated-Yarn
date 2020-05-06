@@ -18,7 +18,9 @@ public class LiteralText extends BaseText {
 	}
 
 	public LiteralText copy() {
-		return new LiteralText(this.string);
+		LiteralText literalText = new LiteralText(this.string);
+		literalText.setStyle(this.getStyle());
+		return literalText;
 	}
 
 	@Override

@@ -239,7 +239,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
-		return GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, this);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return GenericContainerScreenHandler.createGeneric9x3(syncId, playerInventory, this);
 	}
 }

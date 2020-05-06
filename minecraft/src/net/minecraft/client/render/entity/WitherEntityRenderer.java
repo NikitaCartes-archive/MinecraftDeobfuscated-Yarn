@@ -7,6 +7,7 @@ import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
@@ -18,7 +19,7 @@ public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, Wither
 		this.addFeature(new WitherArmorFeatureRenderer(this));
 	}
 
-	protected int getBlockLight(WitherEntity witherEntity, float f) {
+	protected int getBlockLight(WitherEntity witherEntity, BlockPos blockPos) {
 		return 15;
 	}
 

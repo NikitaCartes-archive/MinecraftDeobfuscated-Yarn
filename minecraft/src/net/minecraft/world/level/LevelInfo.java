@@ -5,32 +5,41 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 
 public final class LevelInfo {
-	private final String field_24105;
+	private final String name;
 	private final long seed;
 	private final GameMode gameMode;
 	private final boolean structures;
 	private final boolean hardcore;
 	private final LevelGeneratorOptions generatorOptions;
-	private final Difficulty field_24106;
+	private final Difficulty difficulty;
 	private boolean commands;
 	private boolean bonusChest;
-	private final GameRules field_24107;
+	private final GameRules gameRules;
 
-	public LevelInfo(String string, long l, GameMode gameMode, boolean bl, boolean bl2, Difficulty difficulty, LevelGeneratorOptions levelGeneratorOptions) {
-		this(string, l, gameMode, bl, bl2, difficulty, levelGeneratorOptions, new GameRules());
+	public LevelInfo(
+		String name, long seed, GameMode gameMode, boolean structures, boolean hardcore, Difficulty difficulty, LevelGeneratorOptions generatorOptions
+	) {
+		this(name, seed, gameMode, structures, hardcore, difficulty, generatorOptions, new GameRules());
 	}
 
 	public LevelInfo(
-		String string, long l, GameMode gameMode, boolean bl, boolean bl2, Difficulty difficulty, LevelGeneratorOptions levelGeneratorOptions, GameRules gameRules
+		String name,
+		long seed,
+		GameMode gameMode,
+		boolean structures,
+		boolean hardcore,
+		Difficulty difficulty,
+		LevelGeneratorOptions generatorOptions,
+		GameRules gameRules
 	) {
-		this.field_24105 = string;
-		this.seed = l;
+		this.name = name;
+		this.seed = seed;
 		this.gameMode = gameMode;
-		this.structures = bl;
-		this.hardcore = bl2;
-		this.generatorOptions = levelGeneratorOptions;
-		this.field_24106 = difficulty;
-		this.field_24107 = gameRules;
+		this.structures = structures;
+		this.hardcore = hardcore;
+		this.generatorOptions = generatorOptions;
+		this.difficulty = difficulty;
+		this.gameRules = gameRules;
 	}
 
 	public LevelInfo setBonusChest() {
@@ -71,15 +80,15 @@ public final class LevelInfo {
 		return this.commands;
 	}
 
-	public String method_27339() {
-		return this.field_24105;
+	public String getLevelName() {
+		return this.name;
 	}
 
-	public Difficulty method_27340() {
-		return this.field_24106;
+	public Difficulty getDifficulty() {
+		return this.difficulty;
 	}
 
-	public GameRules method_27341() {
-		return this.field_24107;
+	public GameRules getGameRules() {
+		return this.gameRules;
 	}
 }

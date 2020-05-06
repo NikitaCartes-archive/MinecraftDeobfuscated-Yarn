@@ -81,7 +81,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 	}
 
 	@Override
-	public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-		return equipmentSlot == EquipmentSlot.MAINHAND ? this.field_23745 : super.getModifiers(equipmentSlot);
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+		return slot == EquipmentSlot.MAINHAND ? this.field_23745 : super.getAttributeModifiers(slot);
 	}
 }

@@ -57,7 +57,7 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				if (subtitleEntry.getTime() + 3000L <= Util.getMeasuringTimeMs()) {
 					iterator.remove();
 				} else {
-					j = Math.max(j, this.client.textRenderer.getStringWidth(subtitleEntry.getText()));
+					j = Math.max(j, this.client.textRenderer.getWidth(subtitleEntry.getText()));
 				}
 			}
 
@@ -77,7 +77,7 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				int m = 9;
 				int n = m / 2;
 				float f = 1.0F;
-				int o = this.client.textRenderer.getStringWidth(text);
+				int o = this.client.textRenderer.getWidth(text);
 				int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (double)((float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F)));
 				int q = p << 16 | p << 8 | p;
 				RenderSystem.pushMatrix();

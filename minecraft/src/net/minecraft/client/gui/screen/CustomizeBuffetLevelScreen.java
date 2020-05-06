@@ -137,9 +137,9 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderDirtBackground(0);
+		this.renderBackgroundTexture(0);
 		this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.width / 2, 30, 10526880);
 		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.width / 2, 68, 10526880);
 		super.render(matrices, mouseX, mouseY, delta);
@@ -191,7 +191,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 			@Override
 			public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-				BuffetBiomesListWidget.this.drawString(
+				BuffetBiomesListWidget.this.drawStringWithShadow(
 					matrices, CustomizeBuffetLevelScreen.this.textRenderer, Registry.BIOME.get(this.biome).getName().getString(), width + 5, y + 2, 16777215
 				);
 			}

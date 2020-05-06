@@ -32,14 +32,14 @@ public class SaddleFeatureRenderer<T extends Entity & Saddleable, M extends Enti
 		float limbAngle,
 		float limbDistance,
 		float tickDelta,
-		float customAngle,
+		float animationProgress,
 		float headYaw,
 		float headPitch
 	) {
 		if (entity.isSaddled()) {
 			this.getContextModel().copyStateTo(this.model);
 			this.model.animateModel(entity, limbAngle, limbDistance, tickDelta);
-			this.model.setAngles(entity, limbAngle, limbDistance, customAngle, headYaw, headPitch);
+			this.model.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(this.TEXTURE));
 			this.model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		}

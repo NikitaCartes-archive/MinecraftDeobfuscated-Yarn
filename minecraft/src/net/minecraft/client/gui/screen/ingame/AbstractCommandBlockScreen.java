@@ -151,12 +151,12 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("advMode.setCommand"), this.width / 2, 20, 16777215);
-		this.drawString(matrices, this.textRenderer, I18n.translate("advMode.command"), this.width / 2 - 150, 40, 10526880);
+		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("advMode.command"), this.width / 2 - 150, 40, 10526880);
 		this.consoleCommandTextField.render(matrices, mouseX, mouseY, delta);
 		int i = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
 			i += 5 * 9 + 1 + this.getTrackOutputButtonHeight() - 135;
-			this.drawString(matrices, this.textRenderer, I18n.translate("advMode.previousOutput"), this.width / 2 - 150, i + 4, 10526880);
+			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("advMode.previousOutput"), this.width / 2 - 150, i + 4, 10526880);
 			this.previousOutputTextField.render(matrices, mouseX, mouseY, delta);
 		}
 

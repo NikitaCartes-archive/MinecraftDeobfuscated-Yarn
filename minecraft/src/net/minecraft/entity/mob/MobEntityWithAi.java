@@ -2,7 +2,7 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.BlockPos;
@@ -25,7 +25,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 	}
 
 	@Override
-	public boolean canSpawn(IWorld world, SpawnType spawnType) {
+	public boolean canSpawn(IWorld world, SpawnReason spawnReason) {
 		return this.getPathfindingFavor(this.getBlockPos(), world) >= 0.0F;
 	}
 
@@ -40,7 +40,7 @@ public abstract class MobEntityWithAi extends MobEntity {
 		if (entity != null && entity.world == this.world) {
 			this.setPositionTarget(entity.getBlockPos(), 5);
 			float f = this.distanceTo(entity);
-			if (this instanceof TameableEntity && ((TameableEntity)this).isSitting()) {
+			if (this instanceof TameableEntity && ((TameableEntity)this).isInSittingPose()) {
 				if (f > 10.0F) {
 					this.detachLeash(true, true);
 				}

@@ -3,8 +3,8 @@ package net.minecraft.world.biome;
 import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
@@ -27,7 +27,7 @@ public final class EndBiome extends Biome {
 		);
 		this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Feature.END_SPIKE.configure(new EndSpikeFeatureConfig(false, ImmutableList.of(), null)));
 		DefaultBiomeFeatures.addEndCities(this);
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
+		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 
 	@Environment(EnvType.CLIENT)

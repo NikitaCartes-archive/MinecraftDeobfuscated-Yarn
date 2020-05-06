@@ -3,7 +3,7 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -25,7 +25,9 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData();
 		}
@@ -36,7 +38,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		}
 
 		passiveData.countSpawned();
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Nullable

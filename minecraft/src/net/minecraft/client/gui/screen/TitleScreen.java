@@ -299,8 +299,8 @@ public class TitleScreen extends Screen {
 				string = string + I18n.translate("menu.modded");
 			}
 
-			this.drawString(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | l);
-			this.drawString(matrices, this.textRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 16777215 | l);
+			this.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | l);
+			this.drawStringWithShadow(matrices, this.textRenderer, "Copyright Mojang AB. Do not distribute!", this.copyrightTextX, this.height - 10, 16777215 | l);
 			if (mouseX > this.copyrightTextX && mouseX < this.copyrightTextX + this.copyrightTextWidth && mouseY > this.height - 10 && mouseY < this.height) {
 				fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 16777215 | l);
 			}

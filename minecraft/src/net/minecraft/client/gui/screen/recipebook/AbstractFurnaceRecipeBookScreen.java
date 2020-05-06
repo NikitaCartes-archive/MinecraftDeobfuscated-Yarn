@@ -118,7 +118,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 			int k = this.outputSlot.x + i;
 			int l = this.outputSlot.y + j;
 			DrawableHelper.fill(matrixStack, k, l, k + 16, l + 16, 822018048);
-			this.client.getItemRenderer().renderGuiItem(this.client.player, this.getItem().getStackForRender(), k, l);
+			this.client.getItemRenderer().method_27951(this.client.player, this.getItem().getStackForRender(), k, l);
 			RenderSystem.depthFunc(516);
 			DrawableHelper.fill(matrixStack, k, l, k + 16, l + 16, 822083583);
 			RenderSystem.depthFunc(515);

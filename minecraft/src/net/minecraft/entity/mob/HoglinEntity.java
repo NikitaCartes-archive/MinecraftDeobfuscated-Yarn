@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -177,18 +177,20 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		}
 	}
 
-	public static boolean canSpawn(EntityType<HoglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<HoglinEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		if (world.getRandom().nextFloat() < 0.2F) {
 			this.setBaby(true);
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -246,7 +248,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		ZoglinEntity zoglinEntity = EntityType.ZOGLIN.create(word);
 		if (zoglinEntity != null) {
 			zoglinEntity.copyPositionAndRotation(this);
-			zoglinEntity.initialize(word, word.getLocalDifficulty(zoglinEntity.getBlockPos()), SpawnType.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null);
+			zoglinEntity.initialize(word, word.getLocalDifficulty(zoglinEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(this.isBaby()), null);
 			zoglinEntity.setBaby(this.isBaby());
 			zoglinEntity.setAiDisabled(this.isAiDisabled());
 			if (this.hasCustomName()) {
@@ -309,7 +311,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	public boolean canConvert() {
-		return this.world.getDimension().getType() == DimensionType.OVERWORLD && !this.isImmuneToZombification() && !this.isAiDisabled();
+		return this.world.getDimension().getType() != DimensionType.THE_NETHER && !this.isImmuneToZombification() && !this.isAiDisabled();
 	}
 
 	private void setCannotBeHunted(boolean cannotBeHunted) {

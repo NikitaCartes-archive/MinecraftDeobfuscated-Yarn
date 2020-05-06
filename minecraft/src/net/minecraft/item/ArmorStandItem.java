@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import java.util.Random;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -29,7 +29,7 @@ public class ArmorStandItem extends Item {
 			BlockPos blockPos = itemPlacementContext.getBlockPos();
 			ItemStack itemStack = context.getStack();
 			ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND
-				.create(world, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnType.SPAWN_EGG, true, true);
+				.create(world, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
 			if (world.doesNotCollide(armorStandEntity) && world.getEntities(armorStandEntity, armorStandEntity.getBoundingBox()).isEmpty()) {
 				if (!world.isClient) {
 					float f = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;

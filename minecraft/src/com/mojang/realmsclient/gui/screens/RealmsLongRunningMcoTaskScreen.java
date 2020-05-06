@@ -100,7 +100,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements clas
 		}
 
 		if (this.error) {
-			this.drawStringWithShadow(matrices, this.textRenderer, this.errorMessage, this.width / 2, row(8), 16711680);
+			this.drawCenteredText(matrices, this.textRenderer, this.errorMessage, this.width / 2, row(8), 16711680);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

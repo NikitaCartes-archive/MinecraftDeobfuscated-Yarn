@@ -48,12 +48,12 @@ public class LargeTropicalFishEntityModel<T extends Entity> extends TintableComp
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		float f = 1.0F;
 		if (!entity.isTouchingWater()) {
 			f = 1.5F;
 		}
 
-		this.field_3599.yaw = -f * 0.45F * MathHelper.sin(0.6F * customAngle);
+		this.field_3599.yaw = -f * 0.45F * MathHelper.sin(0.6F * animationProgress);
 	}
 }

@@ -82,8 +82,8 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
-		return EntityView.super.intersectsEntities(entity, voxelShape);
+	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
+		return EntityView.super.intersectsEntities(entity, shape);
 	}
 
 	@Override

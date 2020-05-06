@@ -15,7 +15,7 @@ public class EmptyEntry extends LeafEntry {
 	}
 
 	@Override
-	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
 	}
 
 	public static LeafEntry.Builder<?> Serializer() {

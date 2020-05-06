@@ -22,7 +22,7 @@ public interface Trader {
 	TraderOfferList getOffers();
 
 	@Environment(EnvType.CLIENT)
-	void setOffersFromServer(@Nullable TraderOfferList traderOfferList);
+	void setOffersFromServer(@Nullable TraderOfferList offers);
 
 	void trade(TradeOffer offer);
 

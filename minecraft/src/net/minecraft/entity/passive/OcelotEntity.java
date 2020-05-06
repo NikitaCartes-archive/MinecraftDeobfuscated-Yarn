@@ -11,7 +11,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -156,13 +156,13 @@ public class OcelotEntity extends AnimalEntity {
 		return SoundEvents.ENTITY_OCELOT_DEATH;
 	}
 
-	private float method_22329() {
+	private float getAttackDamage() {
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 	}
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		return target.damage(DamageSource.mob(this), this.method_22329());
+		return target.damage(DamageSource.mob(this), this.getAttackDamage());
 	}
 
 	@Override
@@ -238,7 +238,7 @@ public class OcelotEntity extends AnimalEntity {
 		return TAMING_INGREDIENT.test(stack);
 	}
 
-	public static boolean canSpawn(EntityType<OcelotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<OcelotEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return random.nextInt(3) != 0;
 	}
 
@@ -261,13 +261,15 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData();
 			((PassiveEntity.PassiveData)entityData).setBabyChance(1.0F);
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	static class FleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

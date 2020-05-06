@@ -232,7 +232,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final Executor workerExecutor;
 	@Nullable
 	private String serverId;
-	private final StructureManager field_24370;
+	private final StructureManager structureManager;
 	protected final class_5219 field_24372;
 
 	public MinecraftServer(
@@ -265,7 +265,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.dataManager.registerListener(this.commandFunctionManager);
 		this.dataManager.registerListener(this.advancementLoader);
 		this.workerExecutor = Util.getServerWorkerExecutor();
-		this.field_24370 = new StructureManager(this, session, dataFixer);
+		this.structureManager = new StructureManager(this, session, dataFixer);
 	}
 
 	private void initScoreboard(PersistentStateManager persistentStateManager) {
@@ -367,7 +367,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ServerWorld serverWorld2 = this.getWorld(DimensionType.OVERWORLD);
 		if (!lv.isInitialized()) {
 			try {
-				method_27901(serverWorld2, serverWorld2.dimension, lv, this.field_24372.method_27433().hasBonusChest());
+				method_27901(serverWorld2, serverWorld2.dimension, lv, this.field_24372.getLevelInfo().hasBonusChest());
 				lv.setInitialized(true);
 				if (lv.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 					this.setToDebugWorldProperties(this.field_24372);
@@ -1496,7 +1496,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public ServerCommandSource getCommandSource() {
 		return new ServerCommandSource(
 			this,
-			this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : Vec3d.method_24954(this.getWorld(DimensionType.OVERWORLD).method_27911()),
+			this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : Vec3d.of(this.getWorld(DimensionType.OVERWORLD).method_27911()),
 			Vec2f.ZERO,
 			this.getWorld(DimensionType.OVERWORLD),
 			4,
@@ -1805,8 +1805,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return true;
 	}
 
-	public StructureManager method_27727() {
-		return this.field_24370;
+	public StructureManager getStructureManager() {
+		return this.structureManager;
 	}
 
 	public class_5219 method_27728() {

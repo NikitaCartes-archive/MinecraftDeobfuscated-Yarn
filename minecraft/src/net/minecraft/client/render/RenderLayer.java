@@ -69,6 +69,36 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final RenderLayer WATER_MASK = of(
 		"water_mask", VertexFormats.POSITION, 7, 256, RenderLayer.MultiPhaseParameters.builder().texture(NO_TEXTURE).writeMaskState(DEPTH_MASK).build(false)
 	);
+	private static final RenderLayer ARMOR_GLINT = of(
+		"armor_glint",
+		VertexFormats.POSITION_TEXTURE,
+		7,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.writeMaskState(COLOR_MASK)
+			.cull(DISABLE_CULLING)
+			.depthTest(EQUAL_DEPTH_TEST)
+			.transparency(GLINT_TRANSPARENCY)
+			.texturing(GLINT_TEXTURING)
+			.layering(VIEW_OFFSET_Z_LAYERING)
+			.build(false)
+	);
+	private static final RenderLayer ARMOR_ENTITY_GLINT = of(
+		"armor_entity_glint",
+		VertexFormats.POSITION_TEXTURE,
+		7,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.writeMaskState(COLOR_MASK)
+			.cull(DISABLE_CULLING)
+			.depthTest(EQUAL_DEPTH_TEST)
+			.transparency(GLINT_TRANSPARENCY)
+			.texturing(ENTITY_GLINT_TEXTURING)
+			.layering(VIEW_OFFSET_Z_LAYERING)
+			.build(false)
+	);
 	private static final RenderLayer GLINT = of(
 		"glint",
 		VertexFormats.POSITION_TEXTURE,
@@ -95,7 +125,6 @@ public abstract class RenderLayer extends RenderPhase {
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
 			.texturing(ENTITY_GLINT_TEXTURING)
-			.layering(VIEW_OFFSET_Z_LAYERING)
 			.build(false)
 	);
 	private static final RenderLayer LIGHTNING = of(
@@ -375,6 +404,14 @@ public abstract class RenderLayer extends RenderPhase {
 				.target(OUTLINE_TARGET)
 				.build(RenderLayer.OutlineMode.IS_OUTLINE)
 		);
+	}
+
+	public static RenderLayer method_27948() {
+		return ARMOR_GLINT;
+	}
+
+	public static RenderLayer method_27949() {
+		return ARMOR_ENTITY_GLINT;
 	}
 
 	public static RenderLayer getGlint() {

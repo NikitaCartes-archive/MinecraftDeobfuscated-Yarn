@@ -500,8 +500,8 @@ public class EntitySelectorOptions {
 									return false;
 								} else {
 									LootContext lootContext = new LootContext.Builder(serverWorld)
-										.put(LootContextParameters.THIS_ENTITY, entity)
-										.put(LootContextParameters.POSITION, entity.getBlockPos())
+										.parameter(LootContextParameters.THIS_ENTITY, entity)
+										.parameter(LootContextParameters.POSITION, entity.getBlockPos())
 										.build(LootContextTypes.SELECTOR);
 									return bl ^ lootCondition.test(lootContext);
 								}

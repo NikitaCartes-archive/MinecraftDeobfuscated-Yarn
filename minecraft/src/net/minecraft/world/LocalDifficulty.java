@@ -8,9 +8,9 @@ public class LocalDifficulty {
 	private final Difficulty globalDifficulty;
 	private final float localDifficulty;
 
-	public LocalDifficulty(Difficulty difficulty, long timeOfDay, long l, float f) {
+	public LocalDifficulty(Difficulty difficulty, long timeOfDay, long inhabitedTime, float moonSize) {
 		this.globalDifficulty = difficulty;
-		this.localDifficulty = this.setLocalDifficulty(difficulty, timeOfDay, l, f);
+		this.localDifficulty = this.setLocalDifficulty(difficulty, timeOfDay, inhabitedTime, moonSize);
 	}
 
 	public Difficulty getGlobalDifficulty() {
@@ -33,23 +33,23 @@ public class LocalDifficulty {
 		}
 	}
 
-	private float setLocalDifficulty(Difficulty difficulty, long timeOfDay, long l, float f) {
+	private float setLocalDifficulty(Difficulty difficulty, long timeOfDay, long inhabitedTime, float moonSize) {
 		if (difficulty == Difficulty.PEACEFUL) {
 			return 0.0F;
 		} else {
 			boolean bl = difficulty == Difficulty.HARD;
-			float g = 0.75F;
-			float h = MathHelper.clamp(((float)timeOfDay + -72000.0F) / 1440000.0F, 0.0F, 1.0F) * 0.25F;
-			g += h;
-			float i = 0.0F;
-			i += MathHelper.clamp((float)l / 3600000.0F, 0.0F, 1.0F) * (bl ? 1.0F : 0.75F);
-			i += MathHelper.clamp(f * 0.25F, 0.0F, h);
+			float f = 0.75F;
+			float g = MathHelper.clamp(((float)timeOfDay + -72000.0F) / 1440000.0F, 0.0F, 1.0F) * 0.25F;
+			f += g;
+			float h = 0.0F;
+			h += MathHelper.clamp((float)inhabitedTime / 3600000.0F, 0.0F, 1.0F) * (bl ? 1.0F : 0.75F);
+			h += MathHelper.clamp(moonSize * 0.25F, 0.0F, g);
 			if (difficulty == Difficulty.EASY) {
-				i *= 0.5F;
+				h *= 0.5F;
 			}
 
-			g += i;
-			return (float)difficulty.getId() * g;
+			f += h;
+			return (float)difficulty.getId() * f;
 		}
 	}
 }

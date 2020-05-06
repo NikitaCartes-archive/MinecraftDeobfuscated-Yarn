@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -120,8 +120,8 @@ public class SilverfishEntity extends HostileEntity {
 		return InfestedBlock.isInfestable(world.getBlockState(pos.down())) ? 10.0F : super.getPathfindingFavor(pos, world);
 	}
 
-	public static boolean canSpawn(EntityType<SilverfishEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-		if (canSpawnIgnoreLightLevel(type, world, spawnType, pos, random)) {
+	public static boolean canSpawn(EntityType<SilverfishEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		if (canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random)) {
 			PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0, true);
 			return playerEntity == null;
 		} else {

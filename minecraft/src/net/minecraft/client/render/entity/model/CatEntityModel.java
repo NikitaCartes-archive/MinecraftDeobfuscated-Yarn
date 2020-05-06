@@ -35,7 +35,7 @@ public class CatEntityModel<T extends CatEntity> extends OcelotEntityModel<T> {
 		}
 
 		super.animateModel(catEntity, f, g, h);
-		if (catEntity.isSitting()) {
+		if (catEntity.isInSittingPose()) {
 			this.torso.pitch = (float) (Math.PI / 4);
 			this.torso.pivotY += -4.0F;
 			this.torso.pivotZ += 5.0F;

@@ -224,7 +224,7 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 
 		DrawableHelper.drawTexture(matrixStack, i, j + 12, 0.0F, 0.0F, 60, 60, 60, 60);
 		int k = bl ? 10526880 : 16777215;
-		this.drawStringWithShadow(matrixStack, this.textRenderer, text, i + 30, j, k);
+		this.drawCenteredText(matrixStack, this.textRenderer, text, i + 30, j, k);
 	}
 
 	@Override

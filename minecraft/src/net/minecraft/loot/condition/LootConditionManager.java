@@ -44,7 +44,7 @@ public class LootConditionManager extends JsonDataLoader {
 		});
 		Map<Identifier, LootCondition> map2 = builder.build();
 		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, map2::get, identifier -> null);
-		map2.forEach((identifier, lootCondition) -> lootCondition.check(lootTableReporter.withCondition("{" + identifier + "}", identifier)));
+		map2.forEach((identifier, lootCondition) -> lootCondition.validate(lootTableReporter.withCondition("{" + identifier + "}", identifier)));
 		lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
 		this.conditions = map2;
 	}

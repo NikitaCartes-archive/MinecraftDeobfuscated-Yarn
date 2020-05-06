@@ -213,7 +213,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			}
 
 			RenderSystem.enableDepthTest();
-			this.itemRenderer.renderGuiItem(this.client.player, itemStack, i, j);
+			this.itemRenderer.method_27951(this.client.player, itemStack, i, j);
 			this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i, j, string);
 		}
 

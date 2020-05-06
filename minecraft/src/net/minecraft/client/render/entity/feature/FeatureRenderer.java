@@ -77,7 +77,7 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		float limbAngle,
 		float limbDistance,
 		float tickDelta,
-		float customAngle,
+		float animationProgress,
 		float headYaw,
 		float headPitch
 	);

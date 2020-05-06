@@ -15,7 +15,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -206,7 +206,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		villagerEntity.copyPositionAndRotation(this);
 		villagerEntity.setVillagerData(this.getVillagerData());
 		if (this.gossipData != null) {
-			villagerEntity.method_21650(this.gossipData);
+			villagerEntity.setGossipDataFromTag(this.gossipData);
 		}
 
 		if (this.offerData != null) {
@@ -214,7 +214,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		villagerEntity.setExperience(this.xp);
-		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnType.CONVERSION, null, null);
+		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
 		if (this.isBaby()) {
 			villagerEntity.setBreedingAge(-24000);
 		}
@@ -311,9 +311,11 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public void setVillagerData(VillagerData data) {

@@ -58,9 +58,9 @@ public class SpawnRestriction {
 		return entry == null ? Heightmap.Type.MOTION_BLOCKING_NO_LEAVES : entry.heightmapType;
 	}
 
-	public static <T extends Entity> boolean canSpawn(EntityType<T> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static <T extends Entity> boolean canSpawn(EntityType<T> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		SpawnRestriction.Entry entry = (SpawnRestriction.Entry)RESTRICTIONS.get(type);
-		return entry == null || entry.predicate.test(type, world, spawnType, pos, random);
+		return entry == null || entry.predicate.test(type, world, spawnReason, pos, random);
 	}
 
 	static {
@@ -154,6 +154,6 @@ public class SpawnRestriction {
 
 	@FunctionalInterface
 	public interface SpawnPredicate<T extends Entity> {
-		boolean test(EntityType<T> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random);
+		boolean test(EntityType<T> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random);
 	}
 }

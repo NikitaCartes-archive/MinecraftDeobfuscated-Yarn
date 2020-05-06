@@ -36,7 +36,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -340,14 +340,14 @@ public class DebugHud extends DrawableHelper {
 			if (serverWorld != null) {
 				SpawnHelper.Info info = serverWorld.getChunkManager().getSpawnInfo();
 				if (info != null) {
-					Object2IntMap<EntityCategory> object2IntMap = info.getCategoryToCount();
+					Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();
 					int k = info.getSpawningChunkCount();
 					list.add(
 						"SC: "
 							+ k
 							+ ", "
-							+ (String)Stream.of(EntityCategory.values())
-								.map(entityCategory -> Character.toUpperCase(entityCategory.getName().charAt(0)) + ": " + object2IntMap.getInt(entityCategory))
+							+ (String)Stream.of(SpawnGroup.values())
+								.map(spawnGroup -> Character.toUpperCase(spawnGroup.getName().charAt(0)) + ": " + object2IntMap.getInt(spawnGroup))
 								.collect(Collectors.joining(", "))
 					);
 				} else {

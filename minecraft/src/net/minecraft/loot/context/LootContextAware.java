@@ -9,7 +9,7 @@ public interface LootContextAware {
 		return ImmutableSet.of();
 	}
 
-	default void check(LootTableReporter reporter) {
-		reporter.checkContext(this);
+	default void validate(LootTableReporter reporter) {
+		reporter.validateContext(this);
 	}
 }

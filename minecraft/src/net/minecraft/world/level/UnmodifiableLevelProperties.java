@@ -66,7 +66,7 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public void setClearWeatherTime(int i) {
+	public void setClearWeatherTime(int clearWeatherTime) {
 	}
 
 	@Override
@@ -95,48 +95,48 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public void method_27416(int i) {
+	public void setSpawnX(int spawnX) {
 	}
 
 	@Override
-	public void method_27417(int i) {
+	public void setSpawnY(int spawnY) {
 	}
 
 	@Override
-	public void method_27419(int i) {
+	public void setSpawnZ(int spawnZ) {
 	}
 
 	@Override
-	public void setTime(long l) {
+	public void setTime(long time) {
 	}
 
 	@Override
-	public void setTimeOfDay(long l) {
+	public void setTimeOfDay(long timeOfDay) {
 	}
 
 	@Override
-	public void setSpawnPos(BlockPos blockPos) {
+	public void setSpawnPos(BlockPos pos) {
 	}
 
 	@Override
-	public void setThundering(boolean bl) {
+	public void setThundering(boolean thundering) {
 	}
 
 	@Override
-	public void setThunderTime(int i) {
+	public void setThunderTime(int thunderTime) {
 	}
 
 	@Override
-	public void setRaining(boolean bl) {
+	public void setRaining(boolean raining) {
 	}
 
 	@Override
-	public void setRainTime(int i) {
+	public void setRainTime(int rainTime) {
 	}
 
 	@Override
-	public boolean method_27420() {
-		return this.properties.method_27420();
+	public boolean hasStructures() {
+		return this.properties.hasStructures();
 	}
 
 	@Override
@@ -154,8 +154,8 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public LevelGeneratorOptions method_27421() {
-		return this.properties.method_27421();
+	public LevelGeneratorOptions getGeneratorOptions() {
+		return this.properties.getGeneratorOptions();
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public void setInitialized(boolean bl) {
+	public void setInitialized(boolean initialized) {
 	}
 
 	@Override
@@ -202,13 +202,13 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public void setWorldData(CompoundTag compoundTag) {
-		this.field_24179.method_27435(this.field_24178, compoundTag);
+	public void setWorldData(CompoundTag tag) {
+		this.field_24179.setWorldData(this.field_24178, tag);
 	}
 
 	@Override
 	public CompoundTag getWorldData() {
-		return this.field_24179.method_27434(this.field_24178);
+		return this.field_24179.getWorldData(this.field_24178);
 	}
 
 	@Override
@@ -217,7 +217,7 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public void setWanderingTraderSpawnDelay(int i) {
+	public void setWanderingTraderSpawnDelay(int wanderingTraderSpawnDelay) {
 	}
 
 	@Override
@@ -226,11 +226,11 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public void setWanderingTraderSpawnChance(int i) {
+	public void setWanderingTraderSpawnChance(int wanderingTraderSpawnChance) {
 	}
 
 	@Override
-	public void setWanderingTraderId(UUID uUID) {
+	public void setWanderingTraderId(UUID uuid) {
 	}
 
 	@Override

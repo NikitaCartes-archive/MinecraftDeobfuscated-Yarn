@@ -41,11 +41,16 @@ public class WanderAroundTask extends Task<MobEntity> {
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
 		Brain<?> brain = mobEntity.getBrain();
 		WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
-		if (!this.hasReached(mobEntity, walkTarget) && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
+		boolean bl = this.hasReached(mobEntity, walkTarget);
+		if (!bl && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
 			this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
 			return true;
 		} else {
 			brain.forget(MemoryModuleType.WALK_TARGET);
+			if (bl) {
+				brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+			}
+
 			return false;
 		}
 	}
@@ -113,7 +118,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 				return true;
 			}
 
-			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)mobEntity, 10, 7, Vec3d.method_24955(blockPos));
+			Vec3d vec3d = TargetFinder.findTargetTowards((MobEntityWithAi)mobEntity, 10, 7, Vec3d.ofBottomCenter(blockPos));
 			if (vec3d != null) {
 				this.path = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
 				return this.path != null;

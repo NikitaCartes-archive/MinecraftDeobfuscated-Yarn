@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -67,7 +67,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	public RabbitEntity(EntityType<? extends RabbitEntity> entityType, World world) {
 		super(entityType, world);
-		this.jumpControl = new RabbitEntity.class_5197(this);
+		this.jumpControl = new RabbitEntity.RabbitJumpControl(this);
 		this.moveControl = new RabbitEntity.RabbitMoveControl(this);
 		this.setSpeed(0.0);
 	}
@@ -120,8 +120,8 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_6605(float f) {
-		return this.jumpDuration == 0 ? 0.0F : ((float)this.jumpTicks + f) / (float)this.jumpDuration;
+	public float getJumpProgress(float delta) {
+		return this.jumpDuration == 0 ? 0.0F : ((float)this.jumpTicks + delta) / (float)this.jumpDuration;
 	}
 
 	public void setSpeed(double speed) {
@@ -165,7 +165,7 @@ public class RabbitEntity extends AnimalEntity {
 		if (this.onGround) {
 			if (!this.lastOnGround) {
 				this.setJumping(false);
-				this.method_6619();
+				this.scheduleJump();
 			}
 
 			if (this.getRabbitType() == 99 && this.ticksUntilJump == 0) {
@@ -178,8 +178,8 @@ public class RabbitEntity extends AnimalEntity {
 				}
 			}
 
-			RabbitEntity.class_5197 lv = (RabbitEntity.class_5197)this.jumpControl;
-			if (!lv.method_27312()) {
+			RabbitEntity.RabbitJumpControl rabbitJumpControl = (RabbitEntity.RabbitJumpControl)this.jumpControl;
+			if (!rabbitJumpControl.isActive()) {
 				if (this.moveControl.isMoving() && this.ticksUntilJump == 0) {
 					Path path = this.navigation.getCurrentPath();
 					Vec3d vec3d = new Vec3d(this.moveControl.getTargetX(), this.moveControl.getTargetY(), this.moveControl.getTargetZ());
@@ -190,7 +190,7 @@ public class RabbitEntity extends AnimalEntity {
 					this.lookTowards(vec3d.x, vec3d.z);
 					this.startJump();
 				}
-			} else if (!lv.method_27313()) {
+			} else if (!rabbitJumpControl.method_27313()) {
 				this.method_6611();
 			}
 		}
@@ -199,7 +199,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_27298() {
+	public boolean shouldSpawnSprintingParticles() {
 		return false;
 	}
 
@@ -208,14 +208,14 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	private void method_6611() {
-		((RabbitEntity.class_5197)this.jumpControl).method_27311(true);
+		((RabbitEntity.RabbitJumpControl)this.jumpControl).method_27311(true);
 	}
 
 	private void method_6621() {
-		((RabbitEntity.class_5197)this.jumpControl).method_27311(false);
+		((RabbitEntity.RabbitJumpControl)this.jumpControl).method_27311(false);
 	}
 
-	private void scheduleJump() {
+	private void doScheduleJump() {
 		if (this.moveControl.getSpeed() < 2.2) {
 			this.ticksUntilJump = 10;
 		} else {
@@ -223,8 +223,8 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	private void method_6619() {
-		this.scheduleJump();
+	private void scheduleJump() {
+		this.doScheduleJump();
 		this.method_6621();
 	}
 
@@ -342,7 +342,9 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		int i = this.chooseType(world);
 		if (entityData instanceof RabbitEntity.RabbitData) {
 			i = ((RabbitEntity.RabbitData)entityData).type;
@@ -351,7 +353,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		this.setRabbitType(i);
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private int chooseType(IWorld world) {
@@ -366,7 +368,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	public static boolean canSpawn(EntityType<RabbitEntity> entity, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<RabbitEntity> entity, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		BlockState blockState = world.getBlockState(pos.down());
 		return (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.SNOW) || blockState.isOf(Blocks.SAND)) && world.getBaseLightLevel(pos, 0) > 8;
 	}
@@ -390,7 +392,7 @@ public class RabbitEntity extends AnimalEntity {
 	static class EatCarrotCropGoal extends MoveToTargetPosGoal {
 		private final RabbitEntity rabbit;
 		private boolean wantsCarrots;
-		private boolean field_6861;
+		private boolean hasTarget;
 
 		public EatCarrotCropGoal(RabbitEntity rabbit) {
 			super(rabbit, 0.7F, 16);
@@ -404,7 +406,7 @@ public class RabbitEntity extends AnimalEntity {
 					return false;
 				}
 
-				this.field_6861 = false;
+				this.hasTarget = false;
 				this.wantsCarrots = this.rabbit.wantsCarrots();
 				this.wantsCarrots = true;
 			}
@@ -414,7 +416,7 @@ public class RabbitEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return this.field_6861 && super.shouldContinue();
+			return this.hasTarget && super.shouldContinue();
 		}
 
 		@Override
@@ -434,7 +436,7 @@ public class RabbitEntity extends AnimalEntity {
 				BlockPos blockPos = this.targetPos.up();
 				BlockState blockState = world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
-				if (this.field_6861 && block instanceof CarrotsBlock) {
+				if (this.hasTarget && block instanceof CarrotsBlock) {
 					Integer integer = blockState.get(CarrotsBlock.AGE);
 					if (integer == 0) {
 						world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
@@ -447,7 +449,7 @@ public class RabbitEntity extends AnimalEntity {
 					this.rabbit.moreCarrotTicks = 40;
 				}
 
-				this.field_6861 = false;
+				this.hasTarget = false;
 				this.cooldown = 10;
 			}
 		}
@@ -455,12 +457,12 @@ public class RabbitEntity extends AnimalEntity {
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
 			Block block = world.getBlockState(pos).getBlock();
-			if (block == Blocks.FARMLAND && this.wantsCarrots && !this.field_6861) {
+			if (block == Blocks.FARMLAND && this.wantsCarrots && !this.hasTarget) {
 				pos = pos.up();
 				BlockState blockState = world.getBlockState(pos);
 				block = blockState.getBlock();
 				if (block instanceof CarrotsBlock && ((CarrotsBlock)block).isMature(blockState)) {
-					this.field_6861 = true;
+					this.hasTarget = true;
 					return true;
 				}
 			}
@@ -518,49 +520,16 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	static class RabbitMoveControl extends MoveControl {
+	public class RabbitJumpControl extends JumpControl {
 		private final RabbitEntity rabbit;
-		private double field_6858;
-
-		public RabbitMoveControl(RabbitEntity owner) {
-			super(owner);
-			this.rabbit = owner;
-		}
-
-		@Override
-		public void tick() {
-			if (this.rabbit.onGround && !this.rabbit.jumping && !((RabbitEntity.class_5197)this.rabbit.jumpControl).method_27312()) {
-				this.rabbit.setSpeed(0.0);
-			} else if (this.isMoving()) {
-				this.rabbit.setSpeed(this.field_6858);
-			}
-
-			super.tick();
-		}
-
-		@Override
-		public void moveTo(double x, double y, double z, double speed) {
-			if (this.rabbit.isTouchingWater()) {
-				speed = 1.5;
-			}
-
-			super.moveTo(x, y, z, speed);
-			if (speed > 0.0) {
-				this.field_6858 = speed;
-			}
-		}
-	}
-
-	public class class_5197 extends JumpControl {
-		private final RabbitEntity field_24090;
 		private boolean field_24091;
 
-		public class_5197(RabbitEntity rabbitEntity2) {
-			super(rabbitEntity2);
-			this.field_24090 = rabbitEntity2;
+		public RabbitJumpControl(RabbitEntity rabbit) {
+			super(rabbit);
+			this.rabbit = rabbit;
 		}
 
-		public boolean method_27312() {
+		public boolean isActive() {
 			return this.active;
 		}
 
@@ -575,8 +544,41 @@ public class RabbitEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			if (this.active) {
-				this.field_24090.startJump();
+				this.rabbit.startJump();
 				this.active = false;
+			}
+		}
+	}
+
+	static class RabbitMoveControl extends MoveControl {
+		private final RabbitEntity rabbit;
+		private double rabbitSpeed;
+
+		public RabbitMoveControl(RabbitEntity owner) {
+			super(owner);
+			this.rabbit = owner;
+		}
+
+		@Override
+		public void tick() {
+			if (this.rabbit.onGround && !this.rabbit.jumping && !((RabbitEntity.RabbitJumpControl)this.rabbit.jumpControl).isActive()) {
+				this.rabbit.setSpeed(0.0);
+			} else if (this.isMoving()) {
+				this.rabbit.setSpeed(this.rabbitSpeed);
+			}
+
+			super.tick();
+		}
+
+		@Override
+		public void moveTo(double x, double y, double z, double speed) {
+			if (this.rabbit.isTouchingWater()) {
+				speed = 1.5;
+			}
+
+			super.moveTo(x, y, z, speed);
+			if (speed > 0.0) {
+				this.rabbitSpeed = speed;
 			}
 		}
 	}

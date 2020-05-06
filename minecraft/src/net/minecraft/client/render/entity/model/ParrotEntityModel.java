@@ -190,7 +190,7 @@ public class ParrotEntityModel extends CompositeEntityModel<ParrotEntity> {
 	private static ParrotEntityModel.Pose getPose(ParrotEntity parrot) {
 		if (parrot.getSongPlaying()) {
 			return ParrotEntityModel.Pose.PARTY;
-		} else if (parrot.isSitting()) {
+		} else if (parrot.isInSittingPose()) {
 			return ParrotEntityModel.Pose.SITTING;
 		} else {
 			return parrot.isInAir() ? ParrotEntityModel.Pose.FLYING : ParrotEntityModel.Pose.STANDING;

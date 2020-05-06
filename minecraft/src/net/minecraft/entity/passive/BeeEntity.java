@@ -244,7 +244,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 	}
 
 	private void startMovingTo(BlockPos pos) {
-		Vec3d vec3d = Vec3d.method_24955(pos);
+		Vec3d vec3d = Vec3d.ofBottomCenter(pos);
 		int i = 0;
 		BlockPos blockPos = this.getBlockPos();
 		int j = (int)vec3d.y - blockPos.getY();
@@ -707,7 +707,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		private Vec3d getRandomLocation() {
 			Vec3d vec3d2;
 			if (BeeEntity.this.isHiveValid() && !BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 22)) {
-				Vec3d vec3d = Vec3d.method_24953(BeeEntity.this.hivePos);
+				Vec3d vec3d = Vec3d.ofCenter(BeeEntity.this.hivePos);
 				vec3d2 = vec3d.subtract(BeeEntity.this.getPos()).normalize();
 			} else {
 				vec3d2 = BeeEntity.this.getRotationVec(0.0F);
@@ -923,7 +923,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		private List<BlockPos> possibleHives = Lists.<BlockPos>newArrayList();
 		@Nullable
 		private Path path = null;
-		private int field_23133;
+		private int ticksUntilLost;
 
 		MoveToHiveGoal() {
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
@@ -946,14 +946,14 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 		@Override
 		public void start() {
 			this.ticks = 0;
-			this.field_23133 = 0;
+			this.ticksUntilLost = 0;
 			super.start();
 		}
 
 		@Override
 		public void stop() {
 			this.ticks = 0;
-			this.field_23133 = 0;
+			this.ticksUntilLost = 0;
 			BeeEntity.this.navigation.stop();
 			BeeEntity.this.navigation.resetRangeMultiplier();
 		}
@@ -967,7 +967,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 				} else if (!BeeEntity.this.navigation.isFollowingPath()) {
 					if (!BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 16)) {
 						if (BeeEntity.this.isTooFar(BeeEntity.this.hivePos)) {
-							this.reset();
+							this.setLost();
 						} else {
 							BeeEntity.this.startMovingTo(BeeEntity.this.hivePos);
 						}
@@ -976,10 +976,10 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 						if (!bl) {
 							this.makeChosenHivePossibleHive();
 						} else if (this.path != null && BeeEntity.this.navigation.getCurrentPath().equalsPath(this.path)) {
-							++this.field_23133;
-							if (this.field_23133 > 60) {
-								this.reset();
-								this.field_23133 = 0;
+							++this.ticksUntilLost;
+							if (this.ticksUntilLost > 60) {
+								this.setLost();
+								this.ticksUntilLost = 0;
 							}
 						} else {
 							this.path = BeeEntity.this.navigation.getCurrentPath();
@@ -1016,10 +1016,10 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 				this.addPossibleHive(BeeEntity.this.hivePos);
 			}
 
-			this.reset();
+			this.setLost();
 		}
 
-		private void reset() {
+		private void setLost() {
 			BeeEntity.this.hivePos = null;
 			BeeEntity.this.ticksLeftToFindHive = 200;
 		}
@@ -1156,7 +1156,7 @@ public class BeeEntity extends AnimalEntity implements Flutterer {
 			if (this.ticks > 600) {
 				BeeEntity.this.flowerPos = null;
 			} else {
-				Vec3d vec3d = Vec3d.method_24955(BeeEntity.this.flowerPos).add(0.0, 0.6F, 0.0);
+				Vec3d vec3d = Vec3d.ofBottomCenter(BeeEntity.this.flowerPos).add(0.0, 0.6F, 0.0);
 				if (vec3d.distanceTo(BeeEntity.this.getPos()) > 1.0) {
 					this.nextTarget = vec3d;
 					this.moveToNextTarget();

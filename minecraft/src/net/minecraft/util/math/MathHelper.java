@@ -227,20 +227,31 @@ public class MathHelper {
 		return abs(subtractAngles(first, second));
 	}
 
-	public static float capRotation(float start, float end, float speed) {
-		float f = subtractAngles(start, end);
-		float g = clamp(f, -speed, speed);
-		return end - g;
+	/**
+	 * Steps from {@code from} degrees towards {@code to} degrees, changing the value by at most {@code step} degrees.
+	 */
+	public static float stepAngleTowards(float from, float to, float step) {
+		float f = subtractAngles(from, to);
+		float g = clamp(f, -step, step);
+		return to - g;
 	}
 
-	public static float method_15348(float f, float g, float h) {
-		h = abs(h);
-		return f < g ? clamp(f + h, f, g) : clamp(f - h, g, f);
+	/**
+	 * Steps from {@code from} towards {@code to}, changing the value by at most {@code step}.
+	 */
+	public static float stepTowards(float from, float to, float step) {
+		step = abs(step);
+		return from < to ? clamp(from + step, from, to) : clamp(from - step, to, from);
 	}
 
-	public static float method_15388(float f, float g, float h) {
-		float i = subtractAngles(f, g);
-		return method_15348(f, f + i, h);
+	/**
+	 * Steps from {@code from} degrees towards {@code to} degrees, changing the value by at most {@code step} degrees.
+	 * 
+	 * <p>This method does not wrap the resulting angle, so {@link #stepAngleTowards(float, float, float)} should be used in preference.</p>
+	 */
+	public static float stepUnwrappedAngleTowards(float from, float to, float step) {
+		float f = subtractAngles(from, to);
+		return stepTowards(from, from + f, step);
 	}
 
 	@Environment(EnvType.CLIENT)

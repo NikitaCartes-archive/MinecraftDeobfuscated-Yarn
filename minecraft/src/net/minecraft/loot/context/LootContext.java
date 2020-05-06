@@ -26,7 +26,7 @@ public class LootContext {
 	private final float luck;
 	private final ServerWorld world;
 	private final Function<Identifier, LootTable> tableGetter;
-	private final Set<LootTable> tables = Sets.<LootTable>newLinkedHashSet();
+	private final Set<LootTable> activeTables = Sets.<LootTable>newLinkedHashSet();
 	private final Function<Identifier, LootCondition> conditionGetter;
 	private final Set<LootCondition> conditions = Sets.<LootCondition>newLinkedHashSet();
 	private final Map<LootContextParameter<?>, Object> parameters;
@@ -54,10 +54,10 @@ public class LootContext {
 		return this.parameters.containsKey(parameter);
 	}
 
-	public void drop(Identifier id, Consumer<ItemStack> itemDropper) {
+	public void drop(Identifier id, Consumer<ItemStack> lootConsumer) {
 		LootContext.Dropper dropper = (LootContext.Dropper)this.drops.get(id);
 		if (dropper != null) {
-			dropper.add(this, itemDropper);
+			dropper.add(this, lootConsumer);
 		}
 	}
 
@@ -66,12 +66,12 @@ public class LootContext {
 		return (T)this.parameters.get(parameter);
 	}
 
-	public boolean addDrop(LootTable supplier) {
-		return this.tables.add(supplier);
+	public boolean markActive(LootTable table) {
+		return this.activeTables.add(table);
 	}
 
-	public void removeDrop(LootTable supplier) {
-		this.tables.remove(supplier);
+	public void markInactive(LootTable table) {
+		this.activeTables.remove(table);
 	}
 
 	public boolean addCondition(LootCondition condition) {
@@ -113,12 +113,12 @@ public class LootContext {
 			this.world = world;
 		}
 
-		public LootContext.Builder setRandom(Random random) {
+		public LootContext.Builder random(Random random) {
 			this.random = random;
 			return this;
 		}
 
-		public LootContext.Builder setRandom(long seed) {
+		public LootContext.Builder random(long seed) {
 			if (seed != 0L) {
 				this.random = new Random(seed);
 			}
@@ -126,7 +126,7 @@ public class LootContext {
 			return this;
 		}
 
-		public LootContext.Builder setRandom(long seed, Random random) {
+		public LootContext.Builder random(long seed, Random random) {
 			if (seed == 0L) {
 				this.random = random;
 			} else {
@@ -136,17 +136,17 @@ public class LootContext {
 			return this;
 		}
 
-		public LootContext.Builder setLuck(float luck) {
+		public LootContext.Builder luck(float luck) {
 			this.luck = luck;
 			return this;
 		}
 
-		public <T> LootContext.Builder put(LootContextParameter<T> key, T value) {
+		public <T> LootContext.Builder parameter(LootContextParameter<T> key, T value) {
 			this.parameters.put(key, value);
 			return this;
 		}
 
-		public <T> LootContext.Builder putNullable(LootContextParameter<T> key, @Nullable T value) {
+		public <T> LootContext.Builder optionalParameter(LootContextParameter<T> key, @Nullable T value) {
 			if (value == null) {
 				this.parameters.remove(key);
 			} else {

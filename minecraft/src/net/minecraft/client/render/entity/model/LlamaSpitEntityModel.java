@@ -27,7 +27,7 @@ public class LlamaSpitEntityModel<T extends Entity> extends CompositeEntityModel
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 	}
 
 	@Override

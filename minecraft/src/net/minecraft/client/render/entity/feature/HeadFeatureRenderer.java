@@ -27,8 +27,19 @@ import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithHead> extends FeatureRenderer<T, M> {
+	private final float field_24474;
+	private final float field_24475;
+	private final float field_24476;
+
 	public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
+		this(featureRendererContext, 1.0F, 1.0F, 1.0F);
+	}
+
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, float f, float g, float h) {
 		super(featureRendererContext);
+		this.field_24474 = f;
+		this.field_24475 = g;
+		this.field_24476 = h;
 	}
 
 	public void render(
@@ -38,6 +49,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			matrixStack.push();
+			matrixStack.scale(this.field_24474, this.field_24475, this.field_24476);
 			boolean bl = livingEntity instanceof VillagerEntity || livingEntity instanceof ZombieVillagerEntity;
 			if (livingEntity.isBaby() && !(livingEntity instanceof VillagerEntity)) {
 				float m = 2.0F;

@@ -15,7 +15,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 	private static final Identifier ZOMBIFIED_PIGLIN_TEXTURE = new Identifier("textures/entity/piglin/zombified_piglin.png");
 
 	public PiglinEntityRenderer(EntityRenderDispatcher dispatcher, boolean zombified) {
-		super(dispatcher, getPiglinModel(zombified), 0.5F);
+		super(dispatcher, getPiglinModel(zombified), 0.5F, 1.0019531F, 1.0F, 1.0019531F);
 		this.addFeature(new PiglinBipedArmorFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F), createEarlessPiglinModel()));
 	}
 
