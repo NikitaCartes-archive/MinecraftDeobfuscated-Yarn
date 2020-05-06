@@ -8,9 +8,9 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.sapling.LargeTreeSaplingGenerator;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ extends LargeTreeSaplingGenerator {
     @Override
     @Nullable
     protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
-        return new AbstractTreeFeature((Function<Dynamic<?>, ? extends TreeFeatureConfig>)((Function<Dynamic<?>, TreeFeatureConfig>)TreeFeatureConfig::deserialize)).configure(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
+        return new TreeFeature((Function<Dynamic<?>, ? extends TreeFeatureConfig>)((Function<Dynamic<?>, TreeFeatureConfig>)TreeFeatureConfig::deserialize)).configure(DefaultBiomeFeatures.JUNGLE_SAPLING_TREE_CONFIG);
     }
 
     @Override

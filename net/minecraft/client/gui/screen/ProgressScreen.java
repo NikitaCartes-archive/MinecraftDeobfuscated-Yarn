@@ -71,10 +71,10 @@ implements ProgressListener {
         }
         this.renderBackground(matrices);
         if (this.title != null) {
-            this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
+            this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         }
         if (this.task != null && this.progress != 0) {
-            this.drawStringWithShadow(matrices, this.textRenderer, new LiteralText("").append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 0xFFFFFF);
+            this.drawCenteredText(matrices, this.textRenderer, new LiteralText("").append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

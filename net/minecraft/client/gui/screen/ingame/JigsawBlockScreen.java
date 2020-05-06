@@ -173,16 +173,16 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.pool", new Object[0]), this.width / 2 - 153, 10, 0xA0A0A0);
+        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.pool", new Object[0]), this.width / 2 - 153, 10, 0xA0A0A0);
         this.poolField.render(matrices, mouseX, mouseY, delta);
-        this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.name", new Object[0]), this.width / 2 - 153, 45, 0xA0A0A0);
+        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.name", new Object[0]), this.width / 2 - 153, 45, 0xA0A0A0);
         this.nameField.render(matrices, mouseX, mouseY, delta);
-        this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.target", new Object[0]), this.width / 2 - 153, 80, 0xA0A0A0);
+        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.target", new Object[0]), this.width / 2 - 153, 80, 0xA0A0A0);
         this.targetField.render(matrices, mouseX, mouseY, delta);
-        this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.final_state", new Object[0]), this.width / 2 - 153, 115, 0xA0A0A0);
+        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.final_state", new Object[0]), this.width / 2 - 153, 115, 0xA0A0A0);
         this.finalStateField.render(matrices, mouseX, mouseY, delta);
         if (JigsawBlock.method_26378(this.jigsaw.getCachedState()).getAxis().isVertical()) {
-            this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.joint_label", new Object[0]), this.width / 2 - 153, 156, 0xFFFFFF);
+            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.joint_label", new Object[0]), this.width / 2 - 153, 156, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

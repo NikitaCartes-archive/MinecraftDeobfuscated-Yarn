@@ -21,15 +21,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.class_5195;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -90,7 +90,7 @@ public abstract class Biome {
     protected final Map<GenerationStep.Feature, List<ConfiguredFeature<?, ?>>> features = Maps.newHashMap();
     protected final List<ConfiguredFeature<?, ?>> flowerFeatures = Lists.newArrayList();
     protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.newHashMap();
-    private final Map<EntityCategory, List<SpawnEntry>> spawns = Maps.newHashMap();
+    private final Map<SpawnGroup, List<SpawnEntry>> spawns = Maps.newHashMap();
     private final Map<EntityType<?>, SpawnDensity> spawnDensities = Maps.newHashMap();
     private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
         Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25f){
@@ -131,8 +131,8 @@ public abstract class Biome {
         for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
             this.features.put(feature, Lists.newArrayList());
         }
-        for (Enum enum_ : EntityCategory.values()) {
-            this.spawns.put((EntityCategory)enum_, Lists.newArrayList());
+        for (Enum enum_ : SpawnGroup.values()) {
+            this.spawns.put((SpawnGroup)enum_, Lists.newArrayList());
         }
     }
 
@@ -152,16 +152,16 @@ public abstract class Biome {
         return this.skyColor;
     }
 
-    protected void addSpawn(EntityCategory type, SpawnEntry spawnEntry) {
-        this.spawns.get((Object)type).add(spawnEntry);
+    protected void addSpawn(SpawnGroup group, SpawnEntry spawnEntry) {
+        this.spawns.get((Object)group).add(spawnEntry);
     }
 
     protected void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
         this.spawnDensities.put(type, new SpawnDensity(mass, maxMass));
     }
 
-    public List<SpawnEntry> getEntitySpawnList(EntityCategory category) {
-        return this.spawns.get((Object)category);
+    public List<SpawnEntry> getEntitySpawnList(SpawnGroup group) {
+        return this.spawns.get((Object)group);
     }
 
     @Nullable
@@ -177,7 +177,7 @@ public abstract class Biome {
         return this.getRainfall() > 0.85f;
     }
 
-    public float getMaxSpawnLimit() {
+    public float getMaxSpawnChance() {
         return 0.1f;
     }
 
@@ -387,7 +387,7 @@ public abstract class Biome {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Optional<class_5195> method_27343() {
+    public Optional<MusicSound> method_27343() {
         return this.effects.method_27345();
     }
 

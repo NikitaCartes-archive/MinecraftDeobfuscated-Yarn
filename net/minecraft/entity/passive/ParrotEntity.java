@@ -22,7 +22,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FlyOntoTreeGoal;
@@ -117,11 +117,11 @@ implements Flutterer {
         hashMap.put(EntityType.ZOMBIE, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE);
         hashMap.put(EntityType.ZOMBIE_VILLAGER, SoundEvents.ENTITY_PARROT_IMITATE_ZOMBIE_VILLAGER);
     });
-    public float field_6818;
-    public float field_6819;
-    public float field_6827;
-    public float field_6829;
-    private float field_6824 = 1.0f;
+    public float flapProgress;
+    public float maxWingDeviation;
+    public float prevMaxWingDeviation;
+    public float prevFlapProgress;
+    private float flapSpeed = 1.0f;
     private boolean songPlaying;
     private BlockPos songSource;
 
@@ -135,13 +135,13 @@ implements Flutterer {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setVariant(this.random.nextInt(5));
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData();
             ((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
         }
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -189,7 +189,7 @@ implements Flutterer {
             ParrotEntity.imitateNearbyMob(this.world, this);
         }
         super.tickMovement();
-        this.method_6578();
+        this.flapWings();
     }
 
     @Override
@@ -204,20 +204,20 @@ implements Flutterer {
         return this.songPlaying;
     }
 
-    private void method_6578() {
-        this.field_6829 = this.field_6818;
-        this.field_6827 = this.field_6819;
-        this.field_6819 = (float)((double)this.field_6819 + (double)(this.onGround || this.hasVehicle() ? -1 : 4) * 0.3);
-        this.field_6819 = MathHelper.clamp(this.field_6819, 0.0f, 1.0f);
-        if (!this.onGround && this.field_6824 < 1.0f) {
-            this.field_6824 = 1.0f;
+    private void flapWings() {
+        this.prevFlapProgress = this.flapProgress;
+        this.prevMaxWingDeviation = this.maxWingDeviation;
+        this.maxWingDeviation = (float)((double)this.maxWingDeviation + (double)(this.onGround || this.hasVehicle() ? -1 : 4) * 0.3);
+        this.maxWingDeviation = MathHelper.clamp(this.maxWingDeviation, 0.0f, 1.0f);
+        if (!this.onGround && this.flapSpeed < 1.0f) {
+            this.flapSpeed = 1.0f;
         }
-        this.field_6824 = (float)((double)this.field_6824 * 0.9);
+        this.flapSpeed = (float)((double)this.flapSpeed * 0.9);
         Vec3d vec3d = this.getVelocity();
         if (!this.onGround && vec3d.y < 0.0) {
             this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
         }
-        this.field_6818 += this.field_6824 * 2.0f;
+        this.flapProgress += this.flapSpeed * 2.0f;
     }
 
     public static boolean imitateNearbyMob(World world, Entity parrot) {
@@ -269,7 +269,7 @@ implements Flutterer {
         }
         if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
             if (!this.world.isClient) {
-                this.method_24346(!this.method_24345());
+                this.setSitting(!this.isSitting());
             }
             return true;
         }
@@ -281,7 +281,7 @@ implements Flutterer {
         return false;
     }
 
-    public static boolean canSpawn(EntityType<ParrotEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<ParrotEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
         BlockState blockState = world.getBlockState(pos.down());
         return (blockState.isIn(BlockTags.LEAVES) || blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.AIR)) && world.getBaseLightLevel(pos, 0) > 8;
     }
@@ -347,7 +347,7 @@ implements Flutterer {
     @Override
     protected float playFlySound(float distance) {
         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
-        return distance + this.field_6819 / 2.0f;
+        return distance + this.maxWingDeviation / 2.0f;
     }
 
     @Override
@@ -387,7 +387,7 @@ implements Flutterer {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        this.method_24346(false);
+        this.setSitting(false);
         return super.damage(source, amount);
     }
 

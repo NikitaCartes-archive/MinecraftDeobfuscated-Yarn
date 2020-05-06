@@ -38,7 +38,7 @@ extends AbstractCriterion<Conditions> {
     }
 
     public void trigger(ServerPlayerEntity player, ItemStack rod, FishingBobberEntity bobber, Collection<ItemStack> fishingLoots) {
-        LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, bobber.getHookedEntity());
+        LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, bobber.getHookedEntity() != null ? bobber.getHookedEntity() : bobber);
         this.test(player, conditions -> conditions.test(rod, lootContext, fishingLoots));
     }
 

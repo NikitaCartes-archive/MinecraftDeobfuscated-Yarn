@@ -705,7 +705,7 @@ implements ScreenHandlerListener {
         if (!this.isCreative()) {
             double d = 8.0;
             double e = 5.0;
-            Vec3d vec3d = Vec3d.method_24955(pos);
+            Vec3d vec3d = Vec3d.ofBottomCenter(pos);
             List<HostileEntity> list = this.world.getEntities(HostileEntity.class, new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0), hostileEntity -> hostileEntity.isAngryAt(this));
             if (!list.isEmpty()) {
                 return Either.left(PlayerEntity.SleepFailureReason.NOT_SAFE);
@@ -730,7 +730,7 @@ implements ScreenHandlerListener {
     }
 
     private boolean isBedTooFarAway(BlockPos pos) {
-        Vec3d vec3d = Vec3d.method_24955(pos);
+        Vec3d vec3d = Vec3d.ofBottomCenter(pos);
         return Math.abs(this.getX() - vec3d.getX()) <= 3.0 && Math.abs(this.getY() - vec3d.getY()) <= 2.0 && Math.abs(this.getZ() - vec3d.getZ()) <= 3.0;
     }
 
@@ -898,7 +898,7 @@ implements ScreenHandlerListener {
         this.closeCurrentScreen();
     }
 
-    public void method_14241() {
+    public void updateCursorStack() {
         if (this.field_13991) {
             return;
         }

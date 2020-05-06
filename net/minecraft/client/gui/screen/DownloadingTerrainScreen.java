@@ -24,7 +24,7 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderDirtBackground(0);
+        this.renderBackgroundTexture(0);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("multiplayer.downloadingTerrain", new Object[0]), this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }

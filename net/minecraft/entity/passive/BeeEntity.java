@@ -245,7 +245,7 @@ implements Flutterer {
 
     private void startMovingTo(BlockPos pos) {
         Vec3d vec3d2;
-        Vec3d vec3d = Vec3d.method_24955(pos);
+        Vec3d vec3d = Vec3d.ofBottomCenter(pos);
         int i = 0;
         BlockPos blockPos = this.getBlockPos();
         int j = (int)vec3d.y - blockPos.getY();
@@ -859,7 +859,7 @@ implements Flutterer {
                 BeeEntity.this.flowerPos = null;
                 return;
             }
-            Vec3d vec3d = Vec3d.method_24955(BeeEntity.this.flowerPos).add(0.0, 0.6f, 0.0);
+            Vec3d vec3d = Vec3d.ofBottomCenter(BeeEntity.this.flowerPos).add(0.0, 0.6f, 0.0);
             if (vec3d.distanceTo(BeeEntity.this.getPos()) > 1.0) {
                 this.nextTarget = vec3d;
                 this.moveToNextTarget();
@@ -1018,7 +1018,7 @@ implements Flutterer {
         private List<BlockPos> possibleHives;
         @Nullable
         private Path path;
-        private int field_23133;
+        private int ticksUntilLost;
 
         MoveToHiveGoal() {
             this.ticks = BeeEntity.this.world.random.nextInt(10);
@@ -1040,14 +1040,14 @@ implements Flutterer {
         @Override
         public void start() {
             this.ticks = 0;
-            this.field_23133 = 0;
+            this.ticksUntilLost = 0;
             super.start();
         }
 
         @Override
         public void stop() {
             this.ticks = 0;
-            this.field_23133 = 0;
+            this.ticksUntilLost = 0;
             BeeEntity.this.navigation.stop();
             BeeEntity.this.navigation.resetRangeMultiplier();
         }
@@ -1070,10 +1070,10 @@ implements Flutterer {
                 if (!bl) {
                     this.makeChosenHivePossibleHive();
                 } else if (this.path != null && BeeEntity.this.navigation.getCurrentPath().equalsPath(this.path)) {
-                    ++this.field_23133;
-                    if (this.field_23133 > 60) {
-                        this.reset();
-                        this.field_23133 = 0;
+                    ++this.ticksUntilLost;
+                    if (this.ticksUntilLost > 60) {
+                        this.setLost();
+                        this.ticksUntilLost = 0;
                     }
                 } else {
                     this.path = BeeEntity.this.navigation.getCurrentPath();
@@ -1081,7 +1081,7 @@ implements Flutterer {
                 return;
             }
             if (BeeEntity.this.isTooFar(BeeEntity.this.hivePos)) {
-                this.reset();
+                this.setLost();
                 return;
             }
             BeeEntity.this.startMovingTo(BeeEntity.this.hivePos);
@@ -1112,10 +1112,10 @@ implements Flutterer {
             if (BeeEntity.this.hivePos != null) {
                 this.addPossibleHive(BeeEntity.this.hivePos);
             }
-            this.reset();
+            this.setLost();
         }
 
-        private void reset() {
+        private void setLost() {
             BeeEntity.this.hivePos = null;
             BeeEntity.this.ticksLeftToFindHive = 200;
         }
@@ -1157,7 +1157,7 @@ implements Flutterer {
         private Vec3d getRandomLocation() {
             Vec3d vec3d2;
             if (BeeEntity.this.isHiveValid() && !BeeEntity.this.isWithinDistance(BeeEntity.this.hivePos, 22)) {
-                Vec3d vec3d = Vec3d.method_24953(BeeEntity.this.hivePos);
+                Vec3d vec3d = Vec3d.ofCenter(BeeEntity.this.hivePos);
                 vec3d2 = vec3d.subtract(BeeEntity.this.getPos()).normalize();
             } else {
                 vec3d2 = BeeEntity.this.getRotationVec(0.0f);

@@ -57,7 +57,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
+        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("lanServer.otherPlayers", new Object[0]), this.width / 2, 82, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }

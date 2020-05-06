@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.entity.mob.GhastEntity;
@@ -62,9 +62,9 @@ public class SpawnRestriction {
         return entry == null ? Heightmap.Type.MOTION_BLOCKING_NO_LEAVES : entry.heightmapType;
     }
 
-    public static <T extends Entity> boolean canSpawn(EntityType<T> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+    public static <T extends Entity> boolean canSpawn(EntityType<T> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
         Entry entry = RESTRICTIONS.get(type);
-        return entry == null || entry.predicate.test(type, world, spawnType, pos, random);
+        return entry == null || entry.predicate.test(type, world, spawnReason, pos, random);
     }
 
     static {
@@ -159,7 +159,7 @@ public class SpawnRestriction {
 
     @FunctionalInterface
     public static interface SpawnPredicate<T extends Entity> {
-        public boolean test(EntityType<T> var1, IWorld var2, SpawnType var3, BlockPos var4, Random var5);
+        public boolean test(EntityType<T> var1, IWorld var2, SpawnReason var3, BlockPos var4, Random var5);
     }
 }
 

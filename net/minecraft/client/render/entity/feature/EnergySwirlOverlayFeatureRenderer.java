@@ -25,7 +25,7 @@ extends FeatureRenderer<T, M> {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float customAngle, float headYaw, float headPitch) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         if (!((SkinOverlayOwner)entity).shouldRenderOverlay()) {
             return;
         }
@@ -34,7 +34,7 @@ extends FeatureRenderer<T, M> {
         entityModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
         ((EntityModel)this.getContextModel()).copyStateTo(entityModel);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(f), f * 0.01f));
-        entityModel.setAngles(entity, limbAngle, limbDistance, customAngle, headYaw, headPitch);
+        entityModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         entityModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 0.5f, 0.5f, 0.5f, 1.0f);
     }
 

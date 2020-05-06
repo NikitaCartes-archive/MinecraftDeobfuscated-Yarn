@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5275;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -21,7 +22,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -63,7 +64,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -81,7 +81,7 @@ Saddleable {
     private int eatingGrassTicks;
     private int eatingTicks;
     private int angryTicks;
-    public int field_6957;
+    public int tailWagTicks;
     public int field_6958;
     protected boolean inAir;
     protected BasicInventory items;
@@ -94,13 +94,13 @@ Saddleable {
     private float lastAngryAnimationProgress;
     private float eatingAnimationProgress;
     private float lastEatingAnimationProgress;
-    protected boolean field_6964 = true;
+    protected boolean playExtraHorseSounds = true;
     protected int soundTicks;
 
     protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.stepHeight = 1.0f;
-        this.method_6721();
+        this.onChestedStatusChanged();
     }
 
     @Override
@@ -259,7 +259,7 @@ Saddleable {
         return 2;
     }
 
-    protected void method_6721() {
+    protected void onChestedStatusChanged() {
         BasicInventory basicInventory = this.items;
         this.items = new BasicInventory(this.getInventorySize());
         if (basicInventory != null) {
@@ -279,7 +279,7 @@ Saddleable {
         if (this.world.isClient) {
             return;
         }
-        this.setHorseFlag(4, !this.items.getStack(0).isEmpty() && this.canBeSaddled());
+        this.setHorseFlag(4, !this.items.getStack(0).isEmpty());
     }
 
     @Override
@@ -335,7 +335,7 @@ Saddleable {
         if (blockState.isOf(Blocks.SNOW)) {
             blockSoundGroup = blockState.getSoundGroup();
         }
-        if (this.hasPassengers() && this.field_6964) {
+        if (this.hasPassengers() && this.playExtraHorseSounds) {
             ++this.soundTicks;
             if (this.soundTicks > 5 && this.soundTicks % 3 == 0) {
                 this.playWalkSound(blockSoundGroup);
@@ -463,8 +463,8 @@ Saddleable {
         return false;
     }
 
-    private void method_6759() {
-        this.field_6957 = 1;
+    private void wagTail() {
+        this.tailWagTicks = 1;
     }
 
     @Override
@@ -483,7 +483,7 @@ Saddleable {
     @Override
     public void tickMovement() {
         if (this.random.nextInt(200) == 0) {
-            this.method_6759();
+            this.wagTail();
         }
         super.tickMovement();
         if (this.world.isClient || !this.isAlive()) {
@@ -526,8 +526,8 @@ Saddleable {
             this.angryTicks = 0;
             this.setAngry(false);
         }
-        if (this.field_6957 > 0 && ++this.field_6957 > 8) {
-            this.field_6957 = 0;
+        if (this.tailWagTicks > 0 && ++this.tailWagTicks > 8) {
+            this.tailWagTicks = 0;
         }
         if (this.field_6958 > 0) {
             ++this.field_6958;
@@ -905,25 +905,43 @@ Saddleable {
         return this.getPassengerList().get(0);
     }
 
-    @Override
-    public Vec3d method_24829(LivingEntity livingEntity) {
-        Vec3d vec3d = HorseBaseEntity.method_24826(this.getWidth(), livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.RIGHT ? 90.0f : -90.0f));
+    @Nullable
+    private Vec3d method_27930(Vec3d vec3d, LivingEntity livingEntity) {
         double d = this.getX() + vec3d.x;
         double e = this.getBoundingBox().y1;
         double f = this.getZ() + vec3d.z;
-        Box box = livingEntity.method_24833(livingEntity.method_26081()).offset(d, e, f);
-        BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
-        double g = this.getBoundingBox().y2 + 0.75;
-        do {
-            Box box2;
-            double h = this.world.method_26372(mutable);
-            if ((double)mutable.getY() + h > g) break;
-            if (!Double.isInfinite(h) && h < 1.0 && this.world.getBlockCollisions(livingEntity, box2 = box.offset(d, (double)mutable.getY() + h, f)).allMatch(VoxelShape::isEmpty)) {
-                return new Vec3d(d, (double)mutable.getY() + h, f);
-            }
-            mutable.move(Direction.UP);
-        } while ((double)mutable.getY() < g);
-        return new Vec3d(this.getX(), this.getY(), this.getZ());
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        block0: for (EntityPose entityPose : livingEntity.getPoses()) {
+            mutable.set(d, e, f);
+            double g = this.getBoundingBox().y2 + 0.75;
+            do {
+                Vec3d vec3d2;
+                Box box;
+                double h = this.world.method_26372(mutable);
+                if ((double)mutable.getY() + h > g) continue block0;
+                if (class_5275.method_27932(h) && class_5275.method_27933(this.world, livingEntity, (box = livingEntity.method_24833(entityPose)).offset(vec3d2 = new Vec3d(d, (double)mutable.getY() + h, f)))) {
+                    livingEntity.setPose(entityPose);
+                    return vec3d2;
+                }
+                mutable.move(Direction.UP);
+            } while ((double)mutable.getY() < g);
+        }
+        return null;
+    }
+
+    @Override
+    public Vec3d method_24829(LivingEntity livingEntity) {
+        Vec3d vec3d = HorseBaseEntity.method_24826(this.getWidth(), livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.RIGHT ? 90.0f : -90.0f));
+        Vec3d vec3d2 = this.method_27930(vec3d, livingEntity);
+        if (vec3d2 != null) {
+            return vec3d2;
+        }
+        Vec3d vec3d3 = HorseBaseEntity.method_24826(this.getWidth(), livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.LEFT ? 90.0f : -90.0f));
+        Vec3d vec3d4 = this.method_27930(vec3d3, livingEntity);
+        if (vec3d4 != null) {
+            return vec3d4;
+        }
+        return this.getPos();
     }
 
     protected void initAttributes() {
@@ -931,13 +949,13 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData();
             ((PassiveEntity.PassiveData)entityData).setBabyChance(0.2f);
         }
         this.initAttributes();
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 }
 

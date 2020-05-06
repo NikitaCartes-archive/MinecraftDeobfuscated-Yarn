@@ -342,7 +342,7 @@ implements Waterloggable {
         List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos.getX(), pos.getY() + 1, pos.getZ(), pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1));
         if (!list.isEmpty()) {
             for (CatEntity catEntity : list) {
-                if (!catEntity.isSitting()) continue;
+                if (!catEntity.isInSittingPose()) continue;
                 return true;
             }
         }

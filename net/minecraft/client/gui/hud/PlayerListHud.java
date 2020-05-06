@@ -77,7 +77,7 @@ extends DrawableHelper {
         int j = 0;
         int k = 0;
         for (PlayerListEntry playerListEntry : list) {
-            l = this.client.textRenderer.getStringWidth(this.getPlayerName(playerListEntry));
+            l = this.client.textRenderer.getWidth(this.getPlayerName(playerListEntry));
             j = Math.max(j, l);
             if (scoreboardObjective == null || scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) continue;
             l = this.client.textRenderer.getWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), scoreboardObjective).getScore());
@@ -99,20 +99,20 @@ extends DrawableHelper {
         if (this.header != null) {
             list2 = this.client.textRenderer.wrapLines(this.header, i - 50);
             for (Text text : list2) {
-                s = Math.max(s, this.client.textRenderer.getStringWidth(text));
+                s = Math.max(s, this.client.textRenderer.getWidth(text));
             }
         }
         List<Text> list3 = null;
         if (this.footer != null) {
             list3 = this.client.textRenderer.wrapLines(this.footer, i - 50);
             for (Text text2 : list3) {
-                s = Math.max(s, this.client.textRenderer.getStringWidth(text2));
+                s = Math.max(s, this.client.textRenderer.getWidth(text2));
             }
         }
         if (list2 != null) {
             PlayerListHud.fill(matrixStack, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list2.size() * this.client.textRenderer.fontHeight, Integer.MIN_VALUE);
             for (Text text2 : list2) {
-                t = this.client.textRenderer.getStringWidth(text2);
+                t = this.client.textRenderer.getWidth(text2);
                 this.client.textRenderer.drawWithShadow(matrixStack, text2, (float)(i / 2 - t / 2), (float)r, -1);
                 r += this.client.textRenderer.fontHeight;
             }
@@ -149,7 +149,7 @@ extends DrawableHelper {
                 }
                 x += 9;
             }
-            this.client.textRenderer.drawWithShadow(matrixStack, this.getPlayerName(playerListEntry2), (float)x, (float)y, -1862270977);
+            this.client.textRenderer.drawWithShadow(matrixStack, this.getPlayerName(playerListEntry2), (float)x, (float)y, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1);
             if (scoreboardObjective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR && (ae = (ad = x + j + 1) + o) - ad > 5) {
                 this.renderScoreboardObjective(scoreboardObjective, y, gameProfile.getName(), ad, ae, playerListEntry2, matrixStack);
             }
@@ -158,7 +158,7 @@ extends DrawableHelper {
         if (list3 != null) {
             PlayerListHud.fill(matrixStack, i / 2 - s / 2 - 1, (r += n * 9 + 1) - 1, i / 2 + s / 2 + 1, r + list3.size() * this.client.textRenderer.fontHeight, Integer.MIN_VALUE);
             for (Text text3 : list3) {
-                w = this.client.textRenderer.getStringWidth(text3);
+                w = this.client.textRenderer.getWidth(text3);
                 this.client.textRenderer.drawWithShadow(matrixStack, text3, (float)(i / 2 - w / 2), (float)r, -1);
                 r += this.client.textRenderer.fontHeight;
             }

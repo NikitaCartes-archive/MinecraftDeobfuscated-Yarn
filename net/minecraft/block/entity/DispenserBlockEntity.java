@@ -89,8 +89,8 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
-        return new Generic3x3ContainerScreenHandler(i, playerInventory, this);
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new Generic3x3ContainerScreenHandler(syncId, playerInventory, this);
     }
 }
 

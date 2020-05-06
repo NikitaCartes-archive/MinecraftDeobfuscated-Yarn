@@ -45,8 +45,8 @@ implements Trader {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setOffersFromServer(@Nullable TraderOfferList traderOfferList) {
-        this.recipeList = traderOfferList;
+    public void setOffersFromServer(@Nullable TraderOfferList offers) {
+        this.recipeList = offers;
     }
 
     @Override

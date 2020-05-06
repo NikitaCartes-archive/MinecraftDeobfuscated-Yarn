@@ -63,15 +63,15 @@ extends Block {
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        this.method_24417(state, world, pos, notify);
+        this.updateCurves(state, world, pos, notify);
     }
 
-    protected BlockState method_24417(BlockState blockState, World world, BlockPos blockPos, boolean bl) {
-        blockState = this.updateBlockState(world, blockPos, blockState, true);
+    protected BlockState updateCurves(BlockState state, World world, BlockPos pos, boolean notify) {
+        state = this.updateBlockState(world, pos, state, true);
         if (this.allowCurves) {
-            blockState.neighborUpdate(world, blockPos, this, blockPos, bl);
+            state.neighborUpdate(world, pos, this, pos, notify);
         }
-        return blockState;
+        return state;
     }
 
     @Override
@@ -80,31 +80,7 @@ extends Block {
             return;
         }
         RailShape railShape = state.get(this.getShapeProperty());
-        boolean bl = false;
-        BlockPos blockPos = pos.down();
-        if (!AbstractRailBlock.hasTopRim(world, blockPos)) {
-            bl = true;
-        }
-        BlockPos blockPos2 = pos.east();
-        if (railShape == RailShape.ASCENDING_EAST && !AbstractRailBlock.hasTopRim(world, blockPos2)) {
-            bl = true;
-        } else {
-            BlockPos blockPos3 = pos.west();
-            if (railShape == RailShape.ASCENDING_WEST && !AbstractRailBlock.hasTopRim(world, blockPos3)) {
-                bl = true;
-            } else {
-                BlockPos blockPos4 = pos.north();
-                if (railShape == RailShape.ASCENDING_NORTH && !AbstractRailBlock.hasTopRim(world, blockPos4)) {
-                    bl = true;
-                } else {
-                    BlockPos blockPos5 = pos.south();
-                    if (railShape == RailShape.ASCENDING_SOUTH && !AbstractRailBlock.hasTopRim(world, blockPos5)) {
-                        bl = true;
-                    }
-                }
-            }
-        }
-        if (bl && !world.isAir(pos)) {
+        if (AbstractRailBlock.shouldDropRail(pos, world, railShape) && !world.isAir(pos)) {
             if (!notify) {
                 AbstractRailBlock.dropStacks(state, world, pos);
             }
@@ -112,6 +88,34 @@ extends Block {
         } else {
             this.updateBlockState(state, world, pos, block);
         }
+    }
+
+    /**
+     * Checks if this rail should be dropped.
+     * 
+     * <p>This method will return true if:
+     * <ul><li>The rail block is ascending.</li>
+     * <li>The block in the direction of ascension does not have a top rim.</li></ul>
+     */
+    private static boolean shouldDropRail(BlockPos pos, World world, RailShape shape) {
+        if (!AbstractRailBlock.hasTopRim(world, pos.down())) {
+            return true;
+        }
+        switch (shape) {
+            case ASCENDING_EAST: {
+                return !AbstractRailBlock.hasTopRim(world, pos.east());
+            }
+            case ASCENDING_WEST: {
+                return !AbstractRailBlock.hasTopRim(world, pos.west());
+            }
+            case ASCENDING_NORTH: {
+                return !AbstractRailBlock.hasTopRim(world, pos.north());
+            }
+            case ASCENDING_SOUTH: {
+                return !AbstractRailBlock.hasTopRim(world, pos.south());
+            }
+        }
+        return false;
     }
 
     protected void updateBlockState(BlockState state, World world, BlockPos pos, Block neighbor) {

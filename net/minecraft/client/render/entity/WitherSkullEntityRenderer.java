@@ -14,6 +14,7 @@ import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -28,7 +29,7 @@ extends EntityRenderer<WitherSkullEntity> {
     }
 
     @Override
-    protected int getBlockLight(WitherSkullEntity witherSkullEntity, float f) {
+    protected int getBlockLight(WitherSkullEntity witherSkullEntity, BlockPos blockPos) {
         return 15;
     }
 

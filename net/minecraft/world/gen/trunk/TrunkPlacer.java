@@ -18,8 +18,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.TestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
@@ -47,7 +47,7 @@ public abstract class TrunkPlacer {
     }
 
     protected static void method_27404(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState, BlockBox blockBox) {
-        AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
+        TreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableWorld, blockPos, blockState);
         blockBox.encompass(new BlockBox(blockPos, blockPos));
     }
 
@@ -60,12 +60,12 @@ public abstract class TrunkPlacer {
 
     protected static void method_27400(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
         if (!TrunkPlacer.method_27403(modifiableTestableWorld, blockPos)) {
-            AbstractTreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableTestableWorld, blockPos, Blocks.DIRT.getDefaultState());
+            TreeFeature.setBlockStateWithoutUpdatingNeighbors(modifiableTestableWorld, blockPos, Blocks.DIRT.getDefaultState());
         }
     }
 
     protected static boolean method_27402(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
-        if (AbstractTreeFeature.canReplace(modifiableTestableWorld, blockPos)) {
+        if (TreeFeature.canReplace(modifiableTestableWorld, blockPos)) {
             TrunkPlacer.method_27404(modifiableTestableWorld, blockPos, treeFeatureConfig.trunkProvider.getBlockState(random, blockPos), blockBox);
             set.add(blockPos.toImmutable());
             return true;
@@ -74,7 +74,7 @@ public abstract class TrunkPlacer {
     }
 
     protected static void method_27401(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos.Mutable mutable, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig) {
-        if (AbstractTreeFeature.canTreeReplace(modifiableTestableWorld, mutable)) {
+        if (TreeFeature.canTreeReplace(modifiableTestableWorld, mutable)) {
             TrunkPlacer.method_27402(modifiableTestableWorld, random, mutable, set, blockBox, treeFeatureConfig);
         }
     }

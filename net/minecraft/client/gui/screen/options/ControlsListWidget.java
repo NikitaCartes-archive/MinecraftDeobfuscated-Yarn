@@ -43,7 +43,7 @@ extends ElementListWidget<Entry> {
                 string = string2;
                 this.addEntry(new CategoryEntry(new TranslatableText(string2)));
             }
-            if ((i = client.textRenderer.getStringWidth(text = new TranslatableText(((KeyBinding)keyBinding).getId()))) > this.maxKeyNameLength) {
+            if ((i = client.textRenderer.getWidth(text = new TranslatableText(((KeyBinding)keyBinding).getId()))) > this.maxKeyNameLength) {
                 this.maxKeyNameLength = i;
             }
             this.addEntry(new KeyBindingEntry((KeyBinding)keyBinding, text));
@@ -149,7 +149,7 @@ extends ElementListWidget<Entry> {
 
         public CategoryEntry(Text text) {
             this.name = text;
-            this.nameWidth = ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.getStringWidth(this.name);
+            this.nameWidth = ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.getWidth(this.name);
         }
 
         @Override

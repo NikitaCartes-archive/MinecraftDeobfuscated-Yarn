@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
@@ -41,6 +41,11 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * In charge of shaping, adding biome specific surface blocks, and carving chunks,
+ * as well as populating the generated chunks with {@linkplain net.minecraft.world.gen.feature.Feature features} and {@linkplain net.minecraft.entity.Entity entities}.
+ * Biome placement starts here, however all vanilla and most modded chunk generators delegate this to a {@linkplain net.minecraft.world.biome.source.BiomeSource biome source}.
+ */
 public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
     protected final IWorld world;
     protected final long seed;
@@ -154,8 +159,8 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         return 256;
     }
 
-    public List<Biome.SpawnEntry> getEntitySpawnList(StructureAccessor structureAccessor, EntityCategory entityCategory, BlockPos blockPos) {
-        return this.world.getBiome(blockPos).getEntitySpawnList(entityCategory);
+    public List<Biome.SpawnEntry> getEntitySpawnList(StructureAccessor structureAccessor, SpawnGroup spawnGroup, BlockPos blockPos) {
+        return this.world.getBiome(blockPos).getEntitySpawnList(spawnGroup);
     }
 
     public void setStructureStarts(StructureAccessor structureAccessor, BiomeAccess biomeAccess, Chunk chunk, ChunkGenerator<?> chunkGenerator, StructureManager structureManager) {
@@ -200,6 +205,9 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
         }
     }
 
+    /**
+     * Generates the base shape of the chunk out of the basic block states as decided by this chunk generator's config.
+     */
     public abstract void populateNoise(IWorld var1, StructureAccessor var2, Chunk var3);
 
     public int getSeaLevel() {

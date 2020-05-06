@@ -52,7 +52,7 @@ public enum Difficulty {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Difficulty method_27297() {
+    public Difficulty cycle() {
         return BY_NAME[(this.id + 1) % BY_NAME.length];
     }
 

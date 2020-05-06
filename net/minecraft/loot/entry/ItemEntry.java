@@ -28,12 +28,12 @@ extends LeafEntry {
     }
 
     @Override
-    public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-        itemDropper.accept(new ItemStack(this.item));
+    public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+        lootConsumer.accept(new ItemStack(this.item));
     }
 
-    public static LeafEntry.Builder<?> builder(ItemConvertible itemProvider) {
-        return ItemEntry.builder((int weight, int quality, LootCondition[] conditions, LootFunction[] functions) -> new ItemEntry(itemProvider.asItem(), weight, quality, conditions, functions));
+    public static LeafEntry.Builder<?> builder(ItemConvertible drop) {
+        return ItemEntry.builder((int weight, int quality, LootCondition[] conditions, LootFunction[] functions) -> new ItemEntry(drop.asItem(), weight, quality, conditions, functions));
     }
 
     public static class Serializer

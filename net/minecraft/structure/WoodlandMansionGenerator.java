@@ -12,7 +12,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
@@ -979,7 +979,7 @@ public class WoodlandMansionGenerator {
                 }
                 illagerEntity.setPersistent();
                 illagerEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-                illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnType.STRUCTURE, null, null);
+                illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
                 world.spawnEntity(illagerEntity);
                 world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
             }

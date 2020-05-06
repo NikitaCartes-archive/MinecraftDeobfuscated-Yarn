@@ -81,7 +81,7 @@ extends BlockEntityRenderer<SignBlockEntity> {
                 return list.isEmpty() ? LiteralText.EMPTY : list.get(0);
             });
             if (text2 == null) continue;
-            float s = -textRenderer.getStringWidth(text2) / 2;
+            float s = -textRenderer.getWidth(text2) / 2;
             textRenderer.draw(text2, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
         }
         matrixStack.pop();

@@ -19,7 +19,6 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -116,11 +115,6 @@ extends EntityRenderer<ItemFrameEntity> {
     @Override
     protected void renderLabelIfPresent(ItemFrameEntity itemFrameEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         super.renderLabelIfPresent(itemFrameEntity, itemFrameEntity.getHeldItemStack().getName(), matrixStack, vertexConsumerProvider, i);
-    }
-
-    @Override
-    public /* synthetic */ Vec3d getPositionOffset(Entity entity, float tickDelta) {
-        return this.getPositionOffset((ItemFrameEntity)entity, tickDelta);
     }
 }
 

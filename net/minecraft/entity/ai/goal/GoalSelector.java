@@ -11,14 +11,27 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.WeightedGoal;
+import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Manages a set of goals, which are competing for certain controls on the mob.
+ * Multiple goals can run at the same time, so long as they are all using different controls.
+ * 
+ * <p>A running goal will always be replaced with a goal with a <i>lower</i> priority, if
+ * such a goal exists, it's competing for the same control and its
+ * {@link Goal#canStart() canStart()} method returns true. (Note that some goals randomize
+ * this method.)</p>
+ * 
+ * <p>If two goals have the same priority and are competing for the same control, then one
+ * goal cannot replace the other if it's running. The goal selector tries to run goals in the order
+ * they were added.</p>
+ */
 public class GoalSelector {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final WeightedGoal activeGoal = new WeightedGoal(Integer.MAX_VALUE, new Goal(){
+    private static final PrioritizedGoal REPLACEABLE_GOAL = new PrioritizedGoal(Integer.MAX_VALUE, new Goal(){
 
         @Override
         public boolean canStart() {
@@ -31,57 +44,61 @@ public class GoalSelector {
             return false;
         }
     };
-    private final Map<Goal.Control, WeightedGoal> goalsByControl = new EnumMap<Goal.Control, WeightedGoal>(Goal.Control.class);
-    private final Set<WeightedGoal> goals = Sets.newLinkedHashSet();
+    private final Map<Goal.Control, PrioritizedGoal> goalsByControl = new EnumMap<Goal.Control, PrioritizedGoal>(Goal.Control.class);
+    private final Set<PrioritizedGoal> goals = Sets.newLinkedHashSet();
     private final Supplier<Profiler> profiler;
     private final EnumSet<Goal.Control> disabledControls = EnumSet.noneOf(Goal.Control.class);
     private int timeInterval = 3;
 
-    public GoalSelector(Supplier<Profiler> supplier) {
-        this.profiler = supplier;
+    public GoalSelector(Supplier<Profiler> profiler) {
+        this.profiler = profiler;
     }
 
-    public void add(int weight, Goal goal) {
-        this.goals.add(new WeightedGoal(weight, goal));
+    /**
+     * Adds a goal with a certain priority. Goals with <i>lower</i> priorities will replace running goals
+     * with a higher priority.
+     */
+    public void add(int priority, Goal goal) {
+        this.goals.add(new PrioritizedGoal(priority, goal));
     }
 
     public void remove(Goal goal) {
-        this.goals.stream().filter(weightedGoal -> weightedGoal.getGoal() == goal).filter(WeightedGoal::isRunning).forEach(WeightedGoal::stop);
-        this.goals.removeIf(weightedGoal -> weightedGoal.getGoal() == goal);
+        this.goals.stream().filter(prioritizedGoal -> prioritizedGoal.getGoal() == goal).filter(PrioritizedGoal::isRunning).forEach(PrioritizedGoal::stop);
+        this.goals.removeIf(prioritizedGoal -> prioritizedGoal.getGoal() == goal);
     }
 
     public void tick() {
         Profiler profiler = this.profiler.get();
         profiler.push("goalCleanup");
-        this.getRunningGoals().filter(weightedGoal -> {
-            if (!weightedGoal.isRunning()) return true;
-            if (weightedGoal.getControls().stream().anyMatch(this.disabledControls::contains)) return true;
-            if (weightedGoal.shouldContinue()) return false;
+        this.getRunningGoals().filter(prioritizedGoal -> {
+            if (!prioritizedGoal.isRunning()) return true;
+            if (prioritizedGoal.getControls().stream().anyMatch(this.disabledControls::contains)) return true;
+            if (prioritizedGoal.shouldContinue()) return false;
             return true;
         }).forEach(Goal::stop);
-        this.goalsByControl.forEach((control, weightedGoal) -> {
-            if (!weightedGoal.isRunning()) {
+        this.goalsByControl.forEach((control, prioritizedGoal) -> {
+            if (!prioritizedGoal.isRunning()) {
                 this.goalsByControl.remove(control);
             }
         });
         profiler.pop();
         profiler.push("goalUpdate");
-        this.goals.stream().filter(weightedGoal -> !weightedGoal.isRunning()).filter(weightedGoal -> weightedGoal.getControls().stream().noneMatch(this.disabledControls::contains)).filter(weightedGoal -> weightedGoal.getControls().stream().allMatch(control -> this.goalsByControl.getOrDefault(control, activeGoal).canBeReplacedBy((WeightedGoal)weightedGoal))).filter(WeightedGoal::canStart).forEach(weightedGoal -> {
-            weightedGoal.getControls().forEach(control -> {
-                WeightedGoal weightedGoal2 = this.goalsByControl.getOrDefault(control, activeGoal);
-                weightedGoal2.stop();
-                this.goalsByControl.put((Goal.Control)((Object)((Object)control)), (WeightedGoal)weightedGoal);
+        this.goals.stream().filter(prioritizedGoal -> !prioritizedGoal.isRunning()).filter(prioritizedGoal -> prioritizedGoal.getControls().stream().noneMatch(this.disabledControls::contains)).filter(prioritizedGoal -> prioritizedGoal.getControls().stream().allMatch(control -> this.goalsByControl.getOrDefault(control, REPLACEABLE_GOAL).canBeReplacedBy((PrioritizedGoal)prioritizedGoal))).filter(PrioritizedGoal::canStart).forEach(prioritizedGoal -> {
+            prioritizedGoal.getControls().forEach(control -> {
+                PrioritizedGoal prioritizedGoal2 = this.goalsByControl.getOrDefault(control, REPLACEABLE_GOAL);
+                prioritizedGoal2.stop();
+                this.goalsByControl.put((Goal.Control)((Object)((Object)control)), (PrioritizedGoal)prioritizedGoal);
             });
-            weightedGoal.start();
+            prioritizedGoal.start();
         });
         profiler.pop();
         profiler.push("goalTick");
-        this.getRunningGoals().forEach(WeightedGoal::tick);
+        this.getRunningGoals().forEach(PrioritizedGoal::tick);
         profiler.pop();
     }
 
-    public Stream<WeightedGoal> getRunningGoals() {
-        return this.goals.stream().filter(WeightedGoal::isRunning);
+    public Stream<PrioritizedGoal> getRunningGoals() {
+        return this.goals.stream().filter(PrioritizedGoal::isRunning);
     }
 
     public void disableControl(Goal.Control control) {

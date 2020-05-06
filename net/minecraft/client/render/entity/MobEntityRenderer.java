@@ -89,10 +89,12 @@ extends LivingEntityRenderer<T, M> {
         float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025f / 2.0f;
         float w = t * v;
         float x = r * v;
-        int y = this.getBlockLight(mobEntity, f);
-        int z = this.dispatcher.getRenderer(entity).getBlockLight(entity, f);
-        int aa = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, new BlockPos(((Entity)mobEntity).getCameraPosVec(f)));
-        int ab = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(f)));
+        BlockPos blockPos = new BlockPos(((Entity)mobEntity).getCameraPosVec(f));
+        BlockPos blockPos2 = new BlockPos(entity.getCameraPosVec(f));
+        int y = this.getBlockLight(mobEntity, blockPos);
+        int z = this.dispatcher.getRenderer(entity).getBlockLight(entity, blockPos2);
+        int aa = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, blockPos);
+        int ab = ((MobEntity)mobEntity).world.getLightLevel(LightType.SKY, blockPos2);
         MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025f, 0.025f, w, x);
         MobEntityRenderer.method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025f, 0.0f, w, x);
         matrixStack.pop();

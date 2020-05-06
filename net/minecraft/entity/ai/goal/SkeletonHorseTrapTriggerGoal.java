@@ -7,7 +7,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
@@ -49,7 +49,7 @@ extends Goal {
 
     private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
         SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
-        skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnType.TRIGGERED, null, null);
+        skeletonHorseEntity.initialize(this.skeletonHorse.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
         skeletonHorseEntity.updatePosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
         skeletonHorseEntity.timeUntilRegen = 60;
         skeletonHorseEntity.setPersistent();
@@ -61,7 +61,7 @@ extends Goal {
 
     private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity vehicle) {
         SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.world);
-        skeletonEntity.initialize(vehicle.world, localDifficulty, SpawnType.TRIGGERED, null, null);
+        skeletonEntity.initialize(vehicle.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
         skeletonEntity.updatePosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
         skeletonEntity.timeUntilRegen = 60;
         skeletonEntity.setPersistent();

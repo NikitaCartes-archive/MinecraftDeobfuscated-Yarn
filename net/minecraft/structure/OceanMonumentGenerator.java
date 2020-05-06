@@ -14,7 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.StructureManager;
@@ -1707,7 +1707,7 @@ public class OceanMonumentGenerator {
                 ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(iWorld.getWorld());
                 elderGuardianEntity.heal(elderGuardianEntity.getMaximumHealth());
                 elderGuardianEntity.refreshPositionAndAngles((double)l + 0.5, m, (double)n + 0.5, 0.0f, 0.0f);
-                elderGuardianEntity.initialize(iWorld, iWorld.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnType.STRUCTURE, null, null);
+                elderGuardianEntity.initialize(iWorld, iWorld.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
                 iWorld.spawnEntity(elderGuardianEntity);
                 return true;
             }

@@ -164,7 +164,7 @@ extends AnimalModel<T> {
         float o = ((HorseBaseEntity)horseBaseEntity).getAngryAnimationProgress(h);
         float p = 1.0f - o;
         float q = ((HorseBaseEntity)horseBaseEntity).getEatingAnimationProgress(h);
-        boolean bl = ((HorseBaseEntity)horseBaseEntity).field_6957 != 0;
+        boolean bl = ((HorseBaseEntity)horseBaseEntity).tailWagTicks != 0;
         float r = (float)((HorseBaseEntity)horseBaseEntity).age + h;
         this.head.pivotY = 4.0f;
         this.head.pivotZ = -12.0f;

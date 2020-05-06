@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowGroupLeaderGoal;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -101,8 +101,8 @@ extends FishEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        super.initialize(world, difficulty, spawnType, entityData, entityTag);
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (entityData == null) {
             entityData = new FishData(this);
         } else {

@@ -36,10 +36,10 @@ extends LongRunningTask {
             WorldCreationTask.setScreen(this.lastScreen);
         } catch (RealmsServiceException realmsServiceException) {
             LOGGER.error("Couldn't create world");
-            this.method_27453(realmsServiceException.toString());
+            this.error(realmsServiceException.toString());
         } catch (Exception exception) {
             LOGGER.error("Could not create world");
-            this.method_27453(exception.getLocalizedMessage());
+            this.error(exception.getLocalizedMessage());
         }
     }
 }

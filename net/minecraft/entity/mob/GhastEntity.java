@@ -11,7 +11,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -123,8 +123,8 @@ implements Monster {
         return 5.0f;
     }
 
-    public static boolean canSpawn(EntityType<GhastEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && GhastEntity.canMobSpawn(type, world, spawnType, pos, random);
+    public static boolean canSpawn(EntityType<GhastEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && GhastEntity.canMobSpawn(type, world, spawnReason, pos, random);
     }
 
     @Override
@@ -278,7 +278,7 @@ implements Monster {
     static class GhastMoveControl
     extends MoveControl {
         private final GhastEntity ghast;
-        private int field_7276;
+        private int collisionCheckCooldown;
 
         public GhastMoveControl(GhastEntity ghast) {
             super(ghast);
@@ -290,11 +290,11 @@ implements Monster {
             if (this.state != MoveControl.State.MOVE_TO) {
                 return;
             }
-            if (this.field_7276-- <= 0) {
-                this.field_7276 += this.ghast.getRandom().nextInt(5) + 2;
+            if (this.collisionCheckCooldown-- <= 0) {
+                this.collisionCheckCooldown += this.ghast.getRandom().nextInt(5) + 2;
                 Vec3d vec3d = new Vec3d(this.targetX - this.ghast.getX(), this.targetY - this.ghast.getY(), this.targetZ - this.ghast.getZ());
                 double d = vec3d.length();
-                if (this.method_7051(vec3d = vec3d.normalize(), MathHelper.ceil(d))) {
+                if (this.willCollide(vec3d = vec3d.normalize(), MathHelper.ceil(d))) {
                     this.ghast.setVelocity(this.ghast.getVelocity().add(vec3d.multiply(0.1)));
                 } else {
                     this.state = MoveControl.State.WAIT;
@@ -302,10 +302,10 @@ implements Monster {
             }
         }
 
-        private boolean method_7051(Vec3d vec3d, int i) {
+        private boolean willCollide(Vec3d direction, int steps) {
             Box box = this.ghast.getBoundingBox();
-            for (int j = 1; j < i; ++j) {
-                if (this.ghast.world.doesNotCollide(this.ghast, box = box.offset(vec3d))) continue;
+            for (int i = 1; i < steps; ++i) {
+                if (this.ghast.world.doesNotCollide(this.ghast, box = box.offset(direction))) continue;
                 return false;
             }
             return true;

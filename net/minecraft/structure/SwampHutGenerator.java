@@ -9,7 +9,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -97,7 +97,7 @@ extends StructurePieceWithDimensions {
             WitchEntity witchEntity = EntityType.WITCH.create(world.getWorld());
             witchEntity.setPersistent();
             witchEntity.refreshPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
-            witchEntity.initialize(world, world.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.STRUCTURE, null, null);
+            witchEntity.initialize(world, world.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
             world.spawnEntity(witchEntity);
         }
         this.method_16181(world, boundingBox);
@@ -113,7 +113,7 @@ extends StructurePieceWithDimensions {
             CatEntity catEntity = EntityType.CAT.create(iWorld.getWorld());
             catEntity.setPersistent();
             catEntity.refreshPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
-            catEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnType.STRUCTURE, null, null);
+            catEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
             iWorld.spawnEntity(catEntity);
         }
     }

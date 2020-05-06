@@ -23,7 +23,7 @@ import net.minecraft.util.math.ColumnPos;
 import net.minecraft.world.dimension.DimensionType;
 
 public class ForceLoadCommand {
-    private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.forceload.toobig", object, object2));
+    private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.forceload.toobig", object, object2));
     private static final Dynamic2CommandExceptionType QUERY_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.forceload.query.failure", object, object2));
     private static final SimpleCommandExceptionType ADDED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.forceload.added.failure"));
     private static final SimpleCommandExceptionType REMOVED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.forceload.removed.failure"));
@@ -83,7 +83,7 @@ public class ForceLoadCommand {
         int n = j >> 4;
         long q = ((long)(o - m) + 1L) * ((long)(p - n) + 1L);
         if (q > 256L) {
-            throw TOOBIG_EXCEPTION.create(256, q);
+            throw TOO_BIG_EXCEPTION.create(256, q);
         }
         DimensionType dimensionType = source.getWorld().getDimension().getType();
         ServerWorld serverWorld = source.getMinecraftServer().getWorld(dimensionType);

@@ -26,6 +26,7 @@ extends ForgingScreen<SmithingScreenHandler> {
     protected void drawForeground(MatrixStack matrixStack, int i, int j) {
         RenderSystem.disableBlend();
         this.textRenderer.draw(matrixStack, this.title, 60.0f, 20.0f, 0x404040);
+        this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0f, (float)(this.backgroundHeight - 96 + 2), 0x404040);
     }
 }
 

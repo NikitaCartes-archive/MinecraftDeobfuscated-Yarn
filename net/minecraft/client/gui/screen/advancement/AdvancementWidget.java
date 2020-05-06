@@ -52,10 +52,10 @@ extends DrawableHelper {
         int i = advancement.getRequirementCount();
         int j = String.valueOf(i).length();
         int k = i > 1 ? client.textRenderer.getWidth("  ") + client.textRenderer.getWidth("0") * j * 2 + client.textRenderer.getWidth("/") : 0;
-        int l = 29 + client.textRenderer.getStringWidth(this.title) + k;
+        int l = 29 + client.textRenderer.getWidth(this.title) + k;
         this.description = this.wrapDescription(display.getDescription().shallowCopy().formatted(display.getFrame().getTitleFormat()), l);
         for (Text text : this.description) {
-            l = Math.max(l, client.textRenderer.getStringWidth(text));
+            l = Math.max(l, client.textRenderer.getWidth(text));
         }
         this.width = l + 3 + 5;
     }
@@ -126,7 +126,7 @@ extends DrawableHelper {
             AdvancementObtainedStatus advancementObtainedStatus = f >= 1.0f ? AdvancementObtainedStatus.OBTAINED : AdvancementObtainedStatus.UNOBTAINED;
             this.client.getTextureManager().bindTexture(WIDGETS_TEX);
             this.drawTexture(matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
-            this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+            this.client.getItemRenderer().method_27953(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
         }
         for (AdvancementWidget advancementWidget : this.children) {
             advancementWidget.renderWidgets(matrixStack, i, j);
@@ -208,7 +208,7 @@ extends DrawableHelper {
                 this.client.textRenderer.draw(matrixStack, this.description.get(r), (float)(p + 5), (float)(j + this.yPos + 9 + 17 + r * this.client.textRenderer.fontHeight), -5592406);
             }
         }
-        this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+        this.client.getItemRenderer().method_27953(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
     }
 
     protected void method_2324(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o, int p, int q) {

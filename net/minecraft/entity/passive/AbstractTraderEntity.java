@@ -14,7 +14,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Npc;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -54,12 +54,12 @@ Trader {
     }
 
     @Override
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData();
             ((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
         }
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public int getHeadRollingTimeLeft() {
@@ -115,7 +115,7 @@ Trader {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void setOffersFromServer(@Nullable TraderOfferList traderOfferList) {
+    public void setOffersFromServer(@Nullable TraderOfferList offers) {
     }
 
     @Override

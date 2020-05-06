@@ -895,7 +895,7 @@ extends RealmsScreen {
         int k = 0;
         int l = 0;
         for (Text text : list) {
-            int m = this.textRenderer.getStringWidth(text);
+            int m = this.textRenderer.getWidth(text);
             if (m <= l) continue;
             l = m;
         }

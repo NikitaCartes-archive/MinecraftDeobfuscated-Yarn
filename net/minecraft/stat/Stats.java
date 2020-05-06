@@ -40,6 +40,7 @@ public class Stats {
     public static final Identifier HORSE_ONE_CM = Stats.register("horse_one_cm", StatFormatter.DISTANCE);
     public static final Identifier AVIATE_ONE_CM = Stats.register("aviate_one_cm", StatFormatter.DISTANCE);
     public static final Identifier SWIM_ONE_CM = Stats.register("swim_one_cm", StatFormatter.DISTANCE);
+    public static final Identifier STRIDER_ONE_CM = Stats.register("strider_one_cm", StatFormatter.DISTANCE);
     public static final Identifier JUMP = Stats.register("jump", StatFormatter.DEFAULT);
     public static final Identifier DROP = Stats.register("drop", StatFormatter.DEFAULT);
     public static final Identifier DAMAGE_DEALT = Stats.register("damage_dealt", StatFormatter.DIVIDE_BY_TEN);

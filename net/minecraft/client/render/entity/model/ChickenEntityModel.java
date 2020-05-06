@@ -62,7 +62,7 @@ extends AnimalModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.head.pitch = headPitch * ((float)Math.PI / 180);
         this.head.yaw = headYaw * ((float)Math.PI / 180);
         this.beak.pitch = this.head.pitch;
@@ -72,8 +72,8 @@ extends AnimalModel<T> {
         this.torso.pitch = 1.5707964f;
         this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * 1.4f * limbDistance;
         this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
-        this.rightWing.roll = customAngle;
-        this.leftWing.roll = -customAngle;
+        this.rightWing.roll = animationProgress;
+        this.leftWing.roll = -animationProgress;
     }
 }
 

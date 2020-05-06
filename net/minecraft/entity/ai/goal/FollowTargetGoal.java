@@ -61,8 +61,8 @@ extends TrackTargetGoal {
         super.start();
     }
 
-    public void method_24632(@Nullable LivingEntity livingEntity) {
-        this.targetEntity = livingEntity;
+    public void setTargetEntity(@Nullable LivingEntity targetEntity) {
+        this.targetEntity = targetEntity;
     }
 }
 

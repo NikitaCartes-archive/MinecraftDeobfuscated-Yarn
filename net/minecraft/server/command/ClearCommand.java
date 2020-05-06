@@ -31,11 +31,11 @@ public class ClearCommand {
     private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Predicate<ItemStack> item, int maxCount) throws CommandSyntaxException {
         int i = 0;
         for (ServerPlayerEntity serverPlayerEntity : targets) {
-            i += serverPlayerEntity.inventory.method_7369(item, maxCount);
+            i += serverPlayerEntity.inventory.clearItem(item, maxCount);
             serverPlayerEntity.playerScreenHandler.clearCraftingSlots();
             serverPlayerEntity.currentScreenHandler.sendContentUpdates();
             serverPlayerEntity.playerScreenHandler.onContentChanged(serverPlayerEntity.inventory);
-            serverPlayerEntity.method_14241();
+            serverPlayerEntity.updateCursorStack();
         }
         if (i == 0) {
             if (targets.size() == 1) {

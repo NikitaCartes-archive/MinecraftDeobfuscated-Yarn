@@ -4,7 +4,7 @@
 package net.minecraft.village;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -86,7 +86,7 @@ public class ZombieSiegeManager {
         }
         try {
             zombieEntity = new ZombieEntity(world);
-            zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnType.EVENT, null, null);
+            zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.EVENT, null, null);
         } catch (Exception exception) {
             exception.printStackTrace();
             return;
@@ -102,8 +102,8 @@ public class ZombieSiegeManager {
             int l;
             int j = pos.getX() + world.random.nextInt(16) - 8;
             BlockPos blockPos = new BlockPos(j, l = world.getTopY(Heightmap.Type.WORLD_SURFACE, j, k = pos.getZ() + world.random.nextInt(16) - 8), k);
-            if (!world.isNearOccupiedPointOfInterest(blockPos) || !HostileEntity.canSpawnInDark(EntityType.ZOMBIE, world, SpawnType.EVENT, blockPos, world.random)) continue;
-            return Vec3d.method_24955(blockPos);
+            if (!world.isNearOccupiedPointOfInterest(blockPos) || !HostileEntity.canSpawnInDark(EntityType.ZOMBIE, world, SpawnReason.EVENT, blockPos, world.random)) continue;
+            return Vec3d.ofBottomCenter(blockPos);
         }
         return null;
     }

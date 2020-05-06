@@ -19,7 +19,7 @@ extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        return this.tameable.method_24345();
+        return this.tameable.isSitting();
     }
 
     @Override
@@ -40,18 +40,18 @@ extends Goal {
         if (this.tameable.squaredDistanceTo(livingEntity) < 144.0 && livingEntity.getAttacker() != null) {
             return false;
         }
-        return this.tameable.method_24345();
+        return this.tameable.isSitting();
     }
 
     @Override
     public void start() {
         this.tameable.getNavigation().stop();
-        this.tameable.setSitting(true);
+        this.tameable.setInSittingPose(true);
     }
 
     @Override
     public void stop() {
-        this.tameable.setSitting(false);
+        this.tameable.setInSittingPose(false);
     }
 }
 

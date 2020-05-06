@@ -10,6 +10,6 @@ import net.minecraft.loot.context.LootContext;
 public interface LootChoice {
     public int getWeight(float var1);
 
-    public void drop(Consumer<ItemStack> var1, LootContext var2);
+    public void generateLoot(Consumer<ItemStack> var1, LootContext var2);
 }
 

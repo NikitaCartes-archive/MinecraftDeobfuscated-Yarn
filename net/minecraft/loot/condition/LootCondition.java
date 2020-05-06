@@ -48,7 +48,7 @@ Predicate<LootContext> {
             return InvertedLootCondition.builder(this);
         }
 
-        default public AlternativeLootCondition.Builder withCondition(Builder condition) {
+        default public AlternativeLootCondition.Builder or(Builder condition) {
             return AlternativeLootCondition.builder(this, condition);
         }
     }

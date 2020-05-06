@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -150,7 +150,7 @@ implements RangedAttackMob {
     @Override
     protected int getInventorySize() {
         if (this.hasChest()) {
-            return 2 + 3 * this.method_6702();
+            return 2 + 3 * this.getInventoryColumns();
         }
         return super.getInventorySize();
     }
@@ -226,7 +226,7 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         int i;
         this.initializeStrength();
         if (entityData instanceof LlamaData) {
@@ -236,7 +236,7 @@ implements RangedAttackMob {
             entityData = new LlamaData(i);
         }
         this.setVariant(i);
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
@@ -278,7 +278,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    public int method_6702() {
+    public int getInventoryColumns() {
         return this.getStrength();
     }
 

@@ -57,12 +57,12 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         float f = 1.0f;
         if (!((Entity)entity).isTouchingWater()) {
             f = 1.5f;
         }
-        this.tail.yaw = -f * 0.45f * MathHelper.sin(0.6f * customAngle);
+        this.tail.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
     }
 }
 

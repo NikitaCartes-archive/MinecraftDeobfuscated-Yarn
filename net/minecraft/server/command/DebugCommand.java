@@ -30,11 +30,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class DebugCommand {
-    private static final Logger logger = LogManager.getLogger();
-    private static final SimpleCommandExceptionType NORUNNING_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning"));
-    private static final SimpleCommandExceptionType ALREADYRUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.alreadyRunning"));
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final SimpleCommandExceptionType NOT_RUNNING_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning"));
+    private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.alreadyRunning"));
     @Nullable
-    private static final FileSystemProvider field_20310 = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElse(null);
+    private static final FileSystemProvider FILE_SYSTEM_PROVIDER = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElse(null);
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("debug").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(CommandManager.literal("start").executes(commandContext -> DebugCommand.executeStart((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("stop").executes(commandContext -> DebugCommand.executeStop((ServerCommandSource)commandContext.getSource())))).then(CommandManager.literal("report").executes(commandContext -> DebugCommand.createDebugReport((ServerCommandSource)commandContext.getSource()))));
@@ -43,7 +43,7 @@ public class DebugCommand {
     private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
         MinecraftServer minecraftServer = source.getMinecraftServer();
         if (minecraftServer.isDebugRunning()) {
-            throw ALREADYRUNNING_EXCEPTION.create();
+            throw ALREADY_RUNNING_EXCEPTION.create();
         }
         minecraftServer.enableProfiler();
         source.sendFeedback(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
@@ -53,7 +53,7 @@ public class DebugCommand {
     private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
         MinecraftServer minecraftServer = source.getMinecraftServer();
         if (!minecraftServer.isDebugRunning()) {
-            throw NORUNNING_EXCPETION.create();
+            throw NOT_RUNNING_EXCPETION.create();
         }
         ProfileResult profileResult = minecraftServer.stopDebug();
         File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
@@ -70,19 +70,19 @@ public class DebugCommand {
         try {
             Path path = minecraftServer.getFile("debug").toPath();
             Files.createDirectories(path, new FileAttribute[0]);
-            if (SharedConstants.isDevelopment || field_20310 == null) {
+            if (SharedConstants.isDevelopment || FILE_SYSTEM_PROVIDER == null) {
                 Path path2 = path.resolve(string);
                 minecraftServer.dump(path2);
             } else {
                 Path path2 = path.resolve(string + ".zip");
-                try (FileSystem fileSystem = field_20310.newFileSystem(path2, ImmutableMap.of("create", "true"));){
+                try (FileSystem fileSystem = FILE_SYSTEM_PROVIDER.newFileSystem(path2, ImmutableMap.of("create", "true"));){
                     minecraftServer.dump(fileSystem.getPath("/", new String[0]));
                 }
             }
             source.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
             return 1;
         } catch (IOException iOException) {
-            logger.error("Failed to save debug dump", (Throwable)iOException);
+            LOGGER.error("Failed to save debug dump", (Throwable)iOException);
             source.sendError(new TranslatableText("commands.debug.reportFailed"));
             return 0;
         }

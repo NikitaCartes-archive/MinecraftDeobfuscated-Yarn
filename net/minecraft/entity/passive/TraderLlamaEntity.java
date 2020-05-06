@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -78,12 +78,12 @@ extends LlamaEntity {
     public void tickMovement() {
         super.tickMovement();
         if (!this.world.isClient) {
-            this.method_20501();
+            this.tryDespawn();
         }
     }
 
-    private void method_20501() {
-        if (!this.method_20502()) {
+    private void tryDespawn() {
+        if (!this.canDespawn()) {
             return;
         }
         int n = this.despawnDelay = this.heldByTrader() ? ((WanderingTraderEntity)this.getHoldingEntity()).getDespawnDelay() - 1 : this.despawnDelay - 1;
@@ -93,7 +93,7 @@ extends LlamaEntity {
         }
     }
 
-    private boolean method_20502() {
+    private boolean canDespawn() {
         return !this.isTame() && !this.leashedByPlayer() && !this.hasPlayerRider();
     }
 
@@ -107,15 +107,15 @@ extends LlamaEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        if (spawnType == SpawnType.EVENT) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        if (spawnReason == SpawnReason.EVENT) {
             this.setBreedingAge(0);
         }
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData();
             ((PassiveEntity.PassiveData)entityData).setBabyAllowed(false);
         }
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public class DefendTraderGoal

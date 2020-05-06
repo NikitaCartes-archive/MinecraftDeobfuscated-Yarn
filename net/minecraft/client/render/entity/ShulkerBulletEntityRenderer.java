@@ -16,6 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -30,7 +31,7 @@ extends EntityRenderer<ShulkerBulletEntity> {
     }
 
     @Override
-    protected int getBlockLight(ShulkerBulletEntity shulkerBulletEntity, float f) {
+    protected int getBlockLight(ShulkerBulletEntity shulkerBulletEntity, BlockPos blockPos) {
         return 15;
     }
 

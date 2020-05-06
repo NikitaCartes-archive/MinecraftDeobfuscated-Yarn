@@ -3,8 +3,11 @@
  */
 package net.minecraft.entity.vehicle;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
@@ -14,9 +17,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
+import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.class_5275;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -58,6 +66,7 @@ extends Entity {
     private static final TrackedData<Integer> CUSTOM_BLOCK_ID = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final ImmutableMap<EntityPose, ImmutableList<Integer>> field_24464 = ImmutableMap.of(EntityPose.STANDING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.CROUCHING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.SWIMMING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1)));
     private boolean field_7660;
     private static final Map<RailShape, Pair<Vec3i, Vec3i>> field_7664 = Util.make(Maps.newEnumMap(RailShape.class), enumMap -> {
         Vec3i vec3i = Direction.WEST.getVector();
@@ -160,6 +169,50 @@ extends Entity {
     @Override
     public double getMountedHeightOffset() {
         return 0.0;
+    }
+
+    @Override
+    public Vec3d method_24829(LivingEntity livingEntity) {
+        Direction direction = this.getMovementDirection();
+        if (direction.getAxis() == Direction.Axis.Y) {
+            return super.method_24829(livingEntity);
+        }
+        int[][] is = class_5275.method_27934(direction);
+        BlockPos blockPos = this.getBlockPos();
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        ImmutableList<EntityPose> immutableList = livingEntity.getPoses();
+        for (EntityPose entityPose : immutableList) {
+            EntityDimensions entityDimensions = livingEntity.getDimensions(entityPose);
+            float f = Math.min(entityDimensions.width, 1.0f) / 2.0f;
+            Iterator iterator = field_24464.get((Object)entityPose).iterator();
+            while (iterator.hasNext()) {
+                int i = (Integer)iterator.next();
+                for (int[] js : is) {
+                    Vec3d vec3d;
+                    Box box;
+                    mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
+                    double d = this.world.method_26097(mutable, blockState -> {
+                        if (blockState.isIn(BlockTags.CLIMBABLE)) {
+                            return true;
+                        }
+                        return blockState.getBlock() instanceof TrapdoorBlock && blockState.get(TrapdoorBlock.OPEN) != false;
+                    });
+                    if (!class_5275.method_27932(d) || !class_5275.method_27933(this.world, livingEntity, (box = new Box(-f, d, -f, f, d + (double)entityDimensions.height, f)).offset(vec3d = Vec3d.ofCenter(mutable, d)))) continue;
+                    livingEntity.setPose(entityPose);
+                    return vec3d;
+                }
+            }
+        }
+        double e = this.getBoundingBox().y2;
+        mutable.set((double)blockPos.getX(), e, (double)blockPos.getZ());
+        for (EntityPose entityPose2 : immutableList) {
+            double g = livingEntity.getDimensions((EntityPose)entityPose2).height;
+            double h = (double)mutable.getY() + this.world.method_26096(mutable, e - (double)mutable.getY() + g);
+            if (!(e + g <= h)) continue;
+            livingEntity.setPose(entityPose2);
+            break;
+        }
+        return super.method_24829(livingEntity);
     }
 
     @Override

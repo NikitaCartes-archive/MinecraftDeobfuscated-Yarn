@@ -32,7 +32,7 @@ public class LootContext {
     private final float luck;
     private final ServerWorld world;
     private final Function<Identifier, LootTable> tableGetter;
-    private final Set<LootTable> tables = Sets.newLinkedHashSet();
+    private final Set<LootTable> activeTables = Sets.newLinkedHashSet();
     private final Function<Identifier, LootCondition> conditionGetter;
     private final Set<LootCondition> conditions = Sets.newLinkedHashSet();
     private final Map<LootContextParameter<?>, Object> parameters;
@@ -52,10 +52,10 @@ public class LootContext {
         return this.parameters.containsKey(parameter);
     }
 
-    public void drop(Identifier id, Consumer<ItemStack> itemDropper) {
+    public void drop(Identifier id, Consumer<ItemStack> lootConsumer) {
         Dropper dropper = this.drops.get(id);
         if (dropper != null) {
-            dropper.add(this, itemDropper);
+            dropper.add(this, lootConsumer);
         }
     }
 
@@ -64,12 +64,12 @@ public class LootContext {
         return (T)this.parameters.get(parameter);
     }
 
-    public boolean addDrop(LootTable supplier) {
-        return this.tables.add(supplier);
+    public boolean markActive(LootTable table) {
+        return this.activeTables.add(table);
     }
 
-    public void removeDrop(LootTable supplier) {
-        this.tables.remove(supplier);
+    public void markInactive(LootTable table) {
+        this.activeTables.remove(table);
     }
 
     public boolean addCondition(LootCondition condition) {
@@ -161,34 +161,34 @@ public class LootContext {
             this.world = world;
         }
 
-        public Builder setRandom(Random random) {
+        public Builder random(Random random) {
             this.random = random;
             return this;
         }
 
-        public Builder setRandom(long seed) {
+        public Builder random(long seed) {
             if (seed != 0L) {
                 this.random = new Random(seed);
             }
             return this;
         }
 
-        public Builder setRandom(long seed, Random random) {
+        public Builder random(long seed, Random random) {
             this.random = seed == 0L ? random : new Random(seed);
             return this;
         }
 
-        public Builder setLuck(float luck) {
+        public Builder luck(float luck) {
             this.luck = luck;
             return this;
         }
 
-        public <T> Builder put(LootContextParameter<T> key, T value) {
+        public <T> Builder parameter(LootContextParameter<T> key, T value) {
             this.parameters.put(key, value);
             return this;
         }
 
-        public <T> Builder putNullable(LootContextParameter<T> key, @Nullable T value) {
+        public <T> Builder optionalParameter(LootContextParameter<T> key, @Nullable T value) {
             if (value == null) {
                 this.parameters.remove(key);
             } else {

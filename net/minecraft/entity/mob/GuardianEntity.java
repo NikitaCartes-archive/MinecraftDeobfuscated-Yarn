@@ -15,7 +15,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -285,8 +285,8 @@ extends HostileEntity {
         return world.intersectsEntities(this);
     }
 
-    public static boolean canSpawn(EntityType<? extends GuardianEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return !(random.nextInt(20) != 0 && world.isSkyVisibleAllowingSea(pos) || world.getDifficulty() == Difficulty.PEACEFUL || spawnType != SpawnType.SPAWNER && !world.getFluidState(pos).matches(FluidTags.WATER));
+    public static boolean canSpawn(EntityType<? extends GuardianEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return !(random.nextInt(20) != 0 && world.isSkyVisibleAllowingSea(pos) || world.getDifficulty() == Difficulty.PEACEFUL || spawnReason != SpawnReason.SPAWNER && !world.getFluidState(pos).matches(FluidTags.WATER));
     }
 
     @Override

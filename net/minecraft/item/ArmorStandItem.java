@@ -5,7 +5,7 @@ package net.minecraft.item;
 
 import java.util.Random;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
@@ -36,7 +36,7 @@ extends Item {
         ItemPlacementContext itemPlacementContext = new ItemPlacementContext(context);
         BlockPos blockPos = itemPlacementContext.getBlockPos();
         ItemStack itemStack = context.getStack();
-        ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(world, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnType.SPAWN_EGG, true, true);
+        ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(world, itemStack.getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
         if (!world.doesNotCollide(armorStandEntity) || !world.getEntities(armorStandEntity, armorStandEntity.getBoundingBox()).isEmpty()) {
             return ActionResult.FAIL;
         }

@@ -52,7 +52,7 @@ implements DataProvider {
         Path path = this.root.getOutput();
         HashMap<Identifier, LootTable> map = Maps.newHashMap();
         this.lootTypeGenerators.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((identifier, builder) -> {
-            if (map.put((Identifier)identifier, builder.withType((LootContextType)pair.getSecond()).create()) != null) {
+            if (map.put((Identifier)identifier, builder.type((LootContextType)pair.getSecond()).build()) != null) {
                 throw new IllegalStateException("Duplicate loot table " + identifier);
             }
         }));
@@ -61,7 +61,7 @@ implements DataProvider {
         for (Identifier identifier2 : set) {
             lootTableReporter.report("Missing built-in table: " + identifier2);
         }
-        map.forEach((identifier, lootTable) -> LootManager.check(lootTableReporter, identifier, lootTable));
+        map.forEach((identifier, lootTable) -> LootManager.validate(lootTableReporter, identifier, lootTable));
         Multimap<String, String> multimap = lootTableReporter.getMessages();
         if (!multimap.isEmpty()) {
             multimap.forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));

@@ -3,8 +3,6 @@
  */
 package net.minecraft.entity;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -14,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -34,7 +31,6 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
@@ -125,7 +121,6 @@ CommandOutput {
     protected static final Logger LOGGER = LogManager.getLogger();
     private static final AtomicInteger MAX_ENTITY_ID = new AtomicInteger();
     private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
-    private static final ImmutableMap<EntityPose, ImmutableList<Integer>> POSE_HEIGHTS = ImmutableMap.of(EntityPose.STANDING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.CROUCHING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(-1)), EntityPose.SWIMMING, ImmutableList.of(Integer.valueOf(0), Integer.valueOf(1)));
     private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     private static double renderDistanceMultiplier = 1.0;
     private final EntityType<?> type;
@@ -393,7 +388,7 @@ CommandOutput {
         this.prevPitch = this.pitch;
         this.prevYaw = this.yaw;
         this.tickNetherPortal();
-        if (this.method_27298()) {
+        if (this.shouldSpawnSprintingParticles()) {
             this.spawnSprintingParticles();
         }
         this.updateWaterState();
@@ -980,7 +975,7 @@ CommandOutput {
         return this.world.getBlockState(this.getLandingPos());
     }
 
-    public boolean method_27298() {
+    public boolean shouldSpawnSprintingParticles() {
         return this.isSprinting() && !this.isTouchingWater() && !this.isSpectator() && !this.isInSneakingPose() && !this.isInLava() && this.isAlive();
     }
 
@@ -2431,50 +2426,7 @@ CommandOutput {
     }
 
     public Vec3d method_24829(LivingEntity livingEntity) {
-        Direction direction = this.getMovementDirection();
-        if (direction.getAxis() == Direction.Axis.Y) {
-            return new Vec3d(this.getX(), this.getBoundingBox().y2, this.getZ());
-        }
-        Direction direction2 = direction.rotateYClockwise();
-        int[][] is = new int[][]{{direction2.getOffsetX(), direction2.getOffsetZ()}, {-direction2.getOffsetX(), -direction2.getOffsetZ()}, {-direction.getOffsetX() + direction2.getOffsetX(), -direction.getOffsetZ() + direction2.getOffsetZ()}, {-direction.getOffsetX() - direction2.getOffsetX(), -direction.getOffsetZ() - direction2.getOffsetZ()}, {direction.getOffsetX() + direction2.getOffsetX(), direction.getOffsetZ() + direction2.getOffsetZ()}, {direction.getOffsetX() - direction2.getOffsetX(), direction.getOffsetZ() - direction2.getOffsetZ()}, {-direction.getOffsetX(), -direction.getOffsetZ()}, {direction.getOffsetX(), direction.getOffsetZ()}};
-        BlockPos blockPos = this.getBlockPos();
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        ImmutableList<EntityPose> immutableList = livingEntity.getPoses();
-        for (EntityPose entityPose : immutableList) {
-            EntityDimensions entityDimensions = livingEntity.getDimensions(entityPose);
-            float f = Math.min(entityDimensions.width, 1.0f) / 2.0f;
-            float g = 0.5f - f;
-            float h = 0.5f + f;
-            Iterator iterator = POSE_HEIGHTS.get((Object)entityPose).iterator();
-            while (iterator.hasNext()) {
-                int i = (Integer)iterator.next();
-                for (int[] js : is) {
-                    mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
-                    double d = this.world.method_26097(mutable, blockState -> {
-                        if (blockState.isIn(BlockTags.CLIMBABLE)) {
-                            return true;
-                        }
-                        return blockState.getBlock() instanceof TrapdoorBlock && blockState.get(TrapdoorBlock.OPEN) != false;
-                    });
-                    if (Double.isInfinite(d) || d >= 1.0) continue;
-                    double e = (double)mutable.getY() + d;
-                    Box box = new Box((float)mutable.getX() + g, e, (float)mutable.getZ() + g, (float)mutable.getX() + h, e + (double)entityDimensions.height, (float)mutable.getZ() + h);
-                    if (!this.world.getBlockCollisions(livingEntity, box).allMatch(VoxelShape::isEmpty)) continue;
-                    livingEntity.setPose(entityPose);
-                    return Vec3d.method_26410(mutable, d);
-                }
-            }
-        }
-        double j = this.getBoundingBox().y2;
-        mutable.set((double)blockPos.getX(), j, (double)blockPos.getZ());
-        for (EntityPose entityPose2 : immutableList) {
-            double k = livingEntity.getDimensions((EntityPose)entityPose2).height;
-            double l = (double)mutable.getY() + this.world.method_26096(mutable, j - (double)mutable.getY() + k);
-            if (!(j + k <= l)) continue;
-            livingEntity.setPose(entityPose2);
-            break;
-        }
-        return new Vec3d(this.getX(), j, this.getZ());
+        return new Vec3d(this.getX(), this.getBoundingBox().y2, this.getZ());
     }
 
     @Nullable

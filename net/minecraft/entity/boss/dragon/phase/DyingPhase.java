@@ -38,7 +38,7 @@ extends AbstractPhase {
         ++this.ticks;
         if (this.field_7041 == null) {
             BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
-            this.field_7041 = Vec3d.method_24955(blockPos);
+            this.field_7041 = Vec3d.ofBottomCenter(blockPos);
         }
         if ((d = this.field_7041.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ())) < 100.0 || d > 22500.0 || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
             this.dragon.setHealth(0.0f);

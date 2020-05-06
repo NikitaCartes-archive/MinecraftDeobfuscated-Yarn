@@ -33,8 +33,8 @@ extends LootEntry {
     private final LootChoice choice = new Choice(){
 
         @Override
-        public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-            LeafEntry.this.drop(LootFunction.apply(LeafEntry.this.compiledFunctions, itemDropper, context), context);
+        public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+            LeafEntry.this.generateLoot(LootFunction.apply(LeafEntry.this.compiledFunctions, lootConsumer, context), context);
         }
     };
 
@@ -47,14 +47,14 @@ extends LootEntry {
     }
 
     @Override
-    public void check(LootTableReporter reporter) {
-        super.check(reporter);
+    public void validate(LootTableReporter reporter) {
+        super.validate(reporter);
         for (int i = 0; i < this.functions.length; ++i) {
-            this.functions[i].check(reporter.makeChild(".functions[" + i + "]"));
+            this.functions[i].validate(reporter.makeChild(".functions[" + i + "]"));
         }
     }
 
-    protected abstract void drop(Consumer<ItemStack> var1, LootContext var2);
+    protected abstract void generateLoot(Consumer<ItemStack> var1, LootContext var2);
 
     @Override
     public boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {
@@ -141,7 +141,7 @@ extends LootEntry {
         private final List<LootFunction> functions = Lists.newArrayList();
 
         @Override
-        public T withFunction(LootFunction.Builder builder) {
+        public T apply(LootFunction.Builder builder) {
             this.functions.add(builder.build());
             return (T)((Builder)this.getThisBuilder());
         }
@@ -150,19 +150,19 @@ extends LootEntry {
             return this.functions.toArray(new LootFunction[0]);
         }
 
-        public T setWeight(int weight) {
+        public T weight(int weight) {
             this.weight = weight;
             return (T)((Builder)this.getThisBuilder());
         }
 
-        public T setQuality(int quality) {
+        public T quality(int quality) {
             this.quality = quality;
             return (T)((Builder)this.getThisBuilder());
         }
 
         @Override
-        public /* synthetic */ Object withFunction(LootFunction.Builder lootFunctionBuilder) {
-            return this.withFunction(lootFunctionBuilder);
+        public /* synthetic */ Object apply(LootFunction.Builder function) {
+            return this.apply(function);
         }
     }
 

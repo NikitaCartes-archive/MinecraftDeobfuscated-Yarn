@@ -36,12 +36,12 @@ public interface EntityView {
         return this.getEntities(except, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
-    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
+    default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
         if (shape.isEmpty()) {
             return true;
         }
-        for (Entity entity : this.getEntities(except, shape.getBoundingBox())) {
-            if (entity.removed || !entity.inanimate || except != null && entity.isConnectedThroughVehicle(except) || !VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND)) continue;
+        for (Entity entity2 : this.getEntities(entity, shape.getBoundingBox())) {
+            if (entity2.removed || !entity2.inanimate || entity != null && entity2.isConnectedThroughVehicle(entity) || !VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity2.getBoundingBox()), BooleanBiFunction.AND)) continue;
             return false;
         }
         return true;
@@ -90,7 +90,7 @@ public interface EntityView {
 
     default public boolean isPlayerInRange(double x, double y, double z, double range) {
         for (PlayerEntity playerEntity : this.getPlayers()) {
-            if (!EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity) || !EntityPredicates.VALID_ENTITY_LIVING.test(playerEntity)) continue;
+            if (!EntityPredicates.EXCEPT_SPECTATOR.test(playerEntity) || !EntityPredicates.VALID_LIVING_ENTITY.test(playerEntity)) continue;
             double d = playerEntity.squaredDistanceTo(x, y, z);
             if (!(range < 0.0) && !(d < range * range)) continue;
             return true;

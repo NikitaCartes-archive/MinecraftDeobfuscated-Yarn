@@ -28,9 +28,9 @@ implements EntryCombiner {
         this.conditionPredicate = LootConditions.joinAnd(conditions);
     }
 
-    public void check(LootTableReporter reporter) {
+    public void validate(LootTableReporter reporter) {
         for (int i = 0; i < this.conditions.length; ++i) {
-            this.conditions[i].check(reporter.makeChild(".condition[" + i + "]"));
+            this.conditions[i].validate(reporter.makeChild(".condition[" + i + "]"));
         }
     }
 
@@ -67,7 +67,7 @@ implements EntryCombiner {
         protected abstract T getThisBuilder();
 
         @Override
-        public T withCondition(LootCondition.Builder builder) {
+        public T conditionally(LootCondition.Builder builder) {
             this.conditions.add(builder.build());
             return this.getThisBuilder();
         }
@@ -81,7 +81,7 @@ implements EntryCombiner {
             return this.conditions.toArray(new LootCondition[0]);
         }
 
-        public AlternativeEntry.Builder withChild(Builder<?> builder) {
+        public AlternativeEntry.Builder alternatively(Builder<?> builder) {
             return new AlternativeEntry.Builder(this, builder);
         }
 
@@ -93,8 +93,8 @@ implements EntryCombiner {
         }
 
         @Override
-        public /* synthetic */ Object withCondition(LootCondition.Builder builder) {
-            return this.withCondition(builder);
+        public /* synthetic */ Object conditionally(LootCondition.Builder condition) {
+            return this.conditionally(condition);
         }
     }
 }

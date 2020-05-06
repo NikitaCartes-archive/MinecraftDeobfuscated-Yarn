@@ -15,7 +15,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.FeatureUpdater;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.storage.RegionBasedStorage;
 import net.minecraft.world.storage.StorageIoWorker;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +27,7 @@ implements AutoCloseable {
 
     public VersionedChunkStorage(File file, DataFixer dataFixer, boolean bl) {
         this.dataFixer = dataFixer;
-        this.worker = new StorageIoWorker(new RegionBasedStorage(file, bl), "chunk");
+        this.worker = new StorageIoWorker(file, bl, "chunk");
     }
 
     public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {

@@ -40,8 +40,8 @@ import net.minecraft.text.TranslatableText;
 
 public class ScoreboardCommand {
     private static final SimpleCommandExceptionType OBJECTIVES_ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.add.duplicate"));
-    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADYEMPTY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.display.alreadyEmpty"));
-    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADYSET_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.display.alreadySet"));
+    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.display.alreadyEmpty"));
+    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.objectives.display.alreadySet"));
     private static final SimpleCommandExceptionType PLAYERS_ENABLE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.players.enable.failed"));
     private static final SimpleCommandExceptionType PLAYERS_ENABLE_INVALID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.scoreboard.players.enable.invalid"));
     private static final Dynamic2CommandExceptionType PLAYERS_GET_NULL_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.scoreboard.players.get.null", object, object2));
@@ -58,7 +58,7 @@ public class ScoreboardCommand {
         return literalArgumentBuilder;
     }
 
-    private static CompletableFuture<Suggestions> suggestDisabled(ServerCommandSource source, Collection<String> targets, SuggestionsBuilder suggestionsBuilder) {
+    private static CompletableFuture<Suggestions> suggestDisabled(ServerCommandSource source, Collection<String> targets, SuggestionsBuilder builder) {
         ArrayList<String> list = Lists.newArrayList();
         ServerScoreboard scoreboard = source.getMinecraftServer().getScoreboard();
         for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
@@ -72,7 +72,7 @@ public class ScoreboardCommand {
             if (!bl) continue;
             list.add(scoreboardObjective.getName());
         }
-        return CommandSource.suggestMatching(list, suggestionsBuilder);
+        return CommandSource.suggestMatching(list, builder);
     }
 
     private static int executeGet(ServerCommandSource source, String target, ScoreboardObjective objective) throws CommandSyntaxException {
@@ -225,7 +225,7 @@ public class ScoreboardCommand {
     private static int executeClearDisplay(ServerCommandSource source, int slot) throws CommandSyntaxException {
         ServerScoreboard scoreboard = source.getMinecraftServer().getScoreboard();
         if (scoreboard.getObjectiveForSlot(slot) == null) {
-            throw OBJECTIVES_DISPLAY_ALREADYEMPTY_EXCEPTION.create();
+            throw OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION.create();
         }
         ((Scoreboard)scoreboard).setObjectiveSlot(slot, null);
         source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[slot]), true);
@@ -235,7 +235,7 @@ public class ScoreboardCommand {
     private static int executeSetDisplay(ServerCommandSource source, int slot, ScoreboardObjective objective) throws CommandSyntaxException {
         ServerScoreboard scoreboard = source.getMinecraftServer().getScoreboard();
         if (scoreboard.getObjectiveForSlot(slot) == objective) {
-            throw OBJECTIVES_DISPLAY_ALREADYSET_EXCEPTION.create();
+            throw OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION.create();
         }
         ((Scoreboard)scoreboard).setObjectiveSlot(slot, objective);
         source.sendFeedback(new TranslatableText("commands.scoreboard.objectives.display.set", Scoreboard.getDisplaySlotNames()[slot], objective.getDisplayName()), true);

@@ -408,9 +408,9 @@ extends ProjectileEntity {
             this.world.sendEntityStatus(this, (byte)31);
             i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
         } else if (this.hookCountdown > 0) {
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, this.getBlockPos()).put(LootContextParameters.TOOL, usedItem).put(LootContextParameters.THIS_ENTITY, this).setRandom(this.random).setLuck((float)this.luckOfTheSeaLevel + playerEntity.getLuck());
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.POSITION, this.getBlockPos()).parameter(LootContextParameters.TOOL, usedItem).parameter(LootContextParameters.THIS_ENTITY, this).random(this.random).luck((float)this.luckOfTheSeaLevel + playerEntity.getLuck());
             LootTable lootTable = this.world.getServer().getLootManager().getTable(LootTables.FISHING_GAMEPLAY);
-            List<ItemStack> list = lootTable.getDrops(builder.build(LootContextTypes.FISHING));
+            List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.FISHING));
             Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, usedItem, this, list);
             for (ItemStack itemStack : list) {
                 ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack);
@@ -472,6 +472,7 @@ extends ProjectileEntity {
         return entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
     }
 
+    @Nullable
     public Entity getHookedEntity() {
         return this.hookedEntity;
     }

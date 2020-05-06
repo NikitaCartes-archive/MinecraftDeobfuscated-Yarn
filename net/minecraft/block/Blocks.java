@@ -252,7 +252,7 @@ public class Blocks {
     public static final Block GOLD_ORE = Blocks.register("gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
     public static final Block IRON_ORE = Blocks.register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
     public static final Block COAL_ORE = Blocks.register("coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f)));
-    public static final Block NETHER_GOLD_ORE = Blocks.register("nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f).sounds(BlockSoundGroup.field_24120)));
+    public static final Block NETHER_GOLD_ORE = Blocks.register("nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f, 3.0f).sounds(BlockSoundGroup.NETHER_GOLD_ORE)));
     public static final Block OAK_LOG = Blocks.register("oak_log", Blocks.createLogBlock(MaterialColor.WOOD, MaterialColor.SPRUCE));
     public static final Block SPRUCE_LOG = Blocks.register("spruce_log", Blocks.createLogBlock(MaterialColor.SPRUCE, MaterialColor.BROWN));
     public static final Block BIRCH_LOG = Blocks.register("birch_log", Blocks.createLogBlock(MaterialColor.SAND, MaterialColor.QUARTZ));
@@ -460,7 +460,7 @@ public class Blocks {
     public static final Block RED_MUSHROOM_BLOCK = Blocks.register("red_mushroom_block", new MushroomBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.RED).strength(0.2f).sounds(BlockSoundGroup.WOOD)));
     public static final Block MUSHROOM_STEM = Blocks.register("mushroom_stem", new MushroomBlock(AbstractBlock.Settings.of(Material.WOOD, MaterialColor.WEB).strength(0.2f).sounds(BlockSoundGroup.WOOD)));
     public static final Block IRON_BARS = Blocks.register("iron_bars", new PaneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque()));
-    public static final Block CHAIN = Blocks.register("chain", new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0f, 6.0f).sounds(BlockSoundGroup.field_24119).nonOpaque()));
+    public static final Block CHAIN = Blocks.register("chain", new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0f, 6.0f).sounds(BlockSoundGroup.CHAIN).nonOpaque()));
     public static final Block GLASS_PANE = Blocks.register("glass_pane", new PaneBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque()));
     public static final Block MELON = Blocks.register("melon", new MelonBlock(AbstractBlock.Settings.of(Material.PUMPKIN, MaterialColor.LIME).strength(1.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block ATTACHED_PUMPKIN_STEM = Blocks.register("attached_pumpkin_stem", new AttachedStemBlock((GourdBlock)PUMPKIN, AbstractBlock.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.WOOD)));
@@ -473,8 +473,8 @@ public class Blocks {
     public static final Block STONE_BRICK_STAIRS = Blocks.register("stone_brick_stairs", new StairsBlock(STONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(STONE_BRICKS)));
     public static final Block MYCELIUM = Blocks.register("mycelium", new MyceliumBlock(AbstractBlock.Settings.of(Material.ORGANIC, MaterialColor.PURPLE).ticksRandomly().strength(0.6f).sounds(BlockSoundGroup.GRASS)));
     public static final Block LILY_PAD = Blocks.register("lily_pad", new LilyPadBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.GRASS).nonOpaque()));
-    public static final Block NETHER_BRICKS = Blocks.register("nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICK)));
-    public static final Block NETHER_BRICK_FENCE = Blocks.register("nether_brick_fence", new FenceBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICK)));
+    public static final Block NETHER_BRICKS = Blocks.register("nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICKS)));
+    public static final Block NETHER_BRICK_FENCE = Blocks.register("nether_brick_fence", new FenceBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICKS)));
     public static final Block NETHER_BRICK_STAIRS = Blocks.register("nether_brick_stairs", new StairsBlock(NETHER_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(NETHER_BRICKS)));
     public static final Block NETHER_WART = Blocks.register("nether_wart", new NetherWartBlock(AbstractBlock.Settings.of(Material.PLANT, MaterialColor.RED).noCollision().ticksRandomly().sounds(BlockSoundGroup.NETHER_WART)));
     public static final Block ENCHANTING_TABLE = Blocks.register("enchanting_table", new EnchantingTableBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.RED).strength(5.0f, 1200.0f)));
@@ -684,7 +684,7 @@ public class Blocks {
     public static final Block COBBLESTONE_SLAB = Blocks.register("cobblestone_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.STONE).strength(2.0f, 6.0f)));
     public static final Block BRICK_SLAB = Blocks.register("brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.RED).strength(2.0f, 6.0f)));
     public static final Block STONE_BRICK_SLAB = Blocks.register("stone_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.STONE).strength(2.0f, 6.0f)));
-    public static final Block NETHER_BRICK_SLAB = Blocks.register("nether_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICK)));
+    public static final Block NETHER_BRICK_SLAB = Blocks.register("nether_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICKS)));
     public static final Block QUARTZ_SLAB = Blocks.register("quartz_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.QUARTZ).strength(2.0f, 6.0f)));
     public static final Block RED_SANDSTONE_SLAB = Blocks.register("red_sandstone_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.ORANGE).strength(2.0f, 6.0f)));
     public static final Block CUT_RED_SANDSTONE_SLAB = Blocks.register("cut_red_sandstone_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.ORANGE).strength(2.0f, 6.0f)));
@@ -723,7 +723,7 @@ public class Blocks {
     public static final Block FROSTED_ICE = Blocks.register("frosted_ice", new FrostedIceBlock(AbstractBlock.Settings.of(Material.ICE).slipperiness(0.98f).ticksRandomly().strength(0.5f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning((blockState, blockView, blockPos, entityType) -> entityType == EntityType.POLAR_BEAR)));
     public static final Block MAGMA_BLOCK = Blocks.register("magma_block", new MagmaBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).lightLevel(blockState -> 3).ticksRandomly().strength(0.5f).allowsSpawning((blockState, blockView, blockPos, entityType) -> entityType.isFireImmune()).postProcess(Blocks::always).emissiveLighting(Blocks::always)));
     public static final Block NETHER_WART_BLOCK = Blocks.register("nether_wart_block", new Block(AbstractBlock.Settings.of(Material.ORGANIC, MaterialColor.RED).strength(1.0f).sounds(BlockSoundGroup.WART_BLOCK)));
-    public static final Block RED_NETHER_BRICKS = Blocks.register("red_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICK)));
+    public static final Block RED_NETHER_BRICKS = Blocks.register("red_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICKS)));
     public static final Block BONE_BLOCK = Blocks.register("bone_block", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(2.0f).sounds(BlockSoundGroup.BONE)));
     public static final Block STRUCTURE_VOID = Blocks.register("structure_void", new StructureVoidBlock(AbstractBlock.Settings.of(Material.STRUCTURE_VOID).noCollision().dropsNothing()));
     public static final Block OBSERVER = Blocks.register("observer", new ObserverBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0f).solidBlock(Blocks::never)));
@@ -972,14 +972,14 @@ public class Blocks {
     public static final Block POLISHED_BLACKSTONE_BRICK_SLAB = Blocks.register("polished_blackstone_brick_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS).strength(2.0f, 6.0f)));
     public static final Block POLISHED_BLACKSTONE_BRICK_STAIRS = Blocks.register("polished_blackstone_brick_stairs", new StairsBlock(POLISHED_BLACKSTONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS)));
     public static final Block POLISHED_BLACKSTONE_BRICK_WALL = Blocks.register("polished_blackstone_brick_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS)));
-    public static final Block GILDED_BLACKSTONE = Blocks.register("gilded_blackstone", new Block(AbstractBlock.Settings.copy(BLACKSTONE).sounds(BlockSoundGroup.field_24121)));
+    public static final Block GILDED_BLACKSTONE = Blocks.register("gilded_blackstone", new Block(AbstractBlock.Settings.copy(BLACKSTONE).sounds(BlockSoundGroup.GILDED_BLACKSTONE)));
     public static final Block POLISHED_BLACKSTONE_STAIRS = Blocks.register("polished_blackstone_stairs", new StairsBlock(POLISHED_BLACKSTONE.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_BLACKSTONE)));
     public static final Block POLISHED_BLACKSTONE_SLAB = Blocks.register("polished_blackstone_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE)));
     public static final Block POLISHED_BLACKSTONE_PRESSURE_PLATE = Blocks.register("polished_blackstone_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.MOBS, AbstractBlock.Settings.of(Material.STONE, MaterialColor.BLACK).noCollision().strength(0.5f)));
     public static final Block POLISHED_BLACKSTONE_BUTTON = Blocks.register("polished_blackstone_button", new StoneButtonBlock(AbstractBlock.Settings.of(Material.PART).noCollision().strength(0.5f)));
     public static final Block POLISHED_BLACKSTONE_WALL = Blocks.register("polished_blackstone_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE)));
-    public static final Block CHISELED_NETHER_BRICKS = Blocks.register("chiseled_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICK)));
-    public static final Block CRACKED_NETHER_BRICKS = Blocks.register("cracked_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICK)));
+    public static final Block CHISELED_NETHER_BRICKS = Blocks.register("chiseled_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICKS)));
+    public static final Block CRACKED_NETHER_BRICKS = Blocks.register("cracked_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0f, 6.0f).sounds(BlockSoundGroup.NETHER_BRICKS)));
     public static final Block QUARTZ_BRICKS = Blocks.register("quartz_bricks", new Block(AbstractBlock.Settings.copy(QUARTZ_BLOCK)));
 
     private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {

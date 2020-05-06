@@ -26,8 +26,8 @@ extends LeafEntry {
     }
 
     @Override
-    public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-        context.drop(this.name, itemDropper);
+    public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+        context.drop(this.name, lootConsumer);
     }
 
     public static LeafEntry.Builder<?> builder(Identifier name) {

@@ -60,7 +60,7 @@ extends RealmsScreen {
         int i = this.height / 2 - this.textHeight / 2;
         if (this.lines != null) {
             for (Text text : this.lines) {
-                this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
+                this.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, i, 0xFFFFFF);
                 i += this.textRenderer.fontHeight;
             }
         }

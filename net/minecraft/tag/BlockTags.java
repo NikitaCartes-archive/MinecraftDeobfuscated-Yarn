@@ -89,6 +89,7 @@ public class BlockTags {
     public static final Tag.Identified<Block> STRIDER_WARM_BLOCKS = BlockTags.register("strider_warm_blocks");
     public static final Tag.Identified<Block> CAMPFIRES = BlockTags.register("campfires");
     public static final Tag.Identified<Block> GUARDED_BY_PIGLINS = BlockTags.register("guarded_by_piglins");
+    public static final Tag.Identified<Block> PREVENT_MOB_SPAWNING_INSIDE = BlockTags.register("prevent_mob_spawning_inside");
 
     private static Tag.Identified<Block> register(String id) {
         return ACCESSOR.get(id);

@@ -72,7 +72,7 @@ class_5219 {
     private final boolean structures;
     private final boolean hardcore;
     private final boolean commandsAllowed;
-    private final boolean field_24192;
+    private final boolean bonusChest;
     private boolean initialized;
     private Difficulty difficulty = Difficulty.NORMAL;
     private boolean difficultyLocked;
@@ -151,7 +151,7 @@ class_5219 {
         this.hardcore = tag.getBoolean("hardcore");
         this.initialized = tag.contains("initialized", 99) ? tag.getBoolean("initialized") : true;
         this.commandsAllowed = tag.contains("allowCommands", 99) ? tag.getBoolean("allowCommands") : this.gameMode == GameMode.CREATIVE;
-        this.field_24192 = tag.getBoolean("BonusChest");
+        this.bonusChest = tag.getBoolean("BonusChest");
         this.dataVersion = dataVersion;
         if (playerData != null) {
             this.playerData = playerData;
@@ -211,30 +211,30 @@ class_5219 {
         this.dataVersion = SharedConstants.getGameVersion().getWorldVersion();
         this.randomSeed = levelInfo.getSeed();
         this.gameMode = levelInfo.getGameMode();
-        this.difficulty = levelInfo.method_27340();
+        this.difficulty = levelInfo.getDifficulty();
         this.structures = levelInfo.hasStructures();
         this.hardcore = levelInfo.isHardcore();
         this.generatorOptions = levelInfo.getGeneratorOptions();
         this.commandsAllowed = levelInfo.allowCommands();
-        this.field_24192 = levelInfo.hasBonusChest();
-        this.levelName = levelInfo.method_27339();
+        this.bonusChest = levelInfo.hasBonusChest();
+        this.levelName = levelInfo.getLevelName();
         this.version = 19133;
         this.initialized = false;
         this.versionName = SharedConstants.getGameVersion().getName();
         this.versionId = SharedConstants.getGameVersion().getWorldVersion();
         this.versionSnapshot = !SharedConstants.getGameVersion().isStable();
-        this.gameRules.setAllValues(levelInfo.method_27341(), null);
+        this.gameRules.setAllValues(levelInfo.getGameRules(), null);
     }
 
     @Override
-    public CompoundTag cloneWorldTag(@Nullable CompoundTag compoundTag) {
+    public CompoundTag cloneWorldTag(@Nullable CompoundTag tag) {
         this.loadPlayerData();
-        if (compoundTag == null) {
-            compoundTag = this.playerData;
+        if (tag == null) {
+            tag = this.playerData;
         }
-        CompoundTag compoundTag2 = new CompoundTag();
-        this.updateProperties(compoundTag2, compoundTag);
-        return compoundTag2;
+        CompoundTag compoundTag = new CompoundTag();
+        this.updateProperties(compoundTag, tag);
+        return compoundTag;
     }
 
     private void updateProperties(CompoundTag levelTag, CompoundTag playerTag) {
@@ -276,7 +276,7 @@ class_5219 {
         levelTag.putBoolean("thundering", this.thundering);
         levelTag.putBoolean("hardcore", this.hardcore);
         levelTag.putBoolean("allowCommands", this.commandsAllowed);
-        levelTag.putBoolean("BonusChest", this.field_24192);
+        levelTag.putBoolean("BonusChest", this.bonusChest);
         levelTag.putBoolean("initialized", this.initialized);
         this.field_24193.method_27357(levelTag);
         levelTag.putByte("Difficulty", (byte)this.difficulty.getId());
@@ -363,35 +363,35 @@ class_5219 {
     }
 
     @Override
-    public void method_27416(int i) {
-        this.spawnX = i;
+    public void setSpawnX(int spawnX) {
+        this.spawnX = spawnX;
     }
 
     @Override
-    public void method_27417(int i) {
-        this.spawnY = i;
+    public void setSpawnY(int spawnY) {
+        this.spawnY = spawnY;
     }
 
     @Override
-    public void method_27419(int i) {
-        this.spawnZ = i;
+    public void setSpawnZ(int spawnZ) {
+        this.spawnZ = spawnZ;
     }
 
     @Override
-    public void setTime(long l) {
-        this.time = l;
+    public void setTime(long time) {
+        this.time = time;
     }
 
     @Override
-    public void setTimeOfDay(long l) {
-        this.timeOfDay = l;
+    public void setTimeOfDay(long timeOfDay) {
+        this.timeOfDay = timeOfDay;
     }
 
     @Override
-    public void setSpawnPos(BlockPos blockPos) {
-        this.spawnX = blockPos.getX();
-        this.spawnY = blockPos.getY();
-        this.spawnZ = blockPos.getZ();
+    public void setSpawnPos(BlockPos pos) {
+        this.spawnX = pos.getX();
+        this.spawnY = pos.getY();
+        this.spawnZ = pos.getZ();
     }
 
     @Override
@@ -416,8 +416,8 @@ class_5219 {
     }
 
     @Override
-    public void setClearWeatherTime(int i) {
-        this.clearWeatherTime = i;
+    public void setClearWeatherTime(int clearWeatherTime) {
+        this.clearWeatherTime = clearWeatherTime;
     }
 
     @Override
@@ -426,8 +426,8 @@ class_5219 {
     }
 
     @Override
-    public void setThundering(boolean bl) {
-        this.thundering = bl;
+    public void setThundering(boolean thundering) {
+        this.thundering = thundering;
     }
 
     @Override
@@ -436,8 +436,8 @@ class_5219 {
     }
 
     @Override
-    public void setThunderTime(int i) {
-        this.thunderTime = i;
+    public void setThunderTime(int thunderTime) {
+        this.thunderTime = thunderTime;
     }
 
     @Override
@@ -446,8 +446,8 @@ class_5219 {
     }
 
     @Override
-    public void setRaining(boolean bl) {
-        this.raining = bl;
+    public void setRaining(boolean raining) {
+        this.raining = raining;
     }
 
     @Override
@@ -456,8 +456,8 @@ class_5219 {
     }
 
     @Override
-    public void setRainTime(int i) {
-        this.rainTime = i;
+    public void setRainTime(int rainTime) {
+        this.rainTime = rainTime;
     }
 
     @Override
@@ -466,7 +466,7 @@ class_5219 {
     }
 
     @Override
-    public boolean method_27420() {
+    public boolean hasStructures() {
         return this.structures;
     }
 
@@ -486,7 +486,7 @@ class_5219 {
     }
 
     @Override
-    public LevelGeneratorOptions method_27421() {
+    public LevelGeneratorOptions getGeneratorOptions() {
         return this.generatorOptions;
     }
 
@@ -501,8 +501,8 @@ class_5219 {
     }
 
     @Override
-    public void setInitialized(boolean bl) {
-        this.initialized = bl;
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
     }
 
     @Override
@@ -536,8 +536,8 @@ class_5219 {
     }
 
     @Override
-    public void setDifficultyLocked(boolean bl) {
-        this.difficultyLocked = bl;
+    public void setDifficultyLocked(boolean locked) {
+        this.difficultyLocked = locked;
     }
 
     @Override
@@ -552,7 +552,7 @@ class_5219 {
     }
 
     @Override
-    public CompoundTag method_27434(DimensionType dimensionType) {
+    public CompoundTag getWorldData(DimensionType dimensionType) {
         CompoundTag compoundTag = this.worldData.get(dimensionType);
         if (compoundTag == null) {
             return new CompoundTag();
@@ -561,18 +561,18 @@ class_5219 {
     }
 
     @Override
-    public void method_27435(DimensionType dimensionType, CompoundTag compoundTag) {
-        this.worldData.put(dimensionType, compoundTag);
+    public void setWorldData(DimensionType dimensionType, CompoundTag tag) {
+        this.worldData.put(dimensionType, tag);
     }
 
     @Override
     public CompoundTag getWorldData() {
-        return this.method_27434(DimensionType.OVERWORLD);
+        return this.getWorldData(DimensionType.OVERWORLD);
     }
 
     @Override
-    public void setWorldData(CompoundTag compoundTag) {
-        this.method_27435(DimensionType.OVERWORLD, compoundTag);
+    public void setWorldData(CompoundTag tag) {
+        this.setWorldData(DimensionType.OVERWORLD, tag);
     }
 
     @Override
@@ -610,8 +610,8 @@ class_5219 {
     }
 
     @Override
-    public void setCustomBossEvents(@Nullable CompoundTag compoundTag) {
-        this.customBossEvents = compoundTag;
+    public void setCustomBossEvents(@Nullable CompoundTag tag) {
+        this.customBossEvents = tag;
     }
 
     @Override
@@ -620,8 +620,8 @@ class_5219 {
     }
 
     @Override
-    public void setWanderingTraderSpawnDelay(int i) {
-        this.wanderingTraderSpawnDelay = i;
+    public void setWanderingTraderSpawnDelay(int wanderingTraderSpawnDelay) {
+        this.wanderingTraderSpawnDelay = wanderingTraderSpawnDelay;
     }
 
     @Override
@@ -630,28 +630,28 @@ class_5219 {
     }
 
     @Override
-    public void setWanderingTraderSpawnChance(int i) {
-        this.wanderingTraderSpawnChance = i;
+    public void setWanderingTraderSpawnChance(int wanderingTraderSpawnChance) {
+        this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
     }
 
     @Override
-    public void setWanderingTraderId(UUID uUID) {
-        this.wanderingTraderId = uUID;
+    public void setWanderingTraderId(UUID uuid) {
+        this.wanderingTraderId = uuid;
     }
 
     @Override
-    public void addServerBrand(String string, boolean bl) {
-        this.serverBrands.add(string);
-        this.modded |= bl;
+    public void addServerBrand(String brand, boolean modded) {
+        this.serverBrands.add(brand);
+        this.modded |= modded;
     }
 
     @Override
-    public boolean method_27431() {
+    public boolean isModded() {
         return this.modded;
     }
 
     @Override
-    public Set<String> method_27432() {
+    public Set<String> getServerBrands() {
         return ImmutableSet.copyOf(this.serverBrands);
     }
 
@@ -661,9 +661,9 @@ class_5219 {
     }
 
     @Override
-    public LevelInfo method_27433() {
+    public LevelInfo getLevelInfo() {
         LevelInfo levelInfo = new LevelInfo(this.levelName, this.randomSeed, this.gameMode, this.structures, this.hardcore, this.difficulty, this.generatorOptions, this.gameRules.copy());
-        if (this.field_24192) {
+        if (this.bonusChest) {
             levelInfo = levelInfo.setBonusChest();
         }
         if (this.commandsAllowed) {

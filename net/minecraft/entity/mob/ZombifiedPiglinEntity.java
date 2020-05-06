@@ -10,7 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
@@ -109,7 +109,7 @@ extends ZombieEntity {
         super.mobTick();
     }
 
-    public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return world.getDifficulty() != Difficulty.PEACEFUL && world.getBlockState(pos.down()).getBlock() != Blocks.NETHER_WART_BLOCK;
     }
 

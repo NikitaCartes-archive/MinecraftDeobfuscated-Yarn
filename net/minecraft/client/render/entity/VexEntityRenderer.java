@@ -11,6 +11,7 @@ import net.minecraft.client.render.entity.model.VexEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
 @Environment(value=EnvType.CLIENT)
 public class VexEntityRenderer
@@ -23,7 +24,7 @@ extends BipedEntityRenderer<VexEntity, VexEntityModel> {
     }
 
     @Override
-    protected int getBlockLight(VexEntity vexEntity, float f) {
+    protected int getBlockLight(VexEntity vexEntity, BlockPos blockPos) {
         return 15;
     }
 

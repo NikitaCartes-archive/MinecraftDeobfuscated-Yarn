@@ -12,7 +12,7 @@ import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
@@ -73,7 +73,7 @@ implements DynamicSerializable {
             for (int l = -baseHeight; l <= baseHeight + j; ++l) {
                 if (this.method_27387(random, k, i, l, baseHeight, giantTrunk)) continue;
                 mutable.set(blockPos, k, i, l);
-                if (!AbstractTreeFeature.canReplace(world, mutable)) continue;
+                if (!TreeFeature.canReplace(world, mutable)) continue;
                 world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
                 leaves.add(mutable.toImmutable());
             }

@@ -17,7 +17,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
@@ -278,9 +278,9 @@ extends PatrolEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnType != SpawnType.NATURAL);
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnReason != SpawnReason.NATURAL);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public abstract SoundEvent getCelebratingSound();
@@ -348,7 +348,7 @@ extends PatrolEntity {
         @Override
         public void tick() {
             if (this.raider.getNavigation().isIdle()) {
-                Vec3d vec3d = Vec3d.method_24955(this.home);
+                Vec3d vec3d = Vec3d.ofBottomCenter(this.home);
                 Vec3d vec3d2 = TargetFinder.findTargetTowards(this.raider, 16, 7, vec3d, 0.3141592741012573);
                 if (vec3d2 == null) {
                     vec3d2 = TargetFinder.findTargetTowards(this.raider, 8, 7, vec3d);

@@ -32,6 +32,7 @@ extends Task<LivingEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
+        long l;
         if (entity.hasVehicle()) {
             return false;
         }
@@ -41,7 +42,7 @@ extends Task<LivingEntity> {
             return false;
         }
         Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
-        if (optional.isPresent() && world.getTime() - optional.get().getTime() < 100L) {
+        if (optional.isPresent() && (l = world.getTime() - optional.get().getTime()) > 0L && l < 100L) {
             return false;
         }
         BlockState blockState = world.getBlockState(globalPos.getPos());

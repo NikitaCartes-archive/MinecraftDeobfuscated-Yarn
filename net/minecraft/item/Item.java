@@ -294,7 +294,7 @@ implements ItemConvertible {
         return false;
     }
 
-    public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
+    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
         return ImmutableMultimap.of();
     }
 

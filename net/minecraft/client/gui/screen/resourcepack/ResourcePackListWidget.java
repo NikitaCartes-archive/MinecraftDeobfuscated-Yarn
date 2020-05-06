@@ -45,7 +45,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     @Override
     protected void renderHeader(MatrixStack matrixStack, int y, int i, Tessellator tessellator) {
         MutableText text = new LiteralText("").append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
-        this.client.textRenderer.draw(matrixStack, text, (float)(y + this.width / 2 - this.client.textRenderer.getStringWidth(text) / 2), (float)Math.min(this.top + 3, i), 0xFFFFFF);
+        this.client.textRenderer.draw(matrixStack, text, (float)(y + this.width / 2 - this.client.textRenderer.getWidth(text) / 2), (float)Math.min(this.top + 3, i), 0xFFFFFF);
     }
 
     @Override
@@ -152,7 +152,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                     }
                 }
             }
-            if ((j = this.client.textRenderer.getStringWidth(text)) > 157) {
+            if ((j = this.client.textRenderer.getWidth(text)) > 157) {
                 MutableText text3 = this.client.textRenderer.trimToWidth(text, 157 - this.client.textRenderer.getWidth("...")).append("...");
                 this.client.textRenderer.drawWithShadow(matrices, text3, (float)(width + 32 + 2), (float)(y + 1), 0xFFFFFF);
             } else {

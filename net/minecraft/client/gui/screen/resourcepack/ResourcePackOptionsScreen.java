@@ -111,10 +111,10 @@ extends GameOptionsScreen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderDirtBackground(0);
+        this.renderBackgroundTexture(0);
         this.availablePacks.render(matrices, mouseX, mouseY, delta);
         this.enabledPacks.render(matrices, mouseX, mouseY, delta);
-        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
+        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 0xFFFFFF);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("resourcePack.folderInfo", new Object[0]), this.width / 2 - 77, this.height - 26, 0x808080);
         super.render(matrices, mouseX, mouseY, delta);
     }

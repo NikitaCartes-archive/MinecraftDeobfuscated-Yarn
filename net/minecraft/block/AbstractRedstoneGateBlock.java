@@ -129,15 +129,15 @@ extends HorizontalFacingBlock {
         return Math.max(i, blockState.isOf(Blocks.REDSTONE_WIRE) ? blockState.get(RedstoneWireBlock.POWER) : 0);
     }
 
-    protected int getMaxInputLevelSides(WorldView worldView, BlockPos pos, BlockState state) {
+    protected int getMaxInputLevelSides(WorldView world, BlockPos pos, BlockState state) {
         Direction direction = state.get(FACING);
         Direction direction2 = direction.rotateYClockwise();
         Direction direction3 = direction.rotateYCounterclockwise();
-        return Math.max(this.getInputLevel(worldView, pos.offset(direction2), direction2), this.getInputLevel(worldView, pos.offset(direction3), direction3));
+        return Math.max(this.getInputLevel(world, pos.offset(direction2), direction2), this.getInputLevel(world, pos.offset(direction3), direction3));
     }
 
-    protected int getInputLevel(WorldView worldView, BlockPos pos, Direction dir) {
-        BlockState blockState = worldView.getBlockState(pos);
+    protected int getInputLevel(WorldView world, BlockPos pos, Direction dir) {
+        BlockState blockState = world.getBlockState(pos);
         if (this.isValidInput(blockState)) {
             if (blockState.isOf(Blocks.REDSTONE_BLOCK)) {
                 return 15;
@@ -145,7 +145,7 @@ extends HorizontalFacingBlock {
             if (blockState.isOf(Blocks.REDSTONE_WIRE)) {
                 return blockState.get(RedstoneWireBlock.POWER);
             }
-            return worldView.getStrongRedstonePower(pos, dir);
+            return world.getStrongRedstonePower(pos, dir);
         }
         return 0;
     }

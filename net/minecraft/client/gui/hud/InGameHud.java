@@ -245,7 +245,7 @@ extends DrawableHelper {
                         j = MathHelper.hsvToRgb(g / 50.0f, 0.7f, 0.6f) & 0xFFFFFF;
                     }
                     l = k << 24 & 0xFF000000;
-                    m = textRenderer.getStringWidth(this.overlayMessage);
+                    m = textRenderer.getWidth(this.overlayMessage);
                     this.drawTextBackground(matrixStack, textRenderer, -4, m, 0xFFFFFF | l);
                     textRenderer.draw(matrixStack, this.overlayMessage, (float)(-m / 2), -4.0f, j | l);
                     RenderSystem.disableBlend();
@@ -272,14 +272,14 @@ extends DrawableHelper {
                     RenderSystem.pushMatrix();
                     RenderSystem.scalef(4.0f, 4.0f, 4.0f);
                     int j2 = k << 24 & 0xFF000000;
-                    l = textRenderer.getStringWidth(this.title);
+                    l = textRenderer.getWidth(this.title);
                     this.drawTextBackground(matrixStack, textRenderer, -10, l, 0xFFFFFF | j2);
                     textRenderer.drawWithShadow(matrixStack, this.title, (float)(-l / 2), -10.0f, 0xFFFFFF | j2);
                     RenderSystem.popMatrix();
                     if (this.subtitle != null) {
                         RenderSystem.pushMatrix();
                         RenderSystem.scalef(2.0f, 2.0f, 2.0f);
-                        m = textRenderer.getStringWidth(this.subtitle);
+                        m = textRenderer.getWidth(this.subtitle);
                         this.drawTextBackground(matrixStack, textRenderer, 5, m, 0xFFFFFF | j2);
                         textRenderer.drawWithShadow(matrixStack, this.subtitle, (float)(-m / 2), 5.0f, 0xFFFFFF | j2);
                         RenderSystem.popMatrix();
@@ -546,7 +546,7 @@ extends DrawableHelper {
             if (this.currentStack.hasCustomName()) {
                 mutableText.formatted(Formatting.ITALIC);
             }
-            int i = this.getFontRenderer().getStringWidth(mutableText);
+            int i = this.getFontRenderer().getWidth(mutableText);
             int j = (this.scaledWidth - i) / 2;
             int k = this.scaledHeight - 59;
             if (!this.client.interactionManager.hasStatusBars()) {
@@ -584,13 +584,13 @@ extends DrawableHelper {
         collection = list.size() > 15 ? Lists.newArrayList(Iterables.skip(list, collection.size() - 15)) : list;
         ArrayList<Pair<ScoreboardPlayerScore, MutableText>> list2 = Lists.newArrayListWithCapacity(collection.size());
         Text text = scoreboardObjective.getDisplayName();
-        int j = i = this.getFontRenderer().getStringWidth(text);
+        int j = i = this.getFontRenderer().getWidth(text);
         int k = this.getFontRenderer().getWidth(": ");
         for (ScoreboardPlayerScore scoreboardPlayerScore2 : collection) {
             Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
             MutableText text2 = Team.modifyText(team, new LiteralText(scoreboardPlayerScore2.getPlayerName()));
             list2.add(Pair.of(scoreboardPlayerScore2, text2));
-            j = Math.max(j, this.getFontRenderer().getStringWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore2.getScore())));
+            j = Math.max(j, this.getFontRenderer().getWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore2.getScore())));
         }
         int l = collection.size() * this.getFontRenderer().fontHeight;
         int m = this.scaledHeight / 2 + l / 3;
@@ -943,7 +943,7 @@ extends DrawableHelper {
             RenderSystem.scalef(1.0f / h, (h + 1.0f) / 2.0f, 1.0f);
             RenderSystem.translatef(-(i + 8), -(j + 12), 0.0f);
         }
-        this.itemRenderer.renderGuiItem(playerEntity, itemStack, i, j);
+        this.itemRenderer.method_27951(playerEntity, itemStack, i, j);
         if (g > 0.0f) {
             RenderSystem.popMatrix();
         }

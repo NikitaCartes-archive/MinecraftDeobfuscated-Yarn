@@ -136,11 +136,11 @@ implements Vanishable {
     }
 
     @Override
-    public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-        if (equipmentSlot == EquipmentSlot.MAINHAND) {
+    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+        if (slot == EquipmentSlot.MAINHAND) {
             return this.field_23746;
         }
-        return super.getModifiers(equipmentSlot);
+        return super.getAttributeModifiers(slot);
     }
 
     @Override

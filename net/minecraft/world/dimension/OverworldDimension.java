@@ -33,7 +33,7 @@ extends Dimension {
     }
 
     public ChunkGenerator<? extends ChunkGeneratorConfig> createChunkGenerator() {
-        return this.world.getLevelProperties().method_27421().createChunkGenerator(this.world);
+        return this.world.getLevelProperties().getGeneratorOptions().createChunkGenerator(this.world);
     }
 
     @Override

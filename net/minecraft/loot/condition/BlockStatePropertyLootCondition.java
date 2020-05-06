@@ -88,7 +88,7 @@ implements LootCondition {
             this.block = block;
         }
 
-        public Builder method_22584(StatePredicate.Builder builder) {
+        public Builder properties(StatePredicate.Builder builder) {
             this.propertyValues = builder.build();
             return this;
         }

@@ -33,7 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
 public class FillCommand {
-    private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.fill.toobig", object, object2));
+    private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.fill.toobig", object, object2));
     private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed"));
 
@@ -44,7 +44,7 @@ public class FillCommand {
     private static int execute(ServerCommandSource source, BlockBox range, BlockStateArgument block, Mode mode, @Nullable Predicate<CachedBlockPosition> filter) throws CommandSyntaxException {
         int i = range.getBlockCountX() * range.getBlockCountY() * range.getBlockCountZ();
         if (i > 32768) {
-            throw TOOBIG_EXCEPTION.create(32768, i);
+            throw TOO_BIG_EXCEPTION.create(32768, i);
         }
         ArrayList<BlockPos> list = Lists.newArrayList();
         ServerWorld serverWorld = source.getWorld();

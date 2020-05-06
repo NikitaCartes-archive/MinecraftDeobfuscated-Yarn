@@ -284,7 +284,7 @@ extends TameableEntity {
 
     @Override
     public int getLookPitchSpeed() {
-        if (this.isSitting()) {
+        if (this.isInSittingPose()) {
             return 20;
         }
         return super.getLookPitchSpeed();
@@ -296,7 +296,7 @@ extends TameableEntity {
             return false;
         }
         Entity entity = source.getAttacker();
-        this.method_24346(false);
+        this.setSitting(false);
         if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof PersistentProjectileEntity)) {
             amount = (amount + 1.0f) / 2.0f;
         }
@@ -364,7 +364,7 @@ extends TameableEntity {
             }
             if (!this.isOwner(player)) return bl;
             if (this.isBreedingItem(itemStack)) return bl;
-            this.method_24346(!this.method_24345());
+            this.setSitting(!this.isSitting());
             this.jumping = false;
             this.navigation.stop();
             this.setTarget(null);
@@ -379,7 +379,7 @@ extends TameableEntity {
             this.setOwner(player);
             this.navigation.stop();
             this.setTarget(null);
-            this.method_24346(true);
+            this.setSitting(true);
             this.world.sendEntityStatus(this, (byte)7);
             return true;
         } else {
@@ -473,7 +473,7 @@ extends TameableEntity {
         if (!wolfEntity.isTamed()) {
             return false;
         }
-        if (wolfEntity.isSitting()) {
+        if (wolfEntity.isInSittingPose()) {
             return false;
         }
         return this.isInLove() && wolfEntity.isInLove();

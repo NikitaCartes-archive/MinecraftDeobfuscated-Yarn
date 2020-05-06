@@ -94,7 +94,7 @@ extends AbstractButtonWidget {
             minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k + 1, this.y + k + 1);
             --k;
         }
-        minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k, this.y + k);
+        minecraftClient.getItemRenderer().method_27953(itemStack, this.x + k, this.y + k);
         if (bl) {
             RenderSystem.popMatrix();
         }

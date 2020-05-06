@@ -87,9 +87,9 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
-        this.field_3499.roll = -0.2f + 0.4f * MathHelper.sin(customAngle * 0.2f);
-        this.field_3494.roll = 0.2f - 0.4f * MathHelper.sin(customAngle * 0.2f);
+    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+        this.field_3499.roll = -0.2f + 0.4f * MathHelper.sin(animationProgress * 0.2f);
+        this.field_3494.roll = 0.2f - 0.4f * MathHelper.sin(animationProgress * 0.2f);
     }
 }
 

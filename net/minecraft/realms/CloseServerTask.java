@@ -49,7 +49,7 @@ extends LongRunningTask {
                     return;
                 }
                 LOGGER.error("Failed to close server", (Throwable)exception);
-                this.method_27453("Failed to close the server");
+                this.error("Failed to close the server");
             }
         }
     }

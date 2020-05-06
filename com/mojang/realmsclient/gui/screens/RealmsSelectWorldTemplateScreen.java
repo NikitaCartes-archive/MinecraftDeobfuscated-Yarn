@@ -249,13 +249,13 @@ extends RealmsScreen {
         if (this.noTemplatesMessage != null) {
             this.method_21414(matrices, mouseX, mouseY, this.noTemplatesMessage);
         }
-        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 13, 0xFFFFFF);
+        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 13, 0xFFFFFF);
         if (this.displayWarning) {
             int k;
             int i;
             Text[] texts = this.warning;
             for (i = 0; i < texts.length; ++i) {
-                int j = this.textRenderer.getStringWidth(texts[i]);
+                int j = this.textRenderer.getWidth(texts[i]);
                 k = this.width / 2 - j / 2;
                 int l = RealmsSelectWorldTemplateScreen.row(-1 + i);
                 if (mouseX < k || mouseX > k + j || mouseY < l || mouseY > l + this.textRenderer.fontHeight) continue;
@@ -272,7 +272,7 @@ extends RealmsScreen {
                         k = 0x3366BB;
                     }
                 }
-                this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, RealmsSelectWorldTemplateScreen.row(-1 + i), k);
+                this.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, RealmsSelectWorldTemplateScreen.row(-1 + i), k);
             }
         }
         super.render(matrices, mouseX, mouseY, delta);

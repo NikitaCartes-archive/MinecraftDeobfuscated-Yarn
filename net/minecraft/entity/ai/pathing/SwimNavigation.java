@@ -82,7 +82,7 @@ extends EntityNavigation {
             g = (float)((double)g * (vec3d2.length() * 6.0));
         }
         int i = 6;
-        Vec3d vec3d3 = Vec3d.method_24953(this.currentPath.getCurrentPosition());
+        Vec3d vec3d3 = Vec3d.ofCenter(this.currentPath.getCurrentPosition());
         if (Math.abs(this.entity.getX() - (vec3d3.x + 0.5)) < (double)g && Math.abs(this.entity.getZ() - (vec3d3.z + 0.5)) < (double)g && Math.abs(this.entity.getY() - vec3d3.y) < (double)(g * 2.0f)) {
             this.currentPath.next();
         }
@@ -110,7 +110,7 @@ extends EntityNavigation {
                 this.currentNodeMs += Util.getMeasuringTimeMs() - this.lastActiveTickMs;
             } else {
                 this.lastNodePosition = vec3i;
-                double d = currentPos.distanceTo(Vec3d.method_24953(this.lastNodePosition));
+                double d = currentPos.distanceTo(Vec3d.ofCenter(this.lastNodePosition));
                 double d2 = this.currentNodeTimeout = this.entity.getMovementSpeed() > 0.0f ? d / (double)this.entity.getMovementSpeed() * 100.0 : 0.0;
             }
             if (this.currentNodeTimeout > 0.0 && (double)this.currentNodeMs > this.currentNodeTimeout * 2.0) {

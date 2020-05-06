@@ -120,9 +120,9 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderDirtBackground(0);
+        this.renderBackgroundTexture(0);
         this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
-        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
+        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.generator", new Object[0]), this.width / 2, 30, 0xA0A0A0);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("createWorld.customize.buffet.biome", new Object[0]), this.width / 2, 68, 0xA0A0A0);
         super.render(matrices, mouseX, mouseY, delta);
@@ -166,7 +166,7 @@ extends Screen {
 
             @Override
             public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-                BuffetBiomesListWidget.this.drawString(matrices, CustomizeBuffetLevelScreen.this.textRenderer, Registry.BIOME.get(this.biome).getName().getString(), width + 5, y + 2, 0xFFFFFF);
+                BuffetBiomesListWidget.this.drawStringWithShadow(matrices, CustomizeBuffetLevelScreen.this.textRenderer, Registry.BIOME.get(this.biome).getName().getString(), width + 5, y + 2, 0xFFFFFF);
             }
 
             @Override

@@ -43,13 +43,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.class_5268;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Npc;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -171,7 +171,7 @@ extends World {
     private final StructureAccessor structureAccessor;
 
     public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, class_5268 properties, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener) {
-        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, session, server.getDataFixer(), server.method_27727(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), server::getProfiler, false);
+        super(properties, dimensionType, (world, dimension) -> new ServerChunkManager((ServerWorld)world, session, server.getDataFixer(), server.getStructureManager(), workerExecutor, dimension.createChunkGenerator(), server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), worldGenerationProgressListener, () -> server.getWorld(DimensionType.OVERWORLD).getPersistentStateManager()), server::getProfiler, false);
         this.server = server;
         this.field_24456 = properties;
         this.portalForcer = new PortalForcer(this);
@@ -897,7 +897,7 @@ extends World {
     }
 
     public StructureManager getStructureManager() {
-        return this.server.method_27727();
+        return this.server.getStructureManager();
     }
 
     public <T extends ParticleEffect> int spawnParticles(T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
@@ -941,7 +941,7 @@ extends World {
 
     @Nullable
     public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
-        if (!this.field_24456.method_27420()) {
+        if (!this.field_24456.hasStructures()) {
             return null;
         }
         return this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
@@ -1103,8 +1103,8 @@ extends World {
             writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getSpawningChunkCount()));
             info = this.getChunkManager().getSpawnInfo();
             if (info != null) {
-                for (Object2IntMap.Entry entry : ((SpawnHelper.Info)info).getCategoryToCount().object2IntEntrySet()) {
-                    writer.write(String.format("spawn_count.%s: %d\n", ((EntityCategory)((Object)entry.getKey())).getName(), entry.getIntValue()));
+                for (Object2IntMap.Entry entry : ((SpawnHelper.Info)info).getGroupToCount().object2IntEntrySet()) {
+                    writer.write(String.format("spawn_count.%s: %d\n", ((SpawnGroup)((Object)entry.getKey())).getName(), entry.getIntValue()));
                 }
             }
             writer.write(String.format("entities: %d\n", this.entitiesById.size()));

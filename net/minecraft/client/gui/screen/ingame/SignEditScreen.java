@@ -119,7 +119,7 @@ extends Screen {
         int m;
         DiffuseLighting.disableGuiDepthLighting();
         this.renderBackground(matrices);
-        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 40, 0xFFFFFF);
+        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 40, 0xFFFFFF);
         matrices.push();
         matrices.translate(this.width / 2, 0.0, 50.0);
         float f = 93.75f;

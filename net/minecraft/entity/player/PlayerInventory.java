@@ -156,36 +156,36 @@ Nameable {
         }
     }
 
-    public int method_7369(Predicate<ItemStack> predicate, int i) {
-        int k;
-        int j = 0;
-        for (k = 0; k < this.size(); ++k) {
-            ItemStack itemStack = this.getStack(k);
-            if (itemStack.isEmpty() || !predicate.test(itemStack)) continue;
-            int l = i <= 0 ? itemStack.getCount() : Math.min(i - j, itemStack.getCount());
-            j += l;
-            if (i == 0) continue;
-            itemStack.decrement(l);
+    public int clearItem(Predicate<ItemStack> itemPredicate, int amount) {
+        int j;
+        int i = 0;
+        for (j = 0; j < this.size(); ++j) {
+            ItemStack itemStack = this.getStack(j);
+            if (itemStack.isEmpty() || !itemPredicate.test(itemStack)) continue;
+            int k = amount <= 0 ? itemStack.getCount() : Math.min(amount - i, itemStack.getCount());
+            i += k;
+            if (amount == 0) continue;
+            itemStack.decrement(k);
             if (itemStack.isEmpty()) {
-                this.setStack(k, ItemStack.EMPTY);
+                this.setStack(j, ItemStack.EMPTY);
             }
-            if (i <= 0 || j < i) continue;
-            return j;
+            if (amount <= 0 || i < amount) continue;
+            return i;
         }
-        if (!this.cursorStack.isEmpty() && predicate.test(this.cursorStack)) {
-            k = i <= 0 ? this.cursorStack.getCount() : Math.min(i - j, this.cursorStack.getCount());
-            j += k;
-            if (i != 0) {
-                this.cursorStack.decrement(k);
+        if (!this.cursorStack.isEmpty() && itemPredicate.test(this.cursorStack)) {
+            j = amount <= 0 ? this.cursorStack.getCount() : Math.min(amount - i, this.cursorStack.getCount());
+            i += j;
+            if (amount != 0) {
+                this.cursorStack.decrement(j);
                 if (this.cursorStack.isEmpty()) {
                     this.cursorStack = ItemStack.EMPTY;
                 }
-                if (i > 0 && j >= i) {
-                    return j;
+                if (amount > 0 && i >= amount) {
+                    return i;
                 }
             }
         }
-        return j;
+        return i;
     }
 
     private int addStack(ItemStack stack) {

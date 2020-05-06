@@ -65,9 +65,9 @@ extends LockableContainerBlockEntity {
         if (this.lootTableId != null && this.world.getServer() != null) {
             LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
             this.lootTableId = null;
-            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).put(LootContextParameters.POSITION, new BlockPos(this.pos)).setRandom(this.lootTableSeed);
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.POSITION, new BlockPos(this.pos)).random(this.lootTableSeed);
             if (player != null) {
-                builder.setLuck(player.getLuck()).put(LootContextParameters.THIS_ENTITY, player);
+                builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
             }
             lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
         }
@@ -143,7 +143,7 @@ extends LockableContainerBlockEntity {
     public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (this.checkUnlocked(playerEntity)) {
             this.checkLootInteraction(playerInventory.player);
-            return this.createContainer(i, playerInventory);
+            return this.createScreenHandler(i, playerInventory);
         }
         return null;
     }

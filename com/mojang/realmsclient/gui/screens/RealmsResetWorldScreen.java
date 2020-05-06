@@ -181,7 +181,7 @@ extends RealmsScreenWithCallback {
         }
         DrawableHelper.drawTexture(matrixStack, i, j + 12, 0.0f, 0.0f, 60, 60, 60, 60);
         int k = bl ? 0xA0A0A0 : 0xFFFFFF;
-        this.drawStringWithShadow(matrixStack, this.textRenderer, text, i + 30, j, k);
+        this.drawCenteredText(matrixStack, this.textRenderer, text, i + 30, j, k);
     }
 
     @Override

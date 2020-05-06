@@ -30,6 +30,8 @@ public class BufferBuilderStorage {
         BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getSign());
         BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, TexturedRenderLayers.getChest());
         BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getTranslucentNoCrumbling());
+        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.method_27948());
+        BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.method_27949());
         BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getGlint());
         BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getEntityGlint());
         BufferBuilderStorage.assignBufferBuilder(object2ObjectLinkedOpenHashMap, RenderLayer.getWaterMask());

@@ -440,46 +440,46 @@ extends Screen {
         String string;
         this.renderBackground(matrices);
         StructureBlockMode structureBlockMode = this.structureBlock.getMode();
-        this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
+        this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
         if (structureBlockMode != StructureBlockMode.DATA) {
-            this.drawString(matrices, this.textRenderer, I18n.translate("structure_block.structure_name", new Object[0]), this.width / 2 - 153, 30, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.structure_name", new Object[0]), this.width / 2 - 153, 30, 0xA0A0A0);
             this.inputName.render(matrices, mouseX, mouseY, delta);
         }
         if (structureBlockMode == StructureBlockMode.LOAD || structureBlockMode == StructureBlockMode.SAVE) {
-            this.drawString(matrices, this.textRenderer, I18n.translate("structure_block.position", new Object[0]), this.width / 2 - 153, 70, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.position", new Object[0]), this.width / 2 - 153, 70, 0xA0A0A0);
             this.inputPosX.render(matrices, mouseX, mouseY, delta);
             this.inputPosY.render(matrices, mouseX, mouseY, delta);
             this.inputPosZ.render(matrices, mouseX, mouseY, delta);
             string = I18n.translate("structure_block.include_entities", new Object[0]);
             i = this.textRenderer.getWidth(string);
-            this.drawString(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 150, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 150, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.SAVE) {
-            this.drawString(matrices, this.textRenderer, I18n.translate("structure_block.size", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.size", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputSizeX.render(matrices, mouseX, mouseY, delta);
             this.inputSizeY.render(matrices, mouseX, mouseY, delta);
             this.inputSizeZ.render(matrices, mouseX, mouseY, delta);
             string = I18n.translate("structure_block.detect_size", new Object[0]);
             i = this.textRenderer.getWidth(string);
-            this.drawString(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 110, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 110, 0xA0A0A0);
             String string2 = I18n.translate("structure_block.show_air", new Object[0]);
             int j = this.textRenderer.getWidth(string2);
-            this.drawString(matrices, this.textRenderer, string2, this.width / 2 + 154 - j, 70, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, string2, this.width / 2 + 154 - j, 70, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.LOAD) {
-            this.drawString(matrices, this.textRenderer, I18n.translate("structure_block.integrity", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.integrity", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputIntegrity.render(matrices, mouseX, mouseY, delta);
             this.inputSeed.render(matrices, mouseX, mouseY, delta);
             string = I18n.translate("structure_block.show_boundingbox", new Object[0]);
             i = this.textRenderer.getWidth(string);
-            this.drawString(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 70, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, string, this.width / 2 + 154 - i, 70, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.DATA) {
-            this.drawString(matrices, this.textRenderer, I18n.translate("structure_block.custom_data", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("structure_block.custom_data", new Object[0]), this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputMetadata.render(matrices, mouseX, mouseY, delta);
         }
         string = "structure_block.mode_info." + structureBlockMode.asString();
-        this.drawString(matrices, this.textRenderer, I18n.translate(string, new Object[0]), this.width / 2 - 153, 174, 0xA0A0A0);
+        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate(string, new Object[0]), this.width / 2 - 153, 174, 0xA0A0A0);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

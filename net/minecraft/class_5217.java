@@ -37,7 +37,7 @@ public interface class_5217 {
 
     public LevelGeneratorType getGeneratorType();
 
-    public LevelGeneratorOptions method_27421();
+    public LevelGeneratorOptions getGeneratorOptions();
 
     public GameRules getGameRules();
 
@@ -47,7 +47,7 @@ public interface class_5217 {
 
     default public void populateCrashReport(CrashReportSection crashReportSection) {
         crashReportSection.add("Level seed", () -> String.valueOf(this.getSeed()));
-        crashReportSection.add("Level generator options", () -> this.method_27421().getDynamic().toString());
+        crashReportSection.add("Level generator options", () -> this.getGeneratorOptions().getDynamic().toString());
         crashReportSection.add("Level spawn location", () -> CrashReportSection.createPositionString(this.getSpawnX(), this.getSpawnY(), this.getSpawnZ()));
         crashReportSection.add("Level time", () -> String.format("%d game time, %d day time", this.getTime(), this.getTimeOfDay()));
     }

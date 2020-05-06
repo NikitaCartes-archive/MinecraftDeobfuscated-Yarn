@@ -11,7 +11,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.HostileEntity;
@@ -75,25 +75,25 @@ extends HostileEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        if (spawnType != SpawnType.PATROL && spawnType != SpawnType.EVENT && spawnType != SpawnType.STRUCTURE && this.random.nextFloat() < 0.06f && this.canLead()) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+        if (spawnReason != SpawnReason.PATROL && spawnReason != SpawnReason.EVENT && spawnReason != SpawnReason.STRUCTURE && this.random.nextFloat() < 0.06f && this.canLead()) {
             this.patrolLeader = true;
         }
         if (this.isPatrolLeader()) {
             this.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
             this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0f);
         }
-        if (spawnType == SpawnType.PATROL) {
+        if (spawnReason == SpawnReason.PATROL) {
             this.patrolling = true;
         }
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
-    public static boolean canSpawn(EntityType<? extends PatrolEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<? extends PatrolEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
         if (world.getLightLevel(LightType.BLOCK, pos) > 8) {
             return false;
         }
-        return PatrolEntity.canSpawnIgnoreLightLevel(type, world, spawnType, pos, random);
+        return PatrolEntity.canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random);
     }
 
     @Override
@@ -142,23 +142,23 @@ extends HostileEntity {
 
     public static class PatrolGoal<T extends PatrolEntity>
     extends Goal {
-        private final T actor;
+        private final T entity;
         private final double leaderSpeed;
-        private final double fellowSpeed;
-        private long field_20701;
+        private final double followSpeed;
+        private long nextPatrolSearchTime;
 
-        public PatrolGoal(T actor, double leaderSpeed, double fellowSpeed) {
-            this.actor = actor;
+        public PatrolGoal(T entity, double leaderSpeed, double followSpeed) {
+            this.entity = entity;
             this.leaderSpeed = leaderSpeed;
-            this.fellowSpeed = fellowSpeed;
-            this.field_20701 = -1L;
+            this.followSpeed = followSpeed;
+            this.nextPatrolSearchTime = -1L;
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }
 
         @Override
         public boolean canStart() {
-            boolean bl = ((PatrolEntity)this.actor).world.getTime() < this.field_20701;
-            return ((PatrolEntity)this.actor).isRaidCenterSet() && ((MobEntity)this.actor).getTarget() == null && !((Entity)this.actor).hasPassengers() && ((PatrolEntity)this.actor).hasPatrolTarget() && !bl;
+            boolean bl = ((PatrolEntity)this.entity).world.getTime() < this.nextPatrolSearchTime;
+            return ((PatrolEntity)this.entity).isRaidCenterSet() && ((MobEntity)this.entity).getTarget() == null && !((Entity)this.entity).hasPassengers() && ((PatrolEntity)this.entity).hasPatrolTarget() && !bl;
         }
 
         @Override
@@ -171,41 +171,41 @@ extends HostileEntity {
 
         @Override
         public void tick() {
-            boolean bl = ((PatrolEntity)this.actor).isPatrolLeader();
-            EntityNavigation entityNavigation = ((MobEntity)this.actor).getNavigation();
+            boolean bl = ((PatrolEntity)this.entity).isPatrolLeader();
+            EntityNavigation entityNavigation = ((MobEntity)this.entity).getNavigation();
             if (entityNavigation.isIdle()) {
-                List<PatrolEntity> list = this.method_22333();
-                if (((PatrolEntity)this.actor).isRaidCenterSet() && list.isEmpty()) {
-                    ((PatrolEntity)this.actor).setPatrolling(false);
-                } else if (!bl || !((PatrolEntity)this.actor).getPatrolTarget().isWithinDistance(((Entity)this.actor).getPos(), 10.0)) {
-                    Vec3d vec3d = Vec3d.method_24955(((PatrolEntity)this.actor).getPatrolTarget());
-                    Vec3d vec3d2 = ((Entity)this.actor).getPos();
+                List<PatrolEntity> list = this.findPatrolTargets();
+                if (((PatrolEntity)this.entity).isRaidCenterSet() && list.isEmpty()) {
+                    ((PatrolEntity)this.entity).setPatrolling(false);
+                } else if (!bl || !((PatrolEntity)this.entity).getPatrolTarget().isWithinDistance(((Entity)this.entity).getPos(), 10.0)) {
+                    Vec3d vec3d = Vec3d.ofBottomCenter(((PatrolEntity)this.entity).getPatrolTarget());
+                    Vec3d vec3d2 = ((Entity)this.entity).getPos();
                     Vec3d vec3d3 = vec3d2.subtract(vec3d);
                     vec3d = vec3d3.rotateY(90.0f).multiply(0.4).add(vec3d);
                     Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
                     BlockPos blockPos = new BlockPos(vec3d4);
-                    if (!entityNavigation.startMovingTo((blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos)).getX(), blockPos.getY(), blockPos.getZ(), bl ? this.fellowSpeed : this.leaderSpeed)) {
+                    if (!entityNavigation.startMovingTo((blockPos = ((PatrolEntity)this.entity).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos)).getX(), blockPos.getY(), blockPos.getZ(), bl ? this.followSpeed : this.leaderSpeed)) {
                         this.wander();
-                        this.field_20701 = ((PatrolEntity)this.actor).world.getTime() + 200L;
+                        this.nextPatrolSearchTime = ((PatrolEntity)this.entity).world.getTime() + 200L;
                     } else if (bl) {
                         for (PatrolEntity patrolEntity : list) {
                             patrolEntity.setPatrolTarget(blockPos);
                         }
                     }
                 } else {
-                    ((PatrolEntity)this.actor).setRandomPatrolTarget();
+                    ((PatrolEntity)this.entity).setRandomPatrolTarget();
                 }
             }
         }
 
-        private List<PatrolEntity> method_22333() {
-            return ((PatrolEntity)this.actor).world.getEntities(PatrolEntity.class, ((Entity)this.actor).getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf((Entity)this.actor));
+        private List<PatrolEntity> findPatrolTargets() {
+            return ((PatrolEntity)this.entity).world.getEntities(PatrolEntity.class, ((Entity)this.entity).getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf((Entity)this.entity));
         }
 
         private boolean wander() {
-            Random random = ((LivingEntity)this.actor).getRandom();
-            BlockPos blockPos = ((PatrolEntity)this.actor).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ((Entity)this.actor).getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-            return ((MobEntity)this.actor).getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.leaderSpeed);
+            Random random = ((LivingEntity)this.entity).getRandom();
+            BlockPos blockPos = ((PatrolEntity)this.entity).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ((Entity)this.entity).getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+            return ((MobEntity)this.entity).getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.leaderSpeed);
         }
     }
 }

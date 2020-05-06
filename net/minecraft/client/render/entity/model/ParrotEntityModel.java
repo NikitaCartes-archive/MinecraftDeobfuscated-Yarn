@@ -191,7 +191,7 @@ extends CompositeEntityModel<ParrotEntity> {
         if (parrot.getSongPlaying()) {
             return Pose.PARTY;
         }
-        if (parrot.isSitting()) {
+        if (parrot.isInSittingPose()) {
             return Pose.SITTING;
         }
         if (parrot.isInAir()) {

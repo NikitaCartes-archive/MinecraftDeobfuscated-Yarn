@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 public interface class_5221 {
     public void error(Text var1);
 
-    default public void method_27453(String string) {
+    default public void error(String string) {
         this.error(new LiteralText(string));
     }
 }

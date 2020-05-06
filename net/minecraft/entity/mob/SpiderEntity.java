@@ -12,7 +12,7 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
@@ -88,7 +88,7 @@ extends HostileEntity {
     public void tick() {
         super.tick();
         if (!this.world.isClient) {
-            this.setCanClimb(this.horizontalCollision);
+            this.setClimbingWall(this.horizontalCollision);
         }
     }
 
@@ -118,7 +118,7 @@ extends HostileEntity {
 
     @Override
     public boolean isClimbing() {
-        return this.getCanClimb();
+        return this.isClimbingWall();
     }
 
     @Override
@@ -141,25 +141,25 @@ extends HostileEntity {
         return super.canHaveStatusEffect(effect);
     }
 
-    public boolean getCanClimb() {
+    public boolean isClimbingWall() {
         return (this.dataTracker.get(SPIDER_FLAGS) & 1) != 0;
     }
 
-    public void setCanClimb(boolean bl) {
+    public void setClimbingWall(boolean climbing) {
         byte b = this.dataTracker.get(SPIDER_FLAGS);
-        b = bl ? (byte)(b | 1) : (byte)(b & 0xFFFFFFFE);
+        b = climbing ? (byte)(b | 1) : (byte)(b & 0xFFFFFFFE);
         this.dataTracker.set(SPIDER_FLAGS, b);
     }
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         StatusEffect statusEffect;
-        entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (world.getRandom().nextInt(100) == 0) {
             SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
             skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
-            skeletonEntity.initialize(world, difficulty, spawnType, null, null);
+            skeletonEntity.initialize(world, difficulty, spawnReason, null, null);
             skeletonEntity.startRiding(this);
             world.spawnEntity(skeletonEntity);
         }

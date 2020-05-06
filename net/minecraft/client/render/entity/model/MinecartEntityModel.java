@@ -46,8 +46,8 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
-        this.field_3432[5].pivotY = 4.0f - customAngle;
+    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+        this.field_3432[5].pivotY = 4.0f - animationProgress;
     }
 
     @Override

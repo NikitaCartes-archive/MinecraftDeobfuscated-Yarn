@@ -208,7 +208,7 @@ implements ScreenHandlerProvider<T> {
                 HandledScreen.fill(matrixStack, i, j, i + 16, j + 16, -2130706433);
             }
             RenderSystem.enableDepthTest();
-            this.itemRenderer.renderGuiItem(this.client.player, itemStack, i, j);
+            this.itemRenderer.method_27951(this.client.player, itemStack, i, j);
             this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i, j, string);
         }
         this.itemRenderer.zOffset = 0.0f;

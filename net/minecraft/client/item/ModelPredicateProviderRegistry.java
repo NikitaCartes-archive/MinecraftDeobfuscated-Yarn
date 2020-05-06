@@ -95,9 +95,11 @@ public class ModelPredicateProviderRegistry {
             @Override
             public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
                 Entity entity;
-                boolean bl = livingEntity != null;
-                Entity entity2 = entity = bl ? livingEntity : itemStack.getFrame();
-                if (clientWorld == null && entity != null && entity.world instanceof ClientWorld) {
+                Entity entity2 = entity = livingEntity != null ? livingEntity : itemStack.getHolder();
+                if (entity == null) {
+                    return 0.0f;
+                }
+                if (clientWorld == null && entity.world instanceof ClientWorld) {
                     clientWorld = (ClientWorld)entity.world;
                 }
                 if (clientWorld == null) {
@@ -156,7 +158,7 @@ public class ModelPredicateProviderRegistry {
                     e = livingEntity.bodyYaw;
                 }
                 e = MathHelper.floorMod(e / 360.0, 1.0);
-                double f = this.getAngleToPos(Vec3d.method_24953(blockPos), entity) / 6.2831854820251465;
+                double f = this.getAngleToPos(Vec3d.ofCenter(blockPos), entity) / 6.2831854820251465;
                 if (bl) {
                     if (this.value.shouldUpdate(l)) {
                         this.value.update(l, 0.5 - (e - 0.25));

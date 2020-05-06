@@ -207,7 +207,7 @@ public class LootCommand {
         ServerWorld serverWorld = serverCommandSource.getWorld();
         BlockState blockState = serverWorld.getBlockState(pos);
         BlockEntity blockEntity = serverWorld.getBlockEntity(pos);
-        LootContext.Builder builder = new LootContext.Builder(serverWorld).put(LootContextParameters.POSITION, pos).put(LootContextParameters.BLOCK_STATE, blockState).putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity).putNullable(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity()).put(LootContextParameters.TOOL, stack);
+        LootContext.Builder builder = new LootContext.Builder(serverWorld).parameter(LootContextParameters.POSITION, pos).parameter(LootContextParameters.BLOCK_STATE, blockState).optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity).optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity()).parameter(LootContextParameters.TOOL, stack);
         List<ItemStack> list2 = blockState.getDroppedStacks(builder);
         return constructor.accept(context, list2, list -> LootCommand.sendDroppedFeedback(serverCommandSource, list, blockState.getBlock().getLootTableId()));
     }
@@ -221,34 +221,34 @@ public class LootCommand {
         LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld());
         Entity entity2 = serverCommandSource.getEntity();
         if (entity2 instanceof PlayerEntity) {
-            builder.put(LootContextParameters.LAST_DAMAGE_PLAYER, (PlayerEntity)entity2);
+            builder.parameter(LootContextParameters.LAST_DAMAGE_PLAYER, (PlayerEntity)entity2);
         }
-        builder.put(LootContextParameters.DAMAGE_SOURCE, DamageSource.MAGIC);
-        builder.putNullable(LootContextParameters.DIRECT_KILLER_ENTITY, entity2);
-        builder.putNullable(LootContextParameters.KILLER_ENTITY, entity2);
-        builder.put(LootContextParameters.THIS_ENTITY, entity);
-        builder.put(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()));
+        builder.parameter(LootContextParameters.DAMAGE_SOURCE, DamageSource.MAGIC);
+        builder.optionalParameter(LootContextParameters.DIRECT_KILLER_ENTITY, entity2);
+        builder.optionalParameter(LootContextParameters.KILLER_ENTITY, entity2);
+        builder.parameter(LootContextParameters.THIS_ENTITY, entity);
+        builder.parameter(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()));
         LootTable lootTable = serverCommandSource.getMinecraftServer().getLootManager().getTable(identifier);
-        List<ItemStack> list2 = lootTable.getDrops(builder.build(LootContextTypes.ENTITY));
+        List<ItemStack> list2 = lootTable.generateLoot(builder.build(LootContextTypes.ENTITY));
         return constructor.accept(context, list2, list -> LootCommand.sendDroppedFeedback(serverCommandSource, list, identifier));
     }
 
     private static int executeLoot(CommandContext<ServerCommandSource> context, Identifier lootTable, Target constructor) throws CommandSyntaxException {
         ServerCommandSource serverCommandSource = context.getSource();
-        LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld()).putNullable(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity()).put(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()));
+        LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld()).optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity()).parameter(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()));
         return LootCommand.getFeedbackMessageSingle(context, lootTable, builder.build(LootContextTypes.CHEST), constructor);
     }
 
     private static int executeFish(CommandContext<ServerCommandSource> context, Identifier lootTable, BlockPos pos, ItemStack stack, Target constructor) throws CommandSyntaxException {
         ServerCommandSource serverCommandSource = context.getSource();
-        LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld()).put(LootContextParameters.POSITION, pos).put(LootContextParameters.TOOL, stack).build(LootContextTypes.FISHING);
+        LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld()).parameter(LootContextParameters.POSITION, pos).parameter(LootContextParameters.TOOL, stack).build(LootContextTypes.FISHING);
         return LootCommand.getFeedbackMessageSingle(context, lootTable, lootContext, constructor);
     }
 
     private static int getFeedbackMessageSingle(CommandContext<ServerCommandSource> context, Identifier lootTable, LootContext lootContext, Target constructor) throws CommandSyntaxException {
         ServerCommandSource serverCommandSource = context.getSource();
         LootTable lootTable2 = serverCommandSource.getMinecraftServer().getLootManager().getTable(lootTable);
-        List<ItemStack> list2 = lootTable2.getDrops(lootContext);
+        List<ItemStack> list2 = lootTable2.generateLoot(lootContext);
         return constructor.accept(context, list2, list -> LootCommand.sendDroppedFeedback(serverCommandSource, list));
     }
 

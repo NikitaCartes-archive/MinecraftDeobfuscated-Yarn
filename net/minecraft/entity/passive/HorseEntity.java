@@ -7,7 +7,7 @@ import java.util.UUID;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -254,24 +254,24 @@ extends HorseBaseEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         HorseColor horseColor;
         if (entityData instanceof HorseData) {
-            horseColor = ((HorseData)entityData).variant;
+            horseColor = ((HorseData)entityData).color;
         } else {
             horseColor = Util.getRandom(HorseColor.values(), this.random);
             entityData = new HorseData(horseColor);
         }
         this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), this.random));
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     public static class HorseData
     extends PassiveEntity.PassiveData {
-        public final HorseColor variant;
+        public final HorseColor color;
 
-        public HorseData(HorseColor horseColor) {
-            this.variant = horseColor;
+        public HorseData(HorseColor color) {
+            this.color = color;
         }
     }
 }

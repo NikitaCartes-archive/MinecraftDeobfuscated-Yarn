@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.trunk.TrunkPlacer;
@@ -96,7 +96,7 @@ extends TrunkPlacer {
                 set.add(blockPos2.toImmutable());
                 continue;
             }
-            if (AbstractTreeFeature.canTreeReplace(world, blockPos2)) continue;
+            if (TreeFeature.canTreeReplace(world, blockPos2)) continue;
             return false;
         }
         return true;

@@ -81,7 +81,7 @@ implements class_5221 {
             this.drawCenteredString(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
         }
         if (this.error) {
-            this.drawStringWithShadow(matrices, this.textRenderer, this.errorMessage, this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0xFF0000);
+            this.drawCenteredText(matrices, this.textRenderer, this.errorMessage, this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0xFF0000);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

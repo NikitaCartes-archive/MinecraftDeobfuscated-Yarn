@@ -383,8 +383,8 @@ Tickable {
     }
 
     @Override
-    protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
-        return new HopperScreenHandler(i, playerInventory, this);
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new HopperScreenHandler(syncId, playerInventory, this);
     }
 }
 

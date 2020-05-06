@@ -30,7 +30,7 @@ extends Task<MobEntity> {
     }
 
     private boolean method_25942(MobEntity mobEntity) {
-        return mobEntity.isHolding(item -> item instanceof RangedWeaponItem && mobEntity.method_25938((RangedWeaponItem)item));
+        return mobEntity.isHolding(item -> item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item));
     }
 
     @Override

@@ -29,14 +29,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 
 public class TriggerCommand {
-    private static final SimpleCommandExceptionType FAILED_UMPRIMED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.trigger.failed.unprimed"));
+    private static final SimpleCommandExceptionType FAILED_UNPRIMED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.trigger.failed.unprimed"));
     private static final SimpleCommandExceptionType FAILED_INVALID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.trigger.failed.invalid"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("trigger").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("objective", ObjectiveArgumentType.objective()).suggests((commandContext, suggestionsBuilder) -> TriggerCommand.suggestObjectives((ServerCommandSource)commandContext.getSource(), suggestionsBuilder)).executes(commandContext -> TriggerCommand.executeSimple((ServerCommandSource)commandContext.getSource(), TriggerCommand.getScore(((ServerCommandSource)commandContext.getSource()).getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective"))))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("value", IntegerArgumentType.integer()).executes(commandContext -> TriggerCommand.executeAdd((ServerCommandSource)commandContext.getSource(), TriggerCommand.getScore(((ServerCommandSource)commandContext.getSource()).getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective")), IntegerArgumentType.getInteger(commandContext, "value")))))).then(CommandManager.literal("set").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("value", IntegerArgumentType.integer()).executes(commandContext -> TriggerCommand.executeSet((ServerCommandSource)commandContext.getSource(), TriggerCommand.getScore(((ServerCommandSource)commandContext.getSource()).getPlayer(), ObjectiveArgumentType.getObjective(commandContext, "objective")), IntegerArgumentType.getInteger(commandContext, "value")))))));
     }
 
-    public static CompletableFuture<Suggestions> suggestObjectives(ServerCommandSource source, SuggestionsBuilder suggestionsBuilder) {
+    public static CompletableFuture<Suggestions> suggestObjectives(ServerCommandSource source, SuggestionsBuilder builder) {
         Entity entity = source.getEntity();
         ArrayList<String> list = Lists.newArrayList();
         if (entity != null) {
@@ -48,7 +48,7 @@ public class TriggerCommand {
                 list.add(scoreboardObjective.getName());
             }
         }
-        return CommandSource.suggestMatching(list, suggestionsBuilder);
+        return CommandSource.suggestMatching(list, builder);
     }
 
     private static int executeAdd(ServerCommandSource source, ScoreboardPlayerScore score, int value) {
@@ -76,11 +76,11 @@ public class TriggerCommand {
         }
         Scoreboard scoreboard = player.getScoreboard();
         if (!scoreboard.playerHasObjective(string = player.getEntityName(), objective)) {
-            throw FAILED_UMPRIMED_EXCEPTION.create();
+            throw FAILED_UNPRIMED_EXCEPTION.create();
         }
         ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
         if (scoreboardPlayerScore.isLocked()) {
-            throw FAILED_UMPRIMED_EXCEPTION.create();
+            throw FAILED_UNPRIMED_EXCEPTION.create();
         }
         scoreboardPlayerScore.setLocked(true);
         return scoreboardPlayerScore;

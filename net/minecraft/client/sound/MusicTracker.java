@@ -6,11 +6,11 @@ package net.minecraft.client.sound;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5195;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundManager;
+import net.minecraft.sound.MusicSound;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,25 +27,25 @@ public class MusicTracker {
     }
 
     public void tick() {
-        class_5195 lv = this.client.getMusicType();
+        MusicSound musicSound = this.client.getMusicType();
         if (this.current != null) {
-            if (!lv.method_27279().getId().equals(this.current.getId()) && lv.method_27282()) {
+            if (!musicSound.getEvent().getId().equals(this.current.getId()) && musicSound.method_27282()) {
                 this.client.getSoundManager().stop(this.current);
-                this.timeUntilNextSong = MathHelper.nextInt(this.random, 0, lv.method_27280() / 2);
+                this.timeUntilNextSong = MathHelper.nextInt(this.random, 0, musicSound.method_27280() / 2);
             }
             if (!this.client.getSoundManager().isPlaying(this.current)) {
                 this.current = null;
-                this.timeUntilNextSong = Math.min(this.timeUntilNextSong, MathHelper.nextInt(this.random, lv.method_27280(), lv.method_27281()));
+                this.timeUntilNextSong = Math.min(this.timeUntilNextSong, MathHelper.nextInt(this.random, musicSound.method_27280(), musicSound.method_27281()));
             }
         }
-        this.timeUntilNextSong = Math.min(this.timeUntilNextSong, lv.method_27281());
+        this.timeUntilNextSong = Math.min(this.timeUntilNextSong, musicSound.method_27281());
         if (this.current == null && this.timeUntilNextSong-- <= 0) {
-            this.play(lv);
+            this.play(musicSound);
         }
     }
 
-    public void play(class_5195 type) {
-        this.current = PositionedSoundInstance.music(type.method_27279());
+    public void play(MusicSound type) {
+        this.current = PositionedSoundInstance.music(type.getEvent());
         if (this.current.getSound() != SoundManager.MISSING_SOUND) {
             this.client.getSoundManager().play(this.current);
         }
@@ -60,11 +60,11 @@ public class MusicTracker {
         }
     }
 
-    public boolean isPlayingType(class_5195 type) {
+    public boolean isPlayingType(MusicSound type) {
         if (this.current == null) {
             return false;
         }
-        return type.method_27279().getId().equals(this.current.getId());
+        return type.getEvent().getId().equals(this.current.getId());
     }
 }
 

@@ -5,7 +5,7 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -25,8 +25,8 @@ extends AbstractSkeletonEntity {
         super((EntityType<? extends AbstractSkeletonEntity>)entityType, world);
     }
 
-    public static boolean canSpawn(EntityType<StrayEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return StrayEntity.canSpawnInDark(type, world, spawnType, pos, random) && (spawnType == SpawnType.SPAWNER || world.isSkyVisible(pos));
+    public static boolean canSpawn(EntityType<StrayEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return StrayEntity.canSpawnInDark(type, world, spawnReason, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.isSkyVisible(pos));
     }
 
     @Override

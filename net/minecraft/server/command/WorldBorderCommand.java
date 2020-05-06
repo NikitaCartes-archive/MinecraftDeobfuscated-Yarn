@@ -22,7 +22,7 @@ import net.minecraft.world.border.WorldBorder;
 
 public class WorldBorderCommand {
     private static final SimpleCommandExceptionType CENTER_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.worldborder.center.failed"));
-    private static final SimpleCommandExceptionType SET_FAILED_NOCHANGE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.worldborder.set.failed.nochange"));
+    private static final SimpleCommandExceptionType SET_FAILED_NO_CHANGE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.worldborder.set.failed.nochange"));
     private static final SimpleCommandExceptionType SET_FAILED_SMALL_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.worldborder.set.failed.small."));
     private static final SimpleCommandExceptionType SET_FAILED_BIG_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.worldborder.set.failed.big."));
     private static final SimpleCommandExceptionType WARNING_TIME_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.worldborder.warning.time.failed"));
@@ -94,7 +94,7 @@ public class WorldBorderCommand {
         WorldBorder worldBorder = source.getWorld().getWorldBorder();
         double d = worldBorder.getSize();
         if (d == distance) {
-            throw SET_FAILED_NOCHANGE_EXCEPTION.create();
+            throw SET_FAILED_NO_CHANGE_EXCEPTION.create();
         }
         if (distance < 1.0) {
             throw SET_FAILED_SMALL_EXCEPTION.create();

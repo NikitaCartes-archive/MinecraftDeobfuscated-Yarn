@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.Random;
 import net.minecraft.class_5268;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -91,7 +91,7 @@ public class WanderingTraderManager {
             if (this.world.getBiome(blockPos3) == Biomes.THE_VOID) {
                 return false;
             }
-            WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(this.world, null, null, null, blockPos3, SpawnType.EVENT, false, false);
+            WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(this.world, null, null, null, blockPos3, SpawnReason.EVENT, false, false);
             if (wanderingTraderEntity != null) {
                 for (int j = 0; j < 2; ++j) {
                     this.spawnLlama(wanderingTraderEntity, 4);
@@ -111,7 +111,7 @@ public class WanderingTraderManager {
         if (blockPos == null) {
             return;
         }
-        TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(this.world, null, null, null, blockPos, SpawnType.EVENT, false, false);
+        TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(this.world, null, null, null, blockPos, SpawnReason.EVENT, false, false);
         if (traderLlamaEntity == null) {
             return;
         }

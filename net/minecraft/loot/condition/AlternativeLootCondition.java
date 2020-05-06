@@ -32,10 +32,10 @@ implements LootCondition {
     }
 
     @Override
-    public void check(LootTableReporter reporter) {
-        LootCondition.super.check(reporter);
+    public void validate(LootTableReporter reporter) {
+        LootCondition.super.validate(reporter);
         for (int i = 0; i < this.terms.length; ++i) {
-            this.terms[i].check(reporter.makeChild(".term[" + i + "]"));
+            this.terms[i].validate(reporter.makeChild(".term[" + i + "]"));
         }
     }
 
@@ -82,7 +82,7 @@ implements LootCondition {
         }
 
         @Override
-        public Builder withCondition(LootCondition.Builder condition) {
+        public Builder or(LootCondition.Builder condition) {
             this.terms.add(condition.build());
             return this;
         }

@@ -90,15 +90,15 @@ public interface CommandSource {
         return builder.buildFuture();
     }
 
-    public static CompletableFuture<Suggestions> suggestIdentifiers(Stream<Identifier> stream, SuggestionsBuilder suggestionsBuilder) {
-        return CommandSource.suggestIdentifiers(stream::iterator, suggestionsBuilder);
+    public static CompletableFuture<Suggestions> suggestIdentifiers(Stream<Identifier> stream, SuggestionsBuilder builder) {
+        return CommandSource.suggestIdentifiers(stream::iterator, builder);
     }
 
     public static <T> CompletableFuture<Suggestions> suggestFromIdentifier(Stream<T> candidates, SuggestionsBuilder builder, Function<T, Identifier> identifier, Function<T, Message> tooltip) {
         return CommandSource.suggestFromIdentifier(candidates::iterator, builder, identifier, tooltip);
     }
 
-    public static CompletableFuture<Suggestions> suggestPositions(String string, Collection<RelativePosition> candidates, SuggestionsBuilder suggestionsBuilder, Predicate<String> predicate) {
+    public static CompletableFuture<Suggestions> suggestPositions(String string, Collection<RelativePosition> candidates, SuggestionsBuilder builder, Predicate<String> predicate) {
         ArrayList<String> list;
         block4: {
             String[] strings;
@@ -132,7 +132,7 @@ public interface CommandSource {
                 list.add(string3);
             }
         }
-        return CommandSource.suggestMatching(list, suggestionsBuilder);
+        return CommandSource.suggestMatching(list, builder);
     }
 
     public static CompletableFuture<Suggestions> suggestColumnPositions(String string, Collection<RelativePosition> collection, SuggestionsBuilder suggestionsBuilder, Predicate<String> predicate) {

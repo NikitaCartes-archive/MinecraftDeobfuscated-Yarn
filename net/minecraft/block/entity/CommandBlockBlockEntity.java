@@ -49,12 +49,12 @@ extends BlockEntity {
         @Override
         @Environment(value=EnvType.CLIENT)
         public Vec3d getPos() {
-            return Vec3d.method_24953(CommandBlockBlockEntity.this.pos);
+            return Vec3d.ofCenter(CommandBlockBlockEntity.this.pos);
         }
 
         @Override
         public ServerCommandSource getSource() {
-            return new ServerCommandSource(this, Vec3d.method_24953(CommandBlockBlockEntity.this.pos), Vec2f.ZERO, this.getWorld(), 2, this.getCustomName().getString(), this.getCustomName(), this.getWorld().getServer(), null);
+            return new ServerCommandSource(this, Vec3d.ofCenter(CommandBlockBlockEntity.this.pos), Vec2f.ZERO, this.getWorld(), 2, this.getCustomName().getString(), this.getCustomName(), this.getWorld().getServer(), null);
         }
     };
 

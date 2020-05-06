@@ -202,7 +202,7 @@ extends Screen {
             if ((float)l + f + 12.0f + 8.0f > 0.0f && (float)l + f < (float)this.height) {
                 Text text = this.credits.get(m);
                 if (this.field_24261.contains(m)) {
-                    this.textRenderer.drawWithShadow(matrices, text, (float)(j + (274 - this.textRenderer.getStringWidth(text)) / 2), (float)l, 0xFFFFFF);
+                    this.textRenderer.drawWithShadow(matrices, text, (float)(j + (274 - this.textRenderer.getWidth(text)) / 2), (float)l, 0xFFFFFF);
                 } else {
                     this.textRenderer.random.setSeed((long)((float)((long)m * 4238972211L) + this.time / 4.0f));
                     this.textRenderer.drawWithShadow(matrices, text, (float)j, (float)l, 0xFFFFFF);

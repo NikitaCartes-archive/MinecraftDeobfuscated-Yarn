@@ -124,7 +124,7 @@ extends AbstractRailBlock {
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        this.updatePoweredStatus(world, pos, this.method_24417(state, world, pos, notify));
+        this.updatePoweredStatus(world, pos, this.updateCurves(state, world, pos, notify));
     }
 
     @Override

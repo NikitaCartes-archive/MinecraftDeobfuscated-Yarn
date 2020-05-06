@@ -141,7 +141,7 @@ extends BlockEntity {
     public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity player) {
         String string = player == null ? "Sign" : player.getName().getString();
         Text text = player == null ? new LiteralText("Sign") : player.getDisplayName();
-        return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.method_24953(this.pos), Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player);
+        return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ofCenter(this.pos), Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player);
     }
 
     public DyeColor getTextColor() {

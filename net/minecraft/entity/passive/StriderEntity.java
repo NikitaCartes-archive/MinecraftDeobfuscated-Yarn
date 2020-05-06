@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.class_5275;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
@@ -18,7 +19,7 @@ import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SaddledComponent;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -59,7 +60,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -89,7 +89,7 @@ Saddleable {
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0f);
     }
 
-    public static boolean canSpawn(EntityType<StriderEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<StriderEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return world.getBlockState(pos.up()).isAir();
     }
 
@@ -216,6 +216,7 @@ Saddleable {
 
     @Override
     public Vec3d method_24829(LivingEntity livingEntity) {
+        double f;
         Vec3d[] vec3ds = new Vec3d[]{StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw - 22.5f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw + 22.5f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw - 45.0f), StriderEntity.method_24826(this.getWidth(), livingEntity.getWidth(), livingEntity.yaw + 45.0f)};
         LinkedHashSet<BlockPos> set = Sets.newLinkedHashSet();
         double d = this.getBoundingBox().y2;
@@ -223,21 +224,20 @@ Saddleable {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Vec3d vec3d : vec3ds) {
             mutable.set(this.getX() + vec3d.x, d, this.getZ() + vec3d.z);
-            for (double f = d; f > e; f -= 1.0) {
+            for (f = d; f > e; f -= 1.0) {
                 set.add(mutable.toImmutable());
                 mutable.move(Direction.DOWN);
             }
         }
         for (BlockPos blockPos : set) {
             if (this.world.getFluidState(blockPos).matches(FluidTags.LAVA)) continue;
-            Vec3d vec3d2 = Vec3d.method_24955(blockPos);
             for (EntityPose entityPose : livingEntity.getPoses()) {
-                Box box2;
-                Box box = livingEntity.method_24833(entityPose).offset(vec3d2);
-                double g = this.world.method_26372(blockPos);
-                if (Double.isInfinite(g) || !(g < 1.0) || !this.world.getBlockCollisions(livingEntity, box2 = box.offset(0.0, g, 0.0)).allMatch(VoxelShape::isEmpty)) continue;
+                Vec3d vec3d2;
+                Box box;
+                f = this.world.method_26372(blockPos);
+                if (!class_5275.method_27932(f) || !class_5275.method_27933(this.world, livingEntity, (box = livingEntity.method_24833(entityPose)).offset(vec3d2 = Vec3d.ofCenter(blockPos, f)))) continue;
                 livingEntity.setPose(entityPose);
-                return new Vec3d(vec3d2.x, (double)blockPos.getY() + g, vec3d2.z);
+                return vec3d2;
             }
         }
         return new Vec3d(this.getX(), this.getBoundingBox().y2, this.getZ());
@@ -410,7 +410,7 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         ZombifiedPiglinEntity zombifiedPiglinEntity;
         StriderData.RiderType riderType;
         if (entityData instanceof StriderData) {
@@ -435,11 +435,11 @@ Saddleable {
         }
         if (mobEntity != null) {
             mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0f);
-            mobEntity.initialize(world, difficulty, SpawnType.JOCKEY, null, null);
+            mobEntity.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
             mobEntity.startRiding(this, true);
             world.spawnEntity(mobEntity);
         }
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override

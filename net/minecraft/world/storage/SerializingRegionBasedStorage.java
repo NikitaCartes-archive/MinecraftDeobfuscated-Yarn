@@ -28,7 +28,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.RegionBasedStorage;
 import net.minecraft.world.storage.StorageIoWorker;
 import net.minecraft.world.storage.StorageSerializer;
 import org.apache.logging.log4j.LogManager;
@@ -53,7 +52,7 @@ implements AutoCloseable {
         this.factory = factory;
         this.dataFixer = dataFixer;
         this.dataFixType = dataFixType;
-        this.worker = new StorageIoWorker(new RegionBasedStorage(directory, bl), directory.getName());
+        this.worker = new StorageIoWorker(directory, bl, directory.getName());
     }
 
     protected void tick(BooleanSupplier shouldKeepTicking) {

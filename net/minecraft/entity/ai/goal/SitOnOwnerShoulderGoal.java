@@ -21,7 +21,7 @@ extends Goal {
     public boolean canStart() {
         ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.tameable.getOwner();
         boolean bl = serverPlayerEntity != null && !serverPlayerEntity.isSpectator() && !serverPlayerEntity.abilities.flying && !serverPlayerEntity.isTouchingWater();
-        return !this.tameable.method_24345() && bl && this.tameable.isReadyToSitOnPlayer();
+        return !this.tameable.isSitting() && bl && this.tameable.isReadyToSitOnPlayer();
     }
 
     @Override
@@ -37,7 +37,7 @@ extends Goal {
 
     @Override
     public void tick() {
-        if (this.mounted || this.tameable.isSitting() || this.tameable.isLeashed()) {
+        if (this.mounted || this.tameable.isInSittingPose() || this.tameable.isLeashed()) {
             return;
         }
         if (this.tameable.getBoundingBox().intersects(this.owner.getBoundingBox())) {

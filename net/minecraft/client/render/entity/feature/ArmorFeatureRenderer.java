@@ -74,7 +74,7 @@ extends FeatureRenderer<T, M> {
     }
 
     private void renderArmorParts(EquipmentSlot slot, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ArmorItem item, boolean glint, A armorModel, boolean secondLayer, float red, float green, float blue, @Nullable String suffix) {
-        VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(slot, item, secondLayer, suffix)), false, glint);
+        VertexConsumer vertexConsumer = ItemRenderer.method_27952(vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(slot, item, secondLayer, suffix)), false, glint);
         ((AnimalModel)armorModel).render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0f);
     }
 

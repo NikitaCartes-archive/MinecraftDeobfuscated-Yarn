@@ -165,7 +165,7 @@ public class TextRenderer {
         return MathHelper.ceil(this.handler.getWidth(text));
     }
 
-    public int getStringWidth(Text text) {
+    public int getWidth(Text text) {
         return MathHelper.ceil(this.handler.getWidth(text));
     }
 
@@ -295,7 +295,7 @@ public class TextRenderer {
                 float g = (float)(underlineColor >> 16 & 0xFF) / 255.0f;
                 float h = (float)(underlineColor >> 8 & 0xFF) / 255.0f;
                 float i = (float)(underlineColor & 0xFF) / 255.0f;
-                this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0f, this.y + 9.0f, this.x + 1.0f, this.y - 1.0f, -0.01f, g, h, i, f));
+                this.addRectangle(new GlyphRenderer.Rectangle(x - 1.0f, this.y + 9.0f, this.x + 1.0f, this.y - 1.0f, 0.01f, g, h, i, f));
             }
             if (this.rectangles != null) {
                 GlyphRenderer glyphRenderer = TextRenderer.this.getFontStorage(Style.DEFAULT_FONT_ID).getRectangleRenderer();

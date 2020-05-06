@@ -38,25 +38,25 @@ extends CompositeEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         int i;
-        float f = customAngle * (float)Math.PI * -0.1f;
+        float f = animationProgress * (float)Math.PI * -0.1f;
         for (i = 0; i < 4; ++i) {
-            this.rods[i].pivotY = -2.0f + MathHelper.cos(((float)(i * 2) + customAngle) * 0.25f);
+            this.rods[i].pivotY = -2.0f + MathHelper.cos(((float)(i * 2) + animationProgress) * 0.25f);
             this.rods[i].pivotX = MathHelper.cos(f) * 9.0f;
             this.rods[i].pivotZ = MathHelper.sin(f) * 9.0f;
             f += 1.5707964f;
         }
-        f = 0.7853982f + customAngle * (float)Math.PI * 0.03f;
+        f = 0.7853982f + animationProgress * (float)Math.PI * 0.03f;
         for (i = 4; i < 8; ++i) {
-            this.rods[i].pivotY = 2.0f + MathHelper.cos(((float)(i * 2) + customAngle) * 0.25f);
+            this.rods[i].pivotY = 2.0f + MathHelper.cos(((float)(i * 2) + animationProgress) * 0.25f);
             this.rods[i].pivotX = MathHelper.cos(f) * 7.0f;
             this.rods[i].pivotZ = MathHelper.sin(f) * 7.0f;
             f += 1.5707964f;
         }
-        f = 0.47123894f + customAngle * (float)Math.PI * -0.05f;
+        f = 0.47123894f + animationProgress * (float)Math.PI * -0.05f;
         for (i = 8; i < 12; ++i) {
-            this.rods[i].pivotY = 11.0f + MathHelper.cos(((float)i * 1.5f + customAngle) * 0.5f);
+            this.rods[i].pivotY = 11.0f + MathHelper.cos(((float)i * 1.5f + animationProgress) * 0.5f);
             this.rods[i].pivotX = MathHelper.cos(f) * 5.0f;
             this.rods[i].pivotZ = MathHelper.sin(f) * 5.0f;
             f += 1.5707964f;

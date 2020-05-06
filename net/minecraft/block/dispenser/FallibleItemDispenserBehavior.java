@@ -8,11 +8,19 @@ import net.minecraft.util.math.BlockPointer;
 
 public abstract class FallibleItemDispenserBehavior
 extends ItemDispenserBehavior {
-    protected boolean success = true;
+    private boolean success = true;
+
+    public boolean isSuccess() {
+        return this.success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
 
     @Override
     protected void playSound(BlockPointer pointer) {
-        pointer.getWorld().syncWorldEvent(this.success ? 1000 : 1001, pointer.getBlockPos(), 0);
+        pointer.getWorld().syncWorldEvent(this.isSuccess() ? 1000 : 1001, pointer.getBlockPos(), 0);
     }
 }
 

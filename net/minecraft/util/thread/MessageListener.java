@@ -3,6 +3,7 @@
  */
 package net.minecraft.util.thread;
 
+import com.mojang.datafixers.util.Either;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -20,6 +21,16 @@ extends AutoCloseable {
     default public <Source> CompletableFuture<Source> ask(Function<? super MessageListener<Source>, ? extends Msg> messageProvider) {
         CompletableFuture completableFuture = new CompletableFuture();
         Msg object = messageProvider.apply(MessageListener.create("ask future procesor handle", completableFuture::complete));
+        this.send(object);
+        return completableFuture;
+    }
+
+    default public <Source> CompletableFuture<Source> method_27918(Function<? super MessageListener<Either<Source, Exception>>, ? extends Msg> function) {
+        CompletableFuture completableFuture = new CompletableFuture();
+        Msg object = function.apply(MessageListener.create("ask future procesor handle", either -> {
+            either.ifLeft(completableFuture::complete);
+            either.ifRight(completableFuture::completeExceptionally);
+        }));
         this.send(object);
         return completableFuture;
     }

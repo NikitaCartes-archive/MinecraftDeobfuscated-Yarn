@@ -16,8 +16,8 @@ import net.minecraft.util.Identifier;
 public interface LootFunction
 extends LootContextAware,
 BiFunction<ItemStack, LootContext, ItemStack> {
-    public static Consumer<ItemStack> apply(BiFunction<ItemStack, LootContext, ItemStack> itemApplier, Consumer<ItemStack> itemDropper, LootContext context) {
-        return stack -> itemDropper.accept((ItemStack)itemApplier.apply((ItemStack)stack, context));
+    public static Consumer<ItemStack> apply(BiFunction<ItemStack, LootContext, ItemStack> itemApplier, Consumer<ItemStack> lootConsumer, LootContext context) {
+        return stack -> lootConsumer.accept((ItemStack)itemApplier.apply((ItemStack)stack, context));
     }
 
     public static abstract class Factory<T extends LootFunction> {

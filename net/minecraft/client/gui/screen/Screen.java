@@ -136,7 +136,7 @@ implements Drawable {
         RenderSystem.disableDepthTest();
         int i = 0;
         for (Text text : lines) {
-            j = this.textRenderer.getStringWidth(text);
+            j = this.textRenderer.getWidth(text);
             if (j <= i) continue;
             i = j;
         }
@@ -301,29 +301,48 @@ implements Drawable {
     public void removed() {
     }
 
+    /**
+     * Renders the background of this screen.
+     * 
+     * <p>If the client is in a world, renders the translucent background gradient.
+     * Otherwise {@linkplain #renderBackgroundTexture(int) renders the background texture}.
+     */
     public void renderBackground(MatrixStack matrices) {
         this.renderBackground(matrices, 0);
     }
 
-    public void renderBackground(MatrixStack matrices, int alpha) {
+    /**
+     * Renders the background of this screen.
+     * 
+     * <p>If the client is in a world, renders the translucent background gradient.
+     * Otherwise {@linkplain #renderBackgroundTexture(int) renders the background texture}.
+     * 
+     * @param vOffset an offset applied to the V coordinate of the background texture
+     */
+    public void renderBackground(MatrixStack matrices, int vOffset) {
         if (this.client.world != null) {
             this.fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
         } else {
-            this.renderDirtBackground(alpha);
+            this.renderBackgroundTexture(vOffset);
         }
     }
 
-    public void renderDirtBackground(int alpha) {
+    /**
+     * Renders the fullscreen {@linkplain #BACKGROUND_TEXTURE background texture} of this screen.
+     * 
+     * @param vOffset an offset applied to the V coordinate of the background texture
+     */
+    public void renderBackgroundTexture(int vOffset) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;
         bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-        bufferBuilder.vertex(0.0, this.height, 0.0).texture(0.0f, (float)this.height / 32.0f + (float)alpha).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(this.width, this.height, 0.0).texture((float)this.width / 32.0f, (float)this.height / 32.0f + (float)alpha).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(this.width, 0.0, 0.0).texture((float)this.width / 32.0f, alpha).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0f, alpha).color(64, 64, 64, 255).next();
+        bufferBuilder.vertex(0.0, this.height, 0.0).texture(0.0f, (float)this.height / 32.0f + (float)vOffset).color(64, 64, 64, 255).next();
+        bufferBuilder.vertex(this.width, this.height, 0.0).texture((float)this.width / 32.0f, (float)this.height / 32.0f + (float)vOffset).color(64, 64, 64, 255).next();
+        bufferBuilder.vertex(this.width, 0.0, 0.0).texture((float)this.width / 32.0f, vOffset).color(64, 64, 64, 255).next();
+        bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0f, vOffset).color(64, 64, 64, 255).next();
         tessellator.draw();
     }
 

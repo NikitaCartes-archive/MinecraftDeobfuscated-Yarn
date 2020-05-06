@@ -22,7 +22,7 @@ extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
     private static final Identifier ZOMBIFIED_PIGLIN_TEXTURE = new Identifier("textures/entity/piglin/zombified_piglin.png");
 
     public PiglinEntityRenderer(EntityRenderDispatcher dispatcher, boolean zombified) {
-        super(dispatcher, PiglinEntityRenderer.getPiglinModel(zombified), 0.5f);
+        super(dispatcher, PiglinEntityRenderer.getPiglinModel(zombified), 0.5f, 1.0019531f, 1.0f, 1.0019531f);
         this.addFeature(new PiglinBipedArmorFeatureRenderer(this, new BipedEntityModel(0.5f), new BipedEntityModel(1.0f), PiglinEntityRenderer.createEarlessPiglinModel()));
     }
 

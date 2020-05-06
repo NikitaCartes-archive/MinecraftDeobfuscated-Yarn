@@ -6,7 +6,7 @@ package net.minecraft.entity.mob;
 import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -108,12 +108,12 @@ implements Monster {
         return i <= random.nextInt(8);
     }
 
-    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(world, pos, random) && HostileEntity.canMobSpawn(type, world, spawnType, pos, random);
+    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(world, pos, random) && HostileEntity.canMobSpawn(type, world, spawnReason, pos, random);
     }
 
-    public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
-        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.canMobSpawn(type, world, spawnType, pos, random);
+    public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.canMobSpawn(type, world, spawnReason, pos, random);
     }
 
     public static DefaultAttributeContainer.Builder createHostileAttributes() {
@@ -126,7 +126,7 @@ implements Monster {
     }
 
     @Override
-    protected boolean method_27071() {
+    protected boolean shouldDropLoot() {
         return true;
     }
 

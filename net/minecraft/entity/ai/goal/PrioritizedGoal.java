@@ -7,19 +7,19 @@ import java.util.EnumSet;
 import net.minecraft.entity.ai.goal.Goal;
 import org.jetbrains.annotations.Nullable;
 
-public class WeightedGoal
+public class PrioritizedGoal
 extends Goal {
     private final Goal goal;
-    private final int weight;
+    private final int priority;
     private boolean running;
 
-    public WeightedGoal(int weight, Goal goal) {
-        this.weight = weight;
+    public PrioritizedGoal(int priority, Goal goal) {
+        this.priority = priority;
         this.goal = goal;
     }
 
-    public boolean canBeReplacedBy(WeightedGoal goal) {
-        return this.canStop() && goal.getWeight() < this.getWeight();
+    public boolean canBeReplacedBy(PrioritizedGoal goal) {
+        return this.canStop() && goal.getPriority() < this.getPriority();
     }
 
     @Override
@@ -74,8 +74,8 @@ extends Goal {
         return this.running;
     }
 
-    public int getWeight() {
-        return this.weight;
+    public int getPriority() {
+        return this.priority;
     }
 
     public Goal getGoal() {
@@ -89,7 +89,7 @@ extends Goal {
         if (object == null || this.getClass() != object.getClass()) {
             return false;
         }
-        return this.goal.equals(((WeightedGoal)object).goal);
+        return this.goal.equals(((PrioritizedGoal)object).goal);
     }
 
     public int hashCode() {

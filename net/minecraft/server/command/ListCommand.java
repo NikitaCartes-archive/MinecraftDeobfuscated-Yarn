@@ -22,12 +22,12 @@ public class ListCommand {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("list").executes(commandContext -> ListCommand.executeNames((ServerCommandSource)commandContext.getSource()))).then(CommandManager.literal("uuids").executes(commandContext -> ListCommand.executeUuids((ServerCommandSource)commandContext.getSource()))));
     }
 
-    private static int executeNames(ServerCommandSource serverCommandSource) {
-        return ListCommand.execute(serverCommandSource, PlayerEntity::getDisplayName);
+    private static int executeNames(ServerCommandSource source) {
+        return ListCommand.execute(source, PlayerEntity::getDisplayName);
     }
 
-    private static int executeUuids(ServerCommandSource serverCommandSource) {
-        return ListCommand.execute(serverCommandSource, PlayerEntity::getNameAndUuid);
+    private static int executeUuids(ServerCommandSource source) {
+        return ListCommand.execute(source, PlayerEntity::getNameAndUuid);
     }
 
     private static int execute(ServerCommandSource source, Function<ServerPlayerEntity, Text> nameProvider) {

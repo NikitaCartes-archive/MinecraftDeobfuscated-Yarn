@@ -155,11 +155,11 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.drawCenteredString(matrices, this.textRenderer, I18n.translate("advMode.setCommand", new Object[0]), this.width / 2, 20, 0xFFFFFF);
-        this.drawString(matrices, this.textRenderer, I18n.translate("advMode.command", new Object[0]), this.width / 2 - 150, 40, 0xA0A0A0);
+        this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("advMode.command", new Object[0]), this.width / 2 - 150, 40, 0xA0A0A0);
         this.consoleCommandTextField.render(matrices, mouseX, mouseY, delta);
         int i = 75;
         if (!this.previousOutputTextField.getText().isEmpty()) {
-            this.drawString(matrices, this.textRenderer, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (i += 5 * this.textRenderer.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
+            this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("advMode.previousOutput", new Object[0]), this.width / 2 - 150, (i += 5 * this.textRenderer.fontHeight + 1 + this.getTrackOutputButtonHeight() - 135) + 4, 0xA0A0A0);
             this.previousOutputTextField.render(matrices, mouseX, mouseY, delta);
         }
         super.render(matrices, mouseX, mouseY, delta);

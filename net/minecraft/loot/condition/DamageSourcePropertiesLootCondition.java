@@ -35,7 +35,7 @@ implements LootCondition {
     public boolean test(LootContext lootContext) {
         DamageSource damageSource = lootContext.get(LootContextParameters.DAMAGE_SOURCE);
         BlockPos blockPos = lootContext.get(LootContextParameters.POSITION);
-        return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), Vec3d.method_24954(blockPos), damageSource);
+        return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), Vec3d.of(blockPos), damageSource);
     }
 
     public static LootCondition.Builder builder(DamageSourcePredicate.Builder builder) {

@@ -43,6 +43,12 @@ public class TargetFinder {
     }
 
     @Nullable
+    public static Vec3d method_27929(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d) {
+        Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.getX(), mobEntityWithAi.getY(), mobEntityWithAi.getZ());
+        return TargetFinder.findTarget(mobEntityWithAi, i, j, 0, vec3d2, false, 1.5707963705062866, mobEntityWithAi::getPathfindingFavor, true, 0, 0, true);
+    }
+
+    @Nullable
     public static Vec3d findTargetTowards(MobEntityWithAi mob, int maxHorizontalDistance, int maxVerticalDistance, Vec3d pos) {
         Vec3d vec3d = pos.subtract(mob.getX(), mob.getY(), mob.getZ());
         return TargetFinder.findTarget(mob, maxHorizontalDistance, maxVerticalDistance, 0, vec3d, true, 1.5707963705062866, mob::getPathfindingFavor, false, 0, 0, true);
@@ -104,7 +110,7 @@ public class TargetFinder {
             bl2 = true;
         }
         if (bl2) {
-            return Vec3d.method_24955(blockPos2);
+            return Vec3d.ofBottomCenter(blockPos2);
         }
         return null;
     }

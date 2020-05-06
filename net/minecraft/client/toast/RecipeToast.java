@@ -44,9 +44,9 @@ implements Toast {
         ItemStack itemStack = recipe.getRecipeKindIcon();
         RenderSystem.pushMatrix();
         RenderSystem.scalef(0.6f, 0.6f, 1.0f);
-        toastManager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
+        toastManager.getGame().getItemRenderer().method_27953(itemStack, 3, 3);
         RenderSystem.popMatrix();
-        toastManager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
+        toastManager.getGame().getItemRenderer().method_27953(recipe.getOutput(), 8, 8);
         return l - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
     }
 

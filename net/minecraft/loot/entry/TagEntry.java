@@ -33,8 +33,8 @@ extends LeafEntry {
     }
 
     @Override
-    public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-        this.name.values().forEach(item -> itemDropper.accept(new ItemStack((ItemConvertible)item)));
+    public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+        this.name.values().forEach(item -> lootConsumer.accept(new ItemStack((ItemConvertible)item)));
     }
 
     private boolean grow(LootContext context, Consumer<LootChoice> lootChoiceExpander) {
@@ -43,8 +43,8 @@ extends LeafEntry {
                 lootChoiceExpander.accept(new LeafEntry.Choice(){
 
                     @Override
-                    public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-                        itemDropper.accept(new ItemStack(item));
+                    public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+                        lootConsumer.accept(new ItemStack(item));
                     }
                 });
             }

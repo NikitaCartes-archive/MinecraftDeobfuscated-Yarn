@@ -16,7 +16,7 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -75,7 +75,7 @@ extends Item {
         }
         BlockPos blockPos2 = blockState.getCollisionShape(world, blockPos).isEmpty() ? blockPos : blockPos.offset(direction);
         EntityType<?> entityType2 = this.getEntityType(itemStack.getTag());
-        if (entityType2.spawnFromItemStack(world, itemStack, context.getPlayer(), blockPos2, SpawnType.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP) != null) {
+        if (entityType2.spawnFromItemStack(world, itemStack, context.getPlayer(), blockPos2, SpawnReason.SPAWN_EGG, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP) != null) {
             itemStack.decrement(1);
         }
         return ActionResult.SUCCESS;
@@ -100,7 +100,7 @@ extends Item {
             return TypedActionResult.fail(itemStack);
         }
         EntityType<?> entityType = this.getEntityType(itemStack.getTag());
-        if (entityType.spawnFromItemStack(world, itemStack, user, blockPos, SpawnType.SPAWN_EGG, false, false) == null) {
+        if (entityType.spawnFromItemStack(world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
             return TypedActionResult.pass(itemStack);
         }
         if (!user.abilities.creativeMode) {

@@ -93,11 +93,11 @@ Nameable {
     @Nullable
     public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (this.checkUnlocked(playerEntity)) {
-            return this.createContainer(i, playerInventory);
+            return this.createScreenHandler(i, playerInventory);
         }
         return null;
     }
 
-    protected abstract ScreenHandler createContainer(int var1, PlayerInventory var2);
+    protected abstract ScreenHandler createScreenHandler(int var1, PlayerInventory var2);
 }
 

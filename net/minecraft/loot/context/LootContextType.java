@@ -32,7 +32,7 @@ public class LootContextType {
         return "[" + Joiner.on(", ").join(this.allowed.stream().map(parameter -> (this.required.contains(parameter) ? "!" : "") + parameter.getIdentifier()).iterator()) + "]";
     }
 
-    public void check(LootTableReporter reporter, LootContextAware parameterConsumer) {
+    public void validate(LootTableReporter reporter, LootContextAware parameterConsumer) {
         Set<LootContextParameter<?>> set = parameterConsumer.getRequiredParameters();
         Sets.SetView<LootContextParameter<?>> set2 = Sets.difference(set, this.allowed);
         if (!set2.isEmpty()) {

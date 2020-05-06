@@ -251,7 +251,7 @@ Runnable {
     private final Executor workerExecutor;
     @Nullable
     private String serverId;
-    private final StructureManager field_24370;
+    private final StructureManager structureManager;
     protected final class_5219 field_24372;
 
     public MinecraftServer(LevelStorage.Session session, class_5219 arg, Proxy proxy, DataFixer dataFixer, CommandManager commandManager, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
@@ -274,7 +274,7 @@ Runnable {
         this.dataManager.registerListener(this.commandFunctionManager);
         this.dataManager.registerListener(this.advancementLoader);
         this.workerExecutor = Util.getServerWorkerExecutor();
-        this.field_24370 = new StructureManager(this, session, dataFixer);
+        this.structureManager = new StructureManager(this, session, dataFixer);
     }
 
     private void initScoreboard(PersistentStateManager persistentStateManager) {
@@ -371,7 +371,7 @@ Runnable {
         ServerWorld serverWorld2 = this.getWorld(DimensionType.OVERWORLD);
         if (!lv.isInitialized()) {
             try {
-                MinecraftServer.method_27901(serverWorld2, serverWorld2.dimension, lv, this.field_24372.method_27433().hasBonusChest());
+                MinecraftServer.method_27901(serverWorld2, serverWorld2.dimension, lv, this.field_24372.getLevelInfo().hasBonusChest());
                 lv.setInitialized(true);
                 if (lv.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
                     this.setToDebugWorldProperties(this.field_24372);
@@ -1402,7 +1402,7 @@ Runnable {
     }
 
     public ServerCommandSource getCommandSource() {
-        return new ServerCommandSource(this, this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : Vec3d.method_24954(this.getWorld(DimensionType.OVERWORLD).method_27911()), Vec2f.ZERO, this.getWorld(DimensionType.OVERWORLD), 4, "Server", new LiteralText("Server"), this, null);
+        return new ServerCommandSource(this, this.getWorld(DimensionType.OVERWORLD) == null ? Vec3d.ZERO : Vec3d.of(this.getWorld(DimensionType.OVERWORLD).method_27911()), Vec2f.ZERO, this.getWorld(DimensionType.OVERWORLD), 4, "Server", new LiteralText("Server"), this, null);
     }
 
     @Override
@@ -1607,8 +1607,8 @@ Runnable {
         return true;
     }
 
-    public StructureManager method_27727() {
-        return this.field_24370;
+    public StructureManager getStructureManager() {
+        return this.structureManager;
     }
 
     public class_5219 method_27728() {

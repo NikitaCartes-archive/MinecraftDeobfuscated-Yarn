@@ -33,8 +33,8 @@ extends class_5269 {
         crashReportSection.add("Level name", this::getLevelName);
         crashReportSection.add("Level game mode", () -> String.format("Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.getGameMode().getName(), this.getGameMode().getId(), this.isHardcore(), this.areCommandsAllowed()));
         crashReportSection.add("Level generator", () -> {
-            LevelGeneratorType levelGeneratorType = this.method_27421().getType();
-            return String.format("ID %02d - %s, ver %d. Features enabled: %b", levelGeneratorType.getId(), levelGeneratorType.getName(), levelGeneratorType.getVersion(), this.method_27420());
+            LevelGeneratorType levelGeneratorType = this.getGeneratorOptions().getType();
+            return String.format("ID %02d - %s, ver %d. Features enabled: %b", levelGeneratorType.getId(), levelGeneratorType.getName(), levelGeneratorType.getVersion(), this.hasStructures());
         });
         crashReportSection.add("Level weather", () -> String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()));
     }
@@ -43,7 +43,7 @@ extends class_5269 {
 
     public void setClearWeatherTime(int var1);
 
-    public boolean method_27420();
+    public boolean hasStructures();
 
     public CompoundTag getWorldData();
 

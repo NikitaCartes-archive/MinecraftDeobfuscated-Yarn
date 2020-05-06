@@ -18,7 +18,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.Shearable;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EatGrassGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -212,7 +212,7 @@ implements Shearable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float method_6628(float f) {
+    public float getNeckAngle(float delta) {
         if (this.eatGrassTimer <= 0) {
             return 0.0f;
         }
@@ -220,16 +220,16 @@ implements Shearable {
             return 1.0f;
         }
         if (this.eatGrassTimer < 4) {
-            return ((float)this.eatGrassTimer - f) / 4.0f;
+            return ((float)this.eatGrassTimer - delta) / 4.0f;
         }
-        return -((float)(this.eatGrassTimer - 40) - f) / 4.0f;
+        return -((float)(this.eatGrassTimer - 40) - delta) / 4.0f;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float method_6641(float f) {
+    public float getHeadAngle(float delta) {
         if (this.eatGrassTimer > 4 && this.eatGrassTimer <= 36) {
-            float g = ((float)(this.eatGrassTimer - 4) - f) / 32.0f;
-            return 0.62831855f + 0.21991149f * MathHelper.sin(g * 28.7f);
+            float f = ((float)(this.eatGrassTimer - 4) - delta) / 32.0f;
+            return 0.62831855f + 0.21991149f * MathHelper.sin(f * 28.7f);
         }
         if (this.eatGrassTimer > 0) {
             return 0.62831855f;
@@ -359,19 +359,19 @@ implements Shearable {
 
     @Override
     @Nullable
-    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
         this.setColor(SheepEntity.generateDefaultColor(world.getRandom()));
-        return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
-    private DyeColor getChildColor(AnimalEntity animalEntity, AnimalEntity animalEntity2) {
-        DyeColor dyeColor = ((SheepEntity)animalEntity).getColor();
-        DyeColor dyeColor2 = ((SheepEntity)animalEntity2).getColor();
+    private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {
+        DyeColor dyeColor = ((SheepEntity)firstParent).getColor();
+        DyeColor dyeColor2 = ((SheepEntity)secondParent).getColor();
         CraftingInventory craftingInventory = SheepEntity.createDyeMixingCraftingInventory(dyeColor, dyeColor2);
         return this.world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world).map(craftingRecipe -> craftingRecipe.craft(craftingInventory)).map(ItemStack::getItem).filter(DyeItem.class::isInstance).map(DyeItem.class::cast).map(DyeItem::getColor).orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
     }
 
-    private static CraftingInventory createDyeMixingCraftingInventory(DyeColor dyeColor, DyeColor dyeColor2) {
+    private static CraftingInventory createDyeMixingCraftingInventory(DyeColor firstColor, DyeColor secondColor) {
         CraftingInventory craftingInventory = new CraftingInventory(new ScreenHandler(null, -1){
 
             @Override
@@ -379,8 +379,8 @@ implements Shearable {
                 return false;
             }
         }, 2, 1);
-        craftingInventory.setStack(0, new ItemStack(DyeItem.byColor(dyeColor)));
-        craftingInventory.setStack(1, new ItemStack(DyeItem.byColor(dyeColor2)));
+        craftingInventory.setStack(0, new ItemStack(DyeItem.byColor(firstColor)));
+        craftingInventory.setStack(1, new ItemStack(DyeItem.byColor(secondColor)));
         return craftingInventory;
     }
 

@@ -20,8 +20,12 @@ extends MobEntityRenderer<T, M> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/steve.png");
 
     public BipedEntityRenderer(EntityRenderDispatcher dispatcher, M model, float f) {
-        super(dispatcher, model, f);
-        this.addFeature(new HeadFeatureRenderer(this));
+        this(dispatcher, model, f, 1.0f, 1.0f, 1.0f);
+    }
+
+    public BipedEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M bipedEntityModel, float f, float g, float h, float i) {
+        super(entityRenderDispatcher, bipedEntityModel, f);
+        this.addFeature(new HeadFeatureRenderer(this, g, h, i));
         this.addFeature(new ElytraFeatureRenderer(this));
         this.addFeature(new HeldItemFeatureRenderer(this));
     }

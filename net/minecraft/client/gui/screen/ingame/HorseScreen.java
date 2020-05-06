@@ -45,7 +45,7 @@ extends HandledScreen<HorseScreenHandler> {
         int k = (this.height - this.backgroundHeight) / 2;
         this.drawTexture(matrixStack, j, k, 0, 0, this.backgroundWidth, this.backgroundHeight);
         if (this.entity instanceof AbstractDonkeyEntity && (abstractDonkeyEntity = (AbstractDonkeyEntity)this.entity).hasChest()) {
-            this.drawTexture(matrixStack, j + 79, k + 17, 0, this.backgroundHeight, abstractDonkeyEntity.method_6702() * 18, 54);
+            this.drawTexture(matrixStack, j + 79, k + 17, 0, this.backgroundHeight, abstractDonkeyEntity.getInventoryColumns() * 18, 54);
         }
         if (this.entity.canBeSaddled()) {
             this.drawTexture(matrixStack, j + 7, k + 35 - 18, 18, this.backgroundHeight + 54, 18, 18);
