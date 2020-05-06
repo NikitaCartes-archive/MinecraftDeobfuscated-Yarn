@@ -71,7 +71,7 @@ public abstract class TameableEntity extends AnimalEntity {
 		}
 
 		this.sitting = tag.getBoolean("Sitting");
-		this.setSitting(this.sitting);
+		this.setInSittingPose(this.sitting);
 	}
 
 	@Override
@@ -124,13 +124,13 @@ public abstract class TameableEntity extends AnimalEntity {
 	protected void onTamedChanged() {
 	}
 
-	public boolean isSitting() {
+	public boolean isInSittingPose() {
 		return (this.dataTracker.get(TAMEABLE_FLAGS) & 1) != 0;
 	}
 
-	public void setSitting(boolean sitting) {
+	public void setInSittingPose(boolean inSittingPose) {
 		byte b = this.dataTracker.get(TAMEABLE_FLAGS);
-		if (sitting) {
+		if (inSittingPose) {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 1));
 		} else {
 			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -2));
@@ -214,11 +214,11 @@ public abstract class TameableEntity extends AnimalEntity {
 		super.onDeath(source);
 	}
 
-	public boolean method_24345() {
+	public boolean isSitting() {
 		return this.sitting;
 	}
 
-	public void method_24346(boolean bl) {
-		this.sitting = bl;
+	public void setSitting(boolean sitting) {
+		this.sitting = sitting;
 	}
 }

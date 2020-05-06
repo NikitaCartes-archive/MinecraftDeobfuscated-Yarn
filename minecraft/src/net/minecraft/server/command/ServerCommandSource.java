@@ -37,7 +37,7 @@ public class ServerCommandSource implements CommandSource {
 	private final int level;
 	private final String simpleName;
 	private final Text name;
-	private final MinecraftServer minecraftServer;
+	private final MinecraftServer server;
 	private final boolean silent;
 	@Nullable
 	private final Entity entity;
@@ -74,7 +74,7 @@ public class ServerCommandSource implements CommandSource {
 		this.level = level;
 		this.simpleName = simpleName;
 		this.name = name;
-		this.minecraftServer = server;
+		this.server = server;
 		this.resultConsumer = resultConsumer;
 		this.entityAnchor = entityAnchor;
 		this.rotation = rot;
@@ -91,7 +91,7 @@ public class ServerCommandSource implements CommandSource {
 				this.level,
 				entity.getName().getString(),
 				entity.getDisplayName(),
-				this.minecraftServer,
+				this.server,
 				entity,
 				this.silent,
 				this.resultConsumer,
@@ -110,7 +110,7 @@ public class ServerCommandSource implements CommandSource {
 				this.level,
 				this.simpleName,
 				this.name,
-				this.minecraftServer,
+				this.server,
 				this.entity,
 				this.silent,
 				this.resultConsumer,
@@ -129,7 +129,7 @@ public class ServerCommandSource implements CommandSource {
 				this.level,
 				this.simpleName,
 				this.name,
-				this.minecraftServer,
+				this.server,
 				this.entity,
 				this.silent,
 				this.resultConsumer,
@@ -148,7 +148,7 @@ public class ServerCommandSource implements CommandSource {
 				this.level,
 				this.simpleName,
 				this.name,
-				this.minecraftServer,
+				this.server,
 				this.entity,
 				this.silent,
 				resultConsumer,
@@ -174,7 +174,7 @@ public class ServerCommandSource implements CommandSource {
 				this.level,
 				this.simpleName,
 				this.name,
-				this.minecraftServer,
+				this.server,
 				this.entity,
 				true,
 				this.resultConsumer,
@@ -193,7 +193,7 @@ public class ServerCommandSource implements CommandSource {
 				level,
 				this.simpleName,
 				this.name,
-				this.minecraftServer,
+				this.server,
 				this.entity,
 				this.silent,
 				this.resultConsumer,
@@ -212,7 +212,7 @@ public class ServerCommandSource implements CommandSource {
 				level,
 				this.simpleName,
 				this.name,
-				this.minecraftServer,
+				this.server,
 				this.entity,
 				this.silent,
 				this.resultConsumer,
@@ -231,7 +231,7 @@ public class ServerCommandSource implements CommandSource {
 				this.level,
 				this.simpleName,
 				this.name,
-				this.minecraftServer,
+				this.server,
 				this.entity,
 				this.silent,
 				this.resultConsumer,
@@ -250,7 +250,7 @@ public class ServerCommandSource implements CommandSource {
 				this.level,
 				this.simpleName,
 				this.name,
-				this.minecraftServer,
+				this.server,
 				this.entity,
 				this.silent,
 				this.resultConsumer,
@@ -320,7 +320,7 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public MinecraftServer getMinecraftServer() {
-		return this.minecraftServer;
+		return this.server;
 	}
 
 	public EntityAnchorArgumentType.EntityAnchor getEntityAnchor() {
@@ -339,16 +339,16 @@ public class ServerCommandSource implements CommandSource {
 
 	private void sendToOps(Text message) {
 		Text text = new TranslatableText("chat.type.admin", this.getDisplayName(), message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC});
-		if (this.minecraftServer.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
-				if (serverPlayerEntity != this.output && this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
+		if (this.server.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+			for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
+				if (serverPlayerEntity != this.output && this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
 					serverPlayerEntity.sendSystemMessage(text);
 				}
 			}
 		}
 
-		if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
-			this.minecraftServer.sendSystemMessage(text);
+		if (this.output != this.server && this.server.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
+			this.server.sendSystemMessage(text);
 		}
 	}
 
@@ -366,12 +366,12 @@ public class ServerCommandSource implements CommandSource {
 
 	@Override
 	public Collection<String> getPlayerNames() {
-		return Lists.<String>newArrayList(this.minecraftServer.getPlayerNames());
+		return Lists.<String>newArrayList(this.server.getPlayerNames());
 	}
 
 	@Override
 	public Collection<String> getTeamNames() {
-		return this.minecraftServer.getScoreboard().getTeamNames();
+		return this.server.getScoreboard().getTeamNames();
 	}
 
 	@Override
@@ -381,7 +381,7 @@ public class ServerCommandSource implements CommandSource {
 
 	@Override
 	public Stream<Identifier> getRecipeIds() {
-		return this.minecraftServer.getRecipeManager().keys();
+		return this.server.getRecipeManager().keys();
 	}
 
 	@Override

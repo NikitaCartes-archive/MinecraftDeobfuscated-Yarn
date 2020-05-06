@@ -292,7 +292,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_NETHERRACK_HIT,
 		SoundEvents.BLOCK_NETHERRACK_FALL
 	);
-	public static final BlockSoundGroup NETHER_BRICK = new BlockSoundGroup(
+	public static final BlockSoundGroup NETHER_BRICKS = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_NETHER_BRICKS_BREAK,
@@ -355,7 +355,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_LODESTONE_HIT,
 		SoundEvents.BLOCK_LODESTONE_FALL
 	);
-	public static final BlockSoundGroup field_24119 = new BlockSoundGroup(
+	public static final BlockSoundGroup CHAIN = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_CHAIN_BREAK,
@@ -364,7 +364,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_CHAIN_HIT,
 		SoundEvents.BLOCK_CHAIN_FALL
 	);
-	public static final BlockSoundGroup field_24120 = new BlockSoundGroup(
+	public static final BlockSoundGroup NETHER_GOLD_ORE = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_NETHER_GOLD_ORE_BREAK,
@@ -373,7 +373,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_NETHER_GOLD_ORE_HIT,
 		SoundEvents.BLOCK_NETHER_GOLD_ORE_FALL
 	);
-	public static final BlockSoundGroup field_24121 = new BlockSoundGroup(
+	public static final BlockSoundGroup GILDED_BLACKSTONE = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_GILDED_BLACKSTONE_BREAK,

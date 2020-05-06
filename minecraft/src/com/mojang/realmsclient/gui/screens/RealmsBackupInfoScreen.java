@@ -119,9 +119,9 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 		protected void renderItem(MatrixStack matrixStack, int x, int y, int itemHeight, int mouseX, int mouseY, int i, float f) {
 			String string = (String)RealmsBackupInfoScreen.this.keys.get(x);
 			TextRenderer textRenderer = this.client.textRenderer;
-			this.drawString(matrixStack, textRenderer, string, this.width / 2 - 40, itemHeight, 10526880);
+			this.drawStringWithShadow(matrixStack, textRenderer, string, this.width / 2 - 40, itemHeight, 10526880);
 			String string2 = (String)RealmsBackupInfoScreen.this.backup.changeList.get(string);
-			this.method_27535(
+			this.drawTextWithShadow(
 				matrixStack, textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(string, string2), this.width / 2 - 40, itemHeight + 12, 16777215
 			);
 		}

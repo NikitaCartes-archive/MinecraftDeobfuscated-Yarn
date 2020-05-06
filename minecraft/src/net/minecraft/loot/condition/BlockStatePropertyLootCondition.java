@@ -47,7 +47,7 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 			this.block = block;
 		}
 
-		public BlockStatePropertyLootCondition.Builder method_22584(StatePredicate.Builder builder) {
+		public BlockStatePropertyLootCondition.Builder properties(StatePredicate.Builder builder) {
 			this.propertyValues = builder.build();
 			return this;
 		}

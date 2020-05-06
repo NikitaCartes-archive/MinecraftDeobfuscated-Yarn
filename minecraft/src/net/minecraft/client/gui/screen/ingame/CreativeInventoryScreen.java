@@ -617,11 +617,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			this.searchResultTags.forEach((identifier, tag) -> {
 				if (tag.contains(item)) {
-					list2.add(1, new LiteralText("#" + identifier).formatted(new Formatting[]{Formatting.BOLD, Formatting.DARK_PURPLE}));
+					list2.add(1, new LiteralText("#" + identifier).formatted(Formatting.DARK_PURPLE));
 				}
 			});
 			if (itemGroup != null) {
-				list2.add(1, new TranslatableText(itemGroup.getTranslationKey()).formatted(new Formatting[]{Formatting.BOLD, Formatting.BLUE}));
+				list2.add(1, new TranslatableText(itemGroup.getTranslationKey()).formatted(Formatting.BLUE));
 			}
 
 			this.renderTooltip(matrices, list2, x, y);

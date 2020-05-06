@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5275;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,7 +20,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -59,7 +60,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -78,7 +78,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	private int eatingGrassTicks;
 	private int eatingTicks;
 	private int angryTicks;
-	public int field_6957;
+	public int tailWagTicks;
 	public int field_6958;
 	protected boolean inAir;
 	protected BasicInventory items;
@@ -91,13 +91,13 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	private float lastAngryAnimationProgress;
 	private float eatingAnimationProgress;
 	private float lastEatingAnimationProgress;
-	protected boolean field_6964 = true;
+	protected boolean playExtraHorseSounds = true;
 	protected int soundTicks;
 
 	protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
-		this.method_6721();
+		this.onChestedStatusChanged();
 	}
 
 	@Override
@@ -269,7 +269,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return 2;
 	}
 
-	protected void method_6721() {
+	protected void onChestedStatusChanged() {
 		BasicInventory basicInventory = this.items;
 		this.items = new BasicInventory(this.getInventorySize());
 		if (basicInventory != null) {
@@ -290,7 +290,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	protected void updateSaddle() {
 		if (!this.world.isClient) {
-			this.setHorseFlag(4, !this.items.getStack(0).isEmpty() && this.canBeSaddled());
+			this.setHorseFlag(4, !this.items.getStack(0).isEmpty());
 		}
 	}
 
@@ -348,7 +348,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 				blockSoundGroup = blockState.getSoundGroup();
 			}
 
-			if (this.hasPassengers() && this.field_6964) {
+			if (this.hasPassengers() && this.playExtraHorseSounds) {
 				this.soundTicks++;
 				if (this.soundTicks > 5 && this.soundTicks % 3 == 0) {
 					this.playWalkSound(blockSoundGroup);
@@ -486,8 +486,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return false;
 	}
 
-	private void method_6759() {
-		this.field_6957 = 1;
+	private void wagTail() {
+		this.tailWagTicks = 1;
 	}
 
 	@Override
@@ -506,7 +506,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	@Override
 	public void tickMovement() {
 		if (this.random.nextInt(200) == 0) {
-			this.method_6759();
+			this.wagTail();
 		}
 
 		super.tickMovement();
@@ -560,8 +560,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			this.setAngry(false);
 		}
 
-		if (this.field_6957 > 0 && ++this.field_6957 > 8) {
-			this.field_6957 = 0;
+		if (this.tailWagTicks > 0 && ++this.tailWagTicks > 8) {
+			this.tailWagTicks = 0;
 		}
 
 		if (this.field_6958 > 0) {
@@ -979,33 +979,50 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 	}
 
-	@Override
-	public Vec3d method_24829(LivingEntity livingEntity) {
-		Vec3d vec3d = method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.RIGHT ? 90.0F : -90.0F));
+	@Nullable
+	private Vec3d method_27930(Vec3d vec3d, LivingEntity livingEntity) {
 		double d = this.getX() + vec3d.x;
 		double e = this.getBoundingBox().y1;
 		double f = this.getZ() + vec3d.z;
-		Box box = livingEntity.method_24833(livingEntity.method_26081()).offset(d, e, f);
-		BlockPos.Mutable mutable = new BlockPos.Mutable(d, e, f);
-		double g = this.getBoundingBox().y2 + 0.75;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		do {
-			double h = this.world.method_26372(mutable);
-			if ((double)mutable.getY() + h > g) {
-				break;
-			}
+		for (EntityPose entityPose : livingEntity.getPoses()) {
+			mutable.set(d, e, f);
+			double g = this.getBoundingBox().y2 + 0.75;
 
-			if (!Double.isInfinite(h) && h < 1.0) {
-				Box box2 = box.offset(d, (double)mutable.getY() + h, f);
-				if (this.world.getBlockCollisions(livingEntity, box2).allMatch(VoxelShape::isEmpty)) {
-					return new Vec3d(d, (double)mutable.getY() + h, f);
+			do {
+				double h = this.world.method_26372(mutable);
+				if ((double)mutable.getY() + h > g) {
+					break;
 				}
-			}
 
-			mutable.move(Direction.UP);
-		} while ((double)mutable.getY() < g);
+				if (class_5275.method_27932(h)) {
+					Box box = livingEntity.method_24833(entityPose);
+					Vec3d vec3d2 = new Vec3d(d, (double)mutable.getY() + h, f);
+					if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d2))) {
+						livingEntity.setPose(entityPose);
+						return vec3d2;
+					}
+				}
 
-		return new Vec3d(this.getX(), this.getY(), this.getZ());
+				mutable.move(Direction.UP);
+			} while (!((double)mutable.getY() < g));
+		}
+
+		return null;
+	}
+
+	@Override
+	public Vec3d method_24829(LivingEntity livingEntity) {
+		Vec3d vec3d = method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.RIGHT ? 90.0F : -90.0F));
+		Vec3d vec3d2 = this.method_27930(vec3d, livingEntity);
+		if (vec3d2 != null) {
+			return vec3d2;
+		} else {
+			Vec3d vec3d3 = method_24826((double)this.getWidth(), (double)livingEntity.getWidth(), this.yaw + (livingEntity.getMainArm() == Arm.LEFT ? 90.0F : -90.0F));
+			Vec3d vec3d4 = this.method_27930(vec3d3, livingEntity);
+			return vec3d4 != null ? vec3d4 : this.getPos();
+		}
 	}
 
 	protected void initAttributes() {
@@ -1013,13 +1030,15 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData();
 			((PassiveEntity.PassiveData)entityData).setBabyChance(0.2F);
 		}
 
 		this.initAttributes();
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 }

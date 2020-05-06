@@ -48,6 +48,6 @@ public class StructureAccessor {
 	}
 
 	public boolean method_27834() {
-		return this.field_24405.method_27420();
+		return this.field_24405.hasStructures();
 	}
 }

@@ -22,8 +22,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -430,7 +430,7 @@ public class Raid {
 
 		for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
 			Vec3d vec3d = serverPlayerEntity.getPos();
-			Vec3d vec3d2 = Vec3d.method_24953(pos);
+			Vec3d vec3d2 = Vec3d.ofCenter(pos);
 			float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
 			double d = vec3d.x + (double)(13.0F / g) * (vec3d2.x - vec3d.x);
 			double e = vec3d.z + (double)(13.0F / g) * (vec3d2.z - vec3d.z);
@@ -498,7 +498,7 @@ public class Raid {
 			raider.setOutOfRaidCounter(0);
 			if (!existing && pos != null) {
 				raider.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 1.0, (double)pos.getZ() + 0.5);
-				raider.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnType.EVENT, null, null);
+				raider.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnReason.EVENT, null, null);
 				raider.addBonusForWave(wave, false);
 				raider.setOnGround(true);
 				this.world.spawnEntity(raider);

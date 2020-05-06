@@ -15,7 +15,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
@@ -153,8 +153,8 @@ public class CatEntity extends TameableEntity {
 		return DyeColor.byId(this.dataTracker.get(COLLAR_COLOR));
 	}
 
-	public void setCollarColor(DyeColor dyeColor) {
-		this.dataTracker.set(COLLAR_COLOR, dyeColor.getId());
+	public void setCollarColor(DyeColor color) {
+		this.dataTracker.set(COLLAR_COLOR, color.getId());
 	}
 
 	@Override
@@ -357,8 +357,10 @@ public class CatEntity extends TameableEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-		entityData = super.initialize(world, difficulty, spawnType, entityData, entityTag);
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
+		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		if (world.getMoonSize() > 0.9F) {
 			this.setCatType(this.random.nextInt(11));
 		} else {
@@ -394,7 +396,7 @@ public class CatEntity extends TameableEntity {
 
 						boolean bl = super.interactMob(player, hand);
 						if (!bl || this.isBaby()) {
-							this.method_24346(!this.method_24345());
+							this.setSitting(!this.isSitting());
 						}
 
 						return bl;
@@ -415,7 +417,7 @@ public class CatEntity extends TameableEntity {
 				this.eat(player, itemStack);
 				if (this.random.nextInt(3) == 0) {
 					this.setOwner(player);
-					this.method_24346(true);
+					this.setSitting(true);
 					this.world.sendEntityStatus(this, (byte)7);
 				} else {
 					this.world.sendEntityStatus(this, (byte)6);
@@ -494,7 +496,7 @@ public class CatEntity extends TameableEntity {
 		public boolean canStart() {
 			if (!this.cat.isTamed()) {
 				return false;
-			} else if (this.cat.method_24345()) {
+			} else if (this.cat.isSitting()) {
 				return false;
 			} else {
 				LivingEntity livingEntity = this.cat.getOwner();
@@ -534,13 +536,13 @@ public class CatEntity extends TameableEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return this.cat.isTamed() && !this.cat.method_24345() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.method_16098();
+			return this.cat.isTamed() && !this.cat.isSitting() && this.owner != null && this.owner.isSleeping() && this.bedPos != null && !this.method_16098();
 		}
 
 		@Override
 		public void start() {
 			if (this.bedPos != null) {
-				this.cat.setSitting(false);
+				this.cat.setInSittingPose(false);
 				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
 			}
 		}
@@ -572,11 +574,11 @@ public class CatEntity extends TameableEntity {
 			mutable.set(this.cat.getBlockPos());
 			LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
-				.put(LootContextParameters.POSITION, mutable)
-				.put(LootContextParameters.THIS_ENTITY, this.cat)
-				.setRandom(random);
+				.parameter(LootContextParameters.POSITION, mutable)
+				.parameter(LootContextParameters.THIS_ENTITY, this.cat)
+				.random(random);
 
-			for (ItemStack itemStack : lootTable.getDrops(builder.build(LootContextTypes.GIFT))) {
+			for (ItemStack itemStack : lootTable.generateLoot(builder.build(LootContextTypes.GIFT))) {
 				this.cat
 					.world
 					.spawnEntity(
@@ -594,7 +596,7 @@ public class CatEntity extends TameableEntity {
 		@Override
 		public void tick() {
 			if (this.owner != null && this.bedPos != null) {
-				this.cat.setSitting(false);
+				this.cat.setInSittingPose(false);
 				this.cat.getNavigation().startMovingTo((double)this.bedPos.getX(), (double)this.bedPos.getY(), (double)this.bedPos.getZ(), 1.1F);
 				if (this.cat.squaredDistanceTo(this.owner) < 2.5) {
 					this.ticksOnBed++;

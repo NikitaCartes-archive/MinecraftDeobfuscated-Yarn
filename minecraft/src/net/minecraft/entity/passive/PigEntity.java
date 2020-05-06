@@ -1,12 +1,15 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_5275;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SaddledComponent;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -35,6 +38,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -172,6 +177,36 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		this.saddledComponent.setSaddled(true);
 		if (sound != null) {
 			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_PIG_SADDLE, sound, 0.5F, 1.0F);
+		}
+	}
+
+	@Override
+	public Vec3d method_24829(LivingEntity livingEntity) {
+		Direction direction = this.getMovementDirection();
+		if (direction.getAxis() == Direction.Axis.Y) {
+			return super.method_24829(livingEntity);
+		} else {
+			int[][] is = class_5275.method_27934(direction);
+			BlockPos blockPos = this.getBlockPos();
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+			for (EntityPose entityPose : livingEntity.getPoses()) {
+				Box box = livingEntity.method_24833(entityPose);
+
+				for (int[] js : is) {
+					mutable.set(blockPos.getX() + js[0], blockPos.getY(), blockPos.getZ() + js[1]);
+					double d = this.world.method_26372(mutable);
+					if (class_5275.method_27932(d)) {
+						Vec3d vec3d = Vec3d.ofCenter(mutable, d);
+						if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d))) {
+							livingEntity.setPose(entityPose);
+							return vec3d;
+						}
+					}
+				}
+			}
+
+			return super.method_24829(livingEntity);
 		}
 	}
 

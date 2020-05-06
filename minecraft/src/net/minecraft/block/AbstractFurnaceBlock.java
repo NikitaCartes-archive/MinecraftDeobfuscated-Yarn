@@ -64,7 +64,7 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof AbstractFurnaceBlockEntity) {
 				ItemScatterer.spawn(world, pos, (AbstractFurnaceBlockEntity)blockEntity);
-				((AbstractFurnaceBlockEntity)blockEntity).method_27354(world, Vec3d.method_24953(pos));
+				((AbstractFurnaceBlockEntity)blockEntity).method_27354(world, Vec3d.ofCenter(pos));
 				world.updateComparators(pos, this);
 			}
 

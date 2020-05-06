@@ -2,7 +2,7 @@ package net.minecraft.world.gen.chunk;
 
 import java.util.List;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
@@ -59,8 +59,8 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getEntitySpawnList(StructureAccessor structureAccessor, EntityCategory entityCategory, BlockPos blockPos) {
-		if (entityCategory == EntityCategory.MONSTER) {
+	public List<Biome.SpawnEntry> getEntitySpawnList(StructureAccessor structureAccessor, SpawnGroup spawnGroup, BlockPos blockPos) {
+		if (spawnGroup == SpawnGroup.MONSTER) {
 			if (Feature.NETHER_BRIDGE.isInsideStructure(this.world, structureAccessor, blockPos)) {
 				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
@@ -71,7 +71,7 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 			}
 		}
 
-		return super.getEntitySpawnList(structureAccessor, entityCategory, blockPos);
+		return super.getEntitySpawnList(structureAccessor, spawnGroup, blockPos);
 	}
 
 	@Override

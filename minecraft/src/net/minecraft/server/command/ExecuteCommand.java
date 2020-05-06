@@ -240,7 +240,7 @@ public class ExecuteCommand {
 			CommandManager.literal("bossbar")
 				.then(
 					CommandManager.argument("id", IdentifierArgumentType.identifier())
-						.suggests(BossBarCommand.suggestionProvider)
+						.suggests(BossBarCommand.SUGGESTION_PROVIDER)
 						.then(
 							CommandManager.literal("value")
 								.redirect(node, commandContext -> executeStoreBossbar(commandContext.getSource(), BossBarCommand.getBossBar(commandContext), true, requestResult))
@@ -625,8 +625,8 @@ public class ExecuteCommand {
 	private static boolean testLootCondition(ServerCommandSource serverCommandSource, LootCondition lootCondition) {
 		ServerWorld serverWorld = serverCommandSource.getWorld();
 		LootContext.Builder builder = new LootContext.Builder(serverWorld)
-			.put(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()))
-			.putNullable(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
+			.parameter(LootContextParameters.POSITION, new BlockPos(serverCommandSource.getPosition()))
+			.optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
 		return lootCondition.test(builder.build(LootContextTypes.COMMAND));
 	}
 

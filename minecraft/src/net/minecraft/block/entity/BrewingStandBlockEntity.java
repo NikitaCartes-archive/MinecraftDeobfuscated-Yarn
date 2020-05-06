@@ -274,7 +274,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 	}
 
 	@Override
-	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
-		return new BrewingStandScreenHandler(i, playerInventory, this, this.propertyDelegate);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return new BrewingStandScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
 	}
 }

@@ -16,18 +16,18 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5195;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -86,7 +86,7 @@ public abstract class Biome {
 	protected final Map<GenerationStep.Feature, List<ConfiguredFeature<?, ?>>> features = Maps.<GenerationStep.Feature, List<ConfiguredFeature<?, ?>>>newHashMap();
 	protected final List<ConfiguredFeature<?, ?>> flowerFeatures = Lists.<ConfiguredFeature<?, ?>>newArrayList();
 	protected final Map<StructureFeature<?>, FeatureConfig> structureFeatures = Maps.<StructureFeature<?>, FeatureConfig>newHashMap();
-	private final Map<EntityCategory, List<Biome.SpawnEntry>> spawns = Maps.<EntityCategory, List<Biome.SpawnEntry>>newHashMap();
+	private final Map<SpawnGroup, List<Biome.SpawnEntry>> spawns = Maps.<SpawnGroup, List<Biome.SpawnEntry>>newHashMap();
 	private final Map<EntityType<?>, Biome.SpawnDensity> spawnDensities = Maps.<EntityType<?>, Biome.SpawnDensity>newHashMap();
 	private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
 			Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
@@ -133,8 +133,8 @@ public abstract class Biome {
 				this.features.put(feature, Lists.newArrayList());
 			}
 
-			for (EntityCategory entityCategory : EntityCategory.values()) {
-				this.spawns.put(entityCategory, Lists.newArrayList());
+			for (SpawnGroup spawnGroup : SpawnGroup.values()) {
+				this.spawns.put(spawnGroup, Lists.newArrayList());
 			}
 		} else {
 			throw new IllegalStateException("You are missing parameters to build a proper biome for " + this.getClass().getSimpleName() + "\n" + settings);
@@ -157,16 +157,16 @@ public abstract class Biome {
 		return this.skyColor;
 	}
 
-	protected void addSpawn(EntityCategory type, Biome.SpawnEntry spawnEntry) {
-		((List)this.spawns.get(type)).add(spawnEntry);
+	protected void addSpawn(SpawnGroup group, Biome.SpawnEntry spawnEntry) {
+		((List)this.spawns.get(group)).add(spawnEntry);
 	}
 
 	protected void addSpawnDensity(EntityType<?> type, double maxMass, double mass) {
 		this.spawnDensities.put(type, new Biome.SpawnDensity(mass, maxMass));
 	}
 
-	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory category) {
-		return (List<Biome.SpawnEntry>)this.spawns.get(category);
+	public List<Biome.SpawnEntry> getEntitySpawnList(SpawnGroup group) {
+		return (List<Biome.SpawnEntry>)this.spawns.get(group);
 	}
 
 	@Nullable
@@ -182,7 +182,7 @@ public abstract class Biome {
 		return this.getRainfall() > 0.85F;
 	}
 
-	public float getMaxSpawnLimit() {
+	public float getMaxSpawnChance() {
 		return 0.1F;
 	}
 
@@ -419,7 +419,7 @@ public abstract class Biome {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Optional<class_5195> method_27343() {
+	public Optional<MusicSound> method_27343() {
 		return this.effects.method_27345();
 	}
 

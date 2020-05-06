@@ -39,7 +39,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			}
 
 			Text text = new TranslatableText(keyBinding.getId());
-			int i = client.textRenderer.getStringWidth(text);
+			int i = client.textRenderer.getWidth(text);
 			if (i > this.maxKeyNameLength) {
 				this.maxKeyNameLength = i;
 			}
@@ -65,7 +65,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 		public CategoryEntry(Text text) {
 			this.name = text;
-			this.nameWidth = ControlsListWidget.this.client.textRenderer.getStringWidth(this.name);
+			this.nameWidth = ControlsListWidget.this.client.textRenderer.getWidth(this.name);
 		}
 
 		@Override

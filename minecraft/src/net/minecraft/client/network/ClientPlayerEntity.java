@@ -351,8 +351,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public boolean method_27298() {
-		return !this.abilities.flying && super.method_27298();
+	public boolean shouldSpawnSprintingParticles() {
+		return !this.abilities.flying && super.shouldSpawnSprintingParticles();
 	}
 
 	@Override

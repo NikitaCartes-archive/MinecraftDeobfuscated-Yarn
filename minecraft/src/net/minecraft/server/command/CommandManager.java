@@ -97,7 +97,7 @@ public class CommandManager {
 		SummonCommand.register(this.dispatcher);
 		TagCommand.register(this.dispatcher);
 		TeamCommand.register(this.dispatcher);
-		TeammsgCommand.register(this.dispatcher);
+		TeamMsgCommand.register(this.dispatcher);
 		TeleportCommand.register(this.dispatcher);
 		TellRawCommand.register(this.dispatcher);
 		TimeCommand.register(this.dispatcher);
@@ -253,10 +253,10 @@ public class CommandManager {
 		return RequiredArgumentBuilder.argument(name, type);
 	}
 
-	public static Predicate<String> getCommandValidator(CommandManager.CommandParser commandParser) {
+	public static Predicate<String> getCommandValidator(CommandManager.CommandParser parser) {
 		return string -> {
 			try {
-				commandParser.parse(new StringReader(string));
+				parser.parse(new StringReader(string));
 				return true;
 			} catch (CommandSyntaxException var3) {
 				return false;

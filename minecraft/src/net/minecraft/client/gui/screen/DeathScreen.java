@@ -103,10 +103,10 @@ public class DeathScreen extends Screen {
 		this.fillGradient(matrices, 0, 0, this.width, this.height, 1615855616, -1602211792);
 		RenderSystem.pushMatrix();
 		RenderSystem.scalef(2.0F, 2.0F, 2.0F);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
 		RenderSystem.popMatrix();
 		if (this.message != null) {
-			this.drawStringWithShadow(matrices, this.textRenderer, this.message, this.width / 2, 85, 16777215);
+			this.drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 16777215);
 		}
 
 		this.drawCenteredString(
@@ -125,7 +125,7 @@ public class DeathScreen extends Screen {
 		if (this.message == null) {
 			return null;
 		} else {
-			int i = this.client.textRenderer.getStringWidth(this.message);
+			int i = this.client.textRenderer.getWidth(this.message);
 			int j = this.width / 2 - i / 2;
 			int k = this.width / 2 + i / 2;
 			return mouseX >= j && mouseX <= k ? this.client.textRenderer.getTextHandler().trimToWidth(this.message, mouseX - j) : null;

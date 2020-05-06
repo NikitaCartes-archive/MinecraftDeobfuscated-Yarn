@@ -19,20 +19,20 @@ public class Vec3d implements Position {
 		return new Vec3d(d, e, f);
 	}
 
-	public static Vec3d method_24953(Vec3i vec3i) {
-		return new Vec3d((double)vec3i.getX() + 0.5, (double)vec3i.getY() + 0.5, (double)vec3i.getZ() + 0.5);
+	public static Vec3d ofCenter(Vec3i vec) {
+		return new Vec3d((double)vec.getX() + 0.5, (double)vec.getY() + 0.5, (double)vec.getZ() + 0.5);
 	}
 
-	public static Vec3d method_24954(Vec3i vec3i) {
-		return new Vec3d((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ());
+	public static Vec3d of(Vec3i vec) {
+		return new Vec3d((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
 	}
 
-	public static Vec3d method_24955(Vec3i vec3i) {
-		return new Vec3d((double)vec3i.getX() + 0.5, (double)vec3i.getY(), (double)vec3i.getZ() + 0.5);
+	public static Vec3d ofBottomCenter(Vec3i vec) {
+		return new Vec3d((double)vec.getX() + 0.5, (double)vec.getY(), (double)vec.getZ() + 0.5);
 	}
 
-	public static Vec3d method_26410(Vec3i vec3i, double d) {
-		return new Vec3d((double)vec3i.getX() + 0.5, (double)vec3i.getY() + d, (double)vec3i.getZ() + 0.5);
+	public static Vec3d ofCenter(Vec3i vec, double deltaY) {
+		return new Vec3d((double)vec.getX() + 0.5, (double)vec.getY() + deltaY, (double)vec.getZ() + 0.5);
 	}
 
 	public Vec3d(double x, double y, double z) {
@@ -41,12 +41,12 @@ public class Vec3d implements Position {
 		this.z = z;
 	}
 
-	public Vec3d(Vector3f vector3f) {
-		this((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ());
+	public Vec3d(Vector3f vec) {
+		this((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
 	}
 
-	public Vec3d reverseSubtract(Vec3d vec3d) {
-		return new Vec3d(vec3d.x - this.x, vec3d.y - this.y, vec3d.z - this.z);
+	public Vec3d reverseSubtract(Vec3d vec) {
+		return new Vec3d(vec.x - this.x, vec.y - this.y, vec.z - this.z);
 	}
 
 	public Vec3d normalize() {
@@ -54,24 +54,24 @@ public class Vec3d implements Position {
 		return d < 1.0E-4 ? ZERO : new Vec3d(this.x / d, this.y / d, this.z / d);
 	}
 
-	public double dotProduct(Vec3d vec3d) {
-		return this.x * vec3d.x + this.y * vec3d.y + this.z * vec3d.z;
+	public double dotProduct(Vec3d vec) {
+		return this.x * vec.x + this.y * vec.y + this.z * vec.z;
 	}
 
-	public Vec3d crossProduct(Vec3d vec3d) {
-		return new Vec3d(this.y * vec3d.z - this.z * vec3d.y, this.z * vec3d.x - this.x * vec3d.z, this.x * vec3d.y - this.y * vec3d.x);
+	public Vec3d crossProduct(Vec3d vec) {
+		return new Vec3d(this.y * vec.z - this.z * vec.y, this.z * vec.x - this.x * vec.z, this.x * vec.y - this.y * vec.x);
 	}
 
-	public Vec3d subtract(Vec3d vec3d) {
-		return this.subtract(vec3d.x, vec3d.y, vec3d.z);
+	public Vec3d subtract(Vec3d vec) {
+		return this.subtract(vec.x, vec.y, vec.z);
 	}
 
 	public Vec3d subtract(double x, double y, double z) {
 		return this.add(-x, -y, -z);
 	}
 
-	public Vec3d add(Vec3d vec3d) {
-		return this.add(vec3d.x, vec3d.y, vec3d.z);
+	public Vec3d add(Vec3d vec) {
+		return this.add(vec.x, vec.y, vec.z);
 	}
 
 	public Vec3d add(double x, double y, double z) {
@@ -82,17 +82,17 @@ public class Vec3d implements Position {
 		return this.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) < radius * radius;
 	}
 
-	public double distanceTo(Vec3d vec3d) {
-		double d = vec3d.x - this.x;
-		double e = vec3d.y - this.y;
-		double f = vec3d.z - this.z;
+	public double distanceTo(Vec3d vec) {
+		double d = vec.x - this.x;
+		double e = vec.y - this.y;
+		double f = vec.z - this.z;
 		return (double)MathHelper.sqrt(d * d + e * e + f * f);
 	}
 
-	public double squaredDistanceTo(Vec3d vec3d) {
-		double d = vec3d.x - this.x;
-		double e = vec3d.y - this.y;
-		double f = vec3d.z - this.z;
+	public double squaredDistanceTo(Vec3d vec) {
+		double d = vec.x - this.x;
+		double e = vec.y - this.y;
+		double f = vec.z - this.z;
 		return d * d + e * e + f * f;
 	}
 
@@ -156,22 +156,22 @@ public class Vec3d implements Position {
 		return "(" + this.x + ", " + this.y + ", " + this.z + ")";
 	}
 
-	public Vec3d rotateX(float f) {
-		float g = MathHelper.cos(f);
-		float h = MathHelper.sin(f);
+	public Vec3d rotateX(float angle) {
+		float f = MathHelper.cos(angle);
+		float g = MathHelper.sin(angle);
 		double d = this.x;
-		double e = this.y * (double)g + this.z * (double)h;
-		double i = this.z * (double)g - this.y * (double)h;
-		return new Vec3d(d, e, i);
+		double e = this.y * (double)f + this.z * (double)g;
+		double h = this.z * (double)f - this.y * (double)g;
+		return new Vec3d(d, e, h);
 	}
 
-	public Vec3d rotateY(float f) {
-		float g = MathHelper.cos(f);
-		float h = MathHelper.sin(f);
-		double d = this.x * (double)g + this.z * (double)h;
+	public Vec3d rotateY(float angle) {
+		float f = MathHelper.cos(angle);
+		float g = MathHelper.sin(angle);
+		double d = this.x * (double)f + this.z * (double)g;
 		double e = this.y;
-		double i = this.z * (double)g - this.x * (double)h;
-		return new Vec3d(d, e, i);
+		double h = this.z * (double)f - this.x * (double)g;
+		return new Vec3d(d, e, h);
 	}
 
 	@Environment(EnvType.CLIENT)

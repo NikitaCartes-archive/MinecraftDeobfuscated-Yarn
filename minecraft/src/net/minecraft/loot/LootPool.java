@@ -34,20 +34,20 @@ public class LootPool {
 	private final Predicate<LootContext> predicate;
 	private final LootFunction[] functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> javaFunctions;
-	private final LootTableRange rollsRange;
-	private final UniformLootTableRange bonusRollsRange;
+	private final LootTableRange rolls;
+	private final UniformLootTableRange bonusRolls;
 
-	private LootPool(LootEntry[] entries, LootCondition[] conditions, LootFunction[] functions, LootTableRange rollsRange, UniformLootTableRange bonusRollsRange) {
+	private LootPool(LootEntry[] entries, LootCondition[] conditions, LootFunction[] functions, LootTableRange rolls, UniformLootTableRange bonusRolls) {
 		this.entries = entries;
 		this.conditions = conditions;
 		this.predicate = LootConditions.joinAnd(conditions);
 		this.functions = functions;
 		this.javaFunctions = LootFunctions.join(functions);
-		this.rollsRange = rollsRange;
-		this.bonusRollsRange = bonusRollsRange;
+		this.rolls = rolls;
+		this.bonusRolls = bonusRolls;
 	}
 
-	private void supplyOnce(Consumer<ItemStack> itemDropper, LootContext context) {
+	private void supplyOnce(Consumer<ItemStack> lootConsumer, LootContext context) {
 		Random random = context.getRandom();
 		List<LootChoice> list = Lists.<LootChoice>newArrayList();
 		MutableInt mutableInt = new MutableInt();
@@ -65,14 +65,14 @@ public class LootPool {
 		int i = list.size();
 		if (mutableInt.intValue() != 0 && i != 0) {
 			if (i == 1) {
-				((LootChoice)list.get(0)).drop(itemDropper, context);
+				((LootChoice)list.get(0)).generateLoot(lootConsumer, context);
 			} else {
 				int j = random.nextInt(mutableInt.intValue());
 
 				for (LootChoice lootChoice : list) {
 					j -= lootChoice.getWeight(context.getLuck());
 					if (j < 0) {
-						lootChoice.drop(itemDropper, context);
+						lootChoice.generateLoot(lootConsumer, context);
 						return;
 					}
 				}
@@ -80,11 +80,11 @@ public class LootPool {
 		}
 	}
 
-	public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
+	public void addGeneratedLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
 		if (this.predicate.test(context)) {
-			Consumer<ItemStack> consumer = LootFunction.apply(this.javaFunctions, itemDropper, context);
+			Consumer<ItemStack> consumer = LootFunction.apply(this.javaFunctions, lootConsumer, context);
 			Random random = context.getRandom();
-			int i = this.rollsRange.next(random) + MathHelper.floor(this.bonusRollsRange.nextFloat(random) * context.getLuck());
+			int i = this.rolls.next(random) + MathHelper.floor(this.bonusRolls.nextFloat(random) * context.getLuck());
 
 			for (int j = 0; j < i; j++) {
 				this.supplyOnce(consumer, context);
@@ -92,17 +92,17 @@ public class LootPool {
 		}
 	}
 
-	public void check(LootTableReporter lootTableReporter) {
+	public void validate(LootTableReporter lootTableReporter) {
 		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].check(lootTableReporter.makeChild(".condition[" + i + "]"));
+			this.conditions[i].validate(lootTableReporter.makeChild(".condition[" + i + "]"));
 		}
 
 		for (int i = 0; i < this.functions.length; i++) {
-			this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"));
+			this.functions[i].validate(lootTableReporter.makeChild(".functions[" + i + "]"));
 		}
 
 		for (int i = 0; i < this.entries.length; i++) {
-			this.entries[i].check(lootTableReporter.makeChild(".entries[" + i + "]"));
+			this.entries[i].validate(lootTableReporter.makeChild(".entries[" + i + "]"));
 		}
 	}
 
@@ -114,11 +114,11 @@ public class LootPool {
 		private final List<LootEntry> entries = Lists.<LootEntry>newArrayList();
 		private final List<LootCondition> conditions = Lists.<LootCondition>newArrayList();
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
-		private LootTableRange rollsRange = new UniformLootTableRange(1.0F);
+		private LootTableRange rolls = new UniformLootTableRange(1.0F);
 		private UniformLootTableRange bonusRollsRange = new UniformLootTableRange(0.0F, 0.0F);
 
-		public LootPool.Builder withRolls(LootTableRange rollsRange) {
-			this.rollsRange = rollsRange;
+		public LootPool.Builder rolls(LootTableRange rolls) {
+			this.rolls = rolls;
 			return this;
 		}
 
@@ -126,30 +126,30 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder withEntry(LootEntry.Builder<?> entryBuilder) {
-			this.entries.add(entryBuilder.build());
+		public LootPool.Builder with(LootEntry.Builder<?> entry) {
+			this.entries.add(entry.build());
 			return this;
 		}
 
-		public LootPool.Builder withCondition(LootCondition.Builder builder) {
+		public LootPool.Builder conditionally(LootCondition.Builder builder) {
 			this.conditions.add(builder.build());
 			return this;
 		}
 
-		public LootPool.Builder withFunction(LootFunction.Builder builder) {
+		public LootPool.Builder apply(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this;
 		}
 
 		public LootPool build() {
-			if (this.rollsRange == null) {
+			if (this.rolls == null) {
 				throw new IllegalArgumentException("Rolls not set");
 			} else {
 				return new LootPool(
 					(LootEntry[])this.entries.toArray(new LootEntry[0]),
 					(LootCondition[])this.conditions.toArray(new LootCondition[0]),
 					(LootFunction[])this.functions.toArray(new LootFunction[0]),
-					this.rollsRange,
+					this.rolls,
 					this.bonusRollsRange
 				);
 			}
@@ -171,10 +171,10 @@ public class LootPool {
 
 		public JsonElement serialize(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("rolls", LootTableRanges.toJson(lootPool.rollsRange, jsonSerializationContext));
+			jsonObject.add("rolls", LootTableRanges.toJson(lootPool.rolls, jsonSerializationContext));
 			jsonObject.add("entries", jsonSerializationContext.serialize(lootPool.entries));
-			if (lootPool.bonusRollsRange.getMinValue() != 0.0F && lootPool.bonusRollsRange.getMaxValue() != 0.0F) {
-				jsonObject.add("bonus_rolls", jsonSerializationContext.serialize(lootPool.bonusRollsRange));
+			if (lootPool.bonusRolls.getMinValue() != 0.0F && lootPool.bonusRolls.getMaxValue() != 0.0F) {
+				jsonObject.add("bonus_rolls", jsonSerializationContext.serialize(lootPool.bonusRolls));
 			}
 
 			if (!ArrayUtils.isEmpty((Object[])lootPool.conditions)) {

@@ -3,19 +3,19 @@ package net.minecraft;
 import net.minecraft.util.math.BlockPos;
 
 public interface class_5269 extends class_5217 {
-	void method_27416(int i);
+	void setSpawnX(int spawnX);
 
-	void method_27417(int i);
+	void setSpawnY(int spawnY);
 
-	void method_27419(int i);
+	void setSpawnZ(int spawnZ);
 
-	default void setSpawnPos(BlockPos blockPos) {
-		this.method_27416(blockPos.getX());
-		this.method_27417(blockPos.getY());
-		this.method_27419(blockPos.getZ());
+	default void setSpawnPos(BlockPos pos) {
+		this.setSpawnX(pos.getX());
+		this.setSpawnY(pos.getY());
+		this.setSpawnZ(pos.getZ());
 	}
 
-	void setTime(long l);
+	void setTime(long time);
 
-	void setTimeOfDay(long l);
+	void setTimeOfDay(long timeOfDay);
 }

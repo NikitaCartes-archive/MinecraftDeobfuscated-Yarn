@@ -747,7 +747,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				if (!this.isCreative()) {
 					double d = 8.0;
 					double e = 5.0;
-					Vec3d vec3d = Vec3d.method_24955(pos);
+					Vec3d vec3d = Vec3d.ofBottomCenter(pos);
 					List<HostileEntity> list = this.world
 						.getEntities(
 							HostileEntity.class,
@@ -780,7 +780,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	private boolean isBedTooFarAway(BlockPos pos) {
-		Vec3d vec3d = Vec3d.method_24955(pos);
+		Vec3d vec3d = Vec3d.ofBottomCenter(pos);
 		return Math.abs(this.getX() - vec3d.getX()) <= 3.0 && Math.abs(this.getY() - vec3d.getY()) <= 2.0 && Math.abs(this.getZ() - vec3d.getZ()) <= 3.0;
 	}
 
@@ -955,7 +955,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.closeCurrentScreen();
 	}
 
-	public void method_14241() {
+	public void updateCursorStack() {
 		if (!this.field_13991) {
 			this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 		}

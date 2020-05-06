@@ -133,7 +133,7 @@ public class Blocks {
 	public static final Block IRON_ORE = register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
 	public static final Block COAL_ORE = register("coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F)));
 	public static final Block NETHER_GOLD_ORE = register(
-		"nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F).sounds(BlockSoundGroup.field_24120))
+		"nether_gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_GOLD_ORE))
 	);
 	public static final Block OAK_LOG = register("oak_log", createLogBlock(MaterialColor.WOOD, MaterialColor.SPRUCE));
 	public static final Block SPRUCE_LOG = register("spruce_log", createLogBlock(MaterialColor.SPRUCE, MaterialColor.BROWN));
@@ -816,7 +816,7 @@ public class Blocks {
 		"iron_bars", new PaneBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0F, 6.0F).sounds(BlockSoundGroup.METAL).nonOpaque())
 	);
 	public static final Block CHAIN = register(
-		"chain", new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0F, 6.0F).sounds(BlockSoundGroup.field_24119).nonOpaque())
+		"chain", new ChainBlock(AbstractBlock.Settings.of(Material.METAL, MaterialColor.AIR).strength(5.0F, 6.0F).sounds(BlockSoundGroup.CHAIN).nonOpaque())
 	);
 	public static final Block GLASS_PANE = register(
 		"glass_pane", new PaneBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3F).sounds(BlockSoundGroup.GLASS).nonOpaque())
@@ -858,11 +858,11 @@ public class Blocks {
 		"lily_pad", new LilyPadBlock(AbstractBlock.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.GRASS).nonOpaque())
 	);
 	public static final Block NETHER_BRICKS = register(
-		"nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICK))
+		"nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICKS))
 	);
 	public static final Block NETHER_BRICK_FENCE = register(
 		"nether_brick_fence",
-		new FenceBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICK))
+		new FenceBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICKS))
 	);
 	public static final Block NETHER_BRICK_STAIRS = register(
 		"nether_brick_stairs", new StairsBlock(NETHER_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(NETHER_BRICKS))
@@ -1541,7 +1541,8 @@ public class Blocks {
 		"stone_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.STONE).strength(2.0F, 6.0F))
 	);
 	public static final Block NETHER_BRICK_SLAB = register(
-		"nether_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICK))
+		"nether_brick_slab",
+		new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICKS))
 	);
 	public static final Block QUARTZ_SLAB = register(
 		"quartz_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.QUARTZ).strength(2.0F, 6.0F))
@@ -1696,7 +1697,7 @@ public class Blocks {
 		"nether_wart_block", new Block(AbstractBlock.Settings.of(Material.ORGANIC, MaterialColor.RED).strength(1.0F).sounds(BlockSoundGroup.WART_BLOCK))
 	);
 	public static final Block RED_NETHER_BRICKS = register(
-		"red_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICK))
+		"red_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICKS))
 	);
 	public static final Block BONE_BLOCK = register(
 		"bone_block", new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MaterialColor.SAND).strength(2.0F).sounds(BlockSoundGroup.BONE))
@@ -2525,7 +2526,7 @@ public class Blocks {
 		"polished_blackstone_brick_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE_BRICKS))
 	);
 	public static final Block GILDED_BLACKSTONE = register(
-		"gilded_blackstone", new Block(AbstractBlock.Settings.copy(BLACKSTONE).sounds(BlockSoundGroup.field_24121))
+		"gilded_blackstone", new Block(AbstractBlock.Settings.copy(BLACKSTONE).sounds(BlockSoundGroup.GILDED_BLACKSTONE))
 	);
 	public static final Block POLISHED_BLACKSTONE_STAIRS = register(
 		"polished_blackstone_stairs", new StairsBlock(POLISHED_BLACKSTONE.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_BLACKSTONE))
@@ -2541,10 +2542,11 @@ public class Blocks {
 	public static final Block POLISHED_BLACKSTONE_WALL = register("polished_blackstone_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_BLACKSTONE)));
 	public static final Block CHISELED_NETHER_BRICKS = register(
 		"chiseled_nether_bricks",
-		new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICK))
+		new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICKS))
 	);
 	public static final Block CRACKED_NETHER_BRICKS = register(
-		"cracked_nether_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICK))
+		"cracked_nether_bricks",
+		new Block(AbstractBlock.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F).sounds(BlockSoundGroup.NETHER_BRICKS))
 	);
 	public static final Block QUARTZ_BRICKS = register("quartz_bricks", new Block(AbstractBlock.Settings.copy(QUARTZ_BLOCK)));
 

@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.feature.AbstractTreeFeature;
+import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
@@ -99,7 +99,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 				if (make) {
 					method_27404(world, blockPos2, config.trunkProvider.getBlockState(random, blockPos2).with(PillarBlock.AXIS, this.getLogAxis(start, blockPos2)), blockBox);
 					set.add(blockPos2.toImmutable());
-				} else if (!AbstractTreeFeature.canTreeReplace(world, blockPos2)) {
+				} else if (!TreeFeature.canTreeReplace(world, blockPos2)) {
 					return false;
 				}
 			}

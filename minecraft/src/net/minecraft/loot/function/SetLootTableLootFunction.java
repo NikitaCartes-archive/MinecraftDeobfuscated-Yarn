@@ -39,16 +39,16 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public void check(LootTableReporter reporter) {
+	public void validate(LootTableReporter reporter) {
 		if (reporter.hasTable(this.id)) {
 			reporter.report("Table " + this.id + " is recursively called");
 		} else {
-			super.check(reporter);
+			super.validate(reporter);
 			LootTable lootTable = reporter.getTable(this.id);
 			if (lootTable == null) {
 				reporter.report("Unknown loot table called " + this.id);
 			} else {
-				lootTable.check(reporter.withTable("->{" + this.id + "}", this.id));
+				lootTable.validate(reporter.withTable("->{" + this.id + "}", this.id));
 			}
 		}
 	}

@@ -1,11 +1,13 @@
 package net.minecraft.server.world;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -368,7 +370,9 @@ public class ServerChunkManager extends ChunkManager {
 			SpawnHelper.Info info = SpawnHelper.setupSpawn(j, this.world.iterateEntities(), this::ifChunkLoaded);
 			this.spawnEntry = info;
 			this.world.getProfiler().pop();
-			this.threadedAnvilChunkStorage.entryIterator().forEach(chunkHolder -> {
+			List<ChunkHolder> list = Lists.<ChunkHolder>newArrayList(this.threadedAnvilChunkStorage.entryIterator());
+			Collections.shuffle(list);
+			list.forEach(chunkHolder -> {
 				Optional<WorldChunk> optional = ((Either)chunkHolder.getEntityTickingFuture().getNow(ChunkHolder.UNLOADED_WORLD_CHUNK)).left();
 				if (optional.isPresent()) {
 					WorldChunk worldChunk = (WorldChunk)optional.get();

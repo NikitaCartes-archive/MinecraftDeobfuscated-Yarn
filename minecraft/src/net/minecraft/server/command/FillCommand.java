@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class FillCommand {
-	private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableText("commands.fill.toobig", object, object2)
 	);
 	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
@@ -132,7 +132,7 @@ public class FillCommand {
 	) throws CommandSyntaxException {
 		int i = range.getBlockCountX() * range.getBlockCountY() * range.getBlockCountZ();
 		if (i > 32768) {
-			throw TOOBIG_EXCEPTION.create(32768, i);
+			throw TOO_BIG_EXCEPTION.create(32768, i);
 		} else {
 			List<BlockPos> list = Lists.<BlockPos>newArrayList();
 			ServerWorld serverWorld = source.getWorld();

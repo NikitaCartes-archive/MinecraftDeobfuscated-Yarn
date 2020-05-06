@@ -4,7 +4,7 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -58,7 +58,7 @@ public class PhantomSpawner {
 											for (int m = 0; m < l; m++) {
 												PhantomEntity phantomEntity = EntityType.PHANTOM.create(serverWorld);
 												phantomEntity.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
-												entityData = phantomEntity.initialize(serverWorld, localDifficulty, SpawnType.NATURAL, entityData, null);
+												entityData = phantomEntity.initialize(serverWorld, localDifficulty, SpawnReason.NATURAL, entityData, null);
 												serverWorld.spawnEntity(phantomEntity);
 											}
 

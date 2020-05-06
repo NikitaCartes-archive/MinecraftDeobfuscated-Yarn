@@ -20,8 +20,8 @@ public class ChickenEntityRenderer extends MobEntityRenderer<ChickenEntity, Chic
 	}
 
 	protected float getAnimationProgress(ChickenEntity chickenEntity, float f) {
-		float g = MathHelper.lerp(f, chickenEntity.field_6736, chickenEntity.field_6741);
-		float h = MathHelper.lerp(f, chickenEntity.field_6738, chickenEntity.field_6743);
+		float g = MathHelper.lerp(f, chickenEntity.prevFlapProgress, chickenEntity.flapProgress);
+		float h = MathHelper.lerp(f, chickenEntity.prevMaxWingDeviation, chickenEntity.maxWingDeviation);
 		return (MathHelper.sin(g) + 1.0F) * h;
 	}
 }

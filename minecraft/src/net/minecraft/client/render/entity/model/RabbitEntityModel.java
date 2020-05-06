@@ -142,7 +142,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.rightEar.yaw = this.nose.yaw - (float) (Math.PI / 12);
 		this.leftEar.yaw = this.nose.yaw + (float) (Math.PI / 12);
-		this.field_3531 = MathHelper.sin(rabbitEntity.method_6605(k) * (float) Math.PI);
+		this.field_3531 = MathHelper.sin(rabbitEntity.getJumpProgress(k) * (float) Math.PI);
 		this.leftBackLeg.pitch = (this.field_3531 * 50.0F - 21.0F) * (float) (Math.PI / 180.0);
 		this.rightBackLeg.pitch = (this.field_3531 * 50.0F - 21.0F) * (float) (Math.PI / 180.0);
 		this.leftFoot.pitch = this.field_3531 * 50.0F * (float) (Math.PI / 180.0);
@@ -153,6 +153,6 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 
 	public void animateModel(T rabbitEntity, float f, float g, float h) {
 		super.animateModel(rabbitEntity, f, g, h);
-		this.field_3531 = MathHelper.sin(rabbitEntity.method_6605(h) * (float) Math.PI);
+		this.field_3531 = MathHelper.sin(rabbitEntity.getJumpProgress(h) * (float) Math.PI);
 	}
 }

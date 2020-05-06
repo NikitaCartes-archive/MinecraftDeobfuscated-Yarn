@@ -33,11 +33,11 @@ import net.minecraft.world.World;
 
 public class ChickenEntity extends AnimalEntity {
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
-	public float field_6741;
-	public float field_6743;
-	public float field_6738;
-	public float field_6736;
-	public float field_6737 = 1.0F;
+	public float flapProgress;
+	public float maxWingDeviation;
+	public float prevMaxWingDeviation;
+	public float prevFlapProgress;
+	public float flapSpeed = 1.0F;
 	public int eggLayTime = this.random.nextInt(6000) + 6000;
 	public boolean jockey;
 
@@ -70,21 +70,21 @@ public class ChickenEntity extends AnimalEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		this.field_6736 = this.field_6741;
-		this.field_6738 = this.field_6743;
-		this.field_6743 = (float)((double)this.field_6743 + (double)(this.onGround ? -1 : 4) * 0.3);
-		this.field_6743 = MathHelper.clamp(this.field_6743, 0.0F, 1.0F);
-		if (!this.onGround && this.field_6737 < 1.0F) {
-			this.field_6737 = 1.0F;
+		this.prevFlapProgress = this.flapProgress;
+		this.prevMaxWingDeviation = this.maxWingDeviation;
+		this.maxWingDeviation = (float)((double)this.maxWingDeviation + (double)(this.onGround ? -1 : 4) * 0.3);
+		this.maxWingDeviation = MathHelper.clamp(this.maxWingDeviation, 0.0F, 1.0F);
+		if (!this.onGround && this.flapSpeed < 1.0F) {
+			this.flapSpeed = 1.0F;
 		}
 
-		this.field_6737 = (float)((double)this.field_6737 * 0.9);
+		this.flapSpeed = (float)((double)this.flapSpeed * 0.9);
 		Vec3d vec3d = this.getVelocity();
 		if (!this.onGround && vec3d.y < 0.0) {
 			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
 		}
 
-		this.field_6741 = this.field_6741 + this.field_6737 * 2.0F;
+		this.flapProgress = this.flapProgress + this.flapSpeed * 2.0F;
 		if (!this.world.isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
 			this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			this.dropItem(Items.EGG);

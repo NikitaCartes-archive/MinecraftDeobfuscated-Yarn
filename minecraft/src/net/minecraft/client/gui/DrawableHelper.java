@@ -121,55 +121,132 @@ public abstract class DrawableHelper {
 		RenderSystem.enableTexture();
 	}
 
-	public void drawCenteredString(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int i) {
-		textRenderer.drawWithShadow(matrices, text, (float)(x - textRenderer.getWidth(text) / 2), (float)y, i);
+	public void drawCenteredString(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, text, (float)(x - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
-	public void drawStringWithShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int i, int j, int k) {
-		textRenderer.drawWithShadow(matrices, text, (float)(i - textRenderer.getStringWidth(text) / 2), (float)j, k);
+	public void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, text, (float)(x - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
-	public void drawString(MatrixStack matrices, TextRenderer textRenderer, String text, int i, int j, int k) {
-		textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, k);
+	public void drawStringWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
-	public void method_27535(MatrixStack matrices, TextRenderer textRenderer, Text text, int i, int j, int k) {
-		textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, k);
+	public void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {
+		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
-	public static void drawSprite(MatrixStack matrices, int i, int j, int k, int l, int m, Sprite sprite) {
-		drawTexturedQuad(matrices.peek().getModel(), i, i + l, j, j + m, k, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+	public static void drawSprite(MatrixStack matrices, int x, int y, int z, int width, int height, Sprite sprite) {
+		drawTexturedQuad(matrices.peek().getModel(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
 	}
 
-	public void drawTexture(MatrixStack matrices, int x, int y, int i, int j, int k, int l) {
-		drawTexture(matrices, x, y, this.zOffset, (float)i, (float)j, k, l, 256, 256);
+	/**
+	 * Draws a textured rectangle from a region in a 256x256 texture.
+	 * 
+	 * <p>The Z coordinate of the rectangle is {@link #zOffset}.
+	 * 
+	 * <p>The width and height of the region are the same as
+	 * the dimensions of the rectangle.
+	 * 
+	 * @param matrices the matrix stack used for rendering
+	 * @param x the X coordinate of the rectangle
+	 * @param y the Y coordinate of the rectangle
+	 * @param u the left-most coordinate of the texture region
+	 * @param v the top-most coordinate of the texture region
+	 * @param width the width
+	 * @param height the height
+	 */
+	public void drawTexture(MatrixStack matrices, int x, int y, int u, int v, int width, int height) {
+		drawTexture(matrices, x, y, this.zOffset, (float)u, (float)v, width, height, 256, 256);
 	}
 
-	public static void drawTexture(MatrixStack matrices, int i, int j, int k, float f, float g, int l, int m, int n, int o) {
-		drawTexture(matrices, i, i + l, j, j + m, k, l, m, f, g, o, n);
+	/**
+	 * Draws a textured rectangle from a region in a texture.
+	 * 
+	 * <p>The width and height of the region are the same as
+	 * the dimensions of the rectangle.
+	 * 
+	 * @param matrices the matrix stack used for rendering
+	 * @param x the X coordinate of the rectangle
+	 * @param y the Y coordinate of the rectangle
+	 * @param z the Z coordinate of the rectangle
+	 * @param u the left-most coordinate of the texture region
+	 * @param v the top-most coordinate of the texture region
+	 * @param width the width of the rectangle
+	 * @param height the height of the rectangle
+	 * @param textureHeight the height of the entire texture
+	 * @param textureWidth the width of the entire texture
+	 */
+	public static void drawTexture(MatrixStack matrices, int x, int y, int z, float u, float v, int width, int height, int textureHeight, int textureWidth) {
+		drawTexture(matrices, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
 	}
 
-	public static void drawTexture(MatrixStack matrices, int i, int j, int k, int l, float f, float g, int m, int n, int o, int p) {
-		drawTexture(matrices, i, i + k, j, j + l, 0, m, n, f, g, o, p);
+	/**
+	 * Draws a textured rectangle from a region in a texture.
+	 * 
+	 * @param matrices the matrix stack used for rendering
+	 * @param x the X coordinate of the rectangle
+	 * @param y the Y coordinate of the rectangle
+	 * @param width the width of the rectangle
+	 * @param height the height of the rectangle
+	 * @param u the left-most coordinate of the texture region
+	 * @param v the top-most coordinate of the texture region
+	 * @param regionWidth the width of the texture region
+	 * @param regionHeight the height of the texture region
+	 * @param textureWidth the width of the entire texture
+	 * @param textureHeight the height of the entire texture
+	 */
+	public static void drawTexture(
+		MatrixStack matrices, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight
+	) {
+		drawTexture(matrices, x, x + width, y, y + height, 0, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
 	}
 
-	public static void drawTexture(MatrixStack matrices, int i, int j, float f, float g, int k, int l, int m, int n) {
-		drawTexture(matrices, i, j, k, l, f, g, k, l, m, n);
+	/**
+	 * Draws a textured rectangle from a region in a texture.
+	 * 
+	 * <p>The width and height of the region are the same as
+	 * the dimensions of the rectangle.
+	 * 
+	 * @param matrices the matrix stack used for rendering
+	 * @param x the X coordinate of the rectangle
+	 * @param y the Y coordinate of the rectangle
+	 * @param u the left-most coordinate of the texture region
+	 * @param v the top-most coordinate of the texture region
+	 * @param width the width of the rectangle
+	 * @param height the height of the rectangle
+	 * @param textureWidth the width of the entire texture
+	 * @param textureHeight the height of the entire texture
+	 */
+	public static void drawTexture(MatrixStack matrices, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+		drawTexture(matrices, x, y, width, height, u, v, width, height, textureWidth, textureHeight);
 	}
 
-	private static void drawTexture(MatrixStack matrices, int i, int j, int k, int l, int m, int n, int o, float f, float g, int p, int q) {
+	private static void drawTexture(
+		MatrixStack matrices, int x0, int y0, int x1, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight
+	) {
 		drawTexturedQuad(
-			matrices.peek().getModel(), i, j, k, l, m, (f + 0.0F) / (float)p, (f + (float)n) / (float)p, (g + 0.0F) / (float)q, (g + (float)o) / (float)q
+			matrices.peek().getModel(),
+			x0,
+			y0,
+			x1,
+			y1,
+			z,
+			(u + 0.0F) / (float)textureWidth,
+			(u + (float)regionWidth) / (float)textureWidth,
+			(v + 0.0F) / (float)textureHeight,
+			(v + (float)regionHeight) / (float)textureHeight
 		);
 	}
 
-	private static void drawTexturedQuad(Matrix4f matrices, int i, int j, int k, int l, int m, float f, float g, float h, float n) {
+	private static void drawTexturedQuad(Matrix4f matrices, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		bufferBuilder.begin(7, VertexFormats.POSITION_TEXTURE);
-		bufferBuilder.vertex(matrices, (float)i, (float)l, (float)m).texture(f, n).next();
-		bufferBuilder.vertex(matrices, (float)j, (float)l, (float)m).texture(g, n).next();
-		bufferBuilder.vertex(matrices, (float)j, (float)k, (float)m).texture(g, h).next();
-		bufferBuilder.vertex(matrices, (float)i, (float)k, (float)m).texture(f, h).next();
+		bufferBuilder.vertex(matrices, (float)x0, (float)y1, (float)z).texture(u0, v1).next();
+		bufferBuilder.vertex(matrices, (float)x1, (float)y1, (float)z).texture(u1, v1).next();
+		bufferBuilder.vertex(matrices, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
+		bufferBuilder.vertex(matrices, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
 		bufferBuilder.end();
 		RenderSystem.enableAlphaTest();
 		BufferRenderer.draw(bufferBuilder);

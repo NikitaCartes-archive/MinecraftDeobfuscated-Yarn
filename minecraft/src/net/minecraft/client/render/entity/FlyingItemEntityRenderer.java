@@ -12,6 +12,7 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> extends EntityRenderer<T> {
@@ -31,8 +32,8 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	}
 
 	@Override
-	protected int getBlockLight(T entity, float tickDelta) {
-		return this.lit ? 15 : super.getBlockLight(entity, tickDelta);
+	protected int getBlockLight(T entity, BlockPos blockPos) {
+		return this.lit ? 15 : super.getBlockLight(entity, blockPos);
 	}
 
 	@Override

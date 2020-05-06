@@ -12,7 +12,7 @@ public class VineLogic {
 
 		int i;
 		for (i = 0; random.nextDouble() < d; i++) {
-			d *= 0.94;
+			d *= 0.826;
 		}
 
 		return i;

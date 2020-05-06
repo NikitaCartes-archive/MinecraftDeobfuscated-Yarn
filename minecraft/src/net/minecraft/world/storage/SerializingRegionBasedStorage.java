@@ -54,7 +54,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		this.factory = factory;
 		this.dataFixer = dataFixer;
 		this.dataFixType = dataFixType;
-		this.worker = new StorageIoWorker(new RegionBasedStorage(directory, bl), directory.getName());
+		this.worker = new StorageIoWorker(directory, bl, directory.getName());
 	}
 
 	protected void tick(BooleanSupplier shouldKeepTicking) {

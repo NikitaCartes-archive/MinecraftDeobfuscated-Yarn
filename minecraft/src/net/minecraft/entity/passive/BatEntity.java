@@ -9,7 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -208,7 +208,7 @@ public class BatEntity extends AmbientEntity {
 		tag.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
 	}
 
-	public static boolean canSpawn(EntityType<BatEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<BatEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (pos.getY() >= world.getSeaLevel()) {
 			return false;
 		} else {
@@ -220,7 +220,7 @@ public class BatEntity extends AmbientEntity {
 				return false;
 			}
 
-			return i > random.nextInt(j) ? false : canMobSpawn(type, world, spawnType, pos, random);
+			return i > random.nextInt(j) ? false : canMobSpawn(type, world, spawnReason, pos, random);
 		}
 	}
 

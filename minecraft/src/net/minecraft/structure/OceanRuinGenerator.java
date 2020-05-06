@@ -9,7 +9,7 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.loot.LootTables;
@@ -251,7 +251,7 @@ public class OceanRuinGenerator {
 				DrownedEntity drownedEntity = EntityType.DROWNED.create(world.getWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-				drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnType.STRUCTURE, null, null);
+				drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
 				world.spawnEntity(drownedEntity);
 				if (pos.getY() > world.getSeaLevel()) {
 					world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);

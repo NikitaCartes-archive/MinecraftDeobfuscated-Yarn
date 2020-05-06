@@ -3,8 +3,8 @@ package net.minecraft.world.biome;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.sound.MusicType;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
@@ -48,11 +48,11 @@ public class WarpedForestBiome extends Biome {
 						.loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP)
 						.moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD, 6000, 8, 2.0))
 						.additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS, 0.0111))
-						.method_27346(MusicType.method_27283(SoundEvents.MUSIC_NETHER_WARPED_FOREST))
+						.music(MusicType.method_27283(SoundEvents.MUSIC_NETHER_WARPED_FOREST))
 						.build()
 				)
 				.parent(null)
-				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.7F, 0.0F, 0.0F, 0.7F)))
+				.noises(ImmutableList.of(new Biome.MixedNoisePoint(0.0F, 0.5F, 0.0F, 0.0F, 0.375F)))
 		);
 		this.addStructureFeature(Feature.NETHER_BRIDGE.configure(FeatureConfig.DEFAULT));
 		this.addStructureFeature(Feature.BASTION_REMNANT.configure(new BastionRemnantFeatureConfig(BastionRemnantGenerator.START_POOLS_TO_SIZES)));
@@ -106,8 +106,8 @@ public class WarpedForestBiome extends Biome {
 		);
 		DefaultBiomeFeatures.addWarpedForestVegetation(this);
 		DefaultBiomeFeatures.addNetherOres(this);
-		this.addSpawn(EntityCategory.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
-		this.addSpawn(EntityCategory.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 2, 4));
+		this.addSpawn(SpawnGroup.MONSTER, new Biome.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4));
+		this.addSpawn(SpawnGroup.CREATURE, new Biome.SpawnEntry(EntityType.STRIDER, 60, 2, 4));
 		this.addSpawnDensity(EntityType.ENDERMAN, 1.0, 0.08);
 	}
 }

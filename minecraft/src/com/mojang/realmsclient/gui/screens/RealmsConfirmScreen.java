@@ -32,8 +32,8 @@ public class RealmsConfirmScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title1, this.width / 2, row(3), 16777215);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title2, this.width / 2, row(5), 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title1, this.width / 2, row(3), 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title2, this.width / 2, row(5), 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

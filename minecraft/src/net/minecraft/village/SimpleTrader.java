@@ -37,8 +37,8 @@ public class SimpleTrader implements Trader {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setOffersFromServer(@Nullable TraderOfferList traderOfferList) {
-		this.recipeList = traderOfferList;
+	public void setOffersFromServer(@Nullable TraderOfferList offers) {
+		this.recipeList = offers;
 	}
 
 	@Override

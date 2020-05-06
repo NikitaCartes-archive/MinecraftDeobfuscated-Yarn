@@ -27,8 +27,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class BlazeEntity extends HostileEntity {
-	private float field_7214 = 0.5F;
-	private int field_7215;
+	private float eyeOffset = 0.5F;
+	private int eyeOffsetCooldown;
 	private static final TrackedData<Byte> BLAZE_FLAGS = DataTracker.registerData(BlazeEntity.class, TrackedDataHandlerRegistry.BYTE);
 
 	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
@@ -119,14 +119,14 @@ public class BlazeEntity extends HostileEntity {
 			this.damage(DamageSource.DROWN, 1.0F);
 		}
 
-		this.field_7215--;
-		if (this.field_7215 <= 0) {
-			this.field_7215 = 100;
-			this.field_7214 = 0.5F + (float)this.random.nextGaussian() * 3.0F;
+		this.eyeOffsetCooldown--;
+		if (this.eyeOffsetCooldown <= 0) {
+			this.eyeOffsetCooldown = 100;
+			this.eyeOffset = 0.5F + (float)this.random.nextGaussian() * 3.0F;
 		}
 
 		LivingEntity livingEntity = this.getTarget();
-		if (livingEntity != null && livingEntity.getEyeY() > this.getEyeY() + (double)this.field_7214 && this.canTarget(livingEntity)) {
+		if (livingEntity != null && livingEntity.getEyeY() > this.getEyeY() + (double)this.eyeOffset && this.canTarget(livingEntity)) {
 			Vec3d vec3d = this.getVelocity();
 			this.setVelocity(this.getVelocity().add(0.0, (0.3F - vec3d.y) * 0.3F, 0.0));
 			this.velocityDirty = true;
@@ -162,9 +162,9 @@ public class BlazeEntity extends HostileEntity {
 
 	static class ShootFireballGoal extends Goal {
 		private final BlazeEntity blaze;
-		private int field_7218;
-		private int field_7217;
-		private int field_19420;
+		private int fireballsFired;
+		private int fireballCooldown;
+		private int targetNotVisibleTicks;
 
 		public ShootFireballGoal(BlazeEntity blaze) {
 			this.blaze = blaze;
@@ -179,25 +179,25 @@ public class BlazeEntity extends HostileEntity {
 
 		@Override
 		public void start() {
-			this.field_7218 = 0;
+			this.fireballsFired = 0;
 		}
 
 		@Override
 		public void stop() {
 			this.blaze.setFireActive(false);
-			this.field_19420 = 0;
+			this.targetNotVisibleTicks = 0;
 		}
 
 		@Override
 		public void tick() {
-			this.field_7217--;
+			this.fireballCooldown--;
 			LivingEntity livingEntity = this.blaze.getTarget();
 			if (livingEntity != null) {
 				boolean bl = this.blaze.getVisibilityCache().canSee(livingEntity);
 				if (bl) {
-					this.field_19420 = 0;
+					this.targetNotVisibleTicks = 0;
 				} else {
-					this.field_19420++;
+					this.targetNotVisibleTicks++;
 				}
 
 				double d = this.blaze.squaredDistanceTo(livingEntity);
@@ -206,30 +206,30 @@ public class BlazeEntity extends HostileEntity {
 						return;
 					}
 
-					if (this.field_7217 <= 0) {
-						this.field_7217 = 20;
+					if (this.fireballCooldown <= 0) {
+						this.fireballCooldown = 20;
 						this.blaze.tryAttack(livingEntity);
 					}
 
 					this.blaze.getMoveControl().moveTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), 1.0);
-				} else if (d < this.method_6995() * this.method_6995() && bl) {
+				} else if (d < this.getFollowRange() * this.getFollowRange() && bl) {
 					double e = livingEntity.getX() - this.blaze.getX();
 					double f = livingEntity.getBodyY(0.5) - this.blaze.getBodyY(0.5);
 					double g = livingEntity.getZ() - this.blaze.getZ();
-					if (this.field_7217 <= 0) {
-						this.field_7218++;
-						if (this.field_7218 == 1) {
-							this.field_7217 = 60;
+					if (this.fireballCooldown <= 0) {
+						this.fireballsFired++;
+						if (this.fireballsFired == 1) {
+							this.fireballCooldown = 60;
 							this.blaze.setFireActive(true);
-						} else if (this.field_7218 <= 4) {
-							this.field_7217 = 6;
+						} else if (this.fireballsFired <= 4) {
+							this.fireballCooldown = 6;
 						} else {
-							this.field_7217 = 100;
-							this.field_7218 = 0;
+							this.fireballCooldown = 100;
+							this.fireballsFired = 0;
 							this.blaze.setFireActive(false);
 						}
 
-						if (this.field_7218 > 1) {
+						if (this.fireballsFired > 1) {
 							float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
 							if (!this.blaze.isSilent()) {
 								this.blaze.world.syncWorldEvent(null, 1018, this.blaze.getBlockPos(), 0);
@@ -246,7 +246,7 @@ public class BlazeEntity extends HostileEntity {
 					}
 
 					this.blaze.getLookControl().lookAt(livingEntity, 10.0F, 10.0F);
-				} else if (this.field_19420 < 5) {
+				} else if (this.targetNotVisibleTicks < 5) {
 					this.blaze.getMoveControl().moveTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), 1.0);
 				}
 
@@ -254,7 +254,7 @@ public class BlazeEntity extends HostileEntity {
 			}
 		}
 
-		private double method_6995() {
+		private double getFollowRange() {
 			return this.blaze.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 		}
 	}

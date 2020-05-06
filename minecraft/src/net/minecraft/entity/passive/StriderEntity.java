@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_5275;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -16,7 +17,7 @@ import net.minecraft.entity.ItemSteerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SaddledComponent;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -54,7 +55,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -79,7 +79,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
 	}
 
-	public static boolean canSpawn(EntityType<StriderEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<StriderEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return world.getBlockState(pos.up()).isAir();
 	}
 
@@ -223,16 +223,14 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		for (BlockPos blockPos : set) {
 			if (!this.world.getFluidState(blockPos).matches(FluidTags.LAVA)) {
-				Vec3d vec3d2 = Vec3d.method_24955(blockPos);
-
 				for (EntityPose entityPose : livingEntity.getPoses()) {
-					Box box = livingEntity.method_24833(entityPose).offset(vec3d2);
-					double g = this.world.method_26372(blockPos);
-					if (!Double.isInfinite(g) && g < 1.0) {
-						Box box2 = box.offset(0.0, g, 0.0);
-						if (this.world.getBlockCollisions(livingEntity, box2).allMatch(VoxelShape::isEmpty)) {
+					double f = this.world.method_26372(blockPos);
+					if (class_5275.method_27932(f)) {
+						Box box = livingEntity.method_24833(entityPose);
+						Vec3d vec3d2 = Vec3d.ofCenter(blockPos, f);
+						if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d2))) {
 							livingEntity.setPose(entityPose);
-							return new Vec3d(vec3d2.x, (double)blockPos.getY() + g, vec3d2.z);
+							return vec3d2;
 						}
 					}
 				}
@@ -422,7 +420,9 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		StriderEntity.StriderData.RiderType riderType;
 		if (entityData instanceof StriderEntity.StriderData) {
 			riderType = ((StriderEntity.StriderData)entityData).type;
@@ -458,12 +458,12 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		if (mobEntity != null) {
 			mobEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.yaw, 0.0F);
-			mobEntity.initialize(world, difficulty, SpawnType.JOCKEY, null, null);
+			mobEntity.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
 			mobEntity.startRiding(this, true);
 			world.spawnEntity(mobEntity);
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	static class Navigation extends MobNavigation {

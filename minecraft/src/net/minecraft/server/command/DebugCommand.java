@@ -23,13 +23,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DebugCommand {
-	private static final Logger logger = LogManager.getLogger();
-	private static final SimpleCommandExceptionType NORUNNING_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning"));
-	private static final SimpleCommandExceptionType ALREADYRUNNING_EXCEPTION = new SimpleCommandExceptionType(
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final SimpleCommandExceptionType NOT_RUNNING_EXCPETION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning"));
+	private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.debug.alreadyRunning")
 	);
 	@Nullable
-	private static final FileSystemProvider field_20310 = (FileSystemProvider)FileSystemProvider.installedProviders()
+	private static final FileSystemProvider FILE_SYSTEM_PROVIDER = (FileSystemProvider)FileSystemProvider.installedProviders()
 		.stream()
 		.filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar"))
 		.findFirst()
@@ -48,7 +48,7 @@ public class DebugCommand {
 	private static int executeStart(ServerCommandSource source) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = source.getMinecraftServer();
 		if (minecraftServer.isDebugRunning()) {
-			throw ALREADYRUNNING_EXCEPTION.create();
+			throw ALREADY_RUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.enableProfiler();
 			source.sendFeedback(new TranslatableText("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
@@ -59,7 +59,7 @@ public class DebugCommand {
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = source.getMinecraftServer();
 		if (!minecraftServer.isDebugRunning()) {
-			throw NORUNNING_EXCPETION.create();
+			throw NOT_RUNNING_EXCPETION.create();
 		} else {
 			ProfileResult profileResult = minecraftServer.stopDebug();
 			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
@@ -80,9 +80,9 @@ public class DebugCommand {
 		try {
 			Path path = minecraftServer.getFile("debug").toPath();
 			Files.createDirectories(path);
-			if (!SharedConstants.isDevelopment && field_20310 != null) {
+			if (!SharedConstants.isDevelopment && FILE_SYSTEM_PROVIDER != null) {
 				Path path2 = path.resolve(string + ".zip");
-				FileSystem fileSystem = field_20310.newFileSystem(path2, ImmutableMap.of("create", "true"));
+				FileSystem fileSystem = FILE_SYSTEM_PROVIDER.newFileSystem(path2, ImmutableMap.of("create", "true"));
 				Throwable var6 = null;
 
 				try {
@@ -111,7 +111,7 @@ public class DebugCommand {
 			source.sendFeedback(new TranslatableText("commands.debug.reportSaved", string), false);
 			return 1;
 		} catch (IOException var18) {
-			logger.error("Failed to save debug dump", (Throwable)var18);
+			LOGGER.error("Failed to save debug dump", (Throwable)var18);
 			source.sendError(new TranslatableText("commands.debug.reportFailed"));
 			return 0;
 		}

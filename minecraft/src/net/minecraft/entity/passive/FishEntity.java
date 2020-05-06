@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -59,7 +59,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 		return this.isFromBucket();
 	}
 
-	public static boolean canSpawn(EntityType<? extends FishEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<? extends FishEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return world.getBlockState(pos).isOf(Blocks.WATER) && world.getBlockState(pos.up()).isOf(Blocks.WATER);
 	}
 

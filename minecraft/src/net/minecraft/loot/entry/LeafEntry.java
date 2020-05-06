@@ -27,8 +27,8 @@ public abstract class LeafEntry extends LootEntry {
 	private final BiFunction<ItemStack, LootContext, ItemStack> compiledFunctions;
 	private final LootChoice choice = new LeafEntry.Choice() {
 		@Override
-		public void drop(Consumer<ItemStack> itemDropper, LootContext context) {
-			LeafEntry.this.drop(LootFunction.apply(LeafEntry.this.compiledFunctions, itemDropper, context), context);
+		public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
+			LeafEntry.this.generateLoot(LootFunction.apply(LeafEntry.this.compiledFunctions, lootConsumer, context), context);
 		}
 	};
 
@@ -41,15 +41,15 @@ public abstract class LeafEntry extends LootEntry {
 	}
 
 	@Override
-	public void check(LootTableReporter reporter) {
-		super.check(reporter);
+	public void validate(LootTableReporter reporter) {
+		super.validate(reporter);
 
 		for (int i = 0; i < this.functions.length; i++) {
-			this.functions[i].check(reporter.makeChild(".functions[" + i + "]"));
+			this.functions[i].validate(reporter.makeChild(".functions[" + i + "]"));
 		}
 	}
 
-	protected abstract void drop(Consumer<ItemStack> itemDropper, LootContext context);
+	protected abstract void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context);
 
 	@Override
 	public boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {
@@ -87,7 +87,7 @@ public abstract class LeafEntry extends LootEntry {
 		protected int quality = 0;
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
 
-		public T withFunction(LootFunction.Builder builder) {
+		public T apply(LootFunction.Builder builder) {
 			this.functions.add(builder.build());
 			return this.getThisBuilder();
 		}
@@ -96,12 +96,12 @@ public abstract class LeafEntry extends LootEntry {
 			return (LootFunction[])this.functions.toArray(new LootFunction[0]);
 		}
 
-		public T setWeight(int weight) {
+		public T weight(int weight) {
 			this.weight = weight;
 			return this.getThisBuilder();
 		}
 
-		public T setQuality(int quality) {
+		public T quality(int quality) {
 			this.quality = quality;
 			return this.getThisBuilder();
 		}

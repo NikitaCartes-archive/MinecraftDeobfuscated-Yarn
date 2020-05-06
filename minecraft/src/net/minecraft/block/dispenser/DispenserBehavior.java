@@ -23,7 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
@@ -178,7 +178,7 @@ public interface DispenserBehavior {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 				EntityType<?> entityType = ((SpawnEggItem)stack.getItem()).getEntityType(stack.getTag());
 				entityType.spawnFromItemStack(
-					pointer.getWorld(), stack, null, pointer.getBlockPos().offset(direction), SpawnType.DISPENSER, direction != Direction.UP, false
+					pointer.getWorld(), stack, null, pointer.getBlockPos().offset(direction), SpawnReason.DISPENSER, direction != Direction.UP, false
 				);
 				stack.decrement(1);
 				return stack;
@@ -218,7 +218,7 @@ public interface DispenserBehavior {
 				if (!list.isEmpty()) {
 					((Saddleable)list.get(0)).saddle(SoundCategory.BLOCKS);
 					stack.decrement(1);
-					this.success = true;
+					this.setSuccess(true);
 					return stack;
 				} else {
 					return super.dispenseSilently(pointer, stack);
@@ -234,7 +234,7 @@ public interface DispenserBehavior {
 					.getEntities(HorseBaseEntity.class, new Box(blockPos), horseBaseEntityx -> horseBaseEntityx.isAlive() && horseBaseEntityx.canEquip())) {
 					if (horseBaseEntity.canEquip(stack) && !horseBaseEntity.setSaddled() && horseBaseEntity.isTame()) {
 						horseBaseEntity.equip(401, stack.split(1));
-						this.success = true;
+						this.setSuccess(true);
 						return stack;
 					}
 				}
@@ -273,7 +273,7 @@ public interface DispenserBehavior {
 						.getEntities(AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntityx -> abstractDonkeyEntityx.isAlive() && !abstractDonkeyEntityx.hasChest())) {
 						if (abstractDonkeyEntity.isTame() && abstractDonkeyEntity.equip(499, stack)) {
 							stack.decrement(1);
-							this.success = true;
+							this.setSuccess(true);
 							return stack;
 						}
 					}
@@ -385,7 +385,7 @@ public interface DispenserBehavior {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				World world = pointer.getWorld();
-				this.success = true;
+				this.setSuccess(true);
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 				BlockState blockState = world.getBlockState(blockPos);
 				if (FlintAndSteelItem.canIgnite(blockState, world, blockPos)) {
@@ -396,10 +396,10 @@ public interface DispenserBehavior {
 					TntBlock.primeTnt(world, blockPos);
 					world.removeBlock(blockPos, false);
 				} else {
-					this.success = false;
+					this.setSuccess(false);
 				}
 
-				if (this.success && stack.damage(1, world.random, null)) {
+				if (this.isSuccess() && stack.damage(1, world.random, null)) {
 					stack.setCount(0);
 				}
 
@@ -409,11 +409,11 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.BONE_MEAL, new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				this.success = true;
+				this.setSuccess(true);
 				World world = pointer.getWorld();
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 				if (!BoneMealItem.useOnFertilizable(stack, world, blockPos) && !BoneMealItem.useOnGround(stack, world, blockPos, null)) {
-					this.success = false;
+					this.setSuccess(false);
 				} else if (!world.isClient) {
 					world.syncWorldEvent(2005, blockPos, 0);
 				}
@@ -436,7 +436,7 @@ public interface DispenserBehavior {
 		DispenserBehavior dispenserBehavior2 = new FallibleItemDispenserBehavior() {
 			@Override
 			protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				this.success = ArmorItem.dispenseArmor(pointer, stack);
+				this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
 				return stack;
 			}
 		};
@@ -467,9 +467,9 @@ public interface DispenserBehavior {
 						}
 
 						stack.decrement(1);
-						this.success = true;
+						this.setSuccess(true);
 					} else {
-						this.success = ArmorItem.dispenseArmor(pointer, stack);
+						this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
 					}
 
 					return stack;
@@ -488,9 +488,9 @@ public interface DispenserBehavior {
 					}
 
 					stack.decrement(1);
-					this.success = true;
+					this.setSuccess(true);
 				} else {
-					this.success = ArmorItem.dispenseArmor(pointer, stack);
+					this.setSuccess(ArmorItem.dispenseArmor(pointer, stack));
 				}
 
 				return stack;
@@ -522,17 +522,17 @@ public interface DispenserBehavior {
 
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					this.success = false;
+					this.setSuccess(false);
 					IWorld iWorld = pointer.getWorld();
 					BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 					BlockState blockState = iWorld.getBlockState(blockPos);
 					if (blockState.method_27851(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))
 						&& (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
 						((BeehiveBlock)blockState.getBlock()).takeHoney(iWorld.getWorld(), blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
-						this.success = true;
+						this.setSuccess(true);
 						return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
 					} else if (iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
-						this.success = true;
+						this.setSuccess(true);
 						return this.method_22141(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
 					} else {
 						return super.dispenseSilently(pointer, stack);
@@ -547,12 +547,13 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.getBlockPos().offset(direction);
 				World world = pointer.getWorld();
 				BlockState blockState = world.getBlockState(blockPos);
+				this.setSuccess(true);
 				if (blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
 					if ((Integer)blockState.get(RespawnAnchorBlock.CHARGES) != 4) {
 						RespawnAnchorBlock.charge(world, blockPos, blockState);
 						stack.decrement(1);
 					} else {
-						this.success = false;
+						this.setSuccess(false);
 					}
 
 					return stack;

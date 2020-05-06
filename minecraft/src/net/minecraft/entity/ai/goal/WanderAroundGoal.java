@@ -14,15 +14,21 @@ public class WanderAroundGoal extends Goal {
 	protected final double speed;
 	protected int chance;
 	protected boolean ignoringChance;
+	private boolean field_24463;
 
 	public WanderAroundGoal(MobEntityWithAi mob, double speed) {
 		this(mob, speed, 120);
 	}
 
 	public WanderAroundGoal(MobEntityWithAi mob, double speed, int chance) {
-		this.mob = mob;
-		this.speed = speed;
-		this.chance = chance;
+		this(mob, speed, chance, true);
+	}
+
+	public WanderAroundGoal(MobEntityWithAi mobEntityWithAi, double d, int i, boolean bl) {
+		this.mob = mobEntityWithAi;
+		this.speed = d;
+		this.chance = i;
+		this.field_24463 = bl;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
 	}
 
@@ -32,7 +38,7 @@ public class WanderAroundGoal extends Goal {
 			return false;
 		} else {
 			if (!this.ignoringChance) {
-				if (this.mob.getDespawnCounter() >= 100) {
+				if (this.field_24463 && this.mob.getDespawnCounter() >= 100) {
 					return false;
 				}
 

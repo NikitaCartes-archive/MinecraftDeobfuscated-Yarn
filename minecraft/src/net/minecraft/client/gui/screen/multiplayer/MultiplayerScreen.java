@@ -205,7 +205,7 @@ public class MultiplayerScreen extends Screen {
 		this.tooltipText = null;
 		this.renderBackground(matrices);
 		this.serverListWidget.render(matrices, mouseX, mouseY, delta);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.tooltipText != null) {
 			this.renderTooltip(matrices, this.tooltipText, mouseX, mouseY);

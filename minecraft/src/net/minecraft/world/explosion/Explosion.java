@@ -254,13 +254,13 @@ public class Explosion {
 					if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
 						BlockEntity blockEntity = block.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
 						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-							.setRandom(this.world.random)
-							.put(LootContextParameters.POSITION, blockPos)
-							.put(LootContextParameters.TOOL, ItemStack.EMPTY)
-							.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity)
-							.putNullable(LootContextParameters.THIS_ENTITY, this.entity);
+							.random(this.world.random)
+							.parameter(LootContextParameters.POSITION, blockPos)
+							.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
+							.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity)
+							.optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
 						if (this.destructionType == Explosion.DestructionType.DESTROY) {
-							builder.put(LootContextParameters.EXPLOSION_RADIUS, this.power);
+							builder.parameter(LootContextParameters.EXPLOSION_RADIUS, this.power);
 						}
 
 						blockState.getDroppedStacks(builder).forEach(itemStack -> method_24023(objectArrayList, itemStack, blockPos2));

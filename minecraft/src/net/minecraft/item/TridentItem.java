@@ -147,8 +147,8 @@ public class TridentItem extends Item implements Vanishable {
 	}
 
 	@Override
-	public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-		return equipmentSlot == EquipmentSlot.MAINHAND ? this.field_23746 : super.getModifiers(equipmentSlot);
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+		return slot == EquipmentSlot.MAINHAND ? this.field_23746 : super.getAttributeModifiers(slot);
 	}
 
 	@Override

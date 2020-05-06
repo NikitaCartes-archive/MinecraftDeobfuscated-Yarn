@@ -171,43 +171,43 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 	}
 
-	public int method_7369(Predicate<ItemStack> predicate, int i) {
-		int j = 0;
+	public int clearItem(Predicate<ItemStack> itemPredicate, int amount) {
+		int i = 0;
 
-		for (int k = 0; k < this.size(); k++) {
-			ItemStack itemStack = this.getStack(k);
-			if (!itemStack.isEmpty() && predicate.test(itemStack)) {
-				int l = i <= 0 ? itemStack.getCount() : Math.min(i - j, itemStack.getCount());
-				j += l;
-				if (i != 0) {
-					itemStack.decrement(l);
+		for (int j = 0; j < this.size(); j++) {
+			ItemStack itemStack = this.getStack(j);
+			if (!itemStack.isEmpty() && itemPredicate.test(itemStack)) {
+				int k = amount <= 0 ? itemStack.getCount() : Math.min(amount - i, itemStack.getCount());
+				i += k;
+				if (amount != 0) {
+					itemStack.decrement(k);
 					if (itemStack.isEmpty()) {
-						this.setStack(k, ItemStack.EMPTY);
+						this.setStack(j, ItemStack.EMPTY);
 					}
 
-					if (i > 0 && j >= i) {
-						return j;
+					if (amount > 0 && i >= amount) {
+						return i;
 					}
 				}
 			}
 		}
 
-		if (!this.cursorStack.isEmpty() && predicate.test(this.cursorStack)) {
-			int kx = i <= 0 ? this.cursorStack.getCount() : Math.min(i - j, this.cursorStack.getCount());
-			j += kx;
-			if (i != 0) {
-				this.cursorStack.decrement(kx);
+		if (!this.cursorStack.isEmpty() && itemPredicate.test(this.cursorStack)) {
+			int jx = amount <= 0 ? this.cursorStack.getCount() : Math.min(amount - i, this.cursorStack.getCount());
+			i += jx;
+			if (amount != 0) {
+				this.cursorStack.decrement(jx);
 				if (this.cursorStack.isEmpty()) {
 					this.cursorStack = ItemStack.EMPTY;
 				}
 
-				if (i > 0 && j >= i) {
-					return j;
+				if (amount > 0 && i >= amount) {
+					return i;
 				}
 			}
 		}
 
-		return j;
+		return i;
 	}
 
 	private int addStack(ItemStack stack) {

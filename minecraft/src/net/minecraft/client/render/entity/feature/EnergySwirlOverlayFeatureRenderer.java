@@ -26,7 +26,7 @@ public abstract class EnergySwirlOverlayFeatureRenderer<T extends Entity & SkinO
 		float limbAngle,
 		float limbDistance,
 		float tickDelta,
-		float customAngle,
+		float animationProgress,
 		float headYaw,
 		float headPitch
 	) {
@@ -36,7 +36,7 @@ public abstract class EnergySwirlOverlayFeatureRenderer<T extends Entity & SkinO
 			entityModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
 			this.getContextModel().copyStateTo(entityModel);
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(f), f * 0.01F));
-			entityModel.setAngles(entity, limbAngle, limbDistance, customAngle, headYaw, headPitch);
+			entityModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
 			entityModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 0.5F, 0.5F, 0.5F, 1.0F);
 		}
 	}

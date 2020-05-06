@@ -92,7 +92,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		float blue,
 		@Nullable String suffix
 	) {
-		VertexConsumer vertexConsumer = ItemRenderer.getArmorVertexConsumer(
+		VertexConsumer vertexConsumer = ItemRenderer.method_27952(
 			vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(slot, item, secondLayer, suffix)), false, glint
 		);
 		armorModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0F);

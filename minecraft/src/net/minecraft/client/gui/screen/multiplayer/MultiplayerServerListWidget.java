@@ -254,7 +254,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			Text text = (Text)(bl4 ? this.server.version.shallowCopy().formatted(Formatting.DARK_RED) : this.server.playerCountLabel);
-			int k = this.client.textRenderer.getStringWidth(text);
+			int k = this.client.textRenderer.getWidth(text);
 			this.client.textRenderer.draw(matrices, text, (float)(width + height - k - 15 - 2), (float)(y + 1), 8421504);
 			int l = 0;
 			int m;

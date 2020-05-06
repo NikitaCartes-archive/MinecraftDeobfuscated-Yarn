@@ -224,11 +224,11 @@ public abstract class EntityNavigation {
 		if (this.currentPath.getLength() <= this.currentPath.getCurrentNodeIndex() + 1) {
 			return false;
 		} else {
-			Vec3d vec3d2 = Vec3d.method_24955(this.currentPath.getNode(this.currentPath.getCurrentNodeIndex()).getPos());
+			Vec3d vec3d2 = Vec3d.ofBottomCenter(this.currentPath.getNode(this.currentPath.getCurrentNodeIndex()).getPos());
 			if (!vec3d.isInRange(vec3d2, 2.0)) {
 				return false;
 			} else {
-				Vec3d vec3d3 = Vec3d.method_24955(this.currentPath.getNode(this.currentPath.getCurrentNodeIndex() + 1).getPos());
+				Vec3d vec3d3 = Vec3d.ofBottomCenter(this.currentPath.getNode(this.currentPath.getCurrentNodeIndex() + 1).getPos());
 				Vec3d vec3d4 = vec3d3.subtract(vec3d2);
 				Vec3d vec3d5 = vec3d.subtract(vec3d2);
 				return vec3d4.dotProduct(vec3d5) > 0.0;
@@ -252,7 +252,7 @@ public abstract class EntityNavigation {
 				this.currentNodeMs = this.currentNodeMs + (Util.getMeasuringTimeMs() - this.lastActiveTickMs);
 			} else {
 				this.lastNodePosition = vec3i;
-				double d = currentPos.distanceTo(Vec3d.method_24955(this.lastNodePosition));
+				double d = currentPos.distanceTo(Vec3d.ofBottomCenter(this.lastNodePosition));
 				this.currentNodeTimeout = this.entity.getMovementSpeed() > 0.0F ? d / (double)this.entity.getMovementSpeed() * 1000.0 : 0.0;
 			}
 

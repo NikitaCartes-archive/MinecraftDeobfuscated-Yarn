@@ -101,11 +101,11 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	public boolean method_27070(ItemStack itemStack) {
+	public boolean canInsert(ItemStack stack) {
 		boolean bl = false;
 
-		for (ItemStack itemStack2 : this.stacks) {
-			if (itemStack2.isEmpty() || this.canCombine(itemStack2, itemStack) && itemStack2.getCount() < itemStack2.getMaxCount()) {
+		for (ItemStack itemStack : this.stacks) {
+			if (itemStack.isEmpty() || this.canCombine(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
 				bl = true;
 				break;
 			}

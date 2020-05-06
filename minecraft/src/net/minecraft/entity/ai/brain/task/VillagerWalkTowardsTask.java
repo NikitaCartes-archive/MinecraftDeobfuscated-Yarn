@@ -60,7 +60,7 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 							i < 1000 && (vec3d == null || this.exceedsMaxRange(serverWorld, villagerEntity, GlobalPos.create(villagerEntity.dimension, new BlockPos(vec3d))));
 							i++
 						) {
-							vec3d = TargetFinder.findTargetTowards(villagerEntity, 15, 7, Vec3d.method_24955(globalPos.getPos()));
+							vec3d = TargetFinder.findTargetTowards(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()));
 						}
 
 						if (i == 1000) {

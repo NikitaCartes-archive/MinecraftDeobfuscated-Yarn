@@ -18,7 +18,7 @@ public class MiningToolItem extends ToolItem implements Vanishable {
 	private final Set<Block> effectiveBlocks;
 	protected final float miningSpeed;
 	private final float attackDamage;
-	private final Multimap<EntityAttribute, EntityAttributeModifier> field_23742;
+	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
 	protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, Set<Block> effectiveBlocks, Item.Settings settings) {
 		super(material, settings);
@@ -34,7 +34,7 @@ public class MiningToolItem extends ToolItem implements Vanishable {
 			EntityAttributes.GENERIC_ATTACK_SPEED,
 			new EntityAttributeModifier(ATTACK_SPEED_MODIFIER_UUID, "Tool modifier", (double)attackSpeed, EntityAttributeModifier.Operation.ADDITION)
 		);
-		this.field_23742 = builder.build();
+		this.attributeModifiers = builder.build();
 	}
 
 	@Override
@@ -58,11 +58,11 @@ public class MiningToolItem extends ToolItem implements Vanishable {
 	}
 
 	@Override
-	public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-		return equipmentSlot == EquipmentSlot.MAINHAND ? this.field_23742 : super.getModifiers(equipmentSlot);
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+		return slot == EquipmentSlot.MAINHAND ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 
-	public float method_26366() {
+	public float getAttackDamage() {
 		return this.attackDamage;
 	}
 }

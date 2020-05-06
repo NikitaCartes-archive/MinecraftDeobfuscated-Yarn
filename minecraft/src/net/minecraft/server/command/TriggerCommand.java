@@ -19,7 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 
 public class TriggerCommand {
-	private static final SimpleCommandExceptionType FAILED_UMPRIMED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType FAILED_UNPRIMED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.trigger.failed.unprimed")
 	);
 	private static final SimpleCommandExceptionType FAILED_INVALID_EXCEPTION = new SimpleCommandExceptionType(
@@ -67,7 +67,7 @@ public class TriggerCommand {
 		);
 	}
 
-	public static CompletableFuture<Suggestions> suggestObjectives(ServerCommandSource source, SuggestionsBuilder suggestionsBuilder) {
+	public static CompletableFuture<Suggestions> suggestObjectives(ServerCommandSource source, SuggestionsBuilder builder) {
 		Entity entity = source.getEntity();
 		List<String> list = Lists.<String>newArrayList();
 		if (entity != null) {
@@ -84,7 +84,7 @@ public class TriggerCommand {
 			}
 		}
 
-		return CommandSource.suggestMatching(list, suggestionsBuilder);
+		return CommandSource.suggestMatching(list, builder);
 	}
 
 	private static int executeAdd(ServerCommandSource source, ScoreboardPlayerScore score, int value) {
@@ -112,11 +112,11 @@ public class TriggerCommand {
 			Scoreboard scoreboard = player.getScoreboard();
 			String string = player.getEntityName();
 			if (!scoreboard.playerHasObjective(string, objective)) {
-				throw FAILED_UMPRIMED_EXCEPTION.create();
+				throw FAILED_UNPRIMED_EXCEPTION.create();
 			} else {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, objective);
 				if (scoreboardPlayerScore.isLocked()) {
-					throw FAILED_UMPRIMED_EXCEPTION.create();
+					throw FAILED_UNPRIMED_EXCEPTION.create();
 				} else {
 					scoreboardPlayerScore.setLocked(true);
 					return scoreboardPlayerScore;

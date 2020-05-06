@@ -30,7 +30,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TeleportCommand {
-	private static final SimpleCommandExceptionType field_22255 = new SimpleCommandExceptionType(new TranslatableText("commands.teleport.invalidPosition"));
+	private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableText("commands.teleport.invalidPosition")
+	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
@@ -243,7 +245,7 @@ public class TeleportCommand {
 	) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(x, y, z);
 		if (!World.method_25953(blockPos)) {
-			throw field_22255.create();
+			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
 			if (target instanceof ServerPlayerEntity) {
 				ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
@@ -297,25 +299,25 @@ public class TeleportCommand {
 
 	static class LookTarget {
 		private final Vec3d targetPos;
-		private final Entity targetEntity;
-		private final EntityAnchorArgumentType.EntityAnchor targetEntityAnchor;
+		private final Entity target;
+		private final EntityAnchorArgumentType.EntityAnchor targetAnchor;
 
-		public LookTarget(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
-			this.targetEntity = entity;
-			this.targetEntityAnchor = entityAnchor;
-			this.targetPos = entityAnchor.positionAt(entity);
+		public LookTarget(Entity target, EntityAnchorArgumentType.EntityAnchor targetAnchor) {
+			this.target = target;
+			this.targetAnchor = targetAnchor;
+			this.targetPos = targetAnchor.positionAt(target);
 		}
 
-		public LookTarget(Vec3d vec3d) {
-			this.targetEntity = null;
-			this.targetPos = vec3d;
-			this.targetEntityAnchor = null;
+		public LookTarget(Vec3d targetPos) {
+			this.target = null;
+			this.targetPos = targetPos;
+			this.targetAnchor = null;
 		}
 
 		public void look(ServerCommandSource source, Entity entity) {
-			if (this.targetEntity != null) {
+			if (this.target != null) {
 				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).method_14222(source.getEntityAnchor(), this.targetEntity, this.targetEntityAnchor);
+					((ServerPlayerEntity)entity).method_14222(source.getEntityAnchor(), this.target, this.targetAnchor);
 				} else {
 					entity.lookAt(source.getEntityAnchor(), this.targetPos);
 				}

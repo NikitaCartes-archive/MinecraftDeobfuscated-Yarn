@@ -117,7 +117,7 @@ public class SignEditScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		DiffuseLighting.disableGuiDepthLighting();
 		this.renderBackground(matrices);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 40, 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 40, 16777215);
 		matrices.push();
 		matrices.translate((double)(this.width / 2), 0.0, 50.0);
 		float f = 93.75F;

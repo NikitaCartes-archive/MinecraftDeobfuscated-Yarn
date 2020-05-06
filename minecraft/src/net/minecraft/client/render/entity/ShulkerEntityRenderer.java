@@ -27,10 +27,10 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	public Vec3d getPositionOffset(ShulkerEntity shulkerEntity, float f) {
-		int i = shulkerEntity.method_7113();
-		if (i > 0 && shulkerEntity.method_7117()) {
+		int i = shulkerEntity.getTeleportLerpTimer();
+		if (i > 0 && shulkerEntity.hasAttachedBlock()) {
 			BlockPos blockPos = shulkerEntity.getAttachedBlock();
-			BlockPos blockPos2 = shulkerEntity.method_7120();
+			BlockPos blockPos2 = shulkerEntity.getPrevAttachedBlock();
 			double d = (double)((float)i - f) / 6.0;
 			d *= d;
 			double e = (double)(blockPos.getX() - blockPos2.getX()) * d;
@@ -46,9 +46,9 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		if (super.shouldRender(shulkerEntity, frustum, d, e, f)) {
 			return true;
 		} else {
-			if (shulkerEntity.method_7113() > 0 && shulkerEntity.method_7117()) {
-				Vec3d vec3d = Vec3d.method_24954(shulkerEntity.getAttachedBlock());
-				Vec3d vec3d2 = Vec3d.method_24954(shulkerEntity.method_7120());
+			if (shulkerEntity.getTeleportLerpTimer() > 0 && shulkerEntity.hasAttachedBlock()) {
+				Vec3d vec3d = Vec3d.of(shulkerEntity.getAttachedBlock());
+				Vec3d vec3d2 = Vec3d.of(shulkerEntity.getPrevAttachedBlock());
 				if (frustum.isVisible(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
 					return true;
 				}

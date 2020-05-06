@@ -34,8 +34,8 @@ public class AlternativeEntry extends CombinedEntry {
 	}
 
 	@Override
-	public void check(LootTableReporter reporter) {
-		super.check(reporter);
+	public void validate(LootTableReporter reporter) {
+		super.validate(reporter);
 
 		for (int i = 0; i < this.children.length - 1; i++) {
 			if (ArrayUtils.isEmpty((Object[])this.children[i].conditions)) {
@@ -62,7 +62,7 @@ public class AlternativeEntry extends CombinedEntry {
 		}
 
 		@Override
-		public AlternativeEntry.Builder withChild(LootEntry.Builder<?> builder) {
+		public AlternativeEntry.Builder alternatively(LootEntry.Builder<?> builder) {
 			this.children.add(builder.build());
 			return this;
 		}

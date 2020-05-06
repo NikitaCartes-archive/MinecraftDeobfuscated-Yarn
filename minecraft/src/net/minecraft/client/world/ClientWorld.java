@@ -842,35 +842,35 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void method_27416(int i) {
-			this.field_24435 = i;
+		public void setSpawnX(int spawnX) {
+			this.field_24435 = spawnX;
 		}
 
 		@Override
-		public void method_27417(int i) {
-			this.field_24436 = i;
+		public void setSpawnY(int spawnY) {
+			this.field_24436 = spawnY;
 		}
 
 		@Override
-		public void method_27419(int i) {
-			this.field_24437 = i;
+		public void setSpawnZ(int spawnZ) {
+			this.field_24437 = spawnZ;
 		}
 
 		@Override
-		public void setTime(long l) {
-			this.field_24438 = l;
+		public void setTime(long time) {
+			this.field_24438 = time;
 		}
 
 		@Override
-		public void setTimeOfDay(long l) {
-			this.field_24439 = l;
+		public void setTimeOfDay(long timeOfDay) {
+			this.field_24439 = timeOfDay;
 		}
 
 		@Override
-		public void setSpawnPos(BlockPos blockPos) {
-			this.field_24435 = blockPos.getX();
-			this.field_24436 = blockPos.getY();
-			this.field_24437 = blockPos.getZ();
+		public void setSpawnPos(BlockPos pos) {
+			this.field_24435 = pos.getX();
+			this.field_24436 = pos.getY();
+			this.field_24437 = pos.getZ();
 		}
 
 		@Override
@@ -884,8 +884,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void setRaining(boolean bl) {
-			this.field_24440 = bl;
+		public void setRaining(boolean raining) {
+			this.field_24440 = raining;
 		}
 
 		@Override
@@ -899,7 +899,7 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public LevelGeneratorOptions method_27421() {
+		public LevelGeneratorOptions getGeneratorOptions() {
 			return this.field_24432;
 		}
 

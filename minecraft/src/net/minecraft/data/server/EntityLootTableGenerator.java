@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.loot.ConstantLootTableRange;
@@ -44,15 +44,15 @@ import net.minecraft.util.registry.Registry;
 public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 	private static final EntityPredicate.Builder NEEDS_ENTITY_ON_FIRE = EntityPredicate.Builder.create()
 		.flags(EntityFlagsPredicate.Builder.create().onFire(true).build());
-	private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_CATEGORY_TO_CHECK = ImmutableSet.of(
+	private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(
 		EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER
 	);
 	private final Map<Identifier, LootTable.Builder> lootTables = Maps.<Identifier, LootTable.Builder>newHashMap();
 
 	private static LootTable.Builder createForSheep(ItemConvertible itemConvertible) {
 		return LootTable.builder()
-			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemConvertible)))
-			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
+			.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(itemConvertible)))
+			.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
 	}
 
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
@@ -62,238 +62,223 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.BLAZE,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.BLAZE_ROD)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withCondition(KilledByPlayerLootCondition.builder())
+						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.register(
 			EntityType.CAT,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.STRING).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.STRING).apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
 				)
 		);
 		this.register(
 			EntityType.CAVE_SPIDER,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.STRING)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.SPIDER_EYE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withCondition(KilledByPlayerLootCondition.builder())
+						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.register(
 			EntityType.CHICKEN,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.FEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.CHICKEN)
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.COD,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.COD)
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.BONE_MEAL))
-						.withCondition(RandomChanceLootCondition.builder(0.05F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.BONE_MEAL))
+						.conditionally(RandomChanceLootCondition.builder(0.05F))
 				)
 		);
 		this.register(
 			EntityType.COW,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.LEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.BEEF)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.CREEPER,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.GUNPOWDER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withEntry(TagEntry.builder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
-						.withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.KILLER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
+						.with(TagEntry.builder(ItemTags.CREEPER_DROP_MUSIC_DISCS))
+						.conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.KILLER, EntityPredicate.Builder.create().type(EntityTypeTags.SKELETONS)))
 				)
 		);
 		this.register(
 			EntityType.DOLPHIN,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.COD)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
 						)
 				)
 		);
 		this.register(
 			EntityType.DONKEY,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.LEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.DROWNED,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.GOLD_INGOT))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.05F, 0.01F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.GOLD_INGOT))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.05F, 0.01F))
 				)
 		);
 		this.register(
 			EntityType.ELDER_GUARDIAN,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.PRISMARINE_SHARD)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.COD)
-								.setWeight(3)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
+								.weight(3)
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.PRISMARINE_CRYSTALS).setWeight(2).withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-						)
-						.withEntry(EmptyEntry.Serializer())
+						.with(ItemEntry.builder(Items.PRISMARINE_CRYSTALS).weight(2).apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F))))
+						.with(EmptyEntry.Serializer())
 				)
-				.withPool(
-					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Blocks.WET_SPONGE))
-						.withCondition(KilledByPlayerLootCondition.builder())
+				.pool(
+					LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(Blocks.WET_SPONGE)).conditionally(KilledByPlayerLootCondition.builder())
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.register(EntityType.ENDER_DRAGON, LootTable.builder());
 		this.register(
 			EntityType.ENDERMAN,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ENDER_PEARL)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -301,38 +286,38 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.EVOKER,
 			LootTable.builder()
-				.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Items.TOTEM_OF_UNDYING)))
-				.withPool(
+				.pool(LootPool.builder().rolls(ConstantLootTableRange.create(1)).with(ItemEntry.builder(Items.TOTEM_OF_UNDYING)))
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.EMERALD)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withCondition(KilledByPlayerLootCondition.builder())
+						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.register(EntityType.FOX, LootTable.builder());
 		this.register(
 			EntityType.GHAST,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.GHAST_TEAR)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.GUNPOWDER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -340,159 +325,153 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.GUARDIAN,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.PRISMARINE_SHARD)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.COD)
-								.setWeight(2)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
+								.weight(2)
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
 						)
-						.withEntry(
-							ItemEntry.builder(Items.PRISMARINE_CRYSTALS).setWeight(2).withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-						)
-						.withEntry(EmptyEntry.Serializer())
+						.with(ItemEntry.builder(Items.PRISMARINE_CRYSTALS).weight(2).apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F))))
+						.with(EmptyEntry.Serializer())
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.register(
 			EntityType.HORSE,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.LEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.HUSK,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.IRON_INGOT))
-						.withEntry(ItemEntry.builder(Items.CARROT))
-						.withEntry(ItemEntry.builder(Items.POTATO))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.IRON_INGOT))
+						.with(ItemEntry.builder(Items.CARROT))
+						.with(ItemEntry.builder(Items.POTATO))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.register(
 			EntityType.RAVAGER,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.SADDLE).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.SADDLE).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
 		);
 		this.register(EntityType.ILLUSIONER, LootTable.builder());
 		this.register(
 			EntityType.IRON_GOLEM,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Blocks.POPPY).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Blocks.POPPY).apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F))))
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.IRON_INGOT).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 5.0F))))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.IRON_INGOT).apply(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 5.0F))))
 				)
 		);
 		this.register(
 			EntityType.LLAMA,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.LEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.MAGMA_CUBE,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.MAGMA_CREAM)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(-2.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(-2.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.MULE,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.LEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.MOOSHROOM,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.LEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.BEEF)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -500,52 +479,50 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.PANDA,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Blocks.BAMBOO).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Blocks.BAMBOO).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
 		);
 		this.register(
 			EntityType.PARROT,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.FEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.PHANTOM,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.PHANTOM_MEMBRANE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withCondition(KilledByPlayerLootCondition.builder())
+						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.register(
 			EntityType.PIG,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.PORKCHOP)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -554,102 +531,96 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.POLAR_BEAR,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.COD)
-								.setWeight(3)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.weight(3)
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withEntry(
+						.with(
 							ItemEntry.builder(Items.SALMON)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.PUFFERFISH,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.PUFFERFISH).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.PUFFERFISH).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.BONE_MEAL))
-						.withCondition(RandomChanceLootCondition.builder(0.05F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.BONE_MEAL))
+						.conditionally(RandomChanceLootCondition.builder(0.05F))
 				)
 		);
 		this.register(
 			EntityType.RABBIT,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.RABBIT_HIDE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.RABBIT)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.RABBIT_FOOT))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.1F, 0.03F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.RABBIT_FOOT))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.1F, 0.03F))
 				)
 		);
 		this.register(
 			EntityType.SALMON,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.SALMON)
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.BONE_MEAL))
-						.withCondition(RandomChanceLootCondition.builder(0.05F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.BONE_MEAL))
+						.conditionally(RandomChanceLootCondition.builder(0.05F))
 				)
 		);
 		this.register(
 			EntityType.SHEEP,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.MUTTON)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -672,199 +643,199 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.SHULKER,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.SHULKER_SHELL))
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.5F, 0.0625F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.SHULKER_SHELL))
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.5F, 0.0625F))
 				)
 		);
 		this.register(EntityType.SILVERFISH, LootTable.builder());
 		this.register(
 			EntityType.SKELETON,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.BONE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.SKELETON_HORSE,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.BONE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.SLIME,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.SLIME_BALL)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.SNOW_GOLEM,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.SNOWBALL).withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 15.0F))))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.SNOWBALL).apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 15.0F))))
 				)
 		);
 		this.register(
 			EntityType.SPIDER,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.STRING)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.SPIDER_EYE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withCondition(KilledByPlayerLootCondition.builder())
+						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.register(
 			EntityType.SQUID,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.INK_SAC)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.STRAY,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.BONE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.TIPPED_ARROW)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)).withLimit(1))
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)).withLimit(1))
+								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:slowness"))))
 						)
-						.withCondition(KilledByPlayerLootCondition.builder())
+						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.register(
 			EntityType.STRIDER,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.STRING)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 5.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 5.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.TRADER_LLAMA,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.LEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.TROPICAL_FISH,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.TROPICAL_FISH).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.TROPICAL_FISH).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(1))))
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.BONE_MEAL))
-						.withCondition(RandomChanceLootCondition.builder(0.05F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.BONE_MEAL))
+						.conditionally(RandomChanceLootCondition.builder(0.05F))
 				)
 		);
 		this.register(
 			EntityType.TURTLE,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Blocks.SEAGRASS)
-								.setWeight(3)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.weight(3)
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.BOWL))
-						.withCondition(DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().lightning(true)))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.BOWL))
+						.conditionally(DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().lightning(true)))
 				)
 		);
 		this.register(EntityType.VEX, LootTable.builder());
@@ -873,58 +844,58 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.VINDICATOR,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.EMERALD)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withCondition(KilledByPlayerLootCondition.builder())
+						.conditionally(KilledByPlayerLootCondition.builder())
 				)
 		);
 		this.register(
 			EntityType.WITCH,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(UniformLootTableRange.between(1.0F, 3.0F))
-						.withEntry(
+						.rolls(UniformLootTableRange.between(1.0F, 3.0F))
+						.with(
 							ItemEntry.builder(Items.GLOWSTONE_DUST)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withEntry(
+						.with(
 							ItemEntry.builder(Items.SUGAR)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withEntry(
+						.with(
 							ItemEntry.builder(Items.REDSTONE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withEntry(
+						.with(
 							ItemEntry.builder(Items.SPIDER_EYE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withEntry(
+						.with(
 							ItemEntry.builder(Items.GLASS_BOTTLE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withEntry(
+						.with(
 							ItemEntry.builder(Items.GUNPOWDER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
-						.withEntry(
+						.with(
 							ItemEntry.builder(Items.STICK)
-								.setWeight(2)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.weight(2)
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -932,132 +903,130 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.WITHER_SKELETON,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.COAL)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(-1.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.BONE)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Blocks.WITHER_SKELETON_SKULL))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Blocks.WITHER_SKELETON_SKULL))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.register(EntityType.WOLF, LootTable.builder());
 		this.register(
 			EntityType.ZOGLIN,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 3.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.ZOMBIE,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.IRON_INGOT))
-						.withEntry(ItemEntry.builder(Items.CARROT))
-						.withEntry(ItemEntry.builder(Items.POTATO))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.IRON_INGOT))
+						.with(ItemEntry.builder(Items.CARROT))
+						.with(ItemEntry.builder(Items.POTATO))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.register(
 			EntityType.ZOMBIE_HORSE,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
 		this.register(
 			EntityType.ZOMBIFIED_PIGLIN,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.GOLD_NUGGET)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.GOLD_INGOT))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.GOLD_INGOT))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		this.register(
 			EntityType.HOGLIN,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.PORKCHOP)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F)))
-								.withFunction(
-									FurnaceSmeltLootFunction.builder().withCondition(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE))
-								)
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F)))
+								.apply(FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.LEATHER)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
 		);
@@ -1065,30 +1034,30 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		this.register(
 			EntityType.ZOMBIE_VILLAGER,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(
 							ItemEntry.builder(Items.ROTTEN_FLESH)
-								.withFunction(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
-								.withFunction(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
+								.apply(SetCountLootFunction.builder(UniformLootTableRange.between(0.0F, 2.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootTableRange.between(0.0F, 1.0F)))
 						)
 				)
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(Items.IRON_INGOT))
-						.withEntry(ItemEntry.builder(Items.CARROT))
-						.withEntry(ItemEntry.builder(Items.POTATO))
-						.withCondition(KilledByPlayerLootCondition.builder())
-						.withCondition(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+						.rolls(ConstantLootTableRange.create(1))
+						.with(ItemEntry.builder(Items.IRON_INGOT))
+						.with(ItemEntry.builder(Items.CARROT))
+						.with(ItemEntry.builder(Items.POTATO))
+						.conditionally(KilledByPlayerLootCondition.builder())
+						.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
 				)
 		);
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
 			Identifier identifier = entityType.getLootTableId();
-			if (!ENTITY_TYPES_IN_MISC_CATEGORY_TO_CHECK.contains(entityType) && entityType.getCategory() == EntityCategory.MISC) {
+			if (!ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK.contains(entityType) && entityType.getSpawnGroup() == SpawnGroup.MISC) {
 				if (identifier != LootTables.EMPTY && this.lootTables.remove(identifier) != null) {
 					throw new IllegalStateException(
 						String.format("Weird loottable '%s' for '%s', not a LivingEntity so should not have loot", identifier, Registry.ENTITY_TYPE.getId(entityType))

@@ -3,8 +3,8 @@ package net.minecraft.world.gen;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -83,7 +83,7 @@ public class CatSpawner {
 		if (catEntity == null) {
 			return 0;
 		} else {
-			catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnType.NATURAL, null, null);
+			catEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.NATURAL, null, null);
 			catEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
 			world.spawnEntity(catEntity);
 			return 1;

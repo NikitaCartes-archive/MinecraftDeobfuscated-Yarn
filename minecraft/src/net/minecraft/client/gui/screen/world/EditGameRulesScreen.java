@@ -73,7 +73,7 @@ public class EditGameRulesScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.tooltip = null;
 		this.ruleListWidget.render(matrices, mouseX, mouseY, delta);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.tooltip != null) {
 			this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
@@ -195,7 +195,7 @@ public class EditGameRulesScreen extends Screen {
 
 		@Override
 		public void render(MatrixStack matrices, int x, int y, int width, int height, int mouseX, int mouseY, int i, boolean bl, float tickDelta) {
-			EditGameRulesScreen.this.drawStringWithShadow(matrices, EditGameRulesScreen.this.client.textRenderer, this.name, width + height / 2, y + 5, 16777215);
+			EditGameRulesScreen.this.drawCenteredText(matrices, EditGameRulesScreen.this.client.textRenderer, this.name, width + height / 2, y + 5, 16777215);
 		}
 
 		@Override

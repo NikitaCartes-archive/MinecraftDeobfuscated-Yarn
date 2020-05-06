@@ -28,9 +28,7 @@ public class ServerCommandOutput implements CommandOutput {
 
 	public ServerCommandSource createReconCommandSource() {
 		ServerWorld serverWorld = this.server.getWorld(DimensionType.OVERWORLD);
-		return new ServerCommandSource(
-			this, Vec3d.method_24954(serverWorld.method_27911()), Vec2f.ZERO, serverWorld, 4, "Recon", new LiteralText("Rcon"), this.server, null
-		);
+		return new ServerCommandSource(this, Vec3d.of(serverWorld.method_27911()), Vec2f.ZERO, serverWorld, 4, "Recon", new LiteralText("Rcon"), this.server, null);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.Dynamic;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -480,7 +479,7 @@ public abstract class LivingEntity extends Entity {
 		return !this.isBaby();
 	}
 
-	protected boolean method_27071() {
+	protected boolean shouldDropLoot() {
 		return !this.isBaby();
 	}
 
@@ -1218,7 +1217,7 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		boolean bl = this.playerHitTimer > 0;
-		if (this.method_27071() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+		if (this.shouldDropLoot() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 			this.dropLoot(source, bl);
 			this.dropEquipment(source, i, bl);
 		}
@@ -1254,19 +1253,19 @@ public abstract class LivingEntity extends Entity {
 		Identifier identifier = this.getLootTable();
 		LootTable lootTable = this.world.getServer().getLootManager().getTable(identifier);
 		LootContext.Builder builder = this.getLootContextBuilder(causedByPlayer, source);
-		lootTable.dropLimited(builder.build(LootContextTypes.ENTITY), this::dropStack);
+		lootTable.generateLoot(builder.build(LootContextTypes.ENTITY), this::dropStack);
 	}
 
 	protected LootContext.Builder getLootContextBuilder(boolean causedByPlayer, DamageSource source) {
 		LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-			.setRandom(this.random)
-			.put(LootContextParameters.THIS_ENTITY, this)
-			.put(LootContextParameters.POSITION, this.getBlockPos())
-			.put(LootContextParameters.DAMAGE_SOURCE, source)
-			.putNullable(LootContextParameters.KILLER_ENTITY, source.getAttacker())
-			.putNullable(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
+			.random(this.random)
+			.parameter(LootContextParameters.THIS_ENTITY, this)
+			.parameter(LootContextParameters.POSITION, this.getBlockPos())
+			.parameter(LootContextParameters.DAMAGE_SOURCE, source)
+			.optionalParameter(LootContextParameters.KILLER_ENTITY, source.getAttacker())
+			.optionalParameter(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
 		if (causedByPlayer && this.attackingPlayer != null) {
-			builder = builder.put(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).setLuck(this.attackingPlayer.getLuck());
+			builder = builder.parameter(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).luck(this.attackingPlayer.getLuck());
 		}
 
 		return builder;
@@ -2349,7 +2348,7 @@ public abstract class LivingEntity extends Entity {
 
 	private void initAi() {
 		boolean bl = this.getFlag(7);
-		if (bl && !this.onGround && !this.hasVehicle()) {
+		if (bl && !this.onGround && !this.hasVehicle() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack)) {
 				bl = true;
@@ -2833,10 +2832,6 @@ public abstract class LivingEntity extends Entity {
 
 	public ImmutableList<EntityPose> getPoses() {
 		return ImmutableList.of(EntityPose.STANDING);
-	}
-
-	public EntityPose method_26081() {
-		return (EntityPose)this.getPoses().stream().min(Comparator.comparing(entityPose -> this.getDimensions(entityPose).height)).orElse(EntityPose.STANDING);
 	}
 
 	public Box method_24833(EntityPose entityPose) {

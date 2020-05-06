@@ -128,7 +128,7 @@ public class CreateWorldScreen extends Screen {
 			}
 		);
 		this.field_24286 = this.addButton(new ButtonWidget(this.width / 2 + 5, 115, 150, 20, new TranslatableText("options.difficulty"), buttonWidget -> {
-			this.field_24289 = this.field_24289.method_27297();
+			this.field_24289 = this.field_24289.cycle();
 			this.field_24290 = this.field_24289;
 			buttonWidget.queueNarration(250);
 		}) {
@@ -445,16 +445,16 @@ public class CreateWorldScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
 		if (this.moreOptionsOpen) {
-			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
-			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
+			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
+			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
 			if (this.generateStructuresButton.visible) {
-				this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.mapFeatures.info"), this.width / 2 - 150, 122, -6250336);
+				this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.mapFeatures.info"), this.width / 2 - 150, 122, -6250336);
 			}
 
 			if (this.enableCheatsButton.visible) {
-				this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.allowCommands.info"), this.width / 2 - 150, 172, -6250336);
+				this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.allowCommands.info"), this.width / 2 - 150, 172, -6250336);
 			}
 
 			this.seedField.render(matrices, mouseX, mouseY, delta);
@@ -469,19 +469,21 @@ public class CreateWorldScreen extends Screen {
 					);
 			}
 		} else {
-			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
-			this.drawString(matrices, this.textRenderer, I18n.translate("selectWorld.resultFolder") + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336);
+			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
+			this.drawStringWithShadow(
+				matrices, this.textRenderer, I18n.translate("selectWorld.resultFolder") + " " + this.saveDirectoryName, this.width / 2 - 100, 85, -6250336
+			);
 			this.levelNameField.render(matrices, mouseX, mouseY, delta);
-			this.drawStringWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 155 + 75, 137, -6250336);
-			this.drawStringWithShadow(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 155 + 75, 149, -6250336);
+			this.drawCenteredText(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 155 + 75, 137, -6250336);
+			this.drawCenteredText(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 155 + 75, 149, -6250336);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
 	public void recreateLevel(class_5219 arg) {
-		LevelInfo levelInfo = arg.method_27433();
-		this.levelName = levelInfo.method_27339();
+		LevelInfo levelInfo = arg.getLevelInfo();
+		this.levelName = levelInfo.getLevelName();
 		this.seed = Long.toString(levelInfo.getSeed());
 		this.generatorOptions = levelInfo.getGeneratorOptions();
 		LevelGeneratorType levelGeneratorType = this.generatorOptions.getType() == LevelGeneratorType.CUSTOMIZED
@@ -492,7 +494,7 @@ public class CreateWorldScreen extends Screen {
 		this.cheatsEnabled = levelInfo.allowCommands();
 		this.tweakedCheats = true;
 		this.bonusChest = levelInfo.hasBonusChest();
-		this.field_24289 = levelInfo.method_27340();
+		this.field_24289 = levelInfo.getDifficulty();
 		this.field_24290 = this.field_24289;
 		this.gameRules.setAllValues(arg.getGameRules(), null);
 		if (levelInfo.isHardcore()) {

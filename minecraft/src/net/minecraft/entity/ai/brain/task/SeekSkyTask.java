@@ -42,7 +42,7 @@ public class SeekSkyTask extends Task<LivingEntity> {
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
 			if (isSkyVisible(world, entity, blockPos2)) {
-				return Vec3d.method_24955(blockPos2);
+				return Vec3d.ofBottomCenter(blockPos2);
 			}
 		}
 

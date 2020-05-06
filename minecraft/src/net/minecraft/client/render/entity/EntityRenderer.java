@@ -28,13 +28,16 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public final int getLight(T entity, float tickDelta) {
-		return LightmapTextureManager.pack(
-			this.getBlockLight(entity, tickDelta), entity.world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(tickDelta)))
-		);
+		BlockPos blockPos = new BlockPos(entity.getCameraPosVec(tickDelta));
+		return LightmapTextureManager.pack(this.getBlockLight(entity, blockPos), this.method_27950(entity, blockPos));
 	}
 
-	protected int getBlockLight(T entity, float tickDelta) {
-		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, new BlockPos(entity.getCameraPosVec(tickDelta)));
+	protected int method_27950(T entity, BlockPos blockPos) {
+		return entity.world.getLightLevel(LightType.SKY, blockPos);
+	}
+
+	protected int getBlockLight(T entity, BlockPos blockPos) {
+		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, blockPos);
 	}
 
 	public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
@@ -91,7 +94,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
 			int j = (int)(g * 255.0F) << 24;
 			TextRenderer textRenderer = this.getFontRenderer();
-			float h = (float)(-textRenderer.getStringWidth(text) / 2);
+			float h = (float)(-textRenderer.getWidth(text) / 2);
 			textRenderer.draw(text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl, j, light);
 			if (bl) {
 				textRenderer.draw(text, h, (float)i, -1, false, matrix4f, vertexConsumers, false, 0, light);

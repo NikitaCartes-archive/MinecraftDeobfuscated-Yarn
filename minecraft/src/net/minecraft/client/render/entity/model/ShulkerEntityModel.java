@@ -26,7 +26,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 
 	public void setAngles(T shulkerEntity, float f, float g, float h, float i, float j) {
 		float k = h - (float)shulkerEntity.age;
-		float l = (0.5F + shulkerEntity.method_7116(k)) * (float) Math.PI;
+		float l = (0.5F + shulkerEntity.getOpenProgress(k)) * (float) Math.PI;
 		float m = -1.0F + MathHelper.sin(l);
 		float n = 0.0F;
 		if (l > (float) Math.PI) {
@@ -34,7 +34,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		}
 
 		this.topShell.setPivot(0.0F, 16.0F + MathHelper.sin(l) * 8.0F + n, 0.0F);
-		if (shulkerEntity.method_7116(k) > 0.3F) {
+		if (shulkerEntity.getOpenProgress(k) > 0.3F) {
 			this.topShell.yaw = m * m * m * m * (float) Math.PI * 0.125F;
 		} else {
 			this.topShell.yaw = 0.0F;

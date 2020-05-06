@@ -1,25 +1,24 @@
-package net.minecraft;
+package net.minecraft.sound;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.sound.SoundEvent;
 
-public class class_5195 {
-	private final SoundEvent field_24057;
+public class MusicSound {
+	private final SoundEvent event;
 	private final int field_24058;
 	private final int field_24059;
 	private final boolean field_24060;
 
-	public class_5195(SoundEvent soundEvent, int i, int j, boolean bl) {
-		this.field_24057 = soundEvent;
+	public MusicSound(SoundEvent event, int i, int j, boolean bl) {
+		this.event = event;
 		this.field_24058 = i;
 		this.field_24059 = j;
 		this.field_24060 = bl;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent method_27279() {
-		return this.field_24057;
+	public SoundEvent getEvent() {
+		return this.event;
 	}
 
 	@Environment(EnvType.CLIENT)

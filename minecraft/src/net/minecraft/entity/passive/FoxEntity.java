@@ -27,7 +27,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -288,7 +288,9 @@ public class FoxEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		Biome biome = world.getBiome(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
 		boolean bl = false;
@@ -308,7 +310,7 @@ public class FoxEntity extends AnimalEntity {
 
 		this.addTypeSpecificGoals();
 		this.initEquipment(difficulty);
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	private void addTypeSpecificGoals() {
@@ -681,8 +683,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	class AttackGoal extends MeleeAttackGoal {
-		public AttackGoal(double speed, boolean bl) {
-			super(FoxEntity.this, speed, bl);
+		public AttackGoal(double speed, boolean pauseWhenIdle) {
+			super(FoxEntity.this, speed, pauseWhenIdle);
 		}
 
 		@Override
@@ -797,7 +799,7 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		public void start() {
-			this.method_24632(this.offender);
+			this.setTargetEntity(this.offender);
 			this.targetEntity = this.offender;
 			if (this.friend != null) {
 				this.lastAttackedTime = this.friend.getLastAttackedTime();

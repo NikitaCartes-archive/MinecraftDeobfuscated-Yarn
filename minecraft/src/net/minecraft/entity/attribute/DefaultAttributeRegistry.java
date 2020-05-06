@@ -3,9 +3,9 @@ package net.minecraft.entity.attribute;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import net.minecraft.SharedConstants;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
@@ -155,7 +155,7 @@ public class DefaultAttributeRegistry {
 	public static void checkMissing() {
 		Registry.ENTITY_TYPE
 			.stream()
-			.filter(entityType -> entityType.getCategory() != EntityCategory.MISC)
+			.filter(entityType -> entityType.getSpawnGroup() != SpawnGroup.MISC)
 			.filter(entityType -> !hasDefinitionFor(entityType))
 			.map(Registry.ENTITY_TYPE::getId)
 			.forEach(identifier -> {

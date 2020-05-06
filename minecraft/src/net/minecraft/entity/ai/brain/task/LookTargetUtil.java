@@ -93,7 +93,7 @@ public class LookTargetUtil {
 
 	public static boolean method_25940(MobEntity mobEntity, LivingEntity livingEntity, int i) {
 		Item item = mobEntity.getMainHandStack().getItem();
-		if (item instanceof RangedWeaponItem && mobEntity.method_25938((RangedWeaponItem)item)) {
+		if (item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item)) {
 			int j = ((RangedWeaponItem)item).getRange() - i;
 			return mobEntity.isInRange(livingEntity, (double)j);
 		} else {

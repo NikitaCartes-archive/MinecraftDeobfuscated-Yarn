@@ -118,10 +118,10 @@ public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 			if (GIFTS.containsKey(villagerProfession)) {
 				LootTable lootTable = villager.world.getServer().getLootManager().getTable((Identifier)GIFTS.get(villagerProfession));
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.world)
-					.put(LootContextParameters.POSITION, villager.getBlockPos())
-					.put(LootContextParameters.THIS_ENTITY, villager)
-					.setRandom(villager.getRandom());
-				return lootTable.getDrops(builder.build(LootContextTypes.GIFT));
+					.parameter(LootContextParameters.POSITION, villager.getBlockPos())
+					.parameter(LootContextParameters.THIS_ENTITY, villager)
+					.random(villager.getRandom());
+				return lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
 			} else {
 				return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
 			}

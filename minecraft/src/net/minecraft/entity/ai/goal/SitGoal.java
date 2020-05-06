@@ -14,7 +14,7 @@ public class SitGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.tameable.method_24345();
+		return this.tameable.isSitting();
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class SitGoal extends Goal {
 			if (livingEntity == null) {
 				return true;
 			} else {
-				return this.tameable.squaredDistanceTo(livingEntity) < 144.0 && livingEntity.getAttacker() != null ? false : this.tameable.method_24345();
+				return this.tameable.squaredDistanceTo(livingEntity) < 144.0 && livingEntity.getAttacker() != null ? false : this.tameable.isSitting();
 			}
 		}
 	}
@@ -38,11 +38,11 @@ public class SitGoal extends Goal {
 	@Override
 	public void start() {
 		this.tameable.getNavigation().stop();
-		this.tameable.setSitting(true);
+		this.tameable.setInSittingPose(true);
 	}
 
 	@Override
 	public void stop() {
-		this.tameable.setSitting(false);
+		this.tameable.setInSittingPose(false);
 	}
 }

@@ -61,7 +61,7 @@ public class AdvancementToast implements Toast {
 				}
 			}
 
-			toastManager.getGame().getItemRenderer().renderGuiItem(null, advancementDisplay.getIcon(), 8, 8);
+			toastManager.getGame().getItemRenderer().method_27953(advancementDisplay.getIcon(), 8, 8);
 			return l >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		} else {
 			return Toast.Visibility.HIDE;

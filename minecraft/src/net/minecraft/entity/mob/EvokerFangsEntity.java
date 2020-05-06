@@ -18,9 +18,9 @@ import net.minecraft.world.World;
 
 public class EvokerFangsEntity extends Entity {
 	private int warmup;
-	private boolean field_7610;
+	private boolean startedAttack;
 	private int ticksLeft = 22;
-	private boolean hasAttacked;
+	private boolean playingAnimation;
 	private LivingEntity owner;
 	private UUID ownerUuid;
 
@@ -28,11 +28,11 @@ public class EvokerFangsEntity extends Entity {
 		super(entityType, world);
 	}
 
-	public EvokerFangsEntity(World world, double x, double y, double z, float f, int warmup, LivingEntity owner) {
+	public EvokerFangsEntity(World world, double x, double y, double z, float yaw, int warmup, LivingEntity owner) {
 		this(EntityType.EVOKER_FANGS, world);
 		this.warmup = warmup;
 		this.setOwner(owner);
-		this.yaw = f * (180.0F / (float)Math.PI);
+		this.yaw = yaw * (180.0F / (float)Math.PI);
 		this.updatePosition(x, y, z);
 	}
 
@@ -77,7 +77,7 @@ public class EvokerFangsEntity extends Entity {
 	public void tick() {
 		super.tick();
 		if (this.world.isClient) {
-			if (this.hasAttacked) {
+			if (this.playingAnimation) {
 				this.ticksLeft--;
 				if (this.ticksLeft == 14) {
 					for (int i = 0; i < 12; i++) {
@@ -98,9 +98,9 @@ public class EvokerFangsEntity extends Entity {
 				}
 			}
 
-			if (!this.field_7610) {
+			if (!this.startedAttack) {
 				this.world.sendEntityStatus(this, (byte)4);
-				this.field_7610 = true;
+				this.startedAttack = true;
 			}
 
 			if (--this.ticksLeft < 0) {
@@ -129,7 +129,7 @@ public class EvokerFangsEntity extends Entity {
 	public void handleStatus(byte status) {
 		super.handleStatus(status);
 		if (status == 4) {
-			this.hasAttacked = true;
+			this.playingAnimation = true;
 			if (!this.isSilent()) {
 				this.world
 					.playSound(
@@ -148,7 +148,7 @@ public class EvokerFangsEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	public float getAnimationProgress(float tickDelta) {
-		if (!this.hasAttacked) {
+		if (!this.playingAnimation) {
 			return 0.0F;
 		} else {
 			int i = this.ticksLeft - 2;

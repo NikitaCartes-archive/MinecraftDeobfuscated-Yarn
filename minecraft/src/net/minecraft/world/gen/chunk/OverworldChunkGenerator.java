@@ -2,7 +2,7 @@ package net.minecraft.world.gen.chunk;
 
 import java.util.List;
 import java.util.stream.IntStream;
-import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -139,16 +139,16 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getEntitySpawnList(StructureAccessor structureAccessor, EntityCategory entityCategory, BlockPos blockPos) {
+	public List<Biome.SpawnEntry> getEntitySpawnList(StructureAccessor structureAccessor, SpawnGroup spawnGroup, BlockPos blockPos) {
 		if (Feature.SWAMP_HUT.method_14029(this.world, structureAccessor, blockPos)) {
-			if (entityCategory == EntityCategory.MONSTER) {
+			if (spawnGroup == SpawnGroup.MONSTER) {
 				return Feature.SWAMP_HUT.getMonsterSpawns();
 			}
 
-			if (entityCategory == EntityCategory.CREATURE) {
+			if (spawnGroup == SpawnGroup.CREATURE) {
 				return Feature.SWAMP_HUT.getCreatureSpawns();
 			}
-		} else if (entityCategory == EntityCategory.MONSTER) {
+		} else if (spawnGroup == SpawnGroup.MONSTER) {
 			if (Feature.PILLAGER_OUTPOST.isApproximatelyInsideStructure(this.world, structureAccessor, blockPos)) {
 				return Feature.PILLAGER_OUTPOST.getMonsterSpawns();
 			}
@@ -158,7 +158,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 			}
 		}
 
-		return super.getEntitySpawnList(structureAccessor, entityCategory, blockPos);
+		return super.getEntitySpawnList(structureAccessor, spawnGroup, blockPos);
 	}
 
 	@Override

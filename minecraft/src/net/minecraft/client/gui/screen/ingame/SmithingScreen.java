@@ -21,5 +21,6 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
 		RenderSystem.disableBlend();
 		this.textRenderer.draw(matrixStack, this.title, 60.0F, 20.0F, 4210752);
+		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 	}
 }

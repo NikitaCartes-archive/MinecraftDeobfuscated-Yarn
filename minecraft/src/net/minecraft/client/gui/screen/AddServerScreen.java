@@ -133,9 +133,9 @@ public class AddServerScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
-		this.drawString(matrices, this.textRenderer, I18n.translate("addServer.enterName"), this.width / 2 - 100, 53, 10526880);
-		this.drawString(matrices, this.textRenderer, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 94, 10526880);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("addServer.enterName"), this.width / 2 - 100, 53, 10526880);
+		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 94, 10526880);
 		this.serverNameField.render(matrices, mouseX, mouseY, delta);
 		this.addressField.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);

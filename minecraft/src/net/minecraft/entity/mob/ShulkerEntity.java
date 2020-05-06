@@ -18,7 +18,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -62,29 +62,31 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	);
 	protected static final TrackedData<Byte> PEEK_AMOUNT = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Byte> COLOR = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private float field_7339;
-	private float field_7337;
-	private BlockPos field_7345;
-	private int field_7340;
+	private float prevOpenProgress;
+	private float openProgress;
+	private BlockPos prevAttachedBlock;
+	private int teleportLerpTimer;
 
 	public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
 		super(entityType, world);
 		this.prevBodyYaw = 180.0F;
 		this.bodyYaw = 180.0F;
-		this.field_7345 = null;
+		this.prevAttachedBlock = null;
 		this.experiencePoints = 5;
 	}
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		this.bodyYaw = 180.0F;
 		this.prevBodyYaw = 180.0F;
 		this.yaw = 180.0F;
 		this.prevYaw = 180.0F;
 		this.headYaw = 180.0F;
 		this.prevHeadYaw = 180.0F;
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -115,7 +117,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	public void playAmbientSound() {
-		if (!this.method_7124()) {
+		if (!this.isClosed()) {
 			super.playAmbientSound();
 		}
 	}
@@ -127,7 +129,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		return this.method_7124() ? SoundEvents.ENTITY_SHULKER_HURT_CLOSED : SoundEvents.ENTITY_SHULKER_HURT;
+		return this.isClosed() ? SoundEvents.ENTITY_SHULKER_HURT_CLOSED : SoundEvents.ENTITY_SHULKER_HURT;
 	}
 
 	@Override
@@ -193,7 +195,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			this.yaw = f;
 			this.bodyYaw = f;
 			this.prevBodyYaw = f;
-			this.field_7340 = 0;
+			this.teleportLerpTimer = 0;
 		} else if (!this.world.isClient) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir()) {
@@ -203,7 +205,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 						blockPos = blockPos.offset(direction);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
 					} else {
-						this.method_7127();
+						this.tryTeleport();
 					}
 				} else if (blockState.isOf(Blocks.PISTON_HEAD)) {
 					Direction direction = blockState.get(PistonHeadBlock.FACING);
@@ -211,44 +213,44 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 						blockPos = blockPos.offset(direction);
 						this.dataTracker.set(ATTACHED_BLOCK, Optional.of(blockPos));
 					} else {
-						this.method_7127();
+						this.tryTeleport();
 					}
 				} else {
-					this.method_7127();
+					this.tryTeleport();
 				}
 			}
 
 			Direction direction = this.getAttachedFace();
-			if (!this.method_24350(blockPos, direction)) {
-				Direction direction2 = this.method_24351(blockPos);
+			if (!this.canStay(blockPos, direction)) {
+				Direction direction2 = this.findAttachSide(blockPos);
 				if (direction2 != null) {
 					this.dataTracker.set(ATTACHED_FACE, direction2);
 				} else {
-					this.method_7127();
+					this.tryTeleport();
 				}
 			}
 		}
 
 		float f = (float)this.getPeekAmount() * 0.01F;
-		this.field_7339 = this.field_7337;
-		if (this.field_7337 > f) {
-			this.field_7337 = MathHelper.clamp(this.field_7337 - 0.05F, f, 1.0F);
-		} else if (this.field_7337 < f) {
-			this.field_7337 = MathHelper.clamp(this.field_7337 + 0.05F, 0.0F, f);
+		this.prevOpenProgress = this.openProgress;
+		if (this.openProgress > f) {
+			this.openProgress = MathHelper.clamp(this.openProgress - 0.05F, f, 1.0F);
+		} else if (this.openProgress < f) {
+			this.openProgress = MathHelper.clamp(this.openProgress + 0.05F, 0.0F, f);
 		}
 
 		if (blockPos != null) {
 			if (this.world.isClient) {
-				if (this.field_7340 > 0 && this.field_7345 != null) {
-					this.field_7340--;
+				if (this.teleportLerpTimer > 0 && this.prevAttachedBlock != null) {
+					this.teleportLerpTimer--;
 				} else {
-					this.field_7345 = blockPos;
+					this.prevAttachedBlock = blockPos;
 				}
 			}
 
 			this.resetPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
-			double d = 0.5 - (double)MathHelper.sin((0.5F + this.field_7337) * (float) Math.PI) * 0.5;
-			double e = 0.5 - (double)MathHelper.sin((0.5F + this.field_7339) * (float) Math.PI) * 0.5;
+			double d = 0.5 - (double)MathHelper.sin((0.5F + this.openProgress) * (float) Math.PI) * 0.5;
+			double e = 0.5 - (double)MathHelper.sin((0.5F + this.prevOpenProgress) * (float) Math.PI) * 0.5;
 			Direction direction3 = this.getAttachedFace().getOpposite();
 			this.setBoundingBox(
 				new Box(this.getX() - 0.5, this.getY(), this.getZ() - 0.5, this.getX() + 0.5, this.getY() + 1.0, this.getZ() + 0.5)
@@ -273,7 +275,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	@Override
 	public void move(MovementType type, Vec3d movement) {
 		if (type == MovementType.SHULKER_BOX) {
-			this.method_7127();
+			this.tryTeleport();
 		} else {
 			super.move(type, movement);
 		}
@@ -294,9 +296,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Nullable
-	protected Direction method_24351(BlockPos blockPos) {
+	protected Direction findAttachSide(BlockPos pos) {
 		for (Direction direction : Direction.values()) {
-			if (this.method_24350(blockPos, direction)) {
+			if (this.canStay(pos, direction)) {
 				return direction;
 			}
 		}
@@ -304,12 +306,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return null;
 	}
 
-	private boolean method_24350(BlockPos blockPos, Direction direction) {
-		return this.world.isDirectionSolid(blockPos.offset(direction), this, direction.getOpposite())
-			&& this.world.doesNotCollide(this, ShulkerLidCollisions.getLidCollisionBox(blockPos, direction.getOpposite()));
+	private boolean canStay(BlockPos pos, Direction attachSide) {
+		return this.world.isDirectionSolid(pos.offset(attachSide), this, attachSide.getOpposite())
+			&& this.world.doesNotCollide(this, ShulkerLidCollisions.getLidCollisionBox(pos, attachSide.getOpposite()));
 	}
 
-	protected boolean method_7127() {
+	protected boolean tryTeleport() {
 		if (!this.isAiDisabled() && this.isAlive()) {
 			BlockPos blockPos = this.getBlockPos();
 
@@ -319,7 +321,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					&& this.world.isAir(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
 					&& this.world.doesNotCollide(this, new Box(blockPos2))) {
-					Direction direction = this.method_24351(blockPos2);
+					Direction direction = this.findAttachSide(blockPos2);
 					if (direction != null) {
 						this.dataTracker.set(ATTACHED_FACE, direction);
 						this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
@@ -351,10 +353,10 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		if (ATTACHED_BLOCK.equals(data) && this.world.isClient && !this.hasVehicle()) {
 			BlockPos blockPos = this.getAttachedBlock();
 			if (blockPos != null) {
-				if (this.field_7345 == null) {
-					this.field_7345 = blockPos;
+				if (this.prevAttachedBlock == null) {
+					this.prevAttachedBlock = blockPos;
 				} else {
-					this.field_7340 = 6;
+					this.teleportLerpTimer = 6;
 				}
 
 				this.resetPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
@@ -372,7 +374,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (this.method_7124()) {
+		if (this.isClosed()) {
 			Entity entity = source.getSource();
 			if (entity instanceof PersistentProjectileEntity) {
 				return false;
@@ -381,7 +383,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		if (super.damage(source, amount)) {
 			if ((double)this.getHealth() < (double)this.getMaximumHealth() * 0.5 && this.random.nextInt(4) == 0) {
-				this.method_7127();
+				this.tryTeleport();
 			}
 
 			return true;
@@ -390,7 +392,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 	}
 
-	private boolean method_7124() {
+	private boolean isClosed() {
 		return this.getPeekAmount() == 0;
 	}
 
@@ -409,18 +411,18 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return (BlockPos)this.dataTracker.get(ATTACHED_BLOCK).orElse(null);
 	}
 
-	public void setAttachedBlock(@Nullable BlockPos blockPos) {
-		this.dataTracker.set(ATTACHED_BLOCK, Optional.ofNullable(blockPos));
+	public void setAttachedBlock(@Nullable BlockPos pos) {
+		this.dataTracker.set(ATTACHED_BLOCK, Optional.ofNullable(pos));
 	}
 
 	public int getPeekAmount() {
 		return this.dataTracker.get(PEEK_AMOUNT);
 	}
 
-	public void setPeekAmount(int i) {
+	public void setPeekAmount(int peekAmount) {
 		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(ATTR_COVERED_ARMOR_BONUS);
-			if (i == 0) {
+			if (peekAmount == 0) {
 				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(ATTR_COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
 			} else {
@@ -428,22 +430,22 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			}
 		}
 
-		this.dataTracker.set(PEEK_AMOUNT, (byte)i);
+		this.dataTracker.set(PEEK_AMOUNT, (byte)peekAmount);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_7116(float f) {
-		return MathHelper.lerp(f, this.field_7339, this.field_7337);
+	public float getOpenProgress(float delta) {
+		return MathHelper.lerp(delta, this.prevOpenProgress, this.openProgress);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_7113() {
-		return this.field_7340;
+	public int getTeleportLerpTimer() {
+		return this.teleportLerpTimer;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public BlockPos method_7120() {
-		return this.field_7345;
+	public BlockPos getPrevAttachedBlock() {
+		return this.prevAttachedBlock;
 	}
 
 	@Override
@@ -471,8 +473,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_7117() {
-		return this.field_7345 != null && this.getAttachedBlock() != null;
+	public boolean hasAttachedBlock() {
+		return this.prevAttachedBlock != null && this.getAttachedBlock() != null;
 	}
 
 	@Nullable
@@ -613,8 +615,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	class ShulkerBodyControl extends BodyControl {
-		public ShulkerBodyControl(MobEntity mobEntity) {
-			super(mobEntity);
+		public ShulkerBodyControl(MobEntity entity) {
+			super(entity);
 		}
 
 		@Override

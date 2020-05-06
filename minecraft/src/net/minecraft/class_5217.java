@@ -29,13 +29,13 @@ public interface class_5217 {
 
 	boolean isRaining();
 
-	void setRaining(boolean bl);
+	void setRaining(boolean raining);
 
 	boolean isHardcore();
 
 	LevelGeneratorType getGeneratorType();
 
-	LevelGeneratorOptions method_27421();
+	LevelGeneratorOptions getGeneratorOptions();
 
 	GameRules getGameRules();
 
@@ -45,7 +45,7 @@ public interface class_5217 {
 
 	default void populateCrashReport(CrashReportSection crashReportSection) {
 		crashReportSection.add("Level seed", (CrashCallable<String>)(() -> String.valueOf(this.getSeed())));
-		crashReportSection.add("Level generator options", (CrashCallable<String>)(() -> this.method_27421().getDynamic().toString()));
+		crashReportSection.add("Level generator options", (CrashCallable<String>)(() -> this.getGeneratorOptions().getDynamic().toString()));
 		crashReportSection.add(
 			"Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.getSpawnX(), this.getSpawnY(), this.getSpawnZ()))
 		);

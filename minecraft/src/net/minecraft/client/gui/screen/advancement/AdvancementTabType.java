@@ -67,7 +67,7 @@ enum AdvancementTabType {
 				j += 5;
 		}
 
-		itemRenderer.renderGuiItem(null, icon, i, j);
+		itemRenderer.method_27953(icon, i, j);
 	}
 
 	public int getTabX(int index) {

@@ -49,7 +49,7 @@ public class CheckboxWidget extends AbstractPressableButtonWidget {
 		drawTexture(matrices, this.x, this.y, this.isFocused() ? 20.0F : 0.0F, this.checked ? 20.0F : 0.0F, 20, this.height, 64, 64);
 		this.renderBg(matrices, minecraftClient, mouseX, mouseY);
 		if (this.field_24253) {
-			this.method_27535(
+			this.drawTextWithShadow(
 				matrices, textRenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 14737632 | MathHelper.ceil(this.alpha * 255.0F) << 24
 			);
 		}

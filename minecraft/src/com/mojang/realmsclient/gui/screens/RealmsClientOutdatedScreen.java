@@ -29,12 +29,12 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		Text text = new TranslatableText(this.outdated ? "mco.client.outdated.title" : "mco.client.incompatible.title");
-		this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, row(3), 16711680);
+		this.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, row(3), 16711680);
 		int i = this.outdated ? 2 : 3;
 
 		for (int j = 0; j < i; j++) {
 			String string = (this.outdated ? "mco.client.outdated.msg.line" : "mco.client.incompatible.msg.line") + (j + 1);
-			this.drawStringWithShadow(matrices, this.textRenderer, new TranslatableText(string), this.width / 2, row(5) + j * 12, 16777215);
+			this.drawCenteredText(matrices, this.textRenderer, new TranslatableText(string), this.width / 2, row(5) + j * 12, 16777215);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

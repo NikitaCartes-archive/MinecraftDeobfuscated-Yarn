@@ -79,10 +79,12 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float v = MathHelper.fastInverseSqrt(r * r + t * t) * 0.025F / 2.0F;
 		float w = t * v;
 		float x = r * v;
-		int y = this.getBlockLight(mobEntity, f);
-		int z = this.dispatcher.getRenderer(entity).getBlockLight(entity, f);
-		int aa = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(mobEntity.getCameraPosVec(f)));
-		int ab = mobEntity.world.getLightLevel(LightType.SKY, new BlockPos(entity.getCameraPosVec(f)));
+		BlockPos blockPos = new BlockPos(mobEntity.getCameraPosVec(f));
+		BlockPos blockPos2 = new BlockPos(entity.getCameraPosVec(f));
+		int y = this.getBlockLight(mobEntity, blockPos);
+		int z = this.dispatcher.getRenderer(entity).getBlockLight(entity, blockPos2);
+		int aa = mobEntity.world.getLightLevel(LightType.SKY, blockPos);
+		int ab = mobEntity.world.getLightLevel(LightType.SKY, blockPos2);
 		method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025F, 0.025F, w, x);
 		method_23186(vertexConsumer, matrix4f, r, s, t, y, z, aa, ab, 0.025F, 0.0F, w, x);
 		matrixStack.pop();

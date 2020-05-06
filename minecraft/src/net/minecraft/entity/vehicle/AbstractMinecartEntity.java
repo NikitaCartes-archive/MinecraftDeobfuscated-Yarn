@@ -1,5 +1,7 @@
 package net.minecraft.entity.vehicle;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
@@ -7,14 +9,19 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5275;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
+import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -47,6 +54,9 @@ public abstract class AbstractMinecartEntity extends Entity {
 	private static final TrackedData<Integer> CUSTOM_BLOCK_ID = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CUSTOM_BLOCK_OFFSET = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CUSTOM_BLOCK_PRESENT = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final ImmutableMap<EntityPose, ImmutableList<Integer>> field_24464 = ImmutableMap.of(
+		EntityPose.STANDING, ImmutableList.of(0, 1, -1), EntityPose.CROUCHING, ImmutableList.of(0, 1, -1), EntityPose.SWIMMING, ImmutableList.of(0, 1)
+	);
 	private boolean field_7660;
 	private static final Map<RailShape, Pair<Vec3i, Vec3i>> field_7664 = Util.make(Maps.newEnumMap(RailShape.class), enumMap -> {
 		Vec3i vec3i = Direction.WEST.getVector();
@@ -142,6 +152,59 @@ public abstract class AbstractMinecartEntity extends Entity {
 	@Override
 	public double getMountedHeightOffset() {
 		return 0.0;
+	}
+
+	@Override
+	public Vec3d method_24829(LivingEntity livingEntity) {
+		Direction direction = this.getMovementDirection();
+		if (direction.getAxis() == Direction.Axis.Y) {
+			return super.method_24829(livingEntity);
+		} else {
+			int[][] is = class_5275.method_27934(direction);
+			BlockPos blockPos = this.getBlockPos();
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+			ImmutableList<EntityPose> immutableList = livingEntity.getPoses();
+
+			for (EntityPose entityPose : immutableList) {
+				EntityDimensions entityDimensions = livingEntity.getDimensions(entityPose);
+				float f = Math.min(entityDimensions.width, 1.0F) / 2.0F;
+
+				for (int i : field_24464.get(entityPose)) {
+					for (int[] js : is) {
+						mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
+						double d = this.world
+							.method_26097(
+								mutable,
+								blockState -> blockState.isIn(BlockTags.CLIMBABLE)
+										? true
+										: blockState.getBlock() instanceof TrapdoorBlock && (Boolean)blockState.get(TrapdoorBlock.OPEN)
+							);
+						if (class_5275.method_27932(d)) {
+							Box box = new Box((double)(-f), d, (double)(-f), (double)f, d + (double)entityDimensions.height, (double)f);
+							Vec3d vec3d = Vec3d.ofCenter(mutable, d);
+							if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d))) {
+								livingEntity.setPose(entityPose);
+								return vec3d;
+							}
+						}
+					}
+				}
+			}
+
+			double e = this.getBoundingBox().y2;
+			mutable.set((double)blockPos.getX(), e, (double)blockPos.getZ());
+
+			for (EntityPose entityPose2 : immutableList) {
+				double g = (double)livingEntity.getDimensions(entityPose2).height;
+				double h = (double)mutable.getY() + this.world.method_26096(mutable, e - (double)mutable.getY() + g);
+				if (e + g <= h) {
+					livingEntity.setPose(entityPose2);
+					break;
+				}
+			}
+
+			return super.method_24829(livingEntity);
+		}
 	}
 
 	@Override

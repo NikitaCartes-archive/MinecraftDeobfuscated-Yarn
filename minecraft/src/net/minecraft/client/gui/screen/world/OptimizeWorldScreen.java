@@ -72,17 +72,21 @@ public class OptimizeWorldScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		int i = this.width / 2 - 150;
 		int j = this.width / 2 + 150;
 		int k = this.height / 4 + 100;
 		int l = k + 10;
-		this.drawStringWithShadow(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - 9 - 2, 10526880);
+		this.drawCenteredText(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - 9 - 2, 10526880);
 		if (this.updater.getTotalChunkCount() > 0) {
 			fill(matrices, i - 1, k - 1, j + 1, l + 1, -16777216);
-			this.drawString(matrices, this.textRenderer, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
-			this.drawString(matrices, this.textRenderer, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880);
-			this.drawString(matrices, this.textRenderer, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880);
+			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
+			this.drawStringWithShadow(
+				matrices, this.textRenderer, I18n.translate("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880
+			);
+			this.drawStringWithShadow(
+				matrices, this.textRenderer, I18n.translate("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880
+			);
 			int m = 0;
 
 			for (DimensionType dimensionType : DimensionType.getAll()) {

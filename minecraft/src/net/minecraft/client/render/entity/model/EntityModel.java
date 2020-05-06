@@ -22,7 +22,7 @@ public abstract class EntityModel<T extends Entity> extends Model {
 		super(function);
 	}
 
-	public abstract void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch);
+	public abstract void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch);
 
 	public void animateModel(T entity, float limbAngle, float limbDistance, float tickDelta) {
 	}

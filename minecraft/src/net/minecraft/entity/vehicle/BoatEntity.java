@@ -4,11 +4,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5275;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -658,32 +660,35 @@ public class BoatEntity extends Entity {
 
 	@Override
 	public Vec3d method_24829(LivingEntity livingEntity) {
-		Vec3d vec3d = method_24826(Math.sqrt((double)(this.getWidth() * this.getWidth()) * 2.0), (double)livingEntity.getWidth(), this.yaw);
+		Vec3d vec3d = method_24826((double)(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO), (double)livingEntity.getWidth(), this.yaw);
 		double d = this.getX() + vec3d.x;
-		double e = this.getBoundingBox().y2 + 0.001;
-		double f = this.getZ() + vec3d.z;
-		BlockPos blockPos = new BlockPos(d, e, f);
+		double e = this.getZ() + vec3d.z;
+		BlockPos blockPos = new BlockPos(d, this.getBoundingBox().y2, e);
 		BlockPos blockPos2 = blockPos.down();
 		if (!this.world.isWater(blockPos2)) {
-			Box box = livingEntity.method_24833(livingEntity.method_26081()).offset(d, e, f);
-			double g = this.world.method_26372(blockPos);
-			if (!Double.isInfinite(g) && g < 1.0) {
-				Box box2 = box.offset(d, (double)blockPos.getY() + g, f);
-				if (this.world.getBlockCollisions(livingEntity, box2).allMatch(VoxelShape::isEmpty)) {
-					return new Vec3d(d, (double)blockPos.getY() + g, f);
+			for (EntityPose entityPose : livingEntity.getPoses()) {
+				Box box = livingEntity.method_24833(entityPose);
+				double f = this.world.method_26372(blockPos);
+				if (class_5275.method_27932(f)) {
+					Vec3d vec3d2 = new Vec3d(d, (double)blockPos.getY() + f, e);
+					if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d2))) {
+						livingEntity.setPose(entityPose);
+						return vec3d2;
+					}
 				}
-			} else if (g < 1.0) {
-				double h = this.world.method_26372(blockPos2);
-				if (!Double.isInfinite(h) && h <= 0.5) {
-					Box box3 = box.offset(d, (double)blockPos2.getY() + h, f);
-					if (this.world.getBlockCollisions(livingEntity, box3).allMatch(VoxelShape::isEmpty)) {
-						return new Vec3d(d, (double)blockPos2.getY() + h, f);
+
+				double g = this.world.method_26372(blockPos2);
+				if (class_5275.method_27932(g)) {
+					Vec3d vec3d3 = new Vec3d(d, (double)blockPos2.getY() + g, e);
+					if (class_5275.method_27933(this.world, livingEntity, box.offset(vec3d3))) {
+						livingEntity.setPose(entityPose);
+						return vec3d3;
 					}
 				}
 			}
 		}
 
-		return new Vec3d(this.getX(), e, this.getZ());
+		return super.method_24829(livingEntity);
 	}
 
 	protected void copyEntityData(Entity entity) {

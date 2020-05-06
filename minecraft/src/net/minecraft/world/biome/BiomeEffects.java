@@ -4,9 +4,9 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5195;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
 
 public class BiomeEffects {
@@ -17,7 +17,7 @@ public class BiomeEffects {
 	private final Optional<SoundEvent> loopSound;
 	private final Optional<BiomeMoodSound> moodSound;
 	private final Optional<BiomeAdditionsSound> additionsSound;
-	private final Optional<class_5195> field_24113;
+	private final Optional<MusicSound> music;
 
 	private BiomeEffects(
 		int fogColor,
@@ -27,7 +27,7 @@ public class BiomeEffects {
 		Optional<SoundEvent> loopSound,
 		Optional<BiomeMoodSound> moodSound,
 		Optional<BiomeAdditionsSound> additionsSound,
-		Optional<class_5195> optional
+		Optional<MusicSound> music
 	) {
 		this.fogColor = fogColor;
 		this.waterColor = waterColor;
@@ -36,7 +36,7 @@ public class BiomeEffects {
 		this.loopSound = loopSound;
 		this.moodSound = moodSound;
 		this.additionsSound = additionsSound;
-		this.field_24113 = optional;
+		this.music = music;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -97,8 +97,8 @@ public class BiomeEffects {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Optional<class_5195> method_27345() {
-		return this.field_24113;
+	public Optional<MusicSound> method_27345() {
+		return this.music;
 	}
 
 	public static class Builder {
@@ -109,7 +109,7 @@ public class BiomeEffects {
 		private Optional<SoundEvent> loopSound = Optional.empty();
 		private Optional<BiomeMoodSound> moodSound = Optional.empty();
 		private Optional<BiomeAdditionsSound> additionsSound = Optional.empty();
-		private Optional<class_5195> field_24114 = Optional.empty();
+		private Optional<MusicSound> musicSound = Optional.empty();
 
 		public BiomeEffects.Builder fogColor(int fogColor) {
 			this.fogColor = OptionalInt.of(fogColor);
@@ -136,18 +136,18 @@ public class BiomeEffects {
 			return this;
 		}
 
-		public BiomeEffects.Builder moodSound(BiomeMoodSound biomeMoodSound) {
-			this.moodSound = Optional.of(biomeMoodSound);
+		public BiomeEffects.Builder moodSound(BiomeMoodSound moodSound) {
+			this.moodSound = Optional.of(moodSound);
 			return this;
 		}
 
-		public BiomeEffects.Builder additionsSound(BiomeAdditionsSound biomeAdditionsSound) {
-			this.additionsSound = Optional.of(biomeAdditionsSound);
+		public BiomeEffects.Builder additionsSound(BiomeAdditionsSound additionsSound) {
+			this.additionsSound = Optional.of(additionsSound);
 			return this;
 		}
 
-		public BiomeEffects.Builder method_27346(class_5195 arg) {
-			this.field_24114 = Optional.of(arg);
+		public BiomeEffects.Builder music(MusicSound music) {
+			this.musicSound = Optional.of(music);
 			return this;
 		}
 
@@ -160,7 +160,7 @@ public class BiomeEffects {
 				this.loopSound,
 				this.moodSound,
 				this.additionsSound,
-				this.field_24114
+				this.musicSound
 			);
 		}
 	}

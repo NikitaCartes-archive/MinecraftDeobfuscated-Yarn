@@ -15,8 +15,8 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
-public class TeammsgCommand {
-	private static final Style field_24380 = Style.EMPTY
+public class TeamMsgCommand {
+	private static final Style STYLE = Style.EMPTY
 		.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.type.team.hover")))
 		.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teammsg "));
 	private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.teammsg.failed.noteam"));
@@ -38,7 +38,7 @@ public class TeammsgCommand {
 		if (team == null) {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
-			Text text = team.getFormattedName().fillStyle(field_24380);
+			Text text = team.getFormattedName().fillStyle(STYLE);
 			List<ServerPlayerEntity> list = source.getMinecraftServer().getPlayerManager().getPlayerList();
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {

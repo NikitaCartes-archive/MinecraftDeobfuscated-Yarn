@@ -57,7 +57,7 @@ public class GoToVillageGoal extends Goal {
 		if (this.targetPosition != null) {
 			EntityNavigation entityNavigation = this.mob.getNavigation();
 			if (entityNavigation.isIdle() && !this.targetPosition.isWithinDistance(this.mob.getPos(), 10.0)) {
-				Vec3d vec3d = Vec3d.method_24955(this.targetPosition);
+				Vec3d vec3d = Vec3d.ofBottomCenter(this.targetPosition);
 				Vec3d vec3d2 = this.mob.getPos();
 				Vec3d vec3d3 = vec3d2.subtract(vec3d);
 				vec3d = vec3d3.multiply(0.4).add(vec3d);

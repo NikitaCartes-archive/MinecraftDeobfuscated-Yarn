@@ -52,88 +52,86 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 		biConsumer.accept(
 			LootTables.FISHING_GAMEPLAY,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(LootTableEntry.builder(LootTables.FISHING_JUNK_GAMEPLAY).setWeight(10).setQuality(-2))
-						.withEntry(
+						.rolls(ConstantLootTableRange.create(1))
+						.with(LootTableEntry.builder(LootTables.FISHING_JUNK_GAMEPLAY).weight(10).quality(-2))
+						.with(
 							LootTableEntry.builder(LootTables.FISHING_TREASURE_GAMEPLAY)
-								.setWeight(5)
-								.setQuality(2)
-								.withCondition(
+								.weight(5)
+								.quality(2)
+								.conditionally(
 									EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().fishHook(FishingHookPredicate.of(true)))
 								)
 						)
-						.withEntry(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY).setWeight(85).setQuality(-1))
+						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY).weight(85).quality(-1))
 				)
 		);
 		biConsumer.accept(
 			LootTables.FISHING_FISH_GAMEPLAY,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withEntry(ItemEntry.builder(Items.COD).setWeight(60))
-						.withEntry(ItemEntry.builder(Items.SALMON).setWeight(25))
-						.withEntry(ItemEntry.builder(Items.TROPICAL_FISH).setWeight(2))
-						.withEntry(ItemEntry.builder(Items.PUFFERFISH).setWeight(13))
+						.with(ItemEntry.builder(Items.COD).weight(60))
+						.with(ItemEntry.builder(Items.SALMON).weight(25))
+						.with(ItemEntry.builder(Items.TROPICAL_FISH).weight(2))
+						.with(ItemEntry.builder(Items.PUFFERFISH).weight(13))
 				)
 		);
 		biConsumer.accept(
 			LootTables.FISHING_JUNK_GAMEPLAY,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withEntry(ItemEntry.builder(Items.LEATHER_BOOTS).setWeight(10).withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
-						.withEntry(ItemEntry.builder(Items.LEATHER).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.BONE).setWeight(10))
-						.withEntry(
+						.with(ItemEntry.builder(Items.LEATHER_BOOTS).weight(10).apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
+						.with(ItemEntry.builder(Items.LEATHER).weight(10))
+						.with(ItemEntry.builder(Items.BONE).weight(10))
+						.with(
 							ItemEntry.builder(Items.POTION)
-								.setWeight(10)
-								.withFunction(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
+								.weight(10)
+								.apply(SetNbtLootFunction.builder(Util.make(new CompoundTag(), compoundTag -> compoundTag.putString("Potion", "minecraft:water"))))
 						)
-						.withEntry(ItemEntry.builder(Items.STRING).setWeight(5))
-						.withEntry(ItemEntry.builder(Items.FISHING_ROD).setWeight(2).withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
-						.withEntry(ItemEntry.builder(Items.BOWL).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.STICK).setWeight(5))
-						.withEntry(ItemEntry.builder(Items.INK_SAC).setWeight(1).withFunction(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
-						.withEntry(ItemEntry.builder(Blocks.TRIPWIRE_HOOK).setWeight(10))
-						.withEntry(ItemEntry.builder(Items.ROTTEN_FLESH).setWeight(10))
-						.withEntry(
+						.with(ItemEntry.builder(Items.STRING).weight(5))
+						.with(ItemEntry.builder(Items.FISHING_ROD).weight(2).apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.9F))))
+						.with(ItemEntry.builder(Items.BOWL).weight(10))
+						.with(ItemEntry.builder(Items.STICK).weight(5))
+						.with(ItemEntry.builder(Items.INK_SAC).weight(1).apply(SetCountLootFunction.builder(ConstantLootTableRange.create(10))))
+						.with(ItemEntry.builder(Blocks.TRIPWIRE_HOOK).weight(10))
+						.with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(10))
+						.with(
 							ItemEntry.builder(Blocks.BAMBOO)
-								.withCondition(
-									NEEDS_JUNGLE_BIOME.withCondition(NEEDS_JUNGLE_HILLS_BIOME)
-										.withCondition(NEEDS_JUNGLE_EDGE_BIOME)
-										.withCondition(NEEDS_BAMBOO_JUNGLE_BIOME)
-										.withCondition(NEEDS_MODIFIED_JUNGLE_BIOME)
-										.withCondition(NEEDS_MODIFIED_JUNGLE_EDGE_BIOME)
-										.withCondition(NEEDS_BAMBOO_JUNGLE_HILLS_BIOME)
+								.conditionally(
+									NEEDS_JUNGLE_BIOME.or(NEEDS_JUNGLE_HILLS_BIOME)
+										.or(NEEDS_JUNGLE_EDGE_BIOME)
+										.or(NEEDS_BAMBOO_JUNGLE_BIOME)
+										.or(NEEDS_MODIFIED_JUNGLE_BIOME)
+										.or(NEEDS_MODIFIED_JUNGLE_EDGE_BIOME)
+										.or(NEEDS_BAMBOO_JUNGLE_HILLS_BIOME)
 								)
-								.setWeight(10)
+								.weight(10)
 						)
 				)
 		);
 		biConsumer.accept(
 			LootTables.FISHING_TREASURE_GAMEPLAY,
 			LootTable.builder()
-				.withPool(
+				.pool(
 					LootPool.builder()
-						.withEntry(ItemEntry.builder(Blocks.LILY_PAD))
-						.withEntry(ItemEntry.builder(Items.NAME_TAG))
-						.withEntry(ItemEntry.builder(Items.SADDLE))
-						.withEntry(
+						.with(ItemEntry.builder(Blocks.LILY_PAD))
+						.with(ItemEntry.builder(Items.NAME_TAG))
+						.with(ItemEntry.builder(Items.SADDLE))
+						.with(
 							ItemEntry.builder(Items.BOW)
-								.withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
-								.withFunction(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
+								.apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
+								.apply(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
 						)
-						.withEntry(
+						.with(
 							ItemEntry.builder(Items.FISHING_ROD)
-								.withFunction(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
-								.withFunction(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
+								.apply(SetDamageLootFunction.builder(UniformLootTableRange.between(0.0F, 0.25F)))
+								.apply(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
 						)
-						.withEntry(
-							ItemEntry.builder(Items.BOOK).withFunction(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments())
-						)
-						.withEntry(ItemEntry.builder(Items.NAUTILUS_SHELL))
+						.with(ItemEntry.builder(Items.BOOK).apply(EnchantWithLevelsLootFunction.builder(ConstantLootTableRange.create(30)).allowTreasureEnchantments()))
+						.with(ItemEntry.builder(Items.NAUTILUS_SHELL))
 				)
 		);
 	}

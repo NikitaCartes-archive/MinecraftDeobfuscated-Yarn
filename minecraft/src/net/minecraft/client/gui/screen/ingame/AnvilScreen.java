@@ -81,6 +81,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	protected void drawForeground(MatrixStack matrixStack, int i, int j) {
 		RenderSystem.disableBlend();
 		this.textRenderer.draw(matrixStack, this.title, 60.0F, 6.0F, 4210752);
+		this.textRenderer.draw(matrixStack, this.playerInventory.getDisplayName(), 8.0F, (float)(this.backgroundHeight - 96 + 2), 4210752);
 		int k = this.handler.getLevelCost();
 		if (k > 0) {
 			int l = 8453920;

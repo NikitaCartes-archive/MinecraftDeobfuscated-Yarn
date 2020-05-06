@@ -40,9 +40,9 @@ public class SquidEntityModel<T extends Entity> extends CompositeEntityModel<T> 
 	}
 
 	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		for (ModelPart modelPart : this.field_3574) {
-			modelPart.pitch = customAngle;
+			modelPart.pitch = animationProgress;
 		}
 	}
 

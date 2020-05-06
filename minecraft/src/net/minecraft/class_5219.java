@@ -27,23 +27,23 @@ public interface class_5219 {
 
 	Set<String> getEnabledDataPacks();
 
-	boolean method_27431();
+	boolean isModded();
 
-	Set<String> method_27432();
+	Set<String> getServerBrands();
 
-	void addServerBrand(String string, boolean bl);
+	void addServerBrand(String brand, boolean modded);
 
 	default void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.method_27432())));
-		crashReportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.method_27431())));
+		crashReportSection.add("Known server brands", (CrashCallable<String>)(() -> String.join(", ", this.getServerBrands())));
+		crashReportSection.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.isModded())));
 		crashReportSection.add("Level storage version", (CrashCallable<String>)(() -> {
 			int i = this.getVersion();
-			return String.format("0x%05X - %s", i, this.method_27440(i));
+			return String.format("0x%05X - %s", i, this.getFormatName(i));
 		}));
 	}
 
-	default String method_27440(int i) {
-		switch (i) {
+	default String getFormatName(int id) {
+		switch (id) {
 			case 19132:
 				return "McRegion";
 			case 19133:
@@ -56,13 +56,13 @@ public interface class_5219 {
 	@Nullable
 	CompoundTag getCustomBossEvents();
 
-	void setCustomBossEvents(@Nullable CompoundTag compoundTag);
+	void setCustomBossEvents(@Nullable CompoundTag tag);
 
 	class_5268 method_27859();
 
-	LevelInfo method_27433();
+	LevelInfo getLevelInfo();
 
-	CompoundTag cloneWorldTag(@Nullable CompoundTag compoundTag);
+	CompoundTag cloneWorldTag(@Nullable CompoundTag tag);
 
 	boolean isHardcore();
 
@@ -87,13 +87,13 @@ public interface class_5219 {
 
 	boolean isDifficultyLocked();
 
-	void setDifficultyLocked(boolean bl);
+	void setDifficultyLocked(boolean locked);
 
 	GameRules getGameRules();
 
 	CompoundTag getPlayerData();
 
-	CompoundTag method_27434(DimensionType dimensionType);
+	CompoundTag getWorldData(DimensionType dimensionType);
 
-	void method_27435(DimensionType dimensionType, CompoundTag compoundTag);
+	void setWorldData(DimensionType dimensionType, CompoundTag tag);
 }

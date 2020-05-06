@@ -990,7 +990,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			int l = 0;
 
 			for (Text text : list) {
-				int m = this.textRenderer.getStringWidth(text);
+				int m = this.textRenderer.getWidth(text);
 				if (m > l) {
 					l = m;
 				}

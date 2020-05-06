@@ -61,7 +61,7 @@ public class OpenServerTask extends LongRunningTask {
 				}
 
 				LOGGER.error("Failed to open server", (Throwable)var5);
-				this.method_27453("Failed to open the server");
+				this.error("Failed to open the server");
 			}
 		}
 	}

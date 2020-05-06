@@ -47,11 +47,11 @@ public class DisconnectedScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
 		int i = this.height / 2 - this.reasonHeight / 2;
 		if (this.reasonFormatted != null) {
 			for (Text text : this.reasonFormatted) {
-				this.drawStringWithShadow(matrices, this.textRenderer, text, this.width / 2, i, 16777215);
+				this.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, i, 16777215);
 				i += 9;
 			}
 		}

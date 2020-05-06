@@ -201,10 +201,10 @@ public abstract class AbstractBlock {
 		if (identifier == LootTables.EMPTY) {
 			return Collections.emptyList();
 		} else {
-			LootContext lootContext = builder.put(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
+			LootContext lootContext = builder.parameter(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContext.getWorld();
 			LootTable lootTable = serverWorld.getServer().getLootManager().getTable(identifier);
-			return lootTable.getDrops(lootContext);
+			return lootTable.generateLoot(lootContext);
 		}
 	}
 

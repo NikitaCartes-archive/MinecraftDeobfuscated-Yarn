@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,7 +44,7 @@ public class FishBucketItem extends BucketItem {
 	}
 
 	private void spawnFish(World world, ItemStack stack, BlockPos pos) {
-		Entity entity = this.fishType.spawnFromItemStack(world, stack, null, pos, SpawnType.BUCKET, true, false);
+		Entity entity = this.fishType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
 		if (entity != null) {
 			((FishEntity)entity).setFromBucket(true);
 		}

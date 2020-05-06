@@ -87,8 +87,8 @@ public class LootTableReporter {
 		return ImmutableMultimap.copyOf(this.messages);
 	}
 
-	public void checkContext(LootContextAware contextAware) {
-		this.contextType.check(this, contextAware);
+	public void validateContext(LootContextAware contextAware) {
+		this.contextType.validate(this, contextAware);
 	}
 
 	@Nullable

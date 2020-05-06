@@ -202,7 +202,8 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public static boolean hasTopRim(BlockView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		return !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
+		return blockState.isFullCube(world, pos) && blockState.isSideSolidFullSquare(world, pos, Direction.UP)
+			|| !VoxelShapes.matchesAnywhere(blockState.getSidesShape(world, pos).getFace(Direction.UP), SOLID_MEDIUM_SQUARE_SHAPE, BooleanBiFunction.ONLY_SECOND);
 	}
 
 	public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
@@ -236,10 +237,10 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	public static List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity) {
 		LootContext.Builder builder = new LootContext.Builder(world)
-			.setRandom(world.random)
-			.put(LootContextParameters.POSITION, pos)
-			.put(LootContextParameters.TOOL, ItemStack.EMPTY)
-			.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+			.random(world.random)
+			.parameter(LootContextParameters.POSITION, pos)
+			.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
+			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return state.getDroppedStacks(builder);
 	}
 
@@ -247,11 +248,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack stack
 	) {
 		LootContext.Builder builder = new LootContext.Builder(world)
-			.setRandom(world.random)
-			.put(LootContextParameters.POSITION, pos)
-			.put(LootContextParameters.TOOL, stack)
-			.putNullable(LootContextParameters.THIS_ENTITY, entity)
-			.putNullable(LootContextParameters.BLOCK_ENTITY, blockEntity);
+			.random(world.random)
+			.parameter(LootContextParameters.POSITION, pos)
+			.parameter(LootContextParameters.TOOL, stack)
+			.optionalParameter(LootContextParameters.THIS_ENTITY, entity)
+			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return state.getDroppedStacks(builder);
 	}
 

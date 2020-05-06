@@ -48,7 +48,7 @@ public class CloseServerTask extends LongRunningTask {
 				}
 
 				LOGGER.error("Failed to close server", (Throwable)var5);
-				this.method_27453("Failed to close the server");
+				this.error("Failed to close the server");
 			}
 		}
 	}

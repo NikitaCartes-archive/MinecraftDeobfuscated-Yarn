@@ -43,14 +43,14 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		@Environment(EnvType.CLIENT)
 		@Override
 		public Vec3d getPos() {
-			return Vec3d.method_24953(CommandBlockBlockEntity.this.pos);
+			return Vec3d.ofCenter(CommandBlockBlockEntity.this.pos);
 		}
 
 		@Override
 		public ServerCommandSource getSource() {
 			return new ServerCommandSource(
 				this,
-				Vec3d.method_24953(CommandBlockBlockEntity.this.pos),
+				Vec3d.ofCenter(CommandBlockBlockEntity.this.pos),
 				Vec2f.ZERO,
 				this.getWorld(),
 				2,

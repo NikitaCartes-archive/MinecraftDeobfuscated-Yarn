@@ -35,14 +35,17 @@ public class SleepTask extends Task<LivingEntity> {
 				return false;
 			} else {
 				Optional<Timestamp> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
-				if (optional.isPresent() && world.getTime() - ((Timestamp)optional.get()).getTime() < 100L) {
-					return false;
-				} else {
-					BlockState blockState = world.getBlockState(globalPos.getPos());
-					return globalPos.getPos().isWithinDistance(entity.getPos(), 2.0)
-						&& blockState.getBlock().isIn(BlockTags.BEDS)
-						&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
+				if (optional.isPresent()) {
+					long l = world.getTime() - ((Timestamp)optional.get()).getTime();
+					if (l > 0L && l < 100L) {
+						return false;
+					}
 				}
+
+				BlockState blockState = world.getBlockState(globalPos.getPos());
+				return globalPos.getPos().isWithinDistance(entity.getPos(), 2.0)
+					&& blockState.getBlock().isIn(BlockTags.BEDS)
+					&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
 			}
 		}
 	}

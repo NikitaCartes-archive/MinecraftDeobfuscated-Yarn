@@ -195,7 +195,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 			text = player.getDisplayName();
 		}
 
-		Vec3d vec3d = Vec3d.method_24953(this.pos);
+		Vec3d vec3d = Vec3d.ofCenter(this.pos);
 		return new ServerCommandSource(CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player);
 	}
 

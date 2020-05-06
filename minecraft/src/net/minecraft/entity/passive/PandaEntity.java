@@ -17,7 +17,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -67,7 +67,7 @@ public class PandaEntity extends AnimalEntity {
 	private static final TrackedData<Byte> MAIN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> HIDDEN_GENE = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Byte> PANDA_FLAGS = DataTracker.registerData(PandaEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final TargetPredicate field_21803 = new TargetPredicate().setBaseMaxDistance(8.0).includeTeammates().includeInvulnerable();
+	private static final TargetPredicate ASK_FOR_BAMBOO_TARGET = new TargetPredicate().setBaseMaxDistance(8.0).includeTeammates().includeInvulnerable();
 	private boolean shouldGetRevenge;
 	private boolean shouldAttack;
 	public int playingTicks;
@@ -526,7 +526,9 @@ public class PandaEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
 		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
 		this.resetAttributes();
@@ -535,7 +537,7 @@ public class PandaEntity extends AnimalEntity {
 			((PassiveEntity.PassiveData)entityData).setBabyChance(0.2F);
 		}
 
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	public void initGenes(PandaEntity mother, @Nullable PandaEntity father) {
@@ -770,9 +772,9 @@ public class PandaEntity extends AnimalEntity {
 			return VALUES[id];
 		}
 
-		public static PandaEntity.Gene byName(String string) {
+		public static PandaEntity.Gene byName(String name) {
 			for (PandaEntity.Gene gene : values()) {
-				if (gene.name.equals(string)) {
+				if (gene.name.equals(name)) {
 					return gene;
 				}
 			}
@@ -899,9 +901,9 @@ public class PandaEntity extends AnimalEntity {
 		private final PandaEntity panda;
 		private int nextAskPlayerForBambooAge;
 
-		public PandaMateGoal(PandaEntity pandaEntity2, double d) {
-			super(pandaEntity2, d);
-			this.panda = pandaEntity2;
+		public PandaMateGoal(PandaEntity panda, double chance) {
+			super(panda, chance);
+			this.panda = panda;
 		}
 
 		@Override
@@ -913,7 +915,7 @@ public class PandaEntity extends AnimalEntity {
 					this.panda.setAskForBambooTicks(32);
 					this.nextAskPlayerForBambooAge = this.panda.age + 600;
 					if (this.panda.canMoveVoluntarily()) {
-						PlayerEntity playerEntity = this.world.getClosestPlayer(PandaEntity.field_21803, this.panda);
+						PlayerEntity playerEntity = this.world.getClosestPlayer(PandaEntity.ASK_FOR_BAMBOO_TARGET, this.panda);
 						this.panda.lookAtPlayerGoal.setTarget(playerEntity);
 					}
 				}

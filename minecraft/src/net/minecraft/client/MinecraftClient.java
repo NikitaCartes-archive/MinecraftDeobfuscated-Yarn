@@ -37,7 +37,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5195;
 import net.minecraft.class_5219;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -169,6 +168,7 @@ import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.LiteralText;
@@ -1585,7 +1585,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 
 			lv = new LevelProperties(levelInfo);
-			string = levelInfo.method_27339();
+			string = levelInfo.getLevelName();
 			session.method_27425(lv);
 		} else {
 			string = lv.getLevelName();
@@ -2062,25 +2062,25 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.soundManager;
 	}
 
-	public class_5195 getMusicType() {
+	public MusicSound getMusicType() {
 		if (this.currentScreen instanceof CreditsScreen) {
-			return MusicType.field_5578;
+			return MusicType.CREDITS;
 		} else if (this.player != null) {
 			if (this.player.world.dimension instanceof TheEndDimension) {
-				return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicType.field_5580 : MusicType.field_5583;
+				return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicType.DRAGON : MusicType.END;
 			} else {
 				Biome.Category category = this.player.world.getBiome(this.player.getBlockPos()).getCategory();
-				if (!this.musicTracker.isPlayingType(MusicType.field_5576)
+				if (!this.musicTracker.isPlayingType(MusicType.UNDERWATER)
 					&& (!this.player.isSubmergedInWater() || category != Biome.Category.OCEAN && category != Biome.Category.RIVER)) {
 					return this.player.abilities.creativeMode && this.player.abilities.allowFlying
-						? MusicType.field_5581
-						: (class_5195)this.world.getBiomeAccess().method_27344(this.player.getBlockPos()).method_27343().orElse(MusicType.field_5586);
+						? MusicType.CREATIVE
+						: (MusicSound)this.world.getBiomeAccess().method_27344(this.player.getBlockPos()).method_27343().orElse(MusicType.GAME);
 				} else {
-					return MusicType.field_5576;
+					return MusicType.UNDERWATER;
 				}
 			}
 		} else {
-			return MusicType.field_5585;
+			return MusicType.MENU;
 		}
 	}
 

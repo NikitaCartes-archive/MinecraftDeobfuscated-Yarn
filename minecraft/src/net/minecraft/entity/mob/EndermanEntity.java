@@ -62,7 +62,7 @@ public class EndermanEntity extends HostileEntity {
 		EndermanEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE
 	);
 	private static final TrackedData<Boolean> ANGRY = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Boolean> field_20618 = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> PROVOKED = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final Predicate<LivingEntity> PLAYER_ENDERMITE_PREDICATE = livingEntity -> livingEntity instanceof EndermiteEntity
 			&& ((EndermiteEntity)livingEntity).isPlayerSpawned();
 	private int lastAngrySoundAge = Integer.MIN_VALUE;
@@ -104,7 +104,7 @@ public class EndermanEntity extends HostileEntity {
 		if (target == null) {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
-			this.dataTracker.set(field_20618, false);
+			this.dataTracker.set(PROVOKED, false);
 			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
 		} else {
 			this.ageWhenTargetSet = this.age;
@@ -120,7 +120,7 @@ public class EndermanEntity extends HostileEntity {
 		super.initDataTracker();
 		this.dataTracker.startTracking(CARRIED_BLOCK, Optional.empty());
 		this.dataTracker.startTracking(ANGRY, false);
-		this.dataTracker.startTracking(field_20618, false);
+		this.dataTracker.startTracking(PROVOKED, false);
 	}
 
 	public void playAngrySound() {
@@ -134,7 +134,7 @@ public class EndermanEntity extends HostileEntity {
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
-		if (ANGRY.equals(data) && this.method_22330() && this.world.isClient) {
+		if (ANGRY.equals(data) && this.isProvoked() && this.world.isClient) {
 			this.playAngrySound();
 		}
 
@@ -312,7 +312,7 @@ public class EndermanEntity extends HostileEntity {
 			return false;
 		} else {
 			boolean bl = super.damage(source, amount);
-			if (!this.world.isClient() && source.bypassesArmor() && this.random.nextInt(10) != 0) {
+			if (!this.world.isClient() && this.random.nextInt(10) != 0) {
 				this.teleportRandomly();
 			}
 
@@ -324,17 +324,17 @@ public class EndermanEntity extends HostileEntity {
 		return this.dataTracker.get(ANGRY);
 	}
 
-	public boolean method_22330() {
-		return this.dataTracker.get(field_20618);
+	public boolean isProvoked() {
+		return this.dataTracker.get(PROVOKED);
 	}
 
-	public void method_22331() {
-		this.dataTracker.set(field_20618, true);
+	public void setProvoked() {
+		this.dataTracker.set(PROVOKED, true);
 	}
 
 	static class ChasePlayerGoal extends Goal {
 		private final EndermanEntity enderman;
-		private LivingEntity field_21513;
+		private LivingEntity target;
 
 		public ChasePlayerGoal(EndermanEntity enderman) {
 			this.enderman = enderman;
@@ -343,12 +343,12 @@ public class EndermanEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			this.field_21513 = this.enderman.getTarget();
-			if (!(this.field_21513 instanceof PlayerEntity)) {
+			this.target = this.enderman.getTarget();
+			if (!(this.target instanceof PlayerEntity)) {
 				return false;
 			} else {
-				double d = this.field_21513.squaredDistanceTo(this.enderman);
-				return d > 256.0 ? false : this.enderman.isPlayerStaring((PlayerEntity)this.field_21513);
+				double d = this.target.squaredDistanceTo(this.enderman);
+				return d > 256.0 ? false : this.enderman.isPlayerStaring((PlayerEntity)this.target);
 			}
 		}
 
@@ -359,7 +359,7 @@ public class EndermanEntity extends HostileEntity {
 
 		@Override
 		public void tick() {
-			this.enderman.getLookControl().lookAt(this.field_21513.getX(), this.field_21513.getEyeY(), this.field_21513.getZ());
+			this.enderman.getLookControl().lookAt(this.target.getX(), this.target.getEyeY(), this.target.getZ());
 		}
 	}
 
@@ -430,14 +430,14 @@ public class EndermanEntity extends HostileEntity {
 			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState2 = iWorld.getBlockState(blockPos2);
 			BlockState blockState3 = this.enderman.getCarriedBlock();
-			if (blockState3 != null && this.method_7033(iWorld, blockPos, blockState3, blockState, blockState2, blockPos2)) {
+			if (blockState3 != null && this.canPlaceOn(iWorld, blockPos, blockState3, blockState, blockState2, blockPos2)) {
 				iWorld.setBlockState(blockPos, blockState3, 3);
 				this.enderman.setCarriedBlock(null);
 			}
 		}
 
-		private boolean method_7033(WorldView worldView, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2) {
-			return blockState2.isAir() && !blockState3.isAir() && blockState3.isFullCube(worldView, blockPos2) && blockState.canPlaceAt(worldView, blockPos);
+		private boolean canPlaceOn(WorldView world, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos) {
+			return stateAbove.isAir() && !state.isAir() && state.isFullCube(world, pos) && carriedState.canPlaceAt(world, posAbove);
 		}
 	}
 
@@ -467,7 +467,7 @@ public class EndermanEntity extends HostileEntity {
 		public void start() {
 			this.lookAtPlayerWarmup = 5;
 			this.ticksSinceUnseenTeleport = 0;
-			this.enderman.method_22331();
+			this.enderman.setProvoked();
 		}
 
 		@Override
@@ -493,7 +493,7 @@ public class EndermanEntity extends HostileEntity {
 		@Override
 		public void tick() {
 			if (this.enderman.getTarget() == null) {
-				super.method_24632(null);
+				super.setTargetEntity(null);
 			}
 
 			if (this.targetPlayer != null) {

@@ -54,6 +54,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -888,19 +889,25 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected void damageShield(float amount) {
-		if (amount >= 3.0F && this.activeItemStack.getItem() == Items.SHIELD) {
-			int i = 1 + MathHelper.floor(amount);
-			Hand hand = this.getActiveHand();
-			this.activeItemStack.damage(i, this, playerEntity -> playerEntity.sendToolBreakStatus(hand));
-			if (this.activeItemStack.isEmpty()) {
-				if (hand == Hand.MAIN_HAND) {
-					this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-				} else {
-					this.equipStack(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
-				}
+		if (this.activeItemStack.getItem() == Items.SHIELD) {
+			if (!this.world.isClient) {
+				this.incrementStat(Stats.USED.getOrCreateStat(this.activeItemStack.getItem()));
+			}
 
-				this.activeItemStack = ItemStack.EMPTY;
-				this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.world.random.nextFloat() * 0.4F);
+			if (amount >= 3.0F) {
+				int i = 1 + MathHelper.floor(amount);
+				Hand hand = this.getActiveHand();
+				this.activeItemStack.damage(i, this, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				if (this.activeItemStack.isEmpty()) {
+					if (hand == Hand.MAIN_HAND) {
+						this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+					} else {
+						this.equipStack(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+					}
+
+					this.activeItemStack = ItemStack.EMPTY;
+					this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.world.random.nextFloat() * 0.4F);
+				}
 			}
 		}
 	}
@@ -1481,14 +1488,17 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (this.hasVehicle()) {
 			int i = Math.round(MathHelper.sqrt(dx * dx + dy * dy + dz * dz) * 100.0F);
 			if (i > 0) {
-				if (this.getVehicle() instanceof AbstractMinecartEntity) {
+				Entity entity = this.getVehicle();
+				if (entity instanceof AbstractMinecartEntity) {
 					this.increaseStat(Stats.MINECART_ONE_CM, i);
-				} else if (this.getVehicle() instanceof BoatEntity) {
+				} else if (entity instanceof BoatEntity) {
 					this.increaseStat(Stats.BOAT_ONE_CM, i);
-				} else if (this.getVehicle() instanceof PigEntity) {
+				} else if (entity instanceof PigEntity) {
 					this.increaseStat(Stats.PIG_ONE_CM, i);
-				} else if (this.getVehicle() instanceof HorseBaseEntity) {
+				} else if (entity instanceof HorseBaseEntity) {
 					this.increaseStat(Stats.HORSE_ONE_CM, i);
+				} else if (entity instanceof StriderEntity) {
+					this.increaseStat(Stats.STRIDER_ONE_CM, i);
 				}
 			}
 		}
@@ -1508,7 +1518,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public boolean checkFallFlying() {
-		if (!this.onGround && !this.isFallFlying() && !this.isTouchingWater()) {
+		if (!this.onGround && !this.isFallFlying() && !this.isTouchingWater() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.getItem() == Items.ELYTRA && ElytraItem.isUsable(itemStack)) {
 				this.startFallFlying();

@@ -19,13 +19,13 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 
 	@Override
 	public boolean canStart() {
-		return this.cat.isTamed() && !this.cat.method_24345() && !this.cat.isSleepingWithOwner() && super.canStart();
+		return this.cat.isTamed() && !this.cat.isSitting() && !this.cat.isSleepingWithOwner() && super.canStart();
 	}
 
 	@Override
 	public void start() {
 		super.start();
-		this.cat.setSitting(false);
+		this.cat.setInSittingPose(false);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	@Override
 	public void tick() {
 		super.tick();
-		this.cat.setSitting(false);
+		this.cat.setInSittingPose(false);
 		if (!this.hasReached()) {
 			this.cat.setSleepingWithOwner(false);
 		} else if (!this.cat.isSleepingWithOwner()) {

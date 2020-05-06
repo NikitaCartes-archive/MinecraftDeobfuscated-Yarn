@@ -19,7 +19,7 @@ public class DownloadingTerrainScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderDirtBackground(0);
+		this.renderBackgroundTexture(0);
 		this.drawCenteredString(matrices, this.textRenderer, I18n.translate("multiplayer.downloadingTerrain"), this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

@@ -40,7 +40,7 @@ public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 		if (this.entity instanceof AbstractDonkeyEntity) {
 			AbstractDonkeyEntity abstractDonkeyEntity = (AbstractDonkeyEntity)this.entity;
 			if (abstractDonkeyEntity.hasChest()) {
-				this.drawTexture(matrixStack, j + 79, k + 17, 0, this.backgroundHeight, abstractDonkeyEntity.method_6702() * 18, 54);
+				this.drawTexture(matrixStack, j + 79, k + 17, 0, this.backgroundHeight, abstractDonkeyEntity.getInventoryColumns() * 18, 54);
 			}
 		}
 

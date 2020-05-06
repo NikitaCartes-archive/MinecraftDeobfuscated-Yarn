@@ -123,8 +123,8 @@ public class ArmorItem extends Item implements Wearable {
 	}
 
 	@Override
-	public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(EquipmentSlot equipmentSlot) {
-		return equipmentSlot == this.slot ? this.attributeModifiers : super.getModifiers(equipmentSlot);
+	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+		return slot == this.slot ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 
 	public int getProtection() {

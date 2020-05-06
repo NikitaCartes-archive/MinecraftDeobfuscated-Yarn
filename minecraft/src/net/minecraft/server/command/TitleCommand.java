@@ -95,22 +95,20 @@ public class TitleCommand {
 		);
 	}
 
-	private static int executeClear(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
+	private static int executeClear(ServerCommandSource source, Collection<ServerPlayerEntity> targets) {
 		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.CLEAR, null);
 
-		for (ServerPlayerEntity serverPlayerEntity : collection) {
+		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
-		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableText("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
-			);
+		if (targets.size() == 1) {
+			source.sendFeedback(new TranslatableText("commands.title.cleared.single", ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.title.cleared.multiple", collection.size()), true);
+			source.sendFeedback(new TranslatableText("commands.title.cleared.multiple", targets.size()), true);
 		}
 
-		return collection.size();
+		return targets.size();
 	}
 
 	private static int executeReset(ServerCommandSource source, Collection<ServerPlayerEntity> targets) {

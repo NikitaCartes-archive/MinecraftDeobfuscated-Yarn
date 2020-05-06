@@ -293,8 +293,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
-		return new ShulkerBoxScreenHandler(i, playerInventory, this);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return new ShulkerBoxScreenHandler(syncId, playerInventory, this);
 	}
 
 	public boolean suffocates() {

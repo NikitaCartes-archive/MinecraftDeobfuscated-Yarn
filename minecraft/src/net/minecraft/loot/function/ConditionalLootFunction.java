@@ -33,11 +33,11 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	protected abstract ItemStack process(ItemStack stack, LootContext context);
 
 	@Override
-	public void check(LootTableReporter reporter) {
-		LootFunction.super.check(reporter);
+	public void validate(LootTableReporter reporter) {
+		LootFunction.super.validate(reporter);
 
 		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].check(reporter.makeChild(".conditions[" + i + "]"));
+			this.conditions[i].validate(reporter.makeChild(".conditions[" + i + "]"));
 		}
 	}
 
@@ -48,7 +48,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 	public abstract static class Builder<T extends ConditionalLootFunction.Builder<T>> implements LootFunction.Builder, LootConditionConsumingBuilder<T> {
 		private final List<LootCondition> conditionList = Lists.<LootCondition>newArrayList();
 
-		public T withCondition(LootCondition.Builder builder) {
+		public T conditionally(LootCondition.Builder builder) {
 			this.conditionList.add(builder.build());
 			return this.getThisBuilder();
 		}

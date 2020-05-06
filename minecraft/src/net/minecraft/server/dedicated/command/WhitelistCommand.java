@@ -23,8 +23,8 @@ public class WhitelistCommand {
 		new TranslatableText("commands.whitelist.remove.failed")
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		commandDispatcher.register(
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+		dispatcher.register(
 			CommandManager.literal("whitelist")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(CommandManager.literal("on").executes(commandContext -> executeOn(commandContext.getSource())))

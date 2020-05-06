@@ -23,7 +23,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 
 	protected AbstractDonkeyEntity(EntityType<? extends AbstractDonkeyEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_6964 = false;
+		this.playExtraHorseSounds = false;
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		this.setHasChest(tag.getBoolean("ChestedHorse"));
 		if (this.hasChest()) {
 			ListTag listTag = tag.getList("Items", 10);
-			this.method_6721();
+			this.onChestedStatusChanged();
 
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompound(i);
@@ -123,13 +123,13 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		if (slot == 499) {
 			if (this.hasChest() && item.isEmpty()) {
 				this.setHasChest(false);
-				this.method_6721();
+				this.onChestedStatusChanged();
 				return true;
 			}
 
 			if (!this.hasChest() && item.getItem() == Blocks.CHEST.asItem()) {
 				this.setHasChest(true);
-				this.method_6721();
+				this.onChestedStatusChanged();
 				return true;
 			}
 		}
@@ -166,7 +166,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 						this.setHasChest(true);
 						this.playAddChestSound();
 						bl = true;
-						this.method_6721();
+						this.onChestedStatusChanged();
 					}
 
 					if (!this.isBaby() && !this.isSaddled() && itemStack.getItem() == Items.SADDLE) {
@@ -197,7 +197,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		this.playSound(SoundEvents.ENTITY_DONKEY_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
-	public int method_6702() {
+	public int getInventoryColumns() {
 		return 5;
 	}
 }

@@ -82,8 +82,8 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 	@Nullable
 	@Override
 	public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return this.checkUnlocked(playerEntity) ? this.createContainer(i, playerInventory) : null;
+		return this.checkUnlocked(playerEntity) ? this.createScreenHandler(i, playerInventory) : null;
 	}
 
-	protected abstract ScreenHandler createContainer(int i, PlayerInventory playerInventory);
+	protected abstract ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory);
 }

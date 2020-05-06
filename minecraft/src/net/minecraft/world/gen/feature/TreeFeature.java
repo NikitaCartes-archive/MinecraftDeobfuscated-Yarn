@@ -32,8 +32,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
-public class AbstractTreeFeature extends Feature<TreeFeatureConfig> {
-	public AbstractTreeFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> function) {
+public class TreeFeature extends Feature<TreeFeatureConfig> {
+	public TreeFeature(Function<Dynamic<?>, ? extends TreeFeatureConfig> function) {
 		super(function);
 	}
 
@@ -83,10 +83,8 @@ public class AbstractTreeFeature extends Feature<TreeFeatureConfig> {
 		world.setBlockState(pos, state, 19);
 	}
 
-	public static boolean canReplace(ModifiableTestableWorld modifiableTestableWorld, BlockPos blockPos) {
-		return isAirOrLeaves(modifiableTestableWorld, blockPos)
-			|| isReplaceablePlant(modifiableTestableWorld, blockPos)
-			|| isWater(modifiableTestableWorld, blockPos);
+	public static boolean canReplace(ModifiableTestableWorld world, BlockPos pos) {
+		return isAirOrLeaves(world, pos) || isReplaceablePlant(world, pos) || isWater(world, pos);
 	}
 
 	private boolean generate(

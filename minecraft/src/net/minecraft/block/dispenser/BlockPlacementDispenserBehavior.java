@@ -13,14 +13,15 @@ import net.minecraft.util.math.Direction;
 public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavior {
 	@Override
 	protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-		this.success = false;
+		this.setSuccess(false);
 		Item item = stack.getItem();
 		if (item instanceof BlockItem) {
 			Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 			BlockPos blockPos = pointer.getBlockPos().offset(direction);
 			Direction direction2 = pointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
-			this.success = ((BlockItem)item).place(new AutomaticItemPlacementContext(pointer.getWorld(), blockPos, direction, stack, direction2))
-				== ActionResult.SUCCESS;
+			this.setSuccess(
+				((BlockItem)item).place(new AutomaticItemPlacementContext(pointer.getWorld(), blockPos, direction, stack, direction2)) == ActionResult.SUCCESS
+			);
 		}
 
 		return stack;

@@ -182,16 +182,16 @@ public class JigsawBlockScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.pool"), this.width / 2 - 153, 10, 10526880);
+		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.pool"), this.width / 2 - 153, 10, 10526880);
 		this.poolField.render(matrices, mouseX, mouseY, delta);
-		this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.name"), this.width / 2 - 153, 45, 10526880);
+		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.name"), this.width / 2 - 153, 45, 10526880);
 		this.nameField.render(matrices, mouseX, mouseY, delta);
-		this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.target"), this.width / 2 - 153, 80, 10526880);
+		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.target"), this.width / 2 - 153, 80, 10526880);
 		this.targetField.render(matrices, mouseX, mouseY, delta);
-		this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 115, 10526880);
+		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 115, 10526880);
 		this.finalStateField.render(matrices, mouseX, mouseY, delta);
 		if (JigsawBlock.method_26378(this.jigsaw.getCachedState()).getAxis().isVertical()) {
-			this.drawString(matrices, this.textRenderer, I18n.translate("jigsaw_block.joint_label"), this.width / 2 - 153, 156, 16777215);
+			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.joint_label"), this.width / 2 - 153, 156, 16777215);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

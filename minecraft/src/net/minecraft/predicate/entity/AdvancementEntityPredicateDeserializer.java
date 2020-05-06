@@ -27,7 +27,7 @@ public class AdvancementEntityPredicateDeserializer {
 		LootTableReporter lootTableReporter = new LootTableReporter(contextType, this.conditionManager::get, identifier -> null);
 
 		for (LootCondition lootCondition : lootConditions) {
-			lootCondition.check(lootTableReporter);
+			lootCondition.validate(lootTableReporter);
 			lootTableReporter.getMessages()
 				.forEach((string2, string3) -> LOGGER.warn("Found validation problem in advancement trigger {}/{}: {}", key, string2, string3));
 		}

@@ -76,7 +76,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 				return list.isEmpty() ? LiteralText.EMPTY : (Text)list.get(0);
 			});
 			if (text != null) {
-				float s = (float)(-textRenderer.getStringWidth(text) / 2);
+				float s = (float)(-textRenderer.getWidth(text) / 2);
 				textRenderer.draw(text, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
 			}
 		}

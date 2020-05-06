@@ -45,7 +45,7 @@ public class BossBarCommand {
 	private static final SimpleCommandExceptionType SET_VALUE_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.bossbar.set.value.unchanged")
 	);
-	private static final SimpleCommandExceptionType SETMAX_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType SET_MAX_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.bossbar.set.max.unchanged")
 	);
 	private static final SimpleCommandExceptionType SET_VISIBILITY_UNCHANGED_HIDDEN_EXCEPTION = new SimpleCommandExceptionType(
@@ -54,7 +54,7 @@ public class BossBarCommand {
 	private static final SimpleCommandExceptionType SET_VISIBILITY_UNCHANGED_VISIBLE_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.bossbar.set.visibility.unchanged.visible")
 	);
-	public static final SuggestionProvider<ServerCommandSource> suggestionProvider = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
+	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
 			commandContext.getSource().getMinecraftServer().getBossBarManager().getIds(), suggestionsBuilder
 		);
 
@@ -80,7 +80,7 @@ public class BossBarCommand {
 					CommandManager.literal("remove")
 						.then(
 							CommandManager.argument("id", IdentifierArgumentType.identifier())
-								.suggests(suggestionProvider)
+								.suggests(SUGGESTION_PROVIDER)
 								.executes(commandContext -> removeBossBar(commandContext.getSource(), getBossBar(commandContext)))
 						)
 				)
@@ -89,7 +89,7 @@ public class BossBarCommand {
 					CommandManager.literal("set")
 						.then(
 							CommandManager.argument("id", IdentifierArgumentType.identifier())
-								.suggests(suggestionProvider)
+								.suggests(SUGGESTION_PROVIDER)
 								.then(
 									CommandManager.literal("name")
 										.then(
@@ -183,7 +183,7 @@ public class BossBarCommand {
 					CommandManager.literal("get")
 						.then(
 							CommandManager.argument("id", IdentifierArgumentType.identifier())
-								.suggests(suggestionProvider)
+								.suggests(SUGGESTION_PROVIDER)
 								.then(CommandManager.literal("value").executes(commandContext -> getValue(commandContext.getSource(), getBossBar(commandContext))))
 								.then(CommandManager.literal("max").executes(commandContext -> getMaxValue(commandContext.getSource(), getBossBar(commandContext))))
 								.then(CommandManager.literal("visible").executes(commandContext -> isVisible(commandContext.getSource(), getBossBar(commandContext))))
@@ -262,7 +262,7 @@ public class BossBarCommand {
 
 	private static int setMaxValue(ServerCommandSource source, CommandBossBar bossBar, int value) throws CommandSyntaxException {
 		if (bossBar.getMaxValue() == value) {
-			throw SETMAX_UNCHANGED_EXCEPTION.create();
+			throw SET_MAX_UNCHANGED_EXCEPTION.create();
 		} else {
 			bossBar.setMaxValue(value);
 			source.sendFeedback(new TranslatableText("commands.bossbar.set.max.success", bossBar.toHoverableText(), value), true);

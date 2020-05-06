@@ -40,13 +40,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Npc;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -175,7 +175,7 @@ public class ServerWorld extends World {
 					(ServerWorld)world,
 					session,
 					server.getDataFixer(),
-					server.method_27727(),
+					server.getStructureManager(),
 					workerExecutor,
 					dimension.createChunkGenerator(),
 					server.getPlayerManager().getViewDistance(),
@@ -1046,7 +1046,7 @@ public class ServerWorld extends World {
 	}
 
 	public StructureManager getStructureManager() {
-		return this.server.method_27727();
+		return this.server.getStructureManager();
 	}
 
 	public <T extends ParticleEffect> int spawnParticles(
@@ -1099,7 +1099,7 @@ public class ServerWorld extends World {
 
 	@Nullable
 	public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
-		return !this.field_24456.method_27420() ? null : this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
+		return !this.field_24456.hasStructures() ? null : this.getChunkManager().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
 	}
 
 	@Nullable
@@ -1267,8 +1267,8 @@ public class ServerWorld extends World {
 			writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getSpawningChunkCount()));
 			SpawnHelper.Info info = this.getChunkManager().getSpawnInfo();
 			if (info != null) {
-				for (it.unimi.dsi.fastutil.objects.Object2IntMap.Entry<EntityCategory> entry : info.getCategoryToCount().object2IntEntrySet()) {
-					writer.write(String.format("spawn_count.%s: %d\n", ((EntityCategory)entry.getKey()).getName(), entry.getIntValue()));
+				for (it.unimi.dsi.fastutil.objects.Object2IntMap.Entry<SpawnGroup> entry : info.getGroupToCount().object2IntEntrySet()) {
+					writer.write(String.format("spawn_count.%s: %d\n", ((SpawnGroup)entry.getKey()).getName(), entry.getIntValue()));
 				}
 			}
 

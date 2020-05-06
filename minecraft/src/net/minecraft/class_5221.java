@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 public interface class_5221 {
 	void error(Text text);
 
-	default void method_27453(String string) {
+	default void error(String string) {
 		this.error(new LiteralText(string));
 	}
 }

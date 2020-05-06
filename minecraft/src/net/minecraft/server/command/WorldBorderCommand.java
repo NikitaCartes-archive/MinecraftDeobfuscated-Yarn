@@ -16,7 +16,7 @@ public class WorldBorderCommand {
 	private static final SimpleCommandExceptionType CENTER_FAILED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.worldborder.center.failed")
 	);
-	private static final SimpleCommandExceptionType SET_FAILED_NOCHANGE_EXCEPTION = new SimpleCommandExceptionType(
+	private static final SimpleCommandExceptionType SET_FAILED_NO_CHANGE_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("commands.worldborder.set.failed.nochange")
 	);
 	private static final SimpleCommandExceptionType SET_FAILED_SMALL_EXCEPTION = new SimpleCommandExceptionType(
@@ -195,7 +195,7 @@ public class WorldBorderCommand {
 		WorldBorder worldBorder = source.getWorld().getWorldBorder();
 		double d = worldBorder.getSize();
 		if (d == distance) {
-			throw SET_FAILED_NOCHANGE_EXCEPTION.create();
+			throw SET_FAILED_NO_CHANGE_EXCEPTION.create();
 		} else if (distance < 1.0) {
 			throw SET_FAILED_SMALL_EXCEPTION.create();
 		} else if (distance > 6.0E7) {

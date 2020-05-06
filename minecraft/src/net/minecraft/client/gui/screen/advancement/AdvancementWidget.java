@@ -46,11 +46,11 @@ public class AdvancementWidget extends DrawableHelper {
 		int i = advancement.getRequirementCount();
 		int j = String.valueOf(i).length();
 		int k = i > 1 ? client.textRenderer.getWidth("  ") + client.textRenderer.getWidth("0") * j * 2 + client.textRenderer.getWidth("/") : 0;
-		int l = 29 + client.textRenderer.getStringWidth(this.title) + k;
+		int l = 29 + client.textRenderer.getWidth(this.title) + k;
 		this.description = this.wrapDescription(display.getDescription().shallowCopy().formatted(display.getFrame().getTitleFormat()), l);
 
 		for (Text text : this.description) {
-			l = Math.max(l, client.textRenderer.getStringWidth(text));
+			l = Math.max(l, client.textRenderer.getWidth(text));
 		}
 
 		this.width = l + 3 + 5;
@@ -133,7 +133,7 @@ public class AdvancementWidget extends DrawableHelper {
 			this.drawTexture(
 				matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
 			);
-			this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+			this.client.getItemRenderer().method_27953(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
@@ -228,7 +228,7 @@ public class AdvancementWidget extends DrawableHelper {
 			}
 		}
 
-		this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
+		this.client.getItemRenderer().method_27953(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 	}
 
 	protected void method_2324(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o, int p, int q) {

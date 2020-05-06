@@ -92,8 +92,8 @@ public interface CommandSource {
 		return builder.buildFuture();
 	}
 
-	static CompletableFuture<Suggestions> suggestIdentifiers(Stream<Identifier> stream, SuggestionsBuilder suggestionsBuilder) {
-		return suggestIdentifiers(stream::iterator, suggestionsBuilder);
+	static CompletableFuture<Suggestions> suggestIdentifiers(Stream<Identifier> stream, SuggestionsBuilder builder) {
+		return suggestIdentifiers(stream::iterator, builder);
 	}
 
 	static <T> CompletableFuture<Suggestions> suggestFromIdentifier(
@@ -103,7 +103,7 @@ public interface CommandSource {
 	}
 
 	static CompletableFuture<Suggestions> suggestPositions(
-		String string, Collection<CommandSource.RelativePosition> candidates, SuggestionsBuilder suggestionsBuilder, Predicate<String> predicate
+		String string, Collection<CommandSource.RelativePosition> candidates, SuggestionsBuilder builder, Predicate<String> predicate
 	) {
 		List<String> list = Lists.<String>newArrayList();
 		if (Strings.isNullOrEmpty(string)) {
@@ -135,7 +135,7 @@ public interface CommandSource {
 			}
 		}
 
-		return suggestMatching(list, suggestionsBuilder);
+		return suggestMatching(list, builder);
 	}
 
 	static CompletableFuture<Suggestions> suggestColumnPositions(

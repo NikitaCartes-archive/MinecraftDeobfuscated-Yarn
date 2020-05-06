@@ -18,7 +18,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -165,13 +165,15 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData initialize(IWorld world, LocalDifficulty difficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+	public EntityData initialize(
+		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+	) {
 		this.setHomePos(this.getBlockPos());
 		this.setTravelPos(BlockPos.ORIGIN);
-		return super.initialize(world, difficulty, spawnType, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
-	public static boolean canSpawn(EntityType<TurtleEntity> type, IWorld world, SpawnType spawnType, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<TurtleEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return pos.getY() < world.getSeaLevel() + 4 && world.getBlockState(pos.down()).isOf(Blocks.SAND) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
@@ -432,7 +434,7 @@ public class TurtleEntity extends AnimalEntity {
 			}
 
 			if (this.turtle.getNavigation().isIdle()) {
-				Vec3d vec3d = Vec3d.method_24955(blockPos);
+				Vec3d vec3d = Vec3d.ofBottomCenter(blockPos);
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
 					vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);
@@ -571,7 +573,7 @@ public class TurtleEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			if (this.turtle.getNavigation().isIdle()) {
-				Vec3d vec3d = Vec3d.method_24955(this.turtle.getTravelPos());
+				Vec3d vec3d = Vec3d.ofBottomCenter(this.turtle.getTravelPos());
 				Vec3d vec3d2 = TargetFinder.findTargetTowards(this.turtle, 16, 3, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
 					vec3d2 = TargetFinder.findTargetTowards(this.turtle, 8, 7, vec3d);

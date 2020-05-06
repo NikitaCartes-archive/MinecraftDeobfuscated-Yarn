@@ -13,13 +13,13 @@ import net.minecraft.world.timer.Timer;
 public interface class_5268 extends class_5269 {
 	String getLevelName();
 
-	void setThundering(boolean bl);
+	void setThundering(boolean thundering);
 
 	int getRainTime();
 
-	void setRainTime(int i);
+	void setRainTime(int rainTime);
 
-	void setThunderTime(int i);
+	void setThunderTime(int thunderTime);
 
 	int getThunderTime();
 
@@ -36,13 +36,13 @@ public interface class_5268 extends class_5269 {
 		crashReportSection.add(
 			"Level generator",
 			(CrashCallable<String>)(() -> {
-				LevelGeneratorType levelGeneratorType = this.method_27421().getType();
+				LevelGeneratorType levelGeneratorType = this.getGeneratorOptions().getType();
 				return String.format(
 					"ID %02d - %s, ver %d. Features enabled: %b",
 					levelGeneratorType.getId(),
 					levelGeneratorType.getName(),
 					levelGeneratorType.getVersion(),
-					this.method_27420()
+					this.hasStructures()
 				);
 			})
 		);
@@ -56,23 +56,23 @@ public interface class_5268 extends class_5269 {
 
 	int getClearWeatherTime();
 
-	void setClearWeatherTime(int i);
+	void setClearWeatherTime(int clearWeatherTime);
 
-	boolean method_27420();
+	boolean hasStructures();
 
 	CompoundTag getWorldData();
 
-	void setWorldData(CompoundTag compoundTag);
+	void setWorldData(CompoundTag tag);
 
 	int getWanderingTraderSpawnDelay();
 
-	void setWanderingTraderSpawnDelay(int i);
+	void setWanderingTraderSpawnDelay(int wanderingTraderSpawnDelay);
 
 	int getWanderingTraderSpawnChance();
 
-	void setWanderingTraderSpawnChance(int i);
+	void setWanderingTraderSpawnChance(int wanderingTraderSpawnChance);
 
-	void setWanderingTraderId(UUID uUID);
+	void setWanderingTraderId(UUID uuid);
 
 	GameMode getGameMode();
 
@@ -82,7 +82,7 @@ public interface class_5268 extends class_5269 {
 
 	boolean isInitialized();
 
-	void setInitialized(boolean bl);
+	void setInitialized(boolean initialized);
 
 	boolean areCommandsAllowed();
 

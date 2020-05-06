@@ -22,7 +22,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 
 	public VersionedChunkStorage(File file, DataFixer dataFixer, boolean bl) {
 		this.dataFixer = dataFixer;
-		this.worker = new StorageIoWorker(new RegionBasedStorage(file, bl), "chunk");
+		this.worker = new StorageIoWorker(file, bl, "chunk");
 	}
 
 	public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {

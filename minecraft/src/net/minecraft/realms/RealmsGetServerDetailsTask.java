@@ -59,14 +59,14 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					bl4 = true;
 				} else {
 					bl2 = true;
-					this.method_27453(var12.toString());
+					this.error(var12.toString());
 					LOGGER.error("Couldn't connect to world", (Throwable)var12);
 				}
 				break;
 			} catch (Exception var13) {
 				bl2 = true;
 				LOGGER.error("Couldn't connect to world", (Throwable)var13);
-				this.method_27453(var13.getLocalizedMessage());
+				this.error(var13.getLocalizedMessage());
 				break;
 			}
 

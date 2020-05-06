@@ -102,24 +102,27 @@ public class ModelPredicateProviderRegistry {
 
 			@Override
 			public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
-				boolean bl = livingEntity != null;
-				Entity entity = (Entity)(bl ? livingEntity : itemStack.getFrame());
-				if (clientWorld == null && entity != null && entity.world instanceof ClientWorld) {
-					clientWorld = (ClientWorld)entity.world;
-				}
-
-				if (clientWorld == null) {
+				Entity entity = (Entity)(livingEntity != null ? livingEntity : itemStack.getHolder());
+				if (entity == null) {
 					return 0.0F;
 				} else {
-					double d;
-					if (clientWorld.dimension.hasVisibleSky()) {
-						d = (double)clientWorld.getSkyAngle(1.0F);
-					} else {
-						d = Math.random();
+					if (clientWorld == null && entity.world instanceof ClientWorld) {
+						clientWorld = (ClientWorld)entity.world;
 					}
 
-					d = this.getTime(clientWorld, d);
-					return (float)d;
+					if (clientWorld == null) {
+						return 0.0F;
+					} else {
+						double d;
+						if (clientWorld.dimension.hasVisibleSky()) {
+							d = (double)clientWorld.getSkyAngle(1.0F);
+						} else {
+							d = Math.random();
+						}
+
+						d = this.getTime(clientWorld, d);
+						return (float)d;
+					}
 				}
 			}
 
@@ -170,7 +173,7 @@ public class ModelPredicateProviderRegistry {
 							}
 
 							e = MathHelper.floorMod(e / 360.0, 1.0);
-							double f = this.getAngleToPos(Vec3d.method_24953(blockPos), entity) / (float) (Math.PI * 2);
+							double f = this.getAngleToPos(Vec3d.ofCenter(blockPos), entity) / (float) (Math.PI * 2);
 							double g;
 							if (bl) {
 								if (this.value.shouldUpdate(l)) {

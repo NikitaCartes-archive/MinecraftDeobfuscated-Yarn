@@ -18,15 +18,15 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 		this(shouldExclude, pos, new ListTag());
 	}
 
-	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, ListTag listTag) {
+	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, ListTag tag) {
 		this.shouldExclude = shouldExclude;
 		this.pos = pos;
 
-		for (int i = 0; i < listTag.size(); i++) {
-			ListTag listTag2 = listTag.getList(i);
+		for (int i = 0; i < tag.size(); i++) {
+			ListTag listTag = tag.getList(i);
 
-			for (int j = 0; j < listTag2.size(); j++) {
-				Chunk.getList(this.scheduledPositions, i).add(listTag2.getShort(j));
+			for (int j = 0; j < listTag.size(); j++) {
+				Chunk.getList(this.scheduledPositions, i).add(listTag.getShort(j));
 			}
 		}
 	}

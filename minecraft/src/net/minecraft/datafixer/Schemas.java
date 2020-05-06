@@ -122,6 +122,7 @@ import net.minecraft.datafixer.fix.StriderGravityFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.SwimStatsRenameFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
+import net.minecraft.datafixer.fix.VillagerFollowRangeFix;
 import net.minecraft.datafixer.fix.VillagerGossipFix;
 import net.minecraft.datafixer.fix.VillagerProfessionFix;
 import net.minecraft.datafixer.fix.VillagerTradeFix;
@@ -637,5 +638,7 @@ public class Schemas {
 		builder.addFixer(new StriderGravityFix(schema116, false));
 		Schema schema117 = builder.addSchema(2531, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new RedstoneConnectionsFix(schema117));
+		Schema schema118 = builder.addSchema(2533, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new VillagerFollowRangeFix(schema118));
 	}
 }

@@ -94,7 +94,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 			k--;
 		}
 
-		minecraftClient.getItemRenderer().renderGuiItem(itemStack, this.x + k, this.y + k);
+		minecraftClient.getItemRenderer().method_27953(itemStack, this.x + k, this.y + k);
 		if (bl) {
 			RenderSystem.popMatrix();
 		}

@@ -1408,6 +1408,18 @@ public class DefaultBiomeFeatures {
 				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.ANCIENT_DEBRIS.getDefaultState(), 2))
 				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(1, 8, 16, 128)))
 		);
+		biome.addFeature(
+			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			Feature.ORE
+				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.GRAVEL.getDefaultState(), 33))
+				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(2, 5, 0, 37)))
+		);
+		biome.addFeature(
+			GenerationStep.Feature.UNDERGROUND_DECORATION,
+			Feature.ORE
+				.configure(new OreFeatureConfig(OreFeatureConfig.Target.NETHERRACK, Blocks.BLACKSTONE.getDefaultState(), 33))
+				.createDecoratedFeature(Decorator.COUNT_RANGE.configure(new RangeDecoratorConfig(2, 5, 10, 37)))
+		);
 	}
 
 	public static void addCrimsonForestVegetation(Biome biome) {

@@ -5,8 +5,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.class_5268;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
-import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -82,7 +82,7 @@ public class WanderingTraderManager {
 					return false;
 				}
 
-				WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(this.world, null, null, null, blockPos3, SpawnType.EVENT, false, false);
+				WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(this.world, null, null, null, blockPos3, SpawnReason.EVENT, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {
 						this.spawnLlama(wanderingTraderEntity, 4);
@@ -103,7 +103,7 @@ public class WanderingTraderManager {
 	private void spawnLlama(WanderingTraderEntity wanderingTrader, int range) {
 		BlockPos blockPos = this.getNearbySpawnPos(wanderingTrader.getBlockPos(), range);
 		if (blockPos != null) {
-			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(this.world, null, null, null, blockPos, SpawnType.EVENT, false, false);
+			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(this.world, null, null, null, blockPos, SpawnReason.EVENT, false, false);
 			if (traderLlamaEntity != null) {
 				traderLlamaEntity.attachLeash(wanderingTrader, true);
 			}

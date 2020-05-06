@@ -779,7 +779,7 @@ public final class ItemStack {
 				}
 			}
 		} else {
-			multimap = this.getItem().getModifiers(equipmentSlot);
+			multimap = this.getItem().getAttributeModifiers(equipmentSlot);
 		}
 
 		return multimap;

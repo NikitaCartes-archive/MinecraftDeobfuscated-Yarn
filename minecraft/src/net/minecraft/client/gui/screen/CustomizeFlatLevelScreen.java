@@ -117,10 +117,10 @@ public class CustomizeFlatLevelScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.layers.render(matrices, mouseX, mouseY, delta);
-		this.drawStringWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		this.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		int i = this.width / 2 - 92 - 16;
-		this.method_27535(matrices, this.textRenderer, this.tileText, i, 32, 16777215);
-		this.method_27535(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getStringWidth(this.heightText), 32, 16777215);
+		this.drawTextWithShadow(matrices, this.textRenderer, this.tileText, i, 32, 16777215);
+		this.drawTextWithShadow(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

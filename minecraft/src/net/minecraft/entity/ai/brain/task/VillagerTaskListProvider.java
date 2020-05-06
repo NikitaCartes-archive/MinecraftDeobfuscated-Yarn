@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -228,9 +228,10 @@ public class VillagerTaskListProvider {
 					Pair.of(new FollowMobTask(EntityType.CAT, 8.0F), 8),
 					Pair.of(new FollowMobTask(EntityType.VILLAGER, 8.0F), 2),
 					Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 2),
-					Pair.of(new FollowMobTask(EntityCategory.CREATURE, 8.0F), 1),
-					Pair.of(new FollowMobTask(EntityCategory.WATER_CREATURE, 8.0F), 1),
-					Pair.of(new FollowMobTask(EntityCategory.MONSTER, 8.0F), 1),
+					Pair.of(new FollowMobTask(SpawnGroup.CREATURE, 8.0F), 1),
+					Pair.of(new FollowMobTask(SpawnGroup.WATER_CREATURE, 8.0F), 1),
+					Pair.of(new FollowMobTask(SpawnGroup.WATER_AMBIENT, 8.0F), 1),
+					Pair.of(new FollowMobTask(SpawnGroup.MONSTER, 8.0F), 1),
 					Pair.of(new WaitTask(30, 60), 2)
 				)
 			)

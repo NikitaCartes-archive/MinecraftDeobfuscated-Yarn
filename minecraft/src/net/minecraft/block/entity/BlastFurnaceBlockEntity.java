@@ -24,7 +24,7 @@ public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected ScreenHandler createContainer(int i, PlayerInventory playerInventory) {
-		return new BlastFurnaceScreenHandler(i, playerInventory, this, this.propertyDelegate);
+	protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+		return new BlastFurnaceScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
 	}
 }

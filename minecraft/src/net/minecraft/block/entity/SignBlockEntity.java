@@ -143,7 +143,7 @@ public class SignBlockEntity extends BlockEntity {
 		String string = player == null ? "Sign" : player.getName().getString();
 		Text text = (Text)(player == null ? new LiteralText("Sign") : player.getDisplayName());
 		return new ServerCommandSource(
-			CommandOutput.DUMMY, Vec3d.method_24953(this.pos), Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player
+			CommandOutput.DUMMY, Vec3d.ofCenter(this.pos), Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player
 		);
 	}
 

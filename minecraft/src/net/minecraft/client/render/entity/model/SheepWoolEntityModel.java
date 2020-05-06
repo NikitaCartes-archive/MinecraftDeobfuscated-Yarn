@@ -34,8 +34,8 @@ public class SheepWoolEntityModel<T extends SheepEntity> extends QuadrupedEntity
 
 	public void animateModel(T sheepEntity, float f, float g, float h) {
 		super.animateModel(sheepEntity, f, g, h);
-		this.head.pivotY = 6.0F + sheepEntity.method_6628(h) * 9.0F;
-		this.field_3541 = sheepEntity.method_6641(h);
+		this.head.pivotY = 6.0F + sheepEntity.getNeckAngle(h) * 9.0F;
+		this.field_3541 = sheepEntity.getHeadAngle(h);
 	}
 
 	public void setAngles(T sheepEntity, float f, float g, float h, float i, float j) {

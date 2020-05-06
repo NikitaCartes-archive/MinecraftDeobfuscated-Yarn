@@ -33,7 +33,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			return stack;
 		} else {
 			DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-			this.entries.forEach(entry -> entry.expand(context, choice -> choice.drop(LootTable.limitedConsumer(defaultedList::add), context)));
+			this.entries.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(defaultedList::add), context)));
 			CompoundTag compoundTag = new CompoundTag();
 			Inventories.toTag(compoundTag, defaultedList);
 			CompoundTag compoundTag2 = stack.getOrCreateTag();
@@ -43,11 +43,11 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 	}
 
 	@Override
-	public void check(LootTableReporter reporter) {
-		super.check(reporter);
+	public void validate(LootTableReporter reporter) {
+		super.validate(reporter);
 
 		for (int i = 0; i < this.entries.size(); i++) {
-			((LootEntry)this.entries.get(i)).check(reporter.makeChild(".entry[" + i + "]"));
+			((LootEntry)this.entries.get(i)).validate(reporter.makeChild(".entry[" + i + "]"));
 		}
 	}
 

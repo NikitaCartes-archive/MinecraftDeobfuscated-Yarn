@@ -22,9 +22,9 @@ public abstract class LootEntry implements EntryCombiner {
 		this.conditionPredicate = LootConditions.joinAnd(conditions);
 	}
 
-	public void check(LootTableReporter reporter) {
+	public void validate(LootTableReporter reporter) {
 		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].check(reporter.makeChild(".condition[" + i + "]"));
+			this.conditions[i].validate(reporter.makeChild(".condition[" + i + "]"));
 		}
 	}
 
@@ -37,7 +37,7 @@ public abstract class LootEntry implements EntryCombiner {
 
 		protected abstract T getThisBuilder();
 
-		public T withCondition(LootCondition.Builder builder) {
+		public T conditionally(LootCondition.Builder builder) {
 			this.conditions.add(builder.build());
 			return this.getThisBuilder();
 		}
@@ -50,7 +50,7 @@ public abstract class LootEntry implements EntryCombiner {
 			return (LootCondition[])this.conditions.toArray(new LootCondition[0]);
 		}
 
-		public AlternativeEntry.Builder withChild(LootEntry.Builder<?> builder) {
+		public AlternativeEntry.Builder alternatively(LootEntry.Builder<?> builder) {
 			return new AlternativeEntry.Builder(this, builder);
 		}
 
