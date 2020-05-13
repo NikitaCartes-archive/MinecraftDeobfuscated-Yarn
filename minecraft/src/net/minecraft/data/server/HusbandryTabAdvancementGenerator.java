@@ -11,7 +11,7 @@ import net.minecraft.advancement.criterion.BredAnimalsCriterion;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
 import net.minecraft.advancement.criterion.FilledBucketCriterion;
 import net.minecraft.advancement.criterion.FishingRodHookedCriterion;
-import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
+import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
 import net.minecraft.block.Blocks;
@@ -23,9 +23,9 @@ import net.minecraft.item.Items;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -47,7 +47,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		EntityType.PANDA,
 		EntityType.FOX,
 		EntityType.BEE,
-		EntityType.HOGLIN
+		EntityType.HOGLIN,
+		EntityType.STRIDER
 	};
 	private static final Item[] FISH_ITEMS = new Item[]{Items.COD, Items.TROPICAL_FISH, Items.PUFFERFISH, Items.SALMON};
 	private static final Item[] FISH_BUCKET_ITEMS = new Item[]{Items.COD_BUCKET, Items.TROPICAL_FISH_BUCKET, Items.PUFFERFISH_BUCKET, Items.SALMON_BUCKET};
@@ -141,7 +142,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criteriaMerger(CriteriaMerger.OR)
 			.criterion("bred", BredAnimalsCriterion.Conditions.any())
 			.build(consumer, "husbandry/breed_an_animal");
-		Advancement advancement4 = this.requireFoodItemsEaten(Advancement.Task.create())
+		this.requireFoodItemsEaten(Advancement.Task.create())
 			.parent(advancement2)
 			.display(
 				Items.APPLE,
@@ -155,12 +156,12 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.build(consumer, "husbandry/balanced_diet");
-		Advancement advancement5 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement2)
 			.display(
-				Items.DIAMOND_HOE,
-				new TranslatableText("advancements.husbandry.break_diamond_hoe.title"),
-				new TranslatableText("advancements.husbandry.break_diamond_hoe.description"),
+				Items.NETHERITE_HOE,
+				new TranslatableText("advancements.husbandry.netherite_hoe.title"),
+				new TranslatableText("advancements.husbandry.netherite_hoe.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -168,12 +169,9 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion(
-				"broke_hoe",
-				ItemDurabilityChangedCriterion.Conditions.create(ItemPredicate.Builder.create().item(Items.DIAMOND_HOE).build(), NumberRange.IntRange.exactly(0))
-			)
+			.criterion("netherite_hoe", InventoryChangedCriterion.Conditions.items(Items.NETHERITE_HOE))
 			.build(consumer, "husbandry/break_diamond_hoe");
-		Advancement advancement6 = Advancement.Task.create()
+		Advancement advancement4 = Advancement.Task.create()
 			.parent(advancement)
 			.display(
 				Items.LEAD,
@@ -187,7 +185,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("tamed_animal", TameAnimalCriterion.Conditions.any())
 			.build(consumer, "husbandry/tame_an_animal");
-		Advancement advancement7 = this.requireListedAnimalsBred(Advancement.Task.create())
+		this.requireListedAnimalsBred(Advancement.Task.create())
 			.parent(advancement3)
 			.display(
 				Items.GOLDEN_CARROT,
@@ -201,7 +199,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.build(consumer, "husbandry/bred_all_animals");
-		Advancement advancement8 = this.requireListedFishCaught(Advancement.Task.create())
+		Advancement advancement5 = this.requireListedFishCaught(Advancement.Task.create())
 			.parent(advancement)
 			.criteriaMerger(CriteriaMerger.OR)
 			.display(
@@ -215,8 +213,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.build(consumer, "husbandry/fishy_business");
-		Advancement advancement9 = this.requireListedFishBucketsFilled(Advancement.Task.create())
-			.parent(advancement8)
+		this.requireListedFishBucketsFilled(Advancement.Task.create())
+			.parent(advancement5)
 			.criteriaMerger(CriteriaMerger.OR)
 			.display(
 				Items.PUFFERFISH_BUCKET,
@@ -229,8 +227,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.build(consumer, "husbandry/tactical_fishing");
-		Advancement advancement10 = this.requireAllCatsTamed(Advancement.Task.create())
-			.parent(advancement6)
+		this.requireAllCatsTamed(Advancement.Task.create())
+			.parent(advancement4)
 			.display(
 				Items.COD,
 				new TranslatableText("advancements.husbandry.complete_catalogue.title"),
@@ -243,11 +241,14 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
 			.build(consumer, "husbandry/complete_catalogue");
-		Advancement advancement11 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement)
 			.criterion(
 				"safely_harvest_honey",
-				BlockUsedCriterion.Conditions.create(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES), ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE))
+				BlockUsedCriterion.Conditions.method_27981(
+					LocationPredicate.Builder.create().method_27989(BlockPredicate.Builder.create().method_27962(Blocks.BEEHIVE).build()).method_27990(true),
+					ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE)
+				)
 			)
 			.display(
 				Items.HONEY_BOTTLE,
@@ -260,7 +261,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				false
 			)
 			.build(consumer, "husbandry/safely_harvest_honey");
-		Advancement advancement12 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement)
 			.criterion(
 				"silk_touch_nest",

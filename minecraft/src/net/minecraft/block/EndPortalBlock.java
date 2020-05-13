@@ -45,7 +45,7 @@ public class EndPortalBlock extends BlockWithEntity {
 				state.getOutlineShape(world, pos),
 				BooleanBiFunction.AND
 			)) {
-			entity.changeDimension(world.dimension.getType() == DimensionType.THE_END ? DimensionType.OVERWORLD : DimensionType.THE_END);
+			entity.changeDimension(world.method_27983() == DimensionType.THE_END ? DimensionType.OVERWORLD : DimensionType.THE_END);
 		}
 	}
 

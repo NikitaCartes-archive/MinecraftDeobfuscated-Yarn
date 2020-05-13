@@ -32,7 +32,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import org.apache.commons.io.IOUtils;
 
@@ -183,19 +182,11 @@ public class StructureTestUtil {
 	}
 
 	private static void method_22368(int altitude, BlockPos pos, ServerWorld world) {
-		ChunkGeneratorConfig chunkGeneratorConfig = world.getChunkManager().getChunkGenerator().getConfig();
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig();
+		BlockState[] blockStates = flatChunkGeneratorConfig.getLayerBlocks();
 		BlockState blockState;
-		if (chunkGeneratorConfig instanceof FlatChunkGeneratorConfig) {
-			BlockState[] blockStates = ((FlatChunkGeneratorConfig)chunkGeneratorConfig).getLayerBlocks();
-			if (pos.getY() < altitude) {
-				blockState = blockStates[pos.getY() - 1];
-			} else {
-				blockState = Blocks.AIR.getDefaultState();
-			}
-		} else if (pos.getY() == altitude - 1) {
-			blockState = world.getBiome(pos).getSurfaceConfig().getTopMaterial();
-		} else if (pos.getY() < altitude - 1) {
-			blockState = world.getBiome(pos).getSurfaceConfig().getUnderMaterial();
+		if (pos.getY() < altitude) {
+			blockState = blockStates[pos.getY() - 1];
 		} else {
 			blockState = Blocks.AIR.getDefaultState();
 		}

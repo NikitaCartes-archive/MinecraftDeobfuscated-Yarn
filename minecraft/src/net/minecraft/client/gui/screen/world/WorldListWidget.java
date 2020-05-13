@@ -387,12 +387,11 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		public void recreate() {
 			try {
 				this.client.openScreen(new ProgressScreen());
-				CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen);
 
 				try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName())) {
 					class_5219 lv = session.readLevelProperties();
 					if (lv != null) {
-						createWorldScreen.recreateLevel(lv);
+						CreateWorldScreen createWorldScreen = new CreateWorldScreen(this.screen, lv);
 						if (this.level.isLegacyCustomizedWorld()) {
 							this.client
 								.openScreen(

@@ -4,10 +4,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
 	public EmeraldOreFeature(Function<Dynamic<?>, ? extends EmeraldOreFeatureConfig> function) {
@@ -15,15 +14,15 @@ public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		EmeraldOreFeatureConfig emeraldOreFeatureConfig
 	) {
-		if (iWorld.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
-			iWorld.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
+		if (serverWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
+			serverWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
 		}
 
 		return true;

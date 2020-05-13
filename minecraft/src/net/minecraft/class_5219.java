@@ -60,6 +60,7 @@ public interface class_5219 {
 
 	class_5268 method_27859();
 
+	@Environment(EnvType.CLIENT)
 	LevelInfo getLevelInfo();
 
 	CompoundTag cloneWorldTag(@Nullable CompoundTag tag);
@@ -76,8 +77,6 @@ public interface class_5219 {
 
 	@Environment(EnvType.CLIENT)
 	long getLastPlayed();
-
-	long getSeed();
 
 	boolean areCommandsAllowed();
 
@@ -96,4 +95,6 @@ public interface class_5219 {
 	CompoundTag getWorldData(DimensionType dimensionType);
 
 	void setWorldData(DimensionType dimensionType, CompoundTag tag);
+
+	class_5285 method_28057();
 }

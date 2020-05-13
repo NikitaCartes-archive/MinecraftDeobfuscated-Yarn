@@ -41,7 +41,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 	public static ItemStack createMap(World world, int x, int z, byte scale, boolean showIcons, boolean unlimitedTracking) {
 		ItemStack itemStack = new ItemStack(Items.FILLED_MAP);
-		createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.dimension.getType());
+		createMapState(itemStack, world, x, z, scale, showIcons, unlimitedTracking, world.method_27983());
 		return itemStack;
 	}
 
@@ -53,10 +53,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 	@Nullable
 	public static MapState getOrCreateMapState(ItemStack map, World world) {
 		MapState mapState = getMapState(map, world);
-		if (mapState == null && !world.isClient) {
-			mapState = createMapState(
-				map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.dimension.getType()
-			);
+		if (mapState == null && world instanceof ServerWorld) {
+			mapState = createMapState(map, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.method_27983());
 		}
 
 		return mapState;
@@ -83,14 +81,14 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	public void updateColors(World world, Entity entity, MapState state) {
-		if (world.dimension.getType() == state.dimension && entity instanceof PlayerEntity) {
+		if (world.method_27983() == state.dimension && entity instanceof PlayerEntity) {
 			int i = 1 << state.scale;
 			int j = state.xCenter;
 			int k = state.zCenter;
 			int l = MathHelper.floor(entity.getX() - (double)j) / i + 64;
 			int m = MathHelper.floor(entity.getZ() - (double)k) / i + 64;
 			int n = 128 / i;
-			if (world.dimension.isNether()) {
+			if (world.method_27983().method_27998()) {
 				n /= 2;
 			}
 
@@ -118,7 +116,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 								int v = t & 15;
 								int w = 0;
 								double e = 0.0;
-								if (world.dimension.isNether()) {
+								if (world.method_27983().method_27998()) {
 									int x = s + t * 231871;
 									x = x * x * 31287121 + x * 11;
 									if ((x >> 20 & 1) == 0) {
@@ -220,7 +218,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	public static void fillExplorationMap(ServerWorld serverWorld, ItemStack map) {
 		MapState mapState = getOrCreateMapState(map, serverWorld);
 		if (mapState != null) {
-			if (serverWorld.dimension.getType() == mapState.dimension) {
+			if (serverWorld.method_27983() == mapState.dimension) {
 				int i = 1 << mapState.scale;
 				int j = mapState.xCenter;
 				int k = mapState.zCenter;

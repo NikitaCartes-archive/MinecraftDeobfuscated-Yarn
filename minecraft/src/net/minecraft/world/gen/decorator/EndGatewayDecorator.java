@@ -6,9 +6,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndGatewayDecorator extends Decorator<NopeDecoratorConfig> {
 	public EndGatewayDecorator(Function<Dynamic<?>, ? extends NopeDecoratorConfig> function) {
@@ -16,12 +15,12 @@ public class EndGatewayDecorator extends Decorator<NopeDecoratorConfig> {
 	}
 
 	public Stream<BlockPos> getPositions(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos
+		WorldAccess worldAccess, ChunkGenerator chunkGenerator, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos
 	) {
 		if (random.nextInt(700) == 0) {
 			int i = random.nextInt(16) + blockPos.getX();
 			int j = random.nextInt(16) + blockPos.getZ();
-			int k = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, i, j);
+			int k = worldAccess.getTopY(Heightmap.Type.MOTION_BLOCKING, i, j);
 			if (k > 0) {
 				int l = k + 3 + random.nextInt(7);
 				return Stream.of(new BlockPos(i, l, j));

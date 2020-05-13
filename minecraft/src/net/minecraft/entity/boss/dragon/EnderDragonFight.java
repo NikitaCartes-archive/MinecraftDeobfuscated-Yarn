@@ -78,6 +78,7 @@ public class EnderDragonFight {
 	private EnderDragonSpawnState dragonSpawnState;
 	private int spawnStateTimer;
 	private List<EndCrystalEntity> crystals;
+	private boolean field_24506;
 
 	public EnderDragonFight(ServerWorld world, CompoundTag compoundTag) {
 		this.world = world;
@@ -107,8 +108,7 @@ public class EnderDragonFight {
 				this.gateways.add(listTag.getInt(i));
 			}
 		} else {
-			this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
-			Collections.shuffle(this.gateways, new Random(world.getSeed()));
+			this.field_24506 = true;
 		}
 
 		this.endPortalPattern = BlockPatternBuilder.start()
@@ -363,6 +363,12 @@ public class EnderDragonFight {
 	}
 
 	private void generateNewEndGateway() {
+		if (this.field_24506) {
+			this.field_24506 = false;
+			this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
+			Collections.shuffle(this.gateways, new Random(this.world.getSeed()));
+		}
+
 		if (!this.gateways.isEmpty()) {
 			int i = this.gateways.remove(this.gateways.size() - 1);
 			int j = MathHelper.floor(96.0 * Math.cos(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));

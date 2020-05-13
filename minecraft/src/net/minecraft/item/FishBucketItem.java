@@ -20,8 +20,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class FishBucketItem extends BucketItem {
 	private final EntityType<?> fishType;
@@ -39,7 +39,7 @@ public class FishBucketItem extends BucketItem {
 	}
 
 	@Override
-	protected void playEmptyingSound(@Nullable PlayerEntity player, IWorld world, BlockPos pos) {
+	protected void playEmptyingSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos) {
 		world.playSound(player, pos, SoundEvents.ITEM_BUCKET_EMPTY_FISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 	}
 

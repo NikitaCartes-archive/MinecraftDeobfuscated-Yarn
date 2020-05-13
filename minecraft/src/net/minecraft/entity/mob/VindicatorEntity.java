@@ -42,9 +42,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class VindicatorEntity extends IllagerEntity {
 	private static final Predicate<Difficulty> DIFFICULTY_ALLOWS_DOOR_BREAKING_PREDICATE = difficulty -> difficulty == Difficulty.NORMAL
@@ -128,7 +128,7 @@ public class VindicatorEntity extends IllagerEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);

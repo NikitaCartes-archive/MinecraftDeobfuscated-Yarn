@@ -11,8 +11,8 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class ChorusFlowerBlock extends Block {
@@ -124,7 +124,7 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (direction != Direction.UP && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
@@ -166,12 +166,12 @@ public class ChorusFlowerBlock extends Block {
 		builder.add(AGE);
 	}
 
-	public static void generate(IWorld world, BlockPos pos, Random random, int size) {
+	public static void generate(WorldAccess world, BlockPos pos, Random random, int size) {
 		world.setBlockState(pos, ((ChorusPlantBlock)Blocks.CHORUS_PLANT).withConnectionProperties(world, pos), 2);
 		generate(world, pos, random, pos, size, 0);
 	}
 
-	private static void generate(IWorld world, BlockPos pos, Random random, BlockPos rootPos, int size, int layer) {
+	private static void generate(WorldAccess world, BlockPos pos, Random random, BlockPos rootPos, int size, int layer) {
 		ChorusPlantBlock chorusPlantBlock = (ChorusPlantBlock)Blocks.CHORUS_PLANT;
 		int i = random.nextInt(4) + 1;
 		if (layer == 0) {

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -14,6 +15,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 	private final ModelPart head;
 
 	public ShulkerEntityModel() {
+		super(RenderLayer::method_28116);
 		this.bottomShell = new ModelPart(64, 64, 0, 28);
 		this.head = new ModelPart(64, 64, 0, 52);
 		this.topShell.addCuboid(-8.0F, -16.0F, -8.0F, 16.0F, 12.0F, 16.0F);
@@ -41,7 +43,7 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 		}
 
 		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.head.yaw = i * (float) (Math.PI / 180.0);
+		this.head.yaw = (shulkerEntity.headYaw - 180.0F - shulkerEntity.bodyYaw) * (float) (Math.PI / 180.0);
 	}
 
 	@Override

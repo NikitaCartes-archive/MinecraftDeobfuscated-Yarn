@@ -18,7 +18,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 	}
 
 	protected void sense(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		DimensionType dimensionType = serverWorld.getDimension().getType();
+		DimensionType dimensionType = serverWorld.method_27983();
 		BlockPos blockPos = villagerEntity.getBlockPos();
 		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
 		int i = 4;

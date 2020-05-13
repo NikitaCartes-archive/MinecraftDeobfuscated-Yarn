@@ -88,9 +88,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.setStructureName(tag.getString("name"));
 		this.author = tag.getString("author");
 		this.metadata = tag.getString("metadata");
-		int i = MathHelper.clamp(tag.getInt("posX"), -32, 32);
-		int j = MathHelper.clamp(tag.getInt("posY"), -32, 32);
-		int k = MathHelper.clamp(tag.getInt("posZ"), -32, 32);
+		int i = MathHelper.clamp(tag.getInt("posX"), -48, 48);
+		int j = MathHelper.clamp(tag.getInt("posY"), -48, 48);
+		int k = MathHelper.clamp(tag.getInt("posZ"), -48, 48);
 		this.offset = new BlockPos(i, j, k);
 		int l = MathHelper.clamp(tag.getInt("sizeX"), 0, 48);
 		int m = MathHelper.clamp(tag.getInt("sizeY"), 0, 48);

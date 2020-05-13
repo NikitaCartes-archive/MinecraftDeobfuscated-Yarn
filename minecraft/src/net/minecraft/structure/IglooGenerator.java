@@ -18,7 +18,8 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -87,7 +88,7 @@ public class IglooGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
 				world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
 				BlockEntity blockEntity = world.getBlockEntity(pos.down());
@@ -99,9 +100,9 @@ public class IglooGenerator {
 
 		@Override
 		public boolean generate(
-			IWorld world,
+			ServerWorldAccess serverWorldAccess,
 			StructureAccessor structureAccessor,
-			ChunkGenerator<?> chunkGenerator,
+			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
@@ -114,15 +115,15 @@ public class IglooGenerator {
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			BlockPos blockPos2 = (BlockPos)IglooGenerator.field_14406.get(this.template);
 			BlockPos blockPos3 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos2.getX(), 0, 0 - blockPos2.getZ())));
-			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos3.getX(), blockPos3.getZ());
+			int i = serverWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos3.getX(), blockPos3.getZ());
 			BlockPos blockPos4 = this.pos;
 			this.pos = this.pos.add(0, i - 90 - 1, 0);
-			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+			boolean bl = super.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
 			if (this.template.equals(IglooGenerator.TOP_TEMPLATE)) {
 				BlockPos blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)));
-				BlockState blockState = world.getBlockState(blockPos5.down());
+				BlockState blockState = serverWorldAccess.getBlockState(blockPos5.down());
 				if (!blockState.isAir() && !blockState.isOf(Blocks.LADDER)) {
-					world.setBlockState(blockPos5, Blocks.SNOW_BLOCK.getDefaultState(), 3);
+					serverWorldAccess.setBlockState(blockPos5, Blocks.SNOW_BLOCK.getDefaultState(), 3);
 				}
 			}
 

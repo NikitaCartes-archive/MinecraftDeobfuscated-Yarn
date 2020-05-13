@@ -147,7 +147,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	public void tryTeleportingEntity(Entity entity) {
 		if (this.world instanceof ServerWorld && !this.needsCooldownBeforeTeleporting()) {
 			this.teleportCooldown = 100;
-			if (this.exitPortalPos == null && this.world.dimension instanceof TheEndDimension) {
+			if (this.exitPortalPos == null && this.world.getDimension() instanceof TheEndDimension) {
 				this.createPortal((ServerWorld)this.world);
 			}
 

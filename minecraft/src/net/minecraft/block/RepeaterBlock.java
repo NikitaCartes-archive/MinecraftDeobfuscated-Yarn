@@ -15,8 +15,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class RepeaterBlock extends AbstractRedstoneGateBlock {
@@ -57,7 +57,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return !world.isClient() && direction.getAxis() != ((Direction)state.get(FACING)).getAxis()
 			? state.with(LOCKED, Boolean.valueOf(this.isLocked(world, pos, state)))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);

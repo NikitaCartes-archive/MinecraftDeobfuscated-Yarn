@@ -41,7 +41,7 @@ public class DesertPyramidFeature extends AbstractTempleFeature<DefaultFeatureCo
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			DesertTempleGenerator desertTempleGenerator = new DesertTempleGenerator(this.random, x * 16, z * 16);
 			this.children.add(desertTempleGenerator);
 			this.setBoundingBoxFromChildren();

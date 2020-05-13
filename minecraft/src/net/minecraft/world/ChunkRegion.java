@@ -37,11 +37,11 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ChunkRegion implements IWorld {
+public class ChunkRegion implements ServerWorldAccess {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<Chunk> chunks;
 	private final int centerChunkX;
@@ -52,7 +52,6 @@ public class ChunkRegion implements IWorld {
 	private final class_5217 levelProperties;
 	private final Random random;
 	private final Dimension dimension;
-	private final ChunkGeneratorConfig generatorSettings;
 	private final TickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getBlockTickScheduler());
 	private final TickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(blockPos -> this.getChunk(blockPos).getFluidTickScheduler());
 	private final BiomeAccess biomeAccess;
@@ -71,11 +70,10 @@ public class ChunkRegion implements IWorld {
 			this.width = i;
 			this.world = world;
 			this.seed = world.getSeed();
-			this.generatorSettings = world.getChunkManager().getChunkGenerator().getConfig();
 			this.levelProperties = world.getLevelProperties();
 			this.random = world.getRandom();
 			this.dimension = world.getDimension();
-			this.biomeAccess = new BiomeAccess(this, class_5217.method_27418(this.seed), this.dimension.getType().getBiomeAccessType());
+			this.biomeAccess = new BiomeAccess(this, BiomeAccess.method_27984(this.seed), world.method_27983().getBiomeAccessType());
 			this.field_23788 = ((Chunk)chunks.get(0)).getPos();
 			this.field_23789 = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
 		}
@@ -349,6 +347,11 @@ public class ChunkRegion implements IWorld {
 	@Override
 	public Dimension getDimension() {
 		return this.dimension;
+	}
+
+	@Override
+	public DimensionType method_27983() {
+		return this.dimension.getType();
 	}
 
 	@Override

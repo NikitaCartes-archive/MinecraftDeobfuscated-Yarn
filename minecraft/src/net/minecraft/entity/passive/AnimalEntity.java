@@ -21,8 +21,8 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class AnimalEntity extends PassiveEntity {
@@ -96,7 +96,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 		this.lovingPlayer = tag.containsUuidNew("LoveCause") ? tag.getUuidNew("LoveCause") : null;
 	}
 
-	public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean isValidNaturalSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return world.getBlockState(pos.down()).isOf(Blocks.GRASS_BLOCK) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 

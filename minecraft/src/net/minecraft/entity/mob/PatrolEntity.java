@@ -16,10 +16,10 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public abstract class PatrolEntity extends HostileEntity {
 	private BlockPos patrolTarget;
@@ -70,7 +70,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason != SpawnReason.PATROL
 			&& spawnReason != SpawnReason.EVENT
@@ -92,7 +92,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
-	public static boolean canSpawn(EntityType<? extends PatrolEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return world.getLightLevel(LightType.BLOCK, pos) > 8 ? false : canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random);
 	}
 

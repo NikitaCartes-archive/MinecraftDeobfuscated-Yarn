@@ -6,7 +6,7 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class CoralMushroomFeature extends CoralFeature {
 	public CoralMushroomFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -14,7 +14,7 @@ public class CoralMushroomFeature extends CoralFeature {
 	}
 
 	@Override
-	protected boolean spawnCoral(IWorld world, Random random, BlockPos pos, BlockState state) {
+	protected boolean spawnCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
 		int i = random.nextInt(3) + 3;
 		int j = random.nextInt(3) + 3;
 		int k = random.nextInt(3) + 3;

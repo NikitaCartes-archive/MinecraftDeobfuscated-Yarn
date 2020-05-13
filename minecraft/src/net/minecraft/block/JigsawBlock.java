@@ -74,21 +74,21 @@ public class JigsawBlock extends Block implements BlockEntityProvider {
 	}
 
 	public static boolean attachmentMatches(Structure.StructureBlockInfo info1, Structure.StructureBlockInfo info2) {
-		Direction direction = method_26378(info1.state);
-		Direction direction2 = method_26378(info2.state);
-		Direction direction3 = method_26379(info1.state);
-		Direction direction4 = method_26379(info2.state);
+		Direction direction = getFacing(info1.state);
+		Direction direction2 = getFacing(info2.state);
+		Direction direction3 = getRotation(info1.state);
+		Direction direction4 = getRotation(info2.state);
 		JigsawBlockEntity.Joint joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(info1.tag.getString("joint"))
 			.orElseGet(() -> direction.getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
 		boolean bl = joint == JigsawBlockEntity.Joint.ROLLABLE;
 		return direction == direction2.getOpposite() && (bl || direction3 == direction4) && info1.tag.getString("target").equals(info2.tag.getString("name"));
 	}
 
-	public static Direction method_26378(BlockState blockState) {
-		return ((JigsawOrientation)blockState.get(ORIENTATION)).method_26426();
+	public static Direction getFacing(BlockState blockState) {
+		return ((JigsawOrientation)blockState.get(ORIENTATION)).getFacing();
 	}
 
-	public static Direction method_26379(BlockState blockState) {
-		return ((JigsawOrientation)blockState.get(ORIENTATION)).method_26428();
+	public static Direction getRotation(BlockState blockState) {
+		return ((JigsawOrientation)blockState.get(ORIENTATION)).getRotation();
 	}
 }

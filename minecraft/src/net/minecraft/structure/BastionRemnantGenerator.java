@@ -30,7 +30,7 @@ public class BastionRemnantGenerator {
 	}
 
 	public static void addPieces(
-		ChunkGenerator<?> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		StructureManager structureManager,
 		BlockPos pos,
 		List<StructurePiece> pieces,

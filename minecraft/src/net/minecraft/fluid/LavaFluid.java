@@ -20,8 +20,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class LavaFluid extends FlowableFluid {
@@ -128,13 +128,13 @@ public abstract class LavaFluid extends FlowableFluid {
 	}
 
 	@Override
-	protected void beforeBreakingBlock(IWorld world, BlockPos pos, BlockState state) {
+	protected void beforeBreakingBlock(WorldAccess world, BlockPos pos, BlockState state) {
 		this.playExtinguishEvent(world, pos);
 	}
 
 	@Override
 	public int getFlowSpeed(WorldView world) {
-		return world.getDimension().doesWaterVaporize() ? 4 : 2;
+		return world.method_27983().method_27999() ? 4 : 2;
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public int getLevelDecreasePerBlock(WorldView world) {
-		return world.getDimension().doesWaterVaporize() ? 1 : 2;
+		return world.method_27983().method_27999() ? 1 : 2;
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public int getTickRate(WorldView world) {
-		return world.getDimension().isNether() ? 10 : 30;
+		return world.method_27983().method_27998() ? 10 : 30;
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public abstract class LavaFluid extends FlowableFluid {
 		return i;
 	}
 
-	private void playExtinguishEvent(IWorld world, BlockPos pos) {
+	private void playExtinguishEvent(WorldAccess world, BlockPos pos) {
 		world.syncWorldEvent(1501, pos, 0);
 	}
 
@@ -187,7 +187,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	}
 
 	@Override
-	protected void flow(IWorld world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
+	protected void flow(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
 		if (direction == Direction.DOWN) {
 			FluidState fluidState2 = world.getFluidState(pos);
 			if (this.isIn(FluidTags.LAVA) && fluidState2.matches(FluidTags.WATER)) {

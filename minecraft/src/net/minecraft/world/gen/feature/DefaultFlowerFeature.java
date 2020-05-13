@@ -5,15 +5,15 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class DefaultFlowerFeature extends FlowerFeature<RandomPatchFeatureConfig> {
 	public DefaultFlowerFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function) {
 		super(function);
 	}
 
-	public boolean isPosValid(IWorld iWorld, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
-		return !randomPatchFeatureConfig.blacklist.contains(iWorld.getBlockState(blockPos));
+	public boolean isPosValid(WorldAccess worldAccess, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig) {
+		return !randomPatchFeatureConfig.blacklist.contains(worldAccess.getBlockState(blockPos));
 	}
 
 	public int getFlowerAmount(RandomPatchFeatureConfig randomPatchFeatureConfig) {

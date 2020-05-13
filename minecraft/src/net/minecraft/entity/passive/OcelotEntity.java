@@ -41,9 +41,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class OcelotEntity extends AnimalEntity {
@@ -238,7 +238,7 @@ public class OcelotEntity extends AnimalEntity {
 		return TAMING_INGREDIENT.test(stack);
 	}
 
-	public static boolean canSpawn(EntityType<OcelotEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<OcelotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return random.nextInt(3) != 0;
 	}
 
@@ -262,7 +262,7 @@ public class OcelotEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData();

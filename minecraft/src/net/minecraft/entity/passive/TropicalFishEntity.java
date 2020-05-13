@@ -19,9 +19,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class TropicalFishEntity extends SchoolingFishEntity {
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(TropicalFishEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -211,7 +211,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		if (entityTag != null && entityTag.contains("BucketVariantTag", 3)) {

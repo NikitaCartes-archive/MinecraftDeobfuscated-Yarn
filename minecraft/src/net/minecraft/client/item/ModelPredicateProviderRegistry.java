@@ -116,7 +116,7 @@ public class ModelPredicateProviderRegistry {
 						return 0.0F;
 					} else {
 						double d;
-						if (clientWorld.dimension.hasVisibleSky()) {
+						if (clientWorld.getDimension().hasVisibleSky()) {
 							d = (double)clientWorld.getSkyAngle(1.0F);
 						} else {
 							d = Math.random();
@@ -201,7 +201,7 @@ public class ModelPredicateProviderRegistry {
 	
 				@Nullable
 				private BlockPos getSpawnPos(ClientWorld world) {
-					return world.dimension.hasVisibleSky() ? world.getSpawnPos() : null;
+					return world.getDimension().hasVisibleSky() ? world.getSpawnPos() : null;
 				}
 	
 				@Nullable
@@ -210,7 +210,7 @@ public class ModelPredicateProviderRegistry {
 					boolean bl2 = tag.contains("LodestoneDimension");
 					if (bl && bl2) {
 						Optional<DimensionType> optional = CompassItem.getLodestoneDimension(tag);
-						if (optional.isPresent() && world.dimension.getType().equals(optional.get())) {
+						if (optional.isPresent() && world.method_27983().equals(optional.get())) {
 							return NbtHelper.toBlockPos((CompoundTag)tag.get("LodestonePos"));
 						}
 					}

@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class CoralClawFeature extends CoralFeature {
 	public CoralClawFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -18,7 +18,7 @@ public class CoralClawFeature extends CoralFeature {
 	}
 
 	@Override
-	protected boolean spawnCoral(IWorld world, Random random, BlockPos pos, BlockState state) {
+	protected boolean spawnCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
 		if (!this.spawnCoralPiece(world, random, pos, state)) {
 			return false;
 		} else {

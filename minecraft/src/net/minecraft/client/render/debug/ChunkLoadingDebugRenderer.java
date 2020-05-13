@@ -85,7 +85,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 		private ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
 			ClientWorld clientWorld = ChunkLoadingDebugRenderer.this.client.world;
-			DimensionType dimensionType = ChunkLoadingDebugRenderer.this.client.world.dimension.getType();
+			DimensionType dimensionType = ChunkLoadingDebugRenderer.this.client.world.method_27983();
 			ServerWorld serverWorld;
 			if (integratedServer.getWorld(dimensionType) != null) {
 				serverWorld = integratedServer.getWorld(dimensionType);

@@ -8,7 +8,6 @@ import net.minecraft.structure.VillageStructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -18,13 +17,13 @@ public class VillageFeature extends StructureFeature<StructurePoolFeatureConfig>
 	}
 
 	@Override
-	protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+	protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
 		return chunkGeneratorConfig.getVillageDistance();
 	}
 
 	@Override
-	protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
-		return chunkGenerationConfig.getVillageSeparation();
+	protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
+		return chunkGeneratorConfig.getVillageSeparation();
 	}
 
 	@Override
@@ -53,7 +52,7 @@ public class VillageFeature extends StructureFeature<StructurePoolFeatureConfig>
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			StructurePoolFeatureConfig structurePoolFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.VILLAGE);
 			BlockPos blockPos = new BlockPos(x * 16, 0, z * 16);
 			VillageGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random, structurePoolFeatureConfig);

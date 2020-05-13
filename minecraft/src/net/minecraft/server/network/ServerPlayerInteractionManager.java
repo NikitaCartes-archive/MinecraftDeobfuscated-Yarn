@@ -1,13 +1,13 @@
 package net.minecraft.server.network;
 
 import java.util.Objects;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CommandBlock;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -250,22 +250,22 @@ public class ServerPlayerInteractionManager {
 		}
 	}
 
-	public ActionResult interactItem(PlayerEntity player, World world, ItemStack stack, Hand hand) {
+	public ActionResult interactItem(ServerPlayerEntity serverPlayerEntity, World world, ItemStack stack, Hand hand) {
 		if (this.gameMode == GameMode.SPECTATOR) {
 			return ActionResult.PASS;
-		} else if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
+		} else if (serverPlayerEntity.getItemCooldownManager().isCoolingDown(stack.getItem())) {
 			return ActionResult.PASS;
 		} else {
 			int i = stack.getCount();
 			int j = stack.getDamage();
-			TypedActionResult<ItemStack> typedActionResult = stack.use(world, player, hand);
+			TypedActionResult<ItemStack> typedActionResult = stack.use(world, serverPlayerEntity, hand);
 			ItemStack itemStack = typedActionResult.getValue();
 			if (itemStack == stack && itemStack.getCount() == i && itemStack.getMaxUseTime() <= 0 && itemStack.getDamage() == j) {
 				return typedActionResult.getResult();
-			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack.getMaxUseTime() > 0 && !player.isUsingItem()) {
+			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack.getMaxUseTime() > 0 && !serverPlayerEntity.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
-				player.setStackInHand(hand, itemStack);
+				serverPlayerEntity.setStackInHand(hand, itemStack);
 				if (this.isCreative()) {
 					itemStack.setCount(i);
 					if (itemStack.isDamageable() && itemStack.getDamage() != j) {
@@ -274,11 +274,11 @@ public class ServerPlayerInteractionManager {
 				}
 
 				if (itemStack.isEmpty()) {
-					player.setStackInHand(hand, ItemStack.EMPTY);
+					serverPlayerEntity.setStackInHand(hand, ItemStack.EMPTY);
 				}
 
-				if (!player.isUsingItem()) {
-					((ServerPlayerEntity)player).openHandledScreen(player.playerScreenHandler);
+				if (!serverPlayerEntity.isUsingItem()) {
+					serverPlayerEntity.openHandledScreen(serverPlayerEntity.playerScreenHandler);
 				}
 
 				return typedActionResult.getResult();
@@ -286,37 +286,48 @@ public class ServerPlayerInteractionManager {
 		}
 	}
 
-	public ActionResult interactBlock(PlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
+	public ActionResult interactBlock(ServerPlayerEntity serverPlayerEntity, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
 		BlockPos blockPos = hitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (this.gameMode == GameMode.SPECTATOR) {
 			NamedScreenHandlerFactory namedScreenHandlerFactory = blockState.createScreenHandlerFactory(world, blockPos);
 			if (namedScreenHandlerFactory != null) {
-				player.openHandledScreen(namedScreenHandlerFactory);
+				serverPlayerEntity.openHandledScreen(namedScreenHandlerFactory);
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.PASS;
 			}
 		} else {
-			boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
-			boolean bl2 = player.shouldCancelInteraction() && bl;
+			boolean bl = !serverPlayerEntity.getMainHandStack().isEmpty() || !serverPlayerEntity.getOffHandStack().isEmpty();
+			boolean bl2 = serverPlayerEntity.shouldCancelInteraction() && bl;
+			ItemStack itemStack = stack.copy();
 			if (!bl2) {
-				ActionResult actionResult = blockState.onUse(world, player, hand, hitResult);
+				ActionResult actionResult = blockState.onUse(world, serverPlayerEntity, hand, hitResult);
+				if (actionResult == ActionResult.SUCCESS) {
+					Criteria.field_24478.test(serverPlayerEntity, blockPos, itemStack);
+				}
+
 				if (actionResult.isAccepted()) {
 					return actionResult;
 				}
 			}
 
-			if (!stack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
-				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, hitResult);
+			if (!stack.isEmpty() && !serverPlayerEntity.getItemCooldownManager().isCoolingDown(stack.getItem())) {
+				ItemUsageContext itemUsageContext = new ItemUsageContext(serverPlayerEntity, hand, hitResult);
+				ActionResult actionResult2;
 				if (this.isCreative()) {
 					int i = stack.getCount();
-					ActionResult actionResult2 = stack.useOnBlock(itemUsageContext);
+					actionResult2 = stack.useOnBlock(itemUsageContext);
 					stack.setCount(i);
-					return actionResult2;
 				} else {
-					return stack.useOnBlock(itemUsageContext);
+					actionResult2 = stack.useOnBlock(itemUsageContext);
 				}
+
+				if (actionResult2 == ActionResult.SUCCESS) {
+					Criteria.field_24478.test(serverPlayerEntity, blockPos, itemStack);
+				}
+
+				return actionResult2;
 			} else {
 				return ActionResult.PASS;
 			}

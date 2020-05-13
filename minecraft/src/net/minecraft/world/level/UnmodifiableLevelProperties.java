@@ -26,11 +26,6 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public long getSeed() {
-		return this.field_24179.getSeed();
-	}
-
-	@Override
 	public int getSpawnX() {
 		return this.properties.getSpawnX();
 	}
@@ -135,27 +130,12 @@ public class UnmodifiableLevelProperties implements class_5268 {
 	}
 
 	@Override
-	public boolean hasStructures() {
-		return this.properties.hasStructures();
-	}
-
-	@Override
 	public void setGameMode(GameMode gameMode) {
 	}
 
 	@Override
 	public boolean isHardcore() {
 		return this.field_24179.isHardcore();
-	}
-
-	@Override
-	public LevelGeneratorType getGeneratorType() {
-		return this.properties.getGeneratorType();
-	}
-
-	@Override
-	public LevelGeneratorOptions getGeneratorOptions() {
-		return this.properties.getGeneratorOptions();
 	}
 
 	@Override

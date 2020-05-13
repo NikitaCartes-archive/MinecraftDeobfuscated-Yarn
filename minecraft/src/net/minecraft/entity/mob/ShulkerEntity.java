@@ -12,13 +12,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -47,8 +45,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class ShulkerEntity extends GolemEntity implements Monster {
@@ -64,29 +60,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	protected static final TrackedData<Byte> COLOR = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private float prevOpenProgress;
 	private float openProgress;
-	private BlockPos prevAttachedBlock;
+	private BlockPos prevAttachedBlock = null;
 	private int teleportLerpTimer;
 
 	public ShulkerEntity(EntityType<? extends ShulkerEntity> entityType, World world) {
 		super(entityType, world);
-		this.prevBodyYaw = 180.0F;
-		this.bodyYaw = 180.0F;
-		this.prevAttachedBlock = null;
 		this.experiencePoints = 5;
-	}
-
-	@Nullable
-	@Override
-	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
-	) {
-		this.bodyYaw = 180.0F;
-		this.prevBodyYaw = 180.0F;
-		this.yaw = 180.0F;
-		this.prevYaw = 180.0F;
-		this.headYaw = 180.0F;
-		this.prevHeadYaw = 180.0F;
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 	}
 
 	@Override
@@ -343,9 +322,10 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	public void tickMovement() {
 		super.tickMovement();
 		this.setVelocity(Vec3d.ZERO);
-		this.prevBodyYaw = 180.0F;
-		this.bodyYaw = 180.0F;
-		this.yaw = 180.0F;
+		if (!this.isAiDisabled()) {
+			this.prevBodyYaw = 0.0F;
+			this.bodyYaw = 0.0F;
+		}
 	}
 
 	@Override

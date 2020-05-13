@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
@@ -25,6 +27,9 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 	protected BiomeSource(Set<Biome> biomes) {
 		this.biomes = biomes;
 	}
+
+	@Environment(EnvType.CLIENT)
+	public abstract BiomeSource method_27985(long l);
 
 	public List<Biome> getSpawnBiomes() {
 		return SPAWN_BIOMES;

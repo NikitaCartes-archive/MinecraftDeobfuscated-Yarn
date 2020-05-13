@@ -2,6 +2,7 @@ package net.minecraft.block.entity;
 
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -12,6 +13,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -60,6 +62,10 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	public void checkLootInteraction(@Nullable PlayerEntity player) {
 		if (this.lootTableId != null && this.world.getServer() != null) {
 			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
+			if (player instanceof ServerPlayerEntity) {
+				Criteria.field_24479.method_27993((ServerPlayerEntity)player, this.lootTableId);
+			}
+
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 				.parameter(LootContextParameters.POSITION, new BlockPos(this.pos))

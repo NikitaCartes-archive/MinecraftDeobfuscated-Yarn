@@ -7,10 +7,10 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -121,23 +121,23 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	}
 
 	protected <FC extends FeatureConfig, F extends Feature<FC>> boolean generate(
-		IWorld world,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DC decoratorConfig,
 		ConfiguredFeature<FC, F> configuredFeature
 	) {
 		AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-		this.getPositions(world, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
-			boolean bl = configuredFeature.generate(world, structureAccessor, chunkGenerator, random, blockPosx);
+		this.getPositions(serverWorldAccess, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
+			boolean bl = configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPosx);
 			atomicBoolean.set(atomicBoolean.get() || bl);
 		});
 		return atomicBoolean.get();
 	}
 
-	public abstract Stream<BlockPos> getPositions(IWorld world, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, DC config, BlockPos pos);
+	public abstract Stream<BlockPos> getPositions(WorldAccess world, ChunkGenerator generator, Random random, DC config, BlockPos pos);
 
 	public String toString() {
 		return this.getClass().getSimpleName() + "@" + Integer.toHexString(this.hashCode());

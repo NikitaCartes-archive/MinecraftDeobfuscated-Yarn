@@ -34,13 +34,13 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.level.LevelGeneratorType;
 
 public class SlimeEntity extends MobEntity implements Monster {
 	private static final TrackedData<Integer> SLIME_SIZE = DataTracker.registerData(SlimeEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -272,30 +272,30 @@ public class SlimeEntity extends MobEntity implements Monster {
 		return this.getSize() == 1 ? this.getType().getLootTableId() : LootTables.EMPTY;
 	}
 
-	public static boolean canSpawn(EntityType<SlimeEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		if (world.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT && random.nextInt(4) != 1) {
-			return false;
-		} else {
-			if (world.getDifficulty() != Difficulty.PEACEFUL) {
-				Biome biome = world.getBiome(pos);
-				if (biome == Biomes.SWAMP
-					&& pos.getY() > 50
-					&& pos.getY() < 70
-					&& random.nextFloat() < 0.5F
-					&& random.nextFloat() < world.getMoonSize()
-					&& world.getLightLevel(pos) <= random.nextInt(8)) {
-					return canMobSpawn(type, world, spawnReason, pos, random);
-				}
-
-				ChunkPos chunkPos = new ChunkPos(pos);
-				boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, world.getSeed(), 987234911L).nextInt(10) == 0;
-				if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
-					return canMobSpawn(type, world, spawnReason, pos, random);
-				}
+	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		if (world.getDifficulty() != Difficulty.PEACEFUL) {
+			Biome biome = world.getBiome(pos);
+			if (biome == Biomes.SWAMP
+				&& pos.getY() > 50
+				&& pos.getY() < 70
+				&& random.nextFloat() < 0.5F
+				&& random.nextFloat() < world.getMoonSize()
+				&& world.getLightLevel(pos) <= random.nextInt(8)) {
+				return canMobSpawn(type, world, spawnReason, pos, random);
 			}
 
-			return false;
+			if (!(world instanceof ServerWorldAccess)) {
+				return false;
+			}
+
+			ChunkPos chunkPos = new ChunkPos(pos);
+			boolean bl = ChunkRandom.getSlimeRandom(chunkPos.x, chunkPos.z, ((ServerWorldAccess)world).getSeed(), 987234911L).nextInt(10) == 0;
+			if (random.nextInt(10) == 0 && bl && pos.getY() < 40) {
+				return canMobSpawn(type, world, spawnReason, pos, random);
+			}
 		}
+
+		return false;
 	}
 
 	@Override
@@ -322,7 +322,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		int i = this.random.nextInt(3);
 		if (i < 2 && this.random.nextFloat() < 0.5F * difficulty.getClampedLocalDifficulty()) {

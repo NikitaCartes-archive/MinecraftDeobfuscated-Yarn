@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
@@ -34,7 +34,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+	public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
 		if (!(random.nextFloat() >= this.chance)) {
 			Direction direction = BeehiveBlock.getRandomGenerationDirection(random);
 			int i = !leavesPositions.isEmpty()

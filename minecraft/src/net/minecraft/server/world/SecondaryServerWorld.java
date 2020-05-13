@@ -6,6 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 
@@ -17,7 +18,10 @@ public class SecondaryServerWorld extends ServerWorld {
 		Executor executor,
 		LevelStorage.Session session,
 		DimensionType dimensionType,
-		WorldGenerationProgressListener worldGenerationProgressListener
+		WorldGenerationProgressListener worldGenerationProgressListener,
+		ChunkGenerator chunkGenerator,
+		boolean bl,
+		long l
 	) {
 		super(
 			minecraftServer,
@@ -25,7 +29,10 @@ public class SecondaryServerWorld extends ServerWorld {
 			session,
 			new UnmodifiableLevelProperties(dimensionType, minecraftServer.method_27728(), arg),
 			dimensionType,
-			worldGenerationProgressListener
+			worldGenerationProgressListener,
+			chunkGenerator,
+			bl,
+			l
 		);
 		serverWorld.getWorldBorder().addListener(new WorldBorderListener.WorldBorderSyncer(this.getWorldBorder()));
 	}

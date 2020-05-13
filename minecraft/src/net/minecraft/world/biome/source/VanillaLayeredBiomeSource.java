@@ -2,6 +2,8 @@ package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.layer.BiomeLayers;
@@ -76,10 +78,20 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 		Biomes.MODIFIED_WOODED_BADLANDS_PLATEAU,
 		Biomes.MODIFIED_BADLANDS_PLATEAU
 	);
+	private final boolean field_24498;
+	private final int field_24499;
 
-	public VanillaLayeredBiomeSource(VanillaLayeredBiomeSourceConfig config) {
+	public VanillaLayeredBiomeSource(long l, boolean bl, int i) {
 		super(BIOMES);
-		this.biomeSampler = BiomeLayers.build(config.getSeed(), config.getGeneratorType(), config.getGeneratorConfig());
+		this.field_24498 = bl;
+		this.field_24499 = i;
+		this.biomeSampler = BiomeLayers.build(l, bl, i, 4);
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public BiomeSource method_27985(long l) {
+		return new VanillaLayeredBiomeSource(l, this.field_24498, this.field_24499);
 	}
 
 	@Override

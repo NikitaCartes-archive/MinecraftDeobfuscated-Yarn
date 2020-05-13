@@ -15,6 +15,8 @@ import net.minecraft.item.Items;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
@@ -47,7 +49,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(Blocks.COBBLESTONE))
+			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.STONE_TOOL_MATERIALS).build()))
 			.build(consumer, "story/mine_stone");
 		Advancement advancement3 = Advancement.Task.create()
 			.parent(advancement2)
@@ -137,7 +139,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.criterion("iron_leggings", InventoryChangedCriterion.Conditions.items(Items.IRON_LEGGINGS))
 			.criterion("iron_boots", InventoryChangedCriterion.Conditions.items(Items.IRON_BOOTS))
 			.build(consumer, "story/obtain_armor");
-		Advancement advancement9 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement6)
 			.display(
 				Items.ENCHANTED_BOOK,
@@ -151,7 +153,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("enchanted_item", EnchantedItemCriterion.Conditions.any())
 			.build(consumer, "story/enchant_item");
-		Advancement advancement10 = Advancement.Task.create()
+		Advancement advancement9 = Advancement.Task.create()
 			.parent(advancement7)
 			.display(
 				Blocks.OBSIDIAN,
@@ -165,7 +167,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("obsidian", InventoryChangedCriterion.Conditions.items(Blocks.OBSIDIAN))
 			.build(consumer, "story/form_obsidian");
-		Advancement advancement11 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement8)
 			.display(
 				Items.SHIELD,
@@ -182,7 +184,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				EntityHurtPlayerCriterion.Conditions.create(DamagePredicate.Builder.create().type(DamageSourcePredicate.Builder.create().projectile(true)).blocked(true))
 			)
 			.build(consumer, "story/deflect_arrow");
-		Advancement advancement12 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement6)
 			.display(
 				Items.DIAMOND_CHESTPLATE,
@@ -200,8 +202,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.criterion("diamond_leggings", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_LEGGINGS))
 			.criterion("diamond_boots", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_BOOTS))
 			.build(consumer, "story/shiny_gear");
-		Advancement advancement13 = Advancement.Task.create()
-			.parent(advancement10)
+		Advancement advancement10 = Advancement.Task.create()
+			.parent(advancement9)
 			.display(
 				Items.FLINT_AND_STEEL,
 				new TranslatableText("advancements.story.enter_the_nether.title"),
@@ -214,8 +216,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.THE_NETHER))
 			.build(consumer, "story/enter_the_nether");
-		Advancement advancement14 = Advancement.Task.create()
-			.parent(advancement13)
+		Advancement.Task.create()
+			.parent(advancement10)
 			.display(
 				Items.GOLDEN_APPLE,
 				new TranslatableText("advancements.story.cure_zombie_villager.title"),
@@ -228,8 +230,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("cured_zombie", CuredZombieVillagerCriterion.Conditions.any())
 			.build(consumer, "story/cure_zombie_villager");
-		Advancement advancement15 = Advancement.Task.create()
-			.parent(advancement13)
+		Advancement advancement11 = Advancement.Task.create()
+			.parent(advancement10)
 			.display(
 				Items.ENDER_EYE,
 				new TranslatableText("advancements.story.follow_ender_eye.title"),
@@ -242,8 +244,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
-		Advancement advancement16 = Advancement.Task.create()
-			.parent(advancement15)
+		Advancement.Task.create()
+			.parent(advancement11)
 			.display(
 				Blocks.END_STONE,
 				new TranslatableText("advancements.story.enter_the_end.title"),

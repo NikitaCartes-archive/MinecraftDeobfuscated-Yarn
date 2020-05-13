@@ -2,33 +2,33 @@ package net.minecraft.world.gen;
 
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_5268;
+import net.minecraft.class_5285;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class StructureAccessor {
 	private final ServerWorld field_24404;
-	private final class_5268 field_24405;
+	private final class_5285 field_24497;
 
-	public StructureAccessor(ServerWorld serverWorld, class_5268 arg) {
+	public StructureAccessor(ServerWorld serverWorld, class_5285 arg) {
 		this.field_24404 = serverWorld;
-		this.field_24405 = arg;
+		this.field_24497 = arg;
 	}
 
-	public Stream<StructureStart> getStructuresWithChildren(ChunkSectionPos pos, StructureFeature<?> feature, IWorld world) {
-		return world.getChunk(pos.getSectionX(), pos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES)
+	public Stream<StructureStart> getStructuresWithChildren(ChunkSectionPos pos, StructureFeature<?> feature) {
+		return this.field_24404
+			.getChunk(pos.getSectionX(), pos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES)
 			.getStructureReferences(feature.getName())
 			.stream()
 			.map(long_ -> ChunkSectionPos.from(new ChunkPos(long_), 0))
 			.map(
 				chunkSectionPos -> this.getStructureStart(
-						chunkSectionPos, feature, world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS)
+						chunkSectionPos, feature, this.field_24404.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS)
 					)
 			)
 			.filter(structureStart -> structureStart != null && structureStart.hasChildren());
@@ -48,6 +48,6 @@ public class StructureAccessor {
 	}
 
 	public boolean method_27834() {
-		return this.field_24405.hasStructures();
+		return this.field_24497.method_28029();
 	}
 }

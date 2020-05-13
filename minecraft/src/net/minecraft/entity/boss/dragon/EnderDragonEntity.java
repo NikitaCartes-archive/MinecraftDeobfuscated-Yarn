@@ -108,8 +108,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		this.setHealth(this.getMaximumHealth());
 		this.noClip = true;
 		this.ignoreCameraFrustum = true;
-		if (!world.isClient && world.dimension instanceof TheEndDimension) {
-			this.fight = ((TheEndDimension)world.dimension).getEnderDragonFight();
+		if (!world.isClient && world.getDimension() instanceof TheEndDimension) {
+			this.fight = ((TheEndDimension)world.getDimension()).getEnderDragonFight();
 		} else {
 			this.fight = null;
 		}

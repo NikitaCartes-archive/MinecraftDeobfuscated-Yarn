@@ -20,8 +20,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 @Environment(EnvType.CLIENT)
 public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> {
@@ -66,7 +66,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 				blockState,
 				world,
 				bedBlockEntity.getPos(),
-				(iWorld, blockPos) -> false
+				(worldAccess, blockPos) -> false
 			);
 			int k = propertySource.<Int2IntFunction>apply(new LightmapCoordinatesRetriever<>()).get(i);
 			this.method_3558(

@@ -13,7 +13,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -24,13 +23,13 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+	protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
 		return chunkGeneratorConfig.getEndCityDistance();
 	}
 
 	@Override
-	protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
-		return chunkGenerationConfig.getEndCitySeparation();
+	protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
+		return chunkGeneratorConfig.getEndCitySeparation();
 	}
 
 	@Override
@@ -45,9 +44,9 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Override
 	protected boolean shouldStartAt(
-		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+		BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos
 	) {
-		return getGenerationHeight(chunkX, chunkZ, chunkGenerator) >= 60;
+		return getGenerationHeight(i, j, chunkGenerator) >= 60;
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		return 8;
 	}
 
-	private static int getGenerationHeight(int chunkX, int chunkZ, ChunkGenerator<?> chunkGenerator) {
+	private static int getGenerationHeight(int chunkX, int chunkZ, ChunkGenerator chunkGenerator) {
 		Random random = new Random((long)(chunkX + chunkZ * 10387313));
 		BlockRotation blockRotation = BlockRotation.random(random);
 		int i = 5;
@@ -94,7 +93,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			BlockRotation blockRotation = BlockRotation.random(this.random);
 			int i = EndCityFeature.getGenerationHeight(x, z, chunkGenerator);
 			if (i >= 60) {

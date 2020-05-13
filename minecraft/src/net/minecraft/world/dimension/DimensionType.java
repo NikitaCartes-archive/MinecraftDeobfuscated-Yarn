@@ -15,19 +15,21 @@ import net.minecraft.world.biome.source.VoronoiBiomeAccessType;
 
 public class DimensionType implements DynamicSerializable {
 	public static final DimensionType OVERWORLD = register(
-		"overworld", new DimensionType(1, "", "", OverworldDimension::new, true, HorizontalVoronoiBiomeAccessType.INSTANCE)
+		"overworld", new DimensionType(1, "", "", OverworldDimension::new, true, false, false, HorizontalVoronoiBiomeAccessType.INSTANCE)
 	);
 	public static final DimensionType THE_NETHER = register(
-		"the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false, VoronoiBiomeAccessType.INSTANCE)
+		"the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false, true, true, VoronoiBiomeAccessType.INSTANCE)
 	);
 	public static final DimensionType THE_END = register(
-		"the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false, VoronoiBiomeAccessType.INSTANCE)
+		"the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false, false, false, VoronoiBiomeAccessType.INSTANCE)
 	);
 	private final int id;
 	private final String suffix;
 	private final String saveDir;
 	private final BiFunction<World, DimensionType, ? extends Dimension> factory;
 	private final boolean hasSkyLight;
+	private final boolean field_24504;
+	private final boolean field_24505;
 	private final BiomeAccessType biomeAccessType;
 
 	private static DimensionType register(String id, DimensionType dimension) {
@@ -40,6 +42,8 @@ public class DimensionType implements DynamicSerializable {
 		String saveDir,
 		BiFunction<World, DimensionType, ? extends Dimension> factory,
 		boolean hasSkylight,
+		boolean bl,
+		boolean bl2,
 		BiomeAccessType biomeAccessType
 	) {
 		this.id = dimensionId;
@@ -47,6 +51,8 @@ public class DimensionType implements DynamicSerializable {
 		this.saveDir = saveDir;
 		this.factory = factory;
 		this.hasSkyLight = hasSkylight;
+		this.field_24504 = bl;
+		this.field_24505 = bl2;
 		this.biomeAccessType = biomeAccessType;
 	}
 
@@ -95,6 +101,14 @@ public class DimensionType implements DynamicSerializable {
 
 	public boolean hasSkyLight() {
 		return this.hasSkyLight;
+	}
+
+	public boolean method_27998() {
+		return this.field_24504;
+	}
+
+	public boolean method_27999() {
+		return this.field_24505;
 	}
 
 	public BiomeAccessType getBiomeAccessType() {

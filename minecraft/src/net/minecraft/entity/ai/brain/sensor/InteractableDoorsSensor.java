@@ -16,7 +16,7 @@ import net.minecraft.world.dimension.DimensionType;
 public class InteractableDoorsSensor extends Sensor<LivingEntity> {
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
-		DimensionType dimensionType = world.getDimension().getType();
+		DimensionType dimensionType = world.method_27983();
 		BlockPos blockPos = entity.getBlockPos();
 		List<GlobalPos> list = Lists.<GlobalPos>newArrayList();
 

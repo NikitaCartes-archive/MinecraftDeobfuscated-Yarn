@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_5219;
+import net.minecraft.class_5285;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -13,7 +14,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.level.LevelGeneratorType;
 
 @Environment(EnvType.CLIENT)
 public class LevelSummary implements Comparable<LevelSummary> {
@@ -28,9 +28,9 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	private final String versionName;
 	private final int versionId;
 	private final boolean snapshot;
-	private final LevelGeneratorType generatorType;
 	private final boolean locked;
 	private final File file;
+	private final class_5285 generatorType;
 	@Nullable
 	private Text field_24191;
 
@@ -48,7 +48,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		this.versionName = arg.getVersionName();
 		this.versionId = arg.getVersionId();
 		this.snapshot = arg.isVersionSnapshot();
-		this.generatorType = arg.method_27859().getGeneratorType();
+		this.generatorType = arg.method_28057();
 	}
 
 	public String getName() {
@@ -104,7 +104,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	public boolean isLegacyCustomizedWorld() {
-		return this.generatorType == LevelGeneratorType.CUSTOMIZED && this.versionId < 1466;
+		return this.generatorType.method_28035();
 	}
 
 	public boolean isOutdatedLevel() {
