@@ -5,10 +5,9 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 	public ForestRockFeature(Function<Dynamic<?>, ? extends BoulderFeatureConfig> function) {
@@ -16,16 +15,16 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		BoulderFeatureConfig boulderFeatureConfig
 	) {
 		while (blockPos.getY() > 3) {
-			if (!iWorld.isAir(blockPos.down())) {
-				Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+			if (!serverWorldAccess.isAir(blockPos.down())) {
+				Block block = serverWorldAccess.getBlockState(blockPos.down()).getBlock();
 				if (isDirt(block) || isStone(block)) {
 					break;
 				}
@@ -47,7 +46,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 
 				for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-k, -l, -m), blockPos.add(k, l, m))) {
 					if (blockPos2.getSquaredDistance(blockPos) <= (double)(f * f)) {
-						iWorld.setBlockState(blockPos2, boulderFeatureConfig.state, 4);
+						serverWorldAccess.setBlockState(blockPos2, boulderFeatureConfig.state, 4);
 					}
 				}
 

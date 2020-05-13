@@ -11,8 +11,8 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableTestableWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class LeaveVineTreeDecorator extends TreeDecorator {
@@ -25,7 +25,7 @@ public class LeaveVineTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
+	public void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box) {
 		leavesPositions.forEach(blockPos -> {
 			if (random.nextInt(4) == 0) {
 				BlockPos blockPos2 = blockPos.west();

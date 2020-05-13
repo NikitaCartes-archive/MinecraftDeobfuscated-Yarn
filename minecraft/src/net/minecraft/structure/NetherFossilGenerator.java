@@ -11,7 +11,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -74,21 +75,21 @@ public class NetherFossilGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
 		}
 
 		@Override
 		public boolean generate(
-			IWorld world,
+			ServerWorldAccess serverWorldAccess,
 			StructureAccessor structureAccessor,
-			ChunkGenerator<?> chunkGenerator,
+			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
 			BlockPos blockPos
 		) {
 			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+			return super.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
 		}
 	}
 }

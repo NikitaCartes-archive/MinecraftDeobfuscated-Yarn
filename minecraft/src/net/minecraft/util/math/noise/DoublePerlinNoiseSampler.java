@@ -1,12 +1,18 @@
 package net.minecraft.util.math.noise;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.stream.IntStream;
 import net.minecraft.world.gen.ChunkRandom;
 
 public class DoublePerlinNoiseSampler {
 	private final double amplitude;
 	private final OctavePerlinNoiseSampler firstSampler;
 	private final OctavePerlinNoiseSampler secondSampler;
+
+	public DoublePerlinNoiseSampler(ChunkRandom chunkRandom, IntStream intStream) {
+		this(chunkRandom, (List<Integer>)intStream.boxed().collect(ImmutableList.toImmutableList()));
+	}
 
 	public DoublePerlinNoiseSampler(ChunkRandom chunkRandom, List<Integer> octaves) {
 		this.firstSampler = new OctavePerlinNoiseSampler(chunkRandom, octaves);

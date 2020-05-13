@@ -4,6 +4,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5289;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.Element;
@@ -101,7 +102,7 @@ public class Keyboard {
 						String.format(
 							Locale.ROOT,
 							"/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f",
-							DimensionType.getId(this.client.player.world.dimension.getType()),
+							DimensionType.getId(this.client.player.world.method_27983()),
 							this.client.player.getX(),
 							this.client.player.getY(),
 							this.client.player.getZ(),
@@ -116,16 +117,6 @@ public class Keyboard {
 					}
 
 					return true;
-				case 69:
-				case 74:
-				case 75:
-				case 76:
-				case 77:
-				case 79:
-				case 82:
-				case 83:
-				default:
-					return false;
 				case 70:
 					Option.RENDER_DISTANCE
 						.set(
@@ -154,10 +145,10 @@ public class Keyboard {
 				case 78:
 					if (!this.client.player.hasPermissionLevel(2)) {
 						this.debugWarn("debug.creative_spectator.error");
-					} else if (this.client.player.isCreative()) {
+					} else if (!this.client.player.isSpectator()) {
 						this.client.player.sendChatMessage("/gamemode spectator");
 					} else {
-						this.client.player.sendChatMessage("/gamemode creative");
+						this.client.player.sendChatMessage("/gamemode " + this.client.interactionManager.method_28107().getName());
 					}
 
 					return true;
@@ -182,11 +173,22 @@ public class Keyboard {
 					chatHud.addMessage(new TranslatableText("debug.help.help"));
 					chatHud.addMessage(new TranslatableText("debug.reload_resourcepacks.help"));
 					chatHud.addMessage(new TranslatableText("debug.pause.help"));
+					chatHud.addMessage(new TranslatableText("debug.gamemodes.help"));
 					return true;
 				case 84:
 					this.debugWarn("debug.reload_resourcepacks.message");
 					this.client.reloadResources();
 					return true;
+				case 293:
+					if (!this.client.player.hasPermissionLevel(2)) {
+						this.debugWarn("debug.gamemodes.error");
+					} else {
+						this.client.openScreen(new class_5289());
+					}
+
+					return true;
+				default:
+					return false;
 			}
 		}
 	}

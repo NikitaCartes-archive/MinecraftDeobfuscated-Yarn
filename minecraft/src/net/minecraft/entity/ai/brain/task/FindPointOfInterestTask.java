@@ -58,7 +58,7 @@ public class FindPointOfInterestTask extends Task<MobEntityWithAi> {
 			BlockPos blockPos = path.getTarget();
 			pointOfInterestStorage.getType(blockPos).ifPresent(pointOfInterestType -> {
 				pointOfInterestStorage.getPosition(this.poiType.getCompletionCondition(), blockPos2 -> blockPos2.equals(blockPos), blockPos, 1);
-				mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.getDimension().getType(), blockPos));
+				mobEntityWithAi.getBrain().remember(this.targetMemoryModuleType, GlobalPos.create(serverWorld.method_27983(), blockPos));
 				DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
 			});
 		} else if (this.tries < 5) {

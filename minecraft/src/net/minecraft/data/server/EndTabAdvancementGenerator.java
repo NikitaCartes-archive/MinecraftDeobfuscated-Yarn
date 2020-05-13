@@ -66,7 +66,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("entered_end_gateway", EnterBlockCriterion.Conditions.block(Blocks.END_GATEWAY))
 			.build(consumer, "end/enter_end_gateway");
-		Advancement advancement4 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement2)
 			.display(
 				Items.END_CRYSTAL,
@@ -80,7 +80,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("summoned_dragon", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
 			.build(consumer, "end/respawn_dragon");
-		Advancement advancement5 = Advancement.Task.create()
+		Advancement advancement4 = Advancement.Task.create()
 			.parent(advancement3)
 			.display(
 				Blocks.PURPUR_BLOCK,
@@ -94,7 +94,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.END_CITY)))
 			.build(consumer, "end/find_end_city");
-		Advancement advancement6 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement2)
 			.display(
 				Items.DRAGON_BREATH,
@@ -108,8 +108,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("dragon_breath", InventoryChangedCriterion.Conditions.items(Items.DRAGON_BREATH))
 			.build(consumer, "end/dragon_breath");
-		Advancement advancement7 = Advancement.Task.create()
-			.parent(advancement5)
+		Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.SHULKER_SHELL,
 				new TranslatableText("advancements.end.levitate.title"),
@@ -123,8 +123,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.rewards(AdvancementRewards.Builder.experience(50))
 			.criterion("levitated", LevitationCriterion.Conditions.create(DistancePredicate.y(NumberRange.FloatRange.atLeast(50.0F))))
 			.build(consumer, "end/levitate");
-		Advancement advancement8 = Advancement.Task.create()
-			.parent(advancement5)
+		Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.ELYTRA,
 				new TranslatableText("advancements.end.elytra.title"),
@@ -137,7 +137,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("elytra", InventoryChangedCriterion.Conditions.items(Items.ELYTRA))
 			.build(consumer, "end/elytra");
-		Advancement advancement9 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement2)
 			.display(
 				Blocks.DRAGON_EGG,

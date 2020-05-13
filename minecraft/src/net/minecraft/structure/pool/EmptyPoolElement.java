@@ -10,7 +10,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -34,9 +34,9 @@ public class EmptyPoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		IWorld world,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<?> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		BlockPos blockPos,
 		BlockPos blockPos2,
 		BlockRotation blockRotation,

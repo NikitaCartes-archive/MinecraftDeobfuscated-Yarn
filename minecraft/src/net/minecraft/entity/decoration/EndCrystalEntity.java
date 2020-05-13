@@ -56,7 +56,7 @@ public class EndCrystalEntity extends Entity {
 		this.endCrystalAge++;
 		if (!this.world.isClient) {
 			BlockPos blockPos = this.getBlockPos();
-			if (this.world.dimension instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
+			if (this.world.getDimension() instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
 				this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
 			}
 		}
@@ -114,8 +114,8 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	private void crystalDestroyed(DamageSource source) {
-		if (this.world.dimension instanceof TheEndDimension) {
-			TheEndDimension theEndDimension = (TheEndDimension)this.world.dimension;
+		if (this.world.getDimension() instanceof TheEndDimension) {
+			TheEndDimension theEndDimension = (TheEndDimension)this.world.getDimension();
 			EnderDragonFight enderDragonFight = theEndDimension.getEnderDragonFight();
 			if (enderDragonFight != null) {
 				enderDragonFight.crystalDestroyed(this, source);

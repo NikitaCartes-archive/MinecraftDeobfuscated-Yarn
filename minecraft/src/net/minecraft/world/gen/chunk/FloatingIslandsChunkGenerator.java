@@ -1,15 +1,22 @@
 package net.minecraft.world.gen.chunk;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.class_5284;
 import net.minecraft.world.biome.source.BiomeSource;
 
-public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<FloatingIslandsChunkGeneratorConfig> {
-	private final BlockPos center;
+public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<class_5284> {
+	private final class_5284 field_24519;
 
-	public FloatingIslandsChunkGenerator(IWorld iWorld, BiomeSource biomeSource, FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig) {
-		super(iWorld, biomeSource, 8, 4, 128, floatingIslandsChunkGeneratorConfig, true);
-		this.center = floatingIslandsChunkGeneratorConfig.getCenter();
+	public FloatingIslandsChunkGenerator(BiomeSource biomeSource, long l, class_5284 arg) {
+		super(biomeSource, l, arg, 8, 4, 128, true);
+		this.field_24519 = arg;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public ChunkGenerator method_27997(long l) {
+		return new FloatingIslandsChunkGenerator(this.biomeSource.method_27985(l), l, this.field_24519);
 	}
 
 	@Override

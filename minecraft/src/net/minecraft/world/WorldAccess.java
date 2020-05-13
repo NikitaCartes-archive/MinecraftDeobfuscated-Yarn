@@ -20,9 +20,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.dimension.Dimension;
 
-public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
-	long getSeed();
-
+public interface WorldAccess extends EntityView, WorldView, ModifiableTestableWorld {
 	default float getMoonSize() {
 		return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
 	}
@@ -69,7 +67,7 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data);
 
 	default int getDimensionHeight() {
-		return this.getDimension().isNether() ? 128 : 256;
+		return this.method_27983().method_27998() ? 128 : 256;
 	}
 
 	default void syncWorldEvent(int eventId, BlockPos pos, int data) {
@@ -82,8 +80,8 @@ public interface IWorld extends EntityView, WorldView, ModifiableTestableWorld {
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-		return EntityView.super.intersectsEntities(except, shape);
+	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
+		return EntityView.super.intersectsEntities(entity, shape);
 	}
 
 	@Override

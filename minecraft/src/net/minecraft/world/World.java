@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -66,11 +65,10 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.level.LevelGeneratorType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class World implements IWorld, AutoCloseable {
+public abstract class World implements WorldAccess, AutoCloseable {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	private static final Direction[] DIRECTIONS = Direction.values();
 	public final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
@@ -78,6 +76,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	protected final List<BlockEntity> pendingBlockEntities = Lists.<BlockEntity>newArrayList();
 	protected final List<BlockEntity> unloadedBlockEntities = Lists.<BlockEntity>newArrayList();
 	private final Thread thread;
+	private final boolean field_24496;
 	private int ambientDarkness;
 	protected int lcgBlockSeed = new Random().nextInt();
 	protected final int unusedIncrement = 1013904223;
@@ -86,8 +85,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	protected float thunderGradientPrev;
 	protected float thunderGradient;
 	public final Random random = new Random();
-	public final Dimension dimension;
-	protected final ChunkManager chunkManager;
+	private final Dimension dimension;
 	protected final class_5269 properties;
 	private final Supplier<Profiler> profiler;
 	public final boolean isClient;
@@ -95,23 +93,15 @@ public abstract class World implements IWorld, AutoCloseable {
 	private final WorldBorder border;
 	private final BiomeAccess biomeAccess;
 
-	protected World(
-		class_5269 levelProperties,
-		DimensionType dimensionType,
-		BiFunction<World, Dimension, ChunkManager> chunkManagerProvider,
-		Supplier<Profiler> profiler,
-		boolean isClient
-	) {
-		this.profiler = profiler;
-		this.properties = levelProperties;
+	protected World(class_5269 arg, DimensionType dimensionType, Supplier<Profiler> supplier, boolean bl, boolean bl2, long l) {
+		this.profiler = supplier;
+		this.properties = arg;
 		this.dimension = dimensionType.create(this);
-		this.chunkManager = (ChunkManager)chunkManagerProvider.apply(this, this.dimension);
-		this.isClient = isClient;
-		this.border = this.dimension.createWorldBorder();
+		this.isClient = bl;
+		this.border = this.getDimension().createWorldBorder();
 		this.thread = Thread.currentThread();
-		this.biomeAccess = new BiomeAccess(
-			this, isClient ? levelProperties.getSeed() : class_5217.method_27418(levelProperties.getSeed()), dimensionType.getBiomeAccessType()
-		);
+		this.biomeAccess = new BiomeAccess(this, l, dimensionType.getBiomeAccessType());
+		this.field_24496 = bl2;
 	}
 
 	@Override
@@ -204,7 +194,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Override
 	public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
-		Chunk chunk = this.chunkManager.getChunk(chunkX, chunkZ, leastStatus, create);
+		Chunk chunk = this.getChunkManager().getChunk(chunkX, chunkZ, leastStatus, create);
 		if (chunk == null && create) {
 			throw new IllegalStateException("Should always be able to create a chunk!");
 		} else {
@@ -216,7 +206,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	public boolean setBlockState(BlockPos pos, BlockState state, int flags) {
 		if (isHeightInvalid(pos)) {
 			return false;
-		} else if (!this.isClient && this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+		} else if (!this.isClient && this.method_27982()) {
 			return false;
 		} else {
 			WorldChunk worldChunk = this.getWorldChunk(pos);
@@ -408,11 +398,11 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean isDay() {
-		return this.dimension.getType() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
+		return this.method_27983() == DimensionType.OVERWORLD && this.ambientDarkness < 4;
 	}
 
 	public boolean isNight() {
-		return this.dimension.getType() == DimensionType.OVERWORLD && !this.isDay();
+		return this.method_27983() == DimensionType.OVERWORLD && !this.isDay();
 	}
 
 	@Override
@@ -495,7 +485,7 @@ public abstract class World implements IWorld, AutoCloseable {
 			BlockEntity blockEntity = (BlockEntity)iterator.next();
 			if (!blockEntity.isRemoved() && blockEntity.hasWorld()) {
 				BlockPos blockPos = blockEntity.getPos();
-				if (this.chunkManager.shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
+				if (this.getChunkManager().shouldTickBlock(blockPos) && this.getWorldBorder().contains(blockPos)) {
 					try {
 						profiler.push((Supplier<String>)(() -> String.valueOf(BlockEntityType.getId(blockEntity.getType()))));
 						if (blockEntity.getType().supports(this.getBlockState(blockPos).getBlock())) {
@@ -677,7 +667,7 @@ public abstract class World implements IWorld, AutoCloseable {
 
 	@Environment(EnvType.CLIENT)
 	public String getDebugString() {
-		return this.chunkManager.getDebugString();
+		return this.getChunkManager().getDebugString();
 	}
 
 	@Nullable
@@ -758,7 +748,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean canSetBlock(BlockPos pos) {
-		return isHeightInvalid(pos) ? false : this.chunkManager.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
+		return isHeightInvalid(pos) ? false : this.getChunkManager().isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4);
 	}
 
 	public boolean isDirectionSolid(BlockPos pos, Entity entity, Direction direction) {
@@ -795,7 +785,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public void close() throws IOException {
-		this.chunkManager.close();
+		this.getChunkManager().close();
 	}
 
 	@Nullable
@@ -908,10 +898,6 @@ public abstract class World implements IWorld, AutoCloseable {
 		return this;
 	}
 
-	public LevelGeneratorType getGeneratorType() {
-		return this.properties.getGeneratorType();
-	}
-
 	public int getReceivedStrongRedstonePower(BlockPos pos) {
 		int i = 0;
 		i = Math.max(i, this.getStrongRedstonePower(pos.down(), Direction.DOWN));
@@ -992,11 +978,6 @@ public abstract class World implements IWorld, AutoCloseable {
 		this.properties.setTime(time);
 	}
 
-	@Override
-	public long getSeed() {
-		return this.properties.getSeed();
-	}
-
 	public long getTime() {
 		return this.properties.getTime();
 	}
@@ -1021,11 +1002,6 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public void sendEntityStatus(Entity entity, byte status) {
-	}
-
-	@Override
-	public ChunkManager getChunkManager() {
-		return this.chunkManager;
 	}
 
 	public void addSyncedBlockEvent(BlockPos pos, Block block, int type, int data) {
@@ -1062,7 +1038,7 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	public boolean isThundering() {
-		return this.dimension.hasSkyLight() && !this.dimension.isNether() ? (double)this.getThunderGradient(1.0F) > 0.9 : false;
+		return this.method_27983().hasSkyLight() && !this.method_27983().method_27998() ? (double)this.getThunderGradient(1.0F) > 0.9 : false;
 	}
 
 	public boolean isRaining() {
@@ -1100,8 +1076,8 @@ public abstract class World implements IWorld, AutoCloseable {
 	public CrashReportSection addDetailsToCrashReport(CrashReport report) {
 		CrashReportSection crashReportSection = report.addElement("Affected level", 1);
 		crashReportSection.add("All players", (CrashCallable<String>)(() -> this.getPlayers().size() + " total; " + this.getPlayers()));
-		crashReportSection.add("Chunk stats", this.chunkManager::getDebugString);
-		crashReportSection.add("Level dimension", (CrashCallable<String>)(() -> this.dimension.getType().toString()));
+		crashReportSection.add("Chunk stats", this.getChunkManager()::getDebugString);
+		crashReportSection.add("Level dimension", (CrashCallable<String>)(() -> this.method_27983().toString()));
 
 		try {
 			this.properties.populateCrashReport(crashReportSection);
@@ -1173,6 +1149,11 @@ public abstract class World implements IWorld, AutoCloseable {
 	}
 
 	@Override
+	public DimensionType method_27983() {
+		return this.dimension.getType();
+	}
+
+	@Override
 	public Random getRandom() {
 		return this.random;
 	}
@@ -1207,5 +1188,9 @@ public abstract class World implements IWorld, AutoCloseable {
 	@Override
 	public BiomeAccess getBiomeAccess() {
 		return this.biomeAccess;
+	}
+
+	public final boolean method_27982() {
+		return this.field_24496;
 	}
 }

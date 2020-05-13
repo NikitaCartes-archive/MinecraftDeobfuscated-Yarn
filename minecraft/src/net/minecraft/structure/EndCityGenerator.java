@@ -18,7 +18,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class EndCityGenerator {
 	private static final StructurePlacementData PLACEMENT_DATA = new StructurePlacementData()
@@ -298,7 +298,7 @@ public class EndCityGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox) {
 			if (metadata.startsWith("Chest")) {
 				BlockPos blockPos = pos.down();
 				if (boundingBox.contains(blockPos)) {

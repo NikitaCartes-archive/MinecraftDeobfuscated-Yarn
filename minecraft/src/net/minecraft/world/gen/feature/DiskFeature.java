@@ -6,10 +6,9 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DiskFeature extends Feature<DiskFeatureConfig> {
 	public DiskFeature(Function<Dynamic<?>, ? extends DiskFeatureConfig> function) {
@@ -17,14 +16,14 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DiskFeatureConfig diskFeatureConfig
 	) {
-		if (!iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+		if (!serverWorldAccess.getFluidState(blockPos).matches(FluidTags.WATER)) {
 			return false;
 		} else {
 			int i = 0;
@@ -37,11 +36,11 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 					if (m * m + n * n <= j * j) {
 						for (int o = blockPos.getY() - diskFeatureConfig.ySize; o <= blockPos.getY() + diskFeatureConfig.ySize; o++) {
 							BlockPos blockPos2 = new BlockPos(k, o, l);
-							BlockState blockState = iWorld.getBlockState(blockPos2);
+							BlockState blockState = serverWorldAccess.getBlockState(blockPos2);
 
 							for (BlockState blockState2 : diskFeatureConfig.targets) {
 								if (blockState2.isOf(blockState.getBlock())) {
-									iWorld.setBlockState(blockPos2, diskFeatureConfig.state, 2);
+									serverWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, 2);
 									i++;
 									break;
 								}

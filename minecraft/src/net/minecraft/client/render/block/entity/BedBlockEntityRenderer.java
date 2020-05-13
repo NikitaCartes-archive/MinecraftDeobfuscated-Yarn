@@ -63,7 +63,7 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 				blockState,
 				world,
 				bedBlockEntity.getPos(),
-				(iWorld, blockPos) -> false
+				(worldAccess, blockPos) -> false
 			);
 			int k = propertySource.apply(new LightmapCoordinatesRetriever<>()).get(i);
 			this.method_3558(

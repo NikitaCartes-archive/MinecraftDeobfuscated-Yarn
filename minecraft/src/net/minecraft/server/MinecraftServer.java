@@ -3,14 +3,11 @@ package net.minecraft.server;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.JsonOps;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
@@ -61,6 +58,7 @@ import net.minecraft.class_5217;
 import net.minecraft.class_5218;
 import net.minecraft.class_5219;
 import net.minecraft.class_5268;
+import net.minecraft.class_5285;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.DataCommandStorage;
@@ -104,7 +102,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TickDurationMonitor;
@@ -135,16 +132,14 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.level.LevelGeneratorOptions;
-import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -158,9 +153,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public static final File USER_CACHE_FILE = new File("usercache.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
-			"Demo World", (long)"North Carolina".hashCode(), GameMode.SURVIVAL, true, false, Difficulty.NORMAL, LevelGeneratorType.DEFAULT.getDefaultOptions()
-		)
-		.setBonusChest();
+		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), class_5285.field_24520
+	);
 	protected final LevelStorage.Session session;
 	protected final WorldSaveHandler field_24371;
 	private final Snooper snooper = new Snooper("server", this, Util.getMeasuringTimeMs());
@@ -359,7 +353,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
 		class_5268 lv = this.field_24372.method_27859();
-		ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, this.session, lv, DimensionType.OVERWORLD, worldGenerationProgressListener);
+		class_5285 lv2 = this.field_24372.method_28057();
+		boolean bl = lv2.method_28033();
+		long l = lv2.method_28028();
+		long m = BiomeAccess.method_27984(l);
+		ServerWorld serverWorld = new ServerWorld(
+			this, this.workerExecutor, this.session, lv, DimensionType.OVERWORLD, worldGenerationProgressListener, lv2.method_28032(), bl, m
+		);
 		this.worlds.put(DimensionType.OVERWORLD, serverWorld);
 		PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
 		this.initScoreboard(persistentStateManager);
@@ -368,17 +368,17 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ServerWorld serverWorld2 = this.getWorld(DimensionType.OVERWORLD);
 		if (!lv.isInitialized()) {
 			try {
-				method_27901(serverWorld2, serverWorld2.dimension, lv, this.field_24372.getLevelInfo().hasBonusChest());
+				method_27901(serverWorld2, serverWorld2.getDimension(), lv, lv2.method_28030(), bl);
 				lv.setInitialized(true);
-				if (lv.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+				if (bl) {
 					this.setToDebugWorldProperties(this.field_24372);
 				}
-			} catch (Throwable var10) {
-				CrashReport crashReport = CrashReport.create(var10, "Exception initializing level");
+			} catch (Throwable var16) {
+				CrashReport crashReport = CrashReport.create(var16, "Exception initializing level");
 
 				try {
 					serverWorld2.addDetailsToCrashReport(crashReport);
-				} catch (Throwable var9) {
+				} catch (Throwable var15) {
 				}
 
 				throw new CrashException(crashReport);
@@ -392,24 +392,34 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.getBossBarManager().fromTag(this.field_24372.getCustomBossEvents());
 		}
 
-		for (DimensionType dimensionType : DimensionType.getAll()) {
+		for (Entry<DimensionType, ChunkGenerator> entry : lv2.method_28031().entrySet()) {
+			DimensionType dimensionType = (DimensionType)entry.getKey();
 			if (dimensionType != DimensionType.OVERWORLD) {
 				this.worlds
 					.put(
 						dimensionType,
 						new SecondaryServerWorld(
-							serverWorld2, this.field_24372.method_27859(), this, this.workerExecutor, this.session, dimensionType, worldGenerationProgressListener
+							serverWorld2,
+							this.field_24372.method_27859(),
+							this,
+							this.workerExecutor,
+							this.session,
+							dimensionType,
+							worldGenerationProgressListener,
+							(ChunkGenerator)entry.getValue(),
+							bl,
+							m
 						)
 					);
 			}
 		}
 	}
 
-	private static void method_27901(ServerWorld serverWorld, Dimension dimension, class_5268 arg, boolean bl) {
-		ChunkGenerator<?> chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
+	private static void method_27901(ServerWorld serverWorld, Dimension dimension, class_5268 arg, boolean bl, boolean bl2) {
+		ChunkGenerator chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
 		if (!dimension.canPlayersSleep()) {
 			arg.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()));
-		} else if (arg.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+		} else if (bl2) {
 			arg.setSpawnPos(BlockPos.ORIGIN.up());
 		} else {
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
@@ -421,11 +431,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				LOGGER.warn("Unable to find spawn biome");
 			}
 
-			boolean bl2 = false;
+			boolean bl3 = false;
 
 			for (Block block : BlockTags.VALID_SPAWN.values()) {
 				if (biomeSource.getTopMaterials().contains(block.getDefaultState())) {
-					bl2 = true;
+					bl3 = true;
 					break;
 				}
 			}
@@ -439,7 +449,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			for (int n = 0; n < 1024; n++) {
 				if (i > -16 && i <= 16 && j > -16 && j <= 16) {
-					BlockPos blockPos2 = dimension.getSpawningBlockInChunk(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl2);
+					BlockPos blockPos2 = dimension.getSpawningBlockInChunk(serverWorld.getSeed(), new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl3);
 					if (blockPos2 != null) {
 						arg.setSpawnPos(blockPos2);
 						break;
@@ -459,11 +469,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			if (bl) {
 				ConfiguredFeature<?, ?> configuredFeature = Feature.BONUS_CHEST.configure(FeatureConfig.DEFAULT);
 				configuredFeature.generate(
-					serverWorld,
-					serverWorld.getStructureAccessor(),
-					(ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator,
-					serverWorld.random,
-					new BlockPos(arg.getSpawnX(), arg.getSpawnY(), arg.getSpawnZ())
+					serverWorld, serverWorld.getStructureAccessor(), chunkGenerator, serverWorld.random, new BlockPos(arg.getSpawnX(), arg.getSpawnY(), arg.getSpawnZ())
 				);
 			}
 		}
@@ -503,7 +509,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	private void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
 		ServerWorld serverWorld = this.getWorld(DimensionType.OVERWORLD);
-		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
+		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.method_27983()));
 		BlockPos blockPos = serverWorld.method_27911();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
@@ -572,7 +578,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			if (!bl) {
-				LOGGER.info("Saving chunks for level '{}'/{}", serverWorld, DimensionType.getId(serverWorld.dimension.getType()));
+				LOGGER.info("Saving chunks for level '{}'/{}", serverWorld, DimensionType.getId(serverWorld.method_27983()));
 			}
 
 			serverWorld.save(null, bl2, serverWorld.savingDisabled && !bl3);
@@ -865,14 +871,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.profiler.swap("levels");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
-			if (serverWorld.dimension.getType() == DimensionType.OVERWORLD || this.isNetherAllowed()) {
-				this.profiler.push((Supplier<String>)(() -> serverWorld + " " + Registry.DIMENSION_TYPE.getId(serverWorld.dimension.getType())));
+			if (serverWorld.method_27983() == DimensionType.OVERWORLD || this.isNetherAllowed()) {
+				this.profiler.push((Supplier<String>)(() -> serverWorld + " " + Registry.DIMENSION_TYPE.getId(serverWorld.method_27983())));
 				if (this.ticks % 20 == 0) {
 					this.profiler.push("timeSync");
 					this.playerManager
 						.sendToDimension(
 							new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)),
-							serverWorld.dimension.getType()
+							serverWorld.method_27983()
 						);
 					this.profiler.pop();
 				}
@@ -973,10 +979,16 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				if (optionSet.has(optionSpec3)) {
 					levelInfo = DEMO_LEVEL_INFO;
 				} else {
-					levelInfo = method_27726(serverPropertiesLoader.getPropertiesHandler());
-					if (optionSet.has(optionSpec4)) {
-						levelInfo.setBonusChest();
-					}
+					ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
+					levelInfo = new LevelInfo(
+						serverPropertiesHandler.levelName,
+						serverPropertiesHandler.gameMode,
+						serverPropertiesHandler.hardcore,
+						serverPropertiesHandler.difficulty,
+						false,
+						new GameRules(),
+						optionSet.has(optionSpec4) ? serverPropertiesHandler.field_24623 : serverPropertiesHandler.field_24623.method_28036()
+					);
 				}
 
 				lv = new LevelProperties(levelInfo);
@@ -1005,33 +1017,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		} catch (Exception var32) {
 			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var32);
 		}
-	}
-
-	private static LevelInfo method_27726(ServerPropertiesHandler serverPropertiesHandler) {
-		long l = new Random().nextLong();
-		if (!serverPropertiesHandler.levelSeed.isEmpty()) {
-			try {
-				long m = Long.parseLong(serverPropertiesHandler.levelSeed);
-				if (m != 0L) {
-					l = m;
-				}
-			} catch (NumberFormatException var6) {
-				l = (long)serverPropertiesHandler.levelSeed.hashCode();
-			}
-		}
-
-		String string = serverPropertiesHandler.generatorSettings;
-		JsonObject jsonObject = !string.isEmpty() ? JsonHelper.deserialize(string) : new JsonObject();
-		LevelGeneratorOptions levelGeneratorOptions = serverPropertiesHandler.levelType.loadOptions(new Dynamic<>(JsonOps.INSTANCE, jsonObject));
-		return new LevelInfo(
-			serverPropertiesHandler.levelName,
-			l,
-			serverPropertiesHandler.gameMode,
-			serverPropertiesHandler.generateStructures,
-			serverPropertiesHandler.hardcore,
-			serverPropertiesHandler.difficulty,
-			levelGeneratorOptions
-		);
 	}
 
 	protected void setServerId(String serverId) {
@@ -1221,13 +1206,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			if (serverWorld != null) {
-				class_5217 lv = serverWorld.getLevelProperties();
-				snooper.addInfo("world[" + i + "][dimension]", serverWorld.dimension.getType());
+				snooper.addInfo("world[" + i + "][dimension]", serverWorld.method_27983());
 				snooper.addInfo("world[" + i + "][mode]", this.field_24372.getGameMode());
 				snooper.addInfo("world[" + i + "][difficulty]", serverWorld.getDifficulty());
 				snooper.addInfo("world[" + i + "][hardcore]", this.field_24372.isHardcore());
-				snooper.addInfo("world[" + i + "][generator_name]", lv.getGeneratorType().getName());
-				snooper.addInfo("world[" + i + "][generator_version]", lv.getGeneratorType().getVersion());
 				snooper.addInfo("world[" + i + "][height]", this.worldHeight);
 				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
 				i++;

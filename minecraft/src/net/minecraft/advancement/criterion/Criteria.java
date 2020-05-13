@@ -3,6 +3,8 @@ package net.minecraft.advancement.criterion;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.class_5279;
+import net.minecraft.class_5282;
 import net.minecraft.util.Identifier;
 
 public class Criteria {
@@ -42,10 +44,12 @@ public class Criteria {
 	public static final KilledByCrossbowCriterion KILLED_BY_CROSSBOW = register(new KilledByCrossbowCriterion());
 	public static final LocationArrivalCriterion HERO_OF_THE_VILLAGE = register(new LocationArrivalCriterion(new Identifier("hero_of_the_village")));
 	public static final LocationArrivalCriterion VOLUNTARY_EXILE = register(new LocationArrivalCriterion(new Identifier("voluntary_exile")));
-	public static final BlockUsedCriterion SAFELY_HARVEST_HONEY = register(new BlockUsedCriterion(new Identifier("safely_harvest_honey")));
 	public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = register(new SlideDownBlockCriterion());
 	public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = register(new BeeNestDestroyedCriterion());
 	public static final TargetHitCriterion TARGET_HIT = register(new TargetHitCriterion());
+	public static final BlockUsedCriterion field_24478 = register(new BlockUsedCriterion());
+	public static final class_5282 field_24479 = register(new class_5282());
+	public static final class_5279 field_24480 = register(new class_5279());
 
 	private static <T extends Criterion<?>> T register(T object) {
 		if (VALUES.containsKey(object.getId())) {

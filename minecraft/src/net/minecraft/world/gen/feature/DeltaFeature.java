@@ -10,10 +10,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	private static final ImmutableList<Block> field_24133 = ImmutableList.of(
@@ -34,14 +34,14 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DeltaFeatureConfig deltaFeatureConfig
 	) {
-		BlockPos blockPos2 = method_27102(iWorld, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, iWorld.getHeight() - 1));
+		BlockPos blockPos2 = method_27102(serverWorldAccess, blockPos.mutableCopy().method_27158(Direction.Axis.Y, 1, serverWorldAccess.getHeight() - 1));
 		if (blockPos2 == null) {
 			return false;
 		} else {
@@ -59,16 +59,16 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 					break;
 				}
 
-				if (method_27103(iWorld, blockPos3, deltaFeatureConfig)) {
+				if (method_27103(serverWorldAccess, blockPos3, deltaFeatureConfig)) {
 					if (bl3) {
 						bl = true;
-						this.setBlockState(iWorld, blockPos3, deltaFeatureConfig.rim);
+						this.setBlockState(serverWorldAccess, blockPos3, deltaFeatureConfig.rim);
 					}
 
 					BlockPos blockPos4 = blockPos3.add(i, 0, j);
-					if (method_27103(iWorld, blockPos4, deltaFeatureConfig)) {
+					if (method_27103(serverWorldAccess, blockPos4, deltaFeatureConfig)) {
 						bl = true;
-						this.setBlockState(iWorld, blockPos4, deltaFeatureConfig.contents);
+						this.setBlockState(serverWorldAccess, blockPos4, deltaFeatureConfig.contents);
 					}
 				}
 			}
@@ -77,15 +77,15 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		}
 	}
 
-	private static boolean method_27103(IWorld iWorld, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
-		BlockState blockState = iWorld.getBlockState(blockPos);
+	private static boolean method_27103(WorldAccess worldAccess, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
+		BlockState blockState = worldAccess.getBlockState(blockPos);
 		if (blockState.isOf(deltaFeatureConfig.contents.getBlock())) {
 			return false;
 		} else if (field_24133.contains(blockState.getBlock())) {
 			return false;
 		} else {
 			for (Direction direction : field_23883) {
-				boolean bl = iWorld.getBlockState(blockPos.offset(direction)).isAir();
+				boolean bl = worldAccess.getBlockState(blockPos.offset(direction)).isAir();
 				if (bl && direction != Direction.UP || !bl && direction == Direction.UP) {
 					return false;
 				}
@@ -96,10 +96,10 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	}
 
 	@Nullable
-	private static BlockPos method_27102(IWorld iWorld, BlockPos.Mutable mutable) {
+	private static BlockPos method_27102(WorldAccess worldAccess, BlockPos.Mutable mutable) {
 		while (mutable.getY() > 1) {
-			if (iWorld.getBlockState(mutable).isAir()) {
-				BlockState blockState = iWorld.getBlockState(mutable.move(Direction.DOWN));
+			if (worldAccess.getBlockState(mutable).isAir()) {
+				BlockState blockState = worldAccess.getBlockState(mutable.move(Direction.DOWN));
 				mutable.move(Direction.UP);
 				if (!blockState.isOf(Blocks.LAVA) && !blockState.isOf(Blocks.BEDROCK) && !blockState.isAir()) {
 					return mutable;

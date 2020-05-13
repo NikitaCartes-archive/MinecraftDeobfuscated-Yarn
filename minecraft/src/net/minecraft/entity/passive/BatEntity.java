@@ -25,8 +25,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class BatEntity extends AmbientEntity {
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -208,7 +208,7 @@ public class BatEntity extends AmbientEntity {
 		tag.putByte("BatFlags", this.dataTracker.get(BAT_FLAGS));
 	}
 
-	public static boolean canSpawn(EntityType<BatEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<BatEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (pos.getY() >= world.getSeaLevel()) {
 			return false;
 		} else {

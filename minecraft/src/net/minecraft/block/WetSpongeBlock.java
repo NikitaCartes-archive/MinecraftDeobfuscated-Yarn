@@ -17,7 +17,7 @@ public class WetSpongeBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		if (world.getDimension().doesWaterVaporize()) {
+		if (world.method_27983().method_27999()) {
 			world.setBlockState(pos, Blocks.SPONGE.getDefaultState(), 3);
 			world.syncWorldEvent(2009, pos, 0);
 			world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1.0F, (1.0F + world.getRandom().nextFloat() * 0.2F) * 0.7F);

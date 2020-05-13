@@ -22,7 +22,6 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
@@ -58,13 +57,13 @@ public class RuinedPortalFeature extends AbstractTempleFeature<RuinedPortalFeatu
 	}
 
 	@Override
-	protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
-		return chunkGeneratorConfig.getRuinedPortalSpacing(dimensionType == DimensionType.THE_NETHER);
+	protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
+		return chunkGeneratorConfig.getRuinedPortalSpacing();
 	}
 
 	@Override
-	protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
-		return chunkGenerationConfig.getRuinedPortalSeparation(dimensionType == DimensionType.THE_NETHER);
+	protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
+		return chunkGeneratorConfig.getRuinedPortalSeparation();
 	}
 
 	@Override
@@ -82,7 +81,7 @@ public class RuinedPortalFeature extends AbstractTempleFeature<RuinedPortalFeatu
 	}
 
 	private static int method_27211(
-		Random random, ChunkGenerator<?> chunkGenerator, RuinedPortalFeaturePiece.VerticalPlacement verticalPlacement, boolean bl, int i, int j, BlockBox blockBox
+		Random random, ChunkGenerator chunkGenerator, RuinedPortalFeaturePiece.VerticalPlacement verticalPlacement, boolean bl, int i, int j, BlockBox blockBox
 	) {
 		int k;
 		if (verticalPlacement == RuinedPortalFeaturePiece.VerticalPlacement.IN_NETHER) {
@@ -148,7 +147,7 @@ public class RuinedPortalFeature extends AbstractTempleFeature<RuinedPortalFeatu
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			RuinedPortalFeatureConfig ruinedPortalFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.RUINED_PORTAL);
 			if (ruinedPortalFeatureConfig != null) {
 				RuinedPortalFeaturePiece.Properties properties = new RuinedPortalFeaturePiece.Properties();

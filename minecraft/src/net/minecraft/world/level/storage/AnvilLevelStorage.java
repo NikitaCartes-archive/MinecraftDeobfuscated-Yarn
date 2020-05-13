@@ -16,13 +16,9 @@ import net.minecraft.util.ProgressListener;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.biome.source.BiomeSourceType;
 import net.minecraft.world.biome.source.FixedBiomeSource;
-import net.minecraft.world.biome.source.FixedBiomeSourceConfig;
 import net.minecraft.world.biome.source.VanillaLayeredBiomeSource;
-import net.minecraft.world.biome.source.VanillaLayeredBiomeSourceConfig;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.storage.RegionFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,28 +47,17 @@ public class AnvilLevelStorage {
 		int i = list.size() + list2.size() + list3.size();
 		LOGGER.info("Total conversion count is {}", i);
 		class_5219 lv = session.readLevelProperties();
-		long l = lv != null ? lv.getSeed() : 0L;
-		BiomeSourceType<FixedBiomeSourceConfig, FixedBiomeSource> biomeSourceType = BiomeSourceType.FIXED;
-		BiomeSourceType<VanillaLayeredBiomeSourceConfig, VanillaLayeredBiomeSource> biomeSourceType2 = BiomeSourceType.VANILLA_LAYERED;
+		long l = lv != null ? lv.method_28057().method_28028() : 0L;
 		BiomeSource biomeSource;
-		if (lv != null && lv.method_27859().getGeneratorType() == LevelGeneratorType.FLAT) {
-			biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig(lv.getSeed()).setBiome(Biomes.PLAINS));
+		if (lv != null && lv.method_28057().method_28034()) {
+			biomeSource = new FixedBiomeSource(Biomes.PLAINS);
 		} else {
-			biomeSource = biomeSourceType2.applyConfig(biomeSourceType2.getConfig(l));
+			biomeSource = new VanillaLayeredBiomeSource(l, false, 4);
 		}
 
 		convertRegions(new File(file, "region"), list, biomeSource, 0, i, progressListener);
-		convertRegions(
-			new File(file2, "region"), list2, biomeSourceType.applyConfig(biomeSourceType.getConfig(l).setBiome(Biomes.NETHER_WASTES)), list.size(), i, progressListener
-		);
-		convertRegions(
-			new File(file3, "region"),
-			list3,
-			biomeSourceType.applyConfig(biomeSourceType.getConfig(l).setBiome(Biomes.THE_END)),
-			list.size() + list2.size(),
-			i,
-			progressListener
-		);
+		convertRegions(new File(file2, "region"), list2, new FixedBiomeSource(Biomes.NETHER_WASTES), list.size(), i, progressListener);
+		convertRegions(new File(file3, "region"), list3, new FixedBiomeSource(Biomes.THE_END), list.size() + list2.size(), i, progressListener);
 		makeMcrLevelDatBackup(session);
 		session.method_27425(lv);
 		return true;

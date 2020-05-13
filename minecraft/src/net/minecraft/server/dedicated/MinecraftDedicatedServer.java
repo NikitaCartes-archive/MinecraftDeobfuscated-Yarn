@@ -405,7 +405,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public boolean isSpawnProtected(ServerWorld serverWorld, BlockPos pos, PlayerEntity player) {
-		if (serverWorld.dimension.getType() != DimensionType.OVERWORLD) {
+		if (serverWorld.method_27983() != DimensionType.OVERWORLD) {
 			return false;
 		} else if (this.getPlayerManager().getOpList().isEmpty()) {
 			return false;

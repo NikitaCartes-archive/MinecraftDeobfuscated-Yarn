@@ -13,7 +13,8 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.apache.logging.log4j.LogManager;
@@ -51,9 +52,9 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 
 	@Override
 	public boolean generate(
-		IWorld world,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<?> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockBox boundingBox,
 		ChunkPos chunkPos,
@@ -61,12 +62,12 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	) {
 		this.placementData.setBoundingBox(boundingBox);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (this.structure.place(world, this.pos, blockPos, this.placementData, 2)) {
+		if (this.structure.place(serverWorldAccess, this.pos, blockPos, this.placementData, 2)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.tag != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
 					if (structureBlockMode == StructureBlockMode.DATA) {
-						this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, world, random, boundingBox);
+						this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, serverWorldAccess, random, boundingBox);
 					}
 				}
 			}
@@ -89,7 +90,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 					}
 
-					world.setBlockState(structureBlockInfo2.pos, blockState, 3);
+					serverWorldAccess.setBlockState(structureBlockInfo2.pos, blockState, 3);
 				}
 			}
 		}
@@ -97,7 +98,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		return true;
 	}
 
-	protected abstract void handleMetadata(String metadata, BlockPos pos, IWorld world, Random random, BlockBox boundingBox);
+	protected abstract void handleMetadata(String metadata, BlockPos pos, WorldAccess world, Random random, BlockBox boundingBox);
 
 	@Override
 	public void translate(int x, int y, int z) {

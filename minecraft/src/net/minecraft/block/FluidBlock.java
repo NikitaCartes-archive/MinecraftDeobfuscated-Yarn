@@ -25,8 +25,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class FluidBlock extends Block implements FluidDrainable {
 	public static final IntProperty LEVEL = Properties.LEVEL_15;
@@ -110,7 +110,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (state.getFluidState().isStill() || newState.getFluidState().isStill()) {
 			world.getFluidTickScheduler().schedule(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
 		}
@@ -151,7 +151,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 		return true;
 	}
 
-	private void playExtinguishSound(IWorld world, BlockPos pos) {
+	private void playExtinguishSound(WorldAccess world, BlockPos pos) {
 		world.syncWorldEvent(1501, pos, 0);
 	}
 
@@ -161,7 +161,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public Fluid tryDrainFluid(IWorld world, BlockPos pos, BlockState state) {
+	public Fluid tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
 		if ((Integer)state.get(LEVEL) == 0) {
 			world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
 			return this.fluid;

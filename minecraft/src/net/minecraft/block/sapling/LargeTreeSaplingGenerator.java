@@ -9,13 +9,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Override
-	public boolean generate(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
+	public boolean generate(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
 		for (int i = 0; i >= -1; i--) {
 			for (int j = 0; j >= -1; j--) {
 				if (canGenerateLargeTree(blockState, serverWorld, blockPos, i, j)) {
@@ -30,9 +29,7 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random random);
 
-	public boolean generateLargeTree(
-		ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j
-	) {
+	public boolean generateLargeTree(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
 		ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
 		if (configuredFeature == null) {
 			return false;
@@ -42,9 +39,7 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 			serverWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
 			serverWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);
 			serverWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState2, 4);
-			if (configuredFeature.generate(
-				serverWorld, serverWorld.getStructureAccessor(), (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos.add(i, 0, j)
-			)) {
+			if (configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), chunkGenerator, random, blockPos.add(i, 0, j))) {
 				return true;
 			} else {
 				serverWorld.setBlockState(blockPos.add(i, 0, j), blockState, 4);

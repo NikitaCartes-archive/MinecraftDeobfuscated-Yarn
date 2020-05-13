@@ -7,9 +7,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class CountExtraHeightmapDecorator extends Decorator<CountExtraChanceDecoratorConfig> {
 	public CountExtraHeightmapDecorator(Function<Dynamic<?>, ? extends CountExtraChanceDecoratorConfig> function) {
@@ -17,11 +16,7 @@ public class CountExtraHeightmapDecorator extends Decorator<CountExtraChanceDeco
 	}
 
 	public Stream<BlockPos> getPositions(
-		IWorld iWorld,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
-		Random random,
-		CountExtraChanceDecoratorConfig countExtraChanceDecoratorConfig,
-		BlockPos blockPos
+		WorldAccess worldAccess, ChunkGenerator chunkGenerator, Random random, CountExtraChanceDecoratorConfig countExtraChanceDecoratorConfig, BlockPos blockPos
 	) {
 		int i = countExtraChanceDecoratorConfig.count;
 		if (random.nextFloat() < countExtraChanceDecoratorConfig.extraChance) {
@@ -31,7 +26,7 @@ public class CountExtraHeightmapDecorator extends Decorator<CountExtraChanceDeco
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16) + blockPos.getX();
 			int k = random.nextInt(16) + blockPos.getZ();
-			int l = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k);
+			int l = worldAccess.getTopY(Heightmap.Type.MOTION_BLOCKING, j, k);
 			return new BlockPos(j, l, k);
 		});
 	}

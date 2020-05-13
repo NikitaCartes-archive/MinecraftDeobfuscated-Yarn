@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class HugeRedMushroomFeature extends HugeMushroomFeature {
 	public HugeRedMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
@@ -13,7 +13,7 @@ public class HugeRedMushroomFeature extends HugeMushroomFeature {
 	}
 
 	@Override
-	protected void generateCap(IWorld world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+	protected void generateCap(WorldAccess world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
 		for (int i = y - 3; i <= y; i++) {
 			int j = i < y ? config.capSize : config.capSize - 1;
 			int k = config.capSize - 2;

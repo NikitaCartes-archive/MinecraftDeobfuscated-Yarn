@@ -45,8 +45,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class BeehiveBlock extends BlockWithEntity {
 	private static final Direction[] GENERATE_DIRECTIONS = new Direction[]{Direction.WEST, Direction.EAST, Direction.SOUTH};
@@ -104,7 +104,6 @@ public class BeehiveBlock extends BlockWithEntity {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		ItemStack itemStack2 = itemStack.copy();
 		int i = (Integer)state.get(HONEY_LEVEL);
 		boolean bl = false;
 		if (i >= 5) {
@@ -127,7 +126,7 @@ public class BeehiveBlock extends BlockWithEntity {
 		}
 
 		if (bl) {
-			if (!CampfireBlock.isLitCampfireInRange(world, pos, 5)) {
+			if (!CampfireBlock.isLitCampfireInRange(world, pos)) {
 				if (this.hasBees(world, pos)) {
 					this.angerNearbyBees(world, pos);
 				}
@@ -135,9 +134,6 @@ public class BeehiveBlock extends BlockWithEntity {
 				this.takeHoney(world, state, pos, player, BeehiveBlockEntity.BeeState.EMERGENCY);
 			} else {
 				this.takeHoney(world, state, pos);
-				if (player instanceof ServerPlayerEntity) {
-					Criteria.SAFELY_HARVEST_HONEY.test((ServerPlayerEntity)player, pos, itemStack2);
-				}
 			}
 
 			return ActionResult.SUCCESS;
@@ -297,7 +293,7 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (world.getBlockState(posFrom).getBlock() instanceof FireBlock) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeehiveBlockEntity) {

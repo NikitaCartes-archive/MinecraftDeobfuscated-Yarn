@@ -7,7 +7,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class DoubleBlockProperties {
 	public static <S extends BlockEntity> DoubleBlockProperties.PropertySource<S> toPropertySource(
@@ -16,9 +16,9 @@ public class DoubleBlockProperties {
 		Function<BlockState, Direction> function,
 		DirectionProperty directionProperty,
 		BlockState state,
-		IWorld world,
+		WorldAccess world,
 		BlockPos pos,
-		BiPredicate<IWorld, BlockPos> fallbackTester
+		BiPredicate<WorldAccess, BlockPos> fallbackTester
 	) {
 		S blockEntity = blockEntityType.get(world, pos);
 		if (blockEntity == null) {

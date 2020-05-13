@@ -41,8 +41,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
@@ -52,7 +52,6 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -294,8 +293,8 @@ public abstract class Biome {
 	public void generateFeatureStep(
 		GenerationStep.Feature step,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
-		IWorld world,
+		ChunkGenerator chunkGenerator,
+		ServerWorldAccess serverWorldAccess,
 		long populationSeed,
 		ChunkRandom chunkRandom,
 		BlockPos pos
@@ -306,7 +305,7 @@ public abstract class Biome {
 			chunkRandom.setDecoratorSeed(populationSeed, i, step.ordinal());
 
 			try {
-				configuredFeature.generate(world, structureAccessor, chunkGenerator, chunkRandom, pos);
+				configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, chunkRandom, pos);
 			} catch (Exception var14) {
 				CrashReport crashReport = CrashReport.create(var14, "Feature placement");
 				crashReport.addElement("Feature")

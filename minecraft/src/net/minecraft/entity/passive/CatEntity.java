@@ -61,9 +61,9 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 
 public class CatEntity extends TameableEntity {
@@ -358,7 +358,7 @@ public class CatEntity extends TameableEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
 		if (world.getMoonSize() > 0.9F) {
@@ -368,7 +368,7 @@ public class CatEntity extends TameableEntity {
 		}
 
 		World world2 = world.getWorld();
-		if (world2 instanceof ServerWorld && Feature.SWAMP_HUT.isInsideStructure(world, ((ServerWorld)world2).getStructureAccessor(), this.getBlockPos())) {
+		if (world2 instanceof ServerWorld && Feature.SWAMP_HUT.isInsideStructure(((ServerWorld)world2).getStructureAccessor(), this.getBlockPos())) {
 			this.setCatType(10);
 			this.setPersistent();
 		}

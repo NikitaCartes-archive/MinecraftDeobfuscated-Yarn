@@ -12,8 +12,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class MagmaBlock extends Block {
 	public MagmaBlock(AbstractBlock.Settings settings) {
@@ -35,7 +35,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (direction == Direction.UP && newState.isOf(Blocks.WATER)) {
 			world.getBlockTickScheduler().schedule(pos, this, 20);
 		}

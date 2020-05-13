@@ -7,7 +7,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +41,7 @@ public class StructureFeatures {
 	}
 
 	@Nullable
-	public static StructureStart readStructureStart(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, CompoundTag compoundTag) {
+	public static StructureStart readStructureStart(StructureManager structureManager, CompoundTag compoundTag, long l) {
 		String string = compoundTag.getString("id");
 		if ("INVALID".equals(string)) {
 			return StructureStart.DEFAULT;
@@ -59,10 +58,10 @@ public class StructureFeatures {
 				ListTag listTag = compoundTag.getList("Children", 10);
 
 				try {
-					StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, blockBox, k, chunkGenerator.getSeed());
+					StructureStart structureStart = structureFeature.getStructureStartFactory().create(structureFeature, i, j, blockBox, k, l);
 
-					for (int l = 0; l < listTag.size(); l++) {
-						CompoundTag compoundTag2 = listTag.getCompound(l);
+					for (int m = 0; m < listTag.size(); m++) {
+						CompoundTag compoundTag2 = listTag.getCompound(m);
 						String string2 = compoundTag2.getString("id");
 						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string2.toLowerCase(Locale.ROOT)));
 						if (structurePieceType == null) {
@@ -71,15 +70,15 @@ public class StructureFeatures {
 							try {
 								StructurePiece structurePiece = structurePieceType.load(structureManager, compoundTag2);
 								structureStart.children.add(structurePiece);
-							} catch (Exception var16) {
-								LOGGER.error("Exception loading structure piece with id {}", string2, var16);
+							} catch (Exception var17) {
+								LOGGER.error("Exception loading structure piece with id {}", string2, var17);
 							}
 						}
 					}
 
 					return structureStart;
-				} catch (Exception var17) {
-					LOGGER.error("Failed Start with id {}", string, var17);
+				} catch (Exception var18) {
+					LOGGER.error("Failed Start with id {}", string, var18);
 					return null;
 				}
 			}

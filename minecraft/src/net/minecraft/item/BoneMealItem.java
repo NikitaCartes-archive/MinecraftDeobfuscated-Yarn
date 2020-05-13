@@ -13,8 +13,8 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
@@ -121,7 +121,7 @@ public class BoneMealItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void createParticles(IWorld world, BlockPos pos, int count) {
+	public static void createParticles(WorldAccess world, BlockPos pos, int count) {
 		if (count == 0) {
 			count = 15;
 		}

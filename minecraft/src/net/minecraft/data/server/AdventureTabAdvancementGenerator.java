@@ -145,7 +145,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("slept_in_bed", LocationArrivalCriterion.Conditions.createSleptInBed())
 			.build(consumer, "adventure/sleep_in_bed");
-		Advancement advancement3 = this.requireListedBiomesVisited(Advancement.Task.create())
+		requireListedBiomesVisited(Advancement.Task.create(), BIOMES)
 			.parent(advancement2)
 			.display(
 				Items.DIAMOND_BOOTS,
@@ -159,7 +159,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.rewards(AdvancementRewards.Builder.experience(500))
 			.build(consumer, "adventure/adventuring_time");
-		Advancement advancement4 = Advancement.Task.create()
+		Advancement advancement3 = Advancement.Task.create()
 			.parent(advancement)
 			.display(
 				Items.EMERALD,
@@ -173,7 +173,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("traded", VillagerTradeCriterion.Conditions.any())
 			.build(consumer, "adventure/trade");
-		Advancement advancement5 = this.requireListedMobsKilled(Advancement.Task.create())
+		Advancement advancement4 = this.requireListedMobsKilled(Advancement.Task.create())
 			.parent(advancement)
 			.display(
 				Items.IRON_SWORD,
@@ -187,8 +187,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criteriaMerger(CriteriaMerger.OR)
 			.build(consumer, "adventure/kill_a_mob");
-		Advancement advancement6 = this.requireListedMobsKilled(Advancement.Task.create())
-			.parent(advancement5)
+		this.requireListedMobsKilled(Advancement.Task.create())
+			.parent(advancement4)
 			.display(
 				Items.DIAMOND_SWORD,
 				new TranslatableText("advancements.adventure.kill_all_mobs.title"),
@@ -201,8 +201,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.build(consumer, "adventure/kill_all_mobs");
-		Advancement advancement7 = Advancement.Task.create()
-			.parent(advancement5)
+		Advancement advancement5 = Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.BOW,
 				new TranslatableText("advancements.adventure.shoot_arrow.title"),
@@ -221,8 +221,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/shoot_arrow");
-		Advancement advancement8 = Advancement.Task.create()
-			.parent(advancement5)
+		Advancement advancement6 = Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.TRIDENT,
 				new TranslatableText("advancements.adventure.throw_trident.title"),
@@ -241,8 +241,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/throw_trident");
-		Advancement advancement9 = Advancement.Task.create()
-			.parent(advancement8)
+		Advancement.Task.create()
+			.parent(advancement6)
 			.display(
 				Items.TRIDENT,
 				new TranslatableText("advancements.adventure.very_very_frightening.title"),
@@ -255,8 +255,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("struck_villager", ChanneledLightningCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.VILLAGER).build()))
 			.build(consumer, "adventure/very_very_frightening");
-		Advancement advancement10 = Advancement.Task.create()
-			.parent(advancement4)
+		Advancement.Task.create()
+			.parent(advancement3)
 			.display(
 				Blocks.CARVED_PUMPKIN,
 				new TranslatableText("advancements.adventure.summon_iron_golem.title"),
@@ -269,8 +269,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("summoned_golem", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.IRON_GOLEM)))
 			.build(consumer, "adventure/summon_iron_golem");
-		Advancement advancement11 = Advancement.Task.create()
-			.parent(advancement7)
+		Advancement.Task.create()
+			.parent(advancement5)
 			.display(
 				Items.ARROW,
 				new TranslatableText("advancements.adventure.sniper_duel.title"),
@@ -290,8 +290,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/sniper_duel");
-		Advancement advancement12 = Advancement.Task.create()
-			.parent(advancement5)
+		Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.TOTEM_OF_UNDYING,
 				new TranslatableText("advancements.adventure.totem_of_undying.title"),
@@ -304,7 +304,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("used_totem", UsedTotemCriterion.Conditions.create(Items.TOTEM_OF_UNDYING))
 			.build(consumer, "adventure/totem_of_undying");
-		Advancement advancement13 = Advancement.Task.create()
+		Advancement advancement7 = Advancement.Task.create()
 			.parent(advancement)
 			.display(
 				Items.CROSSBOW,
@@ -318,8 +318,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("shot_crossbow", ShotCrossbowCriterion.Conditions.create(Items.CROSSBOW))
 			.build(consumer, "adventure/ol_betsy");
-		Advancement advancement14 = Advancement.Task.create()
-			.parent(advancement13)
+		Advancement.Task.create()
+			.parent(advancement7)
 			.display(
 				Items.CROSSBOW,
 				new TranslatableText("advancements.adventure.whos_the_pillager_now.title"),
@@ -332,8 +332,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("kill_pillager", KilledByCrossbowCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.PILLAGER)))
 			.build(consumer, "adventure/whos_the_pillager_now");
-		Advancement advancement15 = Advancement.Task.create()
-			.parent(advancement13)
+		Advancement.Task.create()
+			.parent(advancement7)
 			.display(
 				Items.CROSSBOW,
 				new TranslatableText("advancements.adventure.two_birds_one_arrow.title"),
@@ -352,8 +352,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/two_birds_one_arrow");
-		Advancement advancement16 = Advancement.Task.create()
-			.parent(advancement13)
+		Advancement.Task.create()
+			.parent(advancement7)
 			.display(
 				Items.CROSSBOW,
 				new TranslatableText("advancements.adventure.arbalistic.title"),
@@ -367,7 +367,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.rewards(AdvancementRewards.Builder.experience(85))
 			.criterion("arbalistic", KilledByCrossbowCriterion.Conditions.create(NumberRange.IntRange.exactly(5)))
 			.build(consumer, "adventure/arbalistic");
-		Advancement advancement17 = Advancement.Task.create()
+		Advancement advancement8 = Advancement.Task.create()
 			.parent(advancement)
 			.display(
 				Raid.getOminousBanner(),
@@ -386,8 +386,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/voluntary_exile");
-		Advancement advancement18 = Advancement.Task.create()
-			.parent(advancement17)
+		Advancement.Task.create()
+			.parent(advancement8)
 			.display(
 				Raid.getOminousBanner(),
 				new TranslatableText("advancements.adventure.hero_of_the_village.title"),
@@ -401,7 +401,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion("hero_of_the_village", LocationArrivalCriterion.Conditions.createHeroOfTheVillage())
 			.build(consumer, "adventure/hero_of_the_village");
-		Advancement advancement19 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement)
 			.display(
 				Blocks.HONEY_BLOCK.asItem(),
@@ -415,19 +415,26 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("honey_block_slide", SlideDownBlockCriterion.Conditions.create(Blocks.HONEY_BLOCK))
 			.build(consumer, "adventure/honey_block_slide");
-		Advancement advancement20 = Advancement.Task.create()
-			.parent(advancement7)
+		Advancement.Task.create()
+			.parent(advancement5)
 			.display(
 				Blocks.TARGET.asItem(),
 				new TranslatableText("advancements.adventure.bullseye.title"),
 				new TranslatableText("advancements.adventure.bullseye.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				false
 			)
-			.criterion("bullseye", TargetHitCriterion.Conditions.create(NumberRange.IntRange.exactly(15)))
+			.rewards(AdvancementRewards.Builder.experience(50))
+			.criterion(
+				"bullseye",
+				TargetHitCriterion.Conditions.create(
+					NumberRange.IntRange.exactly(15),
+					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(30.0F))).build())
+				)
+			)
 			.build(consumer, "adventure/bullseye");
 	}
 
@@ -441,8 +448,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		return task;
 	}
 
-	private Advancement.Task requireListedBiomesVisited(Advancement.Task task) {
-		for (Biome biome : BIOMES) {
+	protected static Advancement.Task requireListedBiomesVisited(Advancement.Task task, Biome[] biomes) {
+		for (Biome biome : biomes) {
 			task.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(biome)));
 		}
 

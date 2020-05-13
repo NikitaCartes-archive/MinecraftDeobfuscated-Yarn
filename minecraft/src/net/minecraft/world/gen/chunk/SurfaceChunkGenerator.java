@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
+import net.minecraft.class_5284;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.JigsawJunction;
@@ -26,7 +27,7 @@ import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
@@ -36,7 +37,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
-public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> extends ChunkGenerator<T> {
+public abstract class SurfaceChunkGenerator<T extends class_5284> extends ChunkGenerator {
 	private static final float[] field_16649 = Util.make(new float[13824], fs -> {
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 24; j++) {
@@ -59,25 +60,27 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	private final NoiseSampler surfaceDepthNoise;
 	protected final BlockState defaultBlock;
 	protected final BlockState defaultFluid;
+	private final int field_24512;
+	private final int field_24513;
 
-	public SurfaceChunkGenerator(
-		IWorld world, BiomeSource biomeSource, int verticalNoiseResolution, int horizontalNoiseResolution, int worldHeight, T config, boolean useSimplexNoise
-	) {
-		super(world, biomeSource, config);
-		this.verticalNoiseResolution = horizontalNoiseResolution;
-		this.horizontalNoiseResolution = verticalNoiseResolution;
-		this.defaultBlock = config.getDefaultBlock();
-		this.defaultFluid = config.getDefaultFluid();
+	public SurfaceChunkGenerator(BiomeSource biomeSource, long l, T arg, int i, int j, int k, boolean bl) {
+		super(biomeSource, arg.method_28007());
+		this.verticalNoiseResolution = j;
+		this.horizontalNoiseResolution = i;
+		this.defaultBlock = arg.method_28005();
+		this.defaultFluid = arg.method_28006();
 		this.noiseSizeX = 16 / this.horizontalNoiseResolution;
-		this.noiseSizeY = worldHeight / this.verticalNoiseResolution;
+		this.noiseSizeY = k / this.verticalNoiseResolution;
 		this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
-		this.random = new ChunkRandom(this.seed);
+		this.random = new ChunkRandom(l);
 		this.field_16574 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.field_16581 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-15, 0));
 		this.field_16575 = new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-7, 0));
-		this.surfaceDepthNoise = (NoiseSampler)(useSimplexNoise
+		this.surfaceDepthNoise = (NoiseSampler)(bl
 			? new OctaveSimplexNoiseSampler(this.random, IntStream.rangeClosed(-3, 0))
 			: new OctavePerlinNoiseSampler(this.random, IntStream.rangeClosed(-3, 0)));
+		this.field_24512 = arg.getBedrockFloorY();
+		this.field_24513 = arg.getBedrockCeilingY();
 	}
 
 	private double sampleNoise(int x, int y, int z, double d, double e, double f, double g) {
@@ -249,9 +252,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 				int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
 				double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625) * 15.0;
 				region.getBiome(mutable.set(k + m, q, l + n))
-					.buildSurface(
-						chunkRandom, chunk, o, p, q, e, this.getConfig().getDefaultBlock(), this.getConfig().getDefaultFluid(), this.getSeaLevel(), this.world.getSeed()
-					);
+					.buildSurface(chunkRandom, chunk, o, p, q, e, this.defaultBlock, this.defaultFluid, this.getSeaLevel(), region.getSeed());
 			}
 		}
 
@@ -262,9 +263,8 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = chunk.getPos().getStartX();
 		int j = chunk.getPos().getStartZ();
-		T chunkGeneratorConfig = this.getConfig();
-		int k = chunkGeneratorConfig.getBedrockFloorY();
-		int l = chunkGeneratorConfig.getBedrockCeilingY();
+		int k = this.field_24512;
+		int l = this.field_24513;
 
 		for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
 			if (l > 0) {
@@ -286,7 +286,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	}
 
 	@Override
-	public void populateNoise(IWorld world, StructureAccessor structureAccessor, Chunk chunk) {
+	public void populateNoise(WorldAccess world, StructureAccessor structureAccessor, Chunk chunk) {
 		ObjectList<StructurePiece> objectList = new ObjectArrayList<>(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
 		ChunkPos chunkPos = chunk.getPos();
@@ -296,7 +296,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		int l = j << 4;
 
 		for (StructureFeature<?> structureFeature : Feature.JIGSAW_STRUCTURES) {
-			structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(chunkPos, 0), structureFeature, world).forEach(structureStart -> {
+			structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(chunkPos, 0), structureFeature).forEach(structureStart -> {
 				for (StructurePiece structurePiece : structureStart.getChildren()) {
 					if (structurePiece.intersectsChunk(chunkPos, 12)) {
 						if (structurePiece instanceof PoolStructurePiece) {

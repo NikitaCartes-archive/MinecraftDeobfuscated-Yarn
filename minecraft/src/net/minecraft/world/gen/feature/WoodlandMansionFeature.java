@@ -15,10 +15,9 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -30,13 +29,13 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 	}
 
 	@Override
-	protected int getSpacing(DimensionType dimensionType, ChunkGeneratorConfig chunkGeneratorConfig) {
+	protected int getSpacing(ChunkGeneratorConfig chunkGeneratorConfig) {
 		return chunkGeneratorConfig.getMansionDistance();
 	}
 
 	@Override
-	protected int getSeparation(DimensionType dimensionType, ChunkGeneratorConfig chunkGenerationConfig) {
-		return chunkGenerationConfig.getMansionSeparation();
+	protected int getSeparation(ChunkGeneratorConfig chunkGeneratorConfig) {
+		return chunkGeneratorConfig.getMansionSeparation();
 	}
 
 	@Override
@@ -51,9 +50,9 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 	@Override
 	protected boolean shouldStartAt(
-		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+		BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos
 	) {
-		for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(chunkX * 16 + 9, chunkGenerator.getSeaLevel(), chunkZ * 16 + 9, 32)) {
+		for (Biome biome2 : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, chunkGenerator.getSeaLevel(), j * 16 + 9, 32)) {
 			if (!chunkGenerator.hasStructure(biome2, this)) {
 				return false;
 			}
@@ -83,7 +82,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			BlockRotation blockRotation = BlockRotation.random(this.random);
 			int i = 5;
 			int j = 5;
@@ -114,15 +113,15 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 		@Override
 		public void generateStructure(
-			IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
+			ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
 		) {
-			super.generateStructure(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
+			super.generateStructure(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos);
 			int i = this.boundingBox.minY;
 
 			for (int j = blockBox.minX; j <= blockBox.maxX; j++) {
 				for (int k = blockBox.minZ; k <= blockBox.maxZ; k++) {
 					BlockPos blockPos = new BlockPos(j, i, k);
-					if (!world.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
+					if (!serverWorldAccess.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
 						boolean bl = false;
 
 						for (StructurePiece structurePiece : this.children) {
@@ -135,11 +134,11 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 						if (bl) {
 							for (int l = i - 1; l > 1; l--) {
 								BlockPos blockPos2 = new BlockPos(j, l, k);
-								if (!world.isAir(blockPos2) && !world.getBlockState(blockPos2).getMaterial().isLiquid()) {
+								if (!serverWorldAccess.isAir(blockPos2) && !serverWorldAccess.getBlockState(blockPos2).getMaterial().isLiquid()) {
 									break;
 								}
 
-								world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+								serverWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
 							}
 						}
 					}

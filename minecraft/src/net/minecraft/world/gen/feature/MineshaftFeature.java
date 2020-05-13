@@ -23,9 +23,9 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 
 	@Override
 	protected boolean shouldStartAt(
-		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+		BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos
 	) {
-		chunkRandom.setCarverSeed(chunkGenerator.getSeed(), chunkX, chunkZ);
+		chunkRandom.setCarverSeed(l, i, j);
 		MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, this);
 		double d = mineshaftFeatureConfig.probability;
 		return chunkRandom.nextDouble() < d;
@@ -52,7 +52,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			MineshaftFeatureConfig mineshaftFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.MINESHAFT);
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
 				0, this.random, (x << 4) + 2, (z << 4) + 2, mineshaftFeatureConfig.type

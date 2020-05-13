@@ -9,6 +9,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -58,6 +59,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.DebugInfoSender;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
@@ -69,9 +71,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class MobEntity extends LivingEntity {
@@ -508,8 +510,16 @@ public abstract class MobEntity extends LivingEntity {
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
 		if (this.tryEquip(itemStack)) {
+			this.method_27964(item);
 			this.sendPickup(item, itemStack.getCount());
 			item.remove();
+		}
+	}
+
+	protected void method_27964(ItemEntity itemEntity) {
+		PlayerEntity playerEntity = itemEntity.getThrower() != null ? this.world.getPlayerByUuid(itemEntity.getThrower()) : null;
+		if (playerEntity instanceof ServerPlayerEntity) {
+			Criteria.field_24480.method_27975((ServerPlayerEntity)playerEntity, itemEntity.getStack(), this);
 		}
 	}
 
@@ -737,12 +747,12 @@ public abstract class MobEntity extends LivingEntity {
 		return oldAngle + f;
 	}
 
-	public static boolean canMobSpawn(EntityType<? extends MobEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canMobSpawn(EntityType<? extends MobEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		BlockPos blockPos = pos.down();
 		return spawnReason == SpawnReason.SPAWNER || world.getBlockState(blockPos).allowsSpawning(world, blockPos, type);
 	}
 
-	public boolean canSpawn(IWorld world, SpawnReason spawnReason) {
+	public boolean canSpawn(WorldAccess world, SpawnReason spawnReason) {
 		return true;
 	}
 
@@ -971,7 +981,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Nullable
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));

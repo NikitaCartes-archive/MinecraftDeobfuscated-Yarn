@@ -41,7 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public abstract class Screen extends AbstractParentElement implements Drawable {
+public abstract class Screen extends AbstractParentElement implements TickableElement, Drawable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	protected final Text title;
@@ -301,6 +301,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	protected void init() {
 	}
 
+	@Override
 	public void tick() {
 	}
 

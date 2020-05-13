@@ -9,11 +9,10 @@ import net.minecraft.block.SnowyBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 	public FreezeTopLayerFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -21,9 +20,9 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DefaultFeatureConfig defaultFeatureConfig
@@ -35,19 +34,19 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 			for (int j = 0; j < 16; j++) {
 				int k = blockPos.getX() + i;
 				int l = blockPos.getZ() + j;
-				int m = iWorld.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);
+				int m = serverWorldAccess.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);
 				mutable.set(k, m, l);
 				mutable2.set(mutable).move(Direction.DOWN, 1);
-				Biome biome = iWorld.getBiome(mutable);
-				if (biome.canSetIce(iWorld, mutable2, false)) {
-					iWorld.setBlockState(mutable2, Blocks.ICE.getDefaultState(), 2);
+				Biome biome = serverWorldAccess.getBiome(mutable);
+				if (biome.canSetIce(serverWorldAccess, mutable2, false)) {
+					serverWorldAccess.setBlockState(mutable2, Blocks.ICE.getDefaultState(), 2);
 				}
 
-				if (biome.canSetSnow(iWorld, mutable)) {
-					iWorld.setBlockState(mutable, Blocks.SNOW.getDefaultState(), 2);
-					BlockState blockState = iWorld.getBlockState(mutable2);
+				if (biome.canSetSnow(serverWorldAccess, mutable)) {
+					serverWorldAccess.setBlockState(mutable, Blocks.SNOW.getDefaultState(), 2);
+					BlockState blockState = serverWorldAccess.getBlockState(mutable2);
 					if (blockState.contains(SnowyBlock.SNOWY)) {
-						iWorld.setBlockState(mutable2, blockState.with(SnowyBlock.SNOWY, Boolean.valueOf(true)), 2);
+						serverWorldAccess.setBlockState(mutable2, blockState.with(SnowyBlock.SNOWY, Boolean.valueOf(true)), 2);
 					}
 				}
 			}

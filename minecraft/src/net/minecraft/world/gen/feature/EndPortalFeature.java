@@ -5,10 +5,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.WallTorchBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 	public static final BlockPos ORIGIN = BlockPos.ORIGIN;
@@ -20,9 +19,9 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DefaultFeatureConfig defaultFeatureConfig
@@ -34,30 +33,30 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 			if (bl || blockPos2.isWithinDistance(blockPos, 3.5)) {
 				if (blockPos2.getY() < blockPos.getY()) {
 					if (bl) {
-						this.setBlockState(iWorld, blockPos2, Blocks.BEDROCK.getDefaultState());
+						this.setBlockState(serverWorldAccess, blockPos2, Blocks.BEDROCK.getDefaultState());
 					} else if (blockPos2.getY() < blockPos.getY()) {
-						this.setBlockState(iWorld, blockPos2, Blocks.END_STONE.getDefaultState());
+						this.setBlockState(serverWorldAccess, blockPos2, Blocks.END_STONE.getDefaultState());
 					}
 				} else if (blockPos2.getY() > blockPos.getY()) {
-					this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
+					this.setBlockState(serverWorldAccess, blockPos2, Blocks.AIR.getDefaultState());
 				} else if (!bl) {
-					this.setBlockState(iWorld, blockPos2, Blocks.BEDROCK.getDefaultState());
+					this.setBlockState(serverWorldAccess, blockPos2, Blocks.BEDROCK.getDefaultState());
 				} else if (this.open) {
-					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.END_PORTAL.getDefaultState());
+					this.setBlockState(serverWorldAccess, new BlockPos(blockPos2), Blocks.END_PORTAL.getDefaultState());
 				} else {
-					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.AIR.getDefaultState());
+					this.setBlockState(serverWorldAccess, new BlockPos(blockPos2), Blocks.AIR.getDefaultState());
 				}
 			}
 		}
 
 		for (int i = 0; i < 4; i++) {
-			this.setBlockState(iWorld, blockPos.up(i), Blocks.BEDROCK.getDefaultState());
+			this.setBlockState(serverWorldAccess, blockPos.up(i), Blocks.BEDROCK.getDefaultState());
 		}
 
 		BlockPos blockPos3 = blockPos.up(2);
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			this.setBlockState(iWorld, blockPos3.offset(direction), Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, direction));
+			this.setBlockState(serverWorldAccess, blockPos3.offset(direction), Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, direction));
 		}
 
 		return true;

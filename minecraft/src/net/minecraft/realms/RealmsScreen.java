@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.TickableElement;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.util.NarratorManager;
 
@@ -24,8 +25,8 @@ public abstract class RealmsScreen extends Screen {
 	@Override
 	public void tick() {
 		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-			if (abstractButtonWidget instanceof TickableRealmsButton) {
-				((TickableRealmsButton)abstractButtonWidget).tick();
+			if (abstractButtonWidget instanceof TickableElement) {
+				((TickableElement)abstractButtonWidget).tick();
 			}
 		}
 	}

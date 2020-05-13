@@ -19,7 +19,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	private boolean stateStillValid;
@@ -32,26 +31,26 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean method_27217(BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int i, int j, Biome biome) {
-		ChunkPos chunkPos = this.method_27218(chunkGenerator, chunkRandom, i, j);
-		return this.shouldStartAt(biomeAccess, chunkGenerator, chunkRandom, i, j, biome, chunkPos);
+	public boolean method_27217(BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome) {
+		ChunkPos chunkPos = this.method_27218(chunkGenerator.getConfig(), l, chunkRandom, i, j);
+		return this.shouldStartAt(biomeAccess, chunkGenerator, l, chunkRandom, i, j, biome, chunkPos);
 	}
 
 	@Override
 	protected boolean shouldStartAt(
-		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+		BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos
 	) {
-		if (this.lastSeed != chunkGenerator.getSeed()) {
+		if (this.lastSeed != l) {
 			this.invalidateState();
 		}
 
 		if (!this.stateStillValid) {
-			this.initialize(chunkGenerator);
+			this.initialize(chunkGenerator, l);
 			this.stateStillValid = true;
 		}
 
 		for (ChunkPos chunkPos2 : this.startPositions) {
-			if (chunkX == chunkPos2.x && chunkZ == chunkPos2.z) {
+			if (i == chunkPos2.x && j == chunkPos2.z) {
 				return true;
 			}
 		}
@@ -82,9 +81,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Nullable
 	@Override
-	public BlockPos locateStructure(
-		ServerWorld serverWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks
-	) {
+	public BlockPos locateStructure(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, int i, boolean skipExistingChunks) {
 		if (!chunkGenerator.hasStructure(this)) {
 			return null;
 		} else {
@@ -93,7 +90,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 			}
 
 			if (!this.stateStillValid) {
-				this.initialize(chunkGenerator);
+				this.initialize(chunkGenerator, serverWorld.getSeed());
 				this.stateStillValid = true;
 			}
 
@@ -117,8 +114,8 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 	}
 
-	private void initialize(ChunkGenerator<?> chunkGenerator) {
-		this.lastSeed = chunkGenerator.getSeed();
+	private void initialize(ChunkGenerator chunkGenerator, long l) {
+		this.lastSeed = l;
 		List<Biome> list = Lists.<Biome>newArrayList();
 
 		for (Biome biome : Registry.BIOME) {
@@ -131,42 +128,42 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		int j = chunkGenerator.getConfig().getStrongholdCount();
 		int k = chunkGenerator.getConfig().getStrongholdSpread();
 		this.startPositions = new ChunkPos[j];
-		int l = 0;
+		int m = 0;
 
 		for (StructureStart structureStart : this.starts) {
-			if (l < this.startPositions.length) {
-				this.startPositions[l++] = new ChunkPos(structureStart.getChunkX(), structureStart.getChunkZ());
+			if (m < this.startPositions.length) {
+				this.startPositions[m++] = new ChunkPos(structureStart.getChunkX(), structureStart.getChunkZ());
 			}
 		}
 
 		Random random = new Random();
-		random.setSeed(chunkGenerator.getSeed());
+		random.setSeed(l);
 		double d = random.nextDouble() * Math.PI * 2.0;
-		int m = l;
-		if (l < this.startPositions.length) {
-			int n = 0;
+		int n = m;
+		if (m < this.startPositions.length) {
 			int o = 0;
+			int p = 0;
 
-			for (int p = 0; p < this.startPositions.length; p++) {
-				double e = (double)(4 * i + i * o * 6) + (random.nextDouble() - 0.5) * (double)i * 2.5;
-				int q = (int)Math.round(Math.cos(d) * e);
-				int r = (int)Math.round(Math.sin(d) * e);
-				BlockPos blockPos = chunkGenerator.getBiomeSource().locateBiome((q << 4) + 8, chunkGenerator.getSeaLevel(), (r << 4) + 8, 112, list, random);
+			for (int q = 0; q < this.startPositions.length; q++) {
+				double e = (double)(4 * i + i * p * 6) + (random.nextDouble() - 0.5) * (double)i * 2.5;
+				int r = (int)Math.round(Math.cos(d) * e);
+				int s = (int)Math.round(Math.sin(d) * e);
+				BlockPos blockPos = chunkGenerator.getBiomeSource().locateBiome((r << 4) + 8, chunkGenerator.getSeaLevel(), (s << 4) + 8, 112, list, random);
 				if (blockPos != null) {
-					q = blockPos.getX() >> 4;
-					r = blockPos.getZ() >> 4;
+					r = blockPos.getX() >> 4;
+					s = blockPos.getZ() >> 4;
 				}
 
-				if (p >= m) {
-					this.startPositions[p] = new ChunkPos(q, r);
+				if (q >= n) {
+					this.startPositions[q] = new ChunkPos(r, s);
 				}
 
 				d += (Math.PI * 2) / (double)k;
-				if (++n == k) {
-					o++;
-					n = 0;
-					k += 2 * k / (o + 1);
-					k = Math.min(k, this.startPositions.length - p);
+				if (++o == k) {
+					p++;
+					o = 0;
+					k += 2 * k / (p + 1);
+					k = Math.min(k, this.startPositions.length - q);
 					d += random.nextDouble() * Math.PI * 2.0;
 				}
 			}
@@ -174,20 +171,22 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart {
+		private final long field_24559;
+
 		public Start(StructureFeature<?> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
 			super(structureFeature, i, j, blockBox, k, l);
+			this.field_24559 = l;
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			int i = 0;
-			long l = chunkGenerator.getSeed();
 
 			StrongholdGenerator.Start start;
 			do {
 				this.children.clear();
 				this.boundingBox = BlockBox.empty();
-				this.random.setCarverSeed(l + (long)(i++), x, z);
+				this.random.setCarverSeed(this.field_24559 + (long)(i++), x, z);
 				StrongholdGenerator.init();
 				start = new StrongholdGenerator.Start(this.random, (x << 4) + 2, (z << 4) + 2);
 				this.children.add(start);

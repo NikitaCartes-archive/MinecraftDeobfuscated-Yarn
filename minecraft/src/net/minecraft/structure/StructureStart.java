@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.StructureAccessor;
@@ -22,7 +22,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public abstract class StructureStart {
 	public static final StructureStart DEFAULT = new StructureStart(Feature.MINESHAFT, 0, 0, BlockBox.empty(), 0, 0L) {
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 		}
 	};
 	private final StructureFeature<?> feature;
@@ -43,7 +43,7 @@ public abstract class StructureStart {
 		this.boundingBox = box;
 	}
 
-	public abstract void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome);
+	public abstract void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome);
 
 	public BlockBox getBoundingBox() {
 		return this.boundingBox;
@@ -54,7 +54,7 @@ public abstract class StructureStart {
 	}
 
 	public void generateStructure(
-		IWorld world, StructureAccessor structureAccessor, ChunkGenerator<?> chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
+		ServerWorldAccess serverWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos
 	) {
 		synchronized (this.children) {
 			if (!this.children.isEmpty()) {
@@ -66,7 +66,7 @@ public abstract class StructureStart {
 				while (iterator.hasNext()) {
 					StructurePiece structurePiece = (StructurePiece)iterator.next();
 					if (structurePiece.getBoundingBox().intersects(blockBox)
-						&& !structurePiece.generate(world, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) {
+						&& !structurePiece.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockBox, chunkPos, blockPos)) {
 						iterator.remove();
 					}
 				}

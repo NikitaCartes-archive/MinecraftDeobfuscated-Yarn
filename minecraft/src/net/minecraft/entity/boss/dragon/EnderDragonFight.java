@@ -47,8 +47,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
@@ -80,6 +78,7 @@ public class EnderDragonFight {
 	private EnderDragonSpawnState dragonSpawnState;
 	private int spawnStateTimer;
 	private List<EndCrystalEntity> crystals;
+	private boolean field_24506;
 
 	public EnderDragonFight(ServerWorld world, CompoundTag compoundTag) {
 		this.world = world;
@@ -109,8 +108,7 @@ public class EnderDragonFight {
 				this.gateways.add(listTag.getInt(i));
 			}
 		} else {
-			this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
-			Collections.shuffle(this.gateways, new Random(world.getSeed()));
+			this.field_24506 = true;
 		}
 
 		this.endPortalPattern = BlockPatternBuilder.start()
@@ -365,6 +363,12 @@ public class EnderDragonFight {
 	}
 
 	private void generateNewEndGateway() {
+		if (this.field_24506) {
+			this.field_24506 = false;
+			this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
+			Collections.shuffle(this.gateways, new Random(this.world.getSeed()));
+		}
+
 		if (!this.gateways.isEmpty()) {
 			int i = (Integer)this.gateways.remove(this.gateways.size() - 1);
 			int j = MathHelper.floor(96.0 * Math.cos(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
@@ -377,13 +381,7 @@ public class EnderDragonFight {
 		this.world.syncWorldEvent(3000, blockPos, 0);
 		Feature.END_GATEWAY
 			.configure(EndGatewayFeatureConfig.createConfig())
-			.generate(
-				this.world,
-				this.world.getStructureAccessor(),
-				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
-				new Random(),
-				blockPos
-			);
+			.generate(this.world, this.world.getStructureAccessor(), this.world.getChunkManager().getChunkGenerator(), new Random(), blockPos);
 	}
 
 	private void generateEndPortal(boolean previouslyKilled) {
@@ -397,13 +395,7 @@ public class EnderDragonFight {
 		}
 
 		endPortalFeature.configure(FeatureConfig.DEFAULT)
-			.generate(
-				this.world,
-				this.world.getStructureAccessor(),
-				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.getChunkManager().getChunkGenerator(),
-				new Random(),
-				this.exitPortalLocation
-			);
+			.generate(this.world, this.world.getStructureAccessor(), this.world.getChunkManager().getChunkGenerator(), new Random(), this.exitPortalLocation);
 	}
 
 	private EnderDragonEntity createDragon() {

@@ -1,34 +1,53 @@
 package net.minecraft.data.server;
 
 import java.util.function.Consumer;
+import net.minecraft.class_5279;
+import net.minecraft.class_5282;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
+import net.minecraft.advancement.CriteriaMerger;
+import net.minecraft.advancement.criterion.BlockUsedCriterion;
 import net.minecraft.advancement.criterion.BrewedPotionCriterion;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.ConstructBeaconCriterion;
 import net.minecraft.advancement.criterion.EffectsChangedCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.NetherTravelCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
+import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
+	private static final Biome[] field_24614 = new Biome[]{
+		Biomes.NETHER_WASTES, Biomes.SOUL_SAND_VALLEY, Biomes.WARPED_FOREST, Biomes.CRIMSON_FOREST, Biomes.BASALT_DELTAS
+	};
+
 	public void accept(Consumer<Advancement> consumer) {
 		Advancement advancement = Advancement.Task.create()
 			.display(
@@ -78,7 +97,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.NETHER_BRIDGE)))
 			.build(consumer, "nether/find_fortress");
-		Advancement advancement4 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement)
 			.display(
 				Items.MAP,
@@ -93,7 +112,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion("travelled", NetherTravelCriterion.Conditions.distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(7000.0F))))
 			.build(consumer, "nether/fast_travel");
-		Advancement advancement5 = Advancement.Task.create()
+		Advancement.Task.create()
 			.parent(advancement2)
 			.display(
 				Items.GHAST_TEAR,
@@ -113,7 +132,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");
-		Advancement advancement6 = Advancement.Task.create()
+		Advancement advancement4 = Advancement.Task.create()
 			.parent(advancement3)
 			.display(
 				Blocks.WITHER_SKELETON_SKULL,
@@ -127,8 +146,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("wither_skull", InventoryChangedCriterion.Conditions.items(Blocks.WITHER_SKELETON_SKULL))
 			.build(consumer, "nether/get_wither_skull");
-		Advancement advancement7 = Advancement.Task.create()
-			.parent(advancement6)
+		Advancement advancement5 = Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.NETHER_STAR,
 				new TranslatableText("advancements.nether.summon_wither.title"),
@@ -141,7 +160,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.WITHER)))
 			.build(consumer, "nether/summon_wither");
-		Advancement advancement8 = Advancement.Task.create()
+		Advancement advancement6 = Advancement.Task.create()
 			.parent(advancement3)
 			.display(
 				Items.BLAZE_ROD,
@@ -155,8 +174,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("blaze_rod", InventoryChangedCriterion.Conditions.items(Items.BLAZE_ROD))
 			.build(consumer, "nether/obtain_blaze_rod");
-		Advancement advancement9 = Advancement.Task.create()
-			.parent(advancement7)
+		Advancement advancement7 = Advancement.Task.create()
+			.parent(advancement5)
 			.display(
 				Blocks.BEACON,
 				new TranslatableText("advancements.nether.create_beacon.title"),
@@ -169,8 +188,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.IntRange.atLeast(1)))
 			.build(consumer, "nether/create_beacon");
-		Advancement advancement10 = Advancement.Task.create()
-			.parent(advancement9)
+		Advancement.Task.create()
+			.parent(advancement7)
 			.display(
 				Blocks.BEACON,
 				new TranslatableText("advancements.nether.create_full_beacon.title"),
@@ -183,8 +202,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.IntRange.exactly(4)))
 			.build(consumer, "nether/create_full_beacon");
-		Advancement advancement11 = Advancement.Task.create()
-			.parent(advancement8)
+		Advancement advancement8 = Advancement.Task.create()
+			.parent(advancement6)
 			.display(
 				Items.POTION,
 				new TranslatableText("advancements.nether.brew_potion.title"),
@@ -197,8 +216,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("potion", BrewedPotionCriterion.Conditions.any())
 			.build(consumer, "nether/brew_potion");
-		Advancement advancement12 = Advancement.Task.create()
-			.parent(advancement11)
+		Advancement advancement9 = Advancement.Task.create()
+			.parent(advancement8)
 			.display(
 				Items.MILK_BUCKET,
 				new TranslatableText("advancements.nether.all_potions.title"),
@@ -230,8 +249,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/all_potions");
-		Advancement advancement13 = Advancement.Task.create()
-			.parent(advancement12)
+		Advancement.Task.create()
+			.parent(advancement9)
 			.display(
 				Items.BUCKET,
 				new TranslatableText("advancements.nether.all_effects.title"),
@@ -276,5 +295,220 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/all_effects");
+		Advancement advancement10 = Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.ANCIENT_DEBRIS,
+				new TranslatableText("advancements.nether.obtain_ancient_debris.title"),
+				new TranslatableText("advancements.nether.obtain_ancient_debris.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion("ancient_debris", InventoryChangedCriterion.Conditions.items(Items.ANCIENT_DEBRIS))
+			.build(consumer, "nether/obtain_ancient_debris");
+		Advancement.Task.create()
+			.parent(advancement10)
+			.display(
+				Items.NETHERITE_CHESTPLATE,
+				new TranslatableText("advancements.nether.netherite_armor.title"),
+				new TranslatableText("advancements.nether.netherite_armor.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"netherite_armor",
+				InventoryChangedCriterion.Conditions.items(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS)
+			)
+			.build(consumer, "nether/netherite_armor");
+		Advancement.Task.create()
+			.parent(advancement10)
+			.display(
+				Items.LODESTONE,
+				new TranslatableText("advancements.nether.use_lodestone.title"),
+				new TranslatableText("advancements.nether.use_lodestone.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"use_lodestone",
+				BlockUsedCriterion.Conditions.method_27981(
+					LocationPredicate.Builder.create().method_27989(BlockPredicate.Builder.create().method_27962(Blocks.LODESTONE).build()),
+					ItemPredicate.Builder.create().item(Items.COMPASS)
+				)
+			)
+			.build(consumer, "nether/use_lodestone");
+		Advancement advancement11 = Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.CRYING_OBSIDIAN,
+				new TranslatableText("advancements.nether.obtain_crying_obsidian.title"),
+				new TranslatableText("advancements.nether.obtain_crying_obsidian.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion("crying_obsidian", InventoryChangedCriterion.Conditions.items(Items.CRYING_OBSIDIAN))
+			.build(consumer, "nether/obtain_crying_obsidian");
+		Advancement.Task.create()
+			.parent(advancement11)
+			.display(
+				Items.RESPAWN_ANCHOR,
+				new TranslatableText("advancements.nether.charge_respawn_anchor.title"),
+				new TranslatableText("advancements.nether.charge_respawn_anchor.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"charge_respawn_anchor",
+				BlockUsedCriterion.Conditions.method_27981(
+					LocationPredicate.Builder.create()
+						.method_27989(
+							BlockPredicate.Builder.create()
+								.method_27962(Blocks.RESPAWN_ANCHOR)
+								.method_27963(StatePredicate.Builder.create().exactMatch(RespawnAnchorBlock.CHARGES, 4).build())
+								.build()
+						),
+					ItemPredicate.Builder.create().item(Blocks.GLOWSTONE)
+				)
+			)
+			.build(consumer, "nether/charge_respawn_anchor");
+		Advancement advancement12 = Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.WARPED_FUNGUS_ON_A_STICK,
+				new TranslatableText("advancements.nether.ride_strider.title"),
+				new TranslatableText("advancements.nether.ride_strider.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"used_warped_fungus_on_a_stick",
+				ItemDurabilityChangedCriterion.Conditions.create(
+					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().method_27971(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()).build()),
+					ItemPredicate.Builder.create().item(Items.WARPED_FUNGUS_ON_A_STICK).build(),
+					NumberRange.IntRange.ANY
+				)
+			)
+			.build(consumer, "nether/ride_strider");
+		AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Task.create(), field_24614)
+			.parent(advancement12)
+			.display(
+				Items.NETHERITE_BOOTS,
+				new TranslatableText("advancements.nether.explore_nether.title"),
+				new TranslatableText("advancements.nether.explore_nether.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.build(consumer, "nether/explore_nether");
+		Advancement advancement13 = Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.POLISHED_BLACKSTONE_BRICKS,
+				new TranslatableText("advancements.nether.find_bastion.title"),
+				new TranslatableText("advancements.nether.find_bastion.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.BASTION_REMNANT)))
+			.build(consumer, "nether/find_bastion");
+		Advancement.Task.create()
+			.parent(advancement13)
+			.display(
+				Blocks.CHEST,
+				new TranslatableText("advancements.nether.loot_bastion.title"),
+				new TranslatableText("advancements.nether.loot_bastion.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criteriaMerger(CriteriaMerger.OR)
+			.criterion("loot_bastion_other", class_5282.class_5283.method_27995(new Identifier("minecraft:chests/bastion_other")))
+			.criterion("loot_bastion_treasure", class_5282.class_5283.method_27995(new Identifier("minecraft:chests/bastion_treasure")))
+			.criterion("loot_bastion_hoglin_stable", class_5282.class_5283.method_27995(new Identifier("minecraft:chests/bastion_hoglin_stable")))
+			.criterion("loot_bastion_bridge", class_5282.class_5283.method_27995(new Identifier("minecraft:chests/bastion_bridge")))
+			.build(consumer, "nether/loot_bastion");
+		Advancement.Task.create()
+			.parent(advancement)
+			.display(
+				Items.GOLD_INGOT,
+				new TranslatableText("advancements.nether.distract_piglin.title"),
+				new TranslatableText("advancements.nether.distract_piglin.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"distract_piglin",
+				class_5279.class_5280.method_27978(
+					EntityPredicate.Extended.method_27973(
+						EntityPropertiesLootCondition.builder(
+								LootContext.EntityTarget.THIS,
+								EntityPredicate.Builder.create()
+									.equipment(
+										EntityEquipmentPredicate.class_5278.method_27965().method_27966(ItemPredicate.Builder.create().item(Items.GOLDEN_HELMET).build()).method_27967()
+									)
+							)
+							.invert()
+							.build(),
+						EntityPropertiesLootCondition.builder(
+								LootContext.EntityTarget.THIS,
+								EntityPredicate.Builder.create()
+									.equipment(
+										EntityEquipmentPredicate.class_5278.method_27965().method_27968(ItemPredicate.Builder.create().item(Items.GOLDEN_CHESTPLATE).build()).method_27967()
+									)
+							)
+							.invert()
+							.build(),
+						EntityPropertiesLootCondition.builder(
+								LootContext.EntityTarget.THIS,
+								EntityPredicate.Builder.create()
+									.equipment(
+										EntityEquipmentPredicate.class_5278.method_27965().method_27969(ItemPredicate.Builder.create().item(Items.GOLDEN_LEGGINGS).build()).method_27967()
+									)
+							)
+							.invert()
+							.build(),
+						EntityPropertiesLootCondition.builder(
+								LootContext.EntityTarget.THIS,
+								EntityPredicate.Builder.create()
+									.equipment(
+										EntityEquipmentPredicate.class_5278.method_27965().method_27970(ItemPredicate.Builder.create().item(Items.GOLDEN_BOOTS).build()).method_27967()
+									)
+							)
+							.invert()
+							.build()
+					),
+					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED),
+					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().type(EntityType.PIGLIN).build())
+				)
+			)
+			.build(consumer, "nether/distract_piglin");
 	}
 }

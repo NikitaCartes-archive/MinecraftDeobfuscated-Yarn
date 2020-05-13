@@ -82,10 +82,10 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 	}
 
 	private boolean exceedsMaxRange(ServerWorld world, VillagerEntity villager, GlobalPos pos) {
-		return pos.getDimension() != world.getDimension().getType() || pos.getPos().getManhattanDistance(villager.getBlockPos()) > this.maxRange;
+		return pos.getDimension() != world.method_27983() || pos.getPos().getManhattanDistance(villager.getBlockPos()) > this.maxRange;
 	}
 
 	private boolean reachedDestination(ServerWorld world, VillagerEntity villager, GlobalPos pos) {
-		return pos.getDimension() == world.getDimension().getType() && pos.getPos().getManhattanDistance(villager.getBlockPos()) <= this.completionRange;
+		return pos.getDimension() == world.method_27983() && pos.getPos().getManhattanDistance(villager.getBlockPos()) <= this.completionRange;
 	}
 }

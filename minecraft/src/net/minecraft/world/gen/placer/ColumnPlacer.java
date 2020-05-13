@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class ColumnPlacer extends BlockPlacer {
 	private final int minSize;
@@ -25,12 +25,12 @@ public class ColumnPlacer extends BlockPlacer {
 	}
 
 	@Override
-	public void method_23403(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
+	public void method_23403(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Random random) {
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 		int i = this.minSize + random.nextInt(random.nextInt(this.extraSize + 1) + 1);
 
 		for (int j = 0; j < i; j++) {
-			iWorld.setBlockState(mutable, blockState, 2);
+			worldAccess.setBlockState(mutable, blockState, 2);
 			mutable.move(Direction.UP);
 		}
 	}

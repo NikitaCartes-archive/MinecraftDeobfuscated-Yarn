@@ -16,14 +16,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class Feature<FC extends FeatureConfig> {
 	public static final StructureFeature<DefaultFeatureConfig> PILLAGER_OUTPOST = register(
@@ -181,7 +180,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	}
 
 	public abstract boolean generate(
-		IWorld world, StructureAccessor accessor, ChunkGenerator<? extends ChunkGeneratorConfig> generator, Random random, BlockPos pos, FC config
+		ServerWorldAccess serverWorldAccess, StructureAccessor accessor, ChunkGenerator generator, Random random, BlockPos pos, FC config
 	);
 
 	public List<Biome.SpawnEntry> getMonsterSpawns() {

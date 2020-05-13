@@ -54,7 +54,7 @@ public class GoToSecondaryPositionTask extends Task<VillagerEntity> {
 			if (!list.isEmpty()) {
 				this.chosenPosition = (GlobalPos)list.get(serverWorld.getRandom().nextInt(list.size()));
 				return this.chosenPosition != null
-					&& Objects.equals(serverWorld.getDimension().getType(), this.chosenPosition.getDimension())
+					&& Objects.equals(serverWorld.method_27983(), this.chosenPosition.getDimension())
 					&& ((GlobalPos)optional2.get()).getPos().isWithinDistance(villagerEntity.getPos(), (double)this.primaryPositionActivationDistance);
 			}
 		}

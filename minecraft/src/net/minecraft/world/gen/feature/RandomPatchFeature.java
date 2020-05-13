@@ -7,10 +7,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 	public RandomPatchFeature(Function<Dynamic<?>, ? extends RandomPatchFeatureConfig> function) {
@@ -18,9 +17,9 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		RandomPatchFeatureConfig randomPatchFeatureConfig
@@ -28,7 +27,7 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 		BlockState blockState = randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
 		BlockPos blockPos2;
 		if (randomPatchFeatureConfig.project) {
-			blockPos2 = iWorld.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, blockPos);
+			blockPos2 = serverWorldAccess.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, blockPos);
 		} else {
 			blockPos2 = blockPos;
 		}
@@ -44,19 +43,19 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 				random.nextInt(randomPatchFeatureConfig.spreadZ + 1) - random.nextInt(randomPatchFeatureConfig.spreadZ + 1)
 			);
 			BlockPos blockPos3 = mutable.down();
-			BlockState blockState2 = iWorld.getBlockState(blockPos3);
-			if ((iWorld.isAir(mutable) || randomPatchFeatureConfig.canReplace && iWorld.getBlockState(mutable).getMaterial().isReplaceable())
-				&& blockState.canPlaceAt(iWorld, mutable)
+			BlockState blockState2 = serverWorldAccess.getBlockState(blockPos3);
+			if ((serverWorldAccess.isAir(mutable) || randomPatchFeatureConfig.canReplace && serverWorldAccess.getBlockState(mutable).getMaterial().isReplaceable())
+				&& blockState.canPlaceAt(serverWorldAccess, mutable)
 				&& (randomPatchFeatureConfig.whitelist.isEmpty() || randomPatchFeatureConfig.whitelist.contains(blockState2.getBlock()))
 				&& !randomPatchFeatureConfig.blacklist.contains(blockState2)
 				&& (
 					!randomPatchFeatureConfig.needsWater
-						|| iWorld.getFluidState(blockPos3.west()).matches(FluidTags.WATER)
-						|| iWorld.getFluidState(blockPos3.east()).matches(FluidTags.WATER)
-						|| iWorld.getFluidState(blockPos3.north()).matches(FluidTags.WATER)
-						|| iWorld.getFluidState(blockPos3.south()).matches(FluidTags.WATER)
+						|| serverWorldAccess.getFluidState(blockPos3.west()).matches(FluidTags.WATER)
+						|| serverWorldAccess.getFluidState(blockPos3.east()).matches(FluidTags.WATER)
+						|| serverWorldAccess.getFluidState(blockPos3.north()).matches(FluidTags.WATER)
+						|| serverWorldAccess.getFluidState(blockPos3.south()).matches(FluidTags.WATER)
 				)) {
-				randomPatchFeatureConfig.blockPlacer.method_23403(iWorld, mutable, blockState, random);
+				randomPatchFeatureConfig.blockPlacer.method_23403(serverWorldAccess, mutable, blockState, random);
 				i++;
 			}
 		}

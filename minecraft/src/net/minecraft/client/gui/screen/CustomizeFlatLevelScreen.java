@@ -2,19 +2,18 @@ package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -22,24 +21,22 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
-import net.minecraft.world.level.LevelGeneratorOptions;
-import net.minecraft.world.level.LevelGeneratorType;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelScreen extends Screen {
-	private final CreateWorldScreen parent;
-	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
+	private final Screen parent;
+	private final Consumer<FlatChunkGeneratorConfig> field_24565;
+	private FlatChunkGeneratorConfig config;
 	private Text tileText;
 	private Text heightText;
 	private CustomizeFlatLevelScreen.SuperflatLayersListWidget layers;
 	private ButtonWidget widgetButtonRemoveLayer;
 
-	public CustomizeFlatLevelScreen(CreateWorldScreen parent, LevelGeneratorOptions levelGeneratorOptions) {
+	public CustomizeFlatLevelScreen(Screen screen, Consumer<FlatChunkGeneratorConfig> consumer, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		super(new TranslatableText("createWorld.customize.flat.title"));
-		this.parent = parent;
-		if (levelGeneratorOptions.getType() == LevelGeneratorType.FLAT) {
-			this.config = FlatChunkGeneratorConfig.fromDynamic(levelGeneratorOptions.getDynamic());
-		}
+		this.parent = screen;
+		this.field_24565 = consumer;
+		this.config = flatChunkGeneratorConfig;
 	}
 
 	public String getConfigString() {
@@ -85,7 +82,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
-			this.parent.generatorOptions = LevelGeneratorType.FLAT.loadOptions(this.config.toDynamic(NbtOps.INSTANCE));
+			this.field_24565.accept(this.config);
 			this.client.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();

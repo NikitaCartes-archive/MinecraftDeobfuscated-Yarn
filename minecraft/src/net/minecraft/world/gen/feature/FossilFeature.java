@@ -16,10 +16,9 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class FossilFeature extends Feature<DefaultFeatureConfig> {
 	private static final Identifier SPINE_1 = new Identifier("fossil/spine_1");
@@ -48,17 +47,17 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DefaultFeatureConfig defaultFeatureConfig
 	) {
-		Random random2 = iWorld.getRandom();
+		Random random2 = serverWorldAccess.getRandom();
 		BlockRotation blockRotation = BlockRotation.random(random2);
 		int i = random2.nextInt(FOSSILS.length);
-		StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).getServer().getStructureManager();
+		StructureManager structureManager = ((ServerWorld)serverWorldAccess.getWorld()).getServer().getStructureManager();
 		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
 		Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
 		ChunkPos chunkPos = new ChunkPos(blockPos);
@@ -75,7 +74,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int m = 0; m < blockPos2.getX(); m++) {
 			for (int n = 0; n < blockPos2.getZ(); n++) {
-				l = Math.min(l, iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
+				l = Math.min(l, serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
 			}
 		}
 
@@ -83,11 +82,11 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
-		structure.place(iWorld, blockPos3, blockPos3, structurePlacementData, 4);
+		structure.place(serverWorldAccess, blockPos3, blockPos3, structurePlacementData, 4);
 		structurePlacementData.removeProcessor(blockRotStructureProcessor);
 		BlockRotStructureProcessor blockRotStructureProcessor2 = new BlockRotStructureProcessor(0.1F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor2);
-		structure2.place(iWorld, blockPos3, blockPos3, structurePlacementData, 4);
+		structure2.place(serverWorldAccess, blockPos3, blockPos3, structurePlacementData, 4);
 		return true;
 	}
 }

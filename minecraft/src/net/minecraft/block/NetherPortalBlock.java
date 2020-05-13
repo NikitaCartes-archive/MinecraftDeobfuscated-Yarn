@@ -25,8 +25,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class NetherPortalBlock extends Block {
 	public static final EnumProperty<Direction.Axis> AXIS = Properties.HORIZONTAL_AXIS;
@@ -51,7 +51,9 @@ public class NetherPortalBlock extends Block {
 
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
+		if (world.getDimension().hasVisibleSky()
+			&& world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)
+			&& random.nextInt(2000) < world.getDifficulty().getId()) {
 			while (world.getBlockState(pos).isOf(this)) {
 				pos = pos.down();
 			}
@@ -65,8 +67,8 @@ public class NetherPortalBlock extends Block {
 		}
 	}
 
-	public static boolean createPortalAt(IWorld iWorld, BlockPos blockPos) {
-		NetherPortalBlock.AreaHelper areaHelper = createAreaHelper(iWorld, blockPos);
+	public static boolean createPortalAt(WorldAccess worldAccess, BlockPos blockPos) {
+		NetherPortalBlock.AreaHelper areaHelper = createAreaHelper(worldAccess, blockPos);
 		if (areaHelper != null) {
 			areaHelper.createPortal();
 			return true;
@@ -76,18 +78,18 @@ public class NetherPortalBlock extends Block {
 	}
 
 	@Nullable
-	public static NetherPortalBlock.AreaHelper createAreaHelper(IWorld iWorld, BlockPos blockPos) {
-		NetherPortalBlock.AreaHelper areaHelper = new NetherPortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.X);
+	public static NetherPortalBlock.AreaHelper createAreaHelper(WorldAccess worldAccess, BlockPos blockPos) {
+		NetherPortalBlock.AreaHelper areaHelper = new NetherPortalBlock.AreaHelper(worldAccess, blockPos, Direction.Axis.X);
 		if (areaHelper.isValid() && areaHelper.foundPortalBlocks == 0) {
 			return areaHelper;
 		} else {
-			NetherPortalBlock.AreaHelper areaHelper2 = new NetherPortalBlock.AreaHelper(iWorld, blockPos, Direction.Axis.Z);
+			NetherPortalBlock.AreaHelper areaHelper2 = new NetherPortalBlock.AreaHelper(worldAccess, blockPos, Direction.Axis.Z);
 			return areaHelper2.isValid() && areaHelper2.foundPortalBlocks == 0 ? areaHelper2 : null;
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		Direction.Axis axis = direction.getAxis();
 		Direction.Axis axis2 = state.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
@@ -168,13 +170,13 @@ public class NetherPortalBlock extends Block {
 		builder.add(AXIS);
 	}
 
-	public static BlockPattern.Result findPortal(IWorld iWorld, BlockPos world) {
+	public static BlockPattern.Result findPortal(WorldAccess worldAccess, BlockPos world) {
 		Direction.Axis axis = Direction.Axis.Z;
-		NetherPortalBlock.AreaHelper areaHelper = new NetherPortalBlock.AreaHelper(iWorld, world, Direction.Axis.X);
-		LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(iWorld, true);
+		NetherPortalBlock.AreaHelper areaHelper = new NetherPortalBlock.AreaHelper(worldAccess, world, Direction.Axis.X);
+		LoadingCache<BlockPos, CachedBlockPosition> loadingCache = BlockPattern.makeCache(worldAccess, true);
 		if (!areaHelper.isValid()) {
 			axis = Direction.Axis.X;
-			areaHelper = new NetherPortalBlock.AreaHelper(iWorld, world, Direction.Axis.Z);
+			areaHelper = new NetherPortalBlock.AreaHelper(worldAccess, world, Direction.Axis.Z);
 		}
 
 		if (!areaHelper.isValid()) {
@@ -226,7 +228,7 @@ public class NetherPortalBlock extends Block {
 	}
 
 	public static class AreaHelper {
-		private final IWorld world;
+		private final WorldAccess world;
 		private final Direction.Axis axis;
 		private final Direction negativeDir;
 		private final Direction positiveDir;
@@ -236,7 +238,7 @@ public class NetherPortalBlock extends Block {
 		private int height;
 		private int width;
 
-		public AreaHelper(IWorld world, BlockPos pos, Direction.Axis axis) {
+		public AreaHelper(WorldAccess world, BlockPos pos, Direction.Axis axis) {
 			this.world = world;
 			this.axis = axis;
 			if (axis == Direction.Axis.X) {

@@ -8,8 +8,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 
@@ -46,7 +44,6 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		((ConfiguredFeature)this.field_22135.get())
-			.generate(world, world.getStructureAccessor(), (ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(), random, pos);
+		((ConfiguredFeature)this.field_22135.get()).generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), random, pos);
 	}
 }

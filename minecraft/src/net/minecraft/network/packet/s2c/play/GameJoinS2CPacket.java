@@ -8,7 +8,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.LevelGeneratorType;
 
 public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int playerEntityId;
@@ -17,8 +16,9 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private GameMode gameMode;
 	private DimensionType dimension;
 	private int maxPlayers;
-	private LevelGeneratorType generatorType;
 	private int chunkLoadDistance;
+	private boolean field_24618;
+	private boolean field_24619;
 	private boolean reducedDebugInfo;
 	private boolean showsDeathScreen;
 
@@ -32,10 +32,11 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		boolean hardcore,
 		DimensionType dimensionType,
 		int maxPlayers,
-		LevelGeneratorType levelGeneratorType,
-		int chunkLoadDistance,
-		boolean reducedDebugInfo,
-		boolean showsDeathScreen
+		int i,
+		boolean bl,
+		boolean bl2,
+		boolean bl3,
+		boolean bl4
 	) {
 		this.playerEntityId = playerEntityId;
 		this.dimension = dimensionType;
@@ -43,10 +44,11 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.gameMode = gameMode;
 		this.maxPlayers = maxPlayers;
 		this.hardcore = hardcore;
-		this.generatorType = levelGeneratorType;
-		this.chunkLoadDistance = chunkLoadDistance;
-		this.reducedDebugInfo = reducedDebugInfo;
-		this.showsDeathScreen = showsDeathScreen;
+		this.chunkLoadDistance = i;
+		this.field_24618 = bl;
+		this.field_24619 = bl2;
+		this.reducedDebugInfo = bl3;
+		this.showsDeathScreen = bl4;
 	}
 
 	@Override
@@ -59,12 +61,9 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.dimension = DimensionType.byRawId(buf.readInt());
 		this.seed = buf.readLong();
 		this.maxPlayers = buf.readUnsignedByte();
-		this.generatorType = LevelGeneratorType.getTypeFromName(buf.readString(16));
-		if (this.generatorType == null) {
-			this.generatorType = LevelGeneratorType.DEFAULT;
-		}
-
 		this.chunkLoadDistance = buf.readVarInt();
+		this.field_24618 = buf.readBoolean();
+		this.field_24619 = buf.readBoolean();
 		this.reducedDebugInfo = buf.readBoolean();
 		this.showsDeathScreen = buf.readBoolean();
 	}
@@ -81,8 +80,9 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeInt(this.dimension.getRawId());
 		buf.writeLong(this.seed);
 		buf.writeByte(this.maxPlayers);
-		buf.writeString(this.generatorType.getName());
 		buf.writeVarInt(this.chunkLoadDistance);
+		buf.writeBoolean(this.field_24618);
+		buf.writeBoolean(this.field_24619);
 		buf.writeBoolean(this.reducedDebugInfo);
 		buf.writeBoolean(this.showsDeathScreen);
 	}
@@ -102,7 +102,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean isHardcore() {
+	public boolean method_28118() {
 		return this.hardcore;
 	}
 
@@ -117,22 +117,27 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LevelGeneratorType getGeneratorType() {
-		return this.generatorType;
-	}
-
-	@Environment(EnvType.CLIENT)
 	public int getChunkLoadDistance() {
 		return this.chunkLoadDistance;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean hasReducedDebugInfo() {
-		return this.reducedDebugInfo;
+		return this.field_24618;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean showsDeathScreen() {
+		return this.field_24619;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_28119() {
+		return this.reducedDebugInfo;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isHardcore() {
 		return this.showsDeathScreen;
 	}
 }

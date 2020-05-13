@@ -53,8 +53,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.EmptyBlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class AbstractBlock {
@@ -87,7 +87,7 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	public void prepare(BlockState state, IWorld world, BlockPos pos, int flags) {
+	public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags) {
 	}
 
 	@Deprecated
@@ -105,7 +105,7 @@ public abstract class AbstractBlock {
 	}
 
 	@Deprecated
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return state;
 	}
 
@@ -565,7 +565,7 @@ public abstract class AbstractBlock {
 			this.getBlock().neighborUpdate(this.asBlockState(), world, pos, block, posFrom, notify);
 		}
 
-		public final void updateNeighbors(IWorld world, BlockPos pos, int flags) {
+		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags) {
 			this.getBlock();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -577,7 +577,7 @@ public abstract class AbstractBlock {
 			}
 		}
 
-		public void prepare(IWorld world, BlockPos pos, int flags) {
+		public void prepare(WorldAccess world, BlockPos pos, int flags) {
 			this.getBlock().prepare(this.asBlockState(), world, pos, flags);
 		}
 
@@ -626,7 +626,7 @@ public abstract class AbstractBlock {
 			return this.blockVisionPredicate.test(this.asBlockState(), world, pos);
 		}
 
-		public BlockState getStateForNeighborUpdate(Direction direction, BlockState state, IWorld world, BlockPos pos, BlockPos fromPos) {
+		public BlockState getStateForNeighborUpdate(Direction direction, BlockState state, WorldAccess world, BlockPos pos, BlockPos fromPos) {
 			return this.getBlock().getStateForNeighborUpdate(this.asBlockState(), direction, state, world, pos, fromPos);
 		}
 

@@ -38,9 +38,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -241,6 +241,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				this.dropStack(itemStack2);
 			}
 
+			this.method_27964(item);
 			this.equipStack(equipmentSlot, itemStack);
 			this.sendPickup(item, itemStack.getCount());
 			item.remove();
@@ -281,7 +282,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.setAbleToJoinRaid(this.getType() != EntityType.WITCH || spawnReason != SpawnReason.NATURAL);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);

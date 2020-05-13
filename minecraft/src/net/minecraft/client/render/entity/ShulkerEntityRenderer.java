@@ -63,14 +63,9 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	protected void setupTransforms(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f, float g, float h) {
-		super.setupTransforms(shulkerEntity, matrixStack, f, g, h);
+		super.setupTransforms(shulkerEntity, matrixStack, f, g + 180.0F, h);
 		matrixStack.translate(0.0, 0.5, 0.0);
 		matrixStack.multiply(shulkerEntity.getAttachedFace().getOpposite().getRotationQuaternion());
 		matrixStack.translate(0.0, -0.5, 0.0);
-	}
-
-	protected void scale(ShulkerEntity shulkerEntity, MatrixStack matrixStack, float f) {
-		float g = 0.999F;
-		matrixStack.scale(0.999F, 0.999F, 0.999F);
 	}
 }

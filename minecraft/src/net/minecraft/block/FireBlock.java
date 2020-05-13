@@ -17,8 +17,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.TheEndDimension;
 
@@ -52,7 +52,7 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return this.canPlaceAt(state, world, pos) ? this.method_24855(world, pos, (Integer)state.get(AGE)) : Blocks.AIR.getDefaultState();
 	}
 
@@ -120,7 +120,7 @@ public class FireBlock extends AbstractFireBlock {
 			}
 
 			BlockState blockState = world.getBlockState(pos.down());
-			boolean bl = world.dimension instanceof TheEndDimension && blockState.isOf(Blocks.BEDROCK)
+			boolean bl = world.getDimension() instanceof TheEndDimension && blockState.isOf(Blocks.BEDROCK)
 				|| blockState.isOf(Blocks.NETHERRACK)
 				|| blockState.isOf(Blocks.MAGMA_BLOCK);
 			int i = (Integer)state.get(AGE);
@@ -220,8 +220,8 @@ public class FireBlock extends AbstractFireBlock {
 		}
 	}
 
-	private BlockState method_24855(IWorld iWorld, BlockPos blockPos, int i) {
-		BlockState blockState = getState(iWorld, blockPos);
+	private BlockState method_24855(WorldAccess worldAccess, BlockPos blockPos, int i) {
+		BlockState blockState = getState(worldAccess, blockPos);
 		return blockState.isOf(Blocks.FIRE) ? blockState.with(AGE, Integer.valueOf(i)) : blockState;
 	}
 

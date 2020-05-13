@@ -5,10 +5,10 @@ import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 	NoSurfaceOreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> function) {
@@ -16,9 +16,9 @@ public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		OreFeatureConfig oreFeatureConfig
@@ -28,8 +28,8 @@ public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 
 		for (int j = 0; j < i; j++) {
 			this.getStartPos(mutable, random, blockPos, Math.min(j, 7));
-			if (oreFeatureConfig.target.getCondition().test(iWorld.getBlockState(mutable)) && !this.checkAir(iWorld, mutable)) {
-				iWorld.setBlockState(mutable, oreFeatureConfig.state, 2);
+			if (oreFeatureConfig.target.getCondition().test(serverWorldAccess.getBlockState(mutable)) && !this.checkAir(serverWorldAccess, mutable)) {
+				serverWorldAccess.setBlockState(mutable, oreFeatureConfig.state, 2);
 			}
 		}
 
@@ -47,7 +47,7 @@ public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 		return Math.round((random.nextFloat() - random.nextFloat()) * (float)size);
 	}
 
-	private boolean checkAir(IWorld world, BlockPos pos) {
+	private boolean checkAir(WorldAccess world, BlockPos pos) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : Direction.values()) {

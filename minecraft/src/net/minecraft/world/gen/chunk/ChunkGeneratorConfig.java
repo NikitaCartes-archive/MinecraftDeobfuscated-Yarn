@@ -1,7 +1,8 @@
 package net.minecraft.world.gen.chunk;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.util.math.MathHelper;
 
 public class ChunkGeneratorConfig {
 	protected int villageDistance = 32;
@@ -24,12 +25,8 @@ public class ChunkGeneratorConfig {
 	protected final int netherStructureSpacing = 30;
 	protected final int netherStructureSeparation = 4;
 	protected final int netherStructureSeedModifier = 30084232;
-	protected int ruinedPortalSpacing = 40;
-	protected final int netherRuinedPortalSeparation = 15;
-	protected int netherRuinedPortalSpacing = 25;
-	protected final int ruinedPortalSeparation = 10;
-	protected BlockState defaultBlock = Blocks.STONE.getDefaultState();
-	protected BlockState defaultFluid = Blocks.WATER.getDefaultState();
+	protected int field_24507 = 40;
+	protected int field_24508 = 15;
 
 	public int getNetherStructureSpacing() {
 		return 30;
@@ -111,43 +108,48 @@ public class ChunkGeneratorConfig {
 		return 20;
 	}
 
-	public int getRuinedPortalSpacing(boolean inNether) {
-		return inNether ? this.netherRuinedPortalSpacing : this.ruinedPortalSpacing;
+	public int getRuinedPortalSpacing() {
+		return this.field_24507;
 	}
 
-	public int getRuinedPortalSeparation(boolean inNether) {
-		return inNether ? 10 : 15;
+	public int getRuinedPortalSeparation() {
+		return this.field_24508;
 	}
 
-	public BlockState getDefaultBlock() {
-		return this.defaultBlock;
-	}
+	@Environment(EnvType.CLIENT)
+	public void method_28000(String string, String string2, String string3) {
+		if ("village".equals(string) && "distance".equals(string2)) {
+			this.villageDistance = MathHelper.parseInt(string3, this.villageDistance, 9);
+		}
 
-	public BlockState getDefaultFluid() {
-		return this.defaultFluid;
-	}
+		if ("biome_1".equals(string) && "distance".equals(string2)) {
+			this.templeDistance = MathHelper.parseInt(string3, this.templeDistance, 9);
+		}
 
-	public void setDefaultBlock(BlockState state) {
-		this.defaultBlock = state;
-	}
+		if ("stronghold".equals(string)) {
+			if ("distance".equals(string2)) {
+				this.strongholdDistance = MathHelper.parseInt(string3, this.strongholdDistance, 1);
+			} else if ("count".equals(string2)) {
+				this.strongholdCount = MathHelper.parseInt(string3, this.strongholdCount, 1);
+			} else if ("spread".equals(string2)) {
+				this.strongholdSpread = MathHelper.parseInt(string3, this.strongholdSpread, 1);
+			}
+		}
 
-	public void setDefaultFluid(BlockState state) {
-		this.defaultFluid = state;
-	}
+		if ("oceanmonument".equals(string)) {
+			if ("separation".equals(string2)) {
+				this.oceanMonumentSeparation = MathHelper.parseInt(string3, this.oceanMonumentSeparation, 1);
+			} else if ("spacing".equals(string2)) {
+				this.oceanMonumentSpacing = MathHelper.parseInt(string3, this.oceanMonumentSpacing, 1);
+			}
+		}
 
-	/**
-	 * Returns the Y level of the bedrock ceiling, or {@code 0} if the bedrock
-	 * ceiling should not be generated.
-	 */
-	public int getBedrockCeilingY() {
-		return 0;
-	}
+		if ("endcity".equals(string) && "distance".equals(string2)) {
+			this.endCityDistance = MathHelper.parseInt(string3, this.endCityDistance, 1);
+		}
 
-	/**
-	 * Returns the Y level of the bedrock floor, or {@code 256} if the bedrock
-	 * floor should not be generated.
-	 */
-	public int getBedrockFloorY() {
-		return 256;
+		if ("mansion".equals(string) && "distance".equals(string2)) {
+			this.mansionDistance = MathHelper.parseInt(string3, this.mansionDistance, 1);
+		}
 	}
 }

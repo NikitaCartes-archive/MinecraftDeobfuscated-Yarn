@@ -48,7 +48,7 @@ public class CompassItem extends Item implements Vanishable {
 
 				Optional<DimensionType> optional = getLodestoneDimension(compoundTag);
 				if (optional.isPresent()
-					&& ((DimensionType)optional.get()).equals(world.dimension.getType())
+					&& ((DimensionType)optional.get()).equals(world.method_27983())
 					&& compoundTag.contains("LodestonePos")
 					&& !((ServerWorld)world)
 						.getPointOfInterestStorage()
@@ -68,7 +68,7 @@ public class CompassItem extends Item implements Vanishable {
 			context.world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0F, 1.0F);
 			boolean bl = !context.player.abilities.creativeMode && context.stack.getCount() == 1;
 			if (bl) {
-				this.method_27315(context.world.dimension, blockPos, context.stack.getOrCreateTag());
+				this.method_27315(context.world.getDimension(), blockPos, context.stack.getOrCreateTag());
 			} else {
 				ItemStack itemStack = new ItemStack(Items.COMPASS, 1);
 				CompoundTag compoundTag = context.stack.hasTag() ? context.stack.getTag().copy() : new CompoundTag();
@@ -77,7 +77,7 @@ public class CompassItem extends Item implements Vanishable {
 					context.stack.decrement(1);
 				}
 
-				this.method_27315(context.world.dimension, blockPos, compoundTag);
+				this.method_27315(context.world.getDimension(), blockPos, compoundTag);
 				if (!context.player.inventory.insertStack(itemStack)) {
 					context.player.dropItem(itemStack, false);
 				}

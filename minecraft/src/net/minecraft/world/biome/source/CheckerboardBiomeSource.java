@@ -1,16 +1,24 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableSet;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.world.biome.Biome;
 
 public class CheckerboardBiomeSource extends BiomeSource {
 	private final Biome[] biomeArray;
 	private final int gridSize;
 
-	public CheckerboardBiomeSource(CheckerboardBiomeSourceConfig config) {
-		super(ImmutableSet.copyOf(config.getBiomes()));
-		this.biomeArray = config.getBiomes();
-		this.gridSize = config.getSize() + 2;
+	public CheckerboardBiomeSource(Biome[] biomes, int i) {
+		super(ImmutableSet.copyOf(biomes));
+		this.biomeArray = biomes;
+		this.gridSize = i + 2;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public BiomeSource method_27985(long l) {
+		return this;
 	}
 
 	@Override

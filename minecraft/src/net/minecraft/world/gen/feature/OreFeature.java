@@ -7,10 +7,10 @@ import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
 	public OreFeature(Function<Dynamic<?>, ? extends OreFeatureConfig> function) {
@@ -18,9 +18,9 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		OreFeatureConfig oreFeatureConfig
@@ -43,8 +43,8 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 
 		for (int s = n; s <= n + q; s++) {
 			for (int t = p; t <= p + q; t++) {
-				if (o <= iWorld.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
-					return this.generateVeinPart(iWorld, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
+				if (o <= serverWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
+					return this.generateVeinPart(serverWorldAccess, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
 				}
 			}
 		}
@@ -53,7 +53,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 	}
 
 	protected boolean generateVeinPart(
-		IWorld world,
+		WorldAccess world,
 		Random random,
 		OreFeatureConfig config,
 		double startX,

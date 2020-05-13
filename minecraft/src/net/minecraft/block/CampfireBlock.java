@@ -42,8 +42,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 7.0, 16.0);
@@ -114,18 +114,18 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		IWorld iWorld = ctx.getWorld();
+		WorldAccess worldAccess = ctx.getWorld();
 		BlockPos blockPos = ctx.getBlockPos();
-		boolean bl = iWorld.getFluidState(blockPos).getFluid() == Fluids.WATER;
+		boolean bl = worldAccess.getFluidState(blockPos).getFluid() == Fluids.WATER;
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(bl))
-			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down()))))
+			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(worldAccess.getBlockState(blockPos.down()))))
 			.with(LIT, Boolean.valueOf(!bl))
 			.with(FACING, ctx.getPlayerFacing());
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
@@ -183,7 +183,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean tryFillWithFluid(IWorld world, BlockPos pos, BlockState state, FluidState fluidState) {
+	public boolean tryFillWithFluid(WorldAccess world, BlockPos pos, BlockState state, FluidState fluidState) {
 		if (!(Boolean)state.get(Properties.WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
 			boolean bl = (Boolean)state.get(LIT);
 			if (bl) {
@@ -247,8 +247,8 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		}
 	}
 
-	public static boolean isLitCampfireInRange(World world, BlockPos pos, int range) {
-		for (int i = 1; i <= range; i++) {
+	public static boolean isLitCampfireInRange(World world, BlockPos pos) {
+		for (int i = 1; i <= 5; i++) {
 			BlockPos blockPos = pos.down(i);
 			BlockState blockState = world.getBlockState(blockPos);
 			if (isLitCampfire(blockState)) {

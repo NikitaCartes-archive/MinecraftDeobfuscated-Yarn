@@ -8,12 +8,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
@@ -23,14 +22,14 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		SingleStateFeatureConfig singleStateFeatureConfig
 	) {
-		while (blockPos.getY() > 5 && iWorld.isAir(blockPos)) {
+		while (blockPos.getY() > 5 && serverWorldAccess.isAir(blockPos)) {
 			blockPos = blockPos.down();
 		}
 
@@ -38,7 +37,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 			return false;
 		} else {
 			blockPos = blockPos.down(4);
-			if (structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), Feature.VILLAGE, iWorld).findAny().isPresent()) {
+			if (structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(blockPos), Feature.VILLAGE).findAny().isPresent()) {
 				return false;
 			} else {
 				boolean[] bls = new boolean[2048];
@@ -80,12 +79,12 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 										|| t > 0 && bls[(j * 16 + s) * 8 + (t - 1)]
 								);
 							if (bl) {
-								Material material = iWorld.getBlockState(blockPos.add(j, t, s)).getMaterial();
+								Material material = serverWorldAccess.getBlockState(blockPos.add(j, t, s)).getMaterial();
 								if (t >= 4 && material.isLiquid()) {
 									return false;
 								}
 
-								if (t < 4 && !material.isSolid() && iWorld.getBlockState(blockPos.add(j, t, s)) != singleStateFeatureConfig.state) {
+								if (t < 4 && !material.isSolid() && serverWorldAccess.getBlockState(blockPos.add(j, t, s)) != singleStateFeatureConfig.state) {
 									return false;
 								}
 							}
@@ -97,7 +96,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 					for (int s = 0; s < 16; s++) {
 						for (int tx = 0; tx < 8; tx++) {
 							if (bls[(j * 16 + s) * 8 + tx]) {
-								iWorld.setBlockState(blockPos.add(j, tx, s), tx >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, 2);
+								serverWorldAccess.setBlockState(blockPos.add(j, tx, s), tx >= 4 ? CAVE_AIR : singleStateFeatureConfig.state, 2);
 							}
 						}
 					}
@@ -108,12 +107,12 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 						for (int txx = 4; txx < 8; txx++) {
 							if (bls[(j * 16 + s) * 8 + txx]) {
 								BlockPos blockPos2 = blockPos.add(j, txx - 1, s);
-								if (isDirt(iWorld.getBlockState(blockPos2).getBlock()) && iWorld.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
-									Biome biome = iWorld.getBiome(blockPos2);
+								if (isDirt(serverWorldAccess.getBlockState(blockPos2).getBlock()) && serverWorldAccess.getLightLevel(LightType.SKY, blockPos.add(j, txx, s)) > 0) {
+									Biome biome = serverWorldAccess.getBiome(blockPos2);
 									if (biome.getSurfaceConfig().getTopMaterial().isOf(Blocks.MYCELIUM)) {
-										iWorld.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
+										serverWorldAccess.setBlockState(blockPos2, Blocks.MYCELIUM.getDefaultState(), 2);
 									} else {
-										iWorld.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), 2);
+										serverWorldAccess.setBlockState(blockPos2, Blocks.GRASS_BLOCK.getDefaultState(), 2);
 									}
 								}
 							}
@@ -134,8 +133,8 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 											|| txxx < 7 && bls[(j * 16 + s) * 8 + txxx + 1]
 											|| txxx > 0 && bls[(j * 16 + s) * 8 + (txxx - 1)]
 									);
-								if (bl && (txxx < 4 || random.nextInt(2) != 0) && iWorld.getBlockState(blockPos.add(j, txxx, s)).getMaterial().isSolid()) {
-									iWorld.setBlockState(blockPos.add(j, txxx, s), Blocks.STONE.getDefaultState(), 2);
+								if (bl && (txxx < 4 || random.nextInt(2) != 0) && serverWorldAccess.getBlockState(blockPos.add(j, txxx, s)).getMaterial().isSolid()) {
+									serverWorldAccess.setBlockState(blockPos.add(j, txxx, s), Blocks.STONE.getDefaultState(), 2);
 								}
 							}
 						}
@@ -147,8 +146,8 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 						for (int s = 0; s < 16; s++) {
 							int txxxx = 4;
 							BlockPos blockPos2 = blockPos.add(j, 4, s);
-							if (iWorld.getBiome(blockPos2).canSetIce(iWorld, blockPos2, false)) {
-								iWorld.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), 2);
+							if (serverWorldAccess.getBiome(blockPos2).canSetIce(serverWorldAccess, blockPos2, false)) {
+								serverWorldAccess.setBlockState(blockPos2, Blocks.ICE.getDefaultState(), 2);
 							}
 						}
 					}

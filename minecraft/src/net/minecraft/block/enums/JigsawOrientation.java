@@ -21,17 +21,17 @@ public enum JigsawOrientation implements StringIdentifiable {
 
 	private static final Int2ObjectMap<JigsawOrientation> BY_INDEX = new Int2ObjectOpenHashMap<>(values().length);
 	private final String name;
-	private final Direction field_23395;
-	private final Direction field_23396;
+	private final Direction rotation;
+	private final Direction facing;
 
-	private static int getIndex(Direction direction, Direction direction2) {
-		return direction.ordinal() << 3 | direction2.ordinal();
+	private static int getIndex(Direction facing, Direction rotation) {
+		return facing.ordinal() << 3 | rotation.ordinal();
 	}
 
-	private JigsawOrientation(String name, Direction direction, Direction direction2) {
+	private JigsawOrientation(String name, Direction facing, Direction rotation) {
 		this.name = name;
-		this.field_23396 = direction;
-		this.field_23395 = direction2;
+		this.facing = facing;
+		this.rotation = rotation;
 	}
 
 	@Override
@@ -39,22 +39,22 @@ public enum JigsawOrientation implements StringIdentifiable {
 		return this.name;
 	}
 
-	public static JigsawOrientation byDirections(Direction direction, Direction direction2) {
-		int i = getIndex(direction2, direction);
+	public static JigsawOrientation byDirections(Direction facing, Direction rotation) {
+		int i = getIndex(rotation, facing);
 		return BY_INDEX.get(i);
 	}
 
-	public Direction method_26426() {
-		return this.field_23396;
+	public Direction getFacing() {
+		return this.facing;
 	}
 
-	public Direction method_26428() {
-		return this.field_23395;
+	public Direction getRotation() {
+		return this.rotation;
 	}
 
 	static {
 		for (JigsawOrientation jigsawOrientation : values()) {
-			BY_INDEX.put(getIndex(jigsawOrientation.field_23395, jigsawOrientation.field_23396), jigsawOrientation);
+			BY_INDEX.put(getIndex(jigsawOrientation.rotation, jigsawOrientation.facing), jigsawOrientation);
 		}
 	}
 }

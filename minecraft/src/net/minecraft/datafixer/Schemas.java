@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_5196;
+import net.minecraft.class_5277;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
@@ -193,7 +194,7 @@ public class Schemas {
 	private static DataFixer create() {
 		DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getWorldVersion());
 		build(dataFixerBuilder);
-		return dataFixerBuilder.build(Util.getServerWorkerExecutor());
+		return dataFixerBuilder.build(Util.method_28124());
 	}
 
 	public static DataFixer getFixer() {
@@ -640,5 +641,7 @@ public class Schemas {
 		builder.addFixer(new RedstoneConnectionsFix(schema117));
 		Schema schema118 = builder.addSchema(2533, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new VillagerFollowRangeFix(schema118));
+		Schema schema119 = builder.addSchema(2535, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new class_5277(schema119));
 	}
 }

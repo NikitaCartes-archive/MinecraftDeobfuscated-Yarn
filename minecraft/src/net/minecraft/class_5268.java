@@ -7,7 +7,6 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.timer.Timer;
 
 public interface class_5268 extends class_5269 {
@@ -34,19 +33,6 @@ public interface class_5268 extends class_5269 {
 				))
 		);
 		crashReportSection.add(
-			"Level generator",
-			(CrashCallable<String>)(() -> {
-				LevelGeneratorType levelGeneratorType = this.getGeneratorOptions().getType();
-				return String.format(
-					"ID %02d - %s, ver %d. Features enabled: %b",
-					levelGeneratorType.getId(),
-					levelGeneratorType.getName(),
-					levelGeneratorType.getVersion(),
-					this.hasStructures()
-				);
-			})
-		);
-		crashReportSection.add(
 			"Level weather",
 			(CrashCallable<String>)(() -> String.format(
 					"Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()
@@ -57,8 +43,6 @@ public interface class_5268 extends class_5269 {
 	int getClearWeatherTime();
 
 	void setClearWeatherTime(int clearWeatherTime);
-
-	boolean hasStructures();
 
 	CompoundTag getWorldData();
 

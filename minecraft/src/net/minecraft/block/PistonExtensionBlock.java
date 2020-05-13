@@ -26,8 +26,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class PistonExtensionBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = PistonHeadBlock.FACING;
@@ -59,7 +59,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBroken(IWorld world, BlockPos pos, BlockState state) {
+	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() instanceof PistonBlock && (Boolean)blockState.get(PistonBlock.EXTENDED)) {

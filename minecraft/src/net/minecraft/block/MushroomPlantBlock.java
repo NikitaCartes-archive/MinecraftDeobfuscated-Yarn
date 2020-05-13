@@ -8,8 +8,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.DefaultBiomeFeatures;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
@@ -84,13 +82,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			configuredFeature = Feature.HUGE_RED_MUSHROOM.configure(DefaultBiomeFeatures.HUGE_RED_MUSHROOM_CONFIG);
 		}
 
-		if (configuredFeature.generate(
-			serverWorld,
-			serverWorld.getStructureAccessor(),
-			(ChunkGenerator<? extends ChunkGeneratorConfig>)serverWorld.getChunkManager().getChunkGenerator(),
-			random,
-			pos
-		)) {
+		if (configuredFeature.generate(serverWorld, serverWorld.getStructureAccessor(), serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
 			return true;
 		} else {
 			serverWorld.setBlockState(pos, state, 3);

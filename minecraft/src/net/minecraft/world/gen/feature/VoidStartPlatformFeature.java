@@ -6,10 +6,9 @@ import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	private static final BlockPos START_BLOCK = new BlockPos(8, 3, 8);
@@ -24,9 +23,9 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DefaultFeatureConfig defaultFeatureConfig
@@ -42,9 +41,9 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 					if (getDistance(START_BLOCK.getX(), START_BLOCK.getZ(), j, i) <= 16) {
 						mutable.set(j, START_BLOCK.getY(), i);
 						if (mutable.equals(START_BLOCK)) {
-							iWorld.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), 2);
+							serverWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), 2);
 						} else {
-							iWorld.setBlockState(mutable, Blocks.STONE.getDefaultState(), 2);
+							serverWorldAccess.setBlockState(mutable, Blocks.STONE.getDefaultState(), 2);
 						}
 					}
 				}

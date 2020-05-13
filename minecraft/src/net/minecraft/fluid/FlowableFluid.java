@@ -26,8 +26,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 /**
@@ -116,7 +116,7 @@ public abstract class FlowableFluid extends Fluid {
 		}
 	}
 
-	protected void tryFlow(IWorld world, BlockPos fluidPos, FluidState state) {
+	protected void tryFlow(WorldAccess world, BlockPos fluidPos, FluidState state) {
 		if (!state.isEmpty()) {
 			BlockState blockState = world.getBlockState(fluidPos);
 			BlockPos blockPos = fluidPos.down();
@@ -133,7 +133,7 @@ public abstract class FlowableFluid extends Fluid {
 		}
 	}
 
-	private void method_15744(IWorld world, BlockPos pos, FluidState fluidState, BlockState blockState) {
+	private void method_15744(WorldAccess world, BlockPos pos, FluidState fluidState, BlockState blockState) {
 		int i = fluidState.getLevel() - this.getLevelDecreasePerBlock(world);
 		if ((Boolean)fluidState.get(FALLING)) {
 			i = 7;
@@ -237,7 +237,7 @@ public abstract class FlowableFluid extends Fluid {
 
 	protected abstract boolean isInfinite();
 
-	protected void flow(IWorld world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
+	protected void flow(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
 		if (state.getBlock() instanceof FluidFillable) {
 			((FluidFillable)state.getBlock()).tryFillWithFluid(world, pos, state, fluidState);
 		} else {
@@ -249,7 +249,7 @@ public abstract class FlowableFluid extends Fluid {
 		}
 	}
 
-	protected abstract void beforeBreakingBlock(IWorld world, BlockPos pos, BlockState state);
+	protected abstract void beforeBreakingBlock(WorldAccess world, BlockPos pos, BlockState state);
 
 	private static short method_15747(BlockPos blockPos, BlockPos blockPos2) {
 		int i = blockPos2.getX() - blockPos.getX();

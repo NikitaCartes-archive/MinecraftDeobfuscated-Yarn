@@ -43,8 +43,8 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 			this.delta = delta;
 		}
 
-		public static ItemDurabilityChangedCriterion.Conditions create(ItemPredicate item, NumberRange.IntRange durability) {
-			return new ItemDurabilityChangedCriterion.Conditions(EntityPredicate.Extended.EMPTY, item, durability, NumberRange.IntRange.ANY);
+		public static ItemDurabilityChangedCriterion.Conditions create(EntityPredicate.Extended extended, ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
+			return new ItemDurabilityChangedCriterion.Conditions(extended, itemPredicate, intRange, NumberRange.IntRange.ANY);
 		}
 
 		public boolean matches(ItemStack stack, int damage) {

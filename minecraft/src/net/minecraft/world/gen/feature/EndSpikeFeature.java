@@ -23,10 +23,10 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	private static final LoadingCache<Long, List<EndSpikeFeature.Spike>> CACHE = CacheBuilder.newBuilder()
@@ -37,35 +37,35 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		super(function);
 	}
 
-	public static List<EndSpikeFeature.Spike> getSpikes(IWorld world) {
-		Random random = new Random(world.getSeed());
+	public static List<EndSpikeFeature.Spike> getSpikes(ServerWorldAccess serverWorldAccess) {
+		Random random = new Random(serverWorldAccess.getSeed());
 		long l = random.nextLong() & 65535L;
 		return CACHE.getUnchecked(l);
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		EndSpikeFeatureConfig endSpikeFeatureConfig
 	) {
 		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
 		if (list.isEmpty()) {
-			list = getSpikes(iWorld);
+			list = getSpikes(serverWorldAccess);
 		}
 
 		for (EndSpikeFeature.Spike spike : list) {
 			if (spike.isInChunk(blockPos)) {
-				this.generateSpike(iWorld, random, endSpikeFeatureConfig, spike);
+				this.generateSpike(serverWorldAccess, random, endSpikeFeatureConfig, spike);
 			}
 		}
 
 		return true;
 	}
 
-	private void generateSpike(IWorld world, Random random, EndSpikeFeatureConfig config, EndSpikeFeature.Spike spike) {
+	private void generateSpike(WorldAccess world, Random random, EndSpikeFeatureConfig config, EndSpikeFeature.Spike spike) {
 		int i = spike.getRadius();
 
 		for (BlockPos blockPos : BlockPos.iterate(

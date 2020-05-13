@@ -59,9 +59,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biomes;
 
 public class DolphinEntity extends WaterCreatureEntity {
@@ -85,7 +85,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		this.setAir(this.getMaxAir());
 		this.pitch = 0.0F;
@@ -235,6 +235,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
 			ItemStack itemStack = item.getStack();
 			if (this.canPickupItem(itemStack)) {
+				this.method_27964(item);
 				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
 				this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
 				this.sendPickup(item, itemStack.getCount());
@@ -336,7 +337,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		}
 	}
 
-	public static boolean canSpawn(EntityType<DolphinEntity> type, IWorld world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<DolphinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return pos.getY() > 45
 			&& pos.getY() < world.getSeaLevel()
 			&& (world.getBiome(pos) != Biomes.OCEAN || world.getBiome(pos) != Biomes.DEEP_OCEAN)

@@ -45,6 +45,7 @@ public class ItemTags {
 	public static final Tag.Identified<Item> TALL_FLOWERS = register("tall_flowers");
 	public static final Tag.Identified<Item> FLOWERS = register("flowers");
 	public static final Tag.Identified<Item> PIGLIN_REPELLENTS = register("piglin_repellents");
+	public static final Tag.Identified<Item> PIGLIN_LOVED = register("piglin_loved");
 	public static final Tag.Identified<Item> GOLD_ORES = register("gold_ores");
 	public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
 	public static final Tag.Identified<Item> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");

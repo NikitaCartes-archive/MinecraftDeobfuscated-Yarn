@@ -1,44 +1,14 @@
 package net.minecraft.world.dimension;
 
-import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biomes;
-import net.minecraft.world.biome.source.BiomeSourceType;
-import net.minecraft.world.biome.source.MultiNoiseBiomeSourceConfig;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.gen.chunk.CavesChunkGeneratorConfig;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 
 public class TheNetherDimension extends Dimension {
 	public TheNetherDimension(World world, DimensionType type) {
 		super(world, type, 0.1F);
-		this.waterVaporizes = true;
-		this.isNether = true;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public Vec3d modifyFogColor(Vec3d vec3d, float tickDelta) {
-		return vec3d;
-	}
-
-	@Override
-	public ChunkGenerator<?> createChunkGenerator() {
-		CavesChunkGeneratorConfig cavesChunkGeneratorConfig = ChunkGeneratorType.CAVES.createConfig();
-		cavesChunkGeneratorConfig.setDefaultBlock(Blocks.NETHERRACK.getDefaultState());
-		cavesChunkGeneratorConfig.setDefaultFluid(Blocks.LAVA.getDefaultState());
-		MultiNoiseBiomeSourceConfig multiNoiseBiomeSourceConfig = BiomeSourceType.MULTI_NOISE
-			.getConfig(this.world.getSeed())
-			.withBiomes(ImmutableList.of(Biomes.NETHER_WASTES, Biomes.SOUL_SAND_VALLEY, Biomes.CRIMSON_FOREST, Biomes.WARPED_FOREST, Biomes.BASALT_DELTAS));
-		return ChunkGeneratorType.CAVES.create(this.world, BiomeSourceType.MULTI_NOISE.applyConfig(multiNoiseBiomeSourceConfig), cavesChunkGeneratorConfig);
 	}
 
 	@Override
@@ -48,13 +18,13 @@ public class TheNetherDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean checkMobSpawnValidity) {
+	public BlockPos getSpawningBlockInChunk(long l, ChunkPos chunkPos, boolean bl) {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	public BlockPos getTopSpawningBlockPosition(int x, int z, boolean checkMobSpawnValidity) {
+	public BlockPos getTopSpawningBlockPosition(long l, int i, int j, boolean bl) {
 		return null;
 	}
 
@@ -66,12 +36,6 @@ public class TheNetherDimension extends Dimension {
 	@Override
 	public boolean canPlayersSleep() {
 		return false;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean isFogThick(int x, int z) {
-		return true;
 	}
 
 	@Override

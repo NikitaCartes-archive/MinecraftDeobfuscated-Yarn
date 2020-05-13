@@ -120,8 +120,13 @@ public class BlockPredicate {
 			return new BlockPredicate.Builder();
 		}
 
-		public BlockPredicate.Builder tag(Tag<Block> tag) {
-			this.tag = tag;
+		public BlockPredicate.Builder method_27962(Block block) {
+			this.block = block;
+			return this;
+		}
+
+		public BlockPredicate.Builder method_27963(StatePredicate statePredicate) {
+			this.state = statePredicate;
 			return this;
 		}
 

@@ -40,8 +40,8 @@ public class EndCrystalItem extends Item {
 						EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, d + 0.5, e, f + 0.5);
 						endCrystalEntity.setShowBottom(false);
 						world.spawnEntity(endCrystalEntity);
-						if (world.dimension instanceof TheEndDimension) {
-							EnderDragonFight enderDragonFight = ((TheEndDimension)world.dimension).getEnderDragonFight();
+						if (world.getDimension() instanceof TheEndDimension) {
+							EnderDragonFight enderDragonFight = ((TheEndDimension)world.getDimension()).getEnderDragonFight();
 							enderDragonFight.respawnDragon();
 						}
 					}

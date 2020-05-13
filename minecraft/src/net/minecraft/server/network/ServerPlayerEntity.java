@@ -114,6 +114,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -173,7 +174,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 
 	private void moveToSpawn(ServerWorld world) {
 		BlockPos blockPos = world.method_27911();
-		if (world.dimension.hasSkyLight() && world.getServer().method_27728().getGameMode() != GameMode.ADVENTURE) {
+		if (world.method_27983().hasSkyLight() && world.getServer().method_27728().getGameMode() != GameMode.ADVENTURE) {
 			int i = Math.max(0, this.server.getSpawnRadius(world));
 			int j = MathHelper.floor(world.getWorldBorder().getDistanceInsideBorder((double)blockPos.getX(), (double)blockPos.getZ()));
 			if (j < i) {
@@ -194,7 +195,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				int q = (o + n * p) % k;
 				int r = q % (i * 2 + 1);
 				int s = q / (i * 2 + 1);
-				BlockPos blockPos2 = world.getDimension().getTopSpawningBlockPosition(blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
+				BlockPos blockPos2 = world.getDimension().getTopSpawningBlockPosition(world.getSeed(), blockPos.getX() + r - i, blockPos.getZ() + s - i, false);
 				if (blockPos2 != null) {
 					this.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
 					if (world.doesNotCollide(this)) {
@@ -602,7 +603,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			class_5217 lv = serverWorld2.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
-					new PlayerRespawnS2CPacket(newDimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode(), true)
+					new PlayerRespawnS2CPacket(
+						newDimension,
+						BiomeAccess.method_27984(serverWorld2.getSeed()),
+						this.interactionManager.getGameMode(),
+						serverWorld2.method_27982(),
+						serverWorld2.method_28125(),
+						true
+					)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
@@ -692,8 +700,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	}
 
 	private void dimensionChanged(ServerWorld targetWorld) {
-		DimensionType dimensionType = targetWorld.dimension.getType();
-		DimensionType dimensionType2 = this.world.dimension.getType();
+		DimensionType dimensionType = targetWorld.method_27983();
+		DimensionType dimensionType2 = this.world.method_27983();
 		Criteria.CHANGED_DIMENSION.trigger(this, dimensionType, dimensionType2);
 		if (dimensionType == DimensionType.THE_NETHER && dimensionType2 == DimensionType.OVERWORLD && this.enteredNetherPos != null) {
 			Criteria.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
@@ -733,14 +741,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		Direction direction = this.world.getBlockState(pos).get(HorizontalFacingBlock.FACING);
 		if (this.isSleeping() || !this.isAlive()) {
 			return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
-		} else if (!this.world.dimension.hasVisibleSky()) {
+		} else if (!this.world.getDimension().hasVisibleSky()) {
 			return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
 		} else if (!this.isBedTooFarAway(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
 		} else if (this.isBedObstructed(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
 		} else {
-			this.setSpawnPoint(this.world.getDimension().getType(), pos, false, true);
+			this.setSpawnPoint(this.world.method_27983(), pos, false, true);
 			if (this.world.isDay()) {
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			} else {
@@ -1328,11 +1336,18 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 		} else {
 			ServerWorld serverWorld = this.getServerWorld();
-			this.dimension = targetWorld.dimension.getType();
+			this.dimension = targetWorld.method_27983();
 			class_5217 lv = targetWorld.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
-					new PlayerRespawnS2CPacket(this.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), this.interactionManager.getGameMode(), true)
+					new PlayerRespawnS2CPacket(
+						this.dimension,
+						BiomeAccess.method_27984(targetWorld.getSeed()),
+						this.interactionManager.getGameMode(),
+						targetWorld.method_27982(),
+						targetWorld.method_28125(),
+						true
+					)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(lv.getDifficulty(), lv.isDifficultyLocked()));
 			this.server.getPlayerManager().sendCommandTree(this);

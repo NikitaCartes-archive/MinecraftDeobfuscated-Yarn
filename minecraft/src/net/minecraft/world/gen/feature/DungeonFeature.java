@@ -15,10 +15,9 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,9 +31,9 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DefaultFeatureConfig defaultFeatureConfig
@@ -54,7 +53,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 			for (int t = -1; t <= 4; t++) {
 				for (int u = p; u <= q; u++) {
 					BlockPos blockPos2 = blockPos.add(s, t, u);
-					Material material = iWorld.getBlockState(blockPos2).getMaterial();
+					Material material = serverWorldAccess.getBlockState(blockPos2).getMaterial();
 					boolean bl = material.isSolid();
 					if (t == -1 && !bl) {
 						return false;
@@ -64,7 +63,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						return false;
 					}
 
-					if ((s == k || s == l || u == p || u == q) && t == 0 && iWorld.isAir(blockPos2) && iWorld.isAir(blockPos2.up())) {
+					if ((s == k || s == l || u == p || u == q) && t == 0 && serverWorldAccess.isAir(blockPos2) && serverWorldAccess.isAir(blockPos2.up())) {
 						r++;
 					}
 				}
@@ -77,16 +76,16 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					for (int u = p; u <= q; u++) {
 						BlockPos blockPos2x = blockPos.add(s, t, u);
 						if (s != k && t != -1 && u != p && s != l && t != 4 && u != q) {
-							if (!iWorld.getBlockState(blockPos2x).isOf(Blocks.CHEST)) {
-								iWorld.setBlockState(blockPos2x, AIR, 2);
+							if (!serverWorldAccess.getBlockState(blockPos2x).isOf(Blocks.CHEST)) {
+								serverWorldAccess.setBlockState(blockPos2x, AIR, 2);
 							}
-						} else if (blockPos2x.getY() >= 0 && !iWorld.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
-							iWorld.setBlockState(blockPos2x, AIR, 2);
-						} else if (iWorld.getBlockState(blockPos2x).getMaterial().isSolid() && !iWorld.getBlockState(blockPos2x).isOf(Blocks.CHEST)) {
+						} else if (blockPos2x.getY() >= 0 && !serverWorldAccess.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
+							serverWorldAccess.setBlockState(blockPos2x, AIR, 2);
+						} else if (serverWorldAccess.getBlockState(blockPos2x).getMaterial().isSolid() && !serverWorldAccess.getBlockState(blockPos2x).isOf(Blocks.CHEST)) {
 							if (t == -1 && random.nextInt(4) != 0) {
-								iWorld.setBlockState(blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
+								serverWorldAccess.setBlockState(blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
 							} else {
-								iWorld.setBlockState(blockPos2x, Blocks.COBBLESTONE.getDefaultState(), 2);
+								serverWorldAccess.setBlockState(blockPos2x, Blocks.COBBLESTONE.getDefaultState(), 2);
 							}
 						}
 					}
@@ -99,26 +98,26 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 					int v = blockPos.getY();
 					int w = blockPos.getZ() + random.nextInt(o * 2 + 1) - o;
 					BlockPos blockPos3 = new BlockPos(ux, v, w);
-					if (iWorld.isAir(blockPos3)) {
+					if (serverWorldAccess.isAir(blockPos3)) {
 						int x = 0;
 
 						for (Direction direction : Direction.Type.HORIZONTAL) {
-							if (iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().isSolid()) {
+							if (serverWorldAccess.getBlockState(blockPos3.offset(direction)).getMaterial().isSolid()) {
 								x++;
 							}
 						}
 
 						if (x == 1) {
-							iWorld.setBlockState(blockPos3, StructurePiece.method_14916(iWorld, blockPos3, Blocks.CHEST.getDefaultState()), 2);
-							LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
+							serverWorldAccess.setBlockState(blockPos3, StructurePiece.method_14916(serverWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), 2);
+							LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
 							break;
 						}
 					}
 				}
 			}
 
-			iWorld.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
-			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+			serverWorldAccess.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
+			BlockEntity blockEntity = serverWorldAccess.getBlockEntity(blockPos);
 			if (blockEntity instanceof MobSpawnerBlockEntity) {
 				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));
 			} else {

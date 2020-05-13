@@ -101,7 +101,7 @@ public class BeehiveBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	public boolean isSmoked() {
-		return CampfireBlock.isLitCampfireInRange(this.world, this.getPos(), 5);
+		return CampfireBlock.isLitCampfireInRange(this.world, this.getPos());
 	}
 
 	protected void sendDebugData() {

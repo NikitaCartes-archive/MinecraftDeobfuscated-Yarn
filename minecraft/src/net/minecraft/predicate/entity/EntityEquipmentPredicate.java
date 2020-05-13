@@ -92,4 +92,41 @@ public class EntityEquipmentPredicate {
 			return jsonObject;
 		}
 	}
+
+	public static class class_5278 {
+		private ItemPredicate field_24482 = ItemPredicate.ANY;
+		private ItemPredicate field_24483 = ItemPredicate.ANY;
+		private ItemPredicate field_24484 = ItemPredicate.ANY;
+		private ItemPredicate field_24485 = ItemPredicate.ANY;
+		private ItemPredicate field_24486 = ItemPredicate.ANY;
+		private ItemPredicate field_24487 = ItemPredicate.ANY;
+
+		public static EntityEquipmentPredicate.class_5278 method_27965() {
+			return new EntityEquipmentPredicate.class_5278();
+		}
+
+		public EntityEquipmentPredicate.class_5278 method_27966(ItemPredicate itemPredicate) {
+			this.field_24482 = itemPredicate;
+			return this;
+		}
+
+		public EntityEquipmentPredicate.class_5278 method_27968(ItemPredicate itemPredicate) {
+			this.field_24483 = itemPredicate;
+			return this;
+		}
+
+		public EntityEquipmentPredicate.class_5278 method_27969(ItemPredicate itemPredicate) {
+			this.field_24484 = itemPredicate;
+			return this;
+		}
+
+		public EntityEquipmentPredicate.class_5278 method_27970(ItemPredicate itemPredicate) {
+			this.field_24485 = itemPredicate;
+			return this;
+		}
+
+		public EntityEquipmentPredicate method_27967() {
+			return new EntityEquipmentPredicate(this.field_24482, this.field_24483, this.field_24484, this.field_24485, this.field_24486, this.field_24487);
+		}
+	}
 }

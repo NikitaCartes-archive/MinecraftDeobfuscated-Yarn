@@ -14,6 +14,7 @@ import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
 
 public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.Storage {
@@ -55,6 +56,8 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	int getSeaLevel();
 
 	Dimension getDimension();
+
+	DimensionType method_27983();
 
 	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
 		return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());

@@ -15,7 +15,7 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
@@ -32,8 +32,8 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		Camera camera = this.field_4624.gameRenderer.getCamera();
-		IWorld iWorld = this.field_4624.world;
-		DimensionType dimensionType = iWorld.getDimension().getType();
+		WorldAccess worldAccess = this.field_4624.world;
+		DimensionType dimensionType = worldAccess.method_27983();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 		if (this.field_4626.containsKey(dimensionType)) {

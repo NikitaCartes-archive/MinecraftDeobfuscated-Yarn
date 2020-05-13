@@ -18,8 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class LeverBlock extends WallMountedBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
@@ -98,7 +98,7 @@ public class LeverBlock extends WallMountedBlock {
 		return blockState;
 	}
 
-	private static void spawnParticles(BlockState state, IWorld world, BlockPos pos, float alpha) {
+	private static void spawnParticles(BlockState state, WorldAccess world, BlockPos pos, float alpha) {
 		Direction direction = ((Direction)state.get(FACING)).getOpposite();
 		Direction direction2 = getDirection(state).getOpposite();
 		double d = (double)pos.getX() + 0.5 + 0.1 * (double)direction.getOffsetX() + 0.2 * (double)direction2.getOffsetX();

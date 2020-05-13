@@ -38,6 +38,10 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 		super(settings);
 		this.collisionShapes = this.createShapes(radius1, radius2, collisionHeight, 0.0F, collisionHeight);
 		this.boundingShapes = this.createShapes(radius1, radius2, boundingHeight1, 0.0F, boundingHeight2);
+
+		for (BlockState blockState : this.stateManager.getStates()) {
+			this.getShapeIndex(blockState);
+		}
 	}
 
 	protected VoxelShape[] createShapes(float radius1, float radius2, float height1, float offset2, float height2) {

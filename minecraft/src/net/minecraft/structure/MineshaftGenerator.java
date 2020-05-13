@@ -23,7 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -235,7 +236,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		protected boolean addChest(IWorld world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+		protected boolean addChest(WorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
 			BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
 			if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos.down()).isAir()) {
 				BlockState blockState = Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
@@ -253,15 +254,15 @@ public class MineshaftGenerator {
 
 		@Override
 		public boolean generate(
-			IWorld world,
+			ServerWorldAccess serverWorldAccess,
 			StructureAccessor structureAccessor,
-			ChunkGenerator<?> chunkGenerator,
+			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
 			BlockPos blockPos
 		) {
-			if (this.method_14937(world, boundingBox)) {
+			if (this.method_14937(serverWorldAccess, boundingBox)) {
 				return false;
 			} else {
 				int i = 0;
@@ -270,29 +271,29 @@ public class MineshaftGenerator {
 				int l = 2;
 				int m = this.length * 5 - 1;
 				BlockState blockState = this.getPlanksType();
-				this.fillWithOutline(world, boundingBox, 0, 0, 0, 2, 1, m, AIR, AIR, false);
-				this.fillWithOutlineUnderSealevel(world, boundingBox, random, 0.8F, 0, 2, 0, 2, 2, m, AIR, AIR, false, false);
+				this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 0, 2, 1, m, AIR, AIR, false);
+				this.fillWithOutlineUnderSealevel(serverWorldAccess, boundingBox, random, 0.8F, 0, 2, 0, 2, 2, m, AIR, AIR, false, false);
 				if (this.hasCobwebs) {
-					this.fillWithOutlineUnderSealevel(world, boundingBox, random, 0.6F, 0, 0, 0, 2, 1, m, Blocks.COBWEB.getDefaultState(), AIR, false, true);
+					this.fillWithOutlineUnderSealevel(serverWorldAccess, boundingBox, random, 0.6F, 0, 0, 0, 2, 1, m, Blocks.COBWEB.getDefaultState(), AIR, false, true);
 				}
 
 				for (int n = 0; n < this.length; n++) {
 					int o = 2 + n * 5;
-					this.method_14713(world, boundingBox, 0, 0, o, 2, 2, random);
-					this.method_14715(world, boundingBox, random, 0.1F, 0, 2, o - 1);
-					this.method_14715(world, boundingBox, random, 0.1F, 2, 2, o - 1);
-					this.method_14715(world, boundingBox, random, 0.1F, 0, 2, o + 1);
-					this.method_14715(world, boundingBox, random, 0.1F, 2, 2, o + 1);
-					this.method_14715(world, boundingBox, random, 0.05F, 0, 2, o - 2);
-					this.method_14715(world, boundingBox, random, 0.05F, 2, 2, o - 2);
-					this.method_14715(world, boundingBox, random, 0.05F, 0, 2, o + 2);
-					this.method_14715(world, boundingBox, random, 0.05F, 2, 2, o + 2);
+					this.method_14713(serverWorldAccess, boundingBox, 0, 0, o, 2, 2, random);
+					this.method_14715(serverWorldAccess, boundingBox, random, 0.1F, 0, 2, o - 1);
+					this.method_14715(serverWorldAccess, boundingBox, random, 0.1F, 2, 2, o - 1);
+					this.method_14715(serverWorldAccess, boundingBox, random, 0.1F, 0, 2, o + 1);
+					this.method_14715(serverWorldAccess, boundingBox, random, 0.1F, 2, 2, o + 1);
+					this.method_14715(serverWorldAccess, boundingBox, random, 0.05F, 0, 2, o - 2);
+					this.method_14715(serverWorldAccess, boundingBox, random, 0.05F, 2, 2, o - 2);
+					this.method_14715(serverWorldAccess, boundingBox, random, 0.05F, 0, 2, o + 2);
+					this.method_14715(serverWorldAccess, boundingBox, random, 0.05F, 2, 2, o + 2);
 					if (random.nextInt(100) == 0) {
-						this.addChest(world, boundingBox, random, 2, 0, o - 1, LootTables.ABANDONED_MINESHAFT_CHEST);
+						this.addChest(serverWorldAccess, boundingBox, random, 2, 0, o - 1, LootTables.ABANDONED_MINESHAFT_CHEST);
 					}
 
 					if (random.nextInt(100) == 0) {
-						this.addChest(world, boundingBox, random, 0, 0, o + 1, LootTables.ABANDONED_MINESHAFT_CHEST);
+						this.addChest(serverWorldAccess, boundingBox, random, 0, 0, o + 1, LootTables.ABANDONED_MINESHAFT_CHEST);
 					}
 
 					if (this.hasCobwebs && !this.hasSpawner) {
@@ -301,10 +302,10 @@ public class MineshaftGenerator {
 						int r = this.applyXTransform(1, q);
 						int s = this.applyZTransform(1, q);
 						BlockPos blockPos2 = new BlockPos(r, p, s);
-						if (boundingBox.contains(blockPos2) && this.isUnderSeaLevel(world, 1, 0, q, boundingBox)) {
+						if (boundingBox.contains(blockPos2) && this.isUnderSeaLevel(serverWorldAccess, 1, 0, q, boundingBox)) {
 							this.hasSpawner = true;
-							world.setBlockState(blockPos2, Blocks.SPAWNER.getDefaultState(), 2);
-							BlockEntity blockEntity = world.getBlockEntity(blockPos2);
+							serverWorldAccess.setBlockState(blockPos2, Blocks.SPAWNER.getDefaultState(), 2);
+							BlockEntity blockEntity = serverWorldAccess.getBlockEntity(blockPos2);
 							if (blockEntity instanceof MobSpawnerBlockEntity) {
 								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.CAVE_SPIDER);
 							}
@@ -315,10 +316,10 @@ public class MineshaftGenerator {
 				for (int n = 0; n <= 2; n++) {
 					for (int ox = 0; ox <= m; ox++) {
 						int p = -1;
-						BlockState blockState2 = this.getBlockAt(world, n, -1, ox, boundingBox);
-						if (blockState2.isAir() && this.isUnderSeaLevel(world, n, -1, ox, boundingBox)) {
+						BlockState blockState2 = this.getBlockAt(serverWorldAccess, n, -1, ox, boundingBox);
+						if (blockState2.isAir() && this.isUnderSeaLevel(serverWorldAccess, n, -1, ox, boundingBox)) {
 							int r = -1;
-							this.addBlock(world, blockState, n, -1, ox, boundingBox);
+							this.addBlock(serverWorldAccess, blockState, n, -1, ox, boundingBox);
 						}
 					}
 				}
@@ -327,11 +328,11 @@ public class MineshaftGenerator {
 					BlockState blockState3 = Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, RailShape.NORTH_SOUTH);
 
 					for (int oxx = 0; oxx <= m; oxx++) {
-						BlockState blockState4 = this.getBlockAt(world, 1, -1, oxx, boundingBox);
+						BlockState blockState4 = this.getBlockAt(serverWorldAccess, 1, -1, oxx, boundingBox);
 						if (!blockState4.isAir()
-							&& blockState4.isOpaqueFullCube(world, new BlockPos(this.applyXTransform(1, oxx), this.applyYTransform(-1), this.applyZTransform(1, oxx)))) {
-							float f = this.isUnderSeaLevel(world, 1, 0, oxx, boundingBox) ? 0.7F : 0.9F;
-							this.addBlockWithRandomThreshold(world, boundingBox, random, f, 1, 0, oxx, blockState3);
+							&& blockState4.isOpaqueFullCube(serverWorldAccess, new BlockPos(this.applyXTransform(1, oxx), this.applyYTransform(-1), this.applyZTransform(1, oxx)))) {
+							float f = this.isUnderSeaLevel(serverWorldAccess, 1, 0, oxx, boundingBox) ? 0.7F : 0.9F;
+							this.addBlockWithRandomThreshold(serverWorldAccess, boundingBox, random, f, 1, 0, oxx, blockState3);
 						}
 					}
 				}
@@ -340,30 +341,30 @@ public class MineshaftGenerator {
 			}
 		}
 
-		private void method_14713(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l, int m, Random random) {
-			if (this.method_14719(iWorld, blockBox, i, m, l, k)) {
+		private void method_14713(WorldAccess worldAccess, BlockBox blockBox, int i, int j, int k, int l, int m, Random random) {
+			if (this.method_14719(worldAccess, blockBox, i, m, l, k)) {
 				BlockState blockState = this.getPlanksType();
 				BlockState blockState2 = this.getFenceType();
-				this.fillWithOutline(iWorld, blockBox, i, j, k, i, l - 1, k, blockState2.with(FenceBlock.WEST, Boolean.valueOf(true)), AIR, false);
-				this.fillWithOutline(iWorld, blockBox, m, j, k, m, l - 1, k, blockState2.with(FenceBlock.EAST, Boolean.valueOf(true)), AIR, false);
+				this.fillWithOutline(worldAccess, blockBox, i, j, k, i, l - 1, k, blockState2.with(FenceBlock.WEST, Boolean.valueOf(true)), AIR, false);
+				this.fillWithOutline(worldAccess, blockBox, m, j, k, m, l - 1, k, blockState2.with(FenceBlock.EAST, Boolean.valueOf(true)), AIR, false);
 				if (random.nextInt(4) == 0) {
-					this.fillWithOutline(iWorld, blockBox, i, l, k, i, l, k, blockState, AIR, false);
-					this.fillWithOutline(iWorld, blockBox, m, l, k, m, l, k, blockState, AIR, false);
+					this.fillWithOutline(worldAccess, blockBox, i, l, k, i, l, k, blockState, AIR, false);
+					this.fillWithOutline(worldAccess, blockBox, m, l, k, m, l, k, blockState, AIR, false);
 				} else {
-					this.fillWithOutline(iWorld, blockBox, i, l, k, m, l, k, blockState, AIR, false);
+					this.fillWithOutline(worldAccess, blockBox, i, l, k, m, l, k, blockState, AIR, false);
 					this.addBlockWithRandomThreshold(
-						iWorld, blockBox, random, 0.05F, i + 1, l, k - 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH)
+						worldAccess, blockBox, random, 0.05F, i + 1, l, k - 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH)
 					);
 					this.addBlockWithRandomThreshold(
-						iWorld, blockBox, random, 0.05F, i + 1, l, k + 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH)
+						worldAccess, blockBox, random, 0.05F, i + 1, l, k + 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH)
 					);
 				}
 			}
 		}
 
-		private void method_14715(IWorld iWorld, BlockBox blockBox, Random random, float f, int i, int j, int k) {
-			if (this.isUnderSeaLevel(iWorld, i, j, k, blockBox)) {
-				this.addBlockWithRandomThreshold(iWorld, blockBox, random, f, i, j, k, Blocks.COBWEB.getDefaultState());
+		private void method_14715(WorldAccess worldAccess, BlockBox blockBox, Random random, float f, int i, int j, int k) {
+			if (this.isUnderSeaLevel(worldAccess, i, j, k, blockBox)) {
+				this.addBlockWithRandomThreshold(worldAccess, blockBox, random, f, i, j, k, Blocks.COBWEB.getDefaultState());
 			}
 		}
 	}
@@ -503,21 +504,21 @@ public class MineshaftGenerator {
 
 		@Override
 		public boolean generate(
-			IWorld world,
+			ServerWorldAccess serverWorldAccess,
 			StructureAccessor structureAccessor,
-			ChunkGenerator<?> chunkGenerator,
+			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
 			BlockPos blockPos
 		) {
-			if (this.method_14937(world, boundingBox)) {
+			if (this.method_14937(serverWorldAccess, boundingBox)) {
 				return false;
 			} else {
 				BlockState blockState = this.getPlanksType();
 				if (this.twoFloors) {
 					this.fillWithOutline(
-						world,
+						serverWorldAccess,
 						boundingBox,
 						this.boundingBox.minX + 1,
 						this.boundingBox.minY,
@@ -530,7 +531,7 @@ public class MineshaftGenerator {
 						false
 					);
 					this.fillWithOutline(
-						world,
+						serverWorldAccess,
 						boundingBox,
 						this.boundingBox.minX,
 						this.boundingBox.minY,
@@ -543,7 +544,7 @@ public class MineshaftGenerator {
 						false
 					);
 					this.fillWithOutline(
-						world,
+						serverWorldAccess,
 						boundingBox,
 						this.boundingBox.minX + 1,
 						this.boundingBox.maxY - 2,
@@ -556,7 +557,7 @@ public class MineshaftGenerator {
 						false
 					);
 					this.fillWithOutline(
-						world,
+						serverWorldAccess,
 						boundingBox,
 						this.boundingBox.minX,
 						this.boundingBox.maxY - 2,
@@ -569,7 +570,7 @@ public class MineshaftGenerator {
 						false
 					);
 					this.fillWithOutline(
-						world,
+						serverWorldAccess,
 						boundingBox,
 						this.boundingBox.minX + 1,
 						this.boundingBox.minY + 3,
@@ -583,7 +584,7 @@ public class MineshaftGenerator {
 					);
 				} else {
 					this.fillWithOutline(
-						world,
+						serverWorldAccess,
 						boundingBox,
 						this.boundingBox.minX + 1,
 						this.boundingBox.minY,
@@ -596,7 +597,7 @@ public class MineshaftGenerator {
 						false
 					);
 					this.fillWithOutline(
-						world,
+						serverWorldAccess,
 						boundingBox,
 						this.boundingBox.minX,
 						this.boundingBox.minY,
@@ -610,16 +611,16 @@ public class MineshaftGenerator {
 					);
 				}
 
-				this.method_14716(world, boundingBox, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ + 1, this.boundingBox.maxY);
-				this.method_14716(world, boundingBox, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ - 1, this.boundingBox.maxY);
-				this.method_14716(world, boundingBox, this.boundingBox.maxX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, this.boundingBox.maxY);
-				this.method_14716(world, boundingBox, this.boundingBox.maxX - 1, this.boundingBox.minY, this.boundingBox.maxZ - 1, this.boundingBox.maxY);
+				this.method_14716(serverWorldAccess, boundingBox, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ + 1, this.boundingBox.maxY);
+				this.method_14716(serverWorldAccess, boundingBox, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ - 1, this.boundingBox.maxY);
+				this.method_14716(serverWorldAccess, boundingBox, this.boundingBox.maxX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, this.boundingBox.maxY);
+				this.method_14716(serverWorldAccess, boundingBox, this.boundingBox.maxX - 1, this.boundingBox.minY, this.boundingBox.maxZ - 1, this.boundingBox.maxY);
 
 				for (int i = this.boundingBox.minX; i <= this.boundingBox.maxX; i++) {
 					for (int j = this.boundingBox.minZ; j <= this.boundingBox.maxZ; j++) {
-						if (this.getBlockAt(world, i, this.boundingBox.minY - 1, j, boundingBox).isAir()
-							&& this.isUnderSeaLevel(world, i, this.boundingBox.minY - 1, j, boundingBox)) {
-							this.addBlock(world, blockState, i, this.boundingBox.minY - 1, j, boundingBox);
+						if (this.getBlockAt(serverWorldAccess, i, this.boundingBox.minY - 1, j, boundingBox).isAir()
+							&& this.isUnderSeaLevel(serverWorldAccess, i, this.boundingBox.minY - 1, j, boundingBox)) {
+							this.addBlock(serverWorldAccess, blockState, i, this.boundingBox.minY - 1, j, boundingBox);
 						}
 					}
 				}
@@ -628,9 +629,9 @@ public class MineshaftGenerator {
 			}
 		}
 
-		private void method_14716(IWorld iWorld, BlockBox blockBox, int i, int j, int k, int l) {
-			if (!this.getBlockAt(iWorld, i, l + 1, k, blockBox).isAir()) {
-				this.fillWithOutline(iWorld, blockBox, i, j, k, i, l, k, this.getPlanksType(), AIR, false);
+		private void method_14716(WorldAccess worldAccess, BlockBox blockBox, int i, int j, int k, int l) {
+			if (!this.getBlockAt(worldAccess, i, l + 1, k, blockBox).isAir()) {
+				this.fillWithOutline(worldAccess, blockBox, i, j, k, i, l, k, this.getPlanksType(), AIR, false);
 			}
 		}
 	}
@@ -789,19 +790,19 @@ public class MineshaftGenerator {
 
 		@Override
 		public boolean generate(
-			IWorld world,
+			ServerWorldAccess serverWorldAccess,
 			StructureAccessor structureAccessor,
-			ChunkGenerator<?> chunkGenerator,
+			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
 			BlockPos blockPos
 		) {
-			if (this.method_14937(world, boundingBox)) {
+			if (this.method_14937(serverWorldAccess, boundingBox)) {
 				return false;
 			} else {
 				this.fillWithOutline(
-					world,
+					serverWorldAccess,
 					boundingBox,
 					this.boundingBox.minX,
 					this.boundingBox.minY,
@@ -814,7 +815,7 @@ public class MineshaftGenerator {
 					true
 				);
 				this.fillWithOutline(
-					world,
+					serverWorldAccess,
 					boundingBox,
 					this.boundingBox.minX,
 					this.boundingBox.minY + 1,
@@ -828,11 +829,13 @@ public class MineshaftGenerator {
 				);
 
 				for (BlockBox blockBox : this.entrances) {
-					this.fillWithOutline(world, boundingBox, blockBox.minX, blockBox.maxY - 2, blockBox.minZ, blockBox.maxX, blockBox.maxY, blockBox.maxZ, AIR, AIR, false);
+					this.fillWithOutline(
+						serverWorldAccess, boundingBox, blockBox.minX, blockBox.maxY - 2, blockBox.minZ, blockBox.maxX, blockBox.maxY, blockBox.maxZ, AIR, AIR, false
+					);
 				}
 
 				this.method_14919(
-					world,
+					serverWorldAccess,
 					boundingBox,
 					this.boundingBox.minX,
 					this.boundingBox.minY + 4,
@@ -936,22 +939,22 @@ public class MineshaftGenerator {
 
 		@Override
 		public boolean generate(
-			IWorld world,
+			ServerWorldAccess serverWorldAccess,
 			StructureAccessor structureAccessor,
-			ChunkGenerator<?> chunkGenerator,
+			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
 			BlockPos blockPos
 		) {
-			if (this.method_14937(world, boundingBox)) {
+			if (this.method_14937(serverWorldAccess, boundingBox)) {
 				return false;
 			} else {
-				this.fillWithOutline(world, boundingBox, 0, 5, 0, 2, 7, 1, AIR, AIR, false);
-				this.fillWithOutline(world, boundingBox, 0, 0, 7, 2, 2, 8, AIR, AIR, false);
+				this.fillWithOutline(serverWorldAccess, boundingBox, 0, 5, 0, 2, 7, 1, AIR, AIR, false);
+				this.fillWithOutline(serverWorldAccess, boundingBox, 0, 0, 7, 2, 2, 8, AIR, AIR, false);
 
 				for (int i = 0; i < 5; i++) {
-					this.fillWithOutline(world, boundingBox, 0, 5 - i - (i < 4 ? 1 : 0), 2 + i, 2, 7 - i, 2 + i, AIR, AIR, false);
+					this.fillWithOutline(serverWorldAccess, boundingBox, 0, 5 - i - (i < 4 ? 1 : 0), 2 + i, 2, 7 - i, 2 + i, AIR, AIR, false);
 				}
 
 				return true;

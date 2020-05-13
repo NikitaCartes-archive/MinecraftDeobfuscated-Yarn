@@ -8,8 +8,8 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 	public static final IntProperty POWER = Properties.POWER;
@@ -33,12 +33,12 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	@Override
-	protected void playPressSound(IWorld world, BlockPos pos) {
+	protected void playPressSound(WorldAccess world, BlockPos pos) {
 		world.playSound(null, pos, SoundEvents.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.90000004F);
 	}
 
 	@Override
-	protected void playDepressSound(IWorld world, BlockPos pos) {
+	protected void playDepressSound(WorldAccess world, BlockPos pos) {
 		world.playSound(null, pos, SoundEvents.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.75F);
 	}
 

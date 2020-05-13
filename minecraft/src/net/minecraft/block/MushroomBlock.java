@@ -10,7 +10,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 
 public class MushroomBlock extends Block {
 	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
@@ -49,7 +49,7 @@ public class MushroomBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return newState.isOf(this)
 			? state.with((Property)FACING_PROPERTIES.get(direction), Boolean.valueOf(false))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);

@@ -79,9 +79,9 @@ import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerGossips;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -680,7 +680,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	@Nullable
 	@Override
 	public EntityData initialize(
-		IWorld world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		WorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
 		if (spawnReason == SpawnReason.BREEDING) {
 			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
@@ -734,6 +734,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 				return;
 			}
 
+			this.method_27964(item);
 			this.sendPickup(item, itemStack.getCount());
 			ItemStack itemStack2 = basicInventory.addStack(itemStack);
 			if (itemStack2.isEmpty()) {

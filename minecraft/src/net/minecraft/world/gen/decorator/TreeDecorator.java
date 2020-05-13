@@ -9,8 +9,8 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.dynamic.DynamicSerializable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.ModifiableWorld;
+import net.minecraft.world.WorldAccess;
 
 /**
  * Tree decorators can add additional blocks to trees, such as vines or beehives.
@@ -22,7 +22,7 @@ public abstract class TreeDecorator implements DynamicSerializable {
 		this.type = type;
 	}
 
-	public abstract void generate(IWorld world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box);
+	public abstract void generate(WorldAccess world, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, Set<BlockPos> set, BlockBox box);
 
 	protected void placeVine(ModifiableWorld world, BlockPos pos, BooleanProperty directionProperty, Set<BlockPos> set, BlockBox box) {
 		this.setBlockStateAndEncompassPosition(world, pos, Blocks.VINE.getDefaultState().with(directionProperty, Boolean.valueOf(true)), set, box);

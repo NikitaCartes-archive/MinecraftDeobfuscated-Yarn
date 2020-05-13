@@ -41,19 +41,19 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<DefaultFeature
 
 	@Override
 	protected boolean shouldStartAt(
-		BiomeAccess biomeAccess, ChunkGenerator<?> chunkGenerator, ChunkRandom chunkRandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos
+		BiomeAccess biomeAccess, ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos
 	) {
-		int i = chunkX >> 4;
-		int j = chunkZ >> 4;
-		chunkRandom.setSeed((long)(i ^ j << 4) ^ chunkGenerator.getSeed());
+		int k = i >> 4;
+		int m = j >> 4;
+		chunkRandom.setSeed((long)(k ^ m << 4) ^ l);
 		chunkRandom.nextInt();
 		if (chunkRandom.nextInt(5) != 0) {
 			return false;
 		} else {
-			for (int k = chunkX - 10; k <= chunkX + 10; k++) {
-				for (int l = chunkZ - 10; l <= chunkZ + 10; l++) {
-					Biome biome2 = biomeAccess.getBiome(new BlockPos((k << 4) + 9, 0, (l << 4) + 9));
-					if (Feature.VILLAGE.method_27217(biomeAccess, chunkGenerator, chunkRandom, k, l, biome2)) {
+			for (int n = i - 10; n <= i + 10; n++) {
+				for (int o = j - 10; o <= j + 10; o++) {
+					Biome biome2 = biomeAccess.getBiome(new BlockPos((n << 4) + 9, 0, (o << 4) + 9));
+					if (Feature.VILLAGE.method_27217(biomeAccess, chunkGenerator, l, chunkRandom, n, o, biome2)) {
 						return false;
 					}
 				}
@@ -79,7 +79,7 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<DefaultFeature
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			BlockPos blockPos = new BlockPos(x * 16, 0, z * 16);
 			PillagerOutpostGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random);
 			this.setBoundingBoxFromChildren();

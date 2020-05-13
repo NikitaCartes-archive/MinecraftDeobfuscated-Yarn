@@ -19,7 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -32,7 +31,7 @@ public class RaidManager extends PersistentState {
 	private int currentTime;
 
 	public RaidManager(ServerWorld world) {
-		super(nameFor(world.dimension));
+		super(nameFor(world.method_27983()));
 		this.world = world;
 		this.nextAvailableId = 1;
 		this.markDirty();
@@ -69,10 +68,7 @@ public class RaidManager extends PersistentState {
 
 	public static boolean isValidRaiderFor(RaiderEntity raider, Raid raid) {
 		return raider != null && raid != null && raid.getWorld() != null
-			? raider.isAlive()
-				&& raider.canJoinRaid()
-				&& raider.getDespawnCounter() <= 2400
-				&& raider.world.getDimension().getType() == raid.getWorld().getDimension().getType()
+			? raider.isAlive() && raider.canJoinRaid() && raider.getDespawnCounter() <= 2400 && raider.world.method_27983() == raid.getWorld().method_27983()
 			: false;
 	}
 
@@ -83,7 +79,7 @@ public class RaidManager extends PersistentState {
 		} else if (this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 			return null;
 		} else {
-			DimensionType dimensionType = player.world.getDimension().getType();
+			DimensionType dimensionType = player.world.method_27983();
 			if (dimensionType == DimensionType.THE_NETHER) {
 				return null;
 			} else {
@@ -173,8 +169,8 @@ public class RaidManager extends PersistentState {
 		return tag;
 	}
 
-	public static String nameFor(Dimension dimension) {
-		return "raids" + dimension.getType().getSuffix();
+	public static String nameFor(DimensionType dimensionType) {
+		return "raids" + dimensionType.getSuffix();
 	}
 
 	private int nextId() {

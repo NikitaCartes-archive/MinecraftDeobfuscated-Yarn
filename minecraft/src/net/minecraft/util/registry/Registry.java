@@ -58,7 +58,6 @@ import net.minecraft.world.biome.source.BiomeSourceType;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.carver.Carver;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.TreeDecoratorType;
 import net.minecraft.world.gen.feature.Feature;
@@ -100,9 +99,8 @@ public abstract class Registry<T> implements IndexedIterable<T> {
 	public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = create("tree_decorator_type", () -> TreeDecoratorType.LEAVE_VINE);
 	public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = create("feature_size_type", () -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE);
 	public static final Registry<ParticleType<? extends ParticleEffect>> PARTICLE_TYPE = create("particle_type", () -> ParticleTypes.BLOCK);
-	public static final Registry<BiomeSourceType<?, ?>> BIOME_SOURCE_TYPE = create("biome_source_type", () -> BiomeSourceType.VANILLA_LAYERED);
+	public static final Registry<BiomeSourceType> BIOME_SOURCE_TYPE = create("biome_source_type", () -> BiomeSourceType.VANILLA_LAYERED);
 	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = create("block_entity_type", () -> BlockEntityType.FURNACE);
-	public static final Registry<ChunkGeneratorType<?, ?>> CHUNK_GENERATOR_TYPE = create("chunk_generator_type", () -> ChunkGeneratorType.FLAT);
 	public static final Registry<DimensionType> DIMENSION_TYPE = create("dimension_type", () -> DimensionType.OVERWORLD);
 	/**
 	 * The painting motive (theme, motif) registry

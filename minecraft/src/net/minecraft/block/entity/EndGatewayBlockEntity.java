@@ -24,8 +24,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.TheEndDimension;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -149,7 +147,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	public void tryTeleportingEntity(Entity entity) {
 		if (this.world instanceof ServerWorld && !this.needsCooldownBeforeTeleporting()) {
 			this.teleportCooldown = 100;
-			if (this.exitPortalPos == null && this.world.dimension instanceof TheEndDimension) {
+			if (this.exitPortalPos == null && this.world.getDimension() instanceof TheEndDimension) {
 				this.createPortal((ServerWorld)this.world);
 			}
 
@@ -188,13 +186,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			LOGGER.debug("Failed to find suitable block, settling on {}", this.exitPortalPos);
 			Feature.END_ISLAND
 				.configure(FeatureConfig.DEFAULT)
-				.generate(
-					world,
-					world.getStructureAccessor(),
-					(ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(),
-					new Random(this.exitPortalPos.asLong()),
-					this.exitPortalPos
-				);
+				.generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), new Random(this.exitPortalPos.asLong()), this.exitPortalPos);
 		} else {
 			LOGGER.debug("Found block at {}", this.exitPortalPos);
 		}
@@ -261,9 +253,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 	private void createPortal(ServerWorld world, BlockPos pos) {
 		Feature.END_GATEWAY
 			.configure(EndGatewayFeatureConfig.createConfig(this.getPos(), false))
-			.generate(
-				world, world.getStructureAccessor(), (ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(), new Random(), pos
-			);
+			.generate(world, world.getStructureAccessor(), world.getChunkManager().getChunkGenerator(), new Random(), pos);
 	}
 
 	@Environment(EnvType.CLIENT)

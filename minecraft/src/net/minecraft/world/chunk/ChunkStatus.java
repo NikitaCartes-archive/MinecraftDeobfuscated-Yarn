@@ -47,9 +47,14 @@ public class ChunkStatus {
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
-				if (serverWorld.getServer().method_27728().method_27859().hasStructures()) {
+				if (serverWorld.getServer().method_27728().method_28057().method_28029()) {
 					chunkGenerator.setStructureStarts(
-						serverWorld.getStructureAccessor(), serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, chunkGenerator, structureManager
+						serverWorld.getStructureAccessor(),
+						serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()),
+						chunk,
+						chunkGenerator,
+						structureManager,
+						serverWorld.getSeed()
 					);
 				}
 
@@ -102,7 +107,7 @@ public class ChunkStatus {
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(
-				serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.AIR
+				serverWorld.getSeed(), serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.AIR
 			)
 	);
 	public static final ChunkStatus LIQUID_CARVERS = register(
@@ -112,7 +117,7 @@ public class ChunkStatus {
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(serverWorld, chunkGenerator, list, chunk) -> chunkGenerator.carve(
-				serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.LIQUID
+				serverWorld.getSeed(), serverWorld.getBiomeAccess().withSource(chunkGenerator.getBiomeSource()), chunk, GenerationStep.Carver.LIQUID
 			)
 	);
 	public static final ChunkStatus FEATURES = register(
@@ -310,7 +315,7 @@ public class ChunkStatus {
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> runTask(
 		ServerWorld serverWorld,
-		ChunkGenerator<?> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		StructureManager structureManager,
 		ServerLightingProvider serverLightingProvider,
 		Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
@@ -374,7 +379,7 @@ public class ChunkStatus {
 		default CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus chunkStatus,
 			ServerWorld serverWorld,
-			ChunkGenerator<?> chunkGenerator,
+			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			ServerLightingProvider serverLightingProvider,
 			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
@@ -391,14 +396,14 @@ public class ChunkStatus {
 			return CompletableFuture.completedFuture(Either.left(chunk));
 		}
 
-		void doWork(ServerWorld serverWorld, ChunkGenerator<?> generator, List<Chunk> list, Chunk chunk);
+		void doWork(ServerWorld serverWorld, ChunkGenerator generator, List<Chunk> list, Chunk chunk);
 	}
 
 	interface Task {
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus targetStatus,
 			ServerWorld serverWorld,
-			ChunkGenerator<?> generator,
+			ChunkGenerator generator,
 			StructureManager structureManager,
 			ServerLightingProvider serverLightingProvider,
 			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,

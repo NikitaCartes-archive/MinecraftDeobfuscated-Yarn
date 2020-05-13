@@ -43,7 +43,7 @@ public class IglooFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void init(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
+		public void init(ChunkGenerator chunkGenerator, StructureManager structureManager, int x, int z, Biome biome) {
 			DefaultFeatureConfig defaultFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.IGLOO);
 			int i = x * 16;
 			int j = z * 16;

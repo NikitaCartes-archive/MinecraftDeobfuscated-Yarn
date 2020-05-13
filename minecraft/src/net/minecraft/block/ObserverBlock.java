@@ -11,8 +11,8 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class ObserverBlock extends FacingBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
@@ -50,7 +50,7 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (state.get(FACING) == direction && !(Boolean)state.get(POWERED)) {
 			this.scheduleTick(world, pos);
 		}
@@ -58,7 +58,7 @@ public class ObserverBlock extends FacingBlock {
 		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 	}
 
-	private void scheduleTick(IWorld world, BlockPos pos) {
+	private void scheduleTick(WorldAccess world, BlockPos pos) {
 		if (!world.isClient() && !world.getBlockTickScheduler().isScheduled(pos, this)) {
 			world.getBlockTickScheduler().schedule(pos, this, 2);
 		}

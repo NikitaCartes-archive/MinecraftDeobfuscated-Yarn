@@ -72,6 +72,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.WorldSaveHandler;
+import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
@@ -144,14 +145,15 @@ public abstract class PlayerManager {
 			new GameJoinS2CPacket(
 				player.getEntityId(),
 				player.interactionManager.getGameMode(),
-				class_5217.method_27418(lv.getSeed()),
+				BiomeAccess.method_27984(serverWorld.getSeed()),
 				lv.isHardcore(),
-				serverWorld.dimension.getType(),
+				serverWorld.method_27983(),
 				this.getMaxPlayerCount(),
-				lv.getGeneratorType(),
 				this.viewDistance,
 				bl2,
-				!bl
+				!bl,
+				serverWorld.method_27982(),
+				serverWorld.method_28125()
 			)
 		);
 		serverPlayNetworkHandler.sendPacket(
@@ -461,7 +463,12 @@ public abstract class PlayerManager {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
-					serverPlayerEntity.dimension, class_5217.method_27418(lv.getSeed()), lv.getGeneratorType(), serverPlayerEntity.interactionManager.getGameMode(), bl
+					serverPlayerEntity.dimension,
+					BiomeAccess.method_27984(serverPlayerEntity.getServerWorld().getSeed()),
+					serverPlayerEntity.interactionManager.getGameMode(),
+					serverPlayerEntity.getServerWorld().method_27982(),
+					serverPlayerEntity.getServerWorld().method_28125(),
+					bl
 				)
 			);
 		serverPlayerEntity.networkHandler

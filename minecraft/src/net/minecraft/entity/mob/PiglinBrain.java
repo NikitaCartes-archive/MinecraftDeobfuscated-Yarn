@@ -57,8 +57,6 @@ import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.ToolItem;
-import net.minecraft.item.ToolMaterials;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
@@ -82,22 +80,6 @@ public class PiglinBrain {
 	private static final IntRange RIDE_TARGET_MEMORY_DURATION = Durations.betweenSeconds(10, 30);
 	private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
 	private static final Set FOOD = ImmutableSet.of(Items.PORKCHOP, Items.COOKED_PORKCHOP);
-	private static final Set<Item> GOLDEN_ITEMS = ImmutableSet.of(
-		Items.GOLD_INGOT,
-		Items.GOLDEN_APPLE,
-		Items.GOLDEN_HORSE_ARMOR,
-		Items.GOLDEN_CARROT,
-		Items.GOLD_BLOCK,
-		Items.GOLD_ORE,
-		Items.ENCHANTED_GOLDEN_APPLE,
-		Items.GOLDEN_HORSE_ARMOR,
-		Items.LIGHT_WEIGHTED_PRESSURE_PLATE,
-		Items.BELL,
-		Items.GLISTERING_MELON_SLICE,
-		Items.CLOCK,
-		Items.NETHER_GOLD_ORE,
-		Items.GILDED_BLACKSTONE
-	);
 
 	protected static Brain<?> create(PiglinEntity piglin, Dynamic<?> data) {
 		Brain<PiglinEntity> brain = new Brain<>(PiglinEntity.MEMORY_MODULE_TYPES, PiglinEntity.SENSOR_TYPES, data);
@@ -413,9 +395,7 @@ public class PiglinBrain {
 	}
 
 	public static boolean isGoldenItem(Item item) {
-		return GOLDEN_ITEMS.contains(item)
-			|| item instanceof ToolItem && ((ToolItem)item).getMaterial() == ToolMaterials.GOLD
-			|| item instanceof ArmorItem && ((ArmorItem)item).getMaterial() == ArmorMaterials.GOLD;
+		return item.isIn(ItemTags.PIGLIN_LOVED);
 	}
 
 	private static boolean canRide(PiglinEntity piglin, Entity ridden) {

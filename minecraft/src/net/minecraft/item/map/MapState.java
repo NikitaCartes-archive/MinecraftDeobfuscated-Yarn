@@ -18,8 +18,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.dimension.DimensionType;
 
 public class MapState extends PersistentState {
@@ -245,7 +245,7 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	private void addIcon(MapIcon.Type type, @Nullable IWorld world, String key, double x, double z, double rotation, @Nullable Text text) {
+	private void addIcon(MapIcon.Type type, @Nullable WorldAccess world, String key, double x, double z, double rotation, @Nullable Text text) {
 		int i = 1 << this.scale;
 		float f = (float)(x - (double)this.xCenter) / (float)i;
 		float g = (float)(z - (double)this.zCenter) / (float)i;
@@ -324,7 +324,7 @@ public class MapState extends PersistentState {
 		return playerUpdateTracker;
 	}
 
-	public void addBanner(IWorld world, BlockPos pos) {
+	public void addBanner(WorldAccess world, BlockPos pos) {
 		float f = (float)pos.getX() + 0.5F;
 		float g = (float)pos.getZ() + 0.5F;
 		int i = 1 << this.scale;

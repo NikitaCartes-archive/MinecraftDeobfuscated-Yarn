@@ -6,10 +6,9 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 	private final Block ICE = Blocks.PACKED_ICE;
@@ -19,18 +18,18 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		IcePatchFeatureConfig icePatchFeatureConfig
 	) {
-		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
+		while (serverWorldAccess.isAir(blockPos) && blockPos.getY() > 2) {
 			blockPos = blockPos.down();
 		}
 
-		if (!iWorld.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
+		if (!serverWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
 			return false;
 		} else {
 			int i = random.nextInt(icePatchFeatureConfig.radius) + 2;
@@ -43,9 +42,9 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 					if (m * m + n * n <= i * i) {
 						for (int o = blockPos.getY() - 1; o <= blockPos.getY() + 1; o++) {
 							BlockPos blockPos2 = new BlockPos(k, o, l);
-							Block block = iWorld.getBlockState(blockPos2).getBlock();
+							Block block = serverWorldAccess.getBlockState(blockPos2).getBlock();
 							if (isDirt(block) || block == Blocks.SNOW_BLOCK || block == Blocks.ICE) {
-								iWorld.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
+								serverWorldAccess.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
 							}
 						}
 					}

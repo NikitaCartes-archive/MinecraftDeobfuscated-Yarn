@@ -6,9 +6,8 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class DungeonsDecorator extends Decorator<ChanceDecoratorConfig> {
 	public DungeonsDecorator(Function<Dynamic<?>, ? extends ChanceDecoratorConfig> function) {
@@ -16,7 +15,7 @@ public class DungeonsDecorator extends Decorator<ChanceDecoratorConfig> {
 	}
 
 	public Stream<BlockPos> getPositions(
-		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos
+		WorldAccess worldAccess, ChunkGenerator chunkGenerator, Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos
 	) {
 		int i = chanceDecoratorConfig.chance;
 		return IntStream.range(0, i).mapToObj(ix -> {

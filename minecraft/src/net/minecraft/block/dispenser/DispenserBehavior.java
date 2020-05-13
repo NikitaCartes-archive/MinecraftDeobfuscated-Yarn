@@ -63,8 +63,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public interface DispenserBehavior {
 	DispenserBehavior NOOP = (blockPointer, itemStack) -> itemStack;
@@ -355,12 +355,12 @@ public interface DispenserBehavior {
 
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				IWorld iWorld = pointer.getWorld();
+				WorldAccess worldAccess = pointer.getWorld();
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-				BlockState blockState = iWorld.getBlockState(blockPos);
+				BlockState blockState = worldAccess.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (block instanceof FluidDrainable) {
-					Fluid fluid = ((FluidDrainable)block).tryDrainFluid(iWorld, blockPos, blockState);
+					Fluid fluid = ((FluidDrainable)block).tryDrainFluid(worldAccess, blockPos, blockState);
 					if (!(fluid instanceof FlowableFluid)) {
 						return super.dispenseSilently(pointer, stack);
 					} else {
@@ -523,15 +523,15 @@ public interface DispenserBehavior {
 				@Override
 				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 					this.setSuccess(false);
-					IWorld iWorld = pointer.getWorld();
+					WorldAccess worldAccess = pointer.getWorld();
 					BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-					BlockState blockState = iWorld.getBlockState(blockPos);
+					BlockState blockState = worldAccess.getBlockState(blockPos);
 					if (blockState.method_27851(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))
 						&& (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
-						((BeehiveBlock)blockState.getBlock()).takeHoney(iWorld.getWorld(), blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
+						((BeehiveBlock)blockState.getBlock()).takeHoney(worldAccess.getWorld(), blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
 						this.setSuccess(true);
 						return this.method_22141(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
-					} else if (iWorld.getFluidState(blockPos).matches(FluidTags.WATER)) {
+					} else if (worldAccess.getFluidState(blockPos).matches(FluidTags.WATER)) {
 						this.setSuccess(true);
 						return this.method_22141(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
 					} else {

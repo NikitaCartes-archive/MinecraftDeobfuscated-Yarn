@@ -15,10 +15,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 	public BonusChestFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -26,9 +25,9 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		DefaultFeatureConfig defaultFeatureConfig
@@ -43,16 +42,16 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 		for (Integer integer : list) {
 			for (Integer integer2 : list2) {
 				mutable.set(integer, 0, integer2);
-				BlockPos blockPos2 = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable);
-				if (iWorld.isAir(blockPos2) || iWorld.getBlockState(blockPos2).getCollisionShape(iWorld, blockPos2).isEmpty()) {
-					iWorld.setBlockState(blockPos2, Blocks.CHEST.getDefaultState(), 2);
-					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.SPAWN_BONUS_CHEST);
+				BlockPos blockPos2 = serverWorldAccess.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable);
+				if (serverWorldAccess.isAir(blockPos2) || serverWorldAccess.getBlockState(blockPos2).getCollisionShape(serverWorldAccess, blockPos2).isEmpty()) {
+					serverWorldAccess.setBlockState(blockPos2, Blocks.CHEST.getDefaultState(), 2);
+					LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, blockPos2, LootTables.SPAWN_BONUS_CHEST);
 					BlockState blockState = Blocks.TORCH.getDefaultState();
 
 					for (Direction direction : Direction.Type.HORIZONTAL) {
 						BlockPos blockPos3 = blockPos2.offset(direction);
-						if (blockState.canPlaceAt(iWorld, blockPos3)) {
-							iWorld.setBlockState(blockPos3, blockState, 2);
+						if (blockState.canPlaceAt(serverWorldAccess, blockPos3)) {
+							serverWorldAccess.setBlockState(blockPos3, blockState, 2);
 						}
 					}
 

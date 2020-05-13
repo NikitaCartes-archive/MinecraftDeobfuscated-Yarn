@@ -18,10 +18,9 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
@@ -79,9 +78,9 @@ public class FeaturePoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		IWorld world,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<?> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		BlockPos blockPos,
 		BlockPos blockPos2,
 		BlockRotation blockRotation,
@@ -89,7 +88,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		Random random,
 		boolean bl
 	) {
-		return this.feature.generate(world, structureAccessor, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
+		return this.feature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
 	}
 
 	@Override

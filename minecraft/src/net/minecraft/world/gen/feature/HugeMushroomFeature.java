@@ -8,17 +8,17 @@ import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureConfig> {
 	public HugeMushroomFeature(Function<Dynamic<?>, ? extends HugeMushroomFeatureConfig> function) {
 		super(function);
 	}
 
-	protected void generateStem(IWorld world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutable) {
+	protected void generateStem(WorldAccess world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutable) {
 		for (int i = 0; i < height; i++) {
 			mutable.set(pos).move(Direction.UP, i);
 			if (!world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) {
@@ -36,7 +36,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 		return i;
 	}
 
-	protected boolean canGenerate(IWorld world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+	protected boolean canGenerate(WorldAccess world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
 		int i = pos.getY();
 		if (i >= 1 && i + height + 1 < 256) {
 			Block block = world.getBlockState(pos.down()).getBlock();
@@ -64,25 +64,25 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		HugeMushroomFeatureConfig hugeMushroomFeatureConfig
 	) {
 		int i = this.getHeight(random);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		if (!this.canGenerate(iWorld, blockPos, i, mutable, hugeMushroomFeatureConfig)) {
+		if (!this.canGenerate(serverWorldAccess, blockPos, i, mutable, hugeMushroomFeatureConfig)) {
 			return false;
 		} else {
-			this.generateCap(iWorld, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
-			this.generateStem(iWorld, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
+			this.generateCap(serverWorldAccess, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
+			this.generateStem(serverWorldAccess, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
 			return true;
 		}
 	}
 
 	protected abstract int getCapSize(int i, int j, int capSize, int y);
 
-	protected abstract void generateCap(IWorld world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config);
+	protected abstract void generateCap(WorldAccess world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config);
 }

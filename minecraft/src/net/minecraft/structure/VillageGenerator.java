@@ -21,7 +21,7 @@ public class VillageGenerator {
 	}
 
 	public static void addPieces(
-		ChunkGenerator<?> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		StructureManager structureManager,
 		BlockPos pos,
 		List<StructurePiece> pieces,

@@ -4,10 +4,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class RandomRandomFeature extends Feature<RandomRandomFeatureConfig> {
 	public RandomRandomFeature(Function<Dynamic<?>, ? extends RandomRandomFeatureConfig> function) {
@@ -15,9 +14,9 @@ public class RandomRandomFeature extends Feature<RandomRandomFeatureConfig> {
 	}
 
 	public boolean generate(
-		IWorld iWorld,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockPos blockPos,
 		RandomRandomFeatureConfig randomRandomFeatureConfig
@@ -27,7 +26,7 @@ public class RandomRandomFeature extends Feature<RandomRandomFeatureConfig> {
 		for (int j = 0; j < i; j++) {
 			int k = random.nextInt(randomRandomFeatureConfig.features.size());
 			ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)randomRandomFeatureConfig.features.get(k);
-			configuredFeature.generate(iWorld, structureAccessor, chunkGenerator, random, blockPos);
+			configuredFeature.generate(serverWorldAccess, structureAccessor, chunkGenerator, random, blockPos);
 		}
 
 		return true;

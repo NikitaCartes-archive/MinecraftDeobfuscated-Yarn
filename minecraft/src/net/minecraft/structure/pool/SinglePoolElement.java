@@ -25,7 +25,7 @@ import net.minecraft.util.dynamic.DynamicDeserializer;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -106,9 +106,9 @@ public class SinglePoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		IWorld world,
+		ServerWorldAccess serverWorldAccess,
 		StructureAccessor structureAccessor,
-		ChunkGenerator<?> chunkGenerator,
+		ChunkGenerator chunkGenerator,
 		BlockPos blockPos,
 		BlockPos blockPos2,
 		BlockRotation blockRotation,
@@ -118,13 +118,13 @@ public class SinglePoolElement extends StructurePoolElement {
 	) {
 		Structure structure = this.method_27233(structureManager);
 		StructurePlacementData structurePlacementData = this.createPlacementData(blockRotation, blockBox, bl);
-		if (!structure.place(world, blockPos, blockPos2, structurePlacementData, 18)) {
+		if (!structure.place(serverWorldAccess, blockPos, blockPos2, structurePlacementData, 18)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(
-				world, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false)
+				serverWorldAccess, blockPos, blockPos2, structurePlacementData, this.getDataStructureBlocks(structureManager, blockPos, blockRotation, false)
 			)) {
-				this.method_16756(world, structureBlockInfo, blockPos, blockRotation, random, blockBox);
+				this.method_16756(serverWorldAccess, structureBlockInfo, blockPos, blockRotation, random, blockBox);
 			}
 
 			return true;

@@ -5,6 +5,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
+import net.minecraft.block.CampfireBlock;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.FluidPredicate;
 import net.minecraft.predicate.LightPredicate;
@@ -27,6 +28,7 @@ public class LocationPredicate {
 		null,
 		null,
 		null,
+		null,
 		LightPredicate.ANY,
 		BlockPredicate.ANY,
 		FluidPredicate.ANY
@@ -40,6 +42,8 @@ public class LocationPredicate {
 	private final StructureFeature<?> feature;
 	@Nullable
 	private final DimensionType dimension;
+	@Nullable
+	private final Boolean field_24500;
 	private final LightPredicate light;
 	private final BlockPredicate block;
 	private final FluidPredicate fluid;
@@ -51,9 +55,10 @@ public class LocationPredicate {
 		@Nullable Biome biome,
 		@Nullable StructureFeature<?> feature,
 		@Nullable DimensionType dimension,
-		LightPredicate light,
-		BlockPredicate block,
-		FluidPredicate fluid
+		@Nullable Boolean boolean_,
+		LightPredicate lightPredicate,
+		BlockPredicate blockPredicate,
+		FluidPredicate fluidPredicate
 	) {
 		this.x = x;
 		this.y = y;
@@ -61,9 +66,10 @@ public class LocationPredicate {
 		this.biome = biome;
 		this.feature = feature;
 		this.dimension = dimension;
-		this.light = light;
-		this.block = block;
-		this.fluid = fluid;
+		this.field_24500 = boolean_;
+		this.light = lightPredicate;
+		this.block = blockPredicate;
+		this.fluid = fluidPredicate;
 	}
 
 	public static LocationPredicate biome(Biome biome) {
@@ -72,6 +78,7 @@ public class LocationPredicate {
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			biome,
+			null,
 			null,
 			null,
 			LightPredicate.ANY,
@@ -88,6 +95,7 @@ public class LocationPredicate {
 			null,
 			null,
 			dimension,
+			null,
 			LightPredicate.ANY,
 			BlockPredicate.ANY,
 			FluidPredicate.ANY
@@ -101,6 +109,7 @@ public class LocationPredicate {
 			NumberRange.FloatRange.ANY,
 			null,
 			feature,
+			null,
 			null,
 			LightPredicate.ANY,
 			BlockPredicate.ANY,
@@ -119,17 +128,21 @@ public class LocationPredicate {
 			return false;
 		} else if (!this.z.test(z)) {
 			return false;
-		} else if (this.dimension != null && this.dimension != world.dimension.getType()) {
+		} else if (this.dimension != null && this.dimension != world.method_27983()) {
 			return false;
 		} else {
 			BlockPos blockPos = new BlockPos((double)x, (double)y, (double)z);
 			boolean bl = world.canSetBlock(blockPos);
 			if (this.biome == null || bl && this.biome == world.getBiome(blockPos)) {
-				if (this.feature == null || bl && this.feature.isInsideStructure(world, world.getStructureAccessor(), blockPos)) {
-					if (!this.light.test(world, blockPos)) {
-						return false;
+				if (this.feature == null || bl && this.feature.isInsideStructure(world.getStructureAccessor(), blockPos)) {
+					if (this.field_24500 == null || bl && this.field_24500 == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
+						if (!this.light.test(world, blockPos)) {
+							return false;
+						} else {
+							return !this.block.test(world, blockPos) ? false : this.fluid.test(world, blockPos);
+						}
 					} else {
-						return !this.block.test(world, blockPos) ? false : this.fluid.test(world, blockPos);
+						return false;
 					}
 				} else {
 					return false;
@@ -165,6 +178,10 @@ public class LocationPredicate {
 				jsonObject.addProperty("biome", Registry.BIOME.getId(this.biome).toString());
 			}
 
+			if (this.field_24500 != null) {
+				jsonObject.addProperty("smokey", this.field_24500);
+			}
+
 			jsonObject.add("light", this.light.toJson());
 			jsonObject.add("block", this.block.toJson());
 			jsonObject.add("fluid", this.fluid.toJson());
@@ -189,10 +206,13 @@ public class LocationPredicate {
 				biome = (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier + "'"));
 			}
 
+			Boolean boolean_ = jsonObject.has("smokey") ? jsonObject.get("smokey").getAsBoolean() : null;
 			LightPredicate lightPredicate = LightPredicate.fromJson(jsonObject.get("light"));
 			BlockPredicate blockPredicate = BlockPredicate.fromJson(jsonObject.get("block"));
 			FluidPredicate fluidPredicate = FluidPredicate.fromJson(jsonObject.get("fluid"));
-			return new LocationPredicate(floatRange, floatRange2, floatRange3, biome, structureFeature, dimensionType, lightPredicate, blockPredicate, fluidPredicate);
+			return new LocationPredicate(
+				floatRange, floatRange2, floatRange3, biome, structureFeature, dimensionType, boolean_, lightPredicate, blockPredicate, fluidPredicate
+			);
 		} else {
 			return ANY;
 		}
@@ -208,6 +228,8 @@ public class LocationPredicate {
 		private StructureFeature<?> feature;
 		@Nullable
 		private DimensionType dimension;
+		@Nullable
+		private Boolean field_24501;
 		private LightPredicate light = LightPredicate.ANY;
 		private BlockPredicate block = BlockPredicate.ANY;
 		private FluidPredicate fluid = FluidPredicate.ANY;
@@ -221,8 +243,18 @@ public class LocationPredicate {
 			return this;
 		}
 
+		public LocationPredicate.Builder method_27989(BlockPredicate blockPredicate) {
+			this.block = blockPredicate;
+			return this;
+		}
+
+		public LocationPredicate.Builder method_27990(Boolean boolean_) {
+			this.field_24501 = boolean_;
+			return this;
+		}
+
 		public LocationPredicate build() {
-			return new LocationPredicate(this.x, this.y, this.z, this.biome, this.feature, this.dimension, this.light, this.block, this.fluid);
+			return new LocationPredicate(this.x, this.y, this.z, this.biome, this.feature, this.dimension, this.field_24501, this.light, this.block, this.fluid);
 		}
 	}
 }

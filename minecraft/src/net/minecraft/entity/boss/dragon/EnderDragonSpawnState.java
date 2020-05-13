@@ -7,8 +7,6 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -77,7 +75,7 @@ public enum EnderDragonSpawnState {
 							.generate(
 								world,
 								world.getStructureAccessor(),
-								(ChunkGenerator<? extends ChunkGeneratorConfig>)world.getChunkManager().getChunkGenerator(),
+								world.getChunkManager().getChunkGenerator(),
 								new Random(),
 								new BlockPos(spike.getCenterX(), 45, spike.getCenterZ())
 							);

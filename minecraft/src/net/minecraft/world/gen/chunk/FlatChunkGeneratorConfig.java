@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.OptionalDynamic;
 import com.mojang.datafixers.types.DynamicOps;
 import com.mojang.datafixers.util.Pair;
 import java.util.Collections;
@@ -23,7 +24,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -46,7 +46,7 @@ import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
+public class FlatChunkGeneratorConfig {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ConfiguredFeature<?, ? extends StructureFeature<?>> MINESHAFT = Feature.MINESHAFT
 		.configure(new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
@@ -132,12 +132,25 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(field_24422, new BastionRemnantFeatureConfig(BastionRemnantGenerator.START_POOLS_TO_SIZES));
 		}
 	);
+	private final ChunkGeneratorConfig field_24560;
 	private final List<FlatChunkGeneratorLayer> layers = Lists.<FlatChunkGeneratorLayer>newArrayList();
 	private final Map<String, Map<String, String>> structures = Maps.<String, Map<String, String>>newHashMap();
 	private Biome biome;
 	private final BlockState[] layerBlocks = new BlockState[256];
 	private boolean hasNoTerrain;
 	private int groundHeight;
+
+	public FlatChunkGeneratorConfig() {
+		this(new ChunkGeneratorConfig());
+	}
+
+	public FlatChunkGeneratorConfig(ChunkGeneratorConfig chunkGeneratorConfig) {
+		this.field_24560 = chunkGeneratorConfig;
+	}
+
+	public ChunkGeneratorConfig method_28051() {
+		return this.field_24560;
+	}
 
 	@Nullable
 	public static Block parseBlock(String string) {
@@ -348,7 +361,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	}
 
 	public static FlatChunkGeneratorConfig fromDynamic(Dynamic<?> dynamic) {
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig();
 		List<Pair<Integer, Block>> list = dynamic.get("layers")
 			.asList(dynamicx -> Pair.of(dynamicx.get("height").asInt(1), parseBlock(dynamicx.get("block").asString(""))));
 		if (list.stream().anyMatch(pair -> pair.getSecond() == null)) {
@@ -362,7 +375,11 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			} else {
 				flatChunkGeneratorConfig.getLayers().addAll(list2);
 				flatChunkGeneratorConfig.updateLayerBlocks();
-				flatChunkGeneratorConfig.setBiome(Registry.BIOME.get(new Identifier(dynamic.get("biome").asString(""))));
+				OptionalDynamic<?> optionalDynamic = dynamic.get("biome");
+				flatChunkGeneratorConfig.setBiome((Biome)Registry.BIOME.getOrEmpty(new Identifier(optionalDynamic.asString(""))).orElseGet(() -> {
+					LOGGER.error("Unknown biome, defaulting to plains: " + optionalDynamic);
+					return Biomes.PLAINS;
+				}));
 				dynamic.get("structures")
 					.flatMap(Dynamic::getMapValues)
 					.ifPresent(
@@ -379,7 +396,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		if (!iterator.hasNext()) {
 			return getDefaultConfig();
 		} else {
-			FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
+			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig();
 			List<FlatChunkGeneratorLayer> list = parseLayersString((String)iterator.next());
 			if (list.isEmpty()) {
 				return getDefaultConfig();
@@ -432,45 +449,13 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void setStructureOption(String structure, String key, String value) {
-		((Map)this.structures.get(structure)).put(key, value);
-		if ("village".equals(structure) && "distance".equals(key)) {
-			this.villageDistance = MathHelper.parseInt(value, this.villageDistance, 9);
-		}
-
-		if ("biome_1".equals(structure) && "distance".equals(key)) {
-			this.templeDistance = MathHelper.parseInt(value, this.templeDistance, 9);
-		}
-
-		if ("stronghold".equals(structure)) {
-			if ("distance".equals(key)) {
-				this.strongholdDistance = MathHelper.parseInt(value, this.strongholdDistance, 1);
-			} else if ("count".equals(key)) {
-				this.strongholdCount = MathHelper.parseInt(value, this.strongholdCount, 1);
-			} else if ("spread".equals(key)) {
-				this.strongholdSpread = MathHelper.parseInt(value, this.strongholdSpread, 1);
-			}
-		}
-
-		if ("oceanmonument".equals(structure)) {
-			if ("separation".equals(key)) {
-				this.oceanMonumentSeparation = MathHelper.parseInt(value, this.oceanMonumentSeparation, 1);
-			} else if ("spacing".equals(key)) {
-				this.oceanMonumentSpacing = MathHelper.parseInt(value, this.oceanMonumentSpacing, 1);
-			}
-		}
-
-		if ("endcity".equals(structure) && "distance".equals(key)) {
-			this.endCityDistance = MathHelper.parseInt(value, this.endCityDistance, 1);
-		}
-
-		if ("mansion".equals(structure) && "distance".equals(key)) {
-			this.mansionDistance = MathHelper.parseInt(value, this.mansionDistance, 1);
-		}
+	private void setStructureOption(String string, String string2, String value) {
+		((Map)this.structures.get(string)).put(string2, value);
+		this.field_24560.method_28000(string, string2, value);
 	}
 
 	public static FlatChunkGeneratorConfig getDefaultConfig() {
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.FLAT.createConfig();
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig();
 		flatChunkGeneratorConfig.setBiome(Biomes.PLAINS);
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
 		flatChunkGeneratorConfig.getLayers().add(new FlatChunkGeneratorLayer(2, Blocks.DIRT));

@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5269;
+import net.minecraft.class_5294;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -71,8 +72,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.ColorResolver;
-import net.minecraft.world.level.LevelGeneratorOptions;
-import net.minecraft.world.level.LevelGeneratorType;
 
 @Environment(EnvType.CLIENT)
 public class ClientWorld extends World {
@@ -81,6 +80,7 @@ public class ClientWorld extends World {
 	private final ClientPlayNetworkHandler netHandler;
 	private final WorldRenderer worldRenderer;
 	private final ClientWorld.class_5271 field_24430;
+	private final class_5294 field_24606;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private Scoreboard scoreboard = new Scoreboard();
@@ -91,29 +91,38 @@ public class ClientWorld extends World {
 		object2ObjectArrayMap.put(BiomeColors.FOLIAGE_COLOR, new BiomeColorCache());
 		object2ObjectArrayMap.put(BiomeColors.WATER_COLOR, new BiomeColorCache());
 	});
+	private final ClientChunkManager field_24605;
 
 	public ClientWorld(
 		ClientPlayNetworkHandler clientPlayNetworkHandler,
-		ClientWorld.class_5271 levelInfo,
+		ClientWorld.class_5271 arg,
 		DimensionType dimensionType,
 		int chunkLoadDistance,
 		Supplier<Profiler> supplier,
-		WorldRenderer worldRenderer
+		WorldRenderer worldRenderer,
+		boolean bl,
+		long l
 	) {
-		super(levelInfo, dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, chunkLoadDistance), supplier, true);
-		this.field_24430 = levelInfo;
+		super(arg, dimensionType, supplier, true, bl, l);
+		this.field_24605 = new ClientChunkManager(this, chunkLoadDistance);
+		this.field_24430 = arg;
 		this.netHandler = clientPlayNetworkHandler;
 		this.worldRenderer = worldRenderer;
+		this.field_24606 = class_5294.method_28111(dimensionType);
 		this.setSpawnPos(new BlockPos(8, 64, 8));
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
+	}
+
+	public class_5294 method_28103() {
+		return this.field_24606;
 	}
 
 	public void tick(BooleanSupplier booleanSupplier) {
 		this.getWorldBorder().tick();
 		this.tickTime();
 		this.getProfiler().push("blocks");
-		this.chunkManager.tick(booleanSupplier);
+		this.field_24605.method_28102(booleanSupplier);
 		this.getProfiler().pop();
 	}
 
@@ -229,7 +238,7 @@ public class ClientWorld extends World {
 
 	public void unloadBlockEntities(WorldChunk chunk) {
 		this.unloadedBlockEntities.addAll(chunk.getBlockEntities().values());
-		this.chunkManager.getLightingProvider().setLightEnabled(chunk.getPos(), false);
+		this.field_24605.getLightingProvider().setLightEnabled(chunk.getPos(), false);
 	}
 
 	public void resetChunkColor(int i, int j) {
@@ -512,7 +521,7 @@ public class ClientWorld extends World {
 	}
 
 	public ClientChunkManager getChunkManager() {
-		return (ClientChunkManager)super.getChunkManager();
+		return this.field_24605;
 	}
 
 	@Nullable
@@ -705,10 +714,6 @@ public class ClientWorld extends World {
 		return h * h * 0.5F;
 	}
 
-	public double getSkyDarknessHeight() {
-		return this.properties.getGeneratorType() == LevelGeneratorType.FLAT ? 0.0 : 63.0;
-	}
-
 	public int getLightningTicksLeft() {
 		return this.lightningTicksLeft;
 	}
@@ -720,7 +725,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public float getBrightness(Direction direction, boolean shaded) {
-		boolean bl = this.dimension.getType() == DimensionType.THE_NETHER;
+		boolean bl = this.method_27983() == DimensionType.THE_NETHER;
 		if (!shaded) {
 			return bl ? 0.9F : 1.0F;
 		} else {
@@ -788,12 +793,15 @@ public class ClientWorld extends World {
 		return "ClientLevel";
 	}
 
+	public ClientWorld.class_5271 getLevelProperties() {
+		return this.field_24430;
+	}
+
 	@Environment(EnvType.CLIENT)
 	public static class class_5271 implements class_5269 {
-		private final long field_24431;
-		private final LevelGeneratorOptions field_24432;
 		private final boolean field_24433;
 		private final GameRules field_24434;
+		private final boolean field_24607;
 		private int field_24435;
 		private int field_24436;
 		private int field_24437;
@@ -803,17 +811,11 @@ public class ClientWorld extends World {
 		private Difficulty field_24441;
 		private boolean field_24442;
 
-		public class_5271(long l, Difficulty difficulty, boolean bl, LevelGeneratorOptions levelGeneratorOptions) {
-			this.field_24431 = l;
+		public class_5271(Difficulty difficulty, boolean bl, boolean bl2) {
 			this.field_24441 = difficulty;
 			this.field_24433 = bl;
-			this.field_24432 = levelGeneratorOptions;
+			this.field_24607 = bl2;
 			this.field_24434 = new GameRules();
-		}
-
-		@Override
-		public long getSeed() {
-			return this.field_24431;
 		}
 
 		@Override
@@ -894,16 +896,6 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public LevelGeneratorType getGeneratorType() {
-			return this.field_24432.getType();
-		}
-
-		@Override
-		public LevelGeneratorOptions getGeneratorOptions() {
-			return this.field_24432;
-		}
-
-		@Override
 		public GameRules getGameRules() {
 			return this.field_24434;
 		}
@@ -929,6 +921,14 @@ public class ClientWorld extends World {
 
 		public void method_27876(boolean bl) {
 			this.field_24442 = bl;
+		}
+
+		public double method_28105() {
+			return this.field_24607 ? 0.0 : 63.0;
+		}
+
+		public double method_28106() {
+			return this.field_24607 ? 1.0 : 0.03125;
 		}
 	}
 }

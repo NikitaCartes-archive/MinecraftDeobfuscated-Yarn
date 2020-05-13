@@ -127,7 +127,7 @@ public class JigsawBlockScreen extends Screen {
 			this.joint = joints[ix];
 			buttonWidget.setMessage(this.getLocalizedJointName());
 		}));
-		boolean bl = JigsawBlock.method_26378(this.jigsaw.getCachedState()).getAxis().isVertical();
+		boolean bl = JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical();
 		this.jointRotationButton.active = bl;
 		this.jointRotationButton.visible = bl;
 		this.setInitialFocus(this.poolField);
@@ -190,7 +190,7 @@ public class JigsawBlockScreen extends Screen {
 		this.targetField.render(matrices, mouseX, mouseY, delta);
 		this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 115, 10526880);
 		this.finalStateField.render(matrices, mouseX, mouseY, delta);
-		if (JigsawBlock.method_26378(this.jigsaw.getCachedState()).getAxis().isVertical()) {
+		if (JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical()) {
 			this.drawStringWithShadow(matrices, this.textRenderer, I18n.translate("jigsaw_block.joint_label"), this.width / 2 - 153, 156, 16777215);
 		}
 

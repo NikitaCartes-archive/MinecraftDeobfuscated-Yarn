@@ -232,7 +232,7 @@ public class DebugHud extends DrawableHelper {
 				list.add(string3);
 			}
 
-			list.add(DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()));
+			list.add(DimensionType.getId(this.client.world.method_27983()).toString() + " FC: " + Integer.toString(longSet.size()));
 			list.add("");
 			list.add(
 				String.format(
@@ -365,7 +365,7 @@ public class DebugHud extends DrawableHelper {
 	@Nullable
 	private ServerWorld getServerWorld() {
 		IntegratedServer integratedServer = this.client.getServer();
-		return integratedServer != null ? integratedServer.getWorld(this.client.world.getDimension().getType()) : null;
+		return integratedServer != null ? integratedServer.getWorld(this.client.world.method_27983()) : null;
 	}
 
 	@Nullable
@@ -376,7 +376,7 @@ public class DebugHud extends DrawableHelper {
 
 	private World getWorld() {
 		return DataFixUtils.orElse(
-			Optional.ofNullable(this.client.getServer()).map(integratedServer -> integratedServer.getWorld(this.client.world.dimension.getType())), this.client.world
+			Optional.ofNullable(this.client.getServer()).map(integratedServer -> integratedServer.getWorld(this.client.world.method_27983())), this.client.world
 		);
 	}
 

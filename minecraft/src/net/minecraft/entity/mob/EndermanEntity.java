@@ -48,9 +48,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class EndermanEntity extends HostileEntity {
@@ -421,17 +421,17 @@ public class EndermanEntity extends HostileEntity {
 		@Override
 		public void tick() {
 			Random random = this.enderman.getRandom();
-			IWorld iWorld = this.enderman.world;
+			WorldAccess worldAccess = this.enderman.world;
 			int i = MathHelper.floor(this.enderman.getX() - 1.0 + random.nextDouble() * 2.0);
 			int j = MathHelper.floor(this.enderman.getY() + random.nextDouble() * 2.0);
 			int k = MathHelper.floor(this.enderman.getZ() - 1.0 + random.nextDouble() * 2.0);
 			BlockPos blockPos = new BlockPos(i, j, k);
-			BlockState blockState = iWorld.getBlockState(blockPos);
+			BlockState blockState = worldAccess.getBlockState(blockPos);
 			BlockPos blockPos2 = blockPos.down();
-			BlockState blockState2 = iWorld.getBlockState(blockPos2);
+			BlockState blockState2 = worldAccess.getBlockState(blockPos2);
 			BlockState blockState3 = this.enderman.getCarriedBlock();
-			if (blockState3 != null && this.canPlaceOn(iWorld, blockPos, blockState3, blockState, blockState2, blockPos2)) {
-				iWorld.setBlockState(blockPos, blockState3, 3);
+			if (blockState3 != null && this.canPlaceOn(worldAccess, blockPos, blockState3, blockState, blockState2, blockPos2)) {
+				worldAccess.setBlockState(blockPos, blockState3, 3);
 				this.enderman.setCarriedBlock(null);
 			}
 		}

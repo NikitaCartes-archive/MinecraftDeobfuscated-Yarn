@@ -46,8 +46,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
@@ -126,7 +126,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this == block;
 	}
 
-	public static BlockState postProcessState(BlockState state, IWorld world, BlockPos pos) {
+	public static BlockState postProcessState(BlockState state, WorldAccess world, BlockPos pos) {
 		BlockState blockState = state;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -138,7 +138,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return blockState;
 	}
 
-	public static void replaceBlock(BlockState state, BlockState newState, IWorld world, BlockPos pos, int flags) {
+	public static void replaceBlock(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags) {
 		if (newState != state) {
 			if (newState.isAir()) {
 				if (!world.isClient()) {
@@ -232,7 +232,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 	}
 
-	public void onBroken(IWorld world, BlockPos pos, BlockState state) {
+	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
 	}
 
 	public static List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity) {

@@ -40,7 +40,7 @@ public class SpawnPointCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, BlockPos pos) {
-		DimensionType dimensionType = source.getWorld().getDimension().getType();
+		DimensionType dimensionType = source.getWorld().method_27983();
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.setSpawnPoint(dimensionType, pos, true, false);

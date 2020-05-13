@@ -16,8 +16,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public class NoteBlock extends Block {
 	public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
@@ -37,7 +37,7 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, IWorld world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		return direction == Direction.DOWN
 			? state.with(INSTRUMENT, Instrument.fromBlockState(newState))
 			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);

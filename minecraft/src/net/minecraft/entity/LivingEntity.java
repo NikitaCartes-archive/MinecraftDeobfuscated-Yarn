@@ -1822,7 +1822,7 @@ public abstract class LivingEntity extends Entity {
 			vec3d = new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ());
 		}
 
-		this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
+		this.requestTeleport(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Environment(EnvType.CLIENT)

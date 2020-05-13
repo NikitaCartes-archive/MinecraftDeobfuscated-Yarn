@@ -2066,7 +2066,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (this.currentScreen instanceof CreditsScreen) {
 			return MusicType.CREDITS;
 		} else if (this.player != null) {
-			if (this.player.world.dimension instanceof TheEndDimension) {
+			if (this.player.world.getDimension() instanceof TheEndDimension) {
 				return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicType.DRAGON : MusicType.END;
 			} else {
 				Biome.Category category = this.player.world.getBiome(this.player.getBlockPos()).getCategory();

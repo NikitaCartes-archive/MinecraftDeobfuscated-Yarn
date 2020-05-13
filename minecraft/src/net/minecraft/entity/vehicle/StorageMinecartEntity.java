@@ -1,6 +1,7 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -16,6 +17,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -172,6 +174,10 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	public void generateLoot(@Nullable PlayerEntity player) {
 		if (this.lootTableId != null && this.world.getServer() != null) {
 			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
+			if (player instanceof ServerPlayerEntity) {
+				Criteria.field_24479.method_27993((ServerPlayerEntity)player, this.lootTableId);
+			}
+
 			this.lootTableId = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
 				.parameter(LootContextParameters.POSITION, this.getBlockPos())

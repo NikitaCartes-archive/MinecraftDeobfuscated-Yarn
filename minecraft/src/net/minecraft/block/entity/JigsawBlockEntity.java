@@ -109,7 +109,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		this.pool = new Identifier(tag.getString("pool"));
 		this.finalState = tag.getString("final_state");
 		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(tag.getString("joint"))
-			.orElseGet(() -> JigsawBlock.method_26378(state).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
+			.orElseGet(() -> JigsawBlock.getFacing(state).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
 	}
 
 	@Nullable
@@ -124,7 +124,7 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	public void generate(ServerWorld world, int maxDepth) {
-		ChunkGenerator<?> chunkGenerator = world.getChunkManager().getChunkGenerator();
+		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 		StructureManager structureManager = world.getStructureManager();
 		StructureAccessor structureAccessor = world.getStructureAccessor();
 		Random random = world.getRandom();

@@ -238,6 +238,24 @@ public abstract class RenderLayer extends RenderPhase {
 		return getCutoutNoCull(texture, true);
 	}
 
+	public static RenderLayer method_28115(Identifier identifier, boolean bl) {
+		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+			.texture(new RenderPhase.Texture(identifier, false, false))
+			.transparency(NO_TRANSPARENCY)
+			.diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
+			.alpha(ONE_TENTH_ALPHA)
+			.cull(DISABLE_CULLING)
+			.lightmap(ENABLE_LIGHTMAP)
+			.overlay(ENABLE_OVERLAY_COLOR)
+			.layering(VIEW_OFFSET_Z_LAYERING)
+			.build(bl);
+		return of("entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, false, multiPhaseParameters);
+	}
+
+	public static RenderLayer method_28116(Identifier identifier) {
+		return method_28115(identifier, true);
+	}
+
 	public static RenderLayer getEntityTranslucentCull(Identifier texture) {
 		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
 			.texture(new RenderPhase.Texture(texture, false, false))

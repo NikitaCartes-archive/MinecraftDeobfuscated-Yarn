@@ -27,7 +27,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 		} else {
 			this.lastCheckedTime = serverWorld.getTime();
 			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
-			return Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+			return Objects.equals(globalPos.getDimension(), serverWorld.method_27983()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 
@@ -52,7 +52,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 			return false;
 		} else {
 			GlobalPos globalPos = (GlobalPos)optional.get();
-			return Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+			return Objects.equals(globalPos.getDimension(), serverWorld.method_27983()) && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
 }
